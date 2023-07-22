@@ -2,8 +2,10 @@ import { AddressLike } from '.'
 import { Token, TokenTypes } from './token'
 
 // TODO: implement intents that support token value, and not just ETH value
+export type ContractIntentTypes = 'Deploy'
+export type TokenIntentTypes = 'Mint' | 'Transfer' | 'List' | 'Buy' | 'Offer'
 
-type Intent<
+export type Intent<
     TIntentType extends ContractIntentTypes | TokenIntentTypes,
     TIntent,
 > = {
@@ -23,8 +25,7 @@ type Intent<
     signature: `0x${string}`
 }
 
-type ContractIntentTypes = 'Deploy'
-type ContractIntent<TIntentType extends ContractIntentTypes> = Intent<
+export type ContractIntent<TIntentType extends ContractIntentTypes> = Intent<
     TIntentType,
     {
         // The salt used with create2 to determine the address
@@ -34,8 +35,7 @@ type ContractIntent<TIntentType extends ContractIntentTypes> = Intent<
     }
 >
 
-type TokenIntentTypes = 'Mint' | 'Transfer' | 'List' | 'Buy'
-type TokenIntent<TIntentType, TTokenType, TIntent = {}> = Intent<
+export type TokenIntent<TIntentType, TTokenType, TIntent = {}> = Intent<
     TIntentType extends TokenIntentTypes ? TIntentType : never,
     {
         // Token to schedule intent for.
@@ -53,7 +53,7 @@ export type DeployIntent = ContractIntent<'Deploy'>
 //   without having to deploy the contract or mint the contract.
 // ! A valid MintIntent must be for a contract that already exists,
 //   or for an intent that is stored in the DeployIntent.
-type MintIntent<TTokenType> = TokenIntent<
+export type MintIntent<TTokenType> = TokenIntent<
     'Mint',
     TTokenType,
     {
@@ -62,15 +62,9 @@ type MintIntent<TTokenType> = TokenIntent<
     }
 >
 
-export type ERC721MintIntent = MintIntent<'ERC721'>
-export type ERC1155MintIntent = MintIntent<'ERC1155'>
-
 // * Enables creators to declare the intent for a token to be
 //   transferred without having to mint the token.
-type TransferIntent<TTokenType> = TokenIntent<'Transfer', TTokenType>
-
-export type ERC721TransferIntent = TransferIntent<'ERC721'>
-export type ERC1155TransferIntent = TransferIntent<'ERC1155'>
+export type TransferIntent<TTokenType> = TokenIntent<'Transfer', TTokenType>
 
 // * Enables creators to declare economic actions for tokens before
 //   they are deployed or minted.
@@ -86,14 +80,26 @@ export type ListIntent<TTokenType> = TokenIntent<
     }
 >
 
-export type ERC721ListIntent = ListIntent<'ERC721'>
-export type ERC1155ListIntent = ListIntent<'ERC1155'>
-
 // * Enables collectors to declare intent to buy a token without
 //   a token having been declared.
 // ! A valid BuyIntent must be for a token that has already has
 //   a counterpart in the ListIntent.
 export type BuyIntent<TTokenType> = TokenIntent<'Buy', TTokenType>
 
+// * Enables collectors to declare intent to make an offer on a token
+//   without the order being executed.
+export type OfferIntent<TTokenType> = TokenIntent<'Offer', TTokenType>
+
+// * Non-fungible token intents.
+export type ERC721MintIntent = MintIntent<'ERC721'>
+export type ERC721TransferIntent = TransferIntent<'ERC721'>
+export type ERC721ListIntent = ListIntent<'ERC721'>
 export type ERC721BuyIntent = BuyIntent<'ERC721'>
+export type ERC721OfferIntent = OfferIntent<'ERC721'>
+
+// * Fungible token intents.
+export type ERC1155MintIntent = MintIntent<'ERC1155'>
+export type ERC1155TransferIntent = TransferIntent<'ERC1155'>
+export type ERC1155ListIntent = ListIntent<'ERC1155'>
 export type ERC1155BuyIntent = BuyIntent<'ERC1155'>
+export type ERC1155OfferIntent = OfferIntent<'ERC1155'>
