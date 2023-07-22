@@ -1,0 +1,222 @@
+{
+  "main": {
+    "id": "c7fab373ee7aef51",
+    "type": "split",
+    "children": [
+      {
+        "id": "11d05017c2de7525",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "004ea25c5df5e0b8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Intents.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "0da830578bf06040",
+    "type": "split",
+    "children": [
+      {
+        "id": "79467e4bc2541b14",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "de5a42eb9b364aa2",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tailwind",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "3969af872c480e3b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "0b120bb3a7444576",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "5ef4c4cfec0f825b",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 303.5
+  },
+  "right": {
+    "id": "f5633c805b3efdfc",
+    "type": "split",
+    "children": [
+      {
+        "id": "b5991f7452264056",
+        "type": "tabs",
+        "dimension": 74.59715639810427,
+        "children": [
+          {
+            "id": "4ce2e3fe17e08e6f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Intents.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "byModifiedTime",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": false
+              }
+            }
+          },
+          {
+            "id": "a6f92446a8ca2b7e",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "graph",
+              "state": {},
+              "pinned": true
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
+        "id": "4626d5493755cfac",
+        "type": "tabs",
+        "dimension": 25.402843601895732,
+        "children": [
+          {
+            "id": "a61a7486af350d5c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Intents.md"
+              }
+            }
+          },
+          {
+            "id": "c90db1f78f1850b6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Intents.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 660.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "markdown-importer:Open format converter": false,
+      "publish:Publish changes...": false,
+      "switcher:Open quick switcher": true,
+      "graph:Open graph view": true,
+      "canvas:Create new canvas": true,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": true
+    }
+  },
+  "active": "004ea25c5df5e0b8",
+  "lastOpenFiles": [
+    "Pasted image 20230722140305.png",
+    "3. Slip Box/Positive Reframing.md",
+    "3. Slip Box/The Drowned.md",
+    "positiev.md",
+    "3. Slip Box/Post-Performatory.md",
+    "3. Slip Box/Prescriptive Building.md",
+    "An Aligned Creator Platform.md",
+    "1. North Star/No Golden Egg.md",
+    "5. Outputs/Developing Digital Public Goods.md",
+    "3. Slip Box/The Excitable.md",
+    "3. Slip Box/Success Demonstration.md",
+    "7. Utils/1. Images/Pasted image 20230707124032.png",
+    "3. Slip Box/Nuances of Scaling.md",
+    "3. Slip Box/Local Competition.md",
+    "Kellen & Paul.md",
+    "3. Slip Box/Lacking All Leadership.md",
+    "3. Slip Box/I Am the Original.md",
+    "3. Slip Box/Lacking Humility.md",
+    "3. Slip Box/Lacking Desires.md",
+    "3. Slip Box/Death to Nuance - Conversational XOR Gates.md",
+    "3. Slip Box/A Following Is Not Required.md",
+    "3. Slip Box/Being Content.md",
+    "3. Slip Box/Being A Young Leader.md",
+    "3. Slip Box/Frustrated Ascent.md",
+    "3. Slip Box/Game of Thrones.md",
+    "3. Slip Box/Indiscrete Ritualization.md",
+    "3. Slip Box/Imposters Syndrome.md",
+    "7. Utils/1. Images/Pasted image 20230706220301.png",
+    "7. Utils/1. Images/Screen Shot 2023-07-06 at 2.13.27 PM.png",
+    "7. Utils/1. Images/killer_app.gif",
+    "✂️",
+    "7. Utils/3. Accessories",
+    "7. Utils/3. Accessories/noc005_shiffman_12.4.12 (1).pdf",
+    "7. Utils/1. Images/Pasted image 20230615224941.png",
+    "7. Utils/1. Images/Pasted image 20230615225017.png",
+    "7. Utils/2. Templates",
+    "7. Utils/1. Images/opengraph (5) 1.png",
+    "7. Utils/1. Images/opengraph (5).png",
+    "7. Utils",
+    "6. Workspaces",
+    "5. Outputs",
+    "4. Library",
+    "3. Slip Box",
+    "2. Journals",
+    "7. Utils/1. Images/Screen Shot 2023-06-03 at 10.10.02 AM.png",
+    "7. Utils/1. Images/ray-so-export.svg",
+    "Untitled 1.canvas",
+    "Untitled.canvas"
+  ]
+}
