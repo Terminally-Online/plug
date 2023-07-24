@@ -1,21 +1,20 @@
+# Intents
+
 In recent months, [[Intents]] have [risen in popularity](https://www.biconomy.io/post/meta-transactions-account-abstraction-to-intents-evolution-of-web3-ui) among small social pockets of the web3 industry. Enabling a new world of functionality and design space, it's now possible and appreciated by users to deliver a better user experience than was possible previously.
 
 With [[Intents]], the execution of blockchain transactions shifts from imperative executive to declarative execution. The simplest way to think about this, is that a typical (imperative) transaction has value in being executed *now* while a declarative transactions has value in the declared outcome.
 
 In recent years, many transactions required immediate execution. However, that is not true for everything, realistically, very few things. This means, that instead of having to wear the cost of every transaction one may wait to run their transaction until economic incentives are properly aligned. This simple idea, powers an entirely new world of mechanisms and platforms.
 
-
 ---
 
 ## Resources
 
-- https://www.paradigm.xyz/2023/06/intents
+- [https://www.paradigm.xyz/2023/06/intents](https://www.paradigm.xyz/2023/06/intents)
 
 ---
 
 ## References
-
-- 
 
 ---
 

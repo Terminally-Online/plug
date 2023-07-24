@@ -2,7 +2,7 @@ import { AddressLike } from '.'
 import { Token, TokenTypes } from './token'
 
 // TODO: implement intents that support token value, and not just ETH value
-export type ContractIntentTypes = 'Deploy'
+export type ContractIntentTypes = 'Create2' | 'MinimalProxy'
 export type TokenIntentTypes = 'Mint' | 'Transfer' | 'List' | 'Buy' | 'Offer'
 
 export type Intent<
@@ -25,18 +25,17 @@ export type Intent<
     signature: `0x${string}`
 }
 
-export type ContractIntent<TIntentType extends ContractIntentTypes> = Intent<
-    TIntentType,
-    {
-        // The salt used with create2 to determine the address
-        salt: `0x${string}`
-        // The bytecode hash of the contract code & constructor arguments
-        bytecodeHash: `0x${string}`
-    }
->
+export type ContractIntent<
+    TIntentType extends ContractIntentTypes,
+    TIntent = {},
+> = Intent<TIntentType, TIntent>
 
-export type TokenIntent<TIntentType, TTokenType, TIntent = {}> = Intent<
-    TIntentType extends TokenIntentTypes ? TIntentType : never,
+export type TokenIntent<
+    TIntentType extends TokenIntentTypes,
+    TTokenType,
+    TIntent = {},
+> = Intent<
+    TIntentType,
     {
         // Token to schedule intent for.
         token: Token<TTokenType extends TokenTypes ? TTokenType : never>
@@ -46,8 +45,33 @@ export type TokenIntent<TIntentType, TTokenType, TIntent = {}> = Intent<
 >
 
 // * Enables the creator to delay contract deployment until
-//   the first mint is called.
-export type DeployIntent = ContractIntent<'Deploy'>
+//   the first mint is called with Create2.
+// ! The use of this lowers the cost of transfers though
+//   increases the cost of deployment.
+export type Create2Intent = ContractIntent<
+    'Create2',
+    {
+        // The salt used with create2 to determine the address
+        salt: `0x${string}`
+        // The bytecode hash of the contract code & constructor arguments
+        bytecodeHash: `0x${string}`
+    }
+>
+
+// * Enables the creator to delay contract deployment until
+//   the first mint is called with MinimalProxy.
+// ! The use of this lowers the cost of deployment though
+//   increases the cost of transfers.
+export type MinimalProxyIntent = ContractIntent<
+    'MinimalProxy',
+    {
+        // * The base implementation of the contract being cloned.
+        implementation: AddressLike
+        // * The encoded value of the arguments passed to the
+        //   initialization function of the contract.
+        structBytes: `0x${string}`
+    }
+>
 
 // * Enables creators to declare the intent for a token to exist
 //   without having to deploy the contract or mint the contract.
@@ -66,6 +90,13 @@ export type MintIntent<TTokenType> = TokenIntent<
 //   transferred without having to mint the token.
 export type TransferIntent<TTokenType> = TokenIntent<'Transfer', TTokenType>
 
+export type Listing = {
+    // The address to list the token to for private listings.
+    to: AddressLike
+    // TODO: Add economic action definition.
+    value: bigint
+}
+
 // * Enables creators to declare economic actions for tokens before
 //   they are deployed or minted.
 // ! A valid ListIntent must be for a contract that already exists,
@@ -77,6 +108,7 @@ export type ListIntent<TTokenType> = TokenIntent<
         // The address to list the token to for private listings.
         to: AddressLike
         // TODO: Add economic action definition.
+        value: bigint
     }
 >
 
@@ -103,3 +135,13 @@ export type ERC1155TransferIntent = TransferIntent<'ERC1155'>
 export type ERC1155ListIntent = ListIntent<'ERC1155'>
 export type ERC1155BuyIntent = BuyIntent<'ERC1155'>
 export type ERC1155OfferIntent = OfferIntent<'ERC1155'>
+
+// * Bundle driven intents.
+export type DeployIntents = Create2Intent | MinimalProxyIntent
+// TODO: Collection intents (This will set metadata and royalties.)
+export type TokenIntents<TTokenType> =
+    | MintIntent<TTokenType>
+    | TransferIntent<TTokenType>
+    | ListIntent<TTokenType>
+    | BuyIntent<TTokenType>
+    | OfferIntent<TTokenType>

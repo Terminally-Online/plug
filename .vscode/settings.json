@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "shortest",
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsdk": "packages/frontend/node_modules/typescript/lib",
   "editor.codeActionsOnSave": {
     "source.organizeImports.rome": true
   },
@@ -21,5 +21,10 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "rome.rome"
-  }
+  },
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity"
+  },
+
+  "solidity.packageDefaultDependenciesDirectory": "packages/contract/node_modules"
 }
