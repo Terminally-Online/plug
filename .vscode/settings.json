@@ -1,30 +1,28 @@
 {
-  "editor.defaultFormatter": "rome.rome",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "shortest",
-  "typescript.tsdk": "packages/frontend/node_modules/typescript/lib",
   "editor.codeActionsOnSave": {
     "source.organizeImports.rome": true
   },
   "[json]": {
-    "editor.defaultFormatter": "rome.rome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "rome.rome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "rome.rome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "rome.rome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "rome.rome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[solidity]": {
     "editor.defaultFormatter": "JuanBlanco.solidity"
   },
-
-  "solidity.packageDefaultDependenciesDirectory": "packages/contract/node_modules"
+  "solidity.packageDefaultDependenciesDirectory": "packages/protocol/node_modules"
 }
