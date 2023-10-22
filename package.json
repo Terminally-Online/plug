@@ -1,0 +1,11 @@
+{
+	"name": "@nftchance/emporium-core",
+	"devDependencies": {
+		"@nftchance/emporium-types": "^0.2.0",
+		"@nomicfoundation/hardhat-toolbox": "^3.0.0",
+		"hardhat": "^2.17.4"
+	},
+	"dependencies": {
+		"solady": "^0.0.129"
+	}
+}
