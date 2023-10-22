@@ -2,7 +2,7 @@
 
 Emporium is a modern framework enabling support for counterfactual revokable delegations to most effectively reach economic alignment in transaction execution.
 
-![Header image](https://github.com/nftchance/emporium-core/blob/6aca329b4a75a50696b0b3ce241e00686c9f7ca3/README.png)
+![Header image](https://github.com/nftchance/emporium-core/blob/main/README.png?raw=true)
 
 Without `emporium-core`:
 
