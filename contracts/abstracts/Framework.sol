@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.19;
 
+import {IFramework} from '../interfaces/IFramework.sol';
 import {FrameworkCore} from './FrameworkCore.sol';
-import {IFramework} from './interfaces/IFramework.sol';
 
 /**
  * @title Framework

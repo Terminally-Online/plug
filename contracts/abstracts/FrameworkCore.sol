@@ -228,17 +228,12 @@ abstract contract FrameworkCore is Types {
 
 				/// @dev Warm up the delegation reference.
 				delegation = signedDelegation.delegation;
-
+    
 				/// @dev Ensure the delegation is valid.
 				require(
 					delegation.authority == authHash,
 					'FrameworkCore:invalid-authority-delegation-link'
 				);
-
-				// TODO: maybe delegations should have replay protection, at least a nonce (non order dependent),
-				// otherwise once it's revoked, you can't give the exact same permission again.
-				// TODO: Don't know why you wouldn't just add a salt field. Then this way nonce is simple to resolve
-				//       and you can limit to timestamp or something even more granular like millisecond.
 
 				/// @dev Retrieve the packet hash for the delegation.
 				delegationHash = getPacketHash(signedDelegation);
