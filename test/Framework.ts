@@ -1,18 +1,25 @@
-describe('Framework', function () {
-	// async function deployFixture() {
-	// 	const [owner, otherAccount] = await ethers.getSigners()
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
+import { ethers } from 'hardhat'
 
-	// 	const Contract = await ethers.getContractFactory('Framework')
-	// 	const contract = await Contract.deploy()
+// import { expect } from 'chai'
 
-	// 	return { contract, owner, otherAccount }
-	// }
+describe('Lock', function () {
+	async function deployMock() {
+		// Contracts are deployed using the first signer/account by default
+		const [owner, other] = await ethers.getSigners()
+
+		const name = 'FrameworkMock'
+		const version = '0.0.0'
+
+		const Contract = await ethers.getContractFactory(name)
+		const contract = await Contract.deploy(name, version)
+
+		return { contract, name, version, owner, other }
+	}
 
 	describe('Deployment', function () {
-		it('pass: set the right time', async function () {
-			// const { contract } = await loadFixture(deployFixture)
-			// expect.fail('Not implemented')
-			// contract
+		it('Has the right domain hash', async function () {
+			await loadFixture(deployMock)
 		})
 	})
 })
