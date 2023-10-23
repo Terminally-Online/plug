@@ -1,3 +1,9 @@
 [submodule "packages/lib"]
 	path = packages/lib
 	url = https://github.com/nftchance/emporium-lib
+[submodule "packages/core"]
+	path = packages/core
+	url = https://github.com/nftchance/emporium-core
+[submodule "packages/types"]
+	path = packages/types
+	url = https://github.com/nftchance/emporium-types
