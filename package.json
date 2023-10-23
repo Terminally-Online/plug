@@ -1,11 +1,23 @@
 {
-  "name": "emporium",
-  "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "install:submodules": "git submodule add https://github.com/nftchance/emporium-lib packages/lib"
-  },
-  "author": "",
-  "license": "ISC"
+	"name": "emporium",
+	"version": "0.1.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"format": "npx prettier --write .",
+		"install:submodules": "git submodule add https://github.com/nftchance/emporium-lib packages/lib && git submodule add https://github.com/nftchance/emporium-core packages/core"
+	},
+	"author": "",
+	"license": "ISC",
+	"workspaces": [
+		"packages/lib/",
+		"packages/types/"
+	],
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "^4.2.0",
+		"@typescript-eslint/eslint-plugin": "^6.7.3",
+		"@typescript-eslint/parser": "^6.7.3",
+		"eslint": "^8.50.0",
+		"prettier": "^3.0.3"
+	}
 }
