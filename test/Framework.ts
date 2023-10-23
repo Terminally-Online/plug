@@ -5,7 +5,6 @@ import { ethers } from 'hardhat'
 
 describe('Lock', function () {
 	async function deployMock() {
-		// Contracts are deployed using the first signer/account by default
 		const [owner, other] = await ethers.getSigners()
 
 		const name = 'FrameworkMock'

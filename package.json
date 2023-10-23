@@ -1,6 +1,11 @@
 {
 	"name": "@nftchance/emporium-core",
+	"scripts": {
+		"build": "mkdir -p ./dist && cp -r contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
+		"lint": "tsc --noEmit"
+	},
 	"devDependencies": {
+		"@changesets/cli": "^2.26.2",
 		"@nftchance/emporium-types": "^0.2.0",
 		"@nomicfoundation/hardhat-toolbox": "^3.0.0",
 		"hardhat": "^2.17.4"
