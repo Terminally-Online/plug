@@ -1,7 +1,7 @@
 {
 	"name": "@nftchance/emporium-core",
 	"scripts": {
-		"build": "mkdir -p ./dist && cp -r contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
+		"build": "pnpm hardhat compile && mkdir -p ./dist && cp -r contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
 		"lint": "tsc --noEmit"
 	},
 	"devDependencies": {

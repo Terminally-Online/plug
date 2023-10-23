@@ -20,8 +20,8 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: 🏗️ Compile the Smart Contracts
-              run: pnpm hardhat compile
+            - name: ✨ Build package
+              run: pnpm build
 
             - name: 🧪 Run the tests
               run: pnpm hardhat test
