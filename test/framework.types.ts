@@ -29,12 +29,7 @@ export default async function () {
 	const [owner] = await hre.viem.getWalletClients()
 
 	// * Create the util with the debug types.
-	const util = new Framework<typeof DEBUG_TYPES>(contract).init(
-		name,
-		version,
-		1,
-		DEBUG_TYPES
-	)
+	const util = new Framework(name, version, 1, DEBUG_TYPES, contract)
 
 	// @ts-expect-error - Should fail because there is no SignedSHOULD_FAIL type.
 	await util.sign(owner, 'SHOULD_FAIL', {

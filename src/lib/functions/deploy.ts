@@ -1,5 +1,7 @@
 import hre, { network } from 'hardhat'
 
+import { constants } from '@nftchance/emporium-types'
+
 import { Framework } from '../../framework'
 import { getChainId } from './chain'
 
@@ -13,7 +15,13 @@ export default async function () {
 	const contract = await hre.viem.deployContract(name)
 	const publicClient = await hre.viem.getPublicClient()
 
-	const util = await new Framework(contract).init(name, version)
+	const util = new Framework(
+		name,
+		version,
+		chainId,
+		constants.types,
+		contract
+	)
 
 	return { chainId, contract, util, owner, notOwner, publicClient }
 }

@@ -5,24 +5,30 @@ import {
 	WalletClient
 } from 'viem'
 
+import { constants } from '@nftchance/emporium-types'
+
 import { Intent } from './intent'
 import { IntentType, TypedIntent } from './lib/types'
 
 export class Framework<
-	TTypes extends TypedData,
+	TTypes extends TypedData = typeof constants.types,
 	TIntentType extends IntentType<TTypes> = IntentType<TTypes>,
 	TIntent extends TypedIntent<TTypes> = TypedIntent<TTypes>
 > {
-	public info: {
+	public readonly info: {
 		domain: GetTypedDataDomain['domain']
 		types: TTypes
 	} | null = null
 
 	public signedIntents: Array<Intent<TTypes, TIntentType, TIntent>> = []
 
-	constructor(public readonly contract: GetContractReturnType) {}
-
-	init(name: string, version: string, chainId: number, types: TTypes) {
+	constructor(
+		name: string,
+		version: string,
+		chainId: number,
+		types: TTypes,
+		public readonly contract: GetContractReturnType
+	) {
 		this.info = {
 			domain: {
 				chainId,
@@ -32,10 +38,7 @@ export class Framework<
 			},
 			types
 		}
-
-		return this
 	}
-
 	build(
 		intentType: TIntentType extends string ? TIntentType : never,
 		intent: TIntent

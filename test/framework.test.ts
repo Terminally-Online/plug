@@ -5,9 +5,6 @@ import { getAddress, zeroAddress } from 'viem'
 
 import deploy, { name, version } from '../src/lib/functions/deploy'
 
-// Note: Right now, signedDelegation is being used in places with the value of `signerIsContract` but
-//       it is not used onchain so I am not sure if we should actually be providing that value or not.
-
 describe('Framework', function () {
 	it('pass: instantiate a FrameworkUtil class instance', async function () {
 		const { chainId, contract, util } = await loadFixture(deploy)
@@ -39,7 +36,7 @@ describe('Framework', function () {
 		const typedDataHash = await contract.read.getPacketHash([intent])
 
 		// * Sign the delegation to make it executable.
-		const signedIntent = await util.sign(owner, intent)
+		const signedIntent = await util.sign(owner, 'Delegation', intent)
 
 		console.log(signedIntent)
 
