@@ -1,7 +1,4 @@
-import { TypedDataToPrimitiveTypes } from 'abitype'
-
 import {
-	Account,
 	GetTypedDataDomain,
 	hashTypedData,
 	recoverTypedDataAddress,
@@ -9,20 +6,23 @@ import {
 	WalletClient
 } from 'viem'
 
-import { FilterKeysWithSigned, SignedTypeIntent } from './lib/types'
+import { IntentType, TypedIntent } from './lib/types'
 
 export class Intent<
 	TTypes extends TypedData,
-	TIntentType extends
-		FilterKeysWithSigned<TTypes> = FilterKeysWithSigned<TTypes>,
-	// * The EIP-712 type that is being signed.
-	TIntent extends
-		TypedDataToPrimitiveTypes<TTypes>[TIntentType] = TypedDataToPrimitiveTypes<TTypes>[TIntentType]
+	TIntentType extends IntentType<TTypes>,
+	TIntent extends TypedIntent<TTypes>,
+	TIntentTypeLower extends Lowercase<
+		TIntentType extends string ? TIntentType : never
+	> = Lowercase<TIntentType extends string ? TIntentType : never>
 > {
-	client: WalletClient | undefined
-	account: Account | undefined
-	struct: SignedTypeIntent<TTypes> | undefined
-	signature: `0x${string}` | undefined
+	private client: WalletClient | undefined
+	private signature: `0x${string}` | undefined
+
+	public intent:
+		| (Record<'signature', `0x${string}`> &
+				Record<TIntentTypeLower, TIntent>)
+		| undefined
 
 	constructor(
 		public readonly domain: GetTypedDataDomain['domain'],
@@ -30,42 +30,35 @@ export class Intent<
 		public readonly primaryType: TIntentType extends string
 			? TIntentType
 			: never,
-		public readonly message: TIntent
-	) {
-		// * Remove the EIP712Domain type from the types to avoid unused
-		//   elements within the user-defined DAG.
-		// this.types = Object.fromEntries(
-		// 	Object.entries(types).filter(([key]) => key !== 'EIP712Domain')
-		// )
+		private readonly message: TIntent
+	) {}
+
+	lowercasePrimaryType() {
+		return this.primaryType.toLowerCase() as TIntentTypeLower
 	}
 
 	async init(client: WalletClient, callback: (signedIntent: this) => void) {
-		client
-		callback
-		if (this.struct) return this
+		if (this.signature) return this
 
 		this.client = client
 
 		if (!this.client.account)
 			throw new Error('Client account not initialized')
 
-		const signature = await this.client
-			.signTypedData({
-				account: this.client.account.address,
-				domain: this.domain,
-				types: this.types,
-				primaryType: this.primaryType,
-				message: this.message
-			})
-			.catch(error => {
-				throw new Error(error)
-			})
-		if (!signature) throw new Error('Signature not initialized')
-
-		this.struct = {
-			// delegation: this.message,
-			signature: '0x0'
-		}
+		this.intent = {
+			[this.lowercasePrimaryType()]: this.message,
+			signature: await this.client
+				.signTypedData({
+					account: this.client.account.address,
+					domain: this.domain,
+					types: this.types,
+					primaryType: this.primaryType,
+					message: this.message
+				})
+				.catch(error => {
+					throw new Error(error)
+				})
+		} as this['intent']
 
 		callback(this)
 	}

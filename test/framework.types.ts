@@ -49,10 +49,11 @@ export default async function () {
 		contents: 'Hello, world!'
 	})
 
+	// ! The object that is submit onchain.
 	// * Can get the signature and the object that was signed.
-	const { message: signedMail, struct: SignedMail } = mail
-	signedMail
-	SignedMail
+	const { intent } = mail
+	intent?.mail.from
+	intent?.mail
 
 	// @ts-expect-error - Should fail because there is no SignedPerson type.
 	await util.sign(owner, 'Person', {

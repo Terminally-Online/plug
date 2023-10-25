@@ -1,5 +1,3 @@
-import { TypedDataToPrimitiveTypes } from 'abitype'
-
 import {
 	GetContractReturnType,
 	GetTypedDataDomain,
@@ -8,17 +6,12 @@ import {
 } from 'viem'
 
 import { Intent } from './intent'
-import { FilterKeysWithSigned } from './lib/types'
+import { IntentType, TypedIntent } from './lib/types'
 
 export class Framework<
-	// * All of the EIP-712 types.
 	TTypes extends TypedData,
-	// * The key of of the EIP-712 types that have a `Signed` pair.
-	TIntentType extends
-		FilterKeysWithSigned<TTypes> = FilterKeysWithSigned<TTypes>,
-	// * The EIP-712 type that is being signed.
-	TIntent extends
-		TypedDataToPrimitiveTypes<TTypes>[TIntentType] = TypedDataToPrimitiveTypes<TTypes>[TIntentType]
+	TIntentType extends IntentType<TTypes> = IntentType<TTypes>,
+	TIntent extends TypedIntent<TTypes> = TypedIntent<TTypes>
 > {
 	public info: {
 		domain: GetTypedDataDomain['domain']
@@ -49,9 +42,15 @@ export class Framework<
 	) {
 		if (!this.info) throw new Error('Contract info not initialized')
 
+		const types = Object.fromEntries(
+			Object.entries(this.info.types).filter(
+				([key]) => key !== 'EIP712Domain'
+			)
+		) as TTypes
+
 		return new Intent<TTypes, TIntentType, TIntent>(
 			this.info.domain,
-			this.info.types,
+			types,
 			intentType,
 			intent
 		)
