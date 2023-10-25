@@ -5,10 +5,9 @@ import {
 	WalletClient
 } from 'viem'
 
+import { Intent } from '@/intent'
+import { IntentType, TypedIntent } from '@/lib/types'
 import { constants } from '@nftchance/emporium-types'
-
-import { Intent } from './intent'
-import { IntentType, TypedIntent } from './lib/types'
 
 export class Framework<
 	TTypes extends TypedData = typeof constants.types,

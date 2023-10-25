@@ -13,16 +13,18 @@
 		"rootDir": "./",
 		"outDir": "./dist",
 		"esModuleInterop": true,
+		"baseUrl": "./",
 		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@/*": ["./src/*"]
+            "@nftchance/emporium-types": ["node_modules/@nftchance/emporium-types/"], 
+			"@/*": ["./src/*"],
 		},
 		"resolveJsonModule": true
 	},
-	"include": ["./contracts/**/*", "./scripts/**/*", "./test", "src/lib"],
-	"files": ["./hardhat.config.ts"],
+	"include": ["./contracts/**/*", "./scripts/**/*", "./test", "src/**/*"],
+	"files": ["hardhat.config.ts"],
 	"exclude": ["node_modules", "dist", "hardhat.config.ts", "tsup.config.ts"]
 }

@@ -1,9 +1,11 @@
-import hre, { network } from 'hardhat'
+import hre, { network } from 'hardhat';
 
-import { constants } from '@nftchance/emporium-types'
 
-import { Framework } from '../../framework'
-import { getChainId } from './chain'
+
+import { Framework } from '@/framework';
+import { getChainId } from '@/lib/functions/chain';
+import { constants } from '@nftchance/emporium-types';
+
 
 export const [name, version] = ['FrameworkMock', '0.0.0']
 
@@ -12,7 +14,8 @@ export default async function () {
 
 	const [owner, notOwner] = await hre.viem.getWalletClients()
 
-	const contract = await hre.viem.deployContract(name)
+	const contract = await hre.viem.deployContract(name, [name, version])
+
 	const publicClient = await hre.viem.getPublicClient()
 
 	const util = new Framework(

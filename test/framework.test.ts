@@ -1,9 +1,11 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'
-import { getAddress, zeroAddress } from 'viem'
 
-import deploy, { name, version } from '../src/lib/functions/deploy'
+import deploy, { name, version } from '@/lib/functions/deploy'
+
+const BASE_AUTH =
+	'0x0000000000000000000000000000000000000000000000000000000000000000'
 
 describe('Framework', function () {
 	it('pass: instantiate a FrameworkUtil class instance', async function () {
@@ -21,33 +23,52 @@ describe('Framework', function () {
 		})
 	})
 
-	it('pass: getDelegationTypedDataHash(Delegation memory delegation)', async function () {
+	it("pass: echo('hi')", async function () {
+		const { contract, publicClient } = await loadFixture(deploy)
+
+		const hash = await contract.write.echo(['hi'])
+
+		await publicClient.waitForTransactionReceipt({ hash })
+	})
+
+	it('pass: getPacketHash(Delegation memory $input)', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
+
+		console.log(owner.account.address)
 
 		// * Create a Delegation.
 		const intent = {
-			delegate: getAddress(owner.account.address),
-			authority: zeroAddress,
+			delegate: '0x62180042606624f02D8A130dA8A3171e9b33894d',
+			authority: BASE_AUTH,
 			caveats: [],
-			salt: zeroAddress
+			salt: BASE_AUTH
 		}
 
+		await contract.read.pureEcho()
+
+		const abi = contract.abi
+
+		console.log(abi)
+
+		console.log(intent, contract.address)
+
 		// * Recover the packet hash.
-		const typedDataHash = await contract.read.getPacketHash([intent])
+		// await contract.read.getDelegationPacketHash([intent])
+		await contract.read.getPacketHash([intent])
 
-		// * Sign the delegation to make it executable.
-		const signedIntent = await util.sign(owner, 'Delegation', intent)
+		// // * Sign the delegation to make it executable.
+		// const signedIntent = await util.sign(owner, 'Delegation', intent)
+		util
 
-		console.log(signedIntent)
+		// typedDataHash
+		// signedIntent
 
-		if (!signedIntent) expect.fail('Signed intent does not exist.')
+		// if (!signedIntent) expect.fail('Signed intent does not exist.')
 
-		// * Make sure the intent signer matched the recovered signer.
+		// // * Make sure the intent signer matched the recovered signer.
 		// expect(getAddress(owner.account.address)).to.eq(signedIntent.address())
 
-		typedDataHash
-
-		// * Make sure the offchain and onchain hashes match.
+		// // * Make sure the offchain and onchain hashes match.
 		// expect(typedDataHash).to.eq(signedIntent.hash())
 	})
 

@@ -30,7 +30,7 @@ abstract contract Framework is IFramework, FrameworkCore {
 	 */
 	function contractInvoke(
 		Invocation[] calldata $invocation
-	) external override returns (bool $success) {
+	) external returns (bool $success) {
 		$success = _invoke($invocation, msg.sender);
 	}
 
@@ -38,15 +38,15 @@ abstract contract Framework is IFramework, FrameworkCore {
 	 * See {IFramework-invoke}.
 	 */
 	function invoke(
-		SignedInvocation[] calldata $signedInvocations
-	) external override returns (bool $success) {
+		SignedInvocations[] calldata $signedInvocations
+	) external returns (bool $success) {
 		/// @dev Load the stack.
 		uint256 i;
 
 		/// @dev Loop through the signed invocations.
 		for (i; i < $signedInvocations.length; ) {
 			/// @dev Load the signed invocation as a hot reference.
-			SignedInvocation calldata signedInvocation = $signedInvocations[i];
+			SignedInvocations calldata signedInvocation = $signedInvocations[i];
 
 			/// @dev Determine who signed the invocation.
 			address invocationSigner = getSigner(signedInvocation);

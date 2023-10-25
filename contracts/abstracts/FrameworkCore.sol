@@ -3,7 +3,7 @@
 pragma solidity 0.8.19;
 
 /// @dev Hash declarations and decoders for the Emporium framework.
-import {Types} from '@nftchance/emporium-types/dist/contracts/Types.sol';
+import {Types} from './Types.sol';
 
 /// @dev Core Framework dependencies.
 import {CaveatEnforcer} from './CaveatEnforcer.sol';
@@ -228,7 +228,7 @@ abstract contract FrameworkCore is Types {
 
 				/// @dev Warm up the delegation reference.
 				delegation = signedDelegation.delegation;
-    
+
 				/// @dev Ensure the delegation is valid.
 				require(
 					delegation.authority == authHash,

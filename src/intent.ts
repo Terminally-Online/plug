@@ -6,7 +6,7 @@ import {
 	WalletClient
 } from 'viem'
 
-import { IntentType, TypedIntent } from './lib/types'
+import { IntentType, TypedIntent } from '@/lib/types'
 
 export class Intent<
 	TTypes extends TypedData,

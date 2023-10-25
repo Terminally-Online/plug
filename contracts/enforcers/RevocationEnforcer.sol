@@ -100,7 +100,7 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	function getDigest(
 		Delegation memory $delegation,
 		bytes32 $domainHash
-	) public pure returns (bytes32 $digest) {
+	) public view returns (bytes32 $digest) {
 		/// @dev Encode the delegation and domain hash and hash them.
 		$digest = keccak256(
 			abi.encodePacked(

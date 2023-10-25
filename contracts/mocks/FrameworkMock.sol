@@ -34,6 +34,30 @@ contract FrameworkMock is Framework {
 		emit EchoInvoked(msg.sender, _msgSender(), $message);
 	}
 
+	function pureEcho() external pure returns (string memory $message) {
+		$message = 'Hello World';
+	}
+
+	/**
+	 * @notice Encode Delegation data into a packet hash and verify decoded Delegation data
+	 *         from a packet hash to verify type compliance and value-width alignment.
+	 * @param $input The Delegation data to encode.
+	 * @return $packetHash The packet hash of the encoded Delegation data.
+	 */
+	function getPacketHash(
+		Delegation memory $input
+	) public view virtual override returns (bytes32 $packetHash) {
+		$packetHash = keccak256(
+			abi.encode(
+				DELEGATION_TYPEHASH,
+				$input.delegate,
+				$input.authority,
+				getArrayPacketHash($input.caveats),
+				$input.salt
+			)
+		);
+	}
+
 	/**
 	 * @notice A mock function for testing the framework.
 	 */

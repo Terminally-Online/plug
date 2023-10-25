@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 /// @dev Shape declarations in the Emporium framework.
-import {ITypes} from '@nftchance/emporium-types/dist/contracts/Types.sol';
+import {ITypes} from '../abstracts/Types.sol';
 
 interface IFramework is ITypes {
 	/**
@@ -22,6 +22,6 @@ interface IFramework is ITypes {
 	 * @return success Whether the batch of invocations was successfully processed.
 	 */
 	function invoke(
-		SignedInvocation[] calldata $signedInvocations
+		SignedInvocations[] calldata $signedInvocations
 	) external returns (bool success);
 }
