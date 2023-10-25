@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  abitype:
+    specifier: ^0.10.1
+    version: 0.10.1(typescript@5.0.4)
   solady:
     specifier: ^0.0.129
     version: 0.0.129
@@ -2277,6 +2280,20 @@ packages:
   /abbrev@1.0.9:
     resolution: {integrity: sha512-LEyx4aLEC3x6T0UguF6YILf+ntvmOaWsVfENmIW0E9H09vKlLDGelMjjSm0jkDHALj8A8quZ/HapKNigzwge+Q==}
     dev: true
+
+  /abitype@0.10.1(typescript@5.0.4):
+    resolution: {integrity: sha512-nFx5F2RniXGXw2Ci1uu6iDGnP/z3hW+H65G7cxrs5JDF3Ot9GuYkBJCRAB9EZ5QIi3dNByZaCrGFUn8LLkLQbw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: false
 
   /abitype@0.9.10(typescript@5.0.4)(zod@3.22.4):
     resolution: {integrity: sha512-FIS7U4n7qwAT58KibwYig5iFG4K61rbhAqaQh/UWj8v1Y8mjX3F8TC9gd8cz9yT1TYel9f8nS5NO5kZp2RW0jQ==}
@@ -7980,7 +7997,6 @@ packages:
     resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
     engines: {node: '>=12.20'}
     hasBin: true
-    dev: true
 
   /typical@4.0.0:
     resolution: {integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==}

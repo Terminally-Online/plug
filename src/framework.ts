@@ -1,67 +1,74 @@
-import { ContractTransactionResponse, Signer, TypedDataDomain } from 'ethers'
-
 import { TypedDataToPrimitiveTypes } from 'abitype'
 
-import { constants } from '@nftchance/emporium-types'
+import {
+	GetContractReturnType,
+	GetTypedDataDomain,
+	TypedData,
+	WalletClient
+} from 'viem'
 
 import { Intent } from './intent'
-import { Types } from './lib/types'
+import { FilterKeysWithSigned } from './lib/types'
 
-type Contract = {
-	deploymentTransaction(): ContractTransactionResponse
-	getAddress(): Promise<string>
-}
-
-export class Framework {
-	info: {
-		domain: TypedDataDomain
-		types: Types
+export class Framework<
+	// * All of the EIP-712 types.
+	TTypes extends TypedData,
+	// * The key of of the EIP-712 types that have a `Signed` pair.
+	TIntentType extends
+		FilterKeysWithSigned<TTypes> = FilterKeysWithSigned<TTypes>,
+	// * The EIP-712 type that is being signed.
+	TIntent extends
+		TypedDataToPrimitiveTypes<TTypes>[TIntentType] = TypedDataToPrimitiveTypes<TTypes>[TIntentType]
+> {
+	public info: {
+		domain: GetTypedDataDomain['domain']
+		types: TTypes
 	} | null = null
-	signedIntents: Array<unknown> = []
 
-	constructor(public readonly contract: Contract) {}
+	public signedIntents: Array<Intent<TTypes, TIntentType, TIntent>> = []
 
-	async init(
-		name: string,
-		version: string,
-		chainId?: bigint,
-		types = constants.types
-	) {
-		chainId = this.contract.deploymentTransaction()?.chainId
+	constructor(public readonly contract: GetContractReturnType) {}
 
-		if (!chainId) throw new Error('Chain ID not found')
-
-		this.contract.getAddress().then(verifyingContract => {
-			this.info = {
-				domain: {
-					chainId,
-					verifyingContract,
-					name,
-					version
-				},
-				types
-			}
-		})
+	init(name: string, version: string, chainId: number, types: TTypes) {
+		this.info = {
+			domain: {
+				chainId,
+				verifyingContract: this.contract.address,
+				name,
+				version
+			},
+			types
+		}
 
 		return this
 	}
 
-	build(intent: TypedDataToPrimitiveTypes<Types>[keyof Types]) {
+	build(
+		intentType: TIntentType extends string ? TIntentType : never,
+		intent: TIntent
+	) {
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent(this.info.domain, this.info.types, intent)
+		return new Intent<TTypes, TIntentType, TIntent>(
+			this.info.domain,
+			this.info.types,
+			intentType,
+			intent
+		)
 	}
 
-	async sign<TType extends TypedDataToPrimitiveTypes<Types>[keyof Types]>(
-		signer: Signer,
-		intent: TType
+	async sign(
+		client: WalletClient,
+		...[intentType, intent]: Parameters<this['build']>
 	) {
-		return this.build(intent).init(signer, (signedIntent: {}) => {
-			if (!signedIntent) throw new Error('Signed intent not initialized')
+		// * Build the intent and initialize it.
+		await this.build(intentType, intent)
+			.init(client, signedIntent => this.signedIntents.push(signedIntent))
+			.catch(error => {
+				throw new Error(`Signed intent not initialized: ${error}`)
+			})
 
-			this.signedIntents.push(signedIntent)
-
-			return signedIntent
-		})
+		// * Return the latest.
+		return this.signedIntents[this.signedIntents.length - 1]
 	}
 }

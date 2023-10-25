@@ -1,132 +1,137 @@
 import {
-  time,
-  loadFixture,
-} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
-import { expect } from "chai";
-import hre from "hardhat";
-import { getAddress, parseGwei } from "viem";
+	loadFixture,
+	time
+} from '@nomicfoundation/hardhat-toolbox-viem/network-helpers'
+import hre from 'hardhat'
 
-describe("Lock", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
+import { expect } from 'chai'
+import { getAddress, parseGwei } from 'viem'
 
-    const lockedAmount = parseGwei("1");
-    const unlockTime = BigInt((await time.latest()) + ONE_YEAR_IN_SECS);
+describe('Lock', function () {
+	// We define a fixture to reuse the same setup in every test.
+	// We use loadFixture to run this setup once, snapshot that state,
+	// and reset Hardhat Network to that snapshot in every test.
+	async function deployOneYearLockFixture() {
+		const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60
 
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await hre.viem.getWalletClients();
+		const lockedAmount = parseGwei('1')
+		const unlockTime = BigInt((await time.latest()) + ONE_YEAR_IN_SECS)
 
-    const lock = await hre.viem.deployContract("Lock", [unlockTime], {
-      value: lockedAmount,
-    });
+		// Contracts are deployed using the first signer/account by default
+		const [owner, otherAccount] = await hre.viem.getWalletClients()
 
-    const publicClient = await hre.viem.getPublicClient();
+		const lock = await hre.viem.deployContract('Lock', [unlockTime], {
+			value: lockedAmount
+		})
 
-    return {
-      lock,
-      unlockTime,
-      lockedAmount,
-      owner,
-      otherAccount,
-      publicClient,
-    };
-  }
+		const publicClient = await hre.viem.getPublicClient()
 
-  describe("Deployment", function () {
-    it("Should set the right unlockTime", async function () {
-      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+		return {
+			lock,
+			unlockTime,
+			lockedAmount,
+			owner,
+			otherAccount,
+			publicClient
+		}
+	}
 
-      expect(await lock.read.unlockTime()).to.equal(unlockTime);
-    });
+	describe('Deployment', function () {
+		it('Should set the right unlockTime', async function () {
+			const { lock, unlockTime } = await loadFixture(
+				deployOneYearLockFixture
+			)
 
-    it("Should set the right owner", async function () {
-      const { lock, owner } = await loadFixture(deployOneYearLockFixture);
+			expect(await lock.read.unlockTime()).to.equal(unlockTime)
+		})
 
-      expect(await lock.read.owner()).to.equal(getAddress(owner.account.address));
-    });
+		it('Should set the right owner', async function () {
+			const { lock, owner } = await loadFixture(deployOneYearLockFixture)
 
-    it("Should receive and store the funds to lock", async function () {
-      const { lock, lockedAmount, publicClient } = await loadFixture(
-        deployOneYearLockFixture
-      );
+			expect(await lock.read.owner()).to.equal(
+				getAddress(owner.account.address)
+			)
+		})
 
-      expect(
-        await publicClient.getBalance({
-          address: lock.address,
-        })
-      ).to.equal(lockedAmount);
-    });
+		it('Should receive and store the funds to lock', async function () {
+			const { lock, lockedAmount, publicClient } = await loadFixture(
+				deployOneYearLockFixture
+			)
 
-    it("Should fail if the unlockTime is not in the future", async function () {
-      // We don't use the fixture here because we want a different deployment
-      const latestTime = BigInt(await time.latest());
-      await expect(
-        hre.viem.deployContract("Lock", [latestTime], {
-          value: 1n,
-        })
-      ).to.be.rejectedWith("Unlock time should be in the future");
-    });
-  });
+			expect(
+				await publicClient.getBalance({
+					address: lock.address
+				})
+			).to.equal(lockedAmount)
+		})
 
-  describe("Withdrawals", function () {
-    describe("Validations", function () {
-      it("Should revert with the right error if called too soon", async function () {
-        const { lock } = await loadFixture(deployOneYearLockFixture);
+		it('Should fail if the unlockTime is not in the future', async function () {
+			// We don't use the fixture here because we want a different deployment
+			const latestTime = BigInt(await time.latest())
+			await expect(
+				hre.viem.deployContract('Lock', [latestTime], {
+					value: 1n
+				})
+			).to.be.rejectedWith('Unlock time should be in the future')
+		})
+	})
 
-        await expect(lock.write.withdraw()).to.be.rejectedWith(
-          "You can't withdraw yet"
-        );
-      });
+	describe('Withdrawals', function () {
+		describe('Validations', function () {
+			it('Should revert with the right error if called too soon', async function () {
+				const { lock } = await loadFixture(deployOneYearLockFixture)
 
-      it("Should revert with the right error if called from another account", async function () {
-        const { lock, unlockTime, otherAccount } = await loadFixture(
-          deployOneYearLockFixture
-        );
+				await expect(lock.write.withdraw()).to.be.rejectedWith(
+					"You can't withdraw yet"
+				)
+			})
 
-        // We can increase the time in Hardhat Network
-        await time.increaseTo(unlockTime);
+			it('Should revert with the right error if called from another account', async function () {
+				const { lock, unlockTime, otherAccount } = await loadFixture(
+					deployOneYearLockFixture
+				)
 
-        // We retrieve the contract with a different account to send a transaction
-        const lockAsOtherAccount = await hre.viem.getContractAt(
-          "Lock",
-          lock.address,
-          { walletClient: otherAccount }
-        );
-        await expect(lockAsOtherAccount.write.withdraw()).to.be.rejectedWith(
-          "You aren't the owner"
-        );
-      });
+				// We can increase the time in Hardhat Network
+				await time.increaseTo(unlockTime)
 
-      it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-        const { lock, unlockTime } = await loadFixture(
-          deployOneYearLockFixture
-        );
+				// We retrieve the contract with a different account to send a transaction
+				const lockAsOtherAccount = await hre.viem.getContractAt(
+					'Lock',
+					lock.address,
+					{ walletClient: otherAccount }
+				)
+				await expect(
+					lockAsOtherAccount.write.withdraw()
+				).to.be.rejectedWith("You aren't the owner")
+			})
 
-        // Transactions are sent using the first signer by default
-        await time.increaseTo(unlockTime);
+			it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
+				const { lock, unlockTime } = await loadFixture(
+					deployOneYearLockFixture
+				)
 
-        await expect(lock.write.withdraw()).to.be.fulfilled;
-      });
-    });
+				// Transactions are sent using the first signer by default
+				await time.increaseTo(unlockTime)
 
-    describe("Events", function () {
-      it("Should emit an event on withdrawals", async function () {
-        const { lock, unlockTime, lockedAmount, publicClient } =
-          await loadFixture(deployOneYearLockFixture);
+				await expect(lock.write.withdraw()).to.be.fulfilled
+			})
+		})
 
-        await time.increaseTo(unlockTime);
+		describe('Events', function () {
+			it('Should emit an event on withdrawals', async function () {
+				const { lock, unlockTime, lockedAmount, publicClient } =
+					await loadFixture(deployOneYearLockFixture)
 
-        const hash = await lock.write.withdraw();
-        await publicClient.waitForTransactionReceipt({ hash });
+				await time.increaseTo(unlockTime)
 
-        // get the withdrawal events in the latest block
-        const withdrawalEvents = await lock.getEvents.Withdrawal()
-        expect(withdrawalEvents).to.have.lengthOf(1);
-        expect(withdrawalEvents[0].args.amount).to.equal(lockedAmount);
-      });
-    });
-  });
-});
+				const hash = await lock.write.withdraw()
+				await publicClient.waitForTransactionReceipt({ hash })
+
+				// get the withdrawal events in the latest block
+				const withdrawalEvents = await lock.getEvents.Withdrawal()
+				expect(withdrawalEvents).to.have.lengthOf(1)
+				expect(withdrawalEvents[0].args.amount).to.equal(lockedAmount)
+			})
+		})
+	})
+})

@@ -1,22 +1,19 @@
-import { ethers, network } from 'hardhat'
+import hre, { network } from 'hardhat'
 
 import { Framework } from '../../framework'
 import { getChainId } from './chain'
 
 export const [name, version] = ['FrameworkMock', '0.0.0']
 
-export async function deploy() {
+export default async function () {
 	const chainId = await getChainId(network)
 
-	const [owner, notOwner] = await ethers.getSigners()
+	const [owner, notOwner] = await hre.viem.getWalletClients()
 
-	const contract = await (
-		await ethers.getContractFactory(name)
-	).deploy(name, version)
-
-	const address = await contract.getAddress()
+	const contract = await hre.viem.deployContract(name)
+	const publicClient = await hre.viem.getPublicClient()
 
 	const util = await new Framework(contract).init(name, version)
 
-	return { chainId, contract, address, util, owner, notOwner }
+	return { chainId, contract, util, owner, notOwner, publicClient }
 }

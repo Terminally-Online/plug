@@ -1,106 +1,99 @@
+import { TypedDataToPrimitiveTypes } from 'abitype'
+
 import {
-	AddressLike,
-	Signer,
-	TypedDataDomain,
-	TypedDataEncoder,
-	verifyTypedData
-} from 'ethers'
+	Account,
+	GetTypedDataDomain,
+	hashTypedData,
+	recoverTypedDataAddress,
+	TypedData,
+	WalletClient
+} from 'viem'
 
-import { SignedTypes } from './lib/types'
+import { FilterKeysWithSigned, SignedTypeIntent } from './lib/types'
 
-export class Intent<TIntent, TSignedIntent extends SignedTypes> {
-	encoder: TypedDataEncoder
-	signer: Signer | null = null
-	signedMessage: TSignedIntent | null = null
+export class Intent<
+	TTypes extends TypedData,
+	TIntentType extends
+		FilterKeysWithSigned<TTypes> = FilterKeysWithSigned<TTypes>,
+	// * The EIP-712 type that is being signed.
+	TIntent extends
+		TypedDataToPrimitiveTypes<TTypes>[TIntentType] = TypedDataToPrimitiveTypes<TTypes>[TIntentType]
+> {
+	client: WalletClient | undefined
+	account: Account | undefined
+	struct: SignedTypeIntent<TTypes> | undefined
+	signature: `0x${string}` | undefined
 
 	constructor(
-		public readonly domain: TypedDataDomain,
-		public readonly types: Record<string, Array<TypedDataField>>,
+		public readonly domain: GetTypedDataDomain['domain'],
+		public readonly types: TTypes,
+		public readonly primaryType: TIntentType extends string
+			? TIntentType
+			: never,
 		public readonly message: TIntent
 	) {
 		// * Remove the EIP712Domain type from the types to avoid unused
 		//   elements within the user-defined DAG.
-		this.types = Object.fromEntries(
-			Object.entries(types).filter(([key]) => key !== 'EIP712Domain')
-		)
-
-		/// * Go ahead and instantiate the encoder.
-		this.encoder = new TypedDataEncoder(
-			this.types as Record<string, Array<TypedDataField>>
-		)
+		// this.types = Object.fromEntries(
+		// 	Object.entries(types).filter(([key]) => key !== 'EIP712Domain')
+		// )
 	}
 
-	private _primaryType(): keyof TSignedIntent {
-		// TODO: Should solve for this instead of requiring the manual declaration.
-		// If one is not found, throw instead of returning undefined.
+	async init(client: WalletClient, callback: (signedIntent: this) => void) {
+		client
+		callback
+		if (this.struct) return this
 
-		throw new Error('Not implemented.')
-	}
+		this.client = client
 
-	async init(
-		signer: Signer | null,
-		callback: (
-			error: Error | null,
-			signedIntent: TSignedIntent | null
-		) => TSignedIntent
-	) {
-		if (this.signedMessage) return this
+		if (!this.client.account)
+			throw new Error('Client account not initialized')
 
-		if (!signer) throw new Error('Signer not initialized')
-
-		this.signer = signer
-
-		this.signer
-			.signTypedData(
-				this.domain,
-				// ! Hacky way to get around using abitype with Ethers.
-				this.types as unknown as Record<string, Array<TypedDataField>>,
-				this.message as Record<string, unknown>
-			)
-			.then(signature => {
-				const signedIntent: TSignedIntent = {
-					[this._primaryType()]: this.message,
-					signature
-				}
-
-				this.signedMessage = signedIntent
-
-				callback(null, this.signedMessage)
+		const signature = await this.client
+			.signTypedData({
+				account: this.client.account.address,
+				domain: this.domain,
+				types: this.types,
+				primaryType: this.primaryType,
+				message: this.message
 			})
 			.catch(error => {
-				callback(error, null)
+				throw new Error(error)
 			})
+		if (!signature) throw new Error('Signature not initialized')
 
-		return this
+		this.struct = {
+			// delegation: this.message,
+			signature: '0x0'
+		}
+
+		callback(this)
 	}
 
-	address(signature?: string) {
-		// * If a manual signature was not provided, go ahead and retrieve the built one.
-		if (signature === undefined) signature = this.signedMessage?.signature
+	async address(signature = this.signature) {
+		if (!signature) throw new Error('Signature not initialized')
 
-		if (signature === null) throw new Error('Signature not initialized')
-
-		return verifyTypedData(
-			this.domain,
-			this.types as unknown as Record<string, Array<TypedDataField>>,
-			this.message,
+		return await recoverTypedDataAddress({
+			domain: this.domain,
+			types: this.types,
+			primaryType: this.primaryType,
+			message: this.message,
 			signature
-		)
+		})
 	}
 
-	verify(address: AddressLike | `0x${string}`) {
-		return this.address() === address
+	async verify(address: `0x${string}`) {
+		return (await this.address()) === address
 	}
 
-	hash(message?: TIntent) {
-		if (message === undefined) message = this.message
+	hash(message = this.message) {
+		if (!message) throw new Error('Message not initialized')
 
-		if (message === undefined) throw new Error('Message not initialized')
-
-		return TypedDataEncoder.hash(
-			this.domain,
-			this.types as unknown as Record<string, Array<TypedDataField>>,
+		return hashTypedData({
+			domain: this.domain,
+			types: this.types,
+			primaryType: this.primaryType,
 			message
-		)
+		})
 	}
 }

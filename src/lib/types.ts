@@ -1,4 +1,6 @@
-import { TypedDataParameter } from 'abitype'
+import { TypedDataToPrimitiveTypes } from 'abitype'
+
+import { TypedData } from 'viem'
 
 import { constants } from '@nftchance/emporium-types'
 
@@ -26,12 +28,20 @@ export type Types<TTypes extends ConstantTypes = ConstantTypes> = TTypes
 // an object in the array with the name 'signature'. This means, SignedTypes should
 // SignedDelegation and not Invocation or Transaction.
 
-export type SignedTypes<TTypes extends ConstantTypes = ConstantTypes> = {
-	[TKey in keyof TTypes]: TTypes[TKey] extends Array<infer TType>
-		? TType extends TypedDataParameter
-			? TType['name'] extends 'signature'
-				? TKey
-				: never
-			: never
+export type FilterKeysWithSigned<T> = {
+	[K in keyof T]: `Signed${Capitalize<string & K>}` extends keyof T
+		? K
 		: never
-}[keyof TTypes]
+}[keyof T]
+
+export type TypedIntent<TTypes extends TypedData> =
+	TypedDataToPrimitiveTypes<TTypes>[keyof TypedDataToPrimitiveTypes<TTypes>]
+
+export type SignedTypeIntents<TTypes extends TypedData> = {
+	[K in keyof TypedDataToPrimitiveTypes<TTypes> as K extends `Signed${string}`
+		? K
+		: never]: TypedDataToPrimitiveTypes<TTypes>[K]
+}
+
+export type SignedTypeIntent<TTypes extends TypedData> =
+	SignedTypeIntents<TTypes>[keyof SignedTypeIntents<TTypes>]

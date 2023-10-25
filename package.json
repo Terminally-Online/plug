@@ -25,6 +25,7 @@
 		"viem": "^1.15.1"
 	},
 	"dependencies": {
+		"abitype": "^0.10.1",
 		"solady": "^0.0.129",
 		"solidity-bytes-utils": "^0.8.0"
 	}
