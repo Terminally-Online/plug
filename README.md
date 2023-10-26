@@ -1,8 +1,12 @@
 # @nftchance/emporium
 
-Emporium powers generalized counterfactual and revokable EVM intent framework. Without having to change the core logic of your protocol you can be up and running with intents in just a few seconds.
+> **Important**
+> You are reading the implementation documentation for Emporium solely intended to serve developers that are actively building atop the framework.
+>
+> If you are just a general user, this: ([COMING SOON]) has the answers for you.
+> If you are a dev looking for code documentation, this: ([COMING SOON]) has the answers for you.
 
-To use Emporium there are several key pieces that you will find benefit in using:
+Emporium powers generalized counterfactual and revokable EVM intent framework. Without having to change the core logic of your protocol you can be up and running with intents in just a few seconds. To use Emporium there are several key pieces that you will find benefit in using:
 
 ```ml
 packages
@@ -14,7 +18,7 @@ packages
 
 ### 1️⃣ [Generating your Types](https://github.com/nftchance/emporium-types)
 
-> This is only neccessary if you are implement additional complex in your base Emporium Framework implementation. You do not need to do this step if you plan on using the core variant. By default, `emporium-core` was implemented to consume the base shapes and executions.
+> This is only neccessary if you are implementing additional types/decoders in your base `emporium` implementation. You do not need to do this step if you plan on using the core variant. By default, `emporium-core` was implemented to consume the base shapes and executions required for baseline functions.
 
 How much time have you tried writing helper utilities to work with EIP-712 signatures, types and hashes. With `emporium-types` all you have to do is setup your configuration and run the singular `npm emporium generate` in your cli.
 
