@@ -1,8 +1,8 @@
 import {
-	GetContractReturnType,
-	GetTypedDataDomain,
-	TypedData,
-	WalletClient
+    GetContractReturnType,
+    GetTypedDataDomain,
+    TypedData,
+    WalletClient
 } from 'viem'
 
 import { Intent } from '@/intent'
@@ -44,15 +44,9 @@ export class Framework<
 	) {
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		const types = Object.fromEntries(
-			Object.entries(this.info.types).filter(
-				([key]) => key !== 'EIP712Domain'
-			)
-		) as TTypes
-
 		return new Intent<TTypes, TIntentType, TIntent>(
 			this.info.domain,
-			types,
+			this.info.types,
 			intentType,
 			intent
 		)

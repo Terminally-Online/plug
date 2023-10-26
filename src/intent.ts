@@ -1,9 +1,9 @@
 import {
-	GetTypedDataDomain,
-	hashTypedData,
-	recoverTypedDataAddress,
-	TypedData,
-	WalletClient
+    GetTypedDataDomain,
+    TypedData,
+    WalletClient,
+    hashTypedData,
+    recoverTypedDataAddress
 } from 'viem'
 
 import { IntentType, TypedIntent } from '@/lib/types'
@@ -17,7 +17,6 @@ export class Intent<
 	> = Lowercase<TIntentType extends string ? TIntentType : never>
 > {
 	private client: WalletClient | undefined
-	private signature: `0x${string}` | undefined
 
 	public intent:
 		| (Record<'signature', `0x${string}`> &
@@ -38,7 +37,7 @@ export class Intent<
 	}
 
 	async init(client: WalletClient, callback: (signedIntent: this) => void) {
-		if (this.signature) return this
+		if (this.intent) return this
 
 		this.client = client
 
@@ -63,7 +62,7 @@ export class Intent<
 		callback(this)
 	}
 
-	async address(signature = this.signature) {
+	async address(signature = this.intent?.signature) {
 		if (!signature) throw new Error('Signature not initialized')
 
 		return await recoverTypedDataAddress({

@@ -309,8 +309,8 @@ abstract contract Types is ITypes {
     ) public pure virtual returns (bytes32 $packetHash) {
         $packetHash = keccak256(abi.encode(
             EIP712_DOMAIN_TYPEHASH,
-            $input.name,
-			$input.version,
+            keccak256(bytes($input.name)),
+			keccak256(bytes($input.version)),
 			$input.chainId,
 			$input.verifyingContract
         ));
