@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"format": "npx prettier --write .",
-		"install:submodules": "git submodule add https://github.com/nftchance/emporium-lib packages/lib && git submodule add https://github.com/nftchance/emporium-core packages/core"
+		"submodules:update": "git submodule update"
 	},
 	"author": "",
 	"license": "ISC",

@@ -9,9 +9,10 @@
 	"endOfLine": "auto",
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
 	"importOrder": [
-		"ethers",
+		"@nftchance",
 		"hardhat",
 		"abitype",
+		"viem",
 		"<THIRD_PARTY_MODULES>",
 		"^@(.*)$",
 		"./(.*)$",
