@@ -12,7 +12,7 @@ Without `emporium-core`:
 
 With `emporium-core`:
 
--   🧩 Enable delegated execution just by adding the `canDelegate` modifier.
+-   🧩 Enable delegated execution just by inheriting `Framework`.
 -   🥹 Achieve complete alignment with full control over the economics of your protocol.
 -   ✅ Unlock a distributed network of parallel transactions for Ethereum.
 -   🚀 And so much more.
