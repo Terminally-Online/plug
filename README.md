@@ -3,8 +3,8 @@
 > **Important**
 > You are reading the implementation documentation for Emporium solely intended to serve developers that are actively building atop the framework.
 >
-> If you are just a general user, this: ([COMING SOON]) has the answers for you.
-> If you are a dev looking for code documentation, this: ([COMING SOON]) has the answers for you.
+> -   If you are just a general user, this: ([COMING SOON]) has the answers for you.
+> -   If you are a dev looking for code documentation, this: ([COMING SOON]) has the answers for you.
 
 Emporium powers generalized counterfactual and revokable EVM intent framework. Without having to change the core logic of your protocol you can be up and running with intents in just a few seconds. To use Emporium there are several key pieces that you will find benefit in using:
 
