@@ -1,8 +1,7 @@
+import deploy, { name, version } from '@/lib/functions/hardhat'
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'
-
-import deploy, { name, version } from '@/lib/functions/deploy'
 import { getAddress } from 'viem'
 
 const BASE_AUTH =
@@ -32,11 +31,11 @@ describe('Framework', function () {
 		await publicClient.waitForTransactionReceipt({ hash })
 	})
 
-    it("pass: pure echo()", async function () { 
+	it('pass: pure echo()', async function () {
 		const { contract } = await loadFixture(deploy)
 
 		await contract.read.pureEcho()
-    })
+	})
 
 	it('pass: getDelegationPacketHash(Delegation memory $input)', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
@@ -49,38 +48,41 @@ describe('Framework', function () {
 			salt: BASE_AUTH
 		} as const
 
-
 		// * Sign the delegation to make it executable.
 		const signedIntent = await util.sign(owner, 'Delegation', intent)
 
 		if (!signedIntent) expect.fail('Signed intent does not exist.')
 
-        // * Retrieve the object that will be passed onchain.
-        const SignedDelegation = signedIntent.intent
+		// * Retrieve the object that will be passed onchain.
+		const SignedDelegation = signedIntent.intent
 
-        if(!SignedDelegation) expect.fail('Intent could not be signed.')
+		if (!SignedDelegation) expect.fail('Intent could not be signed.')
 
 		// * Make sure the intent signer matched the recovered signer.
-		expect(getAddress(owner.account.address)).to.eq(await signedIntent.address())
-        expect(await signedIntent.verify(getAddress(owner.account.address))).to.be.true
-        const onchainSigner = await contract.read.getSignedDelegationSigner([SignedDelegation])
-		expect(getAddress(owner.account.address)).to.eq(onchainSigner)
+		expect(getAddress(owner.account.address)).to.eq(
+			await signedIntent.address()
+		)
+		expect(await signedIntent.verify(getAddress(owner.account.address))).to
+			.be.true
+		expect(getAddress(owner.account.address)).to.eq(
+			await contract.read.getSignedDelegationSigner([SignedDelegation])
+		)
 
-        // * Validate the digest.
+		// * Validate the digest.
 		// const delegationPacketDigest = await contract.read.getDelegationDigest([intent])
-        // expect(delegationPacketDigest).to.eq(signedIntent.hash())
+		// expect(delegationPacketDigest).to.eq(signedIntent.hash())
 
-        // const typeHash = hashTypedData({
+		// const typeHash = hashTypedData({
 		// 	domain: signedIntent.domain,
 		// 	types: signedIntent.types,
 		// 	primaryType: 'SignedDelegation',
-        //     // @ts-expect-error - test
+		//     // @ts-expect-error - test
 		// 	message: signedIntent.intent
 		// })
 
-        // console.log(typeHash, typedDataHash, signedIntent.hash(intent))
+		// console.log(typeHash, typedDataHash, signedIntent.hash(intent))
 
-        // expect(typedDataHash).to.eq(typeHash)
+		// expect(typedDataHash).to.eq(typeHash)
 		// * Make sure the offchain and onchain hashes match.
 		// expect(typedDataHash).to.eq(signedIntent.hash(intent))
 	})

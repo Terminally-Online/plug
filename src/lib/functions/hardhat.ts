@@ -1,7 +1,7 @@
 import hre, { network } from 'hardhat'
+import { Network } from 'hardhat/types'
 
 import { Framework } from '@/framework'
-import { getChainId } from '@/lib/functions/chain'
 import { constants } from '@nftchance/emporium-types'
 
 export const [name, version] = ['FrameworkMock', '0.0.0']
@@ -23,5 +23,18 @@ export default async function () {
 		contract
 	)
 
-	return { chainId, contract, util, owner, notOwner, publicClient }
+	return {
+		chainId,
+		name,
+		version,
+		contract,
+		util,
+		owner,
+		notOwner,
+		publicClient
+	}
+}
+
+export async function getChainId(network: Network) {
+	return await network.provider.send('eth_chainId').then(parseInt)
 }
