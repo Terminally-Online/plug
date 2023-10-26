@@ -214,7 +214,7 @@ abstract contract FrameworkCore is Types {
 				signedDelegation = invocation.authority[j];
 
 				/// @dev Determine the signer of the delegation.
-				delegationSigner = getSigner(signedDelegation);
+				delegationSigner = getSignedDelegationSigner(signedDelegation);
 
 				/// @dev Implied sending account is the signer of the first delegation.
 				if (j == 0) canGrant = intendedSender = delegationSigner;
@@ -236,7 +236,9 @@ abstract contract FrameworkCore is Types {
 				);
 
 				/// @dev Retrieve the packet hash for the delegation.
-				delegationHash = getPacketHash(signedDelegation);
+				delegationHash = getSignedDelegationPacketHash(
+					signedDelegation
+				);
 
 				/// @dev Loop through all the execution caveats declared in the delegation
 				///      and ensure they are all valid.

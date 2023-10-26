@@ -63,7 +63,9 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 		);
 
 		/// @dev Determine the hash of the delegation.
-		bytes32 delegationHash = getPacketHash($signedDelegation);
+		bytes32 delegationHash = getSignedDelegationPacketHash(
+			$signedDelegation
+		);
 
 		/// @dev Ensure the delegation has not already been revoked.
 		require(
@@ -100,13 +102,13 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	function getDigest(
 		Delegation memory $delegation,
 		bytes32 $domainHash
-	) public view returns (bytes32 $digest) {
+	) public pure returns (bytes32 $digest) {
 		/// @dev Encode the delegation and domain hash and hash them.
 		$digest = keccak256(
 			abi.encodePacked(
 				'\x19\x01',
 				$domainHash,
-				getPacketHash($delegation)
+				getDelegationPacketHash($delegation)
 			)
 		);
 	}

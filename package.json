@@ -25,7 +25,7 @@
 		"viem": "^1.15.1"
 	},
 	"dependencies": {
-		"@nftchance/emporium-types": "^0.3.5",
+		"@nftchance/emporium-types": "^0.3.7",
 		"abitype": "^0.10.1",
 		"solady": "^0.0.129",
 		"solidity-bytes-utils": "^0.8.0"

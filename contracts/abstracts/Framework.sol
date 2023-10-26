@@ -49,7 +49,9 @@ abstract contract Framework is IFramework, FrameworkCore {
 			SignedInvocations calldata signedInvocation = $signedInvocations[i];
 
 			/// @dev Determine who signed the invocation.
-			address invocationSigner = getSigner(signedInvocation);
+			address invocationSigner = getSignedInvocationsSigner(
+				signedInvocation
+			);
 
 			/// @dev Load the invocations as a hot reference.
 			Invocations calldata invocations = signedInvocation.invocations;

@@ -34,36 +34,27 @@ describe('Framework', function () {
 	it('pass: getPacketHash(Delegation memory $input)', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
-		console.log(owner.account.address)
-
 		// * Create a Delegation.
 		const intent = {
 			delegate: '0x62180042606624f02D8A130dA8A3171e9b33894d',
 			authority: BASE_AUTH,
 			caveats: [],
 			salt: BASE_AUTH
-		}
+		} as const
 
 		await contract.read.pureEcho()
 
-		const abi = contract.abi
-
-		console.log(abi)
-
-		console.log(intent, contract.address)
-
 		// * Recover the packet hash.
-		// await contract.read.getDelegationPacketHash([intent])
-		await contract.read.getPacketHash([intent])
+		const typedDataHash = await contract.read.getDelegationPacketHash([
+			intent
+		])
 
 		// // * Sign the delegation to make it executable.
-		// const signedIntent = await util.sign(owner, 'Delegation', intent)
-		util
+		const signedIntent = await util.sign(owner, 'Delegation', intent)
 
-		// typedDataHash
-		// signedIntent
+		typedDataHash
 
-		// if (!signedIntent) expect.fail('Signed intent does not exist.')
+		if (!signedIntent) expect.fail('Signed intent does not exist.')
 
 		// // * Make sure the intent signer matched the recovered signer.
 		// expect(getAddress(owner.account.address)).to.eq(signedIntent.address())

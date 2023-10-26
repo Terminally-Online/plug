@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@nftchance/emporium-types':
-    specifier: ^0.3.5
-    version: 0.3.5(esbuild@0.19.5)(ts-node@10.9.1)
+    specifier: ^0.3.7
+    version: 0.3.7(esbuild@0.19.5)(solady@0.0.129)(ts-node@10.9.1)
   abitype:
     specifier: ^0.10.1
     version: 0.10.1(typescript@5.0.4)
@@ -1369,9 +1369,11 @@ packages:
     resolution: {integrity: sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==}
     dev: false
 
-  /@nftchance/emporium-types@0.3.5(esbuild@0.19.5)(ts-node@10.9.1):
-    resolution: {integrity: sha512-ITgYuoKu6TXDTQdvv+bQ9BOWa6TnGFghC+OWkDtev2SHGkHOzcFhzwl0XW6ERNCiYQsFUBPXbnu5ZL1L9KlE+w==}
+  /@nftchance/emporium-types@0.3.7(esbuild@0.19.5)(solady@0.0.129)(ts-node@10.9.1):
+    resolution: {integrity: sha512-XyHe4htVwJqTeP/hl5fJx3VdoXkZFLHsJlOG49GGNwc+Dfu+4aKp0DFmy8z0J3AGygkCHUDfD93aEoMlsONP8A==}
     hasBin: true
+    peerDependencies:
+      solady: '>=0.0.129'
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.2.1(prettier@3.0.3)
       abitype: 0.9.10(typescript@5.0.4)(zod@3.22.4)
@@ -6911,7 +6913,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /ripemd160@2.0.2:
