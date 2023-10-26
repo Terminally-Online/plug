@@ -1,9 +1,9 @@
 import {
-    GetTypedDataDomain,
-    TypedData,
-    WalletClient,
-    hashTypedData,
-    recoverTypedDataAddress
+	GetTypedDataDomain,
+	hashTypedData,
+	recoverTypedDataAddress,
+	TypedData,
+	WalletClient
 } from 'viem'
 
 import { IntentType, TypedIntent } from '@/lib/types'

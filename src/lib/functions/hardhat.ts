@@ -1,8 +1,9 @@
+import { constants } from '@nftchance/emporium-types'
+
 import hre, { network } from 'hardhat'
 import { Network } from 'hardhat/types'
 
 import { Framework } from '@/framework'
-import { constants } from '@nftchance/emporium-types'
 
 export const [name, version] = ['FrameworkMock', '0.0.0']
 

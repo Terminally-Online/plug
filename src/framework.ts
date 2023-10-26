@@ -1,13 +1,14 @@
+import { constants } from '@nftchance/emporium-types'
+
 import {
-    GetContractReturnType,
-    GetTypedDataDomain,
-    TypedData,
-    WalletClient
+	GetContractReturnType,
+	GetTypedDataDomain,
+	TypedData,
+	WalletClient
 } from 'viem'
 
 import { Intent } from '@/intent'
 import { IntentType, TypedIntent } from '@/lib/types'
-import { constants } from '@nftchance/emporium-types'
 
 export class Framework<
 	TTypes extends TypedData = typeof constants.types,
