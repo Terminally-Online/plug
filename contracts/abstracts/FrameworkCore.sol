@@ -3,7 +3,7 @@
 pragma solidity 0.8.19;
 
 /// @dev Hash declarations and decoders for the Emporium framework.
-import {Types} from '@nftchance/emporium-types/dist/contracts/Types.sol';
+import {Types} from './Types.sol';
 
 /// @dev Core Framework dependencies.
 import {CaveatEnforcer} from './CaveatEnforcer.sol';
@@ -214,7 +214,7 @@ abstract contract FrameworkCore is Types {
 				signedDelegation = invocation.authority[j];
 
 				/// @dev Determine the signer of the delegation.
-				delegationSigner = getSigner(signedDelegation);
+				delegationSigner = getSignedDelegationSigner(signedDelegation);
 
 				/// @dev Implied sending account is the signer of the first delegation.
 				if (j == 0) canGrant = intendedSender = delegationSigner;
@@ -228,7 +228,7 @@ abstract contract FrameworkCore is Types {
 
 				/// @dev Warm up the delegation reference.
 				delegation = signedDelegation.delegation;
-    
+
 				/// @dev Ensure the delegation is valid.
 				require(
 					delegation.authority == authHash,
@@ -236,7 +236,9 @@ abstract contract FrameworkCore is Types {
 				);
 
 				/// @dev Retrieve the packet hash for the delegation.
-				delegationHash = getPacketHash(signedDelegation);
+				delegationHash = getSignedDelegationPacketHash(
+					signedDelegation
+				);
 
 				/// @dev Loop through all the execution caveats declared in the delegation
 				///      and ensure they are all valid.

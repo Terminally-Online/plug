@@ -34,6 +34,10 @@ contract FrameworkMock is Framework {
 		emit EchoInvoked(msg.sender, _msgSender(), $message);
 	}
 
+	function pureEcho() external pure returns (string memory $message) {
+		$message = 'Hello World';
+	}
+
 	/**
 	 * @notice A mock function for testing the framework.
 	 */
