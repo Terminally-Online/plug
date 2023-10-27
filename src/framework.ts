@@ -1,32 +1,32 @@
-import { constants } from '@nftchance/emporium-types'
+import { TypedDataToPrimitiveTypes } from 'abitype'
 
 import {
 	GetContractReturnType,
 	GetTypedDataDomain,
+	GetTypedDataPrimaryType,
 	TypedData,
 	WalletClient
 } from 'viem'
 
 import { Intent } from '@/intent'
-import { IntentType, TypedIntent } from '@/lib/types'
+
+import { TypedDataToKeysWithSignedPair } from './lib/types'
 
 export class Framework<
-	TTypes extends TypedData = typeof constants.types,
-	TIntentType extends IntentType<TTypes> = IntentType<TTypes>,
-	TIntent extends TypedIntent<TTypes> = TypedIntent<TTypes>
+	C extends WalletClient,
+	T extends TypedData,
+	K extends TypedDataToKeysWithSignedPair<T>
 > {
 	public readonly info: {
 		domain: GetTypedDataDomain['domain']
-		types: TTypes
+		types: T
 	} | null = null
-
-	public signedIntents: Array<Intent<TTypes, TIntentType, TIntent>> = []
 
 	constructor(
 		name: string,
 		version: string,
 		chainId: number,
-		types: TTypes,
+		types: T,
 		public readonly contract: GetContractReturnType
 	) {
 		this.info = {
@@ -39,32 +39,31 @@ export class Framework<
 			types
 		}
 	}
-	build(
-		intentType: TIntentType extends string ? TIntentType : never,
+
+	build<TK extends K, TIntent extends TypedDataToPrimitiveTypes<T>[TK]>(
+		intentType: TK & GetTypedDataPrimaryType<T, TK>,
 		intent: TIntent
 	) {
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent<TTypes, TIntentType, TIntent>(
-			this.info.domain,
-			this.info.types,
-			intentType,
-			intent
-		)
+		return new Intent(this.info.domain, this.info.types, intentType, intent)
 	}
 
-	async sign(
-		client: WalletClient,
-		...[intentType, intent]: Parameters<this['build']>
+	async sign<TK extends K>(
+		client: C,
+		intentType: TK,
+		// * Without the explicit declaration here, one can include fields that do
+		//   not belong to the intent type as it would use union. We can only break
+		//   out of the union after that type has been declared such as `intentType`
+		//   setting a reference for the `TK` type.
+		intent: TypedDataToPrimitiveTypes<T>[TK]
 	) {
 		// * Build the intent and initialize it.
-		await this.build(intentType, intent)
-			.init(client, signedIntent => this.signedIntents.push(signedIntent))
-			.catch(error => {
-				throw new Error(`Signed intent not initialized: ${error}`)
-			})
-
-		// * Return the latest.
-		return this.signedIntents[this.signedIntents.length - 1]
+		return (await this.build(intentType, intent).init(client)) as Intent<
+			C,
+			T,
+			TK,
+			TypedDataToPrimitiveTypes<T>[TK]
+		>
 	}
 }

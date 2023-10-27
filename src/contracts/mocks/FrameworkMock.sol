@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 import {Framework} from '../abstracts/Framework.sol';
 
@@ -41,7 +41,7 @@ contract FrameworkMock is Framework {
 	/**
 	 * @notice A mock function for testing the framework.
 	 */
-	function echoMuted() external pure {
+	function mutedEcho() external pure {
 		revert EchoMuted();
 	}
 }

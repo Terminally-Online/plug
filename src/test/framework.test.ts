@@ -1,7 +1,7 @@
 import deploy, { name, version } from '@/lib/functions/hardhat'
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
-import { getAddress } from 'viem'
+import { encodeFunctionData, getAddress } from 'viem'
 
 import { expect } from 'chai'
 
@@ -24,21 +24,8 @@ describe('Framework', function () {
 		})
 	})
 
-	it("pass: echo('hi')", async function () {
-		const { contract, publicClient } = await loadFixture(deploy)
-
-		const hash = await contract.write.echo(['hi'])
-
-		await publicClient.waitForTransactionReceipt({ hash })
-	})
-
-	it('pass: pure echo()', async function () {
-		const { contract } = await loadFixture(deploy)
-
-		await contract.read.pureEcho()
-	})
-
-	it('pass: getDelegationPacketHash(Delegation memory $input)', async function () {
+	// * Run a test from start to finish for a SignedDelegation.
+	it('pass: getSignedDelegationSigner', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
 		// * Create a Delegation.
@@ -68,182 +55,100 @@ describe('Framework', function () {
 		expect(getAddress(owner.account.address)).to.eq(
 			await contract.read.getSignedDelegationSigner([SignedDelegation])
 		)
-
-		// * Validate the digest.
-		// const delegationPacketDigest = await contract.read.getDelegationDigest([intent])
-		// expect(delegationPacketDigest).to.eq(signedIntent.hash())
-
-		// const typeHash = hashTypedData({
-		// 	domain: signedIntent.domain,
-		// 	types: signedIntent.types,
-		// 	primaryType: 'SignedDelegation',
-		//     // @ts-expect-error - test
-		// 	message: signedIntent.intent
-		// })
-
-		// console.log(typeHash, typedDataHash, signedIntent.hash(intent))
-
-		// expect(typedDataHash).to.eq(typeHash)
-		// * Make sure the offchain and onchain hashes match.
-		// expect(typedDataHash).to.eq(signedIntent.hash(intent))
 	})
 
-	// it.only('pass: getInvocationsTypedDataHash(Invocations memory invocations)', async function () {
-	// 	const { util, contract, owner } = await loadFixture(deploy)
+	// * Run a test from start to finish for a SignedInvocations.
+	it('pass: getSignedInvocationsSigner(SignedInvocation memory signedInvocation)', async function () {
+		const { util, contract, owner, notOwner } = await loadFixture(deploy)
 
-	// 	const signedDelegation = await util.sign(owner, {
-	// 		delegate: (await owner.getAddress()) as `0x${string}`,
-	// 		authority: BASE_AUTH,
-	// 		caveats: [],
-	// 		salt: BASE_AUTH
-	// 	})
+		// * Create a Delegation.
+		const intent = {
+			delegate: getAddress(owner.account.address),
+			authority: BASE_AUTH,
+			caveats: [],
+			salt: BASE_AUTH
+		} as const
 
-	// 	if (signedDelegation.signedMessage === null)
-	// 		expect.fail('Signed delegation is null')
+		// * Sign the delegation to make it executable.
+		const signedDelegation = await util.sign(owner, 'Delegation', intent)
 
-	// 	const intent = util.build({
-	// 		replayProtection: {
-	// 			nonce: 1n,
-	// 			queue: 0n
-	// 		},
-	// 		batch: [
-	// 			{
-	// 				authority: [signedDelegation.signedMessage],
-	// 				transaction: {
-	// 					to: (await contract.getAddress()) as `0x${string}`,
-	// 					gasLimit: 21000n,
-	// 					data: '0x'
-	// 				}
-	// 			}
-	// 		]
-	// 	})
+		if (!signedDelegation) expect.fail('Signed intent does not exist.')
 
-	// 	const typedDataHash = await contract.getInvocationsTypedDataHash({
-	// 		replayProtection: {
-	// 			nonce: 1n,
-	// 			queue: 0n
-	// 		},
-	// 		batch: [
-	// 			{
-	// 				authority: [signedDelegation.signedMessage],
-	// 				transaction: {
-	// 					to: (await contract.getAddress()) as `0x${string}`,
-	// 					gasLimit: 21000n,
-	// 					data: '0x'
-	// 				}
-	// 			}
-	// 		]
-	// 	})
+		// * Retrieve the object that will be passed onchain.
+		const SignedDelegation = signedDelegation.intent
 
-	// 	console.table({
-	// 		typedDataHash,
-	// 		hash: intent.hash()
-	// 	})
+		if (!SignedDelegation) expect.fail('Intent could not be signed.')
 
-	// 	expect(typedDataHash).to.eq(intent.hash())
-	// })
+		expect(
+			await contract.read.getSignedDelegationSigner([SignedDelegation])
+		).to.eq(getAddress(owner.account.address))
 
-	// it('fail: alwaysFail()', async function () {
-	// 	const { util, contract, owner } = await loadFixture(deploy)
+		const encodedTransaction = encodeFunctionData({
+			abi: contract.abi,
+			functionName: 'mutedEcho'
+		})
 
-	// 	const signedInvocation = await util.sign(owner, {
-	// 		replayProtection: {
-	// 			nonce: 1n,
-	// 			queue: 0n
-	// 		},
-	// 		batch: [
-	// 			{
-	// 				authority: [],
-	// 				transaction: {
-	// 					to: (await contract.getAddress()) as `0x${string}`,
-	// 					gasLimit: 21000n,
-	// 					data: (await contract.alwaysFail.populateTransaction())
-	// 						.data as `0x${string}`
-	// 				}
-	// 			}
-	// 		]
-	// 	})
+		const signedInvocation = await util.sign(notOwner, 'Invocations', {
+			replayProtection: {
+				nonce: 1n,
+				queue: 0n
+			},
+			batch: [
+				{
+					authority: [SignedDelegation],
+					transaction: {
+						to: getAddress(owner.account.address),
+						gasLimit: 21000n,
+						data: encodedTransaction
+					}
+				}
+			]
+		})
 
-	// 	if (signedInvocation.signedMessage === null)
-	// 		expect.fail('Signed invocation is null')
+		if (!signedInvocation) expect.fail('Signed invocation does not exist.')
+		if (!signedInvocation.intent) expect.fail('Intent does not exist.')
 
-	// 	await expect(
-	// 		contract.invoke([signedInvocation.signedMessage])
-	// 	).to.be.revertedWith('I always fail')
-	// })
+		const SignedInvocation = signedInvocation.intent
 
-	// it('pass: getEIP712DomainHash(string,string,uint256,address)', async function () {
-	// 	expect.fail('Not implemented')
-	// })
+		expect(
+			await contract.read.getSignedInvocationsSigner([SignedInvocation])
+		).to.eq(getAddress(notOwner.account.address))
+	})
 
-	// it('pass: verifyDelegationSignature(SignedDelegation memory signedDelegation)`', async function () {
-	// 	const { util, contract, owner } = await loadFixture(deploy)
+	it('fail: signedInvocations: mutedEcho()', async function () {
+		const { util, contract, owner } = await loadFixture(deploy)
 
-	// 	const signedDelegation = await util.sign(owner, {
-	// 		delegate: (await owner.getAddress()) as `0x${string}`,
-	// 		authority: BASE_AUTH,
-	// 		caveats: [],
-	// 		salt: BASE_AUTH
-	// 	})
+		const encodedTransaction = encodeFunctionData({
+			abi: contract.abi,
+			functionName: 'mutedEcho'
+		})
 
-	// 	if (signedDelegation.signedMessage === null)
-	// 		expect.fail('Signed delegation is null')
+		const signedInvocations = await util.sign(owner, 'Invocations', {
+			replayProtection: {
+				nonce: 1n,
+				queue: 0n
+			},
+			batch: [
+				{
+					authority: [],
+					transaction: {
+						to: contract.address,
+						gasLimit: 21000n,
+						data: encodedTransaction
+					}
+				}
+			]
+		})
 
-	// 	expect(
-	// 		await contract.verifyDelegationSignature(
-	// 			signedDelegation.signedMessage
-	// 		)
-	// 	).to.eq(await owner.getAddress())
-	// })
+		if (!signedInvocations) expect.fail('Signed intent does not exist.')
 
-	// it('pass: verifyInvocationSignature(SignedInvocation memory signedInvocation)', async function () {
-	// 	const { util, contract, owner, notOwner } = await loadFixture(deploy)
+		// * Retrieve the object that will be passed onchain.
+		const SignedInvocations = signedInvocations.intent
 
-	// 	const signedDelegation = await util.sign(owner, {
-	// 		delegate: (await notOwner.getAddress()) as `0x${string}`,
-	// 		authority: BASE_AUTH,
-	// 		caveats: [],
-	// 		salt: BASE_AUTH
-	// 	})
+		if (!SignedInvocations) expect.fail('Intent could not be signed.')
 
-	// 	if (signedDelegation.signedMessage === null)
-	// 		expect.fail('Signed delegation is null')
-
-	// 	expect(
-	// 		await contract.verifyDelegationSignature(
-	// 			signedDelegation.signedMessage
-	// 		)
-	// 	).to.eq(await owner.getAddress())
-
-	// 	const signedInvocation = await util.sign(owner, {
-	// 		replayProtection: {
-	// 			nonce: 1n,
-	// 			queue: 0n
-	// 		},
-	// 		batch: [
-	// 			{
-	// 				authority: [signedDelegation.signedMessage],
-	// 				transaction: {
-	// 					to: (await contract.getAddress()) as `0x${string}`,
-	// 					gasLimit: 21000n,
-	// 					data: (await contract.alwaysFail.populateTransaction())
-	// 						.data as `0x${string}`
-	// 				}
-	// 			}
-	// 		]
-	// 	})
-
-	// 	console.log(signedInvocation.signedMessage, signedInvocation.hash())
-
-	// 	if (signedInvocation.signedMessage === null)
-	// 		expect.fail('Signed invocation is null')
-
-	// 	console.log(await owner.getAddress(), await notOwner.getAddress())
-
-	// 	expect(
-	// 		await contract.verifyInvocationSignature(
-	// 			signedInvocation.signedMessage
-	// 		)
-	// 	).to.eq(await owner.getAddress())
-	// })
+		await expect(
+			contract.write.invoke([[SignedInvocations]])
+		).to.be.rejectedWith('EchoMuted')
+	})
 })

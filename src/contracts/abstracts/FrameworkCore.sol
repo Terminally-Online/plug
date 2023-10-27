@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 /// @dev Hash declarations and decoders for the Emporium framework.
 import {Types} from './Types.sol';
+/// @dev Error utilities for the Emporium framework.
+import {FrameworkErrors} from './FrameworkErrors.sol';
 
 /// @dev Core Framework dependencies.
 import {CaveatEnforcer} from './CaveatEnforcer.sol';
@@ -18,6 +20,8 @@ import {CaveatEnforcer} from './CaveatEnforcer.sol';
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
 abstract contract FrameworkCore is Types {
+	using FrameworkErrors for bytes;
+
 	/// @notice Multi-dimensional account delegation nonce management.
 	mapping(address => mapping(uint256 => uint256)) public nonce;
 
@@ -84,7 +88,7 @@ abstract contract FrameworkCore is Types {
 	) internal {
 		/// @dev Ensure the nonce is in order.
 		require(
-			$protection.nonce == nonce[$intendedSender][$protection.queue]++,
+			$protection.nonce == ++nonce[$intendedSender][$protection.queue],
 			'FrameworkCore:nonce2-out-of-order'
 		);
 	}
@@ -113,50 +117,7 @@ abstract contract FrameworkCore is Types {
 		($success, errorMessage) = address($to).call{gas: $gasLimit}(full);
 
 		/// @dev If the call failed, bubble up the revert reason if possible.
-		if ($success == false) revert(_extractRevertReason(errorMessage));
-	}
-
-	/**
-	 * @notice Extracts the revert reason revert data.
-	 * @param $revertData The revert data to extract the reason from.
-	 * @return $reason The reason for the revert.
-	 */
-	function _extractRevertReason(
-		bytes memory $revertData
-	) internal pure returns (string memory $reason) {
-		/// @dev Hot reference to the length of the revert data.
-		uint256 length = $revertData.length;
-
-		/// @dev Hard no revert reason.
-		if (length == 0) return 'FrameworkCore::execution-failed';
-
-		/// @dev If the length of the revert data is less than 68, the transaction
-		///      failed silently (without a reason).
-		if (length < 68) return '';
-
-		/// @dev Load the stack for the assembly.
-		uint256 rLength;
-
-		assembly {
-			/// @dev Increment the pointer of revertData by 4 bytes
-			///      to skip the function selector.
-			$revertData := add($revertData, 4)
-
-			/// @dev Load the bytes of data at the pointer revertData.
-			rLength := mload($revertData)
-
-			/// @dev Set the length of the revertData to the length of the
-			///      revertData minus 4 bytes (function selector).
-			mstore($revertData, sub(length, 4))
-		}
-
-		/// @dev Decode the revert data, extracting the actual error message.
-		$reason = abi.decode($revertData, (string));
-
-		assembly {
-			/// @dev Restore the length of the revertData.
-			mstore($revertData, rLength)
-		}
+		if ($success == false) errorMessage.bubbleRevert();
 	}
 
 	/**
@@ -266,6 +227,9 @@ abstract contract FrameworkCore is Types {
 				/// @dev Set the next delegation signer as the current delegation signer.
 				canGrant = delegation.delegate;
 			}
+
+			/// @dev Verify the delegate at the end of the delegation chain is the signer.
+			require(canGrant == $sender, 'DelegatableCore:invalid-delegate');
 
 			/// @dev Execute the transaction.
 			$success = _execute(
