@@ -99,27 +99,3 @@ export default async function () {
 	// @ts-expect-error - Doesnt exist.
 	Mail.Email
 }
-
-type ShapeType<T extends keyof typeof OBJECT_SHAPES> = {
-	signature: string
-} & { [K in T]: (typeof OBJECT_SHAPES)[T] }
-
-const OBJECT_SHAPES = {
-	one: { name: 'one' },
-	two: { number: 'two' },
-	three: { name: 'three', number: 'three' }
-} as const
-
-function takeShape<T extends keyof typeof OBJECT_SHAPES>(
-	shape: T
-): ShapeType<T> {
-	return {
-		signature: '0x',
-		[shape]: OBJECT_SHAPES[shape]
-	} as ShapeType<T>
-}
-
-const shape = takeShape('three')
-shape.three.name
-shape.three.number
-shape.signature

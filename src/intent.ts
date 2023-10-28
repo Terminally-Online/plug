@@ -1,35 +1,24 @@
-import { TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedData, TypedDataToPrimitiveTypes } from 'abitype'
 
 import {
 	GetTypedDataDomain,
 	GetTypedDataPrimaryType,
 	hashTypedData,
 	recoverTypedDataAddress,
-	TypedData,
 	WalletClient
 } from 'viem'
 
-import { TypedDataToKeysWithSignedPair } from './lib/types'
-
-export type IntentType<T> = Exclude<
-	{
-		[K in keyof T]: `Signed${Capitalize<string & K>}` extends keyof T
-			? K
-			: never
-	}[keyof T],
-	'EIP712Domain'
->
+import {
+	TypedDataToKeysWithSignedPair,
+	TypedDataToSignedIntent
+} from '@/lib/types'
 
 export class Intent<
 	C extends WalletClient,
 	T extends TypedData,
 	K extends TypedDataToKeysWithSignedPair<T>,
 	U extends TypedDataToPrimitiveTypes<T>[K] = TypedDataToPrimitiveTypes<T>[K],
-	S extends Record<'signature', `0x${string}`> & {
-		[TK in K as Lowercase<string & TK>]: U
-	} = Record<'signature', `0x${string}`> & {
-		[TK in K as Lowercase<string & TK>]: U
-	}
+	S extends TypedDataToSignedIntent<K, U> = TypedDataToSignedIntent<K, U>
 > {
 	private client?: WalletClient
 	public intent: S | undefined

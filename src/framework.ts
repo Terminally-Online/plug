@@ -1,10 +1,9 @@
-import { TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedData, TypedDataToPrimitiveTypes } from 'abitype'
 
 import {
 	GetContractReturnType,
 	GetTypedDataDomain,
 	GetTypedDataPrimaryType,
-	TypedData,
 	WalletClient
 } from 'viem'
 
@@ -42,7 +41,7 @@ export class Framework<
 
 	build<TK extends K>(
 		intentType: TK extends string
-			? GetTypedDataPrimaryType<T, TK> & TypedDataToKeysWithSignedPair<T>
+			? GetTypedDataPrimaryType<T, TK> & K
 			: never,
 		intent: TypedDataToPrimitiveTypes<T>[K]
 	) {
@@ -63,7 +62,7 @@ export class Framework<
 		//   out of the union after that type has been declared such as `intentType`
 		//   setting a reference for the `TK` type.
 		intentType: TK extends string
-			? GetTypedDataPrimaryType<T, TK> & TypedDataToKeysWithSignedPair<T>
+			? GetTypedDataPrimaryType<T, TK> & K
 			: never,
 		intent: TypedDataToPrimitiveTypes<T>[TK]
 	) {
@@ -71,6 +70,6 @@ export class Framework<
 		return (await this.build(
 			intentType,
 			intent as TypedDataToPrimitiveTypes<T>[K]
-		).init(client)) as Intent<C, T, TK, TypedDataToPrimitiveTypes<T>[TK]>
+		).init(client)) as Intent<C, T, TK>
 	}
 }

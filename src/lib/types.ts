@@ -1,4 +1,4 @@
-import { TypedData } from 'viem'
+import { TypedData } from 'abitype'
 
 // ! Turn a dictionary of EIP-712 types into a union of the keys
 //   that have a signed pair.
@@ -19,3 +19,12 @@ export type TypedDataToKeysWithSignedPair<T extends TypedData> =
 			}[keyof T],
 			never
 		>
+
+// * Turn an intent object into the expected onchain shape of the 
+//   SignedIntent pair output.
+export type TypedDataToSignedIntent<K, U> = Record<
+	'signature',
+	`0x${string}`
+> & {
+	[TK in K as Lowercase<string & TK>]: U
+}
