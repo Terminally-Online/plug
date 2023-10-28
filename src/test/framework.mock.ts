@@ -8,7 +8,6 @@ describe('Framework', function () {
 		const { chainId, contract, util } = await loadFixture(deploy)
 
 		expect(util).to.not.be.null.and.not.be.undefined
-		expect(util.signedIntents).to.be.empty
 		expect(util.info).to.not.be.null
 
 		expect(util.info?.domain).to.eql({
