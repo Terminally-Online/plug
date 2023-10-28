@@ -16,7 +16,7 @@ export default async function () {
 
 	const publicClient = await hre.viem.getPublicClient()
 
-	const util = new Framework<typeof constants.types>(
+	const util = new Framework(
 		name,
 		version,
 		chainId,
