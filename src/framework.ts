@@ -41,7 +41,9 @@ export class Framework<
 	}
 
 	build<TK extends K>(
-		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
+		intentType: TK extends string
+			? GetTypedDataPrimaryType<T, TK> & TypedDataToKeysWithSignedPair<T>
+			: never,
 		intent: TypedDataToPrimitiveTypes<T>[K]
 	) {
 		if (!this.info) throw new Error('Contract info not initialized')
@@ -60,7 +62,9 @@ export class Framework<
 		//   not belong to the intent type as it would use union. We can only break
 		//   out of the union after that type has been declared such as `intentType`
 		//   setting a reference for the `TK` type.
-		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
+		intentType: TK extends string
+			? GetTypedDataPrimaryType<T, TK> & TypedDataToKeysWithSignedPair<T>
+			: never,
 		intent: TypedDataToPrimitiveTypes<T>[TK]
 	) {
 		// * Build the intent and initialize it.
