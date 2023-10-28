@@ -40,30 +40,33 @@ export class Framework<
 		}
 	}
 
-	build<TK extends K, TIntent extends TypedDataToPrimitiveTypes<T>[TK]>(
-		intentType: TK & GetTypedDataPrimaryType<T, TK>,
-		intent: TIntent
+	build<TK extends K>(
+		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
+		intent: TypedDataToPrimitiveTypes<T>[K]
 	) {
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent(this.info.domain, this.info.types, intentType, intent)
+		return new Intent<C, T, K>(
+			this.info.domain,
+			this.info.types,
+			intentType,
+			intent
+		)
 	}
 
 	async sign<TK extends K>(
 		client: C,
-		intentType: TK,
 		// * Without the explicit declaration here, one can include fields that do
 		//   not belong to the intent type as it would use union. We can only break
 		//   out of the union after that type has been declared such as `intentType`
 		//   setting a reference for the `TK` type.
+		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
 		intent: TypedDataToPrimitiveTypes<T>[TK]
 	) {
 		// * Build the intent and initialize it.
-		return (await this.build(intentType, intent).init(client)) as Intent<
-			C,
-			T,
-			TK,
-			TypedDataToPrimitiveTypes<T>[TK]
-		>
+		return (await this.build(
+			intentType,
+			intent as TypedDataToPrimitiveTypes<T>[K]
+		).init(client)) as Intent<C, T, TK, TypedDataToPrimitiveTypes<T>[TK]>
 	}
 }

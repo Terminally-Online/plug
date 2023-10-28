@@ -3,9 +3,13 @@ import { TypedDataToPrimitiveTypes } from 'abitype'
 import {
 	GetTypedDataDomain,
 	GetTypedDataPrimaryType,
+	hashTypedData,
+	recoverTypedDataAddress,
 	TypedData,
 	WalletClient
 } from 'viem'
+
+import { TypedDataToKeysWithSignedPair } from './lib/types'
 
 const DEBUG_TYPES = {
 	Mail: [
@@ -41,16 +45,11 @@ export type IntentType<T> = Exclude<
 	'EIP712Domain'
 >
 
-// type TypedIntents<TTypes extends TypedData> = TypedDataToPrimitiveTypes<TTypes>
-
-// type TypedIntent<TTypes extends TypedData> =
-// 	TypedIntents<TTypes>[TypedDataToKeysWithSignedPair<TTypes>]
-
 export class Intent<
 	C extends WalletClient,
 	T extends TypedData,
-	K extends IntentType<TypedData>,
-	U extends TypedDataToPrimitiveTypes<T>[K],
+	K extends TypedDataToKeysWithSignedPair<T>,
+	U extends TypedDataToPrimitiveTypes<T>[K] = TypedDataToPrimitiveTypes<T>[K],
 	S extends Record<'signature', `0x${string}`> & {
 		[TK in K as Lowercase<string & TK>]: U
 	} = Record<'signature', `0x${string}`> & {
@@ -118,30 +117,30 @@ export class Intent<
 		return this
 	}
 
-	// async address(signature = this.intent?.signature) {
-	// 	if (!signature) throw new Error('Signature not initialized')
+	async address(signature = this.intent?.signature) {
+		if (!signature) throw new Error('Signature not initialized')
 
-	// 	return await recoverTypedDataAddress({
-	// 		domain: this.domain,
-	// 		types: this.types,
-	// 		primaryType: this.primaryType,
-	// 		message: this.message,
-	// 		signature
-	// 	})
-	// }
+		return await recoverTypedDataAddress({
+			domain: this.domain,
+			types: this.types,
+			primaryType: this.primaryType,
+			message: this.message,
+			signature
+		})
+	}
 
-	// async verify(address: `0x${string}`) {
-	// 	return (await this.address()) === address
-	// }
+	async verify(address: `0x${string}`) {
+		return (await this.address()) === address
+	}
 
-	// hash(message = this.message) {
-	// 	if (!message) throw new Error('Message not initialized')
+	hash(message = this.message) {
+		if (!message) throw new Error('Message not initialized')
 
-	// 	return hashTypedData({
-	// 		domain: this.domain,
-	// 		types: this.types,
-	// 		primaryType: this.primaryType,
-	// 		message
-	// 	})
-	// }
+		return hashTypedData({
+			domain: this.domain,
+			types: this.types,
+			primaryType: this.primaryType,
+			message
+		})
+	}
 }
