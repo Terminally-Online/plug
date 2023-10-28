@@ -1,6 +1,6 @@
 import hre from 'hardhat'
 
-import { Framework } from '@/framework'
+import { Framework } from '@/core/framework'
 
 const RUN = false
 
@@ -39,7 +39,6 @@ export default async function () {
 
 	// * Create the util with the debug types.
 	const util = new Framework(name, version, 1, DEBUG_TYPES, contract)
-	//    ^?
 
 	// @ts-expect-error - SHOULD_FAIL is not a valid type.
 	await util.sign(owner, 'SHOULD_FAIL', {

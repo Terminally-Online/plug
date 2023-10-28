@@ -7,9 +7,9 @@ import {
 	WalletClient
 } from 'viem'
 
-import { Intent } from '@/intent'
+import { Intent } from '@/core/intent'
 
-import { TypedDataToKeysWithSignedPair } from './lib/types'
+import { TypedDataToKeysWithSignedPair } from '../lib/types'
 
 export class Framework<
 	C extends WalletClient,

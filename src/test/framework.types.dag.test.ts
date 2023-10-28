@@ -1,6 +1,6 @@
 import hre from 'hardhat'
 
-import { Framework } from '@/framework'
+import { Framework } from '@/core/framework'
 
 const RUN = false
 

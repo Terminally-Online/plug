@@ -1,8 +1,49 @@
 {
 	"name": "@nftchance/emporium-core",
+	"license": "BUSL-1.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nftchance/emporium-core.git"
+	},
+	"keywords": [
+		"nftchance",
+		"eip712",
+		"typehash",
+		"signatures",
+		"eth",
+		"ethereum",
+		"solidity",
+		"crypto",
+		"intent",
+		"intents",
+		"emporium"
+	],
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"files": [
+		"src",
+		"dist",
+        "hardhat.config.ts"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
-		"build": "pnpm tsc && pnpm hardhat compile && mkdir -p ./dist && cp -r ./src/contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
-		"lint": "tsc --noEmit"
+		"__BUILD__": "",
+		"prebuild": "pnpm lint && rm -rf ./dist",
+		"build": "pnpm tsup && pnpm hardhat compile",
+		"postbuild": "mkdir -p ./dist && cp -r ./src/contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
+		"__LINT__": "",
+		"lint": "tsc",
+		"__DEV__": "",
+		"dev": "pnpm tsup --watch"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
@@ -22,6 +63,7 @@
 		"solidity-coverage": "^0.8.0",
 		"ts-node": "^10.9.1",
 		"tsconfig-paths": "^4.2.0",
+		"tsup": "^7.2.0",
 		"typescript": "~5.0.4",
 		"viem": "^1.15.1"
 	},
