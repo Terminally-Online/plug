@@ -1,6 +1,7 @@
 {
 	"name": "@nftchance/emporium-core",
 	"license": "BUSL-1.1",
+	"version": "0.0.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/nftchance/emporium-core.git"
@@ -30,7 +31,7 @@
 	"files": [
 		"src",
 		"dist",
-        "hardhat.config.ts"
+		"hardhat.config.ts"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -39,7 +40,6 @@
 		"__BUILD__": "",
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm tsup && pnpm hardhat compile",
-		"postbuild": "mkdir -p ./dist && cp -r ./src/contracts ./dist/contracts && cp -r artifacts ./dist/artifacts",
 		"__LINT__": "",
 		"lint": "tsc",
 		"__DEV__": "",
