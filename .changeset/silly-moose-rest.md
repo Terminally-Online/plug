@@ -1,5 +1,5 @@
 ---
-'@nftchance/emporium-core': path
+'@nftchance/emporium-core': patch
 ---
 
 feat: initial package
