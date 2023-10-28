@@ -1,0 +1,43 @@
+name: '📚 Publish'
+on:
+    push:
+        branches:
+            - 'main'
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: 'pnpm'
+
+            - name: 🔻 Install pnpm
+              run: npm i pnpm@latest -g
+
+            - name: 🗒️ Setup pnpm config
+              run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+
+            - name: ✨ Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: 📦 Build package
+              run: pnpm build
+
+            - name: 🚀 Create Release Pull Request or Publish
+              id: changesets
+              uses: changesets/action@v1
+              with:
+                  publish: pnpm ci:publish
+                  commit: 'feat: version release'
+                  title: 'feat: version release'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
