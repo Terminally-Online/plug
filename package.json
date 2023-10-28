@@ -1,6 +1,5 @@
 {
 	"name": "@nftchance/emporium-core",
-	"private": true,
 	"license": "BUSL-1.1",
 	"version": "0.0.0",
 	"repository": {
@@ -35,7 +34,7 @@
 		"hardhat.config.ts"
 	],
 	"publishConfig": {
-		"access": "restricted"
+		"access": "public"
 	},
 	"scripts": {
 		"__BUILD__": "",
