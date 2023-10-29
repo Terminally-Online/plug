@@ -4,3 +4,6 @@
 [submodule "packages/types"]
 	path = packages/types
 	url = https://github.com/nftchance/emporium-types
+[submodule "packages/docs"]
+	path = packages/docs
+	url = https://github.com/nftchance/emporium-docs
