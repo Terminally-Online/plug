@@ -32,12 +32,6 @@ const TYPES = {
 
 :::
 
-With our types declared we can see that we have:
-
--   a `Mail` type that has a `from` and `to` field that are both of type `Person` and a `contents` field that is of type `string`.
--   The `Person` type has a `name` field that is of type `string` and a `wallet` field that is of type `address`.
--   Finally, we have a `SignedMail` type that has a `mail` field that is of type `Mail` and a `signature` field that is of type `bytes`.
-
 Of note here is that the `SignedMail` type is a nested `Mail` type with an additional `signature` field. This is the `SignedPair` that we are looking for. This signals:
 
 -   `Mail` is the signed message.
@@ -97,4 +91,27 @@ type SignedMail = {
 
 :::
 
-Due to the simple architecture in place you can immediately pop over to `Emporium` with the `SignedMail` type and start using it onchain to verified the signed `Mail` contents of your ecosystem.
+Due to the simple architecture in place you can immediately pop over to `Emporium` with the `SignedMail` type and start using it onchain with:
+
+::: code-group
+
+```solidity [Types.sol]
+function getSignedMailSigner(
+    SignedMail calldata $signedMail,
+    bytes32 $domainHash
+) public view returns (address) {
+    return getMailHash($signedMail.mail, $domainHash).recover(
+        $signedMail.signature
+    );
+}
+```
+
+:::
+
+With just these few lines of `Solidity` we now have the ability to:
+
+-   Securely send and receive Mail.
+-   Verify that the Mail was sent by the `Signer`.
+-   Verify that the Mail has not been tampered with.
+
+While this is a simplified example, it is important to understand that this is the foundation of the `Emporium` framework. With this simple architecture, the framework can be used to build complex protocols that are secure, modular, and easy to use.
