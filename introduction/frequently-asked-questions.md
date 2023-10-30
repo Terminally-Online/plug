@@ -22,6 +22,7 @@ Getting started with Emporium is quite simple however it is understandable that 
 -   [Is there a fee?](#is-there-a-fee)
 -   [Do I have to use a specific API or Relay?](#do-i-have-to-use-a-specific-api-or-relay)
 -   [Doesn't this just make my protocol more complex?](#doesnt-this-just-make-my-protocol-more-complex)
+-   [Does my protocol still support native transactions?](#does-my-protocol-still-support-native-transactions)
 
 ::: info
 
@@ -62,3 +63,7 @@ No, in fact using your own is highly recommended! While there is a first-party A
 ## Doesn't this just make my protocol more complex?
 
 Quite the opposite! By implementing Emporium you are able to remove the complexity of the EVM from your protocol and provide your users with a much more performant experience. This allows you to focus on the core functionality of your protocol and not worry about designing around the limitations of the EVM.
+
+## Does my protocol still support native transactions?
+
+Yes! Emporium is designed to be a drop-in solution that allows you to support both native and declarative transactions. This allows you to support the best of both worlds and provide your users with the best experience possible.

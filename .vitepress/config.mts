@@ -20,6 +20,10 @@ export default defineConfig({
 						link: '/introduction/why-emporium'
 					},
 					{
+						text: 'If This, Then That',
+						link: '/introduction/if-this-then-that'
+					},
+					{
 						text: 'Getting Started',
 						link: '/introduction/getting-started'
 					},
@@ -31,26 +35,20 @@ export default defineConfig({
 			},
 			{
 				text: 'Intents',
+				collapsed: false,
 				items: [
-					{ text: 'Introduction', link: '/intents/introduction' },
 					{
-						text: 'Imperative Transactions',
-						link: '/intents/imperative-transactions'
-					},
-					{
-						text: 'Declarative Messages',
-						link: '/intents/declarative-messages'
-					},
-					{
-						text: 'Permissions',
-						link: '/intents/permissions',
+						text: 'Introduction',
+						link: '/intents/introduction',
 						items: [
 							{
-								text: 'Counterfactual',
-								link: '/intents/counterfactual'
+								text: 'Imperative Transactions',
+								link: '/intents/imperative-transactions'
 							},
-							{ text: 'Revocation', link: '/intents/revocation' },
-							{ text: 'Caveats', link: '/intents/caveats' }
+							{
+								text: 'Declarative Messages',
+								link: '/intents/declarative-messages'
+							}
 						]
 					},
 					{
@@ -66,16 +64,16 @@ export default defineConfig({
 								link: '/intents/execution-paths/multi-dimensional'
 							},
 							{
-								text: 'Channels',
-								link: '/intents/execution-paths/channels'
-							},
-							{
 								text: 'Native Transactions',
 								link: '/intents/execution-paths/native-transactions'
 							},
 							{
 								text: 'Meta-Transactions',
 								link: '/intents/execution-paths/meta-transactions'
+							},
+							{
+								text: 'Channels',
+								link: '/intents/execution-paths/channels'
 							}
 						]
 					}
@@ -83,6 +81,7 @@ export default defineConfig({
 			},
 			{
 				text: 'Types & Decoders',
+				collapsed: true,
 				items: [
 					{
 						text: 'EIP-712',
@@ -203,23 +202,22 @@ export default defineConfig({
 				]
 			},
 			{
-				text: 'Core',
+				text: 'Core Abstracts',
+				collapsed: true,
 				items: [
-					{
-						text: 'Framework',
-						link: '/core/framework',
-						items: [
-							{ text: 'invoke', link: '/core/framework/invoke' },
-							{
-								text: 'contractInvoke',
-								link: '/core/framework/contract-invoke'
-							}
-						]
-					},
-					{ text: 'Abstracts', link: '/core/abstracts' },
 					{
 						text: 'Enforcers',
 						link: '/core/enforcers',
+						items: [
+							{
+								text: 'ThresholdEnforcer',
+								link: '/core/enforcers/threshold-enforcer'
+							}
+						]
+					},
+					{
+						text: 'CaveatEnforcer',
+						link: '/core/framework',
 						items: [
 							{
 								text: 'enforceCaveat',
@@ -227,7 +225,60 @@ export default defineConfig({
 							}
 						]
 					},
-					{ text: 'Executors', link: '/core/executors' }
+					{
+						text: 'Framework',
+						link: '/core/framework',
+						items: [
+							{
+								text: 'contractInvoke',
+								link: '/core/framework/contract-invoke'
+							},
+							{
+								text: 'invoke',
+								link: '/core/framework/invoke'
+							}
+						]
+					}
+				]
+			},
+			{
+				text: 'Instances',
+				collapsed: true,
+				items: [
+					{
+						text: 'Enforcers',
+						link: '/instances/enforcers',
+						items: [
+							{
+								text: 'Allowed Methods',
+								link: '/instances/enforcers/allowed-methods'
+							},
+							{
+								text: 'Block Number',
+								link: '/instances/enforcers/block-number'
+							},
+							{
+								text: 'Timestamp',
+								link: '/instances/enforcers/timestamp'
+							},
+							{
+								text: 'Schedule Windows',
+								link: '/instances/enforcers/schedule-windows'
+							},
+							{
+								text: 'Limited Calls',
+								link: '/instances/enforcers/limited-calls'
+							},
+							{
+								text: 'ERC20Allowance',
+								link: '/instances/enforcers/erc20-allowance'
+							},
+							{
+								text: 'Revocation',
+								link: '/instances/enforcers/revocation'
+							}
+						]
+					}
 				]
 			}
 		],
@@ -238,7 +289,7 @@ export default defineConfig({
 
 		editLink: {
 			pattern:
-				'https://github.com/nftchance/emporium/edit/main/packages/docs/:path'
+				'https://github.com/nftchance/emporium-docs/edit/master/:path'
 		},
 
 		search: {
