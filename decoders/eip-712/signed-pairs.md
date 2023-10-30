@@ -13,7 +13,7 @@ Let's look at a simple example where we have `Mail` that we want to send from `A
 ::: code-group
 
 ```typescript [constants.ts]
-const TYPES = {
+export const types = {
 	Mail: [
 		{ name: 'from', type: 'Person' },
 		{ name: 'to', type: 'Person' },

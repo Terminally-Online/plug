@@ -21,7 +21,7 @@ You can learn about the rationale behind the project in the [Why Emporium](/intr
 
 ## Installation
 
-To get up and running with Emporium, you'll need to install the core protocol and the interface by opening a terminal and running the following command with your package manager of choice:
+To get up and running with `Emporium`, you'll need to install the core protocol and the interface by opening a terminal and running the following command with your package manager of your choice:
 
 ::: code-group
 

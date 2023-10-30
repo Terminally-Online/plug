@@ -94,6 +94,10 @@ export default defineConfig({
 						]
 					},
 					{
+						text: 'Automated Generation',
+						link: '/decoders/automated-generation'
+					},
+					{
 						text: 'Base Types',
 						link: '/decoders/base-types',
 						items: [
@@ -186,16 +190,6 @@ export default defineConfig({
 							{
 								text: 'getSignedIntentSigner',
 								link: '/decoders/signer-getters/get-signed-intent-signer'
-							}
-						]
-					},
-					{
-						text: 'Automated Generation',
-						link: '/decoders/automated-generation',
-						items: [
-							{
-								text: 'Overloads',
-								link: '/decoders/automated-generation/overloads'
 							}
 						]
 					}

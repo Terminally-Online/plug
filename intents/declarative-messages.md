@@ -25,13 +25,11 @@ Declarative messages offer a level of flexibility that is unmatched by their imp
 
 For instance, in a multi-signature wallet, a transaction could be executed only if a certain number of authorized signatures are gathered.
 
-More interestingly, imagine that an employee is paid in an ERC20 that fluctuates in price, but receives compensation in USD. A declarative message could be used to automatically convert the ERC20 to USD at the time of payment without the employee having to do anything.
+More interestingly, imagine that an employee is paid in an ERC20 that fluctuates in price, but compensation in USD denomenation. While they earn $10 USD they may earn 5000 $TOKEN. A declarative message could be used to automatically convert the defined USD amount to the ERC20 aprice at the time of payment without the employee having to do anything.
 
 ### Conditional Execution
 
-The hallmark of a declarative message is that it sets conditions for execution. Think of it like an "_if-then_" statement in programming. If all specified conditions are met, then the transaction will execute.
-
-Of course, if a bad actor was to run the declared transaction before the conditions were met, the transaction would fail.
+The hallmark of a declarative message is that it sets conditions for execution. Think of it like an "_If, Then_" statement. If all specified conditions are met, then the transaction will execute. Of course, if a bad actor was to run the declared transaction before the conditions were met, the transaction would fail because the '_If_' declared has not been satisfied.
 
 ### Compositionality
 
