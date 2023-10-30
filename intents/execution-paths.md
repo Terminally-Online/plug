@@ -28,3 +28,19 @@ Extending the concept of [Single Lane Nonces](/intents/execution-paths/single-la
 TODO: This section is under construction.
 
 :::
+
+## [Native Transactions](/intents/execution-paths/native-transactions)
+
+::: warning
+
+TODO: This section is under construction.
+
+:::
+
+## [Meta-Transactions](/intents/execution-paths/meta-transactions)
+
+::: warning
+
+TODO: This section is under construction.
+
+:::

@@ -68,6 +68,14 @@ export default defineConfig({
 							{
 								text: 'Channels',
 								link: '/intents/execution-paths/channels'
+							},
+							{
+								text: 'Native Transactions',
+								link: '/intents/execution-paths/native-transactions'
+							},
+							{
+								text: 'Meta-Transactions',
+								link: '/intents/execution-paths/meta-transactions'
 							}
 						]
 					}
@@ -258,5 +266,9 @@ export default defineConfig({
 				]
 			]
 		}
+	},
+
+	markdown: {
+		lineNumbers: true
 	}
 })

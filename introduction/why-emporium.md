@@ -21,37 +21,25 @@ Data trends reveal that wasted gas on failed transactions and inefficiencies is 
 
 Even after a decade there is still no battle-tested plug-and-play option. Instead, developers and blockchain users have been left to deal with:
 
----
-
 ### Authorization
 
 Traditionally, permissions are handled on a contract-by-contract basis. This leads to a fragmented and inconsistent security model where each smart contract has its unique authorization mechanism, making it cumbersome to manage permissions across multiple contracts.
-
----
 
 ### Ordering
 
 In the classic EVM, transactions are processed sequentially. This design imposes severe limitations on transaction throughput and creates bottlenecks, particularly during network congestion.
 
----
-
 ### Anticipatory Costs
 
 Users are required to pay transaction costs upfront. This system is inefficient because costs are incurred before knowing whether a transaction will yield any value, effectively making every transaction a gamble.
-
----
 
 ### Scalability
 
 Managing permissions often involves declaring them for each reference or interaction, leading to a bloated and inefficient system. This makes it challenging to scale the protocol or system as new features and interactions are added.
 
----
-
 ### Unbounded Transactions
 
 Once a transaction is submitted, there is no built-in mechanism to protect against changes in contract state or network conditions that might affect the transaction before it gets confirmed. This leaves users vulnerable to smart contract vulnerabilities, front-running, and other forms of transaction manipulation.
-
----
 
 These issues aren't just theoretical—they manifest as real bottlenecks that hamper adoption and user experience. The need for a solution has never been more pressing.
 

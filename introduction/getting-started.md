@@ -54,17 +54,15 @@ Integrating `Emporium` into your protocol is as simple as inheriting from the `F
 
 pragma solidity ^0.8.19;
 
-import { Framework } from '@nftchance/emporium-core/src/contracts/abstracts/Framework.sol'
+import { Framework } from '@nftchance/emporium-core/src/contracts/abstracts/Framework.sol'  // [!code focus:2]
 
-contract PeerToPeerBridge is Framework {
+contract PeerToPeerBridge is Framework { // [!code focus]
     constructor(
-        string memory $name,
+        string memory $name, // [!code focus:2]
         string memory $version
     )
-        Framework($name, $version)
+        Framework($name, $version) // [!code focus]
     { }
-
-    // ...
 }
 ```
 
@@ -94,6 +92,7 @@ const framework = new Framework(
 	contract
 )
 
+// [!code focus:7]
 const signedPermission = await framework.sign(owner, 'Permission', {
 	delegate: getAddress(owner.account.address),
 	authority: bytes32(0),
