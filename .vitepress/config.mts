@@ -90,12 +90,12 @@ export default defineConfig({
 							{
 								text: 'Signed Pairs',
 								link: '/decoders/eip-712/signed-pairs'
+							},
+							{
+								text: 'Automated Generation',
+								link: '/decoders/eip-712/automated-generation'
 							}
 						]
-					},
-					{
-						text: 'Automated Generation',
-						link: '/decoders/automated-generation'
 					},
 					{
 						text: 'Base Types',

@@ -2,10 +2,10 @@
 
 The `Emporium` framework is designed to be modular and flexible for two key reasons:
 
-1. The protocol is not prescriptive with your needs or implementation. You can use it to build whatever you want without having to deal with the consequences of choices I made for you.
+1. The protocol is not prescriptive with your needs. You can use it to build whatever you want without having to deal with the consequences of choices I made for you.
 2. The framework is in `early alpha` and lives in highly iterative environment. At this time, forward progress and improvements are prioritized over API/interface stability.
 
-Typically when writing a new protocol it is not abnormal to take many months from start to finish. Even to get ready for an audit a team of developers will often spend weeks or months writing tests and documentation. This is a lot of time and effort to spend on something that you may not even be sure will work or get users.
+Typically when writing a new protocol it is not abnormal to take many months from start to finish. Even to get ready for an audit a team of developers will often spend weeks or months writing tests and documentation. **This is a lot of time and effort to spend on something that you may not even be sure will work or get users.**
 
 ## The Paradox of Blockchain Development
 
