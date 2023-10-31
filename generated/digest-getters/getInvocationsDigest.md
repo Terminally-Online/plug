@@ -1,14 +1,14 @@
 # getInvocationsDigest
         
-Encode [Invocations](/base-types/Invocations) data into a digest hash.
+Encode [Invocations](/generated/base-types/Invocations) data into a digest hash that has been localized to the domain of the contract.
 
 ## Parameters
 
-- `$input` : [Invocations](/base-types/Invocations) : The `Invocations` data to encode.
+- `$input` : [Invocations](/generated/base-types/Invocations) : The `Invocations` data to encode.
 
 ## Returns
 
-- `$digest` : `bytes32` : The digest hash of the encoded [Invocations](/base-types/Invocations) data.
+- `$digest` : `bytes32` : The digest hash of the encoded [Invocations](/generated/base-types/Invocations) data.
 
 ## Onchain Implementation
 

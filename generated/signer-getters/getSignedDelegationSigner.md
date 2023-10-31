@@ -1,14 +1,14 @@
 # getSignedDelegationSigner
 
-Get the signer of a [SignedDelegation](/base-types/SignedDelegation) data type.
+Get the signer of a [SignedDelegation](/generated/base-types/SignedDelegation) data type.
 
 ## Parameters
 
-- `$input` : [SignedDelegation](/base-types/SignedDelegation) : The `SignedDelegation` data to encode.
+- `$input` : [SignedDelegation](/generated/base-types/SignedDelegation) : The `SignedDelegation` data to encode.
 
 ## Returns
 
-- `$signer` : `address` : The signer of the [SignedDelegation](/base-types/SignedDelegation) data.
+- `$signer` : `address` : The signer of the [SignedDelegation](/generated/base-types/SignedDelegation) data.
 
 ## Onchain Implementation
 

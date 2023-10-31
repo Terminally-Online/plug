@@ -1,14 +1,14 @@
 # getSignedInvocationsSigner
 
-Get the signer of a [SignedInvocations](/base-types/SignedInvocations) data type.
+Get the signer of a [SignedInvocations](/generated/base-types/SignedInvocations) data type.
 
 ## Parameters
 
-- `$input` : [SignedInvocations](/base-types/SignedInvocations) : The `SignedInvocations` data to encode.
+- `$input` : [SignedInvocations](/generated/base-types/SignedInvocations) : The `SignedInvocations` data to encode.
 
 ## Returns
 
-- `$signer` : `address` : The signer of the [SignedInvocations](/base-types/SignedInvocations) data.
+- `$signer` : `address` : The signer of the [SignedInvocations](/generated/base-types/SignedInvocations) data.
 
 ## Onchain Implementation
 

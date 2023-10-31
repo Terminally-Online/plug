@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@nftchance/emporium-types':
-    specifier: ^0.3.12
-    version: 0.3.12(esbuild@0.18.20)
+    specifier: ^0.3.13
+    version: 0.3.13(esbuild@0.18.20)
   fs-extra:
     specifier: ^11.1.1
     version: 11.1.1
@@ -562,8 +562,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
-  /@nftchance/emporium-types@0.3.12(esbuild@0.18.20):
-    resolution: {integrity: sha512-lLgwVW6GKN+oLnbrlSa7PWbLObfpUbtoJfsjoAbA5NqETg8Miwk2YBeMW9nZnBl5Q21X6o47ZxaVB+52c/w6iQ==}
+  /@nftchance/emporium-types@0.3.13(esbuild@0.18.20):
+    resolution: {integrity: sha512-1rpQ22I4CjQVpu0DSBBoefo8V3Jpwwq6q8rYIxFIosVcHRXTHx2Vg/XBBXwz7dD7kXIuhUkFLs79k3rhaDJPGQ==}
     hasBin: true
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.2.1(prettier@3.0.3)

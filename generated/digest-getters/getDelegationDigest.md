@@ -1,14 +1,14 @@
 # getDelegationDigest
         
-Encode [Delegation](/base-types/Delegation) data into a digest hash.
+Encode [Delegation](/generated/base-types/Delegation) data into a digest hash that has been localized to the domain of the contract.
 
 ## Parameters
 
-- `$input` : [Delegation](/base-types/Delegation) : The `Delegation` data to encode.
+- `$input` : [Delegation](/generated/base-types/Delegation) : The `Delegation` data to encode.
 
 ## Returns
 
-- `$digest` : `bytes32` : The digest hash of the encoded [Delegation](/base-types/Delegation) data.
+- `$digest` : `bytes32` : The digest hash of the encoded [Delegation](/generated/base-types/Delegation) data.
 
 ## Onchain Implementation
 
