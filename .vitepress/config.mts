@@ -1,5 +1,28 @@
 import { defineConfig } from 'vitepress'
 
+import { default as fse } from 'fs-extra'
+import { resolve } from 'pathe'
+
+const rootDir = resolve(process.cwd())
+
+// * Get the generated files in a directory and create the array of items.
+function getItems(directory: string) {
+	const directoryPath = resolve(rootDir, directory)
+	const files = fse.readdirSync(directoryPath)
+
+	return files.map(file => {
+		const name = file.replace('.md', '')
+		const link = `${directory}/${name}`
+
+		console.log(link)
+
+		return {
+			text: name,
+			link: link.replace('./', '')
+		}
+	})
+}
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
 	title: 'Emporium',
@@ -80,7 +103,7 @@ export default defineConfig({
 				]
 			},
 			{
-				text: 'Types & Decoders',
+				text: 'Types and Decoders',
 				collapsed: true,
 				items: [
 					{
@@ -100,98 +123,22 @@ export default defineConfig({
 					{
 						text: 'Base Types',
 						link: '/decoders/base-types',
-						items: [
-							{
-								text: 'EIP712Domain',
-								link: '/decoders/base-types/eip-712-domain'
-							},
-							{
-								text: 'Caveat',
-								link: '/decoders/base-types/caveat'
-							},
-							{
-								text: 'Permissions',
-								link: '/decoders/base-types/permissions'
-							},
-							{
-								text: 'SignedPermissions',
-								link: '/decoders/base-types/signed-permissions'
-							},
-							{
-								text: 'Transaction',
-								link: '/decoders/base-types/transaction'
-							},
-							{
-								text: 'Intent',
-								link: '/decoders/base-types/intent'
-							},
-							{
-								text: 'SignedIntent',
-								link: '/decoders/base-types/signed-intent'
-							}
-						]
+						items: getItems('./generated/base-types')
 					},
 					{
-						text: 'Packet Hash Getters',
-						link: '/decoders/packet-hash-getters',
-						items: [
-							{
-								text: 'getEIP712DomainHash',
-								link: '/decoders/packet-hash-getters/get-eip-712-domain-packet-hash'
-							},
-							{
-								text: 'getCaveatHash',
-								link: '/decoders/packet-hash-getters/get-caveat-packet-hash'
-							},
-							{
-								text: 'getPermissionsHash',
-								link: '/decoders/packet-hash-getters/get-permissions-packet-hash'
-							},
-							{
-								text: 'getSignedPermissionsHash',
-								link: '/decoders/packet-hash-getters/get-signed-permissions-packet-hash'
-							},
-							{
-								text: 'getTransactionHash',
-								link: '/decoders/packet-hash-getters/get-transaction-packet-hash'
-							},
-							{
-								text: 'getIntentHash',
-								link: '/decoders/packet-hash-getters/get-intent-packet-hash'
-							},
-							{
-								text: 'getSignedIntentHash',
-								link: '/decoders/packet-hash-getters/get-signed-intent-packet-hash'
-							}
-						]
+						text: 'Hash Getters',
+						link: '/decoders/hash-getters',
+						items: getItems('./generated/hash-getters')
 					},
 					{
 						text: 'Digest Getters',
 						link: '/decoders/digest-getters',
-						items: [
-							{
-								text: 'getPermissionsDigest',
-								link: '/decoders/digest-getters/get-permissions-digest'
-							},
-							{
-								text: 'getIntentDigest',
-								link: '/decoders/digest-getters/get-intent-digest'
-							}
-						]
+						items: getItems('./generated/digest-getters')
 					},
 					{
 						text: 'Signer Getters',
 						link: '/decoders/signer-getters',
-						items: [
-							{
-								text: 'getSignedPermissionsSigner',
-								link: '/decoders/signer-getters/get-signed-permissions-signer'
-							},
-							{
-								text: 'getSignedIntentSigner',
-								link: '/decoders/signer-getters/get-signed-intent-signer'
-							}
-						]
+						items: getItems('./generated/signer-getters')
 					}
 				]
 			},
@@ -200,22 +147,12 @@ export default defineConfig({
 				collapsed: true,
 				items: [
 					{
-						text: 'Enforcers',
-						link: '/core/enforcers',
-						items: [
-							{
-								text: 'ThresholdEnforcer',
-								link: '/core/enforcers/threshold-enforcer'
-							}
-						]
-					},
-					{
 						text: 'CaveatEnforcer',
-						link: '/core/framework',
+						link: '/core/caveat-enforcer',
 						items: [
 							{
 								text: 'enforceCaveat',
-								link: '/core/enforcers/enforce-caveat'
+								link: '/core/caveat-enforcer/enforce-caveat'
 							}
 						]
 					},
@@ -236,7 +173,7 @@ export default defineConfig({
 				]
 			},
 			{
-				text: 'Instances',
+				text: 'Deployable Instances',
 				collapsed: true,
 				items: [
 					{

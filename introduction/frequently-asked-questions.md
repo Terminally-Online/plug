@@ -15,14 +15,15 @@ head:
 
 Getting started with Emporium is quite simple however it is understandable that you may have some questions. This page will attempt to answer some of the most common questions that you may have.
 
--   [Why would I want my protocol to support declarative transactions?](#why-would-i-want-my-protocol-to-support-declarative-transactions)
--   [Can I use Emporium with smart contracts that are already deployed?](#can-i-use-emporium-with-smart-contracts-that-are-already-deployed)
--   [If I want basic support do I need to implement custom types?](#if-i-want-basic-support-do-i-need-to-implement-custom-types)
+-   [Why would I want my protocol to support declarative transactions?](#why-would-i-want-declarative-transactions)
+-   [Can I use Emporium with smart contracts that are already deployed?](#can-i-use-emporium-with-protocols-already-deployed)
+-   [If I want basic support do I need to implement custom types?](#if-i-want-basic-support-do-i-need-custom-types)
 -   [Do I need to deploy my own set of Enforcers?](#do-i-need-to-deploy-my-own-set-of-enforcers)
 -   [Is there a fee?](#is-there-a-fee)
 -   [Do I have to use a specific API or Relay?](#do-i-have-to-use-a-specific-api-or-relay)
--   [Doesn't this just make my protocol more complex?](#doesnt-this-just-make-my-protocol-more-complex)
+-   [Doesn't this just make my protocol more complex?](#doesn-t-this-just-make-my-protocol-more-complex)
 -   [Does my protocol still support native transactions?](#does-my-protocol-still-support-native-transactions)
+-   [Bro... These docs are huge! Can I get a TL;DR?](#bro-these-docs-are-huge-can-i-get-a-tl-dr)
 
 ::: info
 
@@ -67,3 +68,21 @@ Quite the opposite! By implementing Emporium you are able to remove the complexi
 ## Does my protocol still support native transactions?
 
 Yes! Emporium is designed to be a drop-in solution that allows you to support both native and declarative transactions. This allows you to support the best of both worlds and provide your users with the best experience possible.
+
+## Bro... These docs are huge! Can I get a TL;DR?
+
+Sure! Here is a quick summary of the most important parts of the Emporium framework:
+
+-   **Declarative Transactions** - Emporium allows you to break free of the limitations of the EVM and provide your users with a much more performant experience.
+
+-   **Permission-Stack** - Emporium allows you to build a permission-stack that is as simple or complex as you need it to be. This allows you to build a permission that is as simple as a single signature or as complex as a multi-signature with a time-lock.
+
+-   **Enforcers** - Emporium allows you to build a permission-stack that is as simple or complex as you need it to be. This allows you to build a permission that is as simple as a single signature or as complex as a multi-signature with a time-lock.
+
+That's it! If you are looking for more information, please check out the rest of the documentation.
+
+::: tip
+
+If you are still looking for more information, please [reach out for help](https://twitter.com/nftchance). I would love to help you get started and moving in the right direction!
+
+:::
