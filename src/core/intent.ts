@@ -1,4 +1,4 @@
-import { TypedData, TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedData, TypedDataDomain, TypedDataToPrimitiveTypes } from 'abitype'
 
 import {
 	GetTypedDataDomain,
@@ -36,7 +36,15 @@ export class Intent<
 		return this.primaryType.toLowerCase()
 	}
 
-	async init(client: C) {
+	// * Sign and initialize an intent in-framework.
+	// ! This is only used when you have access to a `client` that can sign
+	//   the messages such as a frontend. For an API, you would not
+	//   consume this method in the Framework consumer or anywhere else.
+	async init<
+		P extends {
+			client: C
+		}
+	>({ client }: P) {
 		if (this.intent) return this
 
 		this.client = client
@@ -60,11 +68,20 @@ export class Intent<
 		return this
 	}
 
-	async address(signature = this.intent?.signature) {
+	// * Recover the address from the message and signature of the intent.
+	async address<
+		P extends Partial<{
+			domain: TypedDataDomain
+			signature: `0x${string}`
+		}>
+	>({ domain, signature }: P = {} as P) {
+		domain = domain ?? this.domain
+		signature = signature ?? this.intent?.signature
+
 		if (!signature) throw new Error('Signature not initialized')
 
 		return await recoverTypedDataAddress({
-			domain: this.domain,
+			domain,
 			types: this.types,
 			primaryType: this.primaryType,
 			message: this.message,
@@ -72,15 +89,30 @@ export class Intent<
 		})
 	}
 
-	async verify(address: `0x${string}`) {
-		return (await this.address()) === address
+	// * Confirm the address of the message of intent.
+	async verify<
+		P extends Partial<{
+			domain: TypedDataDomain
+			signature: `0x${string}`
+		}> & {
+			address: `0x${string}`
+		}
+	>({ domain, address, signature }: P) {
+		return (await this.address({ domain, signature })) === address
 	}
 
-	hash(message = this.message) {
-		if (!message) throw new Error('Message not initialized')
+	// * Hash the message of intent.
+	hash<
+		P extends Partial<{
+			domain: TypedDataDomain
+			message: U
+		}>
+	>({ domain, message }: P = {} as P) {
+		domain = domain ?? this.domain
+		message = message ?? this.message
 
 		return hashTypedData({
-			domain: this.domain,
+			domain,
 			types: this.types,
 			primaryType: this.primaryType,
 			message

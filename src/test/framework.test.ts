@@ -47,10 +47,13 @@ describe('Framework', function () {
 
 		// * Make sure the intent signer matched the recovered signer.
 		expect(getAddress(owner.account.address)).to.eq(
-			await signedIntent.address()
+			await signedIntent.address({})
 		)
-		expect(await signedIntent.verify(getAddress(owner.account.address))).to
-			.be.true
+		expect(
+			await signedIntent.verify({
+				address: getAddress(owner.account.address)
+			})
+		).to.be.true
 		expect(getAddress(owner.account.address)).to.eq(
 			await contract.read.getSignedDelegationSigner([SignedDelegation])
 		)

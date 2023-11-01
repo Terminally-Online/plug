@@ -1,4 +1,4 @@
-import { TypedData, TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedData, TypedDataDomain, TypedDataToPrimitiveTypes } from 'abitype'
 
 import {
 	GetContractReturnType,
@@ -43,16 +43,14 @@ export class Framework<
 		intentType: TK extends string
 			? GetTypedDataPrimaryType<T, TK> & K
 			: never,
-		intent: TypedDataToPrimitiveTypes<T>[K]
+		intent: TypedDataToPrimitiveTypes<T>[K],
+		domain?: TypedDataDomain
 	) {
+		domain = domain || this.info?.domain
+
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent<C, T, K>(
-			this.info.domain,
-			this.info.types,
-			intentType,
-			intent
-		)
+		return new Intent<C, T, K>(domain, this.info.types, intentType, intent)
 	}
 
 	async sign<TK extends K>(
@@ -64,12 +62,14 @@ export class Framework<
 		intentType: TK extends string
 			? GetTypedDataPrimaryType<T, TK> & K
 			: never,
-		intent: TypedDataToPrimitiveTypes<T>[TK]
+		intent: TypedDataToPrimitiveTypes<T>[TK],
+		domain?: TypedDataDomain
 	) {
 		// * Build the intent and initialize it.
 		return (await this.build(
 			intentType,
-			intent as TypedDataToPrimitiveTypes<T>[K]
-		).init(client)) as Intent<C, T, TK>
+			intent as TypedDataToPrimitiveTypes<T>[K],
+			domain
+		).init({ client })) as Intent<C, T, TK>
 	}
 }

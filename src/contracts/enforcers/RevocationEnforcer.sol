@@ -51,7 +51,7 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	 * @param $signedDelegation The signed delegation to revoke.
 	 * @param $domainHash The domain hash of the delegation.
 	 */
-	function revokeDelegation(
+	function revoke(
 		SignedDelegation calldata $signedDelegation,
 		bytes32 $domainHash
 	) public {
