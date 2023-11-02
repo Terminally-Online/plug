@@ -1,4 +1,4 @@
-import deploy, { name, version } from '@/lib/functions/hardhat'
+import deploy, { name, version } from '../src/lib/functions/hardhat'
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'

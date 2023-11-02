@@ -20,7 +20,7 @@ export type TypedDataToKeysWithSignedPair<T extends TypedData> =
 			never
 		>
 
-// * Turn an intent object into the expected onchain shape of the 
+// * Turn an intent object into the expected onchain shape of the
 //   SignedIntent pair output.
 export type TypedDataToSignedIntent<K, U> = Record<
 	'signature',

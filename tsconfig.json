@@ -18,14 +18,28 @@
 		"declarationMap": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@nftchance/emporium-types": [
-				"node_modules/@nftchance/emporium-types/"
+			"@/*": ["./src/*"],
+			"@nftchance/emporium-core/types": [
+				"./node_modules/@nftchance/emporium-types"
 			],
-			"@/*": ["./src/*"]
+			"@nftchance/emporium-core/types/*": [
+				"./node_modules/@nftchance/emporium-types"
+			]
 		},
-		"resolveJsonModule": true
+
+		"downlevelIteration": true,
+		"isolatedModules": true,
+		// "jsx": "react-jsx",
+		"lib": ["es2021", "dom"],
+		"noImplicitAny": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"resolveJsonModule": true,
+		"strictNullChecks": true,
+		"types": ["node"]
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "test"],
 	"files": ["src/index.ts", "hardhat.config.ts"],
-	"exclude": ["node_modules", "dist", "tsup.config.ts"]
+	"exclude": ["node_modules", "dist", "test", "tsup.config.ts"]
 }

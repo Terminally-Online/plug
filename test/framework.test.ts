@@ -1,9 +1,8 @@
 import deploy, { name, version } from '@/lib/functions/hardhat'
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
-import { encodeFunctionData, getAddress } from 'viem'
-
 import { expect } from 'chai'
+import { encodeFunctionData, getAddress } from 'viem'
 
 const BASE_AUTH =
 	'0x0000000000000000000000000000000000000000000000000000000000000000'
