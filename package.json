@@ -25,15 +25,15 @@
 	"exports": {
 		"index": {
 			"types": "./dist/index.d.ts",
-			"default": "./dist/index.mjs"
+			"default": "./dist/index.js"
 		},
 		"core/framework": {
 			"types": "./dist/core/framework.d.ts",
-			"default": "./dist/core/framework.mjs"
+			"default": "./dist/core/framework.js"
 		},
 		"core/intent": {
 			"types": "./dist/core/intent.d.ts",
-			"default": "./dist/core/intent.mjs"
+			"default": "./dist/core/intent.js"
 		},
 		"package.json": "./package.json"
 	},

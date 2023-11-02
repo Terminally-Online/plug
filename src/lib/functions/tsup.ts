@@ -21,11 +21,15 @@ export function getConfig({ dev, noExport, ...options }: GetConfig): Options {
 	// https://github.com/preconstruct/preconstruct
 	if (dev) {
 		const entry: string[] = options.entry ?? []
+		const formats = process.env.FORMAT
+			? [process.env.FORMAT as Format]
+			: ['esm' as Format, 'cjs' as Format]
+
 		return {
 			clean: true,
 			// Only need to generate one file with tsup for development since we will create links in `onSuccess`
 			entry: [entry[0] as string],
-			format: [(process.env.FORMAT as Format) ?? 'esm'],
+			format: formats,
 			silent: true,
 			async onSuccess() {
 				// remove all files in dist
@@ -55,11 +59,15 @@ export function getConfig({ dev, noExport, ...options }: GetConfig): Options {
 		}
 	}
 
+	const formats = process.env.FORMAT
+		? [process.env.FORMAT as Format]
+		: ['esm' as Format, 'cjs' as Format]
+
 	return {
 		bundle: true,
 		clean: true,
 		dts: true,
-		format: [(process.env.FORMAT as Format) ?? 'esm'],
+		format: formats,
 		splitting: true,
 		target: 'es2021',
 		async onSuccess() {
@@ -94,7 +102,7 @@ async function generateExports(entry: string[], noExport?: string[]) {
 		const distSourceFile = `${fileWithoutExtension.replace(
 			/^src\//g,
 			'./dist/'
-		)}.mjs`
+		)}.js`
 		const distTypesFile = `${fileWithoutExtension.replace(
 			/^src\//g,
 			'./dist/'
