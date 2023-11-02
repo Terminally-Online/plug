@@ -1,5 +1,11 @@
 # @nftchance/emporium-core
 
+## 0.1.1
+
+### Patch Changes
+
+-   c9a1ab5: fix: better package bundling
+
 ## 0.1.0
 
 ### Minor Changes
