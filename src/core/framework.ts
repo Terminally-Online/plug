@@ -26,12 +26,14 @@ export class Framework<
 		version: string,
 		chainId: number,
 		types: T,
-		public readonly contract: GetContractReturnType
+		public readonly contract: GetContractReturnType | `0x${string}`
 	) {
+		contract = typeof contract === 'string' ? contract : contract.address
+
 		this.info = {
 			domain: {
 				chainId,
-				verifyingContract: this.contract.address,
+				verifyingContract: contract,
 				name,
 				version
 			},
