@@ -45,14 +45,19 @@ export class Framework<
 		intentType: TK extends string
 			? GetTypedDataPrimaryType<T, TK> & K
 			: never,
-		intent: TypedDataToPrimitiveTypes<T>[K],
+		intent: TypedDataToPrimitiveTypes<T>[TK],
 		domain?: TypedDataDomain
 	) {
 		domain = domain || this.info?.domain
 
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent<C, T, K>(domain, this.info.types, intentType, intent)
+		return new Intent<C, T, K>(
+			domain,
+			this.info.types,
+			intentType,
+			intent as TypedDataToPrimitiveTypes<T>[K]
+		)
 	}
 
 	async sign<TK extends K>(

@@ -35,7 +35,7 @@ describe('Framework', function () {
 		} as const
 
 		// * Sign the delegation to make it executable.
-		const signedIntent = await util.sign(owner, 'Delegation', intent)
+		const signedIntent = await util.sign(owner, 'Permission', intent)
 
 		if (!signedIntent) expect.fail('Signed intent does not exist.')
 
@@ -71,7 +71,7 @@ describe('Framework', function () {
 		} as const
 
 		// * Sign the delegation to make it executable.
-		const signedDelegation = await util.sign(owner, 'Delegation', intent)
+		const signedDelegation = await util.sign(owner, 'Permission', intent)
 
 		if (!signedDelegation) expect.fail('Signed intent does not exist.')
 
@@ -89,7 +89,7 @@ describe('Framework', function () {
 			functionName: 'mutedEcho'
 		})
 
-		const signedInvocation = await util.sign(notOwner, 'Invocations', {
+		const signedInvocation = await util.sign(notOwner, 'Intents', {
 			replayProtection: {
 				nonce: 1n,
 				queue: 0n
@@ -124,7 +124,7 @@ describe('Framework', function () {
 			functionName: 'mutedEcho'
 		})
 
-		const signedInvocations = await util.sign(owner, 'Invocations', {
+		const signedInvocations = await util.sign(owner, 'Intents', {
 			replayProtection: {
 				nonce: 1n,
 				queue: 0n

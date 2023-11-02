@@ -85,7 +85,7 @@
 		"viem": "^1.15.1"
 	},
 	"dependencies": {
-		"@nftchance/emporium-types": "^0.3.8",
+		"@nftchance/emporium-types": "^0.4.6",
 		"abitype": "^0.10.1",
 		"dedent": "^1.5.1",
 		"execa": "^8.0.1",
