@@ -1,5 +1,11 @@
 # @nftchance/emporium-core
 
+## 0.1.4
+
+### Patch Changes
+
+-   827cea6: feat: optional contract inclusion
+
 ## 0.1.3
 
 ### Patch Changes
