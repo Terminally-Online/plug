@@ -29,17 +29,14 @@
 
 		"downlevelIteration": true,
 		"isolatedModules": true,
-		// "jsx": "react-jsx",
-		"lib": ["es2021", "dom"],
 		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 
 		"resolveJsonModule": true,
-		"strictNullChecks": true,
-		"types": ["node"]
+		"strictNullChecks": true
 	},
-	"include": ["src/**/*", "test"],
+	"include": ["src/**/*"],
 	"files": ["src/index.ts", "hardhat.config.ts"],
-	"exclude": ["node_modules", "dist", "test", "tsup.config.ts"]
+	"exclude": ["node_modules", "dist", "tsup.config.ts"]
 }
