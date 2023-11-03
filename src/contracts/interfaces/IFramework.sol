@@ -7,21 +7,19 @@ import {ITypes} from '../abstracts/Types.sol';
 
 interface IFramework is ITypes {
 	/**
-	 * @notice Allows a smart contract to submit a batch of invocations for processing,
+	 * @notice Allows a smart contract to submit a batch of intents for processing,
 	 *         allowing itself to be the delegate.
-	 * @param $invocation The batch of invocations to process.
-	 * @return success Whether the batch of invocations was successfully processed.
+	 * @param $intent The batch of intents to execute.
+	 * @return success Whether the batch of intent was successfully processed.
 	 */
-	function contractInvoke(
-		Invocation[] calldata $invocation
-	) external returns (bool);
+	function contractInvoke(Intent[] calldata $intent) external returns (bool);
 
 	/**
-	 * @notice Allows anyone to submit a batch of signed invocations for processing.
-	 * @param $signedInvocations The batch of signed invocations to process.
-	 * @return success Whether the batch of invocations was successfully processed.
+	 * @notice Allows anyone to submit a batch of signed intents for processing.
+	 * @param $signedIntents The batch of signed intents to process.
+	 * @return success Whether the batch of intents was successfully processed.
 	 */
 	function invoke(
-		SignedInvocations[] calldata $signedInvocations
+		SignedIntents[] calldata $signedIntents
 	) external returns (bool success);
 }

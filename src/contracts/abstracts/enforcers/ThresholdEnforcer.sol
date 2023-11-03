@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {CaveatEnforcer} from '../CaveatEnforcer.sol';
-import {BytesLib} from 'solidity-bytes-utils/contracts/BytesLib.sol';
+import {BytesLib} from '../../libraries/BytesLib.sol';
 
 abstract contract ThresholdEnforcer is CaveatEnforcer {
 	using BytesLib for bytes;
@@ -26,11 +26,11 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 		/// @dev Make sure the block number is before the threshold.
 		if (logicOperator == 0) {
 			if (blockThreshold <= _threshold())
-				revert('BlockNumberBeforeEnforcer:expired-delegation');
+				revert('BlockNumberBeforeEnforcer:expired-permission');
 		}
 		/// @dev Make sure the block number is after the threshold.
 		else if (blockThreshold >= _threshold())
-			revert('BlockNumberAfterEnforcer:early-delegation');
+			revert('BlockNumberAfterEnforcer:early-permission');
 
 		$success = true;
 	}

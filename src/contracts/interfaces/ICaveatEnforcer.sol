@@ -10,11 +10,11 @@ interface ICaveatEnforcer is ITypes {
 	 * @notice Enforces a caveat on a transaction.
 	 * @param $terms The terms of the caveat.
 	 * @param $transaction The transaction to enforce the caveat on.
-	 * @param $delegationHash The hash of the delegation.
+	 * @param $permissionHash The hash of the permission.
 	 */
 	function enforceCaveat(
 		bytes calldata $terms,
 		Transaction calldata $transaction,
-		bytes32 $delegationHash
+		bytes32 $permissionHash
 	) external returns (bool);
 }

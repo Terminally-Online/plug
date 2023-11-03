@@ -22,11 +22,11 @@ describe('Framework', function () {
 		})
 	})
 
-	// * Run a test from start to finish for a SignedDelegation.
-	it('pass: getSignedDelegationSigner', async function () {
+	// * Run a test from start to finish for a SignedPermission.
+	it('pass: getSignedPermissionSigner', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
-		// * Create a Delegation.
+		// * Create a Permission.
 		const intent = {
 			delegate: getAddress(owner.account.address),
 			authority: BASE_AUTH,
@@ -34,15 +34,15 @@ describe('Framework', function () {
 			salt: BASE_AUTH
 		} as const
 
-		// * Sign the delegation to make it executable.
+		// * Sign the permission to make it executable.
 		const signedIntent = await util.sign(owner, 'Permission', intent)
 
 		if (!signedIntent) expect.fail('Signed intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedDelegation = signedIntent.intent
+		const SignedPermission = signedIntent.intent
 
-		if (!SignedDelegation) expect.fail('Intent could not be signed.')
+		if (!SignedPermission) expect.fail('Intent could not be signed.')
 
 		// * Make sure the intent signer matched the recovered signer.
 		expect(getAddress(owner.account.address)).to.eq(
@@ -54,15 +54,15 @@ describe('Framework', function () {
 			})
 		).to.be.true
 		expect(getAddress(owner.account.address)).to.eq(
-			await contract.read.getSignedDelegationSigner([SignedDelegation])
+			await contract.read.getSignedPermissionSigner([SignedPermission])
 		)
 	})
 
-	// * Run a test from start to finish for a SignedInvocations.
-	it('pass: getSignedInvocationsSigner(SignedInvocation memory signedInvocation)', async function () {
+	// * Run a test from start to finish for a SignedIntents.
+	it('pass: getSignedIntentsSigner(SignedIntent memory signedIntent)', async function () {
 		const { util, contract, owner, notOwner } = await loadFixture(deploy)
 
-		// * Create a Delegation.
+		// * Create a Permission.
 		const intent = {
 			delegate: getAddress(owner.account.address),
 			authority: BASE_AUTH,
@@ -70,18 +70,18 @@ describe('Framework', function () {
 			salt: BASE_AUTH
 		} as const
 
-		// * Sign the delegation to make it executable.
-		const signedDelegation = await util.sign(owner, 'Permission', intent)
+		// * Sign the permission to make it executable.
+		const signedPermission = await util.sign(owner, 'Permission', intent)
 
-		if (!signedDelegation) expect.fail('Signed intent does not exist.')
+		if (!signedPermission) expect.fail('Signed intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedDelegation = signedDelegation.intent
+		const SignedPermission = signedPermission.intent
 
-		if (!SignedDelegation) expect.fail('Intent could not be signed.')
+		if (!SignedPermission) expect.fail('Intent could not be signed.')
 
 		expect(
-			await contract.read.getSignedDelegationSigner([SignedDelegation])
+			await contract.read.getSignedPermissionSigner([SignedPermission])
 		).to.eq(getAddress(owner.account.address))
 
 		const encodedTransaction = encodeFunctionData({
@@ -89,14 +89,14 @@ describe('Framework', function () {
 			functionName: 'mutedEcho'
 		})
 
-		const signedInvocation = await util.sign(notOwner, 'Intents', {
+		const signedIntent = await util.sign(notOwner, 'Intents', {
 			replayProtection: {
 				nonce: 1n,
 				queue: 0n
 			},
 			batch: [
 				{
-					authority: [SignedDelegation],
+					authority: [SignedPermission],
 					transaction: {
 						to: getAddress(owner.account.address),
 						gasLimit: 21000n,
@@ -106,17 +106,17 @@ describe('Framework', function () {
 			]
 		})
 
-		if (!signedInvocation) expect.fail('Signed invocation does not exist.')
-		if (!signedInvocation.intent) expect.fail('Intent does not exist.')
+		if (!signedIntent) expect.fail('Signed intent does not exist.')
+		if (!signedIntent.intent) expect.fail('Intent does not exist.')
 
-		const SignedInvocation = signedInvocation.intent
+		const SignedIntent = signedIntent.intent
 
 		expect(
-			await contract.read.getSignedInvocationsSigner([SignedInvocation])
+			await contract.read.getSignedIntentsSigner([SignedIntent])
 		).to.eq(getAddress(notOwner.account.address))
 	})
 
-	it('fail: signedInvocations: mutedEcho()', async function () {
+	it('fail: signedIntents: mutedEcho()', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
 		const encodedTransaction = encodeFunctionData({
@@ -124,7 +124,7 @@ describe('Framework', function () {
 			functionName: 'mutedEcho'
 		})
 
-		const signedInvocations = await util.sign(owner, 'Intents', {
+		const signedIntents = await util.sign(owner, 'Intents', {
 			replayProtection: {
 				nonce: 1n,
 				queue: 0n
@@ -141,15 +141,15 @@ describe('Framework', function () {
 			]
 		})
 
-		if (!signedInvocations) expect.fail('Signed intent does not exist.')
+		if (!signedIntents) expect.fail('Signed intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedInvocations = signedInvocations.intent
+		const SignedIntents = signedIntents.intent
 
-		if (!SignedInvocations) expect.fail('Intent could not be signed.')
+		if (!SignedIntents) expect.fail('Intent could not be signed.')
 
 		await expect(
-			contract.write.invoke([[SignedInvocations]])
+			contract.write.invoke([[SignedIntents]])
 		).to.be.rejectedWith('EchoMuted')
 	})
 })

@@ -11,6 +11,6 @@ abstract contract CaveatEnforcer is ICaveatEnforcer {
 	function enforceCaveat(
 		bytes calldata $terms,
 		Transaction calldata $transaction,
-		bytes32 $delegationHash
+		bytes32 $permissionHash
 	) public virtual returns (bool);
 }

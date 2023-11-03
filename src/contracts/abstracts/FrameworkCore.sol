@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 /// @dev Hash declarations and decoders for the Emporium framework.
 import {Types} from './Types.sol';
 /// @dev Error utilities for the Emporium framework.
-import {FrameworkErrors} from './FrameworkErrors.sol';
+import {FrameworkErrors} from '../libraries/FrameworkErrors.sol';
 
 /// @dev Core Framework dependencies.
 import {CaveatEnforcer} from './CaveatEnforcer.sol';
@@ -13,7 +13,7 @@ import {CaveatEnforcer} from './CaveatEnforcer.sol';
 /**
  * @title Framework Core
  * @notice The core contract for the Emporium framework that enables
- *         counterfactual revokable delegation of extremely
+ *         counterfactual revokable permission of extremely
  *         granular permission and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
@@ -22,7 +22,7 @@ import {CaveatEnforcer} from './CaveatEnforcer.sol';
 abstract contract FrameworkCore is Types {
 	using FrameworkErrors for bytes;
 
-	/// @notice Multi-dimensional account delegation nonce management.
+	/// @notice Multi-dimensional account permission nonce management.
 	mapping(address => mapping(uint256 => uint256)) public nonce;
 
 	/**
@@ -38,7 +38,7 @@ abstract contract FrameworkCore is Types {
 
 	/**
 	 * @notice Determine the address representing the message sender in the
-	 *         current context. This is important for delegations, as the
+	 *         current context. This is important for permissions, as the
 	 *         message sender may be the framework itself, in which case
 	 *         the sender must be extracted from the data.
 	 * @dev Because of this function, when building on top of the framework,
@@ -121,13 +121,13 @@ abstract contract FrameworkCore is Types {
 	}
 
 	/**
-	 * @notice Execute a batch of invocations
-	 * @param $batch The batch of invocations to execute.
+	 * @notice Execute a batch of intents
+	 * @param $batch The batch of intents to execute.
 	 * @param $sender The address of the sender.
 	 * @return $success Whether the transaction was successfully executed.
 	 */
 	function _invoke(
-		Invocation[] calldata $batch,
+		Intent[] calldata $batch,
 		address $sender
 	) internal returns (bool $success) {
 		/// @dev Load the stack.
@@ -136,23 +136,23 @@ abstract contract FrameworkCore is Types {
 		uint256 k;
 		address canGrant;
 		address intendedSender;
-		address delegationSigner;
+		address permissionSigner;
 		bytes32 authHash;
-		bytes32 delegationHash;
+		bytes32 permissionHash;
 
 		/// @dev Load the structs into a hot reference.
-		Invocation memory invocation;
-		SignedDelegation memory signedDelegation;
-		Delegation memory delegation;
+		Intent memory intent;
+		SignedPermission memory signedPermission;
+		Permission memory permission;
 		Transaction memory transaction;
 
-		/// @dev Iterate over the batch of invocations.
+		/// @dev Iterate over the batch of intents.
 		for (i; i < $batch.length; ) {
-			/// @dev Load the invocation from the batch.
-			invocation = $batch[i];
+			/// @dev Load the intent from the batch.
+			intent = $batch[i];
 
-			/// @dev If there are no delegations, this invocation comes from the signer
-			if (invocation.authority.length == 0) {
+			/// @dev If there are no permissions, this intent comes from the signer
+			if (intent.authority.length == 0) {
 				canGrant = intendedSender = $sender;
 			}
 
@@ -161,56 +161,54 @@ abstract contract FrameworkCore is Types {
 			j = 0;
 			k = 0;
 
-			/// @dev Load the transaction from the invocation.
-			transaction = invocation.transaction;
+			/// @dev Load the transaction from the intent.
+			transaction = intent.transaction;
 
 			require(
 				transaction.to == address(this),
-				'FrameworkCore:invalid-invocation-target'
+				'FrameworkCore:invalid-intent-target'
 			);
 
-			/// @dev Iterate over the authority delegations.
-			for (j; j < invocation.authority.length; j++) {
-				/// @dev Load the delegation from the invocation.
-				signedDelegation = invocation.authority[j];
+			/// @dev Iterate over the authority permissions.
+			for (j; j < intent.authority.length; j++) {
+				/// @dev Load the permission from the intent.
+				signedPermission = intent.authority[j];
 
-				/// @dev Determine the signer of the delegation.
-				delegationSigner = getSignedDelegationSigner(signedDelegation);
+				/// @dev Determine the signer of the permission.
+				permissionSigner = getSignedPermissionSigner(signedPermission);
 
-				/// @dev Implied sending account is the signer of the first delegation.
-				if (j == 0) canGrant = intendedSender = delegationSigner;
+				/// @dev Implied sending account is the signer of the first permission.
+				if (j == 0) canGrant = intendedSender = permissionSigner;
 
-				/// @dev Ensure the delegation signer has authority to grant
+				/// @dev Ensure the permission signer has authority to grant
 				///      the claimed permission.
 				require(
-					delegationSigner == canGrant,
-					'FrameworkCore:invalid-delegation-signer'
+					permissionSigner == canGrant,
+					'FrameworkCore:invalid-permission-signer'
 				);
 
-				/// @dev Warm up the delegation reference.
-				delegation = signedDelegation.delegation;
+				/// @dev Warm up the permission reference.
+				permission = signedPermission.permission;
 
-				/// @dev Ensure the delegation is valid.
+				/// @dev Ensure the permission is valid.
 				require(
-					delegation.authority == authHash,
-					'FrameworkCore:invalid-authority-delegation-link'
+					permission.authority == authHash,
+					'FrameworkCore:invalid-authority-permission-link'
 				);
 
-				/// @dev Retrieve the packet hash for the delegation.
-				delegationHash = getSignedDelegationPacketHash(
-					signedDelegation
-				);
+				/// @dev Retrieve the packet hash for the permission.
+				permissionHash = getSignedPermissionHash(signedPermission);
 
-				/// @dev Loop through all the execution caveats declared in the delegation
+				/// @dev Loop through all the execution caveats declared in the permission
 				///      and ensure they are all valid.
-				for (k; k < delegation.caveats.length; ) {
+				for (k; k < permission.caveats.length; ) {
 					/// @dev Call the enforcer to determine if the caveat is valid.
 					require(
-						CaveatEnforcer(delegation.caveats[k].enforcer)
+						CaveatEnforcer(permission.caveats[k].enforcer)
 							.enforceCaveat(
-								delegation.caveats[k].terms,
-								invocation.transaction,
-								delegationHash
+								permission.caveats[k].terms,
+								intent.transaction,
+								permissionHash
 							),
 						'FrameworkCore:caveat-rejected'
 					);
@@ -220,16 +218,16 @@ abstract contract FrameworkCore is Types {
 					}
 				}
 
-				/// @dev Store the hash of this delegation in `authHash` to verify the
-				///      next delegation can be verified against it.
-				authHash = delegationHash;
+				/// @dev Store the hash of this permission in `authHash` to verify the
+				///      next permission can be verified against it.
+				authHash = permissionHash;
 
-				/// @dev Set the next delegation signer as the current delegation signer.
-				canGrant = delegation.delegate;
+				/// @dev Set the next permission signer as the current permission signer.
+				canGrant = permission.delegate;
 			}
 
-			/// @dev Verify the delegate at the end of the delegation chain is the signer.
-			require(canGrant == $sender, 'DelegatableCore:invalid-delegate');
+			/// @dev Verify the delegate at the end of the permission chain is the signer.
+			require(canGrant == $sender, 'FrameworkCore:invalid-signer');
 
 			/// @dev Execute the transaction.
 			$success = _execute(

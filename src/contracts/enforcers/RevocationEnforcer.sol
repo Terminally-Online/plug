@@ -12,11 +12,11 @@ import {ECDSA} from 'solady/src/utils/ECDSA.sol';
 /**
  * @title Revocation Enforcer
  * @notice This Caveat Enforcer operates as an independent instance of the
- *         Framework enabling the revocation of previously signed delegations.
+ *         Framework enabling the revocation of previously signed permissions.
  *         After revocation, it is not possible for the signer to reuse the
- *         exact same delegation therefore it is recommended to set salt as
+ *         exact same permission therefore it is recommended to set salt as
  *         as the timestamp of generation (in milliseconds) to ensure that
- *         the signer can still reuse the same delegation with a new salt.
+ *         the signer can still reuse the same permission with a new salt.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
@@ -25,7 +25,7 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	/// @notice Use the ECDSA library for signature verification.
 	using ECDSA for bytes32;
 
-	/// @dev Mapping of revoked delegations.
+	/// @dev Mapping of revoked permissions.
 	mapping(bytes32 => bool) isRevoked;
 
 	constructor() FrameworkCore('RevocationEnforcer', '1') {}
@@ -36,10 +36,10 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	function enforceCaveat(
 		bytes calldata,
 		Transaction calldata,
-		bytes32 $delegationHash
+		bytes32 $permissionHash
 	) public view override returns (bool $success) {
-		/// @dev Ensure the delegation has not been revoked.
-		require(!isRevoked[$delegationHash], 'RevocationEnforcer:revoked');
+		/// @dev Ensure the permission has not been revoked.
+		require(!isRevoked[$permissionHash], 'RevocationEnforcer:revoked');
 
 		/// @dev Otherwise, clear for takeoff.
 		$success = true;
@@ -48,67 +48,65 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 	/**
 	 * @notice Enables a Delegator to revoke the permissions of a previously
 	 *         signed signature.
-	 * @param $signedDelegation The signed delegation to revoke.
-	 * @param $domainHash The domain hash of the delegation.
+	 * @param $signedPermission The signed permission to revoke.
+	 * @param $domainHash The domain hash of the permission.
 	 */
 	function revoke(
-		SignedDelegation calldata $signedDelegation,
+		SignedPermission calldata $signedPermission,
 		bytes32 $domainHash
 	) public {
-		/// @dev Only allow signers of delegations to revoke a signature.
+		/// @dev Only allow signers of permissions to revoke a signature.
 		///      Of course, revocation itself could be delegated.
 		require(
-			getSigner($signedDelegation, $domainHash) == _msgSender(),
+			getSigner($signedPermission, $domainHash) == _msgSender(),
 			'RevocationEnforcer:invalid-revoker'
 		);
 
-		/// @dev Determine the hash of the delegation.
-		bytes32 delegationHash = getSignedDelegationPacketHash(
-			$signedDelegation
-		);
+		/// @dev Determine the hash of the permission.
+		bytes32 permissionHash = getSignedPermissionHash($signedPermission);
 
-		/// @dev Ensure the delegation has not already been revoked.
+		/// @dev Ensure the permission has not already been revoked.
 		require(
-			!isRevoked[delegationHash],
+			!isRevoked[permissionHash],
 			'RevocationEnforcer:already-revoked'
 		);
 
-		/// @dev Mark the delegation as revoked.
-		isRevoked[delegationHash] = true;
+		/// @dev Mark the permission as revoked.
+		isRevoked[permissionHash] = true;
 	}
 
 	/**
-	 * @notice Determine the signer of a signed delegation.
-	 * @param $signedDelegation The signed delegation to determine the signer of.
-	 * @param $domainHash The domain hash of the delegation.
+	 * @notice Determine the signer of a signed permission.
+	 * @param $signedPermission The signed permission to determine the signer of.
+	 * @param $domainHash The domain hash of the permission.
 	 * @return $signer The address of the signer.
 	 */
 	function getSigner(
-		SignedDelegation memory $signedDelegation,
+		SignedPermission memory $signedPermission,
 		bytes32 $domainHash
 	) public view returns (address $signer) {
-		/// @dev Determine the digest of the delegation and recover the signer.
-		$signer = getDigest($signedDelegation.delegation, $domainHash).recover(
-			$signedDelegation.signature
+		/// @dev Determine the digest of the permission and recover the signer.
+		$signer = getDigest($signedPermission.permission, $domainHash).recover(
+			$signedPermission.signature
 		);
 	}
 
 	/**
-	 * @notice Determine the digest of a delegation.
-	 * @param $delegation The delegation to determine the digest of.
-	 * @param $domainHash The domain hash of the delegation.
-	 * @return $digest The digest of the delegation.
+	 * @notice Determine the digest of a permission.
+	 * @param $permission The permission to determine the digest of.
+	 * @param $domainHash The domain hash of the permission.
+	 * @return $digest The digest of the permission.
 	 */
 	function getDigest(
-		Delegation memory $delegation,
+		Permission memory $permission,
 		bytes32 $domainHash
 	) public pure returns (bytes32 $digest) {
-		/// @dev Encode the delegation and domain hash and hash them.
+		/// @dev Encode the permission and domain hash and hash them.
 		$digest = keccak256(
 			abi.encodePacked(
 				'\x19\x01',
 				$domainHash,
-				getDelegationPacketHash($delegation)
+				getPermissionHash($permission)
 			)
 		);
 	}

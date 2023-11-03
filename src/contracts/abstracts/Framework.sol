@@ -8,7 +8,7 @@ import {FrameworkCore} from './FrameworkCore.sol';
 /**
  * @title Framework
  * @notice The core contract for the Emporium framework that enables
- *         counterfactual revokable delegation of extremely
+ *         counterfactual revokable permission of extremely
  *         granular permission and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
@@ -29,41 +29,36 @@ abstract contract Framework is IFramework, FrameworkCore {
 	 * See {IFramework-contractInvoke}.
 	 */
 	function contractInvoke(
-		Invocation[] calldata $invocation
+		Intent[] calldata $intent
 	) external returns (bool $success) {
-		$success = _invoke($invocation, msg.sender);
+		$success = _invoke($intent, msg.sender);
 	}
 
 	/**
 	 * See {IFramework-invoke}.
 	 */
 	function invoke(
-		SignedInvocations[] calldata $signedInvocations
+		SignedIntents[] calldata $signedIntents
 	) external returns (bool $success) {
 		/// @dev Load the stack.
 		uint256 i;
 
-		/// @dev Loop through the signed invocations.
-		for (i; i < $signedInvocations.length; ) {
-			/// @dev Load the signed invocation as a hot reference.
-			SignedInvocations calldata signedInvocation = $signedInvocations[i];
+		/// @dev Loop through the signed intents.
+		for (i; i < $signedIntents.length; ) {
+			/// @dev Load the signed intent as a hot reference.
+			SignedIntents calldata signedIntent = $signedIntents[i];
 
-			/// @dev Determine who signed the invocation.
-			address invocationSigner = getSignedInvocationsSigner(
-				signedInvocation
-			);
+			/// @dev Determine who signed the intent.
+			address intentSigner = getSignedIntentsSigner(signedIntent);
 
-			/// @dev Load the invocations as a hot reference.
-			Invocations calldata invocations = signedInvocation.invocations;
+			/// @dev Load the intents as a hot reference.
+			Intents calldata intents = signedIntent.intents;
 
 			/// @dev Prevent replay attacks by enforcing replay protection.
-			_enforceReplayProtection(
-				invocationSigner,
-				invocations.replayProtection
-			);
+			_enforceReplayProtection(intentSigner, intents.replayProtection);
 
-			/// @dev Invoke the invocations.
-			$success = _invoke(invocations.batch, invocationSigner);
+			/// @dev Invoke the intents.
+			$success = _invoke(intents.batch, intentSigner);
 
 			unchecked {
 				++i;

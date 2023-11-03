@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 import {ERC20} from 'solady/src/tokens/ERC20.sol';
 
 import {CaveatEnforcer} from '../abstracts/CaveatEnforcer.sol';
-import {BytesLib} from 'solidity-bytes-utils/contracts/BytesLib.sol';
+import {BytesLib} from '../libraries/BytesLib.sol';
 
 contract ERC20AllowanceEnforcer is CaveatEnforcer {
 	using BytesLib for bytes;
@@ -15,7 +15,7 @@ contract ERC20AllowanceEnforcer is CaveatEnforcer {
 	bytes4 public constant ERC20_TRANSFER_FROM =
 		bytes4(keccak256('transfer(address,uint256)'));
 
-	/// @dev Balance of amount spend per delegation hash.
+	/// @dev Balance of amount spend per permission hash.
 	mapping(address => mapping(bytes32 => uint256)) spentMap;
 
 	/**
@@ -24,7 +24,7 @@ contract ERC20AllowanceEnforcer is CaveatEnforcer {
 	function enforceCaveat(
 		bytes calldata $terms,
 		Transaction calldata $transaction,
-		bytes32 $delegationHash
+		bytes32 $permissionHash
 	) public override returns (bool) {
 		/// @dev Determine the function being called by the transaction.
 		bytes4 targetSig = bytes4($transaction.data[0:4]);
@@ -43,11 +43,11 @@ contract ERC20AllowanceEnforcer is CaveatEnforcer {
 		///      the address of the token being transferred.
 		uint256 sending = BytesLib.toUint256($transaction.data, 36);
 
-		/// @dev Adjust the spent amount for the delegation hash.
-		spentMap[msg.sender][$delegationHash] += sending;
+		/// @dev Adjust the spent amount for the permission hash.
+		spentMap[msg.sender][$permissionHash] += sending;
 
 		/// @dev Retrieve the balance of the Delegator.
-		uint256 spent = spentMap[msg.sender][$delegationHash];
+		uint256 spent = spentMap[msg.sender][$permissionHash];
 
 		/// @dev Make sure amount spent will not exceed the limit.
 		require(spent <= limit, 'ERC20AllowanceEnforcer:allowance-exceeded');
