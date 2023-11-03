@@ -1,5 +1,13 @@
 # @nftchance/emporium-core
 
+## 0.1.5
+
+### Patch Changes
+
+-   f9f870f: feat: new nomenclature
+-   6b9b199: feat: nomenclature spread
+-   e82fe3a: feat: move up
+
 ## 0.1.4
 
 ### Patch Changes
