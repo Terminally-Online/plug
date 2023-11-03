@@ -18,13 +18,7 @@
 		"declarationMap": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@/*": ["./src/*"],
-			"@nftchance/emporium-core/types": [
-				"./node_modules/@nftchance/emporium-types"
-			],
-			"@nftchance/emporium-core/types/*": [
-				"./node_modules/@nftchance/emporium-types"
-			]
+			"@/*": ["./src/*"]
 		},
 
 		"downlevelIteration": true,
