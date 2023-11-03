@@ -1,5 +1,5 @@
 ---
-'@nftchance/emporium-types': patch
+'@nftchance/emporium-core': patch
 ---
 
 feat: roll ahead
