@@ -85,10 +85,10 @@
 		"typescript": "~5.0.4"
 	},
 	"dependencies": {
-		"@nftchance/emporium-types": "^0.4.7",
+		"@nftchance/emporium-types": "^0.4.9",
 		"abitype": "^0.10.2",
 		"solady": "^0.0.132",
-		"viem": "^1.18.3"
+		"viem": "^1.18.4"
 	},
 	"peerDependencies": {
 		"abitype": ">=0.10.2",
