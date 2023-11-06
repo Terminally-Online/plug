@@ -1,5 +1,11 @@
 # @nftchance/emporium-core
 
+## 0.1.7
+
+### Patch Changes
+
+-   5470937: feat: package exports
+
 ## 0.1.6
 
 ### Patch Changes
