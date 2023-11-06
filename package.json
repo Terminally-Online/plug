@@ -23,22 +23,21 @@
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"exports": {
-		"index": {
+		".": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
-		"core/framework": {
+		"./core/framework": {
 			"types": "./dist/core/framework.d.ts",
 			"default": "./dist/core/framework.js"
 		},
-		"core/intent": {
+		"./core/intent": {
 			"types": "./dist/core/intent.d.ts",
 			"default": "./dist/core/intent.js"
 		},
-		"package.json": "./package.json"
+		"./package.json": "./package.json"
 	},
 	"files": [
-		"/index",
 		"/core",
 		"/dist"
 	],

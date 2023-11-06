@@ -2,7 +2,7 @@ import dedent from 'dedent'
 import { execa } from 'execa'
 import { default as fs } from 'fs-extra'
 import path from 'path'
-import type { Format, Options } from 'tsup'
+import type { Options } from 'tsup'
 
 type GetConfig = Omit<
 	Options,
@@ -21,15 +21,11 @@ export function getConfig({ dev, noExport, ...options }: GetConfig): Options {
 	// https://github.com/preconstruct/preconstruct
 	if (dev) {
 		const entry: string[] = options.entry ?? []
-		const formats = process.env.FORMAT
-			? [process.env.FORMAT as Format]
-			: ['esm' as Format, 'cjs' as Format]
-
 		return {
 			clean: true,
 			// Only need to generate one file with tsup for development since we will create links in `onSuccess`
 			entry: [entry[0] as string],
-			format: formats,
+			format: ['cjs', 'esm'],
 			silent: true,
 			async onSuccess() {
 				// remove all files in dist
@@ -59,15 +55,14 @@ export function getConfig({ dev, noExport, ...options }: GetConfig): Options {
 		}
 	}
 
-	const formats = process.env.FORMAT
-		? [process.env.FORMAT as Format]
-		: ['esm' as Format, 'cjs' as Format]
-
 	return {
 		bundle: true,
 		clean: true,
 		dts: true,
-		format: formats,
+		minify: true,
+		minifyWhitespace: true,
+		treeshake: true,
+		format: ['cjs', 'esm'],
 		splitting: true,
 		target: 'es2021',
 		async onSuccess() {
@@ -97,7 +92,7 @@ async function generateExports(entry: string[], noExport?: string[]) {
 		const extension = path.extname(file)
 		const fileWithoutExtension = file.replace(extension, '')
 		const name = fileWithoutExtension
-			.replace(/^src\//g, '')
+			.replace(/^src\//g, './')
 			.replace(/\/index$/, '')
 		const distSourceFile = `${fileWithoutExtension.replace(
 			/^src\//g,
@@ -113,7 +108,7 @@ async function generateExports(entry: string[], noExport?: string[]) {
 		}
 	}
 
-	exports['package.json'] = './package.json'
+	exports['./package.json'] = './package.json'
 
 	const packageJson = await fs.readJSON('package.json')
 	packageJson.exports = exports
@@ -146,9 +141,8 @@ async function generateProxyPackages(exports: Exports) {
 		await fs.outputFile(
 			`${key}/package.json`,
 			dedent`{
-        "type": "module",
-        "main": "${entrypoint}"
-      }`
+                "main": "${entrypoint}"
+            }`
 		)
 		ignorePaths.push('/' + key.replace(/^\.\//g, ''))
 
