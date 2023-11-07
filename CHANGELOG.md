@@ -1,5 +1,11 @@
 # @nftchance/emporium-core
 
+## 0.1.9
+
+### Patch Changes
+
+-   faf6324: feat: types version bump
+
 ## 0.1.8
 
 ### Patch Changes
