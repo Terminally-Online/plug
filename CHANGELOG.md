@@ -1,5 +1,11 @@
 # @nftchance/emporium-core
 
+## 0.1.8
+
+### Patch Changes
+
+-   9c17064: feat: unsigned pairs
+
 ## 0.1.7
 
 ### Patch Changes
