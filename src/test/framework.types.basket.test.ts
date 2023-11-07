@@ -40,6 +40,13 @@ export default async function () {
 	// * Create the util with the debug types.
 	const util = new Framework(name, version, 1, DEBUG_TYPES, contract)
 
+	// * Should be able to build Person to get the typehash even
+	//   though we are cannot sign it.
+	util.build('Person', {
+		name: 'Bob',
+		wallet: owner.account.address
+	})
+
 	// @ts-expect-error - SHOULD_FAIL is not a valid type.
 	await util.sign(owner, 'SHOULD_FAIL', {
 		name: 'Bob',

@@ -9,14 +9,14 @@ import {
 } from 'viem'
 
 import {
-	TypedDataToKeysWithSignedPair,
+	// TypedDataToKeysWithSignedPair,
 	TypedDataToSignedIntent
 } from '@/lib/types'
 
 export class Intent<
 	C extends WalletClient,
 	T extends TypedData,
-	K extends TypedDataToKeysWithSignedPair<T>,
+	K extends GetTypedDataPrimaryType<T> = GetTypedDataPrimaryType<T>,
 	U extends TypedDataToPrimitiveTypes<T>[K] = TypedDataToPrimitiveTypes<T>[K],
 	S extends TypedDataToSignedIntent<K, U> = TypedDataToSignedIntent<K, U>
 > {
