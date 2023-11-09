@@ -8,8 +8,6 @@ import {BytesLib} from '../../libraries/BytesLib.sol';
 abstract contract ThresholdEnforcer is CaveatEnforcer {
 	using BytesLib for bytes;
 
-	function _threshold() internal view virtual returns (uint256);
-
 	/**
 	 * See {CaveatEnforcer-enforceCaveat}.
 	 */
@@ -18,10 +16,8 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 		Transaction calldata,
 		bytes32
 	) public view override returns (bool $success) {
-		/// @dev Retrieve the logic operator set by the Delegator in the terms.
-		uint256 logicOperator = $terms.toUint128(0);
-		/// @dev Move 16 bytes to the right to get the threshold.
-		uint256 blockThreshold = $terms.toUint128(16);
+		/// @dev Decode the terms to get the logic operator and threshold.
+		(uint256 $operator, uint256 $threshold) = decode($terms);
 
 		/// @dev Make sure the block number is before the threshold.
 		if (logicOperator == 0) {
@@ -34,4 +30,32 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 
 		$success = true;
 	}
+
+	/**
+	 * @dev Decode the terms to get the logic operator and threshold.
+	 */
+	function decode(
+		bytes calldata $data
+	) public pure returns (uint128 $operator, uint128 $threshold) { 
+		/// @dev Retrieve the logic operator set in the terms.
+		$operator = $data.toUint128(0);
+		/// @dev Move 16 bytes to the right to get the threshold.
+		$threshold = $data.toUint128(16);
+	}
+
+	/**
+	 * @dev Encode the logic operator and threshold.
+	 */
+	function encode(
+		uint128 $operator,
+		uint128 $threshold
+	) public pure returns (bytes memory $data) {
+		/// @dev Encode the logic operator and threshold.
+		$data = abi.encodePacked($operator, $threshold);
+	}
+
+	/**
+	 * @dev Unit denomination of the threshold.
+	 */
+	function _threshold() internal view virtual returns (uint256);
 }
