@@ -28,10 +28,28 @@ contract LimitedCallsEnforcer is CaveatEnforcer {
 		/// @dev Confirm the allowed limit has not yet been reached by the sender
 		///      of the declared permission.
 		require(
-			$terms.toUint256(0) >= callCounts[msg.sender][$permissionHash]++,
+			decode($terms) >= callCounts[msg.sender][$permissionHash]++,
 			'LimitedCallsEnforcer:limit-exceeded'
 		);
 
 		$success = true;
+	}
+
+	/**
+	 * @dev Decode the callCount defined by the terms at a given bytes index.
+	 */
+	function decode(
+		bytes calldata $terms
+	) public pure returns (uint256 $callCount) {
+		$callCount = $terms.toUint256(0);
+	}
+
+	/**
+	 * @dev  Encode the limit into the terms of the Caveat.
+	 */
+	function encode(
+		uint256 $callCount
+	) public pure returns (bytes memory $terms) {
+		$terms = abi.encode($callCount);
 	}
 }

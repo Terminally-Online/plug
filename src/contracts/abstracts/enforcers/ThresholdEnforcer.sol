@@ -36,7 +36,7 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 	 */
 	function decode(
 		bytes calldata $data
-	) public pure returns (uint128 $operator, uint128 $threshold) { 
+	) public pure returns (uint128 $operator, uint128 $threshold) {
 		/// @dev Retrieve the logic operator set in the terms.
 		$operator = $data.toUint128(0);
 		/// @dev Move 16 bytes to the right to get the threshold.

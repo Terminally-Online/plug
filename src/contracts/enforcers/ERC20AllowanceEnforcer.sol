@@ -36,7 +36,7 @@ contract ERC20AllowanceEnforcer is CaveatEnforcer {
 		);
 
 		/// @dev Retrieve the limit set by the Delegator.
-		uint256 limit = BytesLib.toUint256($terms, 0);
+		uint256 limit = decode($terms);
 		/// @dev Retrieve the amount of tokens being transferred and starts
 		///      at the 36th byte of the transaction data because the first
 		///      4 bytes are the function signature and the next 32 bytes are
@@ -53,5 +53,23 @@ contract ERC20AllowanceEnforcer is CaveatEnforcer {
 		require(spent <= limit, 'ERC20AllowanceEnforcer:allowance-exceeded');
 
 		return true;
+	}
+
+	/**
+	 * @dev Decode the limit defined by the terms at a given bytes index.
+	 */
+	function decode(
+		bytes calldata $terms
+	) public pure returns (uint256 $limit) {
+		/// @dev Decode the limit.
+		$limit = BytesLib.toUint256($terms, 0);
+	}
+
+	/**
+	 * @dev  Encode the limit into the terms of the Caveat.
+	 */
+	function encode(uint256 $limit) public pure returns (bytes memory $terms) {
+		/// @dev Encode the limit.
+		$terms = abi.encodePacked($limit);
 	}
 }
