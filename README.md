@@ -8,8 +8,8 @@ The key functionality is powered by the following packages (each have their own 
 packages
 ├─ types — "Automatically generate the types and decoders of your intent framework."
 ├─ core — "Intent framework smart contracts and management utilities."
-└─ docs — "In-depth documentation for both end-users and developers."
-└─ core — "Intent framework smart contracts and management utilities."
+├─ docs — "In-depth documentation for both end-users and developers."
+└─ server — "API backend that powers the server, client interface and sdk when needed."
 ```
 
 > **Note**
