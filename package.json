@@ -10,15 +10,9 @@
 	"author": "",
 	"license": "ISC",
 	"workspaces": [
-		"packages/lib/",
 		"packages/core/",
-		"packages/types/"
-	],
-	"devDependencies": {
-		"@trivago/prettier-plugin-sort-imports": "^4.2.0",
-		"@typescript-eslint/eslint-plugin": "^6.7.3",
-		"@typescript-eslint/parser": "^6.7.3",
-		"eslint": "^8.50.0",
-		"prettier": "^3.0.3"
-	}
+		"packages/docs/",
+		"packages/types/",
+		"packages/api/"
+	]
 }

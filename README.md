@@ -1,70 +1,27 @@
 # @nftchance/emporium
 
-> **Important**
-> You are reading the implementation documentation for Emporium solely intended to serve developers that are actively building atop the framework.
->
-> -   If you are just a general user, this: ([COMING SOON]) has the answers for you.
-> -   If you are a dev looking for code documentation, this: ([COMING SOON]) has the answers for you.
+`Emporium` powers "**if this, then that**" statements for EVM blockchains. Without having to change the core logic of your protocol you can turbocharge your protocol with declarative transaction execution in just a few seconds. 
 
-Emporium powers generalized counterfactual and revokable EVM intent framework. Without having to change the core logic of your protocol you can be up and running with intents in just a few seconds. To use Emporium there are several key pieces that you will find benefit in using:
+The key functionality is powered by the following packages (each have their own function):
 
 ```ml
 packages
 ├─ types — "Automatically generate the types and decoders of your intent framework."
+├─ core — "Intent framework smart contracts and management utilities."
+└─ docs — "In-depth documentation for both end-users and developers."
 └─ core — "Intent framework smart contracts and management utilities."
 ```
 
-## Getting Started
+> **Note**
+> While you can browse the codebase and read the sparse implementation/maintenance focused documentation, this is likely not what you are looking for unless you intend of making a contribution directly to `emporium`.
 
-### 1️⃣ [Generating your Types](https://github.com/nftchance/emporium-types)
+## Using a Package
 
-> This is only neccessary if you are implementing additional types/decoders in your base `emporium` implementation. You do not need to do this step if you plan on using the core variant. By default, `emporium-core` was implemented to consume the base shapes and executions required for baseline functions.
+All `Emporium` packages have been built with one thing in mind: using your brain as little as possible. 
 
-How much time have you tried writing helper utilities to work with EIP-712 signatures, types and hashes. With `emporium-types` all you have to do is setup your configuration and run the singular `npm emporium generate` in your cli.
+What this means is that every step of the way, I simply designed around my assumptions as if I was someone with no experience. Due to this, the commands to `build`, `run`, `lint`, etc. are the same acros every package. Of course, some commands are missing from certain packages where they are not relevant, but you can always check the `package.json` of the package you are working within.
 
-Instead of wasting hundreds of hours getting the proper signature types, declared messages and signed outputs you can have everything prepared in a matter of seconds. With the configured defaults, for the `emporium` framework to work you do not have to change anything unless you have a need for [advanced usage](https://github.com/nftchance/emporium-types#advanced-usage-adding-your-types).
+The basic rule is that to build the package you will `cd` into it and run `pnpm build` and to get up and running you just need to use `pnpm dev`.
 
-Head to the [main `emporium-types` repository](https://github.com/nftchance/emporium-types) to read the full usage documentation or go ahead and open your terminal to run:
+Additionally, in all packages that are released for independent consumption `changesets/cli` is used to power a very simple package building and distribution pipeline. When making a change that requires a release simply run `pnpm changeset add` and configure the preferred type of update whether it be `major`, `minor` or `patch`.
 
-```bash
-npm install @nftchance/emporium-types
-```
-
-### 2️⃣ [Consuming the Framework](https://github.com/nftchance/emporium-core)
-
-In most cases, you can skip the need to [generate your types]() and go straight to the consumption of `emporium-core`. With everything already packaged for you, usage is as simple as importing the contract and configuring the top-level contract of your protocol to inherit from like:
-
-```solidity
-// path: ./myProtocol.sol
-// SPDX-License-Identifier: BUSL-1.1
-
-pragma solidity ^0.8.19;
-
-import {Framework} from "@nftchance/emporium-core/"
-
-contract MyProtocol is Framework {
-    // All of your logic.
-}
-```
-
-Just like that, your protocol now has support for intents!
-
-### Reference Implementations
-
-It can be difficult to skim a README and fully understand what is going on here. Here is a small list of applications and protocols that you may find helpful to reference:
-
--   [nouns-bid-intent](https://github.com/nftchance/nouns-bid-intent) - "Schedule bids for Nouns to prevent under-RFV auction closes."
-
-## Built With
-
-`emporium` would not be possible without all the hardwork of those before me.
-
-When building on top of Emporium it is advised to use the same dependencies to ensure the best experience. Dependencies outside of this range are not only untested, but not within the scope of support.
-
-```ml
-dependencies
-├─ solady — "Gas optimized Solidity snippets."
-├─ hardhat — "An Ethereum development environment for professionals."
-├─ viem — "Build reliable Ethereum apps with lightweight, composable, and type-safe modules"
-└─ abitype — "Strict TypeScript types for Ethereum ABIs."
-```
