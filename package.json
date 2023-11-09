@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"format": "npx prettier --write .",
-		"submodules:update": "git submodule update"
+		"submodules:update": "git submodule update --remote --merge"
 	},
 	"author": "",
 	"license": "ISC",
