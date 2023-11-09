@@ -20,12 +20,12 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 		(uint256 $operator, uint256 $threshold) = decode($terms);
 
 		/// @dev Make sure the block number is before the threshold.
-		if (logicOperator == 0) {
-			if (blockThreshold <= _threshold())
+		if ($operator == 0) {
+			if ($threshold <= _threshold())
 				revert('BlockNumberBeforeEnforcer:expired-permission');
 		}
 		/// @dev Make sure the block number is after the threshold.
-		else if (blockThreshold >= _threshold())
+		else if ($threshold >= _threshold())
 			revert('BlockNumberAfterEnforcer:early-permission');
 
 		$success = true;
