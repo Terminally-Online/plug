@@ -7,3 +7,9 @@
 [submodule "packages/docs"]
 	path = packages/docs
 	url = https://github.com/nftchance/emporium-docs
+[submodule "packages/server"]
+	path = packages/server
+	url = https://github.com/nftchance/emporium-server
+[submodule "packages/client"]
+	path = packages/client
+	url = https://github.com/nftchance/emporium-client

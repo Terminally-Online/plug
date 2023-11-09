@@ -13,6 +13,7 @@
 		"packages/core/",
 		"packages/docs/",
 		"packages/types/",
-		"packages/api/"
+		"packages/server/",
+		"packages/client/",
 	]
 }
