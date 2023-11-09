@@ -43,11 +43,11 @@ Once a transaction is submitted, there is no built-in mechanism to protect again
 
 These issues aren't just theoretical—they manifest as real bottlenecks that hamper adoption and user experience. The need for a solution has never been more pressing.
 
-As the developer of protocols aimed at typical consumers the requirements to interact with the blockchain have been a constant hurdle. If users cannot access what you've made; you are missing out on the vast majority of the potential regardless the potential.
+As the developer of protocols aimed at typical consumers the requirements to interact with the blockchain have been a constant hurdle. If users cannot access what you've made; you are missing out on the vast majority of users regardless the potential.
 
-I wanted the ability to lower the barrier of entry without negatively impacting all the existing blockchains such as _censorship resistance_ and _settlement reliability_, but all existing options required a significant level of integration, customized architecture and one-off solutions that couldn't be reused project to project.
+I wanted the ability to lower the barrier of entry without negatively impacting all the existing blockchains benefits such as _censorship resistance_ and _settlement reliability_, but all existing options required a significant level of integration, customized architecture and one-off solutions that couldn't be reused project to project.
 
-A maximum of 5 minutes and I wanted to be up and running with a new idea. So, I created **Emporium**: an extensible framework that provides plug-and-play utilities for your onchain protocol and Typescript based app. Inspired by all the tried solutions before, Emporium packages as many benefits as possible together while leaving compromises, choices and opinion up to the implementing consumers.
+A maximum of 5 minutes and I wanted to be up and running with a new idea. So, I created **Emporium**: an extensible framework that provides plug-and-play utilities for your onchain `Solidity` protocol and `Typescript` based app. Inspired by all the tried solutions before, `Emporium` packages as many benefits as possible together while leaving compromises, choices and opinion up to the implementing consumers.
 
 ## Traditional Blockchain Transactions: A Refresher
 
@@ -69,15 +69,15 @@ This means that instead of crafting a transaction solely based on the contract t
 
 ## Developer Experience
 
-Emporium was developed with one thing in mind: **time to launch.** Too much time is wasted in the crypto development industry on reinventing the wheel and solving complex problems have not been solved, but had their answers shared far and wide.
+Emporium was developed with one thing in mind: **time to launch.** Too much time is wasted in the crypto development industry on reinventing the wheel and solving complex problems that have not only been solved, but had their answers shared far and wide.
 
-To accomplish this, Emporium is designed to streamline the process of integrating declarative transactions into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for Emporium starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
+To accomplish this, `Emporium` is designed to streamline the process of integrating [Declarative Transactions](/intents/declarative-messages) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Emporium` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
 
-By default, Emporium ships with the base types that are needed to power declarative transactions however if you are seeking to build a more complex protocol, you can easily extend the types to meet your needs.
+By default, `Emporium` ships with the base types that are needed to power declarative transactions however if you are seeking to build a more complex protocol, you can easily extend the types to meet your needs.
 
-With your EIP-712 types defined, Emporium will not only unlock the ability to generate the corresponding `TypeScript` logic, but the `Solidity` smart contract as well. This means that as soon as you declare the types used onchain you can immediately start using them in your application and broader protocol stack.
+With your EIP-712 types defined, `Emporium` will not only unlock the ability to generate the corresponding `TypeScript` logic, but the `Solidity` smart contract as well. This means that as soon as you declare the types used onchain you can immediately start using them in your application and broader protocol stack.
 
-This means that you can your types are always kept in sync ensuring that you never have to worry about type mismatches or inconsistencies. What would have taken tens to hundreds of hours before can be completed in just a couple of minutes.
+Plus, with a `types first` approach your types are always kept in sync ensuring that you never have to worry about type mismatches or inconsistencies. What would have taken tens to hundreds of hours before can be completed in just a couple of minutes.
 
 To make integration as seamless as possible it was a constant priority not to be prescriptive. At every step of development I am diligent not to introduce opinion that one may disagree with or _simply not need_.
 

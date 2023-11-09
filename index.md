@@ -5,7 +5,7 @@ layout: home
 hero:
     name: 'Emporium'
     text: 'Documentation for the Emporium protocol.'
-    tagline: My great project tagline
+    tagline: Documentation for the Emporium protocol.
     actions:
         - theme: brand
           text: Getting Started
