@@ -216,7 +216,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: "https://github.com/nftchance/plug-docs/edit/main/:path",
+      pattern: "https://github.com/nftchance/plug-docs/edit/master/:path",
     },
 
     search: {
@@ -228,7 +228,6 @@ export default defineConfig({
 
   // * Load the font files.
   transformHead({ assets }) {
-    // adjust the regex accordingly to match your font
     const myFontFile = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
     if (myFontFile) {
       return [
