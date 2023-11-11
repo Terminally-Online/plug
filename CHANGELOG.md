@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.1.10
+
+### Patch Changes
+
+-   17e6a98: feat: no more codename
+
 ## 0.1.9
 
 ### Patch Changes
