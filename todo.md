@@ -7,9 +7,13 @@ TODO:
 
 - [x] Figure out what to do about naming.
   - [x] Get the domain
+  - [x] Deploy on the new domains
   - [x] My favorite idea so far has been Plug cause 1) it is plug and play 2) it makes contracts plug and play with one another. It is also really short and I can get a domain that's easy to navigate to. Also, it's so simple that I finally have logo ideas.
-  - [ ] Rename the Github repositories
+  - [x] Rename the Github repositories
   - [x] Rename the Discord
+  - [x] Deprecate the old npm packages
+  - [ ] Deploy documentation at docs.onplug.io
+
 - [ ] Make sure our API endpoints are protected
 - [ ] Think about the relayer implementation as this is what really has my interest.
 - [ ] Update `authority` nomenclature to just use `permission` for increased conistency.

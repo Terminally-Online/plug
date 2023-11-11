@@ -5,6 +5,8 @@ import { resolve } from "pathe";
 
 const rootDir = resolve(process.cwd());
 
+const ordering = ["domain", "caveat", "Permission", "Transaction", "ReplayProtection", "Intent"]
+
 // * Get the generated files in a directory and create the array of items.
 function getItems(directory: string) {
   const directoryPath = resolve(rootDir, directory);
@@ -23,15 +25,14 @@ function getItems(directory: string) {
   });
 }
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "Plug",
+  title: "Plug Documentation",
   description: "Documentation for the Plug protocol.",
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
+    logo: { light: '/logo-dark.svg', dark: '/logo-white.svg' },
+
     nav: [
-      { text: "Home", link: "/" },
-      { text: "Examples", link: "/markdown-examples" },
+      { text: "Home", link: "https://www.onplug.io" },
     ],
 
     sidebar: [
@@ -45,10 +46,6 @@ export default defineConfig({
           {
             text: "If This, Then That",
             link: "/introduction/if-this-then-that",
-          },
-          {
-            text: "Getting Started",
-            link: "/introduction/getting-started",
           },
           {
             text: "FAQ",
@@ -219,7 +216,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: "https://github.com/nftchance/plug-docs/edit/master/:path",
+      pattern: "https://github.com/nftchance/plug-docs/edit/main/:path",
     },
 
     search: {
@@ -232,7 +229,7 @@ export default defineConfig({
   // * Load the font files.
   transformHead({ assets }) {
     // adjust the regex accordingly to match your font
-    const myFontFile = assets.find((file) => /GeistMonoVF\.\w+\.woff2/);
+    const myFontFile = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
     if (myFontFile) {
       return [
         [
