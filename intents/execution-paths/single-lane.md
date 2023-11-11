@@ -1,14 +1,14 @@
 ---
 head:
-    - - meta
-      - property: og:title
-        content: Single Lane Nonces
-    - - meta
-      - name: description
-        content: A single-lane nonce is used to ensure that a reference is only seen once.
-    - - meta
-      - property: og:description
-        content: A single-lane nonce is used to ensure that a reference is only seen once.
+  - - meta
+    - property: og:title
+      content: Single Lane Nonces
+  - - meta
+    - name: description
+      content: A single-lane nonce is used to ensure that a reference is only seen once.
+  - - meta
+    - property: og:description
+      content: A single-lane nonce is used to ensure that a reference is only seen once.
 ---
 
 # Single Lane Nonces
@@ -19,8 +19,8 @@ With native accounts and transactions a single-lane nonce is used to ensure that
 
 With native accounts and transactions a single-lane nonce is used to ensure that a transaction is only executed once:
 
--   Submit a transaction, your nonce is incremented by `1`.
--   Submit another transaction with a lower nonce, it's rejected.
+- Submit a transaction, your nonce is incremented by `1`.
+- Submit another transaction with a lower nonce, it's rejected.
 
 This is an low-overhead way to ensure that a transaction is never replayed.
 
@@ -28,16 +28,16 @@ This is an low-overhead way to ensure that a transaction is never replayed.
 
 Although very simple, a single nonce is extremely effective at ensuring uniqueness while preventing unintended reuse. By consuming an incrementally increasing nonce, a user can be sure that a transaction:
 
--   **Is never executed out of order (replayed or skipped).**
+- **Is never executed out of order (replayed or skipped).**
 
 This simple rule result in a system that makes [double-spending](https://en.wikipedia.org/wiki/Double-spending) and [replay attacks](https://en.wikipedia.org/wiki/Replay_attack) impossible. How? Let's look at a simple example where we have $100 and we'd like to send $50 to `Alice` and $50 to `Bob`:
 
--   Send $50 to `Alice`, your nonce is incremented by `1`.
--   Send $50 to `Bob`, your nonce is incremented by `1`.
+- Send $50 to `Alice`, your nonce is incremented by `1`.
+- Send $50 to `Bob`, your nonce is incremented by `1`.
 
 Now, let's say that `Alice` is a bad actor and she tries to replay the transaction that sent her $50. What happens?
 
--   Your nonce is already incremented by `1`, it's rejected.
+- Your nonce is already incremented by `1`, it's rejected.
 
 The transaction to `Alice` is rejected because the nonce is not the next incrementally increasing number. This is a very simple example, but it illustrates the power of a single-lane nonce.
 
@@ -55,7 +55,7 @@ function execute(uint256 $nonce, bytes calldata $message) external {
 }
 ```
 
-Just two lines of code and you have a system that ensures that a transaction is never replayed or skipped. This is the core of the `Emporium` permissioning system and is extended to provide a powerful and flexible permissioning system.
+Just two lines of code and you have a system that ensures that a transaction is never replayed or skipped. This is the core of the `Plug` permissioning system and is extended to provide a powerful and flexible permissioning system.
 
 :::
 

@@ -1,6 +1,6 @@
 # Signed Pairs
 
-At the very base level `Emporium` has been designed to operate on top of [EIP-712](/decoders/eip-712) to enable the signing and verification of structured data.
+At the very base level `Plug` has been designed to operate on top of [EIP-712](/decoders/eip-712) to enable the signing and verification of structured data.
 
 The framework extends the EIP by introducing the concept of a `SignedPair`. With `SignedPairs` the onchain framework operates with the implicit assumption that all `Intents` are delivered in a predefined and standardized data layout.
 
@@ -14,59 +14,59 @@ Let's look at a simple example where we have `Mail` that we want to send from `A
 
 ```typescript [constants.ts]
 export const types = {
-	Mail: [
-		{ name: 'from', type: 'Person' },
-		{ name: 'to', type: 'Person' },
-		{ name: 'contents', type: 'string' }
-	],
-	Person: [
-		{ name: 'name', type: 'string' },
-		{ name: 'wallet', type: 'address' }
-	],
-	SignedMail: [
-		{ name: 'mail', type: 'Mail' },
-		{ name: 'signature', type: 'bytes' }
-	]
-} as const
+  Mail: [
+    { name: "from", type: "Person" },
+    { name: "to", type: "Person" },
+    { name: "contents", type: "string" },
+  ],
+  Person: [
+    { name: "name", type: "string" },
+    { name: "wallet", type: "address" },
+  ],
+  SignedMail: [
+    { name: "mail", type: "Mail" },
+    { name: "signature", type: "bytes" },
+  ],
+} as const;
 ```
 
 :::
 
 Of note here is that the `SignedMail` type is a nested `Mail` type with an additional `signature` field. This is the `SignedPair` that we are looking for. This signals:
 
--   `Mail` is the signed message.
--   `SignedMail` is the type consumed by the onchain function.
--   `signature` is the signature of the `Mail` signed by the `from` field of the `Mail`.
+- `Mail` is the signed message.
+- `SignedMail` is the type consumed by the onchain function.
+- `signature` is the signature of the `Mail` signed by the `from` field of the `Mail`.
 
 Why is it called a `SignedPair`?
 
--   The type MUST be prefixed with `Signed`.
--   The type MUST be a nested type of the `TypedData` that is being signed.
--   The type MUST always have a `signature` field that is of type `bytes`.
+- The type MUST be prefixed with `Signed`.
+- The type MUST be a nested type of the `TypedData` that is being signed.
+- The type MUST always have a `signature` field that is of type `bytes`.
 
 ## The Resulting Assumption
 
-`SignedPairs` enables the onchain protocol of `Emporium` to operate with the assumption if an `Intent` is being used or verified, it is always in the form of the `SignedPair` of the message being executed. In [generic form](https://www.typescriptlang.org/docs/handbook/2/generics.html), this can be thought of as:
+`SignedPairs` enables the onchain protocol of `Plug` to operate with the assumption if an `Intent` is being used or verified, it is always in the form of the `SignedPair` of the message being executed. In [generic form](https://www.typescriptlang.org/docs/handbook/2/generics.html), this can be thought of as:
 
 ::: code-group
 
 ```typescript [SignedPair.ts]
 export type TypedDataToSignedIntent<K, U> = Record<
-	'signature',
-	`0x${string}`
+  "signature",
+  `0x${string}`
 > & {
-	[TK in K as Lowercase<string & TK>]: U
-}
+  [TK in K as Lowercase<string & TK>]: U;
+};
 ```
 
 :::
 
 This may seem confusing if you are not familiar with `Typescript` so let's break it down:
 
--   `TypedDataToSignedIntent` is a generic type that takes two arguments: `K` and `U`.
-    -   `K` is the type of the `TypedData` that is being signed.
-    -   `U` is the type of the `TypedData` that is being consumed by the onchain function.
--   The return type is a `Record` that has a `signature` field that is of type `string` and a `TypedData` field that is of type `U` with a lowercase key.
+- `TypedDataToSignedIntent` is a generic type that takes two arguments: `K` and `U`.
+  - `K` is the type of the `TypedData` that is being signed.
+  - `U` is the type of the `TypedData` that is being consumed by the onchain function.
+- The return type is a `Record` that has a `signature` field that is of type `string` and a `TypedData` field that is of type `U` with a lowercase key.
 
 In the case of our `Mail` example, this results in the `SignedMail` type of:
 
@@ -74,24 +74,24 @@ In the case of our `Mail` example, this results in the `SignedMail` type of:
 
 ```typescript [SignedMail.ts]
 type SignedMail = {
-	signature: string
-	mail: {
-		from: {
-			name: string
-			wallet: string
-		}
-		to: {
-			name: string
-			wallet: string
-		}
-		contents: string
-	}
-}
+  signature: string;
+  mail: {
+    from: {
+      name: string;
+      wallet: string;
+    };
+    to: {
+      name: string;
+      wallet: string;
+    };
+    contents: string;
+  };
+};
 ```
 
 :::
 
-Due to the simple architecture in place you can immediately pop over to `Emporium` with the `SignedMail` type and start using it onchain with:
+Due to the simple architecture in place you can immediately pop over to `Plug` with the `SignedMail` type and start using it onchain with:
 
 ::: code-group
 
@@ -110,8 +110,8 @@ function getSignedMailSigner(
 
 With just these few lines of `Solidity` we now have the ability to:
 
--   Securely send and receive Mail.
--   Verify that the Mail was sent by the `Signer`.
--   Verify that the Mail has not been tampered with.
+- Securely send and receive Mail.
+- Verify that the Mail was sent by the `Signer`.
+- Verify that the Mail has not been tampered with.
 
-While this is a simplified example, it is important to understand that this is the foundation of the `Emporium` framework. With this simple architecture, the framework can be used to build complex protocols that are secure, modular, and easy to use.
+While this is a simplified example, it is important to understand that this is the foundation of the `Plug` framework. With this simple architecture, the framework can be used to build complex protocols that are secure, modular, and easy to use.

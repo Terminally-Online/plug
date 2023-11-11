@@ -1,14 +1,14 @@
 ---
 head:
-    - - meta
-      - property: og:title
-        content: Multi-Dimensional Nonces
-    - - meta
-      - name: description
-        content: With multi-dimensional nonces, you can revoke a set of permissions without impacting the rest of your queues.
-    - - meta
-      - property: og:description
-        content: With multi-dimensional nonces, you can revoke a set of permissions without impacting the rest of your queues.
+  - - meta
+    - property: og:title
+      content: Multi-Dimensional Nonces
+  - - meta
+    - name: description
+      content: With multi-dimensional nonces, you can revoke a set of permissions without impacting the rest of your queues.
+  - - meta
+    - property: og:description
+      content: With multi-dimensional nonces, you can revoke a set of permissions without impacting the rest of your queues.
 ---
 
 # Multi-Dimensional Nonces
@@ -17,7 +17,7 @@ We just covered the details of a [Single Lane](/intents/execution-paths/single-l
 
 ## Nonce Queues
 
-`Emporium` uses a multi-dimensional `queue-nonce` architecture that introduces the ability to have multiple `nonces` for every account on every protocol. In practice this looks like:
+`Plug` uses a multi-dimensional `queue-nonce` architecture that introduces the ability to have multiple `nonces` for every account on every protocol. In practice this looks like:
 
 :::code-group
 
@@ -36,9 +36,9 @@ mapping(address sender => mapping(uint256 queue => uint256 nonce)) public sender
 
 With this functionality available, a user maintains the ability to revoke a set of permissions and even expire an entire `queue` of permissions without impacting every other set of permissions and intents previously signed.
 
--   Submit a transaction in queue `3`, your `queue-nonce` is incremented by 1.
--   Submit another transaction in queue `3` with a lower `queue-nonce`, it's rejected.
--   Submit a transaction in queue `4` with a lower `nonce` than the previous transaction in queue `3`, it's accepted.
+- Submit a transaction in queue `3`, your `queue-nonce` is incremented by 1.
+- Submit another transaction in queue `3` with a lower `queue-nonce`, it's rejected.
+- Submit a transaction in queue `4` with a lower `nonce` than the previous transaction in queue `3`, it's accepted.
 
 Each `queue` is independent and can be incremented without impacting the others.
 
@@ -46,9 +46,9 @@ Each `queue` is independent and can be incremented without impacting the others.
 
 To illustrate the benefit of [nonce queues](#nonce-queues) let's look at a simple example where we'd like to expire an intents already distributed where:
 
--   The current lane `nonce` is `45`.
--   We have `10` active intents (nonces `45-54`).
--   We'd like to expire the `6th` pending intent (nonce `50`).
+- The current lane `nonce` is `45`.
+- We have `10` active intents (nonces `45-54`).
+- We'd like to expire the `6th` pending intent (nonce `50`).
 
 **With single-lane nonces:** We would increment our `nonce` to `50` and all of our previous `nonces` would be invalidated. This seems great at first, but in reality nonces `45-49` should still be valid and active.
 
@@ -60,11 +60,11 @@ Of course, this is a very simple example and the benefit of this functionality e
 
 The technical benefit of [nonce queues](#nonce-queues) is clear, but the experience benefit is even more important. With multi-dimensional queues users of EVM blockchains unlock embedded access control that is not only more secure, but more flexible and user-friendly resulting in:
 
--   Lower wasted gas money.
--   Lower counterparty risk.
--   Lower smart contract risk.
--   Lower exposure to bad actors.
--   Lower chance of human error.
+- Lower wasted gas money.
+- Lower counterparty risk.
+- Lower smart contract risk.
+- Lower exposure to bad actors.
+- Lower chance of human error.
 
 ::: tip
 

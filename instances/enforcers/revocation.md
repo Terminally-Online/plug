@@ -1,14 +1,14 @@
 ---
 head:
-    - - meta
-      - property: og:title
-        content: Revocation
-    - - meta
-      - name: description
-        content: Details of permission revocation and why it's important.
-    - - meta
-      - property: og:description
-        content: Details of permission revocation and why it's important.
+  - - meta
+    - property: og:title
+      content: Revocation
+  - - meta
+    - name: description
+      content: Details of permission revocation and why it's important.
+  - - meta
+    - property: og:description
+      content: Details of permission revocation and why it's important.
 ---
 
 # Revocation
@@ -17,9 +17,9 @@ The concept of raw **revocation** is extremely simple: **_If you can give, you c
 
 With typical native EVM transactions on Ethereum, there is no way to revoke a transaction. Once it's sent, it's sent. If you change your mind, you can't take it back. If the conditions change and you don't want to experience the consequences of the transaction, you can't take it back.
 
-With `Emporium`, you can with ease.
+With `Plug`, you can with ease.
 
-Importantly, this is enabled by precisely the same permission-stack as every other execution condition. Due to the modular design of `Emporium`, unlocking this ability for the users of your protocol is extremely simple and only requires app-level logic.
+Importantly, this is enabled by precisely the same permission-stack as every other execution condition. Due to the modular design of `Plug`, unlocking this ability for the users of your protocol is extremely simple and only requires app-level logic.
 
 ## How does it work?
 
@@ -40,23 +40,23 @@ The first step is to scope a [Revocation Enforcer](/core/enforcers) at the time 
 
 ```typescript
 const permissions = {
-	delegate: '<the EVM address of the delegate>',
-	authority: bytes32(0),
-	caveats: [
-		{
-			enforcer: RevocationEnforcer.address,
-			terms: bytes(0)
-		}
-	],
-	salt: bytes32(Date.now().toString())
-}
+  delegate: "<the EVM address of the delegate>",
+  authority: bytes32(0),
+  caveats: [
+    {
+      enforcer: RevocationEnforcer.address,
+      terms: bytes(0),
+    },
+  ],
+  salt: bytes32(Date.now().toString()),
+};
 ```
 
 With the `RevocationEnforcer` scoped, the permissions can now be signed and given to the delegate. If the permissions given are ever used, first the `RevocationEnforcer` will be called to ensure that the they have not been revoked.
 
 ### Revoking Permissions
 
-With the permissions given, let's look at the implementation of the `revoke` function in the `Emporium` framework contract in chunks to better understand how this works:
+With the permissions given, let's look at the implementation of the `revoke` function in the `Plug` framework contract in chunks to better understand how this works:
 
 ```solidity
 function revoke(SignedPermissions calldata $signedPermissions, bytes32 $domainHash) public
@@ -64,8 +64,8 @@ function revoke(SignedPermissions calldata $signedPermissions, bytes32 $domainHa
 
 Notably, the `revoke` function takes two arguments: the `SignedPermissions` and the `domainHash`.
 
--   The `SignedPermissions` is the same as the `SignedPermissions` that was originally declared.
--   The `domainHash` is the same as the `domainHash` of the intent target (you may give the same permissions for two different contracts).
+- The `SignedPermissions` is the same as the `SignedPermissions` that was originally declared.
+- The `domainHash` is the same as the `domainHash` of the intent target (you may give the same permissions for two different contracts).
 
 ```solidity
 require(

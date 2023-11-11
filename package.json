@@ -1,12 +1,12 @@
 {
   "scripts": {
-    "generate": "rm -rf ./generated/ && pnpm emporium docs",
+    "generate": "rm -rf ./generated/ && pnpm plug docs",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "@nftchance/emporium-types": "^0.3.13",
+    "@nftchance/plug-types": "^0.3.13",
     "fs-extra": "^11.1.1",
     "pathe": "^1.1.1",
     "vitepress": "^1.0.0-rc.24",

@@ -1,21 +1,21 @@
 ---
 head:
-    - - meta
-      - property: og:title
-        content: Single Lane Nonces
-    - - meta
-      - name: description
-        content: A single-lane nonce is used to ensure that a reference is only seen once.
-    - - meta
-      - property: og:description
-        content: A single-lane nonce is used to ensure that a reference is only seen once.
+  - - meta
+    - property: og:title
+      content: Single Lane Nonces
+  - - meta
+    - name: description
+      content: A single-lane nonce is used to ensure that a reference is only seen once.
+  - - meta
+    - property: og:description
+      content: A single-lane nonce is used to ensure that a reference is only seen once.
 ---
 
 # Execution Paths
 
 ## [Single Lane Nonces](/intents/execution-paths/single-lane)
 
-Nonces are a key component of every EVM blockchain and are extended in `Emporium` to provide a powerful and flexible permissioning system. With the core focus of preventing replay attacks, nonces ensure that each signed reference is only seen once.
+Nonces are a key component of every EVM blockchain and are extended in `Plug` to provide a powerful and flexible permissioning system. With the core focus of preventing replay attacks, nonces ensure that each signed reference is only seen once.
 
 ## [Multi-Dimensional Nonces](/intents/execution-paths/multi-dimensional)
 

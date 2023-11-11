@@ -1,14 +1,14 @@
 ---
 head:
-    - - meta
-      - property: og:title
-        content: Declarative Messages
-    - - meta
-      - name: description
-        content: A brief breakdown of why intents are important.
-    - - meta
-      - property: og:description
-        content: A brief breakdown of why intents are important.
+  - - meta
+    - property: og:title
+      content: Declarative Messages
+  - - meta
+    - name: description
+      content: A brief breakdown of why intents are important.
+  - - meta
+    - property: og:description
+      content: A brief breakdown of why intents are important.
 ---
 
 # Declarative Messages
@@ -39,7 +39,7 @@ For instance, a single declarative message could involve a token swap, followed 
 
 ::: tip
 
-There is another common implementation of batch settlement known as 'chaining' where responses from previous functions are used to inform following ones however Emporium does not currently support this.
+There is another common implementation of batch settlement known as 'chaining' where responses from previous functions are used to inform following ones however Plug does not currently support this.
 
 :::
 
