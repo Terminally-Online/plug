@@ -2,31 +2,31 @@
 
 pragma solidity ^0.8.19;
 
-import {IFramework} from '../interfaces/IFramework.sol';
-import {FrameworkCore} from './FrameworkCore.sol';
+import {IPlug} from '../interfaces/IPlug.sol';
+import {PlugCore} from './PlugCore.sol';
 
 /**
- * @title Framework
- * @notice The core contract for the Emporium framework that enables
+ * @title Plug
+ * @notice The core contract for the Plug framework that enables
  *         counterfactual revokable permission of extremely
  *         granular permission and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract Framework is IFramework, FrameworkCore {
+abstract contract Plug is IPlug, PlugCore {
 	/**
-	 * @notice Instantiates a new Framework contract.
+	 * @notice Instantiates a new Plug contract.
 	 * @param $name The name of the contract
 	 * @param $version The version of the contract
 	 */
 	constructor(
 		string memory $name,
 		string memory $version
-	) FrameworkCore($name, $version) {}
+	) PlugCore($name, $version) {}
 
 	/**
-	 * See {IFramework-contractInvoke}.
+	 * See {IPlug-contractInvoke}.
 	 */
 	function contractInvoke(
 		Intent[] calldata $intent
@@ -35,7 +35,7 @@ abstract contract Framework is IFramework, FrameworkCore {
 	}
 
 	/**
-	 * See {IFramework-invoke}.
+	 * See {IPlug-invoke}.
 	 */
 	function invoke(
 		SignedIntents[] calldata $signedIntents

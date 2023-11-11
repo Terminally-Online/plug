@@ -2,17 +2,17 @@
 
 pragma solidity ^0.8.19;
 
-/// @dev Framework abstracts.
+/// @dev Plug abstracts.
 import {CaveatEnforcer} from '../abstracts/CaveatEnforcer.sol';
-import {FrameworkCore} from '../abstracts/FrameworkCore.sol';
+import {PlugCore} from '../abstracts/PlugCore.sol';
 
-/// @dev Hash declarations and decoders for the Emporium framework.
+/// @dev Hash declarations and decoders for the Plug framework.
 import {ECDSA} from 'solady/src/utils/ECDSA.sol';
 
 /**
  * @title Revocation Enforcer
  * @notice This Caveat Enforcer operates as an independent instance of the
- *         Framework enabling the revocation of previously signed permissions.
+ *         Plug enabling the revocation of previously signed permissions.
  *         After revocation, it is not possible for the signer to reuse the
  *         exact same permission therefore it is recommended to set salt as
  *         as the timestamp of generation (in milliseconds) to ensure that
@@ -21,14 +21,14 @@ import {ECDSA} from 'solady/src/utils/ECDSA.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
+contract RevocationEnforcer is CaveatEnforcer, PlugCore {
 	/// @notice Use the ECDSA library for signature verification.
 	using ECDSA for bytes32;
 
 	/// @dev Mapping of revoked permissions.
 	mapping(bytes32 => bool) isRevoked;
 
-	constructor() FrameworkCore('RevocationEnforcer', '1') {}
+	constructor() PlugCore('RevocationEnforcer', '1') {}
 
 	/**
 	 * See {CaveatEnforcer-enforceCaveat}.

@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.19;
 
-/// @dev Shape declarations in the Emporium framework.
+/// @dev Shape declarations in the Plug framework.
 import {ITypes} from '../abstracts/Types.sol';
 
-interface IFramework is ITypes {
+interface IPlug is ITypes {
 	/**
 	 * @notice Allows a smart contract to submit a batch of intents for processing,
 	 *         allowing itself to be the delegate.

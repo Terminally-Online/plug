@@ -1,10 +1,10 @@
 {
-	"name": "@nftchance/emporium-core",
+	"name": "@nftchance/plug-core",
 	"license": "BUSL-1.1",
 	"version": "0.1.9",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/nftchance/emporium-core.git"
+		"url": "https://github.com/nftchance/plug-core.git"
 	},
 	"keywords": [
 		"nftchance",
@@ -17,7 +17,7 @@
 		"crypto",
 		"intent",
 		"intents",
-		"emporium"
+		"plug"
 	],
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
@@ -84,7 +84,7 @@
 		"typescript": "~5.0.4"
 	},
 	"dependencies": {
-		"@nftchance/emporium-types": "^0.4.10",
+		"@nftchance/plug-types": "^0.4.10",
 		"abitype": "^0.10.2",
 		"solady": "^0.0.132",
 		"viem": "^1.18.4"

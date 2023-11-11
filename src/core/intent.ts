@@ -39,7 +39,7 @@ export class Intent<
 	// * Sign and initialize an intent in-framework.
 	// ! This is only used when you have access to a `client` that can sign
 	//   the messages such as a frontend. For an API, you would not
-	//   consume this method in the Framework consumer or anywhere else.
+	//   consume this method in the Plug consumer or anywhere else.
 	async init<
 		P extends {
 			client: C

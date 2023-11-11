@@ -7,8 +7,8 @@ import { encodeFunctionData, getAddress } from 'viem'
 const BASE_AUTH =
 	'0x0000000000000000000000000000000000000000000000000000000000000000'
 
-describe('Framework', function () {
-	it('pass: instantiate a FrameworkUtil class instance', async function () {
+describe('Plug', function () {
+	it('pass: instantiate a PlugUtil class instance', async function () {
 		const { chainId, contract, util } = await loadFixture(deploy)
 
 		expect(util).to.not.be.null.and.not.be.undefined

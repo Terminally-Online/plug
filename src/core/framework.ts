@@ -11,7 +11,7 @@ import { Intent } from '@/core/intent'
 
 import { TypedDataToKeysWithSignedPair } from '../lib/types'
 
-export class Framework<
+export class Plug<
 	C extends WalletClient,
 	T extends TypedData,
 	K extends TypedDataToKeysWithSignedPair<T>

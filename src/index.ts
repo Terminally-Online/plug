@@ -1,4 +1,4 @@
-export { Framework } from '@/core/framework'
+export { Plug } from '@/core/framework'
 export { Intent } from '@/core/intent'
 
 export type {

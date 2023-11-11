@@ -2,25 +2,25 @@
 
 pragma solidity ^0.8.19;
 
-/// @dev Hash declarations and decoders for the Emporium framework.
+/// @dev Hash declarations and decoders for the Plug framework.
 import {Types} from './Types.sol';
-/// @dev Error utilities for the Emporium framework.
-import {FrameworkErrors} from '../libraries/FrameworkErrors.sol';
+/// @dev Error utilities for the Plug framework.
+import {PlugErrors} from '../libraries/PlugErrors.sol';
 
-/// @dev Core Framework dependencies.
+/// @dev Core Plug dependencies.
 import {CaveatEnforcer} from './CaveatEnforcer.sol';
 
 /**
- * @title Framework Core
- * @notice The core contract for the Emporium framework that enables
+ * @title Plug Core
+ * @notice The core contract for the Plug framework that enables
  *         counterfactual revokable permission of extremely
  *         granular permission and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract FrameworkCore is Types {
-	using FrameworkErrors for bytes;
+abstract contract PlugCore is Types {
+	using PlugErrors for bytes;
 
 	/// @notice Multi-dimensional account permission nonce management.
 	mapping(address => mapping(uint256 => uint256)) public nonce;
@@ -89,7 +89,7 @@ abstract contract FrameworkCore is Types {
 		/// @dev Ensure the nonce is in order.
 		require(
 			$protection.nonce == ++nonce[$intendedSender][$protection.queue],
-			'FrameworkCore:nonce2-out-of-order'
+			'PlugCore:nonce2-out-of-order'
 		);
 	}
 
@@ -166,7 +166,7 @@ abstract contract FrameworkCore is Types {
 
 			require(
 				transaction.to == address(this),
-				'FrameworkCore:invalid-intent-target'
+				'PlugCore:invalid-intent-target'
 			);
 
 			/// @dev Iterate over the authority permissions.
@@ -184,7 +184,7 @@ abstract contract FrameworkCore is Types {
 				///      the claimed permission.
 				require(
 					permissionSigner == canGrant,
-					'FrameworkCore:invalid-permission-signer'
+					'PlugCore:invalid-permission-signer'
 				);
 
 				/// @dev Warm up the permission reference.
@@ -193,7 +193,7 @@ abstract contract FrameworkCore is Types {
 				/// @dev Ensure the permission is valid.
 				require(
 					permission.authority == authHash,
-					'FrameworkCore:invalid-authority-permission-link'
+					'PlugCore:invalid-authority-permission-link'
 				);
 
 				/// @dev Retrieve the packet hash for the permission.
@@ -210,7 +210,7 @@ abstract contract FrameworkCore is Types {
 								intent.transaction,
 								permissionHash
 							),
-						'FrameworkCore:caveat-rejected'
+						'PlugCore:caveat-rejected'
 					);
 
 					unchecked {
@@ -227,7 +227,7 @@ abstract contract FrameworkCore is Types {
 			}
 
 			/// @dev Verify the delegate at the end of the permission chain is the signer.
-			require(canGrant == $sender, 'FrameworkCore:invalid-signer');
+			require(canGrant == $sender, 'PlugCore:invalid-signer');
 
 			/// @dev Execute the transaction.
 			$success = _execute(

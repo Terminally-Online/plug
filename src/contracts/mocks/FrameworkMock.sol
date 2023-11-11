@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.19;
 
-import {Framework} from '../abstracts/Framework.sol';
+import {Plug} from '../abstracts/Plug.sol';
 
 /**
- * @title Framework Mock
- * @notice A mock contract for testing the Emporium framework.
+ * @title Plug Mock
+ * @notice A mock contract for testing the Plug framework.
  * @dev This contract is for testing purposes only.
  */
-contract FrameworkMock is Framework {
+contract PlugMock is Plug {
 	/// @dev Active revert when echo is muted.
 	error EchoMuted();
 
@@ -17,14 +17,14 @@ contract FrameworkMock is Framework {
 	event EchoInvoked(address $reality, address $perception, string $message);
 
 	/**
-	 * @notice Instantiates a new Framework contract.
+	 * @notice Instantiates a new Plug contract.
 	 * @param $name The name of the contract
 	 * @param $version The version of the contract
 	 */
 	constructor(
 		string memory $name,
 		string memory $version
-	) Framework($name, $version) {}
+	) Plug($name, $version) {}
 
 	/**
 	 * @notice A mock function for testing the framework.

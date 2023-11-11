@@ -3,8 +3,8 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'
 
-describe('Framework', function () {
-	it('pass: instantiate a FrameworkUtil class instance', async function () {
+describe('Plug', function () {
+	it('pass: instantiate a PlugUtil class instance', async function () {
 		const { chainId, contract, util } = await loadFixture(deploy)
 
 		expect(util).to.not.be.null.and.not.be.undefined

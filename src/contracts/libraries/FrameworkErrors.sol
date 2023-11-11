@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-library FrameworkErrors {
+library PlugErrors {
 	/**
 	 * @notice Bubble up the revert reason revert data.
 	 * @param $revertData The revert data to extract the reason from.
@@ -10,7 +10,7 @@ library FrameworkErrors {
 	function bubbleRevert(bytes memory $revertData) internal pure {
 		/// @dev If we won't be able to recover the message, go ahead
 		///      and revert with the default.
-		if ($revertData.length < 4) revert('FrameworkCore:revert');
+		if ($revertData.length < 4) revert('PlugCore:revert');
 
 		bytes4 errorSelector;
 		assembly {
@@ -19,7 +19,7 @@ library FrameworkErrors {
 
 		/// @dev Panic(uint256) (>=0.8.0)
 		if (errorSelector == bytes4(0x4e487b71)) {
-			string memory reason = 'FrameworkCore:target-panicked-0x';
+			string memory reason = 'PlugCore:target-panicked-0x';
 			uint errorCode;
 
 			assembly {

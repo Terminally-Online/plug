@@ -1,13 +1,13 @@
 import hre from 'hardhat'
 
-import { Framework } from '@/core/framework'
+import { Plug } from '@/core/framework'
 
 const RUN = false
 
 export default async function () {
 	if (!RUN) throw new Error('This test is not meant to be run.')
 
-	const [name, version] = ['FrameworkMock', '0.0.0']
+	const [name, version] = ['PlugMock', '0.0.0']
 
 	const DEBUG_TYPES = {
 		Mail: [
@@ -29,7 +29,7 @@ export default async function () {
 	const [owner] = await hre.viem.getWalletClients()
 
 	// * Create the util with the debug types.
-	const util = new Framework(name, version, 1, DEBUG_TYPES, contract)
+	const util = new Plug(name, version, 1, DEBUG_TYPES, contract)
 
 	// @ts-expect-error - Should fail because there is no SignedSHOULD_FAIL type.
 	await util.sign(owner, 'SHOULD_FAIL', {

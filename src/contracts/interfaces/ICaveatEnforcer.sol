@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-/// @dev Shape declarations in the Emporium framework.
+/// @dev Shape declarations in the Plug framework.
 import {ITypes} from '../abstracts/Types.sol';
 
 interface ICaveatEnforcer is ITypes {

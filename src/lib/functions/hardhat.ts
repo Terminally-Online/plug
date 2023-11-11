@@ -1,11 +1,11 @@
 import hre, { network } from 'hardhat'
 import { Network } from 'hardhat/types'
 
-import { Framework } from '@/core/framework'
+import { Plug } from '@/core/framework'
 
-import { constants } from '@nftchance/emporium-types'
+import { constants } from '@nftchance/plug-types'
 
-export const [name, version] = ['FrameworkMock', '0.0.0']
+export const [name, version] = ['PlugMock', '0.0.0']
 
 export default async function () {
 	const chainId = await getChainId(network)
@@ -16,13 +16,7 @@ export default async function () {
 
 	const publicClient = await hre.viem.getPublicClient()
 
-	const util = new Framework(
-		name,
-		version,
-		chainId,
-		constants.types,
-		contract
-	)
+	const util = new Plug(name, version, chainId, constants.types, contract)
 
 	return {
 		chainId,
