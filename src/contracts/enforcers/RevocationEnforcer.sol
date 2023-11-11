@@ -77,6 +77,8 @@ contract RevocationEnforcer is CaveatEnforcer, FrameworkCore {
 
 	/**
 	 * @notice Determine the signer of a signed permission.
+	 * @dev We use custom functions here because the domain separator is
+	 *      different for each SignedPermission.
 	 * @param $signedPermission The signed permission to determine the signer of.
 	 * @param $domainHash The domain hash of the permission.
 	 * @return $signer The address of the signer.
