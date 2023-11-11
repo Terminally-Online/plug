@@ -25,18 +25,18 @@ Importantly, this is enabled by precisely the same permission-stack as every oth
 
 As revocation is built on the same permission-stack as every other execution condition, it is extremely simple to implement. In fact, it is so simple that it is only a two-step process:
 
-1. Scope a [Revocation Enforcer](/core/enforcers) at the time of **giving** the permissions.
-2. Call the `revoke` function on the [Enforcer](/core/enforcers) **originally declared** in the permissions.
+1. Scope a [Revocation Enforcer](/core/caveat-enforcer) at the time of **giving** the permissions.
+2. Call the `revoke` function on the [Enforcer](/core/caveat-enforcer) **originally declared** in the permissions.
 
 ::: info
 
-If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/enforcers) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/enforcers) is what powers the "_if this_" part of the "_if this, then that_" logic of a permission.
+If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/caveat-enforcer) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/caveat-enforcer) is what powers the "_if this_" part of the "_if this, then that_" logic of a permission.
 
 :::
 
 ### Giving Revocable Permissions
 
-The first step is to scope a [Revocation Enforcer](/core/enforcers) at the time of declaring the permission. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Permission` struct.
+The first step is to scope a [Revocation Enforcer](/core/caveat-enforcer) at the time of declaring the permission. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Permission` struct.
 
 ```typescript
 const permissions = {

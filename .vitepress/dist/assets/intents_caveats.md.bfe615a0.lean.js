@@ -1,0 +1,1 @@
+import{_ as t,o as e,c as a}from"./chunks/framework.6d94f49f.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"intents/caveats.md","filePath":"intents/caveats.md","lastUpdated":1698623604000}'),s={name:"intents/caveats.md"};function n(c,r,o,i,d,p){return e(),a("div")}const f=t(s,[["render",n]]);export{m as __pageData,f as default};

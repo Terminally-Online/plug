@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as r}from"./chunks/framework.6d94f49f.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"core/executors.md","filePath":"core/executors.md","lastUpdated":1698623604000}'),o={name:"core/executors.md"};function a(c,s,n,d,p,_){return t(),r("div")}const f=e(o,[["render",a]]);export{m as __pageData,f as default};

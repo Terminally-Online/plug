@@ -43,9 +43,9 @@ While the architecture is designed to support this functionality, a first-party 
 
 By default the Plug framework has been packaged with a pre-built set of types and smart contracts that are needed to consume the framework. If you are looking to build a protocol that is not supported by the pre-built types, you will need to implement your own custom types by utilizing [`@nftchance/plug-types`](https://www.npmjs.com/package/@nftchance/plug-types?activeTab=readme). Otherwise, you can use the pre-built types and not worry about the declaration or consuming implementation of types.
 
-## Do I need to deploy my own set of Enforcers?
+## Do I need to deploy my own set of Caveats?
 
-_Generally, no._ The base set of [Enforcers](/enforcers) have been designed to be consumed by deployed instances of the `Plug` framework. If you are using a third-party implementation of the core framework or an `Enforcer` you will need to read the logic and determine if it is suitable for your use case as there is no expected or enforced standard.
+_Generally, no._ The base set of [Caveats](/core/caveat-enforcer) have been designed to be consumed by deployed instances of the `Plug` framework. If you are using a third-party implementation of the core framework or an `Enforcer` you will need to read the logic and determine if it is suitable for your use case as there is no expected or enforced standard.
 
 ## Is there a fee?
 
@@ -59,7 +59,7 @@ If you are not sure how to implement a fee structure, please [reach out for help
 
 ## Do I have to use a specific API or Relay?
 
-No, in fact using your own is highly recommended! While there is a first-party API available to you that streamlines the collection, management and distribution of the incoming intents related to your protocol, it is not required. You can use any API or Relay that you would like to consume the intents and distribute them to the appropriate [Executors](/executors).
+No, in fact using your own is highly recommended! While there is a first-party API available to you that streamlines the collection, management and distribution of the incoming intents related to your protocol, it is not required. You can use any API or Relay that you would like to consume the intents and distribute them to the appropriate network. 
 
 ## Doesn't this just make my protocol more complex?
 

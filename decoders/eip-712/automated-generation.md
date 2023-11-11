@@ -139,7 +139,7 @@ This single file contains everything needed to start building on top of [Signed 
 
 - The static `TypeHash` of each `Type`.
 - The initialization of the `Domain` for [EIP-712](/decoders/eip-712#domain-specification).
-- The [hashGetter](/decoders/packet-hash-getters) functions for each `Type`.
+- The [hashGetter](/decoders/hash-getters) functions for each `Type`.
 - The [digestGetter](/decoders/digest-getters) functions for each nested `Type` in the [SignedPairs](/decoders/eip-712/signed-pairs) declared.
 - The [signerGetter](/decoders/signer-getters) functions for the top-level of `SignedPair` `Type`.
 

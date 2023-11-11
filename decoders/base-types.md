@@ -1,6 +1,6 @@
 # Base Types
 
-`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Core Plug](/core/framework) and [Enforcers](/core/enforcers). Alone these types are not very useful, but together they form the foundation of the `Plug` framework.
+`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Core Plug](/core/framework) and [Caveats](/core/caveat-enforcer). Alone these types are not very useful, but together they form the foundation of the `Plug` framework.
 
 ## Type Hashes
 
@@ -81,7 +81,7 @@ By default, most libraries include the `EIP712Domain` type in the signature. Thi
 
 ## Permission Types
 
-Now stepping into the pieces introduced by the `Plug` framework, the `Permission Types` are used to define the [Permission](/permissions/introduction) that is being given.
+Now stepping into the pieces introduced by the `Plug` framework, the `Permission Types` are used to define the [Permission](/generated/base-types/Permission) that is being given.
 
 When creating new permissions you will utilize:
 
@@ -100,10 +100,10 @@ The `Intent Types` are used to define the [Intent](/intents/introduction) that i
 
 When creating new intents you will utilize:
 
-- [Replay Protection](/decoders/base-types/replay-protection)
+- [Replay Protection](/generated/base-types/ReplayProtection)
 - [Transaction](/generated/base-types/Transaction)
 - [Intent](/generated/base-types/Intent)
 
 When distributing new intents you will utilize:
 
-- [SignedIntent](/generated/base-types/SignedIntent)
+- [SignedIntents](/generated/base-types/SignedIntents)

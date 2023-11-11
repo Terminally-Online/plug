@@ -115,7 +115,7 @@ That's a lot happening in just a few lines so it may take a second to wrap your 
 
 ::: info
 
-Note, in this example `authority` was set to `0x0` which gives the invoker full control over the delegated function. If you want to restrict the invoker to a specific function, you can set the `authority` to the address of the function you want to delegate to. We will get into the details of [Caveats](/intents/caveats) and [Enforcers](/enforcers) shortly.
+Note, in this example `authority` was set to `0x0` which gives the invoker full control over the delegated function. If you want to restrict the invoker to a specific function, you can set the `authority` to the address of the function you want to delegate to. We will get into the details of [Caveats](/core/caveat-enforcer) shortly.
 
 :::
 

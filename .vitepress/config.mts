@@ -28,6 +28,7 @@ function getItems(directory: string) {
 export default defineConfig({
   title: "Plug Documentation",
   description: "Documentation for the Plug protocol.",
+  appearance: 'dark',
   themeConfig: {
     logo: { light: '/logo-dark.svg', dark: '/logo-white.svg' },
 
