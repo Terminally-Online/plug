@@ -1,4 +1,4 @@
-# @nftchance/plug
+# 🔌 Plug
 
 `Plug` powers "**if this, then that**" statements for EVM blockchains. Without having to change the core logic of your protocol you can turbocharge your protocol with declarative transaction execution in just a few seconds.
 
