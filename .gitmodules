@@ -1,15 +1,15 @@
 [submodule "packages/core"]
 	path = packages/core
-	url = https://github.com/nftchance/emporium-core
+	url = https://github.com/nftchance/plug-core
 [submodule "packages/types"]
 	path = packages/types
-	url = https://github.com/nftchance/emporium-types
+	url = https://github.com/nftchance/plug-types
 [submodule "packages/docs"]
 	path = packages/docs
-	url = https://github.com/nftchance/emporium-docs
+	url = https://github.com/nftchance/plug-docs
 [submodule "packages/server"]
 	path = packages/server
-	url = https://github.com/nftchance/emporium-server
+	url = https://github.com/nftchance/plug-server
 [submodule "packages/client"]
 	path = packages/client
-	url = https://github.com/nftchance/emporium-client
+	url = https://github.com/nftchance/plug-client
