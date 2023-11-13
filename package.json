@@ -16,7 +16,7 @@
 		"solidity",
 		"crypto",
 		"intent",
-		"intents",
+		"plugs",
 		"plug"
 	],
 	"main": "dist/index.js",
@@ -27,13 +27,13 @@
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
-		"./core/framework": {
-			"types": "./dist/core/framework.d.ts",
-			"default": "./dist/core/framework.js"
+		"./core/plug": {
+			"types": "./dist/core/plug.d.ts",
+			"default": "./dist/core/plug.js"
 		},
-		"./core/intent": {
-			"types": "./dist/core/intent.d.ts",
-			"default": "./dist/core/intent.js"
+		"./core/sdk": {
+			"types": "./dist/core/sdk.d.ts",
+			"default": "./dist/core/sdk.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -84,7 +84,7 @@
 		"typescript": "~5.0.4"
 	},
 	"dependencies": {
-		"@nftchance/plug-types": "^0.4.10",
+		"@nftchance/plug-types": "^0.5.0",
 		"abitype": "^0.10.2",
 		"solady": "^0.0.132",
 		"viem": "^1.18.4"

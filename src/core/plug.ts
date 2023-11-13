@@ -8,17 +8,14 @@ import {
 	WalletClient
 } from 'viem'
 
-import {
-	// TypedDataToKeysWithSignedPair,
-	TypedDataToSignedIntent
-} from '@/lib/types'
+import { TypedDataToLivePlug } from '@/lib/types'
 
-export class Intent<
+export class Plug<
 	C extends WalletClient,
 	T extends TypedData,
 	K extends GetTypedDataPrimaryType<T> = GetTypedDataPrimaryType<T>,
 	U extends TypedDataToPrimitiveTypes<T>[K] = TypedDataToPrimitiveTypes<T>[K],
-	S extends TypedDataToSignedIntent<K, U> = TypedDataToSignedIntent<K, U>
+	S extends TypedDataToLivePlug<K, U> = TypedDataToLivePlug<K, U>
 > {
 	private client?: WalletClient
 	public intent: S | undefined

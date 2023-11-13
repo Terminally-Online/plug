@@ -8,13 +8,13 @@ import {PlugCore} from './PlugCore.sol';
 /**
  * @title Plug
  * @notice The core contract for the Plug framework that enables
- *         counterfactual revokable permission of extremely
- *         granular permission and execution paths.
+ *         counterfactual revokable pin of extremely
+ *         granular pin and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract Plug is IPlug, PlugCore {
+abstract contract Socket is PlugCore, IPlug {
 	/**
 	 * @notice Instantiates a new Plug contract.
 	 * @param $name The name of the contract
@@ -26,39 +26,39 @@ abstract contract Plug is IPlug, PlugCore {
 	) PlugCore($name, $version) {}
 
 	/**
-	 * See {IPlug-contractInvoke}.
+	 * See {IPlug-plugContract}.
 	 */
-	function contractInvoke(
-		Intent[] calldata $intent
+	function plugContract(
+		Plug[] calldata $plugs
 	) external returns (bool $success) {
-		$success = _invoke($intent, msg.sender);
+		$success = _plug($plugs, msg.sender);
 	}
 
 	/**
-	 * See {IPlug-invoke}.
+	 * See {IPlug-plug}.
 	 */
-	function invoke(
-		SignedIntents[] calldata $signedIntents
+	function plug(
+		LivePlugs[] calldata $livePlugs
 	) external returns (bool $success) {
 		/// @dev Load the stack.
 		uint256 i;
 
-		/// @dev Loop through the signed intents.
-		for (i; i < $signedIntents.length; ) {
+		/// @dev Loop through the signed plugs.
+		for (i; i < $livePlugs.length; ) {
 			/// @dev Load the signed intent as a hot reference.
-			SignedIntents calldata signedIntent = $signedIntents[i];
+			LivePlugs calldata livePlugs = $livePlugs[i];
 
 			/// @dev Determine who signed the intent.
-			address intentSigner = getSignedIntentsSigner(signedIntent);
+			address intentSigner = getLivePlugsSigner(livePlugs);
 
-			/// @dev Load the intents as a hot reference.
-			Intents calldata intents = signedIntent.intents;
+			/// @dev Load the plugs as a hot reference.
+			Plugs calldata plugs = livePlugs.plugs;
 
 			/// @dev Prevent replay attacks by enforcing replay protection.
-			_enforceReplayProtection(intentSigner, intents.replayProtection);
+			_enforceBreaker(intentSigner, plugs.breaker);
 
-			/// @dev Invoke the intents.
-			$success = _invoke(intents.batch, intentSigner);
+			/// @dev Invoke the plugs.
+			$success = _plug(plugs.plugs, intentSigner);
 
 			unchecked {
 				++i;

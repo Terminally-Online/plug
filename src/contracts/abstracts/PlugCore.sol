@@ -8,13 +8,13 @@ import {Types} from './Types.sol';
 import {PlugErrors} from '../libraries/PlugErrors.sol';
 
 /// @dev Core Plug dependencies.
-import {CaveatEnforcer} from './CaveatEnforcer.sol';
+import {IFuse} from '../interfaces/IFuse.sol';
 
 /**
  * @title Plug Core
  * @notice The core contract for the Plug framework that enables
- *         counterfactual revokable permission of extremely
- *         granular permission and execution paths.
+ *         counterfactual revokable pin of extremely
+ *         granular pin and execution paths.
  * @author @nftchance
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
@@ -22,7 +22,7 @@ import {CaveatEnforcer} from './CaveatEnforcer.sol';
 abstract contract PlugCore is Types {
 	using PlugErrors for bytes;
 
-	/// @notice Multi-dimensional account permission nonce management.
+	/// @notice Multi-dimensional account pin nonce management.
 	mapping(address => mapping(uint256 => uint256)) public nonce;
 
 	/**
@@ -38,7 +38,7 @@ abstract contract PlugCore is Types {
 
 	/**
 	 * @notice Determine the address representing the message sender in the
-	 *         current context. This is important for permissions, as the
+	 *         current context. This is important for pins, as the
 	 *         message sender may be the framework itself, in which case
 	 *         the sender must be extracted from the data.
 	 * @dev Because of this function, when building on top of the framework,
@@ -82,9 +82,9 @@ abstract contract PlugCore is Types {
 	 * @param $intendedSender The address of the intended sender.
 	 * @param $protection The replay protection struct.
 	 */
-	function _enforceReplayProtection(
+	function _enforceBreaker(
 		address $intendedSender,
-		ReplayProtection memory $protection
+		Breaker memory $protection
 	) internal {
 		/// @dev Ensure the nonce is in order.
 		require(
@@ -97,14 +97,14 @@ abstract contract PlugCore is Types {
 	 * @notice Execution a built transaction.
 	 * @param $to The address of the contract to execute.
 	 * @param $data The data to execute on the contract.
-	 * @param $gasLimit The gas limit for the transaction.
+	 * @param $voltage The gas limit for the transaction.
 	 * @param $sender The address of the sender.
 	 * @return $success Whether the transaction was successfully executed.
 	 */
 	function _execute(
 		address $to,
 		bytes memory $data,
-		uint256 $gasLimit,
+		uint256 $voltage,
 		address $sender
 	) internal returns (bool $success) {
 		/// @dev Build the final call data.
@@ -114,20 +114,20 @@ abstract contract PlugCore is Types {
 		bytes memory errorMessage;
 
 		/// @dev Make the external call that was delegated.
-		($success, errorMessage) = address($to).call{gas: $gasLimit}(full);
+		($success, errorMessage) = address($to).call{gas: $voltage}(full);
 
 		/// @dev If the call failed, bubble up the revert reason if possible.
 		if ($success == false) errorMessage.bubbleRevert();
 	}
 
 	/**
-	 * @notice Execute a batch of intents
-	 * @param $batch The batch of intents to execute.
+	 * @notice Execute a plugs of plugs
+	 * @param $plugs The plugs of plugs to execute.
 	 * @param $sender The address of the sender.
 	 * @return $success Whether the transaction was successfully executed.
 	 */
-	function _invoke(
-		Intent[] calldata $batch,
+	function _plug(
+		Plug[] calldata $plugs,
 		address $sender
 	) internal returns (bool $success) {
 		/// @dev Load the stack.
@@ -136,23 +136,23 @@ abstract contract PlugCore is Types {
 		uint256 k;
 		address canGrant;
 		address intendedSender;
-		address permissionSigner;
+		address pinSigner;
 		bytes32 authHash;
-		bytes32 permissionHash;
+		bytes32 pinHash;
 
 		/// @dev Load the structs into a hot reference.
-		Intent memory intent;
-		SignedPermission memory signedPermission;
-		Permission memory permission;
-		Transaction memory transaction;
+		Plug memory intent;
+		LivePin memory signedPin;
+		Pin memory pin;
+		Current memory current;
 
-		/// @dev Iterate over the batch of intents.
-		for (i; i < $batch.length; ) {
-			/// @dev Load the intent from the batch.
-			intent = $batch[i];
+		/// @dev Iterate over the plugs of plugs.
+		for (i; i < $plugs.length; ) {
+			/// @dev Load the intent from the plugs.
+			intent = $plugs[i];
 
-			/// @dev If there are no permissions, this intent comes from the signer
-			if (intent.authority.length == 0) {
+			/// @dev If there are no pins, this intent comes from the signer
+			if (intent.pins.length == 0) {
 				canGrant = intendedSender = $sender;
 			}
 
@@ -162,55 +162,51 @@ abstract contract PlugCore is Types {
 			k = 0;
 
 			/// @dev Load the transaction from the intent.
-			transaction = intent.transaction;
+			current = intent.current;
 
 			require(
-				transaction.to == address(this),
+				current.ground == address(this),
 				'PlugCore:invalid-intent-target'
 			);
 
-			/// @dev Iterate over the authority permissions.
-			for (j; j < intent.authority.length; j++) {
-				/// @dev Load the permission from the intent.
-				signedPermission = intent.authority[j];
+			/// @dev Iterate over the authority pins.
+			for (j; j < intent.pins.length; j++) {
+				/// @dev Load the pin from the intent.
+				signedPin = intent.pins[j];
 
-				/// @dev Determine the signer of the permission.
-				permissionSigner = getSignedPermissionSigner(signedPermission);
+				/// @dev Determine the signer of the pin.
+				pinSigner = getLivePinSigner(signedPin);
 
-				/// @dev Implied sending account is the signer of the first permission.
-				if (j == 0) canGrant = intendedSender = permissionSigner;
+				/// @dev Implied sending account is the signer of the first pin.
+				if (j == 0) canGrant = intendedSender = pinSigner;
 
-				/// @dev Ensure the permission signer has authority to grant
-				///      the claimed permission.
+				/// @dev Ensure the pin signer has authority to grant
+				///      the claimed pin.
+				require(pinSigner == canGrant, 'PlugCore:invalid-pin-signer');
+
+				/// @dev Warm up the pin reference.
+				pin = signedPin.pin;
+
+				/// @dev Ensure the pin is valid.
 				require(
-					permissionSigner == canGrant,
-					'PlugCore:invalid-permission-signer'
+					pin.live == authHash,
+					'PlugCore:invalid-authority-pin-link'
 				);
 
-				/// @dev Warm up the permission reference.
-				permission = signedPermission.permission;
+				/// @dev Retrieve the packet hash for the pin.
+				pinHash = getLivePinHash(signedPin);
 
-				/// @dev Ensure the permission is valid.
-				require(
-					permission.authority == authHash,
-					'PlugCore:invalid-authority-permission-link'
-				);
-
-				/// @dev Retrieve the packet hash for the permission.
-				permissionHash = getSignedPermissionHash(signedPermission);
-
-				/// @dev Loop through all the execution caveats declared in the permission
+				/// @dev Loop through all the execution fuses declared in the pin
 				///      and ensure they are all valid.
-				for (k; k < permission.caveats.length; ) {
-					/// @dev Call the enforcer to determine if the caveat is valid.
+				for (k; k < pin.fuses.length; ) {
+					/// @dev Call the enforcer to determine if the fuse is valid.
 					require(
-						CaveatEnforcer(permission.caveats[k].enforcer)
-							.enforceCaveat(
-								permission.caveats[k].terms,
-								intent.transaction,
-								permissionHash
-							),
-						'PlugCore:caveat-rejected'
+						IFuse(pin.fuses[k].neutral).enforceFuse(
+							pin.fuses[k].live,
+							intent.current,
+							pinHash
+						),
+						'PlugCore:fuse-rejected'
 					);
 
 					unchecked {
@@ -218,22 +214,22 @@ abstract contract PlugCore is Types {
 					}
 				}
 
-				/// @dev Store the hash of this permission in `authHash` to verify the
-				///      next permission can be verified against it.
-				authHash = permissionHash;
+				/// @dev Store the hash of this pin in `authHash` to verify the
+				///      next pin can be verified against it.
+				authHash = pinHash;
 
-				/// @dev Set the next permission signer as the current permission signer.
-				canGrant = permission.delegate;
+				/// @dev Set the next pin signer as the current pin signer.
+				canGrant = pin.neutral;
 			}
 
-			/// @dev Verify the delegate at the end of the permission chain is the signer.
+			/// @dev Verify the delegate at the end of the pin chain is the signer.
 			require(canGrant == $sender, 'PlugCore:invalid-signer');
 
 			/// @dev Execute the transaction.
 			$success = _execute(
-				transaction.to,
-				transaction.data,
-				transaction.gasLimit,
+				current.ground,
+				current.data,
+				current.voltage,
 				intendedSender
 			);
 

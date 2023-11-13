@@ -1,6 +1,6 @@
 import hre from 'hardhat'
 
-import { Plug } from '@/core/framework'
+import { PlugSDK } from '@/core/sdk'
 
 const RUN = false
 
@@ -19,7 +19,7 @@ export default async function () {
 			{ name: 'name', type: 'string' },
 			{ name: 'wallet', type: 'address' }
 		],
-		SignedMail: [
+		LiveMail: [
 			{ name: 'mail', type: 'Mail' },
 			{ name: 'signature', type: 'bytes' }
 		]
@@ -29,9 +29,9 @@ export default async function () {
 	const [owner] = await hre.viem.getWalletClients()
 
 	// * Create the util with the debug types.
-	const util = new Plug(name, version, 1, DEBUG_TYPES, contract)
+	const util = new PlugSDK(name, version, 1, DEBUG_TYPES, contract)
 
-	// @ts-expect-error - Should fail because there is no SignedSHOULD_FAIL type.
+	// @ts-expect-error - Should fail because there is no LiveSHOULD_FAIL type.
 	await util.sign(owner, 'SHOULD_FAIL', {
 		name: 'Bob',
 		wallet: owner.account.address
@@ -50,7 +50,7 @@ export default async function () {
 	intent?.mail.from
 	intent?.mail
 
-	// @ts-expect-error - Should fail because there is no SignedPerson type.
+	// @ts-expect-error - Should fail because there is no LivePerson type.
 	await util.sign(owner, 'Person', {
 		name: 'Bob',
 		wallet: owner.account.address

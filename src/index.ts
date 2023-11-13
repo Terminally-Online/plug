@@ -1,7 +1,7 @@
-export { Plug } from '@/core/framework'
-export { Intent } from '@/core/intent'
+export { Plug } from '@/core/plug'
+export { PlugSDK } from '@/core/sdk'
 
 export type {
-	TypedDataToKeysWithSignedPair,
-	TypedDataToSignedIntent
+	TypedDataToKeysWithLivePair,
+	TypedDataToLivePlug
 } from '@/lib/types'

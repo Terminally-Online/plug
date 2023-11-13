@@ -181,5 +181,5 @@ typechain-types
 cache
 artifacts
 
-/core/framework/**
-/core/intent/**
+/core/plug/**
+/core/sdk/**

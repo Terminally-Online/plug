@@ -22,101 +22,101 @@ describe('Plug', function () {
 		})
 	})
 
-	// * Run a test from start to finish for a SignedPermission.
-	it('pass: getSignedPermissionSigner', async function () {
+	// * Run a test from start to finish for a LivePin.
+	it('pass: getLivePinSigner', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
-		// * Create a Permission.
-		const intent = {
-			delegate: getAddress(owner.account.address),
-			authority: BASE_AUTH,
-			caveats: [],
+		// * Create a Pin.
+		const pin = {
+			neutral: getAddress(owner.account.address),
+			live: BASE_AUTH,
+			fuses: [],
 			salt: BASE_AUTH
 		} as const
 
-		// * Sign the permission to make it executable.
-		const signedIntent = await util.sign(owner, 'Permission', intent)
+		// * Sign the pin to make it executable.
+		const signedPin = await util.sign(owner, 'Pin', pin)
 
-		if (!signedIntent) expect.fail('Signed intent does not exist.')
+		if (!signedPin) expect.fail('Live intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedPermission = signedIntent.intent
+		const LivePin = signedPin.intent
 
-		if (!SignedPermission) expect.fail('Intent could not be signed.')
+		if (!LivePin) expect.fail('Plug could not be signed.')
 
 		// * Make sure the intent signer matched the recovered signer.
 		expect(getAddress(owner.account.address)).to.eq(
-			await signedIntent.address({})
+			await signedPin.address({})
 		)
 		expect(
-			await signedIntent.verify({
+			await signedPin.verify({
 				address: getAddress(owner.account.address)
 			})
 		).to.be.true
 		expect(getAddress(owner.account.address)).to.eq(
-			await contract.read.getSignedPermissionSigner([SignedPermission])
+			await contract.read.getLivePinSigner([LivePin])
 		)
 	})
 
-	// * Run a test from start to finish for a SignedIntents.
-	it('pass: getSignedIntentsSigner(SignedIntent memory signedIntent)', async function () {
+	// * Run a test from start to finish for a LivePlugs.
+	it('pass: getLivePlugsSigner(LivePlug memory signedPlug)', async function () {
 		const { util, contract, owner, notOwner } = await loadFixture(deploy)
 
-		// * Create a Permission.
-		const intent = {
-			delegate: getAddress(owner.account.address),
-			authority: BASE_AUTH,
-			caveats: [],
+		// * Create a Pin.
+		const pin = {
+			neutral: getAddress(owner.account.address),
+			live: BASE_AUTH,
+			fuses: [],
 			salt: BASE_AUTH
 		} as const
 
-		// * Sign the permission to make it executable.
-		const signedPermission = await util.sign(owner, 'Permission', intent)
+		// * Sign the pin to make it executable.
+		const signedPin = await util.sign(owner, 'Pin', pin)
 
-		if (!signedPermission) expect.fail('Signed intent does not exist.')
+		if (!signedPin) expect.fail('Live intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedPermission = signedPermission.intent
+		const LivePin = signedPin.intent
 
-		if (!SignedPermission) expect.fail('Intent could not be signed.')
+		if (!LivePin) expect.fail('Plug could not be signed.')
 
-		expect(
-			await contract.read.getSignedPermissionSigner([SignedPermission])
-		).to.eq(getAddress(owner.account.address))
+		expect(await contract.read.getLivePinSigner([LivePin])).to.eq(
+			getAddress(owner.account.address)
+		)
 
 		const encodedTransaction = encodeFunctionData({
 			abi: contract.abi,
 			functionName: 'mutedEcho'
 		})
 
-		const signedIntent = await util.sign(notOwner, 'Intents', {
-			replayProtection: {
+		const signedPlug = await util.sign(notOwner, 'Plugs', {
+			breaker: {
 				nonce: 1n,
 				queue: 0n
 			},
-			batch: [
+			plugs: [
 				{
-					authority: [SignedPermission],
-					transaction: {
-						to: getAddress(owner.account.address),
-						gasLimit: 21000n,
+					pins: [LivePin],
+					current: {
+						ground: getAddress(owner.account.address),
+						voltage: 21000n,
 						data: encodedTransaction
 					}
 				}
 			]
 		})
 
-		if (!signedIntent) expect.fail('Signed intent does not exist.')
-		if (!signedIntent.intent) expect.fail('Intent does not exist.')
+		if (!signedPlug) expect.fail('Live intent does not exist.')
+		if (!signedPlug.intent) expect.fail('Plug does not exist.')
 
-		const SignedIntent = signedIntent.intent
+		const LivePlug = signedPlug.intent
 
-		expect(
-			await contract.read.getSignedIntentsSigner([SignedIntent])
-		).to.eq(getAddress(notOwner.account.address))
+		expect(await contract.read.getLivePlugsSigner([LivePlug])).to.eq(
+			getAddress(notOwner.account.address)
+		)
 	})
 
-	it('fail: signedIntents: mutedEcho()', async function () {
+	it('fail: signedPlugs: mutedEcho()', async function () {
 		const { util, contract, owner } = await loadFixture(deploy)
 
 		const encodedTransaction = encodeFunctionData({
@@ -124,32 +124,32 @@ describe('Plug', function () {
 			functionName: 'mutedEcho'
 		})
 
-		const signedIntents = await util.sign(owner, 'Intents', {
-			replayProtection: {
+		const signedPlugs = await util.sign(owner, 'Plugs', {
+			breaker: {
 				nonce: 1n,
 				queue: 0n
 			},
-			batch: [
+			plugs: [
 				{
-					authority: [],
-					transaction: {
-						to: contract.address,
-						gasLimit: 21000n,
+					pins: [],
+					current: {
+						ground: contract.address,
+						voltage: 21000n,
 						data: encodedTransaction
 					}
 				}
 			]
 		})
 
-		if (!signedIntents) expect.fail('Signed intent does not exist.')
+		if (!signedPlugs) expect.fail('Live intent does not exist.')
 
 		// * Retrieve the object that will be passed onchain.
-		const SignedIntents = signedIntents.intent
+		const LivePlugs = signedPlugs.intent
 
-		if (!SignedIntents) expect.fail('Intent could not be signed.')
+		if (!LivePlugs) expect.fail('Plug could not be signed.')
 
-		await expect(
-			contract.write.invoke([[SignedIntents]])
-		).to.be.rejectedWith('EchoMuted')
+		await expect(contract.write.plug([[LivePlugs]])).to.be.rejectedWith(
+			'EchoMuted'
+		)
 	})
 })

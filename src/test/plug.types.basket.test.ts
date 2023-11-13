@@ -1,6 +1,6 @@
 import hre from 'hardhat'
 
-import { Plug } from '../core/framework'
+import { PlugSDK } from '../core/sdk'
 
 const RUN = false
 
@@ -22,13 +22,13 @@ export default async function () {
 		Email: [
 			{ name: 'from', type: 'Person' },
 			{ name: 'to', type: 'Person[]' },
-			{ name: 'mail', type: 'SignedMail[]' }
+			{ name: 'mail', type: 'LiveMail[]' }
 		],
-		SignedMail: [
+		LiveMail: [
 			{ name: 'mail', type: 'Mail' },
 			{ name: 'signature', type: 'bytes' }
 		],
-		SignedEmail: [
+		LiveEmail: [
 			{ name: 'email', type: 'Email' },
 			{ name: 'signature', type: 'bytes' }
 		]
@@ -38,7 +38,7 @@ export default async function () {
 	const [owner] = await hre.viem.getWalletClients()
 
 	// * Create the util with the debug types.
-	const util = new Plug(name, version, 1, DEBUG_TYPES, contract)
+	const util = new PlugSDK(name, version, 1, DEBUG_TYPES, contract)
 
 	// * Should be able to build Person to get the typehash even
 	//   though we are cannot sign it.

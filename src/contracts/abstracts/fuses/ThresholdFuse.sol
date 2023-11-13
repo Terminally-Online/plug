@@ -2,18 +2,18 @@
 
 pragma solidity ^0.8.19;
 
-import {CaveatEnforcer} from '../CaveatEnforcer.sol';
+import {Fuse} from '../Fuse.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
-abstract contract ThresholdEnforcer is CaveatEnforcer {
+abstract contract ThresholdFuse is Fuse{
 	using BytesLib for bytes;
 
 	/**
-	 * See {CaveatEnforcer-enforceCaveat}.
+	 * See {FuseEnforcer-enforceFuse}.
 	 */
-	function enforceCaveat(
+	function enforceFuse(
 		bytes calldata $terms,
-		Transaction calldata,
+		Current calldata,
 		bytes32
 	) public view override returns (bool $success) {
 		/// @dev Decode the terms to get the logic operator and threshold.
@@ -22,11 +22,11 @@ abstract contract ThresholdEnforcer is CaveatEnforcer {
 		/// @dev Make sure the block number is before the threshold.
 		if ($operator == 0) {
 			if ($threshold <= _threshold())
-				revert('BlockNumberBeforeEnforcer:expired-permission');
+				revert('BlockNumberBeforeEnforcer:expired-pin');
 		}
 		/// @dev Make sure the block number is after the threshold.
 		else if ($threshold >= _threshold())
-			revert('BlockNumberAfterEnforcer:early-permission');
+			revert('BlockNumberAfterEnforcer:early-pin');
 
 		$success = true;
 	}

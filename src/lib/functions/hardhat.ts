@@ -1,7 +1,7 @@
 import hre, { network } from 'hardhat'
 import { Network } from 'hardhat/types'
 
-import { Plug } from '@/core/framework'
+import { PlugSDK } from '@/core/sdk'
 
 import { constants } from '@nftchance/plug-types'
 
@@ -16,7 +16,7 @@ export default async function () {
 
 	const publicClient = await hre.viem.getPublicClient()
 
-	const util = new Plug(name, version, chainId, constants.types, contract)
+	const util = new PlugSDK(name, version, chainId, constants.types, contract)
 
 	return {
 		chainId,

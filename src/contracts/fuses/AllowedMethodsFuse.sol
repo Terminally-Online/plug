@@ -2,26 +2,26 @@
 
 pragma solidity ^0.8.19;
 
-import {CaveatEnforcer} from '../abstracts/CaveatEnforcer.sol';
+import {Fuse} from '../abstracts/Fuse.sol';
 
-contract AllowedMethodsEnforcer is CaveatEnforcer {
+contract AllowedMethodsFuse is Fuse {
 	/**
-	 * See {CaveatEnforcer-enforceCaveat}.
+	 * See {FuseEnforcer-enforceFuse}.
 	 */
-	function enforceCaveat(
-		bytes calldata $terms,
-		Transaction calldata $transaction,
+	function enforceFuse(
+		bytes calldata $live,
+		Current calldata $current,
 		bytes32
 	) public pure override returns (bool) {
 		/// @dev The signature of the function that is being called.
-		bytes4 targetSig = bytes4($transaction.data[0:4]);
+		bytes4 targetSig = bytes4($current.data[0:4]);
 
 		/// @dev Load the stack.
 		uint256 i;
 
-		for (i; i < $terms.length; ) {
+		for (i; i < $live.length; ) {
 			/// @dev Slice the next 4 bytes from the terms array.
-			bytes4 allowedSig = bytes4($terms[i:i + 4]);
+			bytes4 allowedSig = bytes4($live[i:i + 4]);
 			/// @dev If we have a match, return true.
 			if (allowedSig == targetSig) return true;
 

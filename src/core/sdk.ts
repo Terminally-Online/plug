@@ -7,14 +7,14 @@ import {
 	WalletClient
 } from 'viem'
 
-import { Intent } from '@/core/intent'
+import { Plug } from '@/core/plug'
 
-import { TypedDataToKeysWithSignedPair } from '../lib/types'
+import { TypedDataToKeysWithLivePair } from '../lib/types'
 
-export class Plug<
+export class PlugSDK<
 	C extends WalletClient,
 	T extends TypedData,
-	K extends TypedDataToKeysWithSignedPair<T>
+	K extends TypedDataToKeysWithLivePair<T>
 > {
 	public readonly info: {
 		domain: GetTypedDataDomain['domain']
@@ -50,7 +50,7 @@ export class Plug<
 
 		if (!this.info) throw new Error('Contract info not initialized')
 
-		return new Intent<C, T, TK>(
+		return new Plug<C, T, TK>(
 			domain,
 			this.info.types,
 			intentType,
@@ -76,6 +76,6 @@ export class Plug<
 			intent as TypedDataToPrimitiveTypes<T>[TK] &
 				TypedDataToPrimitiveTypes<T>[K],
 			domain
-		).init({ client })) as Intent<C, T, TK>
+		).init({ client })) as Plug<C, T, TK>
 	}
 }

@@ -2,33 +2,33 @@
 
 pragma solidity ^0.8.19;
 
-import {CaveatEnforcer} from '../abstracts/CaveatEnforcer.sol';
+import {Fuse} from '../abstracts/Fuse.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 /**
  * @title LimitedCallsEnforcer
- * @notice This Caveat Enforcer powers the ability to limit the number of times
- *         a delegate can call a function with the same permission hash.
+ * @notice This Fuse Enforcer powers the ability to limit the number of times
+ *         a delegate can call a function with the same pin hash.
  */
-contract LimitedCallsEnforcer is CaveatEnforcer {
+contract LimitedCallsFuse is Fuse {
 	/// @dev Use the BytesLib library for bytes manipulation.
 	using BytesLib for bytes;
 
-	/// @dev Keep track of how many times a permission has been used.
+	/// @dev Keep track of how many times a pin has been used.
 	mapping(address => mapping(bytes32 => uint256)) callCounts;
 
 	/**
-	 * See {CaveatEnforcer-enforceCaveat}.
+	 * See {FuseEnforcer-enforceFuse}.
 	 */
-	function enforceCaveat(
-		bytes calldata $terms,
-		Transaction calldata,
-		bytes32 $permissionHash
+	function enforceFuse(
+		bytes calldata $live,
+		Current calldata,
+		bytes32 $pinHash
 	) public override returns (bool $success) {
 		/// @dev Confirm the allowed limit has not yet been reached by the sender
-		///      of the declared permission.
+		///      of the declared pin.
 		require(
-			decode($terms) >= callCounts[msg.sender][$permissionHash]++,
+			decode($live) >= callCounts[msg.sender][$pinHash]++,
 			'LimitedCallsEnforcer:limit-exceeded'
 		);
 
@@ -45,7 +45,7 @@ contract LimitedCallsEnforcer is CaveatEnforcer {
 	}
 
 	/**
-	 * @dev  Encode the limit into the terms of the Caveat.
+	 * @dev  Encode the limit into the terms of the Fuse.
 	 */
 	function encode(
 		uint256 $callCount

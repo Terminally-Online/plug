@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.19;
 
-import {ThresholdEnforcer} from '../abstracts/enforcers/ThresholdEnforcer.sol';
+import {ThresholdFuse} from '../abstracts/fuses/ThresholdFuse.sol';
 
-contract TimestampEnforcer is ThresholdEnforcer {
+contract TimestampFuse is ThresholdFuse {
 	/// @dev Returns the current timestamp.
 	function _threshold() internal view override returns (uint256) {
 		return block.timestamp;
