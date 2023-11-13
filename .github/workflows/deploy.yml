@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 # Sets pins of the GITHUB_TOKEN to allow deployment to GitHub Pages
-pins:
+permissions:
   contents: read
   pages: write
   id-token: write
