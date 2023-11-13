@@ -24,7 +24,7 @@ To resolve this issue, `Plug` is built on top of an automated `Types` generation
 
 This is accomplished by using the `Plug` framework to generate the `Plug` protocol. It sounds funny, but it's true.
 
-This means that the `Plug` framework is not only self-sufficient, but it is also self-generating. Due to the declarative nature of [Intents](/intents/introduction), a few simple rules can be defined to enable automatic generation for a vast majority of the implementation.
+This means that the `Plug` framework is not only self-sufficient, but it is also self-generating. Due to the declarative nature of [Plugs](/plugs/introduction), a few simple rules can be defined to enable automatic generation for a vast majority of the implementation.
 
 With this simple pipeline in place we can focus on the core mechanisms of our protocol and not get bogged down in the tedium of writing and maintaining the same code over and over again.
 
@@ -135,13 +135,13 @@ We've already covered the `out` path, but let's take a look at the output of the
 
 :::
 
-This single file contains everything needed to start building on top of [Signed Pairs](/decoders/eip-712/signed-pairs) and [Intents](/intents/introduction). Although it is a single file, a lot happens including:
+This single file contains everything needed to start building on top of [Live Pairs](/decoders/eip-712/signed-pairs) and [Plugs](/plugs/introduction). Although it is a single file, a lot happens including:
 
 - The static `TypeHash` of each `Type`.
 - The initialization of the `Domain` for [EIP-712](/decoders/eip-712#domain-specification).
 - The [hashGetter](/decoders/hash-getters) functions for each `Type`.
-- The [digestGetter](/decoders/digest-getters) functions for each nested `Type` in the [SignedPairs](/decoders/eip-712/signed-pairs) declared.
-- The [signerGetter](/decoders/signer-getters) functions for the top-level of `SignedPair` `Type`.
+- The [digestGetter](/decoders/digest-getters) functions for each nested `Type` in the [LivePairs](/decoders/eip-712/signed-pairs) declared.
+- The [signerGetter](/decoders/signer-getters) functions for the top-level of `LivePair` `Type`.
 
 ::: tip
 
@@ -153,7 +153,7 @@ Alternativey, in `Solidity` you can just import the live referenece of the proto
 
 ## Adding Custom Types
 
-In some cases you will want access to more than just the base `Plug` types of `Permissions`, `Intents`, and all the supporting shapes such as `Transaction`, `ReplayProtection`, etc.
+In some cases you will want access to more than just the base `Plug` types of `Pins`, `Plugs`, and all the supporting shapes such as `Transaction`, `Breaker`, etc.
 
 In this case, you need to extend the types and prepare your protocol to consume a framework that has already been initialized with all the confusing [EIP-712 data types and decoders](https://eips.ethereum.org/EIPS/eip-712) taken care of.
 
@@ -180,7 +180,7 @@ export const types = {
     { name: "name", type: "string" },
     { name: "wallet", type: "address" },
   ],
-  SignedMail: [
+  LiveMail: [
     { name: "mail", type: "Mail" },
     { name: "signature", type: "bytes" },
   ],

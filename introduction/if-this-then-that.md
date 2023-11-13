@@ -5,10 +5,10 @@ head:
       content: If This, Then That
   - - meta
     - name: description
-      content: Unlock the power of counterfactuals that enable the "if this, then that" logic of permissions.
+      content: Unlock the power of counterfactuals that enable the "if this, then that" logic of pins.
   - - meta
     - property: og:description
-      content: Unlock the power of counterfactuals that enable the "if this, then that" logic of permissions.
+      content: Unlock the power of counterfactuals that enable the "if this, then that" logic of pins.
 ---
 
 # If This, Then That (IFTTT)

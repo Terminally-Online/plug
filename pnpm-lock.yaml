@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@nftchance/plug-types':
-    specifier: ^0.4.10
-    version: 0.4.11(esbuild@0.18.20)(typescript@5.2.2)
+    specifier: ^0.5.0
+    version: 0.5.0(esbuild@0.18.20)(typescript@5.2.2)
   fs-extra:
     specifier: ^11.1.1
     version: 11.1.1
@@ -181,7 +181,7 @@ packages:
     resolution: {integrity: sha512-oLcVCTeIFadUoArDTwpluncplrYBmTCCZZgXCbgNGvOBBiSDDK3eWO4b/+eOTli5tKv1lg+a5/NAXg+nTcei1w==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
       jsesc: 2.5.2
       source-map: 0.5.7
     dev: false
@@ -206,21 +206,21 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.22.15
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
     dev: false
 
   /@babel/helper-hoist-variables@7.22.5:
     resolution: {integrity: sha512-wGjk9QZVzvknA6yKIUURb8zY3grXCcOZt+/7Wcy8O2uctxhplmUPkOdlgoNhmdVee2c92JXbf1xpMtVNbfoxRw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
     dev: false
 
   /@babel/helper-split-export-declaration@7.22.6:
     resolution: {integrity: sha512-AsUnxuLhRYsisFiaJwvp1QF+I3KjD5FOxut14q/GzovUe6orHLesW2C7d754kRm53h5gqrz6sFl6sxc4BVtE/g==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
     dev: false
 
   /@babel/helper-string-parser@7.22.5:
@@ -256,7 +256,7 @@ packages:
     dependencies:
       '@babel/code-frame': 7.22.13
       '@babel/parser': 7.23.0
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
     dev: false
 
   /@babel/traverse@7.23.2:
@@ -270,7 +270,7 @@ packages:
       '@babel/helper-hoist-variables': 7.22.5
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.23.0
-      '@babel/types': 7.23.0
+      '@babel/types': 7.23.3
       debug: 4.3.4
       globals: 11.12.0
     transitivePeerDependencies:
@@ -574,8 +574,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
-  /@nftchance/plug-types@0.4.11(esbuild@0.18.20)(typescript@5.2.2):
-    resolution: {integrity: sha512-uDAro8xGGFfMrxfJHTkRTZvX9rlK+5wrPLjCwT79Mn/W6e0kzTA4QVFlWXpNiya0r7RFANAiGh3eh3BrVLjSVg==}
+  /@nftchance/plug-types@0.5.0(esbuild@0.18.20)(typescript@5.2.2):
+    resolution: {integrity: sha512-rxq8+wQJErlgEbkZxaSH36OP//K5busX3mBWNiWGy8XZLzjx/jj14n0a5vxIxZGF7tVRl84tcaeM7IpzwoaV2Q==}
     hasBin: true
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.0.3)

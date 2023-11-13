@@ -15,7 +15,7 @@ notes:
 
 # EIP712Domain
 
-A [EIP712Domain](/generated/base-types/EIP712Domain) data type provides EIP-712 compatability for encoding and decoding the data needed for an `Intent` to be securely distributed and executed. 
+A [EIP712Domain](/generated/base-types/EIP712Domain) data type provides EIP-712 compatability for encoding and decoding the data needed for an `Plug` to be securely distributed and executed. 
 
 ## The Data Type
 

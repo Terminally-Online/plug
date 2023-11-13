@@ -1,6 +1,6 @@
 # Base Types
 
-`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Core Plug](/core/framework) and [Caveats](/core/caveat-enforcer). Alone these types are not very useful, but together they form the foundation of the `Plug` framework.
+`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Core Plug](/core/framework) and [Fuses](/core/fuse). Alone these types are not very useful, but together they form the foundation of the `Plug` framework.
 
 ## Type Hashes
 
@@ -8,7 +8,7 @@ Type hashes are a cornerstone in the EIP-712 standard and by extension, the Plug
 
 Imagine building a house without a blueprint. You could try to explain what you want, but without a standardized plan, you're bound to run into inconsistencies, misunderstandings, or mistakes. Type hashes act like these blueprints, giving a standardized representation that all parties can understand and agree upon.
 
-For instance, when someone signs a permission, it's not just the data that is signed, but also its type hash. This ensures that the `Signer`, the `Executor`, and the smart contract all agree on the "shape" or structure of the data.
+For instance, when someone signs a pin, it's not just the data that is signed, but also its type hash. This ensures that the `Signer`, the `Executor`, and the smart contract all agree on the "shape" or structure of the data.
 
 ### How to Calculate a Type Hash
 
@@ -79,31 +79,31 @@ As covered in the [EIP-712](/decoders/eip-712) section, typed signatures include
 
 By default, most libraries include the `EIP712Domain` type in the signature. This is because the `EIP712Domain` type is used to define every signature and things would not be secure without it. While the types of every protocol vary, they all share the same `EIP712Domain` type.
 
-## Permission Types
+## Pin Types
 
-Now stepping into the pieces introduced by the `Plug` framework, the `Permission Types` are used to define the [Permission](/generated/base-types/Permission) that is being given.
+Now stepping into the pieces introduced by the `Plug` framework, the `Pin Types` are used to define the [Pin](/generated/base-types/Pin) that is being given.
 
-When creating new permissions you will utilize:
+When creating new pins you will utilize:
 
-- [Caveat](/generated/base-types/Caveat)
-- [Permission](/generated/base-types/Permission)
+- [Fuse](/generated/base-types/Fuse)
+- [Pin](/generated/base-types/Pin)
 
-When distributing, verifying or executing permissions you will utilize:
+When distributing, verifying or executing pins you will utilize:
 
-- [SignedPermission](/generated/base-types/SignedPermission)
+- [LivePin](/generated/base-types/LivePin)
 
-No matter the complexity of the permission, the `Permission Types` are always the same. This is because the `Permission Types` are used to define the `Permission` that is being given, not the logic of the `Permission`.
+No matter the complexity of the pin, the `Pin Types` are always the same. This is because the `Pin Types` are used to define the `Pin` that is being given, not the logic of the `Pin`.
 
-## Intent Types
+## Plug Types
 
-The `Intent Types` are used to define the [Intent](/intents/introduction) that is executed.
+The `Plug Types` are used to define the [Plug](/plugs/introduction) that is executed.
 
-When creating new intents you will utilize:
+When creating new plugs you will utilize:
 
-- [Replay Protection](/generated/base-types/ReplayProtection)
-- [Transaction](/generated/base-types/Transaction)
-- [Intent](/generated/base-types/Intent)
+- [Replay Protection](/generated/base-types/Breaker)
+- [Current](/generated/base-types/Current)
+- [Plug](/generated/base-types/Plug)
 
-When distributing new intents you will utilize:
+When distributing new plugs you will utilize:
 
-- [SignedIntents](/generated/base-types/SignedIntents)
+- [LivePlugs](/generated/base-types/LivePlugs)

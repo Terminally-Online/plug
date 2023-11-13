@@ -1,11 +1,10 @@
-import { defineConfig } from "vitepress";
-
 import { default as fse } from "fs-extra";
 import { resolve } from "pathe";
+import { defineConfig } from "vitepress";
 
 const rootDir = resolve(process.cwd());
 
-const ordering = ["domain", "caveat", "Permission", "Transaction", "ReplayProtection", "Intent"]
+const ordering = ["domain", "fuse", "Pin", "Transaction", "Breaker", "Plug"];
 
 // * Get the generated files in a directory and create the array of items.
 function getItems(directory: string) {
@@ -28,13 +27,11 @@ function getItems(directory: string) {
 export default defineConfig({
   title: "Plug Documentation",
   description: "Documentation for the Plug protocol.",
-  appearance: 'dark',
+  appearance: "dark",
   themeConfig: {
-    logo: { light: '/logo-dark.svg', dark: '/logo-white.svg' },
+    logo: { light: "/logo-dark.svg", dark: "/logo-white.svg" },
 
-    nav: [
-      { text: "Home", link: "https://www.onplug.io" },
-    ],
+    nav: [{ text: "Home", link: "https://www.onplug.io" }],
 
     sidebar: [
       {
@@ -55,46 +52,46 @@ export default defineConfig({
         ],
       },
       {
-        text: "Intents",
+        text: "Plugs",
         collapsed: false,
         items: [
           {
             text: "Introduction",
-            link: "/intents/introduction",
+            link: "/plugs/introduction",
             items: [
               {
                 text: "Imperative Transactions",
-                link: "/intents/imperative-transactions",
+                link: "/plugs/imperative-transactions",
               },
               {
                 text: "Declarative Messages",
-                link: "/intents/declarative-messages",
+                link: "/plugs/declarative-messages",
               },
             ],
           },
           {
             text: "Execution Paths",
-            link: "/intents/execution-paths",
+            link: "/plugs/execution-paths",
             items: [
               {
                 text: "Single Lane",
-                link: "/intents/execution-paths/single-lane",
+                link: "/plugs/execution-paths/single-lane",
               },
               {
                 text: "Multi-Dimensional",
-                link: "/intents/execution-paths/multi-dimensional",
+                link: "/plugs/execution-paths/multi-dimensional",
               },
               {
                 text: "Native Transactions",
-                link: "/intents/execution-paths/native-transactions",
+                link: "/plugs/execution-paths/native-transactions",
               },
               {
                 text: "Meta-Transactions",
-                link: "/intents/execution-paths/meta-transactions",
+                link: "/plugs/execution-paths/meta-transactions",
               },
               {
                 text: "Channels",
-                link: "/intents/execution-paths/channels",
+                link: "/plugs/execution-paths/channels",
               },
             ],
           },
@@ -109,7 +106,7 @@ export default defineConfig({
             link: "/decoders/eip-712",
             items: [
               {
-                text: "Signed Pairs",
+                text: "Live Pairs",
                 link: "/decoders/eip-712/signed-pairs",
               },
               {
@@ -145,12 +142,12 @@ export default defineConfig({
         collapsed: true,
         items: [
           {
-            text: "CaveatEnforcer",
-            link: "/core/caveat-enforcer",
+            text: "FuseEnforcer",
+            link: "/core/fuse",
             items: [
               {
-                text: "enforceCaveat",
-                link: "/core/caveat-enforcer/enforce-caveat",
+                text: "enforceFuse",
+                link: "/core/fuse/enforce-fuse",
               },
             ],
           },

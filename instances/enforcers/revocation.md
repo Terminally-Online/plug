@@ -5,10 +5,10 @@ head:
       content: Revocation
   - - meta
     - name: description
-      content: Details of permission revocation and why it's important.
+      content: Details of pin revocation and why it's important.
   - - meta
     - property: og:description
-      content: Details of permission revocation and why it's important.
+      content: Details of pin revocation and why it's important.
 ---
 
 # Revocation
@@ -19,30 +19,30 @@ With typical native EVM transactions on Ethereum, there is no way to revoke a tr
 
 With `Plug`, you can with ease.
 
-Importantly, this is enabled by precisely the same permission-stack as every other execution condition. Due to the modular design of `Plug`, unlocking this ability for the users of your protocol is extremely simple and only requires app-level logic.
+Importantly, this is enabled by precisely the same pin-stack as every other execution condition. Due to the modular design of `Plug`, unlocking this ability for the users of your protocol is extremely simple and only requires app-level logic.
 
 ## How does it work?
 
-As revocation is built on the same permission-stack as every other execution condition, it is extremely simple to implement. In fact, it is so simple that it is only a two-step process:
+As revocation is built on the same pin-stack as every other execution condition, it is extremely simple to implement. In fact, it is so simple that it is only a two-step process:
 
-1. Scope a [Revocation Enforcer](/core/caveat-enforcer) at the time of **giving** the permissions.
-2. Call the `revoke` function on the [Enforcer](/core/caveat-enforcer) **originally declared** in the permissions.
+1. Scope a [Revocation Enforcer](/core/fuse) at the time of **giving** the pins.
+2. Call the `revoke` function on the [Enforcer](/core/fuse) **originally declared** in the pins.
 
 ::: info
 
-If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/caveat-enforcer) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/caveat-enforcer) is what powers the "_if this_" part of the "_if this, then that_" logic of a permission.
+If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/fuse) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/fuse) is what powers the "_if this_" part of the "_if this, then that_" logic of a pin.
 
 :::
 
-### Giving Revocable Permissions
+### Giving Revocable Pins
 
-The first step is to scope a [Revocation Enforcer](/core/caveat-enforcer) at the time of declaring the permission. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Permission` struct.
+The first step is to scope a [Revocation Enforcer](/core/fuse) at the time of declaring the pin. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Pin` struct.
 
 ```typescript
-const permissions = {
+const pins = {
   delegate: "<the EVM address of the delegate>",
   authority: bytes32(0),
-  caveats: [
+  fuses: [
     {
       enforcer: RevocationEnforcer.address,
       terms: bytes(0),
@@ -52,54 +52,54 @@ const permissions = {
 };
 ```
 
-With the `RevocationEnforcer` scoped, the permissions can now be signed and given to the delegate. If the permissions given are ever used, first the `RevocationEnforcer` will be called to ensure that the they have not been revoked.
+With the `RevocationEnforcer` scoped, the pins can now be signed and given to the delegate. If the pins given are ever used, first the `RevocationEnforcer` will be called to ensure that the they have not been revoked.
 
-### Revoking Permissions
+### Revoking Pins
 
-With the permissions given, let's look at the implementation of the `revoke` function in the `Plug` framework contract in chunks to better understand how this works:
+With the pins given, let's look at the implementation of the `revoke` function in the `Plug` framework contract in chunks to better understand how this works:
 
 ```solidity
-function revoke(SignedPermissions calldata $signedPermissions, bytes32 $domainHash) public
+function revoke(LivePins calldata $signedPins, bytes32 $domainHash) public
 ```
 
-Notably, the `revoke` function takes two arguments: the `SignedPermissions` and the `domainHash`.
+Notably, the `revoke` function takes two arguments: the `LivePins` and the `domainHash`.
 
-- The `SignedPermissions` is the same as the `SignedPermissions` that was originally declared.
-- The `domainHash` is the same as the `domainHash` of the intent target (you may give the same permissions for two different contracts).
+- The `LivePins` is the same as the `LivePins` that was originally declared.
+- The `domainHash` is the same as the `domainHash` of the intent target (you may give the same pins for two different contracts).
 
 ```solidity
 require(
-    getSignedPermissionsSigner($signedPermissions, $domainHash) == _msgSender(),
+    getLivePinsSigner($signedPins, $domainHash) == _msgSender(),
     'RevocationEnforcer:InvalidRevoker'
 );
 ```
 
-Now inside the function, the logic starts by ensuring that the `Sender` of the `revoke`transaction is the same as the`Signer`of the permissions. This is important because it ensures that only the original`Signer` of the permissions can revoke them.
+Now inside the function, the logic starts by ensuring that the `Sender` of the `revoke`transaction is the same as the`Signer`of the pins. This is important because it ensures that only the original`Signer` of the pins can revoke them.
 
 ```solidity
-bytes32 permissionsHash = getSignedPermissionsHash($signedPermissions);
+bytes32 pinsHash = getLivePinsHash($signedPins);
 ```
 
-Now that we know the caller is the signer of the permissions, we need to determine the hash of the permissions that are being revoked.
+Now that we know the caller is the signer of the pins, we need to determine the hash of the pins that are being revoked.
 
 ```solidity
-require(isRevoked[permissionsHash] == false, 'RevocationEnforcer:AlreadyRevoked');
+require(isRevoked[pinsHash] == false, 'RevocationEnforcer:AlreadyRevoked');
 ```
 
-Everything is going great, but before we can revoke the permissions, we need to ensure that they have not already been revoked.
+Everything is going great, but before we can revoke the pins, we need to ensure that they have not already been revoked.
 
 ```solidity
-isRevoked[permissionsHash] = true;
+isRevoked[pinsHash] = true;
 ```
 
-Finally, with all that work done, we can revoke the permissions by setting the `isRevoked` mapping to `true`. All in all, not too complicated.
+Finally, with all that work done, we can revoke the pins by setting the `isRevoked` mapping to `true`. All in all, not too complicated.
 
 ::: tip
 
-It is very important to understand that when you revoke permissions, it does so based on the hash of the permissions given. If the user attempts to use that same set of permissions (that encode to the same hash) again in the future, it will be rejected.
+It is very important to understand that when you revoke pins, it does so based on the hash of the pins given. If the user attempts to use that same set of pins (that encode to the same hash) again in the future, it will be rejected.
 
-Due to this, it is recommended to use `salt` as an encoded timestamp to ensure that the hash is unique each time a set of permissions are given.
+Due to this, it is recommended to use `salt` as an encoded timestamp to ensure that the hash is unique each time a set of pins are given.
 
-Before moving on it is worth noting that the `SignedPermissions` remain localized to the `domainHash` of the intent target. This means that if you revoke permissions for one `domainHash`, it will not affect the permissions for any other `domainHash`.
+Before moving on it is worth noting that the `LivePins` remain localized to the `domainHash` of the intent target. This means that if you revoke pins for one `domainHash`, it will not affect the pins for any other `domainHash`.
 
 :::

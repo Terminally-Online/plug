@@ -23,7 +23,7 @@ Even after a decade there is still no battle-tested plug-and-play option. Instea
 
 ### Authorization
 
-Traditionally, permissions are handled on a contract-by-contract basis. This leads to a fragmented and inconsistent security model where each smart contract has its unique authorization mechanism, making it cumbersome to manage permissions across multiple contracts.
+Traditionally, pins are handled on a contract-by-contract basis. This leads to a fragmented and inconsistent security model where each smart contract has its unique authorization mechanism, making it cumbersome to manage pins across multiple contracts.
 
 ### Ordering
 
@@ -35,7 +35,7 @@ Users are required to pay transaction costs upfront. This system is inefficient 
 
 ### Scalability
 
-Managing permissions often involves declaring them for each reference or interaction, leading to a bloated and inefficient system. This makes it challenging to scale the protocol or system as new features and interactions are added.
+Managing pins often involves declaring them for each reference or interaction, leading to a bloated and inefficient system. This makes it challenging to scale the protocol or system as new features and interactions are added.
 
 ### Unbounded Transactions
 
@@ -51,7 +51,7 @@ A maximum of 5 minutes and I wanted to be up and running with a new idea. So, I 
 
 ## Traditional Blockchain Transactions: A Refresher
 
-In the orthodox blockchain transaction model, a user's `Account` is used to sign a `Transaction`. [This `Transaction` specifies several parameters like the contract address, the method to invoke, and the amount of gas to allocate.](/intents/imperative-transactions)
+In the orthodox blockchain transaction model, a user's `Account` is used to sign a `Transaction`. [This `Transaction` specifies several parameters like the contract address, the method to invoke, and the amount of gas to allocate.](/plugs/imperative-transactions)
 
 The `Transaction` is then broadcast to the network, where it waits in a mempool until miners include it in a new block.
 
@@ -65,13 +65,13 @@ Plug introduces a paradigm shift. Instead of being a passive participant in the 
 
 If a transaction doesn't meet the predetermined conditions, it simply won't execute. This eliminates the risks associated with upfront costs, as you only pay for transactions that provide value. Additionally, it allows for more strategic planning around gas usage, thereby optimizing cost-efficiency.
 
-This means that instead of crafting a transaction solely based on the contract to call and the gas to provide, an individual has the ability to explicitly declare the [conditions that must be met to allow execution](/intents/declarative-messages).
+This means that instead of crafting a transaction solely based on the contract to call and the gas to provide, an individual has the ability to explicitly declare the [conditions that must be met to allow execution](/plugs/declarative-messages).
 
 ## Developer Experience
 
 Plug was developed with one thing in mind: **time to launch.** Too much time is wasted in the crypto development industry on reinventing the wheel and solving complex problems that have not only been solved, but had their answers shared far and wide.
 
-To accomplish this, `Plug` is designed to streamline the process of integrating [Declarative Transactions](/intents/declarative-messages) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Plug` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
+To accomplish this, `Plug` is designed to streamline the process of integrating [Declarative Transactions](/plugs/declarative-messages) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Plug` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
 
 By default, `Plug` ships with the base types that are needed to power declarative transactions however if you are seeking to build a more complex protocol, you can easily extend the types to meet your needs.
 
@@ -101,7 +101,7 @@ There is no dealing with legacy code or outdated technology. Plug is built for t
 
 ## Minimal Integration Architecture
 
-Plug delivers an unparalleled experience when it comes to implementing support for intents in your protocol for one simple reason:
+Plug delivers an unparalleled experience when it comes to implementing support for plugs in your protocol for one simple reason:
 
 1. Integration has been designed to happen at the lowest level possible.
 

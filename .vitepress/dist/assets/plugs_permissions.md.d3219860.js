@@ -1,0 +1,1 @@
+import{_ as s,o as e,c as t}from"./chunks/framework.850b4e59.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"plugs/permissions.md","filePath":"plugs/permissions.md","lastUpdated":null}'),a={name:"plugs/permissions.md"};function r(o,n,p,i,c,l){return e(),t("div")}const _=s(a,[["render",r]]);export{d as __pageData,_ as default};
