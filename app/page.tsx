@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
 import { PointerEvent, useEffect, useRef, WheelEvent } from "react";
 
 import useSize from "@react-hook/size";
 
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-import InfiniteCanvas from "./components/InfiniteCanvas";
-import CanvasStore from "./components/CanvasStore";
-import useRenderLoop from "./components/RenderLoop";
+import InfiniteCanvas from "./components/Canvas/InfiniteCanvas";
+import CanvasStore from "./store";
+import useRenderLoop from "./components/Canvas/RenderLoop";
 
 export default function Canvas() {
   const canvas = useRef<HTMLDivElement>(null);
@@ -57,4 +57,4 @@ export default function Canvas() {
       </div>
     </DndProvider>
   );
-};
+}
