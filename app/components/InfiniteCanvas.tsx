@@ -13,18 +13,14 @@ import { DragItem } from "../types";
 import { snapToGrid } from "../snap-to-grid";
 
 import CanvasStore from "./CanvasStore";
-import Markdown from "./Markdown";
 import { DraggableBox } from "./DraggableBox";
 
 export type ComponentMap = { 
   [key: string]: { 
     type: typeof ItemTypes[keyof typeof ItemTypes],
-    id: string,
     title: string, 
     left: number, 
     top: number, 
-    width: number, 
-    height: number 
   } 
 }
 
@@ -32,12 +28,9 @@ export const InfiniteCanvas = ({}: { frame: string }) => {
   const [components, setComponents] = useState<ComponentMap>({ 
     default: {
       type: ItemTypes.Markdown,
-      id: 'default',
       title: '## test heading',
       left: RECT_W / 2,
       top: RECT_H / 2,
-      width: RECT_W,
-      height: RECT_H,
    }
   });
 
@@ -84,6 +77,7 @@ export const InfiniteCanvas = ({}: { frame: string }) => {
       {Object.keys(components).map((key) => (
         <DraggableBox 
           key={key} 
+          id={key}
           {...components[key]}
         />
       ))}
