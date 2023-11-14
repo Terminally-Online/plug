@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
 import { PropsWithChildren } from "react";
 
-import CanvasStore from "./CanvasStore";
+import CanvasStore from "../../store";
 
-import { inBounds } from "../math-utils";
+import { inBounds } from "../../math-utils";
 
 export interface CanvasPosition {
   top: number;
@@ -18,9 +18,10 @@ export const Position = ({
   top,
   width,
   height,
-  children
+  children,
 }: PropsWithChildren<CanvasPosition>) => {
   const screen = CanvasStore.screen;
+
   if (
     inBounds(
       { left, top, height, width },
@@ -28,7 +29,7 @@ export const Position = ({
         left: screen.x,
         top: screen.y,
         width: screen.width,
-        height: screen.height
+        height: screen.height,
       }
     )
   ) {
@@ -37,7 +38,7 @@ export const Position = ({
         className="absolute inline-block"
         style={{
           left: `${left - screen.x}px`,
-          top: `${top - screen.y}px`
+          top: `${top - screen.y}px`,
         }}
       >
         {children}
