@@ -6,8 +6,8 @@ import type { DragSourceMonitor } from 'react-dnd'
 
 import { getEmptyImage } from 'react-dnd-html5-backend'
 
-import { Box } from './Box'
-import { ItemTypes } from './ItemTypes'
+import { Markdown } from './Markdown'
+import { ItemTypes } from '../ItemTypes'
 
 function getStyles(
   left: number,
@@ -28,14 +28,14 @@ function getStyles(
   }
 }
 
-export type DraggableBoxProps = {
+export type MarkdownDraggableProps = {
   id: string
   title: string
   left: number
   top: number
 }
 
-export const DraggableBox: FC<DraggableBoxProps> = memo(function DraggableBox(
+export const MarkdownDraggable: FC<MarkdownDraggableProps> = memo(function DraggableBox(
   props,
 ) {
   const { id, title, left, top } = props
@@ -58,9 +58,9 @@ export const DraggableBox: FC<DraggableBoxProps> = memo(function DraggableBox(
     <div
       ref={drag}
       style={getStyles(left, top, isDragging)}
-      role="DraggableBox"
+      role="MarkdownDraggable"
     >
-      <Box title={title} />
+      <Markdown title={title} />
     </div>
   )
 })

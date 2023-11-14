@@ -13,7 +13,8 @@ import { DragItem } from "../types";
 import { snapToGrid } from "../snap-to-grid";
 
 import CanvasStore from "./CanvasStore";
-import { DraggableBox } from "./DraggableBox";
+
+import { MarkdownDraggable } from "./Markdown/MarkdownDraggable";
 
 export type ComponentMap = { 
   [key: string]: { 
@@ -58,7 +59,7 @@ export const InfiniteCanvas = ({}: { frame: string }) => {
         let top = Math.round(item.top + delta.y)
 
         if(snapToGrid) [left, top] = snapToGrid(left, top)
-  
+
         moveComponent(item.id, left, top)
       }
     }), [moveComponent]
@@ -75,7 +76,7 @@ export const InfiniteCanvas = ({}: { frame: string }) => {
       }}
     >
       {Object.keys(components).map((key) => (
-        <DraggableBox 
+        <MarkdownDraggable 
           key={key} 
           id={key}
           {...components[key]}
