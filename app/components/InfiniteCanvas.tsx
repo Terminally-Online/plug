@@ -1,64 +1,96 @@
 'use client'
 
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
+import update from 'immutability-helper'
+
+import { useDrop } from "react-dnd";
+
+import { Drag } from "./Drag";
+import { ItemTypes } from "./ItemTypes";
+
+import { RECT_H, RECT_W } from "../constants";
+import { DragItem } from "../types";
+import { snapToGrid } from "../snap-to-grid";
 
 import CanvasStore from "./CanvasStore";
 import Markdown from "./Markdown";
+import { DraggableBox } from "./DraggableBox";
 
-import { RECT_H, RECT_W } from "../constants";
+export type ComponentMap = { 
+  [key: string]: { 
+    type: typeof ItemTypes[keyof typeof ItemTypes],
+    id: string,
+    title: string, 
+    left: number, 
+    top: number, 
+    width: number, 
+    height: number 
+  } 
+}
 
 export const InfiniteCanvas = ({}: { frame: string }) => {
-  // TODO: Retrieve the components from the database.
-  
-  const components = [{
-    type: 'md',
-    content: '## test heading',
-    left: RECT_W,
-    top: RECT_H,
-    width: RECT_W,
-    height: RECT_H,
-  }]
+  const [components, setComponents] = useState<ComponentMap>({ 
+    default: {
+      type: ItemTypes.Markdown,
+      id: 'default',
+      title: '## test heading',
+      left: RECT_W / 2,
+      top: RECT_H / 2,
+      width: RECT_W,
+      height: RECT_H,
+   }
+  });
 
-  const rectW = RECT_W;
-  const rectH = RECT_H;
   const scale = CanvasStore.scale;
+
+  const moveComponent = useCallback((id: string, left: number, top: number) => {
+    setComponents(        
+      update(components, {
+        [id]: {
+          $merge: { left, top },
+        },
+      })
+    );
+  }, [components]);
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: ItemTypes.Markdown,
+      drop(item: DragItem, monitor) { 
+        const delta = monitor.getDifferenceFromInitialOffset()
+
+        if(!delta) return
+
+        let left = Math.round(item.left + delta.x)
+        let top = Math.round(item.top + delta.y)
+
+        if(snapToGrid) [left, top] = snapToGrid(left, top)
+  
+        moveComponent(item.id, left, top)
+      }
+    }), [moveComponent]
+  )
 
   return (
     <div
+      ref={drop}
       className="w-full h-full"
       style={{
+        background: 'red',
         transform: `scale(${(scale.x, scale.y)})`,
         transformOrigin: "top left"
       }}
     >
-      <div
-        className="relative"
-        style={{
-          width: `${rectW}px`,
-          height: `${rectH}px`,
-        }}
-      >
-        {components.map((component, index) => {
-          switch (component.type) {
-            case "md":
-              return (
-                <Markdown
-                  key={index}
-                  text={component.content}
-                  left={component.left}
-                  top={component.top}
-                  width={component.width}
-                  height={component.height}
-                />
-              );
-            default:
-              return null;
-          }
-        })}
-      </div>
+      {Object.keys(components).map((key) => (
+        <DraggableBox 
+          key={key} 
+          {...components[key]}
+        />
+      ))}
+
+      <Drag />
     </div>
   );
 };
 
 export default memo(InfiniteCanvas);
-

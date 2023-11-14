@@ -4,6 +4,9 @@ import { PointerEvent, useEffect, useRef, WheelEvent } from "react";
 
 import useSize from "@react-hook/size";
 
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import InfiniteCanvas from "./components/InfiniteCanvas";
 import CanvasStore from "./components/CanvasStore";
 import useRenderLoop from "./components/RenderLoop";
@@ -41,15 +44,17 @@ export default function Canvas() {
   }, [width, height]);
 
   return (
-    <div className="w-screen h-screen overscroll-none bg-black">
-      <div
-        className="w-full h-full relative overflow-hidden overscroll-none"
-        ref={canvas}
-        onWheel={wheelListener}
-        onPointerMove={pointerListener}
-      >
-        <InfiniteCanvas frame={frame}></InfiniteCanvas>
+    <DndProvider backend={HTML5Backend}>
+      <div className="w-screen h-screen overscroll-none">
+        <div
+          className="w-full h-full relative overflow-hidden"
+          ref={canvas}
+          onWheel={wheelListener}
+          onPointerMove={pointerListener}
+        >
+          <InfiniteCanvas frame={frame}></InfiniteCanvas>
+        </div>
       </div>
-    </div>
+    </DndProvider>
   );
 };

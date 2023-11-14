@@ -1,4 +1,6 @@
 import { default as MarkdownJSX } from 'markdown-to-jsx';
+import { useDrag } from 'react-dnd'
+
 import { CanvasPosition, Position } from "./Position";
 
 interface TextBlockProps extends CanvasPosition {
@@ -16,9 +18,21 @@ const Markdown = ({
   width,
   height
 }: TextBlockProps) => {
+  // const [{ opacity }, dragRef] = useDrag(
+  //   () => ({
+  //     type: 'item',
+  //     item: { text },
+  //     collect: (monitor) => ({
+  //       opacity: monitor.isDragging() ? 0.5 : 1
+  //     })
+  //   }),
+  //   []
+  // )
+
   return (
     <Position left={left} top={top} width={width} height={height}>
       <div
+        // ref={dragRef}
         className="flex items-center justify-center"
         style={{
           width: `${width}px`,
