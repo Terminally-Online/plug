@@ -78,6 +78,7 @@ export default class CanvasStore {
   static initialize(width: number, height: number) {
     const containerWidth = width;
     const containerHeight = height;
+
     canvasData = getInitialCanvasState();
     canvasData.pixelRatio = window.devicePixelRatio || 1;
     canvasData.container.width = containerWidth;
@@ -169,6 +170,7 @@ export default class CanvasStore {
     if (this.isCameraInBounds(x + deltaX, y + deltaY, z)) {
       this.data.camera.x += deltaX;
       this.data.camera.y += deltaY;
+
       // move pointer by the same amount
       this.shouldRender = true;
       this.movePointer(deltaY, deltaY);
@@ -193,6 +195,7 @@ export default class CanvasStore {
       CAMERA_ANGLE,
       this.aspect
     );
+
     const newScaleX = containerWidth / width;
     const newScaleY = containerHeight / height;
     const { x: newX, y: newY } = scaleWithAnchorPoint(
