@@ -1,3 +1,5 @@
+'use client'
+
 import type { CSSProperties, FC } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";

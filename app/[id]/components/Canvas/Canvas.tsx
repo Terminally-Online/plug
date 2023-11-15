@@ -15,6 +15,7 @@ import { Position } from "./Position";
 import { Drag } from "./Drag";
 import { Box } from "../Blocks/Box";
 import { Markdown } from "../Blocks/Markdown";
+
 import Link from "next/link";
 
 export type ComponentMap = {
@@ -102,6 +103,8 @@ export const Canvas = ({}: { frame: string }) => {
       {DEBUG && (
         <div className="fixed top-0 right-0 text-white bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
           <div>Components: {Object.keys(components).length}</div>
+
+          <p>User id: tester</p>
 
           <p>
             Camera: {CanvasStore.camera.x}, {CanvasStore.camera.y},{" "}
