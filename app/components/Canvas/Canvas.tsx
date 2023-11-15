@@ -5,7 +5,7 @@ import { memo, useCallback, useState } from "react";
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
-import type { DragItem } from "../../types";
+import type { DragItem } from "../../lib/types";
 
 import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../../lib/constants";
 import CanvasStore from "../../lib/store";

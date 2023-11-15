@@ -3,8 +3,8 @@ import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 
 import { ItemTypes } from "../../lib/constants";
-import { snapToGrid } from "../../lib/functions/snap-to-grid";
 import { Preview } from "./Preview";
+import { snapToGrid } from "../../lib/functions/snap-to-grid";
 
 const layerStyles: CSSProperties = {
   position: "fixed",
@@ -72,6 +72,7 @@ export const Drag: FC<CustomDragLayerProps> = (props) => {
   if (!isDragging) {
     return null;
   }
+
   return (
     <div style={layerStyles}>
       <div
