@@ -5,7 +5,7 @@ import { memo, useCallback, useState } from "react";
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
-import type { DragItem } from "../../lib/types"
+import type { DragItem } from "../../lib/types";
 
 import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../../lib/constants";
 import CanvasStore from "../../lib/store";
@@ -13,8 +13,9 @@ import { snapToGrid } from "../../lib/functions/snap-to-grid";
 
 import { Position } from "./Position";
 import { Drag } from "./Drag";
-import { Box } from "../Box/Box";
-import { Markdown } from "../Markdown/Markdown";
+import { Box } from "../Blocks/Box";
+import { Markdown } from "../Blocks/Markdown";
+import Link from "next/link";
 
 export type ComponentMap = {
   [key: string]: {
@@ -42,7 +43,13 @@ export const Canvas = ({}: { frame: string }) => {
   const scale = CanvasStore.scale;
 
   const addComponent = useCallback(
-    (id: string, left: number, top: number, type: string, children: React.ReactNode) => {
+    (
+      id: string,
+      left: number,
+      top: number,
+      type: string,
+      children: React.ReactNode
+    ) => {
       setComponents((components) => ({
         ...components,
         [id]: {
@@ -111,6 +118,25 @@ export const Canvas = ({}: { frame: string }) => {
           </p>
 
           <div className="flex flex-row space-x-2 mt-4">
+            <Link href={`/create`}>
+              <button
+                type="button"
+                className="bg-red-700 text-white p-1 px-2"
+              >
+                New Canvas
+              </button>
+            </Link>
+
+            <button
+              type="button"
+              className="bg-red-700 text-white p-1 px-2"
+              onClick={() => {
+                setComponents({});
+              }}
+            >
+              Clear
+            </button>
+
             <button
               type="button"
               className="bg-red-700 text-white p-1 px-2"
@@ -123,7 +149,7 @@ export const Canvas = ({}: { frame: string }) => {
                 addComponent(id, left, top, type, `## ${new Date()} | 6`);
               }}
             >
-              Add Box
+              New Box
             </button>
 
             <button
@@ -138,7 +164,7 @@ export const Canvas = ({}: { frame: string }) => {
                 addComponent(id, left, top, type, `## ${new Date()} | 6`);
               }}
             >
-              Add Markdown
+              New Markdown
             </button>
           </div>
         </div>
@@ -153,8 +179,7 @@ export const Canvas = ({}: { frame: string }) => {
         }}
       >
         {Object.keys(components).map((key) => {
-
-          const componentTypes = { 
+          const componentTypes = {
             [ItemTypes.Box]: Box,
             [ItemTypes.Markdown]: Markdown,
           };

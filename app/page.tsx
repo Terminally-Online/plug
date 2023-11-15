@@ -1,59 +1,12 @@
-"use client";
-
-import { PointerEvent, useEffect, useRef, WheelEvent } from "react";
-
-import useSize from "@react-hook/size";
-
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-
-import Canvas from "./components/Canvas/Canvas";
-import CanvasStore from "./lib/store";
-import useRenderLoop from "./lib/hooks/useRenderLoop";
+import Link from "next/link";
 
 export default function Page() {
-  const canvas = useRef<HTMLDivElement>(null);
-
-  const frame = useRenderLoop(60);
-  const [width, height] = useSize(canvas);
-
-  const wheelListener = (e: WheelEvent) => {
-    e.stopPropagation();
-
-    const friction = 1;
-    const event = e as WheelEvent;
-    const deltaX = event.deltaX * friction;
-    const deltaY = event.deltaY * friction;
-
-    if (!event.ctrlKey) {
-      CanvasStore.moveCamera(deltaX, deltaY);
-    } else {
-      CanvasStore.zoomCamera(deltaX, deltaY);
-    }
-  };
-
-  const pointerListener = (event: PointerEvent) => {
-    CanvasStore.movePointer(event.clientX, event.clientY);
-  };
-
-  useEffect(() => {
-    if (width === 0 || height === 0) return;
-
-    CanvasStore.initialize(width, height);
-  }, [width, height]);
-
-  return (
-    <div className="w-full h-full text-black">
-      <div
-        className="w-full h-full relative overflow-hidden overscroll-none"
-        ref={canvas}
-        onWheel={wheelListener}
-        onPointerMove={pointerListener}
-      >
-        <DndProvider backend={HTML5Backend}>
-          <Canvas frame={frame}></Canvas>
-        </DndProvider>
-      </div>
-    </div>
-  );
+  return <div className="w-screen h-screen flex flex-col items-center justify-center gap-4">
+    <h1 className="text-2xl">Create a new Board</h1>
+    <Link href={`/create`}>
+      <button className="bg-black/40 text-white font-bold rounded-sm p-1 px-2">
+        Create Board
+      </button>
+    </Link>
+  </div>
 }

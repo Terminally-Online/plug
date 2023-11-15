@@ -7,13 +7,13 @@ export type BoxProps = {
   preview?: boolean;
 };
 
-export const Markdown: FC<PropsWithChildren<BoxProps>> = memo(function Box({
+export const Markdown: FC<PropsWithChildren<BoxProps>> = memo(function Markdown({
   children,
   preview,
 }) {
   return (
     <div
-        className="bg-white cursor-move p-2 px-4 border-[1px] border-gray-200"
+      className="bg-white cursor-move p-2 px-4 border-[1px] border-gray-200"
       role={preview ? "MarkdownPreview" : "Markdown"}
     >
       <MarkdownJSX
