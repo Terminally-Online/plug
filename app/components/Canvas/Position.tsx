@@ -28,7 +28,7 @@ export const Position = ({
   height = height ?? 400;
 
   if (
-    inBounds(
+    !inBounds(
       { left, top, width, height },
       {
         left: screen.x,
@@ -37,29 +37,29 @@ export const Position = ({
         height: screen.height,
       }
     )
-  ) {
-    return (
-      <div
-        ref={ref}
-        className="absolute inline-block"
-        style={{
-          left: `${left - screen.x}px`,
-          top: `${top - screen.y}px`,
-          width: `${width}px`,
-          height: `${height}px`,
+  ) return null
+
+  return (
+    <div
+      ref={ref}
+      className="absolute inline-block"
+      style={{
+        left: `${left - screen.x}px`,
+        top: `${top - screen.y}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+      }}
+    >
+      {children}
+
+      {DEBUG && <div className="absolute bg-red-400 p-2 rounded-sm text-red-700 font-bold tabular-nums" 
+        style={{ 
+          top: '-40px', 
+          width: 'max-content',
         }}
       >
-        {children}
-
-        {DEBUG && <div className="absolute bg-red-400 p-2 rounded-sm text-red-700 font-bold tabular-nums" 
-          style={{ 
-            top: '-40px', 
-            width: 'max-content',
-          }}
-        >
-          <p>{Math.round(left - screen.x)} x {Math.round(top - screen.y)} @ {width ?? 0} x {height ?? 0}</p> 
-        </div>}
-      </div>
-    );
-  } else return null;
+        <p>{Math.round(left - screen.x)} x {Math.round(top - screen.y)} @ {width ?? 0} x {height ?? 0}</p> 
+      </div>}
+    </div>
+  );
 };
