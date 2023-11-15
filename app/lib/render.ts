@@ -1,6 +1,6 @@
 "use client";
 
-class RenderLoop {
+export class RenderLoop {
   private lastFrameTime: number = 0;
   private lastRequestId: number | null = null;
   constructor(

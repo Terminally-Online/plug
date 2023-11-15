@@ -9,30 +9,30 @@ const styles: CSSProperties = {
   WebkitTransform: "rotate(-7deg)",
 };
 
-export interface BoxDragPreviewProps {
+export interface BoxPreviewProps {
   title: string;
 }
 
-export interface BoxDragPreviewState {
+export interface BoxPreviewState {
   tickTock: any;
 }
 
-export const BoxDragPreview: FC<BoxDragPreviewProps> = memo(
-  function BoxDragPreview({ title }) {
-    const [tickTock, setTickTock] = useState(false);
+export const BoxPreview: FC<BoxPreviewProps> = memo(function BoxPreview({
+  title,
+}) {
+  const [tickTock, setTickTock] = useState(false);
 
-    useEffect(
-      function subscribeToIntervalTick() {
-        const interval = setInterval(() => setTickTock(!tickTock), 500);
-        return () => clearInterval(interval);
-      },
-      [tickTock]
-    );
+  useEffect(
+    function subscribeToIntervalTick() {
+      const interval = setInterval(() => setTickTock(!tickTock), 500);
+      return () => clearInterval(interval);
+    },
+    [tickTock]
+  );
 
-    return (
-      <div style={styles}>
-        <Box title={title} yellow={tickTock} preview />
-      </div>
-    );
-  }
-);
+  return (
+    <div style={styles}>
+      <Box title={title} yellow={tickTock} preview />
+    </div>
+  );
+});

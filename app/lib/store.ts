@@ -3,11 +3,7 @@
 import {
   cameraToScreenCoordinates,
   scaleWithAnchorPoint,
-<<<<<<<< HEAD:app/lib/store.ts
 } from "./functions/camera-utils";
-========
-} from "./camera-utils";
->>>>>>>> main:app/store.ts
 
 import { CAMERA_ANGLE, RECT_H, RECT_W } from "./constants";
 

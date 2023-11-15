@@ -1,7 +1,7 @@
-import type { CSSProperties, FC } from "react";
 import { memo } from "react";
+import type { CSSProperties, FC } from "react";
 
-import { default as MarkdownJSX } from "markdown-to-jsx";
+import MarkdownJSX from "markdown-to-jsx";
 
 const styles: CSSProperties = {
   border: "1px dashed gray",
@@ -9,13 +9,13 @@ const styles: CSSProperties = {
   cursor: "move",
 };
 
-export interface MarkdownProps {
+export type BoxProps = {
   title: string;
   yellow?: boolean;
   preview?: boolean;
-}
+};
 
-export const Markdown: FC<MarkdownProps> = memo(function Markdown({
+export const Markdown: FC<BoxProps> = memo(function Box({
   title,
   yellow,
   preview,

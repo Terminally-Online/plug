@@ -2,16 +2,15 @@
 
 import { PropsWithChildren } from "react";
 
-import CanvasStore from "../../store";
+import CanvasStore from "../../lib/store";
+import { inBounds } from "../../lib/functions/math-utils";
 
-import { inBounds } from "../../math-utils";
-
-export interface CanvasPosition {
+export type CanvasPosition = {
   top: number;
   left: number;
   width: number;
   height: number;
-}
+};
 
 export const Position = ({
   left,

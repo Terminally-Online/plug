@@ -1,5 +1,5 @@
-import { memo, useEffect, useState } from "react";
 import type { CSSProperties, FC } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { Markdown } from "./Markdown";
 
@@ -9,16 +9,16 @@ const styles: CSSProperties = {
   WebkitTransform: "rotate(-7deg)",
 };
 
-export type MarkdownDragPreviewProps = {
+export type MarkdownPreviewProps = {
   title: string;
 };
 
-export type MarkdownDragPreviewState = {
+export type MarkdownPreviewState = {
   tickTock: any;
 };
 
-export const MarkdownDragPreview: FC<MarkdownDragPreviewProps> = memo(
-  function BoxDragPreview({ title }) {
+export const MarkdownPreview: FC<MarkdownPreviewProps> = memo(
+  function MarkdownPreview({ title }) {
     const [tickTock, setTickTock] = useState(false);
 
     useEffect(

@@ -6,7 +6,7 @@ import type { DragSourceMonitor } from "react-dnd";
 
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-import { Markdown } from "./Markdown";
+import { Box } from "./Box";
 import { ItemTypes } from "../../lib/constants";
 
 function getStyles(
@@ -15,6 +15,7 @@ function getStyles(
   isDragging: boolean
 ): CSSProperties {
   const transform = `translate3d(${left}px, ${top}px, 0)`;
+
   return {
     position: "absolute",
     transform,
@@ -27,19 +28,19 @@ function getStyles(
   };
 }
 
-export type MarkdownDraggableProps = {
+export type DraggableBoxProps = {
   id: string;
   title: string;
   left: number;
   top: number;
 };
 
-export const MarkdownDraggable: FC<MarkdownDraggableProps> = memo(
+export const DraggableBox: FC<DraggableBoxProps> = memo(
   function DraggableBox(props) {
     const { id, title, left, top } = props;
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
-        type: ItemTypes.Markdown,
+        type: ItemTypes.Box,
         item: { id, left, top, title },
         collect: (monitor: DragSourceMonitor) => ({
           isDragging: monitor.isDragging(),
@@ -50,15 +51,15 @@ export const MarkdownDraggable: FC<MarkdownDraggableProps> = memo(
 
     useEffect(() => {
       preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     return (
       <div
         ref={drag}
         style={getStyles(left, top, isDragging)}
-        role="MarkdownDraggable"
+        role="DraggableBox"
       >
-        <Markdown title={title} />
+        <Box title={title} />
       </div>
     );
   }

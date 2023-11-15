@@ -2,10 +2,11 @@ import type { CSSProperties, FC } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 
-import { BoxDragPreview } from "./Box/BoxPreview";
-import { MarkdownDragPreview } from "./Markdown/MarkdownPreview";
-import { ItemTypes } from "../constants";
-import { snapToGrid } from "../snap-to-grid";
+import { BoxPreview } from "./Box/BoxPreview";
+import { MarkdownPreview } from "./Markdown/MarkdownPreview";
+
+import { ItemTypes } from "../lib/constants";
+import { snapToGrid } from "../lib/functions/snap-to-grid";
 
 const layerStyles: CSSProperties = {
   position: "fixed",
@@ -33,9 +34,7 @@ function getItemStyles(
   if (isSnapToGrid) {
     x -= initialOffset.x;
     y -= initialOffset.y;
-
     [x, y] = snapToGrid(x, y);
-
     x += initialOffset.x;
     y += initialOffset.y;
   }
@@ -64,16 +63,17 @@ export const Drag: FC<CustomDragLayerProps> = (props) => {
   function renderItem() {
     switch (itemType) {
       case ItemTypes.Markdown:
-        return <MarkdownDragPreview title={item.title} />;
+        return <MarkdownPreview title={item.title} />;
       case ItemTypes.Box:
-        return <BoxDragPreview title={item.title} />;
+        return <BoxPreview title={item.title} />;
       default:
         return null;
     }
   }
 
-  if (!isDragging) return null;
-
+  if (!isDragging) {
+    return null;
+  }
   return (
     <div style={layerStyles}>
       <div
