@@ -10,7 +10,7 @@ datasource db {
 model Identifier {
   id String @id @default(uuid())
 
-  identifier String   @unique
+  identifier String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -58,8 +58,8 @@ model Component {
 
   canvases ComponentOnCanvas[]
 
-  content   Json
+  content Json
 
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
