@@ -18,7 +18,6 @@ export default function Page() {
   const [width, height] = useSize(canvas);
 
   const wheelListener = (e: WheelEvent) => {
-    e.preventDefault();
     e.stopPropagation();
 
     const friction = 1;

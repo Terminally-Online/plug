@@ -9,7 +9,7 @@ import { Drag } from "./Drag";
 
 import { DragItem } from "../types";
 
-import { RECT_H, RECT_W, ItemTypes } from "../lib/constants";
+import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../lib/constants";
 import CanvasStore from "../lib/store";
 
 import { snapToGrid } from "../lib/functions/snap-to-grid";
@@ -55,18 +55,20 @@ export type ComponentMap = {
     title: string;
     left: number;
     top: number;
+    width?: number;
+    height?: number;
   };
 };
-
-const DEBUG = true;
 
 export const Canvas = ({}: { frame: string }) => {
   const [components, setComponents] = useState<ComponentMap>({
     a: {
       type: ItemTypes.Box,
       title: `## ${new Date()} | 6`,
-      left: RECT_W / 2,
-      top: RECT_H / 2,
+      left: RECT_W * 1.5,
+      top: RECT_H * 1.5,
+      width: 400,
+      height: 400
     },
   });
 
@@ -94,6 +96,8 @@ export const Canvas = ({}: { frame: string }) => {
           title: `## ${new Date()} | 6`,
           left,
           top,
+          width: 400,
+          height: 400
         },
       }));
     },
@@ -118,30 +122,6 @@ export const Canvas = ({}: { frame: string }) => {
     }),
     [moveComponent]
   );
-
-  const texts = [
-    "Infinite",
-    "Canvases",
-    "Are",
-    "Easy",
-    "When",
-    "You",
-    "Know",
-    "The",
-    "Fundamentals",
-  ];
-
-  const colors = [
-    "#f1f7ed",
-    "#61c9a8",
-    "#7ca982",
-    "#e0eec6",
-    "#c2a83e",
-    "#ff99c8",
-    "#fcf6bd",
-    "#9c92a3",
-    "#c6b9cd",
-  ];
 
   return (
     <>
@@ -189,26 +169,9 @@ export const Canvas = ({}: { frame: string }) => {
           transformOrigin: "top left",
         }}
       >
-        {texts.map((text, index) => (
-          <TextBlock
-            key={index}
-            text={text}
-            color={colors[index]}
-            left={(index % 3) * RECT_W}
-            top={Math.floor(index / 3) * RECT_H}
-            width={RECT_W}
-            height={RECT_H}
-          />
-        ))}
-
         {Object.keys(components).map((key) => {
-          const left = components[key].left;
-          const top = components[key].top;
-
-          return <Position left={left} top={top} width={200} height={200}>
-            <div className="flex items-center justify-center">
-              <BoxDraggable key={key} id={key} {...components[key]} />
-            </div>
+          return <Position {...components[key]}>
+            <BoxDraggable key={key} id={key} {...components[key]} />
           </Position>
         })}
 
