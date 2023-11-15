@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import CanvasStore from "./CanvasStore";
-import { useEffect, useRef, useState } from "react";
-
-class RenderLoop {
+export class RenderLoop {
   private lastFrameTime: number = 0;
   private lastRequestId: number | null = null;
-  constructor(private fps: number = 0, private draw: () => void) {}
+  constructor(
+    private fps: number = 0,
+    private draw: () => void
+  ) {}
 
   initialize(fps: number) {
     this.fps = fps;
@@ -42,26 +42,3 @@ export function getRenderLoop(fps = 15, draw: () => void) {
   if (!renderLoop) return new RenderLoop(fps, draw);
   else return renderLoop;
 }
-
-export const useRenderLoop = (fps: number = 15) => {
-  const [frame, setFrame] = useState("0");
-  const loop = useRef<RenderLoop>(
-    getRenderLoop(fps, () => {
-      if (CanvasStore.shouldRender) {
-        setFrame(`${performance.now()}`);
-        CanvasStore.shouldRender = false;
-      }
-    })
-  );
-
-  useEffect(() => {
-    CanvasStore.shouldRender = true;
-    loop.current.start();
-
-    return () => loop.current.stop();
-  }, []);
-  return frame;
-};
-
-export default useRenderLoop;
-

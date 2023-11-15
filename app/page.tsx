@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
 import { PointerEvent, useEffect, useRef, WheelEvent } from "react";
 
 import useSize from "@react-hook/size";
 
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-import InfiniteCanvas from "./components/InfiniteCanvas";
-import CanvasStore from "./components/CanvasStore";
-import useRenderLoop from "./components/RenderLoop";
+import Canvas from "./components/Canvas";
+import CanvasStore from "./lib/store";
+import useRenderLoop from "./lib/hooks/useRenderLoop";
 
-export default function Canvas() {
+export default function Page() {
   const canvas = useRef<HTMLDivElement>(null);
 
   const frame = useRenderLoop(60);
@@ -44,17 +44,17 @@ export default function Canvas() {
   }, [width, height]);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="w-screen h-screen overscroll-none">
-        <div
-          className="w-full h-full relative overflow-hidden"
-          ref={canvas}
-          onWheel={wheelListener}
-          onPointerMove={pointerListener}
-        >
-          <InfiniteCanvas frame={frame}></InfiniteCanvas>
-        </div>
+    <div className="w-screen h-screen overscroll-none text-black">
+      <div
+        className="w-full h-full relative overflow-hidden"
+        ref={canvas}
+        onWheel={wheelListener}
+        onPointerMove={pointerListener}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <Canvas frame={frame}></Canvas>
+        </DndProvider>
       </div>
-    </DndProvider>
+    </div>
   );
-};
+}

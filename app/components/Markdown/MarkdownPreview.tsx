@@ -1,39 +1,38 @@
-import type { CSSProperties, FC } from 'react'
-import { memo, useEffect, useState } from 'react'
+import type { CSSProperties, FC } from "react";
+import { memo, useEffect, useState } from "react";
 
-import { Markdown } from './Markdown'
+import { Markdown } from "./Markdown";
 
 const styles: CSSProperties = {
-  display: 'inline-block',
-  transform: 'rotate(-7deg)',
-  WebkitTransform: 'rotate(-7deg)',
-}
+  display: "inline-block",
+  transform: "rotate(-7deg)",
+  WebkitTransform: "rotate(-7deg)",
+};
 
-export type PreviewProps = {
-  title: string
-}
+export type MarkdownPreviewProps = {
+  title: string;
+};
 
-export type PreviewState = {
-  tickTock: any
-}
+export type MarkdownPreviewState = {
+  tickTock: any;
+};
 
-export const MarkdownPreview: FC<PreviewProps> = memo(
-  function BoxDragPreview({ title }) {
-    const [tickTock, setTickTock] = useState(false)
+export const MarkdownPreview: FC<MarkdownPreviewProps> = memo(
+  function MarkdownPreview({ title }) {
+    const [tickTock, setTickTock] = useState(false);
 
     useEffect(
       function subscribeToIntervalTick() {
-        const interval = setInterval(() => setTickTock(!tickTock), 500)
-        return () => clearInterval(interval)
+        const interval = setInterval(() => setTickTock(!tickTock), 500);
+        return () => clearInterval(interval);
       },
-      [tickTock],
-    )
+      [tickTock]
+    );
 
     return (
       <div style={styles}>
         <Markdown title={title} yellow={tickTock} preview />
       </div>
-    )
-  },
-)
-
+    );
+  }
+);

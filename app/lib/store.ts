@@ -3,9 +3,9 @@
 import {
   cameraToScreenCoordinates,
   scaleWithAnchorPoint,
-} from "../camera-utils";
+} from "./functions/camera-utils";
 
-import { CAMERA_ANGLE, RECT_H, RECT_W } from "../constants";
+import { CAMERA_ANGLE, RECT_H, RECT_W } from "./constants";
 
 const isWindow = typeof window !== "undefined";
 
@@ -29,7 +29,7 @@ export type CanvasState = {
     y: number;
     z: number;
   };
-  components: { 
+  components: {
     [key: string]: {
       /// * Components to render
       id: string | number;
@@ -37,7 +37,7 @@ export type CanvasState = {
       left: number;
       height: number;
       width: number;
-    }
+    };
   };
 };
 
@@ -57,7 +57,7 @@ export const DEFAULT_CANVAS_STATE: CanvasState = {
     y: 1.5 * RECT_H,
     z: 0,
   },
-  components: {}
+  components: {},
 };
 
 let canvasData = DEFAULT_CANVAS_STATE;
