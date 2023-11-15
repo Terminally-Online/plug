@@ -2,8 +2,8 @@
 
 import { PropsWithChildren } from "react";
 
-import CanvasStore from "../lib/store";
-import { inBounds } from "../lib/functions/math-utils";
+import CanvasStore from "../../lib/store";
+import { inBounds } from "../../lib/functions/math-utils";
 
 export type CanvasPosition = {
   top: number;
@@ -20,6 +20,7 @@ export const Position = ({
   children,
 }: PropsWithChildren<CanvasPosition>) => {
   const screen = CanvasStore.screen;
+
   if (
     inBounds(
       { left, top, height, width },
