@@ -3,6 +3,7 @@
 class RenderLoop {
   private lastFrameTime: number = 0;
   private lastRequestId: number | null = null;
+
   constructor(
     private fps: number = 0,
     private draw: () => void
@@ -30,6 +31,7 @@ class RenderLoop {
     this.lastRequestId = requestAnimationFrame(() => this.loop());
     const now = performance.now();
     const elapsed = now - this.lastFrameTime;
+
     if (elapsed > this.fpsInterval) {
       this.lastFrameTime = now - (elapsed % this.fpsInterval);
       this.draw();

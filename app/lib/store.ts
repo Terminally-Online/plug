@@ -110,25 +110,25 @@ export default class CanvasStore {
     canvasData.shouldRender = value;
   }
 
-  private static get container() {
+  public static get container() {
     if (!canvasData) return { width: 0, height: 0 };
 
     return canvasData.container;
   }
 
-  private static get pointer() {
+  public static get pointer() {
     if (!canvasData) return { x: 0, y: 0 };
 
     return canvasData.pointer;
   }
 
-  private static get aspect() {
+  public static get aspect() {
     if (!canvasData) return 0;
 
     return canvasData.container.width / canvasData.container.height;
   }
 
-  private static isCameraInBounds(
+  public static isCameraInBounds(
     cameraX: number,
     cameraY: number,
     cameraZ: number
@@ -223,5 +223,7 @@ export default class CanvasStore {
 
     this.data.pointer.x = left + deltaX / scale.x;
     this.data.pointer.y = top + deltaY / scale.y;
+
+    console.log(this.data.pointer, left, top);
   }
 }

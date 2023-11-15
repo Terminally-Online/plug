@@ -44,9 +44,9 @@ export default function Page() {
   }, [width, height]);
 
   return (
-    <div className="w-screen h-screen overscroll-none text-black">
+    <div className="w-full h-full text-black">
       <div
-        className="w-full h-full relative overflow-hidden"
+        className="w-full h-full relative overflow-hidden overscroll-none"
         ref={canvas}
         onWheel={wheelListener}
         onPointerMove={pointerListener}
