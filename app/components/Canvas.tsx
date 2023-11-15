@@ -14,7 +14,7 @@ import CanvasStore from "../lib/store";
 
 import { snapToGrid } from "../lib/functions/snap-to-grid";
 
-import { DraggableBox } from "./Box/DraggableBox";
+import { BoxDraggable } from "./Box/BoxDraggable";
 import { MarkdownDraggable } from "./Markdown/MarkdownDraggable";
 import { CanvasPosition, Position } from "./Canvas/Position";
 
@@ -100,24 +100,24 @@ export const Canvas = ({}: { frame: string }) => {
     []
   );
 
-  //   const [, drop] = useDrop(
-  //     () => ({
-  //       accept: [ItemTypes.Box, ItemTypes.Markdown],
-  //       drop(item: DragItem, monitor) {
-  //         const delta = monitor.getDifferenceFromInitialOffset();
+  const [, drop] = useDrop(
+    () => ({
+      accept: [ItemTypes.Box, ItemTypes.Markdown],
+      drop(item: DragItem, monitor) {
+        const delta = monitor.getDifferenceFromInitialOffset();
 
-  //         if (!delta) return;
+        if (!delta) return;
 
-  //         let left = Math.round(item.left + delta.x);
-  //         let top = Math.round(item.top + delta.y);
+        let left = Math.round(item.left + delta.x);
+        let top = Math.round(item.top + delta.y);
 
-  //         if (snapToGrid) [left, top] = snapToGrid(left, top);
+        if (snapToGrid) [left, top] = snapToGrid(left, top);
 
-  //         moveComponent(item.id, left, top);
-  //       },
-  //     }),
-  //     [moveComponent]
-  //   );
+        moveComponent(item.id, left, top);
+      },
+    }),
+    [moveComponent]
+  );
 
   const texts = [
     "Infinite",
@@ -157,6 +157,9 @@ export const Canvas = ({}: { frame: string }) => {
             Scale: {CanvasStore.scale.x}, {CanvasStore.scale.y}
           </p>
           <p>
+            Screen: {CanvasStore.screen.x}, {CanvasStore.screen.y}
+          </p>
+          <p>
             Pointer: {CanvasStore.pointer.x}, {CanvasStore.pointer.y}
           </p>
 
@@ -164,7 +167,6 @@ export const Canvas = ({}: { frame: string }) => {
             type="button"
             onClick={() => {
               console.log("add markdown");
-              // todo: add component at pointer
 
               const id = `box-${Object.keys(components).length + 1}`;
               const left = CanvasStore.pointer.x;
@@ -180,37 +182,35 @@ export const Canvas = ({}: { frame: string }) => {
       )}
 
       <div
-        // ref={drop}
-        className="relative w-full h-full bg-yellow-200"
+        ref={drop}
+        className="relative w-screen h-screen"
         style={{
           transform: `scale(${(scale.x, scale.y)})`,
           transformOrigin: "top left",
         }}
       >
-        <div
-          className="relative w-full h-full"
-          style={{
-            width: `${RECT_W}px`,
-            height: `${RECT_H}px`,
-          }}
-        >
-          {texts.map((text, index) => (
-            <TextBlock
-              key={index}
-              text={text}
-              color={colors[index]}
-              left={(index % 3) * RECT_W}
-              top={Math.floor(index / 3) * RECT_H}
-              width={RECT_W}
-              height={RECT_H}
-            />
-          ))}
-          {/* {Object.keys(components).map((key) => (
-            <DraggableBox key={key} id={key} {...components[key]} />
-          ))}
+        {texts.map((text, index) => (
+          <TextBlock
+            key={index}
+            text={text}
+            color={colors[index]}
+            left={(index % 3) * RECT_W}
+            top={Math.floor(index / 3) * RECT_H}
+            width={RECT_W}
+            height={RECT_H}
+          />
+        ))}
 
-          <Drag /> */}
-        </div>
+        {Object.keys(components).map((key) => {
+          const left = components[key].left;
+          const top = components[key].top;
+
+          return <Position left={left} top={top} width={200} height={200}>
+            <BoxDraggable key={key} id={key} {...components[key]} />
+          </Position>
+        })}
+
+          <Drag />
       </div>
     </>
   );

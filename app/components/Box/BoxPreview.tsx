@@ -11,6 +11,8 @@ const styles: CSSProperties = {
 
 export interface BoxPreviewProps {
   title: string;
+  left: number;
+  top: number;
 }
 
 export interface BoxPreviewState {
@@ -32,7 +34,7 @@ export const BoxPreview: FC<BoxPreviewProps> = memo(function BoxPreview({
 
   return (
     <div style={styles}>
-      <Box title={title} yellow={tickTock} preview />
+        <Box title={title} yellow={tickTock} preview />
     </div>
   );
 });

@@ -18,6 +18,7 @@ export const Box: FC<BoxProps> = memo(function Box({ title, yellow, preview }) {
 
   return (
     <div
+      className="flex items-center justify-center"
       style={{ ...styles, backgroundColor }}
       role={preview ? "BoxPreview" : "Box"}
     >
