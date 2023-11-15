@@ -5,7 +5,7 @@ import { memo, useCallback, useState } from "react";
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
-import type { DragItem } from "../../lib/types";
+import type { DragItem } from "../../lib/types"
 
 import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../../lib/constants";
 import CanvasStore from "../../lib/store";
@@ -14,11 +14,12 @@ import { snapToGrid } from "../../lib/functions/snap-to-grid";
 import { Position } from "./Position";
 import { Drag } from "./Drag";
 import { Box } from "../Box/Box";
+import { Markdown } from "../Markdown/Markdown";
 
 export type ComponentMap = {
   [key: string]: {
     type: (typeof ItemTypes)[keyof typeof ItemTypes];
-    title: string;
+    children: React.ReactNode;
     left: number;
     top: number;
     width?: number;
@@ -28,9 +29,9 @@ export type ComponentMap = {
 
 export const Canvas = ({}: { frame: string }) => {
   const [components, setComponents] = useState<ComponentMap>({
-    a: {
+    box: {
       type: ItemTypes.Box,
-      title: `## ${new Date()} | 6`,
+      children: `## ${new Date()} | 6`,
       left: RECT_W * 1.5,
       top: RECT_H * 1.5,
       width: 400,
@@ -39,6 +40,23 @@ export const Canvas = ({}: { frame: string }) => {
   });
 
   const scale = CanvasStore.scale;
+
+  const addComponent = useCallback(
+    (id: string, left: number, top: number, type: string, children: React.ReactNode) => {
+      setComponents((components) => ({
+        ...components,
+        [id]: {
+          type,
+          children,
+          left,
+          top,
+          width: 400,
+          height: 400,
+        },
+      }));
+    },
+    []
+  );
 
   const moveComponent = useCallback(
     (id: string, left: number, top: number) => {
@@ -51,23 +69,6 @@ export const Canvas = ({}: { frame: string }) => {
       );
     },
     [components]
-  );
-
-  const addComponent = useCallback(
-    (id: string, left: number, top: number, type: string) => {
-      setComponents((components) => ({
-        ...components,
-        [id]: {
-          type,
-          title: `## ${new Date()} | 6`,
-          left,
-          top,
-          width: 400,
-          height: 400,
-        },
-      }));
-    },
-    []
   );
 
   const [, drop] = useDrop(
@@ -109,21 +110,37 @@ export const Canvas = ({}: { frame: string }) => {
             Pointer: {CanvasStore.pointer.x}, {CanvasStore.pointer.y}
           </p>
 
-          <button
-            type="button"
-            onClick={() => {
-              console.log("add markdown");
+          <div className="flex flex-row space-x-2 mt-4">
+            <button
+              type="button"
+              className="bg-red-700 text-white p-1 px-2"
+              onClick={() => {
+                const id = `box-${Object.keys(components).length + 1}`;
+                const left = CanvasStore.pointer.x;
+                const top = CanvasStore.pointer.y;
+                const type = ItemTypes.Box;
 
-              const id = `box-${Object.keys(components).length + 1}`;
-              const left = CanvasStore.pointer.x;
-              const top = CanvasStore.pointer.y;
-              const type = ItemTypes.Box;
+                addComponent(id, left, top, type, `## ${new Date()} | 6`);
+              }}
+            >
+              Add Box
+            </button>
 
-              addComponent(id, left, top, type);
-            }}
-          >
-            Add Box
-          </button>
+            <button
+              type="button"
+              className="bg-red-700 text-white p-1 px-2"
+              onClick={() => {
+                const id = `box-${Object.keys(components).length + 1}`;
+                const left = CanvasStore.pointer.x;
+                const top = CanvasStore.pointer.y;
+                const type = ItemTypes.Markdown;
+
+                addComponent(id, left, top, type, `## ${new Date()} | 6`);
+              }}
+            >
+              Add Markdown
+            </button>
+          </div>
         </div>
       )}
 
@@ -136,9 +153,17 @@ export const Canvas = ({}: { frame: string }) => {
         }}
       >
         {Object.keys(components).map((key) => {
+
+          const componentTypes = { 
+            [ItemTypes.Box]: Box,
+            [ItemTypes.Markdown]: Markdown,
+          };
+
+          const Component = componentTypes[components[key].type];
+
           return (
             <Position key={key} id={key} {...components[key]}>
-              <Box>{components[key].title}</Box>
+              <Component>{components[key].children}</Component>
             </Position>
           );
         })}

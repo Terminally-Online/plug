@@ -1,23 +1,14 @@
-import type { CSSProperties, FC, PropsWithChildren } from "react";
+import type { FC, PropsWithChildren } from "react";
 import { memo } from "react";
 
-const styles: CSSProperties = {
-  border: "1px dashed gray",
-  padding: "0.5rem 1rem",
-  cursor: "move",
-};
-
 export interface BoxProps {
-  yellow?: boolean;
   preview?: boolean;
 }
 
-export const Box: FC<PropsWithChildren<BoxProps>> = memo(function Box({ children, yellow, preview }) {
-  const backgroundColor = yellow ? "yellow" : "white";
-
+export const Box: FC<PropsWithChildren<BoxProps>> = memo(function Box({ children, preview }) {
   return (
     <div
-      style={{ ...styles, backgroundColor }}
+      className="bg-white cursor-move p-2 px-4 border-[1px] border-gray-200"
       role={preview ? "BoxPreview" : "Box"}
     >
       {children}

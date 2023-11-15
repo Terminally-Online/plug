@@ -1,30 +1,19 @@
 import { memo } from "react";
-import type { CSSProperties, FC } from "react";
+import type { FC, PropsWithChildren } from "react";
 
 import MarkdownJSX from "markdown-to-jsx";
 
-const styles: CSSProperties = {
-  border: "1px dashed gray",
-  padding: "0.5rem 1rem",
-  cursor: "move",
-};
-
 export type BoxProps = {
-  title: string;
-  yellow?: boolean;
   preview?: boolean;
 };
 
-export const Markdown: FC<BoxProps> = memo(function Box({
-  title,
-  yellow,
+export const Markdown: FC<PropsWithChildren<BoxProps>> = memo(function Box({
+  children,
   preview,
 }) {
-  const backgroundColor = yellow ? "yellow" : "white";
-
   return (
     <div
-      style={{ ...styles, backgroundColor }}
+        className="bg-white cursor-move p-2 px-4 border-[1px] border-gray-200"
       role={preview ? "MarkdownPreview" : "Markdown"}
     >
       <MarkdownJSX
@@ -50,7 +39,7 @@ export const Markdown: FC<BoxProps> = memo(function Box({
           },
         }}
       >
-        {title}
+        {children as string}
       </MarkdownJSX>
     </div>
   );
