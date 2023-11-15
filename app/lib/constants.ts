@@ -7,6 +7,6 @@ export const RECT_W = 1000;
 export const RECT_H = 1000;
 
 export const ItemTypes = {
-  Markdown: "md",
+  Markdown: "markdown",
   Box: "box",
 };

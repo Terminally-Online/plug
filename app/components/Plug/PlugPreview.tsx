@@ -1,7 +1,7 @@
-import type { CSSProperties, FC, PropsWithChildren } from "react";
+import type { CSSProperties, FC } from "react";
 import { memo, useEffect, useState } from "react";
 
-import { Box } from "./Box";
+import { Plug } from "./Plug";
 
 const styles: CSSProperties = {
   display: "inline-block",
@@ -9,12 +9,18 @@ const styles: CSSProperties = {
   WebkitTransform: "rotate(-7deg)",
 };
 
+export interface BoxPreviewProps {
+  title: string;
+  left: number;
+  top: number;
+}
+
 export interface BoxPreviewState {
   tickTock: any;
 }
 
-export const BoxPreview: FC<PropsWithChildren> = memo(function BoxPreview({
-  children,
+export const BoxPreview: FC<BoxPreviewProps> = memo(function BoxPreview({
+  title,
 }) {
   const [tickTock, setTickTock] = useState(false);
 
@@ -29,7 +35,7 @@ export const BoxPreview: FC<PropsWithChildren> = memo(function BoxPreview({
 
   return (
     <div style={styles}>
-        <Box yellow={tickTock} preview>{children}</Box>
+        <Plug title={title} yellow={tickTock} preview />
     </div>
   );
 });

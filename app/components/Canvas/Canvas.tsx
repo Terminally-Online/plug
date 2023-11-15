@@ -1,53 +1,19 @@
 "use client";
 
 import { memo, useCallback, useState } from "react";
-import update from "immutability-helper";
 
 import { useDrop } from "react-dnd";
+import update from "immutability-helper";
 
+import type { DragItem } from "../../types";
+
+import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../../lib/constants";
+import CanvasStore from "../../lib/store";
+import { snapToGrid } from "../../lib/functions/snap-to-grid";
+
+import { Position } from "./Position";
 import { Drag } from "./Drag";
-
-import { DragItem } from "../types";
-
-import { DEBUG, RECT_H, RECT_W, ItemTypes } from "../lib/constants";
-import CanvasStore from "../lib/store";
-
-import { snapToGrid } from "../lib/functions/snap-to-grid";
-
-import { BoxDraggable } from "./Box/BoxDraggable";
-import { MarkdownDraggable } from "./Markdown/MarkdownDraggable";
-import { CanvasPosition, Position } from "./Canvas/Position";
-
-interface TextBlockProps extends CanvasPosition {
-  text: string;
-  color: string;
-  width: number;
-  height: number;
-}
-
-const TextBlock = ({
-  text,
-  color,
-  left,
-  top,
-  width,
-  height,
-}: TextBlockProps) => {
-  return (
-    <Position left={left} top={top} width={width} height={height}>
-      <div
-        className="flex items-center justify-center"
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          background: color,
-        }}
-      >
-        {text}
-      </div>
-    </Position>
-  );
-};
+import { Box } from "../Box/Box";
 
 export type ComponentMap = {
   [key: string]: {
@@ -68,7 +34,7 @@ export const Canvas = ({}: { frame: string }) => {
       left: RECT_W * 1.5,
       top: RECT_H * 1.5,
       width: 400,
-      height: 400
+      height: 400,
     },
   });
 
@@ -97,7 +63,7 @@ export const Canvas = ({}: { frame: string }) => {
           left,
           top,
           width: 400,
-          height: 400
+          height: 400,
         },
       }));
     },
@@ -126,7 +92,7 @@ export const Canvas = ({}: { frame: string }) => {
   return (
     <>
       {DEBUG && (
-        <div className="fixed top-0 right-0 text-white bg-black/60 p-2 m-2 z-10 rounded-sm">
+        <div className="fixed top-0 right-0 text-white bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
           <div>Components: {Object.keys(components).length}</div>
 
           <p>
@@ -170,12 +136,14 @@ export const Canvas = ({}: { frame: string }) => {
         }}
       >
         {Object.keys(components).map((key) => {
-          return <Position {...components[key]}>
-            <BoxDraggable key={key} id={key} {...components[key]} />
-          </Position>
+          return (
+            <Position key={key} id={key} {...components[key]}>
+              <Box>{components[key].title}</Box>
+            </Position>
+          );
         })}
 
-          <Drag />
+        <Drag />
       </div>
     </>
   );

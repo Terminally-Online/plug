@@ -2,11 +2,11 @@ import type { CSSProperties, FC } from "react";
 import type { XYCoord } from "react-dnd";
 import { useDragLayer } from "react-dnd";
 
-import { BoxPreview } from "./Box/BoxPreview";
-import { MarkdownPreview } from "./Markdown/MarkdownPreview";
+import { BoxPreview } from "../Box/BoxPreview";
+import { MarkdownPreview } from "../Markdown/MarkdownPreview";
 
-import { ItemTypes } from "../lib/constants";
-import { snapToGrid } from "../lib/functions/snap-to-grid";
+import { ItemTypes } from "../../lib/constants";
+import { snapToGrid } from "../../lib/functions/snap-to-grid";
 
 const layerStyles: CSSProperties = {
   position: "fixed",
@@ -65,7 +65,7 @@ export const Drag: FC<CustomDragLayerProps> = (props) => {
       case ItemTypes.Markdown:
         return <MarkdownPreview title={item.title} />;
       case ItemTypes.Box:
-        return <BoxPreview title={item.title} />;
+        return <BoxPreview>{item.children}</BoxPreview>;
       default:
         return null;
     }

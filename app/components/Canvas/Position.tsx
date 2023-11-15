@@ -5,8 +5,10 @@ import { PropsWithChildren, useRef } from "react";
 import { DEBUG } from "../../lib/constants";
 import CanvasStore from "../../lib/store";
 import { inBounds } from "../../lib/functions/math-utils";
+import { Draggable } from "./Draggable";
 
 export type CanvasPosition = {
+  id: string;
   top: number;
   left: number;
   width?: number;
@@ -14,6 +16,7 @@ export type CanvasPosition = {
 };
 
 export const Position = ({
+  id,
   left,
   top,
   width,
@@ -37,7 +40,8 @@ export const Position = ({
         height: screen.height,
       }
     )
-  ) return null
+  )
+    return null;
 
   return (
     <div
@@ -50,16 +54,24 @@ export const Position = ({
         height: `${height}px`,
       }}
     >
-      {children}
+      <Draggable id={id} role={id} left={left} top={top}>
+        {children}
+      </Draggable>
 
-      {DEBUG && <div className="absolute bg-red-400 p-2 rounded-sm text-red-700 font-bold tabular-nums" 
-        style={{ 
-          top: '-40px', 
-          width: 'max-content',
-        }}
-      >
-        <p>{Math.round(left - screen.x)} x {Math.round(top - screen.y)} @ {width ?? 0} x {height ?? 0}</p> 
-      </div>}
+      {DEBUG && (
+        <div
+          className="absolute bg-red-400 p-2 rounded-sm text-red-700 font-bold tabular-nums"
+          style={{
+            top: "-40px",
+            width: "max-content",
+          }}
+        >
+          <p>
+            {Math.round(left - screen.x)} x {Math.round(top - screen.y)} @{" "}
+            {width ?? 0} x {height ?? 0}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

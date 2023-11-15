@@ -1,4 +1,4 @@
-import type { CSSProperties, FC, PropsWithChildren } from "react";
+import type { CSSProperties, FC } from "react";
 import { memo } from "react";
 
 const styles: CSSProperties = {
@@ -7,20 +7,21 @@ const styles: CSSProperties = {
   cursor: "move",
 };
 
-export interface BoxProps {
+export interface PlugProps {
+  title: string;
   yellow?: boolean;
   preview?: boolean;
 }
 
-export const Box: FC<PropsWithChildren<BoxProps>> = memo(function Box({ children, yellow, preview }) {
+export const Plug: FC<PlugProps> = memo(function Plug({ title, yellow, preview }) {
   const backgroundColor = yellow ? "yellow" : "white";
 
   return (
     <div
       style={{ ...styles, backgroundColor }}
-      role={preview ? "BoxPreview" : "Box"}
+      role={preview ? "PlugPreview" : "Plug"}
     >
-      {children}
+      {title}
     </div>
   );
 });

@@ -7,7 +7,7 @@ import useSize from "@react-hook/size";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import Canvas from "./components/Canvas";
+import Canvas from "./components/Canvas/Canvas";
 import CanvasStore from "./lib/store";
 import useRenderLoop from "./lib/hooks/useRenderLoop";
 

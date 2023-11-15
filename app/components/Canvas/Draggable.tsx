@@ -1,14 +1,12 @@
 import { memo, useEffect } from "react";
-import type { CSSProperties, FC } from "react";
+import type { CSSProperties, FC, PropsWithChildren } from "react";
 
 import { useDrag } from "react-dnd";
 import type { DragSourceMonitor } from "react-dnd";
 
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-import { Box } from "./Box";
 import { ItemTypes } from "../../lib/constants";
-import { Position } from "../Canvas/Position";
 
 function getStyles(isDragging: boolean): CSSProperties {
   return {
@@ -17,24 +15,24 @@ function getStyles(isDragging: boolean): CSSProperties {
   };
 }
 
-export type DraggableBoxProps = {
+export type DraggableProps = {
   id: string;
-  title: string;
+  role: string;
   left: number;
   top: number;
 };
 
-export const BoxDraggable: FC<DraggableBoxProps> = memo(
-  function DraggableBox({ id, title, left, top }) {
+export const Draggable: FC<PropsWithChildren<DraggableProps>> = memo(
+  function Draggable({ id, role, left, top, children }) {
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
         type: ItemTypes.Box,
-        item: { id, left, top, title },
+        item: { id, left, top, children },
         collect: (monitor: DragSourceMonitor) => ({
           isDragging: monitor.isDragging(),
         }),
       }),
-      [id, left, top, title]
+      [id, left, top, children]
     );
 
     useEffect(() => {
@@ -42,12 +40,8 @@ export const BoxDraggable: FC<DraggableBoxProps> = memo(
     }, [preview]);
 
     return (
-      <div
-        ref={drag}
-        style={getStyles(isDragging)}
-        role="DraggableBox"
-      >
-        <Box title={title} />
+      <div ref={drag} style={getStyles(isDragging)} role={role}>
+        {children}
       </div>
     );
   }
