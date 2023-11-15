@@ -43,7 +43,6 @@ export const BoxDraggable: FC<DraggableBoxProps> = memo(
 
     return (
       <div
-        className="flex items-center justify-center"
         ref={drag}
         style={getStyles(isDragging)}
         role="DraggableBox"

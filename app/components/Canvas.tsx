@@ -206,7 +206,9 @@ export const Canvas = ({}: { frame: string }) => {
           const top = components[key].top;
 
           return <Position left={left} top={top} width={200} height={200}>
-            <BoxDraggable key={key} id={key} {...components[key]} />
+            <div className="flex items-center justify-center">
+              <BoxDraggable key={key} id={key} {...components[key]} />
+            </div>
           </Position>
         })}
 

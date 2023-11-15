@@ -27,7 +27,8 @@ export const BoxPreview: FC<BoxPreviewProps> = memo(function BoxPreview({
   useEffect(
     function subscribeToIntervalTick() {
       const interval = setInterval(() => setTickTock(!tickTock), 500);
-      return () => clearInterval(interval);
+
+      return () => { clearInterval(interval); }
     },
     [tickTock]
   );
