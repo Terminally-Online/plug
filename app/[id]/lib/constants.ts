@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { radians } from "./functions/math-utils";
 
 export const DEBUG = true
@@ -11,3 +13,67 @@ export const ItemTypes = {
   Box: "box",
   Plug: "plug"
 };
+
+const nounsSchema = z.object({
+  price: z.number(),
+})
+
+const thresholdSchema = z.object({
+  threshold: z.number().default(Date.now()),
+})
+
+export const pins = [
+  {
+    label: "Nouns",
+    pins: [
+      {
+        label: "Can Bid on Noun",
+        value: "can-bid",
+        type: 'if',
+        schema: nounsSchema,
+      },
+      {
+        label: "Place Bid on Noun",
+        value: "place-bid",
+        type: 'then',
+        schema: nounsSchema,
+      }
+    ],
+  },
+  {
+    label: "Schedule",
+    pins: [
+      {
+        label: "Within Window",
+        value: "within-window",
+        type: 'if',
+        schema: thresholdSchema,
+      },
+      {
+        label: 'Before Block Number',
+        value: 'before-block-number',
+        type: 'if',
+        schema: thresholdSchema,
+      },
+      {
+        label: 'After Block Number',
+        value: 'after-block-number',
+        type: 'if',
+        schema: thresholdSchema,
+      },
+      {
+        label: 'Before Timestamp',
+        value: 'before-timestamp',
+        type: 'if',
+        schema: thresholdSchema,
+      },
+      {
+        label: 'After Timestamp',
+        value: 'after-timestamp',
+        type: 'if',
+        schema: thresholdSchema,
+      }
+    ],
+  }
+]
+

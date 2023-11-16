@@ -1,4 +1,4 @@
-import { ItemTypes } from "./constants";
+import { pins, ItemTypes } from "./constants";
 
 export type DragItem = {
   id: string;
@@ -17,3 +17,5 @@ export type ComponentMap = {
     height?: number;
   };
 };
+
+export type Pin = (typeof pins)[number]["pins"][number]

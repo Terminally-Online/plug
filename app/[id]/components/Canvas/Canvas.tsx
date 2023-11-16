@@ -93,18 +93,18 @@ export const Canvas = ({
           <p>User id: tester</p>
 
           <p>
-            Camera: {CanvasStore.camera.x}, {CanvasStore.camera.y},{" "}
-            {CanvasStore.camera.z}
+            Camera: {Math.round(CanvasStore.camera.x)}, {Math.round(CanvasStore.camera.y)},{" "}
+            {Math.round(CanvasStore.camera.z)}
           </p>
           <p>Locked: {CanvasStore.camera.locked.toString()}</p>
           <p>
-            Scale: {CanvasStore.scale.x}, {CanvasStore.scale.y}
+            Scale: {Math.round(CanvasStore.scale.x)}, {Math.round(CanvasStore.scale.y)}
           </p>
           <p>
-            Screen: {CanvasStore.screen.x}, {CanvasStore.screen.y}
+            Screen: {Math.round(CanvasStore.screen.x)}, {Math.round(CanvasStore.screen.y)}
           </p>
           <p>
-            Pointer: {CanvasStore.pointer.x}, {CanvasStore.pointer.y}
+            Pointer: {Math.round(CanvasStore.pointer.x)}, {Math.round(CanvasStore.pointer.y)}
           </p>
 
           <div className="flex flex-row space-x-2 mt-4">
@@ -113,31 +113,6 @@ export const Canvas = ({
                 New Canvas
               </button>
             </Link>
-
-            <button
-              type="button"
-              className="bg-red-700 text-white p-1 px-2"
-              onClick={() => {
-                setComponents({});
-              }}
-            >
-              Clear
-            </button>
-
-            <button
-              type="button"
-              className="bg-red-700 text-white p-1 px-2"
-              onClick={() => {
-                const id = `box-${Object.keys(components).length + 1}`;
-                const left = CanvasStore.pointer.x;
-                const top = CanvasStore.pointer.y;
-                const type = ItemTypes.Box;
-
-                addComponent(id, left, top, type, `## ${new Date()} | 6`);
-              }}
-            >
-              New Box
-            </button>
 
             <button
               type="button"
@@ -153,28 +128,13 @@ export const Canvas = ({
             >
               New Plug
             </button>
-
-            <button
-              type="button"
-              className="bg-red-700 text-white p-1 px-2"
-              onClick={() => {
-                const id = `box-${Object.keys(components).length + 1}`;
-                const left = CanvasStore.pointer.x;
-                const top = CanvasStore.pointer.y;
-                const type = ItemTypes.Markdown;
-
-                addComponent(id, left, top, type, `## ${new Date()} | 6`);
-              }}
-            >
-              New Markdown
-            </button>
           </div>
         </div>
       )}
 
       <div
         ref={drop}
-        className="relative w-screen h-screen"
+        className="relative w-screen h-screen overscroll-none"
         style={{
           transform: `scale(${(scale.x, scale.y)})`,
           transformOrigin: "top left",

@@ -234,7 +234,5 @@ export default class CanvasStore {
 
     this.data.pointer.x = left + deltaX / scale.x;
     this.data.pointer.y = top + deltaY / scale.y;
-
-    console.log(this.data.pointer, left, top);
   }
 }

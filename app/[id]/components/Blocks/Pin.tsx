@@ -1,6 +1,3 @@
-
-"use client"
-
 import * as React from "react"
 import {
   CaretSortIcon,
@@ -32,76 +29,19 @@ import {
 
 import CanvasStore from "../../lib/store"
 
-import { z } from "zod"
 import { Input } from "@/components/ui/input"
-
-const nounsSchema = z.object({
-  price: z.number(),
-})
-
-const thresholdSchema = z.object({
-  threshold: z.number().default(Date.now()),
-})
-
-const groups = [
-  {
-    label: "Nouns",
-    teams: [
-      {
-        label: "Can Bid on Noun",
-        value: "can-bid",
-        schema: nounsSchema,
-      },
-      {
-        label: "Place Bid on Noun",
-        value: "place-bid",
-        schema: nounsSchema,
-      }
-    ],
-  },
-  {
-    label: "Schedule",
-    teams: [
-      {
-        label: "Within Window",
-        value: "within-window",
-        schema: thresholdSchema,
-      },
-      {
-        label: 'Before Block Number',
-        value: 'before-block-number',
-        schema: thresholdSchema,
-      },
-      {
-        label: 'After Block Number',
-        value: 'after-block-number',
-        schema: thresholdSchema,
-      },
-      {
-        label: 'Before Timestamp',
-        value: 'before-timestamp',
-        schema: thresholdSchema,
-      },
-      {
-        label: 'After Timestamp',
-        value: 'after-timestamp',
-        schema: thresholdSchema,
-      }
-    ],
-  }
-]
-
-type Team = (typeof groups)[number]["teams"][number]
+import { pins } from "../../lib/constants"
+import { Pin } from "../../lib/types"
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface TeamSwitcherProps extends PopoverTriggerProps {}
+interface PinProps extends PopoverTriggerProps {
+  selectedPin: Pin
+  onPinChange: (pin: Pin) => void
+}
 
-export default function PlugSwitcher({ className }: TeamSwitcherProps) {
+export default function Pin({ className, selectedPin, onPinChange }: PinProps) {
   const [open, setOpen] = React.useState(false)
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
-  )
 
   CanvasStore.lockCamera(open)
 
@@ -113,25 +53,25 @@ export default function PlugSwitcher({ className }: TeamSwitcherProps) {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Select a team"
+            aria-label="Select a Pin"
             className={cn("w-full justify-between border-b-[1px] border-transparent border-b-stone-950 rounded-b-none", className)}
           >
             <Avatar className="mr-2 h-4 w-4">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
+                src={`https://avatar.vercel.sh/${selectedPin.value}.png`}
+                alt={selectedPin.label}
               />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
 
-            {selectedTeam.label}
+            {selectedPin.label}
 
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
 
-        {Object.keys(selectedTeam.schema.shape).map((key) => (
-          <div key={key} className="w-full flex flex-col">
+        {Object.keys(selectedPin.schema.shape).map((key) => (
+          <div key={key} className="w-full flex flex-col bg-stone-800 rounded-bl-sm rounded-br-sm">
             <Input
               type="text"
               id={key}
@@ -148,32 +88,34 @@ export default function PlugSwitcher({ className }: TeamSwitcherProps) {
       <PopoverContent className="w-[400px] p-0">
         <Command>
           <CommandList>
-            <CommandInput placeholder="Search team..." />
-            <CommandEmpty>No team found.</CommandEmpty>
-            {groups.map((group) => (
-              <CommandGroup key={group.label} heading={group.label}>
-                {group.teams.map((team) => (
+            <CommandInput placeholder="Search Pin..." />
+            <CommandEmpty>No Pin found.</CommandEmpty>
+            {pins.map((pinSource) => (
+              <CommandGroup key={pinSource.label} heading={pinSource.label}>
+                {pinSource.pins.map((pin) => (
                   <CommandItem
-                    key={team.value}
+                    key={pin.value}
                     onSelect={() => {
-                      setSelectedTeam(team)
+                      onPinChange(pin)
                       setOpen(false)
                     }}
                     className="text-sm"
                   >
                     <Avatar className="mr-2 h-5 w-5">
                       <AvatarImage
-                        src={`https://avatar.vercel.sh/${team.value}.png`}
-                        alt={team.label}
+                        src={`https://avatar.vercel.sh/${pin.value}.png`}
+                        alt={pin.label}
                         className="grayscale"
                       />
                       <AvatarFallback>SC</AvatarFallback>
                     </Avatar>
-                    {team.label}
+
+                    {pin.label}
+
                     <CheckIcon
                       className={cn(
                         "ml-auto h-4 w-4",
-                        selectedTeam.value === team.value
+                        selectedPin.value === pin.value
                           ? "opacity-100"
                           : "opacity-0"
                       )}
