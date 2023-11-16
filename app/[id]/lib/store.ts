@@ -28,6 +28,7 @@ export type CanvasState = {
     x: number;
     y: number;
     z: number;
+    locked: boolean;
   };
   components: {
     [key: string]: {
@@ -56,6 +57,7 @@ export const DEFAULT_CANVAS_STATE: CanvasState = {
     x: 1.5 * RECT_W,
     y: 1.5 * RECT_H,
     z: 0,
+    locked: false,
   },
   components: {},
 };
@@ -152,7 +154,13 @@ export default class CanvasStore {
     // return isXInBounds && isYInBounds
   }
 
+  public static lockCamera(locked: boolean) {
+    this.data.camera.locked = locked;
+  }
+
   public static moveCamera(mx: number, my: number) {
+    if(this.data.camera.locked) return;
+
     const scrollFactor = 1.5;
 
     const deltaX = mx * scrollFactor;
@@ -171,6 +179,8 @@ export default class CanvasStore {
   }
 
   public static zoomCamera(deltaX: number, deltaY: number) {
+    if(this.data.camera.locked) return;
+
     deltaX;
 
     // Normal zoom is quite slow, we want to scale the amount quite a bit
@@ -211,6 +221,7 @@ export default class CanvasStore {
         x: newX,
         y: newY,
         z: newZ,
+        locked: false,
       };
     }
   }

@@ -10,8 +10,13 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Canvas from "./Canvas/Canvas";
 import CanvasStore from "../lib/store";
 import useRenderLoop from "../lib/hooks/useRenderLoop";
+import { ComponentMap } from "../lib/types";
 
-export default function Viewport() {
+export default function Viewport({
+  components,
+}: {
+  components?: ComponentMap;
+}) {
   const canvas = useRef<HTMLDivElement>(null);
 
   const frame = useRenderLoop(60);
@@ -43,7 +48,7 @@ export default function Viewport() {
   }, [width, height]);
 
   return (
-    <div className="w-full h-full text-black dark:text-white">
+    <div className="bg-white bg-stone-900 w-full h-full text-black dark:text-white">
       <div
         className="w-full h-full relative overflow-hidden overscroll-none"
         ref={canvas}
@@ -51,7 +56,7 @@ export default function Viewport() {
         onPointerMove={pointerListener}
       >
         <DndProvider backend={HTML5Backend}>
-          <Canvas frame={frame}></Canvas>
+          <Canvas frame={frame} components={components}></Canvas>
         </DndProvider>
       </div>
     </div>

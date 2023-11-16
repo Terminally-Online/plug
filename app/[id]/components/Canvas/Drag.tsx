@@ -51,7 +51,7 @@ export interface CustomDragLayerProps {
 }
 
 export const Drag: FC<CustomDragLayerProps> = (props) => {
-  const { itemType, isDragging, item, initialOffset, currentOffset } =
+  const { isDragging, item, initialOffset, currentOffset } =
     useDragLayer((monitor) => ({
       item: monitor.getItem(),
       itemType: monitor.getItemType(),
@@ -61,14 +61,9 @@ export const Drag: FC<CustomDragLayerProps> = (props) => {
     }));
 
   function renderItem() {
-    switch (itemType) {
-      case ItemTypes.Markdown:
-        return <Preview>{item.children}</Preview>;
-      case ItemTypes.Box:
-        return <Preview>{item.children}</Preview>;
-      default:
-        return null;
-    }
+    if(!item || !item.children) return null;
+
+    return <Preview>{item.children}</Preview>;
   }
 
   if (!isDragging) {

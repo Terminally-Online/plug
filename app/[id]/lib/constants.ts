@@ -9,4 +9,5 @@ export const RECT_H = 1000;
 export const ItemTypes = {
   Markdown: "markdown",
   Box: "box",
+  Plug: "plug"
 };
