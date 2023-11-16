@@ -20,9 +20,11 @@ import Link from "next/link";
 import Plug from "../Blocks/Plug";
 
 export const Canvas = ({
+  id,
   components: loadedComponents = {},
 }: {
   frame: string;
+  id: string;
   components?: ComponentMap;
 }) => {
   const [components, setComponents] = useState<ComponentMap>(loadedComponents);
@@ -123,6 +125,13 @@ export const Canvas = ({
                 const top = CanvasStore.pointer.y;
                 const type = ItemTypes.Plug;
 
+                // TODO: Right now we are stringifying the data (children) however we are just discarding the reference.
+                // NOTES: The database is accepting raw JSON and does not have a declared shape because we do not want to
+                //        enforce a specific structure through the schema because if we did, then we would have to
+                //        make a database migration / handler update any time we want to add or remove a new pin.
+                //        By doing it this, pins can be put behind feature flags when desired as well as we can just smash
+                //        shit into the database and won't have to worry about refactoring for the update that enables
+                //        users to create their own Pins.
                 addComponent(id, left, top, type, JSON.stringify({ name: "Test" }));
               }}
             >
@@ -151,7 +160,7 @@ export const Canvas = ({
 
           return (
             <Position key={key} id={key} {...components[key]}>
-              <Component>{components[key].children}</Component>
+              <Component id={id}>{components[key].children}</Component>
             </Position>
           );
         })}

@@ -1,7 +1,7 @@
 import { ItemTypes } from "./lib/constants";
 import { RECT_H, RECT_W } from "./lib/constants";
 
-import { p } from "../lib/prisma";
+import { p } from "@/server/prisma";
 
 import Viewport from "./components/Viewport";
 
@@ -54,5 +54,5 @@ export default async function Page({ params }: { params: { id: string } }) {
     return { ...acc, ...(curr.content as Record<string, any>) };
   }, {});
 
-  return <Viewport components={components} />;
+  return <Viewport id={params.id} components={components} />;
 }

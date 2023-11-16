@@ -13,9 +13,11 @@ import useRenderLoop from "../lib/hooks/useRenderLoop";
 import { ComponentMap } from "../lib/types";
 
 export default function Viewport({
+  id,
   components,
 }: {
-  components?: ComponentMap;
+    id: string;
+    components?: ComponentMap;
 }) {
   const canvas = useRef<HTMLDivElement>(null);
 
@@ -56,7 +58,7 @@ export default function Viewport({
         onPointerMove={pointerListener}
       >
         <DndProvider backend={HTML5Backend}>
-          <Canvas frame={frame} components={components}></Canvas>
+          <Canvas frame={frame} id={id} components={components}></Canvas>
         </DndProvider>
       </div>
     </div>

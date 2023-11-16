@@ -1,3 +1,5 @@
+"use client"
+
 import type { FC, PropsWithChildren } from "react";
 import { memo, useCallback, useState } from "react";
 
@@ -9,28 +11,38 @@ import Pin from "./Pin";
 import PlugSimulation, { PlugSimulationState } from "./PlugSimulation";
 
 export type PlugProps = {
+  id: string;
   preview?: boolean;
 };
 
 export const Plug: FC<PropsWithChildren<PlugProps>> = ({
+  id,
   children,
   preview,
 }) => {
+  // * Deconstruct the values that were sent from the database.
+  // TODO: Acknowledge that this is dangerous and not ideal.
+  const values = JSON.parse(children as string) as Array<PinType>
+
   const [selectedPins, setSelectedPins] = useState([pins[0].pins[0]]);
   const [simulation, setSimulation] = useState<PlugSimulationState | null>(
     null
   );
 
+  const handlePost = () => {
+    id
+    // TODO: Post into the database when selectedPins is updated.
+    //    NOTES: This will only orchestrate the state of the plug and not the actual canvas state of the plug (position, size, etc.)
+    //    NOTES: Also do note that we cannot simply retrieve the state of the Plug from here because to have gotten here we needed to already know its position in order to properly place it on the Canvas.
+  };
+
   // * Remove the selectedPins from the pins so that you can only choose each pin once.
-  // The type of available pins is pins with some of the nested pins removed
   const availablePins = pins
     .map((pin) => ({
       ...pin,
       pins: pin.pins.filter((pin) => !selectedPins.includes(pin)),
     }))
     .filter((pin) => pin.pins.length > 0);
-
-  console.log(availablePins);
 
   const handleChange = (index: number, pin: PinType) => {
     setSelectedPins((previousSelectedPins) => {
@@ -42,7 +54,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
         newSelectedPins.splice(index + 1, newSelectedPins.length - index);
 
       return newSelectedPins;
-    });
+    })
   };
 
   const handleAddition = useCallback(
@@ -75,6 +87,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
             pins={availablePins}
             onPinChange={(newPin) => handleChange(index, newPin)}
           />
+
           <PinAppendage
             pin={pin}
             onClick={() => handleAddition(index)}
