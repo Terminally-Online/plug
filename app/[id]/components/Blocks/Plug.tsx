@@ -20,6 +20,11 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = memo(function Plug({ child
 
       newSelectedPins[index] = pin;
 
+      // * If this is a 'then', remove all the pins after it
+      if(pin.type === "then") {
+        newSelectedPins.splice(index + 1, newSelectedPins.length - index);
+      }
+
       return newSelectedPins;
     });
   }
@@ -29,7 +34,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = memo(function Plug({ child
       className="bg-stone-900 text-white cursor-move flex flex-col items-center justify-center"
       role={preview ? "PlugPreview" : "Plug"}
     >
-      {selectedPins.map((pin, index) => <>
+      {selectedPins.map((pin, index) => <div key={index} className="w-full h-full">
         <Pin selectedPin={pin} onPinChange={(newPin) => { 
           handleChange(index, newPin);
         }} />
@@ -44,7 +49,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = memo(function Plug({ child
             return newSelectedPins;
           })
         }}/>
-      </>)}
+      </div>)}
     </div>
   );
 });

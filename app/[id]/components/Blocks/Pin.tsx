@@ -47,14 +47,17 @@ export default function Pin({ className, selectedPin, onPinChange }: PinProps) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <div className="border border-stone-950 rounded-md w-full">
+      <div className="relative border border-stone-950 rounded-md w-full">
+        <p className="absolute top-[-10px] left-4 bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">{selectedPin.type.slice(0, 1).toUpperCase() + selectedPin.type.slice(1)}</p>
+        <p className="absolute top-[-10px] right-4 text-right bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">Pending</p>
+
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
             aria-label="Select a Pin"
-            className={cn("w-full justify-between border-b-[1px] border-transparent border-b-stone-950 rounded-b-none", className)}
+            className={cn("w-full justify-between border-b-[1px] border-transparent border-b-stone-950 rounded-b-none p-4 py-6", className)}
           >
             <Avatar className="mr-2 h-4 w-4">
               <AvatarImage
