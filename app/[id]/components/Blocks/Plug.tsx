@@ -6,6 +6,7 @@ import { pins } from "../../lib/constants";
 
 import PinAppendage from "./PinAppendage";
 import Pin from "./Pin";
+import PlugSimulation from "./PlugSimulation";
 
 export type PlugProps = {
   preview?: boolean;
@@ -13,6 +14,7 @@ export type PlugProps = {
 
 export const Plug: FC<PropsWithChildren<PlugProps>> = ({ children, preview }) => {
   const [selectedPins, setSelectedPins] = useState([pins[0].pins[0]]);
+  const [simulation, setSimulation] = useState(null);
 
   const handleChange = (index: number, pin: PinType) => {
     setSelectedPins((previousSelectedPins) => {
@@ -43,6 +45,9 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({ children, preview }) =>
         <Pin selectedPin={pin} onPinChange={(newPin) => handleChange(index, newPin)} />
         <PinAppendage pin={pin} onClick={() => handleAddition(index)}/>
       </div>)}
+
+      {/* The action button that lets a user sign the message they've built */}
+      <PlugSimulation pins={selectedPins} />
     </div>
   );
 };

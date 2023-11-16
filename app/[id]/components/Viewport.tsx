@@ -48,7 +48,7 @@ export default function Viewport({
   }, [width, height]);
 
   return (
-    <div className="bg-white bg-stone-900 w-full h-full text-black dark:text-white">
+    <div className="bg-stone-900 w-full h-full text-black dark:text-white">
       <div
         className="w-full h-full relative overflow-hidden overscroll-none"
         ref={canvas}
