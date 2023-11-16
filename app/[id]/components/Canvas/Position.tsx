@@ -60,9 +60,9 @@ export const Position = ({
 
       {DEBUG && (
         <div
-          className="absolute bg-red-400 p-2 rounded-sm text-red-700 font-bold tabular-nums"
+          className="absolute bg-red-400 p-2 rounded-sm text-xs text-red-700 font-bold tabular-nums"
           style={{
-            top: "-40px",
+            top: "-60px",
             width: "max-content",
           }}
         >
