@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 
 import type { Pin } from "../../lib/types";
 
@@ -22,3 +22,5 @@ export const PinAppendage: FC<PinAppendageProps> = ({ pin, onClick }) => {
     </button>
   </div>
 }
+
+export default memo(PinAppendage);

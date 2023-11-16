@@ -17,7 +17,7 @@ import { Box } from "../Blocks/Box";
 import { Markdown } from "../Blocks/Markdown";
 
 import Link from "next/link";
-import { Plug } from "../Blocks/Plug";
+import Plug from "../Blocks/Plug";
 
 export const Canvas = ({
   components: loadedComponents = {},

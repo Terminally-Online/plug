@@ -1,4 +1,5 @@
-import * as React from "react"
+import { memo, useState } from "react"
+
 import {
   CaretSortIcon,
   CheckIcon,
@@ -31,18 +32,19 @@ import CanvasStore from "../../lib/store"
 
 import { Input } from "@/components/ui/input"
 import { pins } from "../../lib/constants"
-import { Pin } from "../../lib/types"
+import { Pin as PinType } from "../../lib/types"
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
 interface PinProps extends PopoverTriggerProps {
-  selectedPin: Pin
-  onPinChange: (pin: Pin) => void
+  selectedPin: PinType
+  onPinChange: (pin: PinType) => void
 }
 
-export default function Pin({ className, selectedPin, onPinChange }: PinProps) {
-  const [open, setOpen] = React.useState(false)
+export const Pin = ({ className, selectedPin, onPinChange }: PinProps) => {
+  const [open, setOpen] = useState(false)
 
+  // * Lock the camera from moving when a Popover is open so that the user can scroll without moving the camera.
   CanvasStore.lockCamera(open)
 
   return (
@@ -134,3 +136,4 @@ export default function Pin({ className, selectedPin, onPinChange }: PinProps) {
   )
 }
 
+export default memo(Pin)
