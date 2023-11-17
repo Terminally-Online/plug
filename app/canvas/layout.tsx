@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { PropsWithChildren } from 'react'
 
 import Hud from './components/Hud'
+import { TabsProvider } from '@/contexts/TabProvider'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -12,8 +13,10 @@ export default function Layout({
   children,
 }: PropsWithChildren) {
   return (
-    <Hud>
-      {children}
-    </Hud>
+    <TabsProvider>
+      <Hud>
+        {children}
+      </Hud>
+    </TabsProvider>
   )
 }

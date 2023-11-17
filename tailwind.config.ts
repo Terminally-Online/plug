@@ -46,6 +46,10 @@ const config: Config = {
         { values: theme("textShadow") }
       );
     }),
+    plugin(function({ addVariant }) {
+      addVariant('active', ['&.active']),
+      addVariant('group-active', ['group.active &'])
+    })
   ],
 };
 export default config;
