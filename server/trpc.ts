@@ -1,17 +1,70 @@
-import { inferAsyncReturnType, initTRPC, TRPCError } from '@trpc/server'
+/**
+ * This is your entry point to setup the root configuration for tRPC on the server.
+ * - `initTRPC` should only be used once per app.
+ * - We export only the functionality that we use so we can enforce which base procedures should be used
+ *
+ * Learn how to create protected base procedures and other things below:
+ * @see https://trpc.io/docs/v10/router
+ * @see https://trpc.io/docs/v10/procedures
+ */
 
-import { createContext } from './context'
+import { Context } from './context';
+import { initTRPC, TRPCError } from '@trpc/server';
+import superjson from 'superjson';
 
-export const t = initTRPC
-	.context<inferAsyncReturnType<typeof createContext>>()
-	.create()
+const t = initTRPC.context<Context>().create({
+  /**
+   * @see https://trpc.io/docs/v10/data-transformers
+   */
+  transformer: superjson,
+  /**
+   * @see https://trpc.io/docs/v10/error-formatting
+   */
+  errorFormatter({ shape }) {
+    return shape;
+  },
+});
 
-const isAdminMiddleware = t.middleware(({ ctx, next }) => {
-	if (!ctx.isAdmin) throw new TRPCError({ code: 'UNAUTHORIZED' })
+/**
+ * Create a router
+ * @see https://trpc.io/docs/v10/router
+ */
+export const router = t.router;
 
-	return next({ ctx: { ...ctx, isAdmin: true } })
-})
+/**
+ * Create an unprotected procedure
+ * @see https://trpc.io/docs/v10/procedures
+ **/
+export const publicProcedure = t.procedure;
 
-export const router = t.router
-export const procedure = t.procedure
-export const adminProcedure = procedure.use(isAdminMiddleware)
+/**
+ * @see https://trpc.io/docs/v10/middlewares
+ */
+export const middleware = t.middleware;
+
+/**
+ * @see https://trpc.io/docs/v10/merging-routers
+ */
+export const mergeRouters = t.mergeRouters;
+
+const isAuthed = middleware(({ next, ctx }) => {
+  const user = ctx.session?.user;
+
+  if (!user?.name) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return next({
+    ctx: {
+      user: {
+        ...user,
+        name: user.name,
+      },
+    },
+  });
+});
+
+/**
+ * Protected base procedure
+ */
+export const authedProcedure = t.procedure.use(isAuthed);

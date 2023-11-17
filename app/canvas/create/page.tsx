@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Page() { 
-  redirect(`/${Math.random().toString(36).substring(7)}`);
+  redirect(`/canvas/${Math.random().toString(36).substring(7)}`);
 }

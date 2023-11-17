@@ -21,7 +21,7 @@ export default function Page() {
 
   const username = session?.user?.name
 
-  return <div className="w-screen h-screen flex flex-col items-center justify-center gap-4">
+  return <div className="bg-stone-900 w-screen h-screen flex flex-col items-center justify-center gap-4">
     <h1 className="text-2xl">{username ? 'Create a new Canvas' : 'Log In to Proceed'}</h1>
     {username ? <CreateCanvasButton /> : <LogInButton />}
   </div>
