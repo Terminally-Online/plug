@@ -11,6 +11,7 @@ import Canvas from "./Canvas/Canvas";
 import CanvasStore from "../lib/store";
 import useRenderLoop from "../lib/hooks/useRenderLoop";
 import { ComponentMap } from "../lib/types";
+import { useTabs } from "@/contexts/TabProvider";
 
 export default function Viewport({
   id,
@@ -19,6 +20,8 @@ export default function Viewport({
     id: string;
     components?: ComponentMap;
 }) {
+  const { handleAdd } = useTabs();
+
   const canvas = useRef<HTMLDivElement>(null);
 
   const frame = useRenderLoop(60);
@@ -42,6 +45,15 @@ export default function Viewport({
   const pointerListener = (event: PointerEvent) => {
     CanvasStore.movePointer(event.clientX, event.clientY);
   };
+
+  useEffect(() => { 
+    handleAdd({
+      label: `Canvas ${id}`,
+      color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+      href: `/canvas/${id}`,
+      active: true
+    })
+  }, [])
 
   useEffect(() => {
     if (width === 0 || height === 0) return;

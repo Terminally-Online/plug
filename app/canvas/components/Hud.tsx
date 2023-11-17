@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, PropsWithChildren, memo } from "react"
+import { FC, PropsWithChildren, memo, useEffect } from "react"
 
 import { cn } from "@/lib/utils";
 
@@ -9,15 +9,31 @@ import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTabs } from "@/contexts/TabProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => { 
   const { data: session } = useSession()
-  const { tabs, createTab, handleCreate, handleRemove } = useTabs()
+  const { tabs, createTab, handleAdd, handleRemove } = useTabs()
 
   const router = useRouter()
+  const path = usePathname()
 
   const username = session?.user?.name
+
+  useEffect(() => { 
+    switch(path) {
+      case ('/canvas/create'): 
+        handleAdd({
+          label: `New Canvas`,
+          color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+          href: `/canvas/create`,
+          active: true
+        });
+        break
+      default: 
+        break
+    }
+  }, [path]);
 
   return <>
     <div className="bg-stone-900 border-b-[1px] border-b-stone-950 fixed top-0 left-0 w-screen z-[99999]">
@@ -62,7 +78,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
         {createTab === undefined ? <button 
           type="button" 
           className="px-2 h-full flex items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 text-white/60 hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out" 
-          onClick={handleCreate}>
+          onClick={() => { router.push('/canvas/create') }}>
           <PlusIcon width={16} height={16} />
         </button> : null}
 

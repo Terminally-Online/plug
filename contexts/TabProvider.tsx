@@ -13,14 +13,12 @@ type Tab = {
 export const TabsContext = createContext<{
   tabs: Tab[]
   createTab: Tab | undefined,
-  handleCreate: () => void
   handleAdd: (tab: Tab) => void
   handleRemove: (index: number) => void
   handleMove: (index: number, newIndex: number) => void
 }>({ 
   tabs: [], 
   createTab: undefined, 
-  handleCreate: () => {},
   handleAdd: () => {}, 
   handleRemove: () => {}, 
   handleMove: () => {} 
@@ -37,28 +35,6 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
   });
 
   const createTab = tabs.find(tab => tab.href === '/canvas/create');
-
-  const handleCreate = () => { 
-    if (createTab) {
-      router.push(createTab.href);
-
-      return;
-    }
-
-    setTabs(tabs => {
-      const tab: Tab = {
-        label: `New Canvas`,
-        color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
-        href: `/canvas/create`,
-        active: false
-      }
-
-      // * Go to the newly created page.
-      router.push(tab.href)
-
-      return [...tabs, tab]
-    })
-  }
 
   const handleAdd = (tab: Tab) => { 
     setTabs(tabs => {
@@ -129,7 +105,6 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
   return <TabsContext.Provider value={{ 
     tabs, 
     createTab, 
-    handleCreate, 
     handleAdd, 
     handleRemove, 
     handleMove 
