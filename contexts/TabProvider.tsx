@@ -13,7 +13,7 @@ type Tab = {
 export const TabsContext = createContext<{
   tabs: Tab[]
   handleAdd: () => void
-  handleRemove: (index: number) => void
+  handleRemove: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => void
   handleMove: (index: number, newIndex: number) => void
 }>({ tabs: [], handleAdd: () => {}, handleRemove: () => {}, handleMove: () => {} })
 
@@ -43,21 +43,27 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
     })
   }
 
-  const handleRemove = (index: number) => {
+  const handleRemove = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    // ? Without this here, the close button would also fire navigation to the canvas route.
+    e.stopPropagation();
+
     setTabs(tabs => {
       const newTabs = [...tabs];
 
       newTabs.splice(index, 1);
 
-      // * When removing, we may remove the active tab. In that case, we need to
-      //   redirect to the last tab in the list.
-      if (newTabs.length > 0) {
-        const lastTab = newTabs[newTabs.length - 1];
+      // * If we do not need a layout shift, we can just remove the tab.
+      if(tabs[index].active) {
+        // * When removing, we may remove the active tab. In that case, we need to
+        //   redirect to the last tab in the list.
+        if (newTabs.length > 0) {
+          const lastTab = newTabs[newTabs.length - 1];
 
-        router.push(lastTab.href);
+          router.push(lastTab.href);
+        }
+        // * If there are no more tabs, we need to redirect to the home page.
+        else router.push('/canvas');
       }
-      // * If there are no more tabs, we need to redirect to the home page.
-      else router.push('/canvas');
 
       return newTabs;
     })

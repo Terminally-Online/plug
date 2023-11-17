@@ -9,10 +9,13 @@ import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTabs } from "@/contexts/TabProvider";
+import { useRouter } from "next/navigation";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => { 
   const { data: session } = useSession()
   const { tabs, handleAdd, handleRemove } = useTabs()
+
+  const router = useRouter()
 
   const username = session?.user?.name
 
@@ -27,22 +30,18 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
         </Link>
 
         {tabs.map(({ label, color, href, active }, index) => 
-          <Link 
-            href={href} 
+          <button 
             key={href} 
             className={cn(
-              "group h-full px-4 text-white/60 hover:text-white active:bg-white hover:active:bg-white active:text-stone-950/60 active:hover:text-stone-950 text-sm transition-all duration-200 ease-in-out flex flex-row items-center gap-4",
+              "group border-l-[1px] border-l-stone-950 h-full px-4 text-white/60 hover:text-white active:bg-white hover:active:bg-white active:text-stone-950/60 active:hover:text-stone-950 text-sm transition-all duration-200 ease-in-out flex flex-row items-center gap-4",
               active ? 'active' : '',
             )}
+            onClick={() => router.push(href)}
           >
-            <button 
-              className={cn(
-                "h-full flex flex-row items-center gap-4",
-              )}
-            >
+            <div className="h-full flex flex-row items-center gap-4">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
               {label}
-            </button>
+            </div>
 
             <button 
               type="button" 
@@ -50,10 +49,10 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
                 "h-full flex items-center justify-center opacity-0 group-hover:opacity-100 text-white/60 hover:text-white active:text-stone-950 transition-all duration-200 ease-in-out active:text-stone-950/60",
                 active ? 'active' : '',
               )}
-              onClick={() => handleRemove(index)}>
+              onClick={(e) => handleRemove(e, index)}>
               <Cross1Icon width={12} height={12} />
             </button>
-          </Link>
+          </button>
         )}
 
         <button 
