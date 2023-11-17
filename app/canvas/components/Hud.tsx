@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => { 
   const { data: session } = useSession()
-  const { tabs, handleAdd, handleRemove } = useTabs()
+  const { tabs, createTab, handleCreate, handleRemove } = useTabs()
 
   const router = useRouter()
 
@@ -49,18 +49,22 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
                 "h-full flex items-center justify-center opacity-0 group-hover:opacity-100 text-white/60 hover:text-white active:text-stone-950 transition-all duration-200 ease-in-out active:text-stone-950/60",
                 active ? 'active' : '',
               )}
-              onClick={(e) => handleRemove(e, index)}>
+              onClick={(e) => {
+                // ? Without this here, the close button would also fire navigation to the canvas route.
+                e.stopPropagation();
+                handleRemove(index)
+              }}>
               <Cross1Icon width={12} height={12} />
             </button>
           </button>
         )}
 
-        <button 
+        {createTab === undefined ? <button 
           type="button" 
           className="px-2 h-full flex items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 text-white/60 hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out" 
-          onClick={handleAdd}>
+          onClick={handleCreate}>
           <PlusIcon width={16} height={16} />
-        </button>
+        </button> : null}
 
         <div className="ml-auto">
           {!username ? <Link 

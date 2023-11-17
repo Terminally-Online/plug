@@ -12,10 +12,19 @@ type Tab = {
 
 export const TabsContext = createContext<{
   tabs: Tab[]
-  handleAdd: () => void
-  handleRemove: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => void
+  createTab: Tab | undefined,
+  handleCreate: () => void
+  handleAdd: (tab: Tab) => void
+  handleRemove: (index: number) => void
   handleMove: (index: number, newIndex: number) => void
-}>({ tabs: [], handleAdd: () => {}, handleRemove: () => {}, handleMove: () => {} })
+}>({ 
+  tabs: [], 
+  createTab: undefined, 
+  handleCreate: () => {},
+  handleAdd: () => {}, 
+  handleRemove: () => {}, 
+  handleMove: () => {} 
+})
 
 export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter()
@@ -27,12 +36,20 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
     return savedTabs ? JSON.parse(savedTabs) : [];
   });
 
-  const handleAdd = () => { 
+  const createTab = tabs.find(tab => tab.href === '/canvas/create');
+
+  const handleCreate = () => { 
+    if (createTab) {
+      router.push(createTab.href);
+
+      return;
+    }
+
     setTabs(tabs => {
       const tab: Tab = {
-        label: `Untitled Canvas`,
+        label: `New Canvas`,
         color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
-        href: `/canvas/${tabs.length + 1}`,
+        href: `/canvas/create`,
         active: false
       }
 
@@ -43,10 +60,19 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
     })
   }
 
-  const handleRemove = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
-    // ? Without this here, the close button would also fire navigation to the canvas route.
-    e.stopPropagation();
+  const handleAdd = (tab: Tab) => { 
+    setTabs(tabs => {
+      // * If we already have a tab with the same href, we don't need to add it.
+      if (tabs.find(t => t.href === tab.href)) return tabs;
 
+      // * Go to the newly created page.
+      router.push(tab.href)
+
+      return [...tabs, tab]
+    })
+  }
+
+  const handleRemove = (index: number) => {
     setTabs(tabs => {
       const newTabs = [...tabs];
 
@@ -87,10 +113,27 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => { 
     // * Mark the selected tab as active when fit.
-    setTabs(tabs => tabs.map(tab => ({ ...tab, active: tab.href === path })))
+    setTabs(tabs => {
+      const activatedTabs = tabs.map(tab => ({ ...tab, active: tab.href === path }))
+      
+      // * If we have a create tab, and our active path is not the create tab, we need to
+      //   remove the create tab.
+      if (createTab && path !== createTab.href) {
+        return activatedTabs.filter(tab => tab.href !== createTab.href);
+      }
+
+      return activatedTabs     
+    })
   }, [path])
 
-  return <TabsContext.Provider value={{ tabs, handleAdd, handleRemove, handleMove }}>
+  return <TabsContext.Provider value={{ 
+    tabs, 
+    createTab, 
+    handleCreate, 
+    handleAdd, 
+    handleRemove, 
+    handleMove 
+  }}>
     {children}
   </TabsContext.Provider>
 }
