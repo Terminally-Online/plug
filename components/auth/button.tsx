@@ -2,22 +2,30 @@
 
 import { getCsrfToken, signIn, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
-import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi"
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { useEffect } from "react";
+import { useAccount, useNetwork, useSignMessage } from "wagmi"
+import { FC, PropsWithChildren, memo, useEffect } from "react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
-export const Button = () => { 
+export type ButtonProps = { 
+  callbackUrl?: string
+}
+
+export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/canvas/' }) => { 
+  const { data: session } = useSession()
   const { signMessageAsync } = useSignMessage()
   const { chain } = useNetwork()
   const { address, isConnected } = useAccount()
-  const { connect } = useConnect({ connector: new InjectedConnector() })
-  const { data: session } = useSession()
+  const { open } = useWeb3Modal()
+
+  const username = session?.user?.name
 
   const handleLogin = async () => {
-    if(!isConnected) connect()
+    if(!isConnected) { 
+      open(); 
+      return 
+    }
 
     try { 
-      const callbackUrl = '/protected'
       const message = new SiweMessage({
         domain: window.location.host,
         address,
@@ -31,12 +39,12 @@ export const Button = () => {
 
       signIn("credentials", {
         message: JSON.stringify(message),
-        redirect: false,
+        redirect: true,
         signature,
         callbackUrl
       })
     } catch (e) {
-      window.alert(e)
+      console.error(e)
     }
   }
 
@@ -44,8 +52,9 @@ export const Button = () => {
     if(isConnected && !session) handleLogin()
   }, [isConnected])
 
-  return <button onClick={(e) => { 
-    e.preventDefault()
-    handleLogin()
-  }}>Sign In</button>
+  return <button type="button" onClick={handleLogin}>
+    {username ? username : isConnected ? 'Sign In' : 'Connect Wallet'}
+  </button>
 }
+
+export default memo(Button);

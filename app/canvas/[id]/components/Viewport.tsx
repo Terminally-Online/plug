@@ -11,7 +11,7 @@ import Canvas from "./Canvas/Canvas";
 import CanvasStore from "../lib/store";
 import useRenderLoop from "../lib/hooks/useRenderLoop";
 import { ComponentMap } from "../lib/types";
-import { useTabs } from "@/contexts/TabProvider";
+import { useTabs } from "@/contexts/TabsProvider";
 
 export default function Viewport({
   id,

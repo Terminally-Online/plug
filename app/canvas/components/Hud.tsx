@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
 
 import Link from "next/link";
-import { useTabs } from "@/contexts/TabProvider";
+import { useTabs } from "@/contexts/TabsProvider";
 import { usePathname, useRouter } from "next/navigation";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => { 
@@ -31,7 +31,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [path]);
 
-  return <>
+  return <div className="w-screen h-screen">
     <div className="bg-stone-900 border-b-[1px] border-b-stone-950 fixed top-0 left-0 w-screen z-[99999]">
       <div className="flex flex-row items-center h-8">
         <Link 
@@ -81,7 +81,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
     </div>
 
     {children}
-  </>
+  </div>
 }
 
 export default memo(Hud)

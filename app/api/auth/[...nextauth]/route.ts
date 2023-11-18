@@ -3,9 +3,8 @@ import { AppProviders } from 'next-auth/providers/index';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { getCsrfToken } from 'next-auth/react';
 import { SiweMessage } from 'siwe';
-import type { NextApiRequest, NextApiResponse } from 'next';
 
-const providers = [CredentialsProvider({
+const providers: AppProviders = [CredentialsProvider({
     name: "Ethereum",
     credentials: {
         message: { 
@@ -26,7 +25,7 @@ const providers = [CredentialsProvider({
             const result = await siwe.verify({ 
                 signature: credentials?.signature || '',
                 domain: nextAuthUrl.host,
-                nonce: await getCsrfToken({ req: { headers: req.headers } })
+                nonce: await getCsrfToken({ req })
             })
 
             if(result.success) { return { id: siwe.address } }
@@ -35,22 +34,24 @@ const providers = [CredentialsProvider({
             return null
         }
     }
-}) ]
+})]
 
 const callbacks = { 
     async session({ session, token }: { session: any, token: any }) {
         session.address = token.sub
         session.user.name = token.sub
-        session.user.image = `https://avatar.vercel.sh/${pin.value}.png`
+        session.user.image = `https://avatar.vercel.sh/${token.sub}.png`
         return session
     }
 }
 
-const handler = NextAuth({ 
+export const authOptions = { 
     providers,
     session: { strategy: "jwt" },
     secret: process.env.NEXTAUTH_SECRET || "secret",
     callbacks
-})
+} as const
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
