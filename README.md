@@ -2,35 +2,35 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, run a Postgres database:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5434:5432 -d postgres
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If you spend a lot of time in the terminal or working with postgres database it is probably worth adding these helper alias to your `~/.zshrc`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# log the postgres database url
+alias pdb_log_url="echo 'postgres://postgres:postgres@localhost:5434/postgres'"
+# start a postgres database with docker
+alias pdbs="pdb_log_url && docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5434:5432 -d postgres"
+# access the postgres database
+alias pdbg="docker exec -it postgres psql -U postgres"
+# clean up the postgres database
+alias pdbc="docker stop postgres && docker rm postgres"
+# start and access the postgres database
+alias pdb="pdbs && pdbg"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+With the database up and running you will need to run the migration withs:
 
-## Learn More
+```bash
+npx prisma migrate
+```
 
-To learn more about Next.js, take a look at the following resources:
+Finally, you are ready to run the development server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```bash
+pnpm dev
+```
