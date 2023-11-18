@@ -14,9 +14,11 @@ export default function Layout({
 }: PropsWithChildren) {
   return (
     <TabsProvider>
-      <Hud>
-        {children}
-      </Hud>
+      <div className="w-screen h-screen">
+        <Hud>
+          {children}
+        </Hud>
+      </div>
     </TabsProvider>
   )
 }

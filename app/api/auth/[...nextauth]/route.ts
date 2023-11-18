@@ -59,10 +59,9 @@ if (useMockProvider) {
 }
 
 const handler = NextAuth({
+    secret: 'testasafd',
     // Configure one or more authentication providers
     providers,
 });
-
-export default handler;
 
 export { handler as GET, handler as POST };

@@ -7,18 +7,14 @@ import { cn } from "@/lib/utils";
 import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useTabs } from "@/contexts/TabProvider";
 import { usePathname, useRouter } from "next/navigation";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => { 
-  const { data: session } = useSession()
   const { tabs, createTab, handleAdd, handleRemove } = useTabs()
 
   const router = useRouter()
   const path = usePathname()
-
-  const username = session?.user?.name
 
   useEffect(() => { 
     switch(path) {
@@ -81,13 +77,6 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
           onClick={() => { router.push('/canvas/create') }}>
           <PlusIcon width={16} height={16} />
         </button> : null}
-
-        <div className="ml-auto">
-          {!username ? <Link 
-            href="/auth/signin" 
-            className="text-white p-2 text-md font-bold"
-          >Log In</Link> : <p>{username}</p>}
-        </div>
       </div>
     </div>
 

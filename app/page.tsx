@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 
 import Link from "next/link";
 
-const LogInButton = () => <Link href={`/auth/signin`}>
+const LogInButton = () => <Link href={`/api/auth/signin`}>
   <button className="bg-black/40 text-white font-bold rounded-sm p-1 px-2">
     Log In 
   </button>
