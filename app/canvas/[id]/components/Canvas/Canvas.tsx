@@ -95,18 +95,22 @@ export const Canvas = ({
           <p>User id: tester</p>
 
           <p>
-            Camera: {Math.round(CanvasStore.camera.x)}, {Math.round(CanvasStore.camera.y)},{" "}
+            Camera: {Math.round(CanvasStore.camera.x)},{" "}
+            {Math.round(CanvasStore.camera.y)},{" "}
             {Math.round(CanvasStore.camera.z)}
           </p>
           <p>Locked: {CanvasStore.camera.locked.toString()}</p>
           <p>
-            Scale: {Math.round(CanvasStore.scale.x)}, {Math.round(CanvasStore.scale.y)}
+            Scale: {Math.round(CanvasStore.scale.x)},{" "}
+            {Math.round(CanvasStore.scale.y)}
           </p>
           <p>
-            Screen: {Math.round(CanvasStore.screen.x)}, {Math.round(CanvasStore.screen.y)}
+            Screen: {Math.round(CanvasStore.screen.x)},{" "}
+            {Math.round(CanvasStore.screen.y)}
           </p>
           <p>
-            Pointer: {Math.round(CanvasStore.pointer.x)}, {Math.round(CanvasStore.pointer.y)}
+            Pointer: {Math.round(CanvasStore.pointer.x)},{" "}
+            {Math.round(CanvasStore.pointer.y)}
           </p>
 
           <div className="flex flex-row space-x-2 mt-4">
@@ -132,7 +136,13 @@ export const Canvas = ({
                 //        By doing it this, pins can be put behind feature flags when desired as well as we can just smash
                 //        shit into the database and won't have to worry about refactoring for the update that enables
                 //        users to create their own Pins.
-                addComponent(id, left, top, type, JSON.stringify({ name: "Test" }));
+                addComponent(
+                  id,
+                  left,
+                  top,
+                  type,
+                  JSON.stringify({ name: "Test" })
+                );
               }}
             >
               New Plug

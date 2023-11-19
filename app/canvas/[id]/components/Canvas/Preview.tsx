@@ -9,9 +9,5 @@ const styles: CSSProperties = {
 export const Preview: FC<PropsWithChildren> = memo(function Preview({
   children,
 }) {
-  return (
-    <div style={styles}>
-        {children}
-    </div>
-  );
+  return <div style={styles}>{children}</div>;
 });

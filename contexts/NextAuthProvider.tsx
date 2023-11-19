@@ -1,10 +1,19 @@
-"use client"
+"use client";
 
-import { SessionProvider } from "next-auth/react"
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
-export default function NextAuthProvider({ children }: { children: ReactNode }) {
+import { SessionProvider } from "next-auth/react";
+
+import WalletProvider from "@/contexts/WalletProvider";
+
+export default function NextAuthProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <SessionProvider session={null}>
-    {children}
-  </SessionProvider>
+    <WalletProvider>
+      {children}
+    </WalletProvider>
+  </SessionProvider>;
 }

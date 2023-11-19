@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
+import CanvasPreviewGrid from './components/Blocks/CanvasPreviewGrid';
 
 export default async function Page() {
   const session = await getServerSession(authOptions)
@@ -10,15 +11,29 @@ export default async function Page() {
 
   if(!username) redirect(`/connect`)
 
+  // TODO: Retrieve these from trpc.
   const canvases = [{ 
-    label: "Hello world", 
-    color: "#ff00ff", 
-    href: "/canvas/hello-world", 
-    active: false 
+    id: 1,
+    name: "Untitled Canvas",
+    updatedAt: new Date(),
+  }, { 
+    id: 1,
+    name: "Untitled Canvas",
+    updatedAt: new Date(),
+  }, { 
+    id: 1,
+    name: "Untitled Canvas",
+    updatedAt: new Date(),
+  }, { 
+    id: 1,
+    name: "Untitled Canvas",
+    updatedAt: new Date(),
+  }, { 
+    id: 1,
+    name: "Untitled Canvas",
+    updatedAt: new Date(),
   }]
 
-  return <div className="bg-stone-900 w-screen h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl text-white">Create a Canvas</h1>
-  </div>
+  return <CanvasPreviewGrid canvases={canvases} />
 }
 

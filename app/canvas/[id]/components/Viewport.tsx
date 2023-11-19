@@ -17,8 +17,8 @@ export default function Viewport({
   id,
   components,
 }: {
-    id: string;
-    components?: ComponentMap;
+  id: string;
+  components?: ComponentMap;
 }) {
   const { handleAdd } = useTabs();
 
@@ -46,14 +46,14 @@ export default function Viewport({
     CanvasStore.movePointer(event.clientX, event.clientY);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     handleAdd({
       label: `Canvas ${id}`,
-      color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
       href: `/canvas/${id}`,
-      active: true
-    })
-  }, [])
+      active: true,
+    });
+  }, []);
 
   useEffect(() => {
     if (width === 0 || height === 0) return;

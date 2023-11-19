@@ -1,6 +1,5 @@
 "use client";
 
-import Hud from "@/app/canvas/components/Hud";
 import { usePathname, useRouter } from "next/navigation";
 import {
   FC,

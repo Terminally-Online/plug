@@ -27,18 +27,18 @@ const getCanvas = async (id: string) => {
   };
 
   const dbHelloWorld = {
-      id,
-      userId: user.id,
-      components: {
-        create: { content: HELLO_WORLD },
-      },
-    }
+    id,
+    userId: user.id,
+    components: {
+      create: { content: HELLO_WORLD },
+    },
+  };
 
   // * Get or create the hello world canvas.
   const canvas = await p.canvas.upsert({
     where: { id },
     update: {},
-    create: dbHelloWorld, 
+    create: dbHelloWorld,
     include: {
       components: true,
     },

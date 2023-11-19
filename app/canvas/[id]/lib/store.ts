@@ -159,7 +159,7 @@ export default class CanvasStore {
   }
 
   public static moveCamera(mx: number, my: number) {
-    if(this.data.camera.locked) return;
+    if (this.data.camera.locked) return;
 
     const scrollFactor = 1.5;
 
@@ -179,7 +179,7 @@ export default class CanvasStore {
   }
 
   public static zoomCamera(deltaX: number, deltaY: number) {
-    if(this.data.camera.locked) return;
+    if (this.data.camera.locked) return;
 
     deltaX;
 

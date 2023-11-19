@@ -1,9 +1,9 @@
-import { router, publicProcedure } from '../trpc';
-import { observable } from '@trpc/server/observable';
-import { clearInterval } from 'timers';
+import { router, publicProcedure } from "../trpc";
+import { observable } from "@trpc/server/observable";
+import { clearInterval } from "timers";
 
 export const appRouter = router({
-	healthcheck: publicProcedure.query(() => 'yay!'),
+	healthcheck: publicProcedure.query(() => "yay!"),
 
 	// TODO: Add the router for Canvas here
 

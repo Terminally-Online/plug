@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { CSSProperties, FC } from "react";
 import type { XYCoord } from "react-dnd";
@@ -51,17 +51,18 @@ export interface CustomDragLayerProps {
 }
 
 export const Drag: FC<CustomDragLayerProps> = (props) => {
-  const { isDragging, item, initialOffset, currentOffset } =
-    useDragLayer((monitor) => ({
+  const { isDragging, item, initialOffset, currentOffset } = useDragLayer(
+    (monitor) => ({
       item: monitor.getItem(),
       itemType: monitor.getItemType(),
       initialOffset: monitor.getInitialSourceClientOffset(),
       currentOffset: monitor.getSourceClientOffset(),
       isDragging: monitor.isDragging(),
-    }));
+    })
+  );
 
   function renderItem() {
-    if(!item || !item.children) return null;
+    if (!item || !item.children) return null;
 
     return <Preview>{item.children}</Preview>;
   }

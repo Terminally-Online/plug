@@ -8,63 +8,73 @@
  * @see https://trpc.io/docs/v10/procedures
  */
 
-import { Context } from './context';
-import { initTRPC, TRPCError } from '@trpc/server';
-import superjson from 'superjson';
+import { initTRPC } from "@trpc/server";
 
-const t = initTRPC.context<Context>().create({
-  /**
-   * @see https://trpc.io/docs/v10/data-transformers
-   */
-  transformer: superjson,
-  /**
-   * @see https://trpc.io/docs/v10/error-formatting
-   */
-  errorFormatter({ shape }) {
-    return shape;
-  },
-});
+const t = initTRPC.create();
 
-/**
- * Create a router
- * @see https://trpc.io/docs/v10/router
- */
 export const router = t.router;
-
-/**
- * Create an unprotected procedure
- * @see https://trpc.io/docs/v10/procedures
- **/
 export const publicProcedure = t.procedure;
 
-/**
- * @see https://trpc.io/docs/v10/middlewares
- */
-export const middleware = t.middleware;
-
-/**
- * @see https://trpc.io/docs/v10/merging-routers
- */
-export const mergeRouters = t.mergeRouters;
-
-const isAuthed = middleware(({ next, ctx }) => {
-  const user = ctx.session?.user;
-
-  if (!user?.name) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  return next({
-    ctx: {
-      user: {
-        ...user,
-        name: user.name,
-      },
-    },
-  });
-});
-
-/**
- * Protected base procedure
- */
-export const authedProcedure = t.procedure.use(isAuthed);
+// import { Context } from "./context";
+// import { initTRPC, TRPCError } from "@trpc/server";
+// import superjson from "superjson";
+//
+// // TODO: Need to renable this to have contxt enabled
+// // const t = initTRPC.context<Context>().create({
+//
+// const t = initTRPC.create({
+//   /**
+//    * @see https://trpc.io/docs/v10/data-transformers
+//    */
+//   transformer: superjson,
+//   /**
+//    * @see https://trpc.io/docs/v10/error-formatting
+//    */
+//   errorFormatter({ shape }) {
+//     return shape;
+//   },
+// });
+//
+// /**
+//  * Create a router
+//  * @see https://trpc.io/docs/v10/router
+//  */
+// export const router = t.router;
+//
+// /**
+//  * Create an unprotected procedure
+//  * @see https://trpc.io/docs/v10/procedures
+//  **/
+// export const publicProcedure = t.procedure;
+//
+// /**
+//  * @see https://trpc.io/docs/v10/middlewares
+//  */
+// export const middleware = t.middleware;
+//
+// /**
+//  * @see https://trpc.io/docs/v10/merging-routers
+//  */
+// export const mergeRouters = t.mergeRouters;
+//
+// const isAuthed = middleware(({ next, ctx }) => {
+//   const user = ctx.session?.user;
+//
+//   if (!user?.name) {
+//     throw new TRPCError({ code: "UNAUTHORIZED" });
+//   }
+//
+//   return next({
+//     ctx: {
+//       user: {
+//         ...user,
+//         name: user.name,
+//       },
+//     },
+//   });
+// });
+//
+// /**
+//  * Protected base procedure
+//  */
+// export const authedProcedure = t.procedure.use(isAuthed);

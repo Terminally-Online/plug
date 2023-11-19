@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import type { FC, PropsWithChildren } from "react";
 import { memo, useCallback, useState } from "react";
@@ -22,7 +22,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 }) => {
   // * Deconstruct the values that were sent from the database.
   // TODO: Acknowledge that this is dangerous and not ideal.
-  const values = JSON.parse(children as string) as Array<PinType>
+  const values = JSON.parse(children as string) as Array<PinType>;
 
   const [selectedPins, setSelectedPins] = useState([pins[0].pins[0]]);
   const [simulation, setSimulation] = useState<PlugSimulationState | null>(
@@ -30,7 +30,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
   );
 
   const handlePost = () => {
-    id
+    id;
     // TODO: Post into the database when selectedPins is updated.
     //    NOTES: This will only orchestrate the state of the plug and not the actual canvas state of the plug (position, size, etc.)
     //    NOTES: Also do note that we cannot simply retrieve the state of the Plug from here because to have gotten here we needed to already know its position in order to properly place it on the Canvas.
@@ -54,7 +54,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
         newSelectedPins.splice(index + 1, newSelectedPins.length - index);
 
       return newSelectedPins;
-    })
+    });
   };
 
   const handleAddition = useCallback(
