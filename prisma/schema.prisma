@@ -7,32 +7,17 @@ datasource db {
     url      = "postgresql://postgres:postgres@localhost:5434/postgres"
 }
 
-model Identifier {
-    id String @id @default(uuid())
-
-    identifier String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-
-    user   User?   @relation(fields: [userId], references: [id])
-    userId String?
-}
-
 model User {
-    id String @id @default(uuid())
-
-    identifiers Identifier[]
-    name        String?
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
-    Canvas      Canvas[]
+    id        String   @id @unique
+    name      String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Canvas    Canvas[]
 }
 
 model Component {
-    id String @id @default(uuid())
-
-    content Json
-
+    id        String   @id @default(uuid())
+    content   Json
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -41,12 +26,12 @@ model Component {
 }
 
 model Canvas {
-    id String @id @default(uuid())
-
+    id        String   @id @default(uuid())
     name      String   @default("Untitled Canvas")
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     public    Boolean  @default(false)
+    color     String   @default("#ff4700")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

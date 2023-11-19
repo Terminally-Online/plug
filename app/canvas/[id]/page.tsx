@@ -5,6 +5,7 @@ import { p } from "@/server/prisma";
 
 import Viewport from "./components/Viewport";
 
+// TODO: We are ready to delete this now and implement the real logic.
 const getCanvas = async (id: string) => {
   // * Get or create the test user -- Everyone is on a global user with no auth for now.
   const user = await p.user.upsert({
