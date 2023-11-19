@@ -20,7 +20,9 @@ export default function RootLayout({
       <body className="w-full h-full bg-white dark:bg-stone-950 overscroll-none">
         <NextAuthProvider>
           <WalletProvider>
-            {children}
+            <div className="mt-8">
+              {children}
+            </div>
           </WalletProvider>
         </ NextAuthProvider>
       </body>

@@ -8,9 +8,10 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 export type ButtonProps = { 
   callbackUrl?: string
+  redirect?: boolean
 }
 
-export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/canvas/' }) => { 
+export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/canvas/', redirect=true }) => { 
   const { data: session } = useSession()
   const { signMessageAsync } = useSignMessage()
   const { chain } = useNetwork()
@@ -29,7 +30,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/can
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "Sign in with Ethereum to the app.",
+        statement: "Sign into with Plug by signing this message to prove that you are the owner of this address.",
         uri: window.location.origin,
         version: "1",
         chainId: chain?.id,
@@ -39,7 +40,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/can
 
       signIn("credentials", {
         message: JSON.stringify(message),
-        redirect: true,
+        redirect,
         signature,
         callbackUrl
       })
@@ -48,9 +49,9 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({ callbackUrl = '/can
     }
   }
 
-  useEffect(() => { 
-    if(isConnected && !session) handleLogin()
-  }, [isConnected])
+  // useEffect(() => { 
+  //   if(isConnected && !session) handleLogin()
+  // }, [isConnected])
 
   return <button type="button" onClick={handleLogin}>
     {username ? username : isConnected ? 'Sign In' : 'Connect Wallet'}

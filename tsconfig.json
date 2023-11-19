@@ -13,7 +13,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "suppressHydrationWarning": true,
     "plugins": [
       {
         "name": "next"

@@ -1,22 +1,59 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { Suspense } from "react"
+
 import { getServerSession } from "next-auth"
-import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
 
-export default async function Page() { 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { p } from "@/server/prisma"
+import Search from "./components/Search"
+import { PlusIcon } from "@radix-ui/react-icons"
+import Block from "./components/Block"
+
+async function getCanvases({ userId, count = 10, page = 1, search = '' }: {
+  userId: string
+  count?: number
+  page?: number
+  search?: string
+}) {
+  // TODO: Replace this with `t.infinite()` once it is implemented.
+  return await p.canvas.findMany({ 
+    where: { 
+      userId,
+      name: { contains: search }
+    },
+    take: count,
+    skip: count * page
+  })
+}
+
+export default async function Page({ searchParams }: { 
+  searchParams: { search?: string }
+}) { 
   const session = await getServerSession(authOptions)
+  const search = searchParams.search
 
-  const username = session?.user?.name
+  const address = session.address
 
-  if(!username) redirect('/connect')
+  if(!address) redirect('/connect')
 
-  return <div className="bg-stone-900 w-screen h-screen flex flex-col gap-2 items-center justify-center">
-    <div className="border-[1px] border-stone-950 p-4">
-      <h1 className="text-2xl text-white">Create a Canvas</h1>
-    </div>
+  const canvases = await getCanvases({
+    userId: address,
+    search
+  })
 
-    <hr />
+  // * If they are creating one, and do not have any canvases yet, bump them through this flow.
+  if(!search && canvases.length === 0) console.log('TODO: Should have skipped through this flow')
 
-    <input placeholder="Search all Canvases..." />
+  return <div className="bg-stone-900 w-screen h-screen flex flex-col gap-2">
+    {/* TODO: Implement a loading indicator */}
+    <Suspense fallback={<div>Loading...</div>}>
+      <Block 
+        href="/canvas/create"
+        title="New Canvas"
+        description="Start from scratch and build out your own approach."
+      />
+
+      <Search />
+    </Suspense>
   </div>
 }
