@@ -6,7 +6,6 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { p } from "@/server/prisma"
 import Search from "./components/Search"
-import { PlusIcon } from "@radix-ui/react-icons"
 import Block from "./components/Block"
 
 async function getCanvases({ userId, count = 10, page = 1, search = '' }: {
@@ -41,19 +40,15 @@ export default async function Page({ searchParams }: {
     search
   })
 
-  // * If they are creating one, and do not have any canvases yet, bump them through this flow.
+  // * If they are creating one, and do not have any canvases yet, bump them through this flow and take them to the tutorial board.
   if(!search && canvases.length === 0) console.log('TODO: Should have skipped through this flow')
 
   return <div className="bg-stone-900 w-screen h-screen flex flex-col gap-2">
     {/* TODO: Implement a loading indicator */}
     <Suspense fallback={<div>Loading...</div>}>
-      <Block 
-        href="/canvas/create"
-        title="New Canvas"
-        description="Start from scratch and build out your own approach."
-      />
+      <Block vertical={canvases.length === 0}/>
 
-      <Search />
+      {canvases.length > 0 ? <Search /> : <></>}
     </Suspense>
   </div>
 }
