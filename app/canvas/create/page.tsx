@@ -4,9 +4,10 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerClient } from "@/app/api/trpc/client.server";
+
 import Search from "./components/Search";
 import Block from "./components/Block";
-import { getServerClient } from "@/app/api/trpc/client.server";
 
 export default async function Page({
   searchParams,

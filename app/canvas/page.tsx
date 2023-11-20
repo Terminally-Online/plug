@@ -6,6 +6,8 @@ import CanvasPreviewGrid from "./components/Blocks/CanvasPreviewGrid";
 
 import { getServerClient } from "../api/trpc/client.server";
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const session = await getServerSession(authOptions);
   const t = getServerClient(session);

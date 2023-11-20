@@ -10,10 +10,14 @@ export type CanvasPreviewGridProps = {
 };
 
 export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
-  <div className="w-full h-full bg-stone-900 grid grid-cols-3 grid-rows-4">
-    {canvases.map((canvas) => (
-      <CanvasPreview key={canvas.id} canvas={canvas} />
-    ))}
+  <div className="w-full h-full bg-stone-900">
+    {canvases.length === 0 ? <div className="h-full flex items-center justify-center">
+      <h1 className="bg-stone-900 text-white text-xl font-bold text-center">No canvases found</h1>
+    </div> : <div className="w-full h-full bg-stone-900 grid grid-cols-3 grid-rows-4">
+        {canvases.map((canvas) => (
+          <CanvasPreview key={canvas.id} canvas={canvas} />
+        ))}
+      </div>}
   </div>
 );
 

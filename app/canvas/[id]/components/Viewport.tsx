@@ -1,6 +1,6 @@
 "use client";
 
-import { PointerEvent, useEffect, useRef, WheelEvent } from "react";
+import { FC, memo, PointerEvent, useEffect, useRef, WheelEvent } from "react";
 
 import useSize from "@react-hook/size";
 
@@ -10,22 +10,20 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Canvas from "./Canvas/Canvas";
 import CanvasStore from "../lib/store";
 import useRenderLoop from "../lib/hooks/useRenderLoop";
-import { ComponentMap } from "../lib/types";
 import { useTabs } from "@/contexts/TabsProvider";
+import { getServerClient } from "@/app/api/trpc/client.server";
 
-export default function Viewport({
-  id,
-  components,
-}: {
-  id: string;
-  components?: ComponentMap;
-}) {
+export type ViewportProps = {
+  canvas: Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>;
+};
+
+const Viewport: FC<ViewportProps> = ({ canvas }) => {
   const { handleAdd } = useTabs();
 
-  const canvas = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const frame = useRenderLoop(60);
-  const [width, height] = useSize(canvas);
+  const [width, height] = useSize(canvasRef);
 
   const wheelListener = (e: WheelEvent) => {
     e.stopPropagation();
@@ -48,9 +46,9 @@ export default function Viewport({
 
   useEffect(() => {
     handleAdd({
-      label: `Canvas ${id}`,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-      href: `/canvas/${id}`,
+      label: canvas.name,
+      color: canvas.color,
+      href: `/canvas/${canvas.id}`,
       active: true,
     });
   }, []);
@@ -65,14 +63,16 @@ export default function Viewport({
     <div className="bg-stone-900 w-full h-full text-black dark:text-white">
       <div
         className="w-full h-full relative overflow-hidden overscroll-none"
-        ref={canvas}
+        ref={canvasRef}
         onWheel={wheelListener}
         onPointerMove={pointerListener}
       >
         <DndProvider backend={HTML5Backend}>
-          <Canvas frame={frame} id={id} components={components}></Canvas>
+          <Canvas frame={frame} canvas={canvas}></Canvas>
         </DndProvider>
       </div>
     </div>
   );
-}
+};
+
+export default memo(Viewport);

@@ -20,26 +20,6 @@ export const appRouter = router({
 			};
 		});
 	}),
-	get: authedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-		const userId = ctx.session?.user?.name;
-
-		const canvas = await p.canvas.findUnique({
-			where: {
-				id: input,
-			},
-		});
-
-		if (!canvas) throw new TRPCError({ code: "NOT_FOUND" });
-
-		if (canvas.public) return canvas;
-
-		if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
-
-		if (canvas.userId !== userId)
-			throw new TRPCError({ code: "FORBIDDEN" });
-
-		return canvas;
-	}),
 	all: authedProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session?.user?.name;
 
@@ -54,6 +34,30 @@ export const appRouter = router({
 
 		// * Return the canvases.
 		return canvases;
+	}),
+	// TODO: I want to implement a .infinite() method that returns a stream of
+	//       canvases that are created by the user so that we do not send a massive
+	//       amount of data to the client.
+	get: authedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+		const userId = ctx.session?.user?.name;
+
+		const canvas = await p.canvas.findUnique({
+			where: {
+				id: input,
+			},
+			include: { components: true },
+		});
+
+		if (!canvas) throw new TRPCError({ code: "NOT_FOUND" });
+
+		if (canvas.public) return canvas;
+
+		if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+		if (canvas.userId !== userId)
+			throw new TRPCError({ code: "FORBIDDEN" });
+
+		return canvas;
 	}),
 	create: authedProcedure
 		.input(
@@ -79,8 +83,11 @@ export const appRouter = router({
 						},
 					},
 				},
+				include: { components: true },
 			});
 		}),
+	// TODO: Update
+	// TODO: Delete (needs to revoke all the active signatures as well onchain)
 });
 
 export type AppRouter = typeof appRouter;

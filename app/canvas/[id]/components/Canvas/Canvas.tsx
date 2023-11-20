@@ -1,11 +1,12 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
+import { FC, memo, useCallback, useState } from "react";
 
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
-import type { ComponentMap, DragItem } from "../../lib/types";
+import Link from "next/link";
+import type { DragItem } from "../../lib/types";
 
 import { DEBUG, ItemTypes } from "../../lib/constants";
 import CanvasStore from "../../lib/store";
@@ -16,18 +17,25 @@ import { Drag } from "./Drag";
 import { Box } from "../Blocks/Box";
 import { Markdown } from "../Blocks/Markdown";
 
-import Link from "next/link";
 import Plug from "../Blocks/Plug";
+import { getServerClient } from "@/app/api/trpc/client.server";
 
-export const Canvas = ({
-  id,
-  components: loadedComponents = {},
-}: {
+export type CanvasProps = {
   frame: string;
-  id: string;
-  components?: ComponentMap;
-}) => {
-  const [components, setComponents] = useState<ComponentMap>(loadedComponents);
+  canvas: Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>;
+};
+
+export type Components =Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>["components"]
+export type Component = Components[0] 
+
+export const Canvas: FC<CanvasProps> = ({ frame, canvas }) => {
+  const componentsMap = canvas.components.reduce((acc, component) => { 
+    acc[component.id] = component
+
+    return acc
+  }, {} as Record<string, Pick<Component, "id" | "type" | "content" | "left" | "top" | "width" | "height">>)
+
+  const [components, setComponents] = useState(componentsMap);
 
   const scale = CanvasStore.scale;
 
@@ -37,19 +45,21 @@ export const Canvas = ({
       left: number,
       top: number,
       type: string,
-      children: React.ReactNode
+      content: React.ReactNode
     ) => {
-      setComponents((components) => ({
-        ...components,
-        [id]: {
-          type,
-          children,
-          left,
-          top,
-          width: 400,
-          height: 400,
-        },
-      }));
+      setComponents(
+        update(components, {
+          $merge: {
+            [id]: {
+              id,
+              left,
+              top,
+              type,
+              content,
+            },
+          },
+        })
+      );
     },
     []
   );
@@ -86,10 +96,12 @@ export const Canvas = ({
     [moveComponent]
   );
 
+  console.log(components)
+
   return (
     <>
       {DEBUG && (
-        <div className="fixed top-0 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
+        <div className="fixed top-8 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
           <div>Components: {Object.keys(components).length}</div>
 
           <p>User id: tester</p>
@@ -159,18 +171,21 @@ export const Canvas = ({
           transformOrigin: "top left",
         }}
       >
-        {Object.keys(components).map((key) => {
+        {Object.keys(components).map(key => {
           const componentTypes = {
             [ItemTypes.Box]: Box,
             [ItemTypes.Markdown]: Markdown,
             [ItemTypes.Plug]: Plug,
           };
 
-          const Component = componentTypes[components[key].type];
+          const component: Component = components[key as keyof typeof components]
+          const Component = componentTypes[component.type];
+
+          console.log('component', component.content)
 
           return (
-            <Position key={key} id={key} {...components[key]}>
-              <Component id={id}>{components[key].children}</Component>
+            <Position key={component.id} {...component}>
+              <Component id={component.id}>{JSON.stringify(component.content)}</Component>
             </Position>
           );
         })}
@@ -181,4 +196,4 @@ export const Canvas = ({
   );
 };
 
-export default memo(Canvas);
+export default Canvas;

@@ -12,7 +12,7 @@ import {
 
 type Tab = {
   label: string;
-  color: `#${string}`;
+  color: string;
   href: string;
   active?: boolean;
 };

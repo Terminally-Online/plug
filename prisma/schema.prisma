@@ -15,8 +15,22 @@ model User {
     Canvas    Canvas[]
 }
 
+enum ComponentType { 
+    MARKDOWN
+    BOX
+    PLUG
+}
+
 model Component {
     id        String   @id @default(uuid())
+
+    type      ComponentType @default(PLUG)
+
+    top       Float
+    left      Float
+    width     Float
+    height    Float
+
     content   Json
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
