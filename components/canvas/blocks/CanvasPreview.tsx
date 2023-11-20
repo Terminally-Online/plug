@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { memo, useMemo } from "react";
 
 import Link from "next/link";
+
 import { Canvas } from "@prisma/client";
 
 export type CanvasPreviewProps = {

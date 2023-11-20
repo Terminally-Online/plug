@@ -1,7 +1,5 @@
 "use client";
 
-import getConfig from "next/config";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createWSClient,
@@ -13,7 +11,7 @@ import {
 import React, { useState } from "react";
 
 import WalletProvider from "@/contexts/WalletProvider";
-import { trpc } from "@/app/api/trpc/client";
+import { t } from "@/app/api/trpc/client";
 
 export default function ClientProvider({
   children,
@@ -22,7 +20,7 @@ export default function ClientProvider({
 }) {
   const [queryClient] = useState(() => new QueryClient({}));
   const [trpcClient] = useState(() =>
-    trpc.createClient({
+    t.createClient({
       links: [
         splitLink({
           condition: (op) => {
@@ -49,11 +47,11 @@ export default function ClientProvider({
 
   return (
     <WalletProvider>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <t.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           {children}
         </QueryClientProvider>
-      </trpc.Provider>
+      </t.Provider>
     </WalletProvider>
   );
 }

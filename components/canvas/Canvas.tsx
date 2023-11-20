@@ -1,43 +1,55 @@
 "use client";
 
-import { FC, memo, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 
 import { useDrop } from "react-dnd";
 import update from "immutability-helper";
 
 import Link from "next/link";
-import type { DragItem } from "../../lib/types";
 
-import { DEBUG, ItemTypes } from "../../lib/constants";
-import CanvasStore from "../../lib/store";
-import { snapToGrid } from "../../lib/functions/snap-to-grid";
+import type { DragItem } from "@/lib/types";
+import { DEBUG, ItemTypes } from "@/lib/constants";
+import CanvasStore from "@/lib/store";
+import { snapToGrid } from "@/lib/functions/snap-to-grid";
 
 import { Position } from "./Position";
 import { Drag } from "./Drag";
-import { Box } from "../Blocks/Box";
-import { Markdown } from "../Blocks/Markdown";
+import Toolbar from "./Toolbar";
+import { Box } from "./blocks/Box";
+import { Markdown } from "./blocks/Markdown";
+import Plug from "./blocks/Plug";
 
-import Plug from "../Blocks/Plug";
 import { getServerClient } from "@/app/api/trpc/client.server";
 
 export type CanvasProps = {
   frame: string;
-  canvas: Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>;
+  canvas: Awaited<
+    ReturnType<ReturnType<typeof getServerClient>["canvas"]["get"]>
+  >;
 };
 
-export type Components =Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>["components"]
-export type Component = Components[0] 
+export type Components = Awaited<
+  ReturnType<ReturnType<typeof getServerClient>["canvas"]["get"]>
+>["components"];
+export type Component = Components[0];
 
 export const Canvas: FC<CanvasProps> = ({ frame, canvas }) => {
-  const componentsMap = canvas.components.reduce((acc, component) => { 
-    acc[component.id] = component
+  const componentsMap = canvas.components.reduce(
+    (acc, component) => {
+      acc[component.id] = component;
 
-    return acc
-  }, {} as Record<string, Pick<Component, "id" | "type" | "content" | "left" | "top" | "width" | "height">>)
+      return acc;
+    },
+    {} as Record<
+      string,
+      Pick<
+        Component,
+        "id" | "type" | "content" | "left" | "top" | "width" | "height"
+      >
+    >
+  );
 
   const [components, setComponents] = useState(componentsMap);
-
-  const scale = CanvasStore.scale;
 
   const addComponent = useCallback(
     (
@@ -96,7 +108,23 @@ export const Canvas: FC<CanvasProps> = ({ frame, canvas }) => {
     [moveComponent]
   );
 
-  console.log(components)
+  console.log(components);
+
+  // * When a user double clicks, add a new component to the canvas.
+  useEffect(() => {
+    const handleDoubleClick = () => {
+      const id = `box-${Object.keys(components).length + 1}`;
+      const left = CanvasStore.pointer.x;
+      const top = CanvasStore.pointer.y;
+      const type = ItemTypes.Plug;
+
+      addComponent(id, left, top, type, JSON.stringify({ name: "Test" }));
+    };
+
+    document.addEventListener("dblclick", handleDoubleClick);
+
+    return () => document.removeEventListener("dblclick", handleDoubleClick);
+  }, []);
 
   return (
     <>
@@ -167,31 +195,35 @@ export const Canvas: FC<CanvasProps> = ({ frame, canvas }) => {
         ref={drop}
         className="relative w-screen h-screen overscroll-none"
         style={{
-          transform: `scale(${(scale.x, scale.y)})`,
+          transform: `scale(${(CanvasStore.scale.x, CanvasStore.scale.y)})`,
           transformOrigin: "top left",
         }}
       >
-        {Object.keys(components).map(key => {
+        {Object.keys(components).map((key) => {
           const componentTypes = {
             [ItemTypes.Box]: Box,
             [ItemTypes.Markdown]: Markdown,
             [ItemTypes.Plug]: Plug,
           };
 
-          const component: Component = components[key as keyof typeof components]
+          const component = components[key as keyof typeof components];
           const Component = componentTypes[component.type];
 
-          console.log('component', component.content)
+          console.log("component", component.content);
 
           return (
             <Position key={component.id} {...component}>
-              <Component id={component.id}>{JSON.stringify(component.content)}</Component>
+              <Component id={component.id}>
+                {JSON.stringify(component.content)}
+              </Component>
             </Position>
           );
         })}
 
         <Drag />
       </div>
+
+      <Toolbar />
     </>
   );
 };

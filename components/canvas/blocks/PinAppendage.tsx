@@ -1,6 +1,6 @@
 import { FC, memo } from "react";
 
-import type { Pin } from "../../lib/types";
+import type { Pin } from "@/lib/types";
 
 export type PinAppendageProps = {
   pin: Pin;

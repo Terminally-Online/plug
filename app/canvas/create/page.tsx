@@ -5,9 +5,8 @@ import { redirect } from "next/navigation";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerClient } from "@/app/api/trpc/client.server";
-
-import Search from "./components/Search";
-import Block from "./components/Block";
+import Search from "@/components/canvas/Search";
+import Block from "@/components/canvas/Block";
 
 export default async function Page({
   searchParams,
@@ -22,14 +21,14 @@ export default async function Page({
   if (!address) redirect("/connect");
 
   // TODO: Re-implement the search functionality by adding input to the procedure.
-  const canvases = await t.all();
+  const canvases = await t.canvas.all();
 
   // * If they are creating one, and do not have any canvases yet, bump
   //   them through this flow and take them to the tutorial board.
   if (!search && canvases.length === 0)
     redirect(
       `/canvas/${
-        (await t.create({ name: "My First Canvas", public: false })).id
+        (await t.canvas.create({ name: "My First Canvas", public: false })).id
       }`
     );
 

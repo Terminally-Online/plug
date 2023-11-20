@@ -3,8 +3,9 @@ import { memo, useState } from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
+import CanvasStore from "@/lib/store";
+import { Pin as PinType, Pins } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -14,17 +15,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import CanvasStore from "../../lib/store";
-
 import { Input } from "@/components/ui/input";
-import { Pin as PinType, Pins } from "../../lib/types";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger

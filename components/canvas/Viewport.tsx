@@ -7,17 +7,26 @@ import useSize from "@react-hook/size";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import Canvas from "./Canvas/Canvas";
-import CanvasStore from "../lib/store";
-import useRenderLoop from "../lib/hooks/useRenderLoop";
+import CanvasStore from "@/lib/store";
+import useRenderLoop from "@/lib/hooks/useRenderLoop";
 import { useTabs } from "@/contexts/TabsProvider";
 import { getServerClient } from "@/app/api/trpc/client.server";
+import { t } from "@/app/api/trpc/client";
+import Canvas from "./Canvas";
 
 export type ViewportProps = {
-  canvas: Awaited<ReturnType<ReturnType<typeof getServerClient>["get"]>>;
+  canvas: Awaited<
+    ReturnType<ReturnType<typeof getServerClient>["canvas"]["get"]>
+  >;
 };
 
 const Viewport: FC<ViewportProps> = ({ canvas }) => {
+  t.randomNumber.useSubscription(undefined, {
+    onData: (randomNumber) => {
+      console.log(randomNumber);
+    },
+  });
+
   const { handleAdd } = useTabs();
 
   const canvasRef = useRef<HTMLDivElement>(null);

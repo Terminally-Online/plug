@@ -1,6 +1,8 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // TODO: I may have disabled the error that was being thrown due to hydration. If it comes back, we will have to
 //       use a dynamic import for Button. Ideally we will not have to do this because I do not want to have to

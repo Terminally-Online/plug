@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import CanvasPreviewGrid from "./components/Blocks/CanvasPreviewGrid";
 
-import { getServerClient } from "../api/trpc/client.server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerClient } from "@/app/api/trpc/client.server";
+import CanvasPreviewGrid from "@/components/canvas/blocks/CanvasPreviewGrid";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -16,7 +16,7 @@ export default async function Page() {
 
   if (!username) redirect(`/connect`);
 
-  const canvases = await t.all();
+  const canvases = await t.canvas.all();
 
   return <CanvasPreviewGrid canvases={canvases} />;
 }

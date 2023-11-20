@@ -2,13 +2,13 @@
 
 import { FC, PropsWithChildren, memo, useEffect } from "react";
 
-import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons";
 
-import Link from "next/link";
 import { useTabs } from "@/contexts/TabsProvider";
-import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => {
   const { tabs, createTab, handleAdd, handleRemove } = useTabs();
@@ -29,7 +29,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
       default:
         break;
     }
-  }, [path]);
+  }, [path, handleAdd]);
 
   return (
     <div className="w-screen h-screen">

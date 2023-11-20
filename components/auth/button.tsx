@@ -3,7 +3,7 @@
 import { getCsrfToken, signIn, useSession } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { useAccount, useNetwork, useSignMessage } from "wagmi";
-import { FC, PropsWithChildren, memo, useEffect } from "react";
+import { FC, PropsWithChildren, memo } from "react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 export type ButtonProps = {
@@ -54,10 +54,6 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
       console.error(e);
     }
   };
-
-  // useEffect(() => {
-  //   if(isConnected && !session) handleLogin()
-  // }, [isConnected])
 
   return (
     <button type="button" onClick={handleLogin}>

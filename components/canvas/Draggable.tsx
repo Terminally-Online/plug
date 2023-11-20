@@ -8,7 +8,7 @@ import type { DragSourceMonitor } from "react-dnd";
 
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-import { ItemTypes } from "../../lib/constants";
+import { ItemTypes } from "@/lib/constants";
 
 function getStyles(isDragging: boolean): CSSProperties {
   return {

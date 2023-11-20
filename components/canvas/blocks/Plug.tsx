@@ -3,9 +3,8 @@
 import type { FC, PropsWithChildren } from "react";
 import { memo, useCallback, useState } from "react";
 
-import type { Pin as PinType } from "../../lib/types";
-import { pins } from "../../lib/constants";
-
+import type { Pin as PinType } from "@/lib/types";
+import { pins } from "@/lib/constants";
 import PinAppendage from "./PinAppendage";
 import Pin from "./Pin";
 import PlugSimulation, { PlugSimulationState } from "./PlugSimulation";

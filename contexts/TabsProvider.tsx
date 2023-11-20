@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
 import {
   FC,
   PropsWithChildren,
@@ -9,6 +8,8 @@ import {
   useEffect,
   useState,
 } from "react";
+
+import { usePathname, useRouter } from "next/navigation";
 
 type Tab = {
   label: string;

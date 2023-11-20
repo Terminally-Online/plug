@@ -2,9 +2,9 @@
 
 import { PropsWithChildren, useRef } from "react";
 
-import { DEBUG } from "../../lib/constants";
-import CanvasStore from "../../lib/store";
-import { inBounds } from "../../lib/functions/math-utils";
+import { DEBUG } from "@/lib/constants";
+import CanvasStore from "@/lib/store";
+import { inBounds } from "@/lib/functions/math-utils";
 import { Draggable } from "./Draggable";
 
 export type CanvasPosition = {
