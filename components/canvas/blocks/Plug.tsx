@@ -8,16 +8,21 @@ import { pins } from "@/lib/constants";
 import PinAppendage from "./PinAppendage";
 import Pin from "./Pin";
 import PlugSimulation, { PlugSimulationState } from "./PlugSimulation";
+import { t } from "@/app/api/trpc/client";
+import { cn } from "@/lib/utils";
 
 export type PlugProps = {
   id: string;
+  selecting: string | null;
   preview?: boolean;
-};
+} & JSX.IntrinsicElements["div"];
 
 export const Plug: FC<PropsWithChildren<PlugProps>> = ({
   id,
   children,
   preview,
+  selecting,
+  ...rest
 }) => {
   // * Deconstruct the values that were sent from the database.
   // TODO: Acknowledge that this is dangerous and not ideal.
@@ -76,8 +81,12 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 
   return (
     <div
-      className="bg-stone-900 text-white cursor-move flex flex-col items-center justify-center"
+      className={cn(
+        "bg-stone-900 text-white cursor-move flex flex-col items-center justify-center",
+        selecting ? "border-[1px] border-red-500" : ""
+      )}
       role={preview ? "PlugPreview" : "Plug"}
+      {...rest}
     >
       {selectedPins.map((pin, index) => (
         <div key={index} className="w-full h-full">

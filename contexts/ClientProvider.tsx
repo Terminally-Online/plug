@@ -12,6 +12,7 @@ import React, { useState } from "react";
 
 import WalletProvider from "@/contexts/WalletProvider";
 import { t } from "@/app/api/trpc/client";
+import { SessionProvider } from "next-auth/react";
 
 export default function ClientProvider({
   children,
@@ -46,12 +47,14 @@ export default function ClientProvider({
   );
 
   return (
-    <WalletProvider>
-      <t.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </t.Provider>
-    </WalletProvider>
+    <SessionProvider>
+      <WalletProvider>
+        <t.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </t.Provider>
+      </WalletProvider>
+    </SessionProvider>
   );
 }

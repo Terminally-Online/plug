@@ -8,8 +8,10 @@ const handler = (req: Request) =>
     endpoint: "/api/trpc",
     req,
     router: appRouter,
+    // TODO: Need to fix this to automatically consume the context from the server.
     createContext: async (opts) => {
-      const session = await getSession();
+      const session = await getSession({ req: opts.req });
+      console.log("route session", session);
       return { session };
     },
     onError({ error }) {

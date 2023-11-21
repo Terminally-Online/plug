@@ -10,17 +10,17 @@ import ws from "ws";
  * @link https://trpc.io/docs/context
  */
 export const createContext = async (
-	opts:
-		| NodeHTTPCreateContextFnOptions<IncomingMessage, ws>
-		| trpcNext.CreateNextContextOptions
+  opts:
+    | NodeHTTPCreateContextFnOptions<IncomingMessage, ws>
+    | trpcNext.CreateNextContextOptions
 ) => {
-	const session = await getSession(opts);
+  const session = await getSession(opts);
 
-	console.log("createContext for", session?.user?.name ?? "unknown user");
+  console.log("createContext for", session?.user?.name ?? "unknown user");
 
-	return {
-		session,
-	};
+  return {
+    session,
+  };
 };
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;

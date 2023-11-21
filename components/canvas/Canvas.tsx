@@ -17,6 +17,7 @@ import { Box } from "./blocks/Box";
 import { Markdown } from "./blocks/Markdown";
 import Toolbar from "./Toolbar";
 import Plug from "./blocks/Plug";
+import { useSession } from "next-auth/react";
 
 export type CanvasProps = {
   frame: string;
@@ -25,6 +26,10 @@ export type CanvasProps = {
 
 export const Canvas: FC<CanvasProps> = ({ id }) => {
   const { handleAdd } = useTabs();
+
+  const { data: session } = useSession();
+
+  const username = session?.user?.name ?? "";
 
   const [canvas, initialCanvasQuery] = t.canvas.get.useSuspenseQuery(id);
 
@@ -138,21 +143,33 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
         {components &&
           Object.keys(components).map((key) => {
             const componentTypes = {
-              [ItemTypes.Box]: Box,
-              [ItemTypes.Markdown]: Markdown,
               [ItemTypes.Plug]: Plug,
             };
 
             const component = components[key];
             const Component = componentTypes[component.type];
 
+            const isSelecting = t.canvas.component.selecting.useMutation();
+
             console.log("component", component.content);
 
             return (
               <Position key={component.id} {...component}>
-                <Component id={component.id}>
+                <Plug
+                  id={component.id}
+                  onClick={() => {
+                    isSelecting.mutate({
+                      id: canvas.id,
+                      component: {
+                        id: component.id,
+                        selecting: username,
+                      },
+                    });
+                  }}
+                  selecting={component.selectingId}
+                >
                   {JSON.stringify(component.content)}
-                </Component>
+                </Plug>
               </Position>
             );
           })}

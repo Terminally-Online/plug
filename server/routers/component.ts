@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { authedProcedure, publicProcedure, router } from "../trpc";
 import { p } from "../prisma";
 import { TRPCError } from "@trpc/server";
 
@@ -16,7 +16,7 @@ export const ComponentSchema = z.object({
 });
 
 export default router({
-	add: publicProcedure
+	add: authedProcedure
 		.input(
 			z.object({
 				id: z.string(),
@@ -62,6 +62,33 @@ export default router({
 				data: {
 					top: input.component.top,
 					left: input.component.left,
+				},
+			});
+
+			return component;
+		}),
+	selecting: publicProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				component: z.object({
+					id: z.string(),
+					selecting: z.string(),
+				}),
+			})
+		)
+		.mutation(async ({ input }) => {
+			const component = await p.component.update({
+				where: {
+					id: input.component.id,
+					canvasId: input.id,
+				},
+				data: {
+					selecting: {
+						connect: {
+							id: input.component.selecting,
+						},
+					},
 				},
 			});
 

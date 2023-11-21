@@ -12,24 +12,30 @@ model User {
     name      String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    Canvas    Canvas[]
+
+    canvases  Canvas[]
+    selecting Component[]
 }
 
-enum ComponentType { 
+enum ComponentType {
     MARKDOWN
     BOX
     PLUG
 }
 
 model Component {
-    id        String   @id @default(uuid())
+    id String @id @default(uuid())
 
-    type      ComponentType @default(PLUG)
+    type ComponentType @default(PLUG)
 
-    top       Float
-    left      Float
-    width     Float
-    height    Float
+    top    Float
+    left   Float
+    width  Float
+    height Float
+
+    // * Field that prevents multiple users from selecting the same component
+    selecting   User?   @relation(fields: [selectingId], references: [id])
+    selectingId String?
 
     content   Json
     createdAt DateTime @default(now())

@@ -61,6 +61,8 @@ export default router({
 
     const userId = ctx.session?.user?.name;
 
+    console.log("userid when getting", ctx);
+
     // if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
     //
     // if (canvas.userId !== userId) throw new TRPCError({ code: "FORBIDDEN" });
