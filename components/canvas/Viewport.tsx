@@ -1,6 +1,14 @@
 "use client";
 
-import { FC, memo, PointerEvent, useEffect, useRef, WheelEvent } from "react";
+import {
+  FC,
+  memo,
+  PointerEvent,
+  Suspense,
+  useEffect,
+  useRef,
+  WheelEvent,
+} from "react";
 
 import useSize from "@react-hook/size";
 
@@ -9,26 +17,14 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 
 import CanvasStore from "@/lib/store";
 import useRenderLoop from "@/lib/hooks/useRenderLoop";
-import { useTabs } from "@/contexts/TabsProvider";
-import { getServerClient } from "@/app/api/trpc/client.server";
-import { t } from "@/app/api/trpc/client";
+
 import Canvas from "./Canvas";
 
 export type ViewportProps = {
-  canvas: Awaited<
-    ReturnType<ReturnType<typeof getServerClient>["canvas"]["get"]>
-  >;
+  id: string;
 };
 
-const Viewport: FC<ViewportProps> = ({ canvas }) => {
-  t.randomNumber.useSubscription(undefined, {
-    onData: (randomNumber) => {
-      console.log(randomNumber);
-    },
-  });
-
-  const { handleAdd } = useTabs();
-
+const Viewport: FC<ViewportProps> = ({ id }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const frame = useRenderLoop(60);
@@ -54,15 +50,6 @@ const Viewport: FC<ViewportProps> = ({ canvas }) => {
   };
 
   useEffect(() => {
-    handleAdd({
-      label: canvas.name,
-      color: canvas.color,
-      href: `/canvas/${canvas.id}`,
-      active: true,
-    });
-  }, []);
-
-  useEffect(() => {
     if (width === 0 || height === 0) return;
 
     CanvasStore.initialize(width, height);
@@ -77,7 +64,9 @@ const Viewport: FC<ViewportProps> = ({ canvas }) => {
         onPointerMove={pointerListener}
       >
         <DndProvider backend={HTML5Backend}>
-          <Canvas frame={frame} canvas={canvas}></Canvas>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Canvas frame={frame} id={id} />
+          </Suspense>
         </DndProvider>
       </div>
     </div>

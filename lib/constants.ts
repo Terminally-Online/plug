@@ -10,10 +10,10 @@ export const RECT_W = 1000;
 export const RECT_H = 1000;
 
 export const ItemTypes = {
-  Markdown: "markdown",
-  Box: "box",
-  Plug: "plug",
-};
+  Markdown: "MARKDOWN",
+  Box: "BOX",
+  Plug: "PLUG",
+} as const;
 
 const nounsSchema = z.object({
   price: z.number(),

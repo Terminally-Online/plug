@@ -1,14 +1,17 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { AppRouter, appRouter } from "@/server/routers/app";
+import { getSession } from "next-auth/react";
 
 const handler = (req: Request) =>
   fetchRequestHandler<AppRouter>({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
-    // TODO: Need to fix this to automatically consume the context from the server.
-    createContext: () => ({ session: null }),
+    createContext: async (opts) => {
+      const session = await getSession();
+      return { session };
+    },
     onError({ error }) {
       if (error.code === "INTERNAL_SERVER_ERROR") {
         // send to bug reporting
