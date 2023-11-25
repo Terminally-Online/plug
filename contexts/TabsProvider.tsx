@@ -37,6 +37,8 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
   const path = usePathname();
 
   const [tabs, setTabs] = useState<Tab[]>(() => {
+    if (typeof window === "undefined") return [];
+
     const savedTabs = localStorage.getItem("tabs");
 
     return savedTabs ? JSON.parse(savedTabs) : [];

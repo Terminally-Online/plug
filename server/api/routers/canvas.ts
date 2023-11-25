@@ -1,11 +1,9 @@
 import { EventEmitter } from "stream";
 
-import { ComponentType, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-import { authedProcedure, router, publicProcedure } from "../trpc";
+import { protectedProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { observable } from "@trpc/server/observable";
-
-import { p } from "../prisma";
 
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -33,12 +31,13 @@ export const CanvasSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
-export default router({
-  all: authedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.name;
+export default createTRPCRouter({
+  test: publicProcedure.query(() => "yay!"),
+  all: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
 
     // * Get the canvases from the database.
-    const canvases = await p.canvas.findMany({
+    const canvases = await ctx.db.canvas.findMany({
       where: {
         userId,
       },
@@ -48,7 +47,7 @@ export default router({
     return canvases;
   }),
   get: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const canvas = await p.canvas.findUnique({
+    const canvas = await ctx.db.canvas.findUnique({
       where: {
         id: input,
       },
@@ -69,7 +68,7 @@ export default router({
 
     return canvas as CanvasWithComponents;
   }),
-  create: authedProcedure
+  create: protectedProcedure
     .input(
       z.object({
         name: z.string(),
@@ -77,10 +76,10 @@ export default router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user.name;
+      const userId = ctx.session.user.id;
 
       // * Create the canvas in the database.
-      return await p.canvas.create({
+      return await ctx.db.canvas.create({
         data: {
           name: input.name,
           public: input.public,
@@ -94,7 +93,7 @@ export default router({
         include: { components: true },
       });
     }),
-  update: authedProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -105,9 +104,9 @@ export default router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user.name;
+      const userId = ctx.session.user.id;
 
-      const canvas = await p.canvas.findUnique({
+      const canvas = await ctx.db.canvas.findUnique({
         where: {
           id: input.id,
         },
@@ -119,7 +118,7 @@ export default router({
       if (canvas.userId !== userId) throw new TRPCError({ code: "FORBIDDEN" });
 
       // * Update the fields that were passed in.
-      const updatedCanvas: CanvasWithComponents = await p.canvas.update({
+      const updatedCanvas: CanvasWithComponents = await ctx.db.canvas.update({
         where: {
           id: input.id,
         },
@@ -137,7 +136,7 @@ export default router({
 
       return updatedCanvas;
     }),
-  onUpdate: authedProcedure.subscription(() => {
+  onUpdate: protectedProcedure.subscription(() => {
     return observable<CanvasWithComponents>((emit) => {
       emitter.on("update", emit.next);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { getCsrfToken, signIn, useSession } from "next-auth/react";
+import { getCsrfToken, signIn } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { useAccount, useNetwork, useSignMessage } from "wagmi";
 import { FC, PropsWithChildren, memo } from "react";
@@ -15,13 +15,10 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   callbackUrl = "/canvas/",
   redirect = true,
 }) => {
-  const { data: session } = useSession();
   const { signMessageAsync } = useSignMessage();
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { open } = useWeb3Modal();
-
-  const username = session?.user?.name;
 
   const handleLogin = async () => {
     if (!isConnected) {
@@ -57,7 +54,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 
   return (
     <button type="button" onClick={handleLogin}>
-      {username ? username : isConnected ? "Sign In" : "Connect Wallet"}
+      {isConnected ? "Sign In" : "Connect Wallet"}
     </button>
   );
 };

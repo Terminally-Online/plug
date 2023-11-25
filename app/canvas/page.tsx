@@ -2,21 +2,22 @@ import { redirect } from "next/navigation";
 
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerClient } from "@/app/api/trpc/client.server";
-import CanvasPreviewGrid from "@/components/canvas/blocks/CanvasPreviewGrid";
+import { authOptions } from "@/server/auth";
+import { api } from "@/trpc/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  const t = getServerClient(session);
+  //   const t = getServerClient(session);
 
   const username = session?.user?.name;
 
   if (!username) redirect(`/connect`);
 
-  const canvases = await t.canvas.all();
+  const canvases = await api.healthcheck.query();
 
-  return <CanvasPreviewGrid canvases={canvases} />;
+  return <>{canvases}</>;
+
+  //   return <CanvasPreviewGrid canvases={canvases} />;
 }
