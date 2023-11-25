@@ -4,7 +4,7 @@ import type { AppType } from "next/app";
 
 import WalletProvider from "@/contexts/WalletProvider";
 
-import { api } from "@/utils/api";
+import { api } from "@/lib/api";
 
 import "./styles.css";
 
