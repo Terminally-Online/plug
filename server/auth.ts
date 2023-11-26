@@ -1,13 +1,14 @@
 import { type GetServerSidePropsContext } from 'next'
+
 import {
 	type DefaultSession,
 	getServerSession,
 	type NextAuthOptions
 } from 'next-auth'
-import { SiweMessage } from 'siwe'
-
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { getCsrfToken } from 'next-auth/react'
+
+import { SiweMessage } from 'siwe'
 
 declare module 'next-auth' {
 	interface Session extends DefaultSession {
@@ -15,16 +16,9 @@ declare module 'next-auth' {
 			id: string
 			name: string
 			image: string
-			// ...other properties
-			// role: UserRole;
 		}
 		address: string
 	}
-
-	// interface User {
-	//   // ...other properties
-	//   // role: UserRole;
-	// }
 }
 
 const authOptions: NextAuthOptions = {

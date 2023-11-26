@@ -1,14 +1,14 @@
-import CanvasPreviewGrid from '@/components/canvas/blocks/CanvasPreviewGrid'
-import { TabsProvider } from '@/contexts/TabsProvider'
-
-import type { GetServerSideProps } from 'next'
-import { Session } from 'next-auth'
 import { Suspense } from 'react'
 
+import type { GetServerSideProps } from 'next'
+
+import { Session } from 'next-auth'
+import { getSession } from 'next-auth/react'
+
+import CanvasPreviewGrid from '@/components/canvas/blocks/CanvasPreviewGrid'
+import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { NextPageWithLayout } from '@/lib/types'
-
-import { getSession } from 'next-auth/react'
 
 const Page: NextPageWithLayout = () => {
 	const { data: canvases } = api.canvas.all.useQuery()

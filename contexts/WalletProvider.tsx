@@ -1,5 +1,6 @@
 import type { FC, PropsWithChildren } from 'react'
 import { memo } from 'react'
+
 import { WagmiConfig } from 'wagmi'
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'

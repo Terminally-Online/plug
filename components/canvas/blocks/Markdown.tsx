@@ -1,6 +1,7 @@
-import MarkdownJSX from 'markdown-to-jsx'
 import { memo } from 'react'
 import type { FC, PropsWithChildren } from 'react'
+
+import MarkdownJSX from 'markdown-to-jsx'
 
 export type BoxProps = {
 	preview?: boolean

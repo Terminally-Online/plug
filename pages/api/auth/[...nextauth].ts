@@ -1,8 +1,8 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
-import { SiweMessage } from 'siwe'
-
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { getCsrfToken } from 'next-auth/react'
+
+import { SiweMessage } from 'siwe'
 
 // https://next-auth.js.org/configuration/providers/oauth
 const authOptions: NextAuthOptions = {

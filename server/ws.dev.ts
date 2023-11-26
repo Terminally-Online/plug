@@ -1,9 +1,10 @@
+import { getSession } from 'next-auth/react'
+
 import ws from 'ws'
 
 import { appRouter } from './api/root'
 import { createInnerTRPCContext } from './api/trpc'
 import { applyWSSHandler } from '@trpc/server/adapters/ws'
-import { getSession } from 'next-auth/react'
 
 const wss = new ws.Server({ port: 3001 })
 const handler = applyWSSHandler({

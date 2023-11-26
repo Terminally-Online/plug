@@ -9,12 +9,11 @@
 	"endOfLine": "auto",
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
 	"importOrder": [
-		"ethers",
-		"hardhat",
-		"abitype",
-		"[A-Z]",
+		"^react$",
+		"^next$",
+		"^next/(.*)$",
+		"next-auth",
 		"<THIRD_PARTY_MODULES>",
-		"<PROJECT_ROOT>",
 		"^@/(.*)$",
 		"./(.*)$"
 	],

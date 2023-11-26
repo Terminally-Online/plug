@@ -1,8 +1,5 @@
 'use client'
 
-import Canvas from './Canvas'
-import useRenderLoop from '@/lib/hooks/useRenderLoop'
-
 import {
 	FC,
 	memo,
@@ -12,11 +9,14 @@ import {
 	useRef,
 	WheelEvent
 } from 'react'
+
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
+import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
+import Canvas from './Canvas'
 import useSize from '@react-hook/size'
 
 export type ViewportProps = {

@@ -1,11 +1,12 @@
 import { type FC } from 'react'
 
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 import { api } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 import { MagicWandIcon, PlusIcon } from '@radix-ui/react-icons'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 export type BlockProps = {
 	vertical: boolean

@@ -1,7 +1,5 @@
 'use client'
 
-import Hud from '@/components/canvas/Hud'
-
 import {
 	createContext,
 	FC,
@@ -13,6 +11,8 @@ import {
 } from 'react'
 
 import { usePathname, useRouter } from 'next/navigation'
+
+import Hud from '@/components/canvas/Hud'
 
 type Tab = {
 	label: string

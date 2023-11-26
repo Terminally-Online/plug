@@ -1,4 +1,15 @@
-'use client'
+import { type FC, useEffect, useMemo } from 'react'
+
+import { useSession } from 'next-auth/react'
+
+import { useDrop } from 'react-dnd'
+
+import { useTabs } from '@/contexts/TabsProvider'
+import { api } from '@/lib/api'
+import { ItemTypes } from '@/lib/constants'
+import { snapToGrid } from '@/lib/functions/snap-to-grid'
+import CanvasStore from '@/lib/store'
+import type { DragItem } from '@/lib/types'
 
 import { Box } from './blocks/Box'
 import { Markdown } from './blocks/Markdown'
@@ -6,18 +17,6 @@ import Plug from './blocks/Plug'
 import { Drag } from './Drag'
 import { Position } from './Position'
 import Toolbar from './Toolbar'
-import { useTabs } from '@/contexts/TabsProvider'
-
-import { FC, useEffect, useMemo } from 'react'
-import { useDrop } from 'react-dnd'
-
-import { api } from '@/lib/api'
-import { ItemTypes } from '@/lib/constants'
-import { snapToGrid } from '@/lib/functions/snap-to-grid'
-import CanvasStore from '@/lib/store'
-import type { DragItem } from '@/lib/types'
-
-import { useSession } from 'next-auth/react'
 
 export type CanvasProps = {
 	frame: string

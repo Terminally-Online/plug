@@ -1,11 +1,13 @@
 'use client'
 
 import { FC, memo, PropsWithChildren } from 'react'
+
+import { getCsrfToken, signIn } from 'next-auth/react'
+
 import { SiweMessage } from 'siwe'
 import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import { getCsrfToken, signIn } from 'next-auth/react'
 
 export type ButtonProps = {
 	callbackUrl?: string

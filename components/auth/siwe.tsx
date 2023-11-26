@@ -1,9 +1,11 @@
 import { type FC, useState } from 'react'
+
+import { getCsrfToken, signIn, useSession } from 'next-auth/react'
+
 import { SiweMessage } from 'siwe'
 import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import { getCsrfToken, signIn, useSession } from 'next-auth/react'
 
 export type SiweProps = Partial<{
 	callbackUrl: string

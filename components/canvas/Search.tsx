@@ -1,13 +1,12 @@
 'use client'
 
-import { useDebounce } from '@/lib/hooks/useDebounce'
-
 import type { FC } from 'react'
 import { memo, useEffect } from 'react'
 
-import { Input } from '@/components/ui/input'
-
 import { useRouter, useSearchParams } from 'next/navigation'
+
+import { Input } from '@/components/ui/input'
+import { useDebounce } from '@/lib/hooks/useDebounce'
 
 export type SearchProps = {
 	baseUrl?: string

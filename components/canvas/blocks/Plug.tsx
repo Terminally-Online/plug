@@ -1,9 +1,5 @@
 'use client'
 
-import Pin from './Pin'
-import PinAppendage from './PinAppendage'
-import PlugSimulation, { PlugSimulationState } from './PlugSimulation'
-
 import type { FC, PropsWithChildren } from 'react'
 import { memo, useCallback, useState } from 'react'
 
@@ -11,6 +7,10 @@ import { t } from '@/app/api/trpc/client'
 import { pins } from '@/lib/constants'
 import type { Pin as PinType } from '@/lib/types'
 import { cn } from '@/lib/utils'
+
+import Pin from './Pin'
+import PinAppendage from './PinAppendage'
+import PlugSimulation, { PlugSimulationState } from './PlugSimulation'
 
 export type PlugProps = {
 	id: string

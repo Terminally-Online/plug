@@ -1,14 +1,13 @@
-import WalletProvider from '@/contexts/WalletProvider'
+import type { AppProps, AppType } from 'next/app'
 
 import { Session } from 'next-auth'
+import { getSession, SessionProvider } from 'next-auth/react'
 
-import Layout from '@/components/auth/layout'
+import WalletProvider from '@/contexts/WalletProvider'
 import { api } from '@/lib/api'
 import { type NextPageWithLayout } from '@/lib/types'
 
 import './styles.css'
-import { getSession, SessionProvider } from 'next-auth/react'
-import type { AppProps, AppType } from 'next/app'
 
 type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout

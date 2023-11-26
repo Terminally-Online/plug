@@ -1,8 +1,7 @@
-import Viewport from '@/components/canvas/Viewport'
-import { TabsProvider } from '@/contexts/TabsProvider'
-
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
+import Viewport from '@/components/canvas/Viewport'
+import { TabsProvider } from '@/contexts/TabsProvider'
 import { NextPageWithLayout } from '@/lib/types'
 
 const Page: NextPageWithLayout<

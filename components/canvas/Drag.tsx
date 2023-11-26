@@ -1,12 +1,13 @@
 'use client'
 
-import { Preview } from './Preview'
-
 import type { CSSProperties, FC } from 'react'
+
 import type { XYCoord } from 'react-dnd'
 import { useDragLayer } from 'react-dnd'
 
 import { snapToGrid } from '@/lib/functions/snap-to-grid'
+
+import { Preview } from './Preview'
 
 const layerStyles: CSSProperties = {
 	position: 'fixed',
