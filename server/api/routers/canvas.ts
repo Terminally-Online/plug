@@ -46,7 +46,7 @@ export default createTRPCRouter({
     // * Return the canvases.
     return canvases;
   }),
-  get: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+  get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const canvas = await ctx.db.canvas.findUnique({
       where: {
         id: input,
@@ -62,9 +62,9 @@ export default createTRPCRouter({
 
     console.log("userid when getting", ctx);
 
-    // if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
-    //
-    // if (canvas.userId !== userId) throw new TRPCError({ code: "FORBIDDEN" });
+    if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+    if (canvas.userId !== userId) throw new TRPCError({ code: "FORBIDDEN" });
 
     return canvas as CanvasWithComponents;
   }),
@@ -77,6 +77,7 @@ export default createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
+      console.log(ctx.session.user);
 
       // * Create the canvas in the database.
       return await ctx.db.canvas.create({

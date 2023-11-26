@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { FC, PropsWithChildren, memo, useEffect } from "react";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,6 +16,12 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const path = usePathname();
 
+  const [client, setClient] = useState(false)
+
+  useEffect(() => { 
+    setClient(true)
+  }, [])
+
   useEffect(() => {
     switch (path) {
       case "/canvas/create":
@@ -30,6 +36,8 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
         break;
     }
   }, [path, handleAdd]);
+
+  if (!client) return null
 
   return (
     <div className="w-screen h-screen">
@@ -50,6 +58,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
                 active ? "active" : ""
               )}
               onClick={() => router.push(href)}
+              suppressHydrationWarning
             >
               <div className="h-full flex flex-row items-center gap-4">
                 <div
@@ -95,4 +104,4 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default memo(Hud);
+export default Hud;

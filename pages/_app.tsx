@@ -1,18 +1,14 @@
-import { Session } from "next-auth";
-import { SessionProvider, getSession } from "next-auth/react";
 import type { AppProps, AppType } from "next/app";
 
+import { Session } from "next-auth";
+import { SessionProvider, getSession } from "next-auth/react";
+
+import { type NextPageWithLayout } from "@/lib/types";
+import { api } from "@/lib/api";
 import WalletProvider from "@/contexts/WalletProvider";
 
-import { api } from "@/lib/api";
-
 import "./styles.css";
-import { ReactElement, ReactNode } from "react";
-import { NextPage } from "next";
-
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
+import Layout from "@/components/auth/layout";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -23,7 +19,6 @@ type AppPropsWithLayout = AppProps & {
 const MyApp: AppType<{
   session: Session | null;
 }> = ({ Component, pageProps }: AppPropsWithLayout) => {
-  // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (

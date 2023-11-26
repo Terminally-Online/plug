@@ -7,18 +7,17 @@ import { getSession } from "next-auth/react";
 import { api } from "@/lib/api";
 import CanvasPreviewGrid from "@/components/canvas/blocks/CanvasPreviewGrid";
 import { TabsProvider } from "@/contexts/TabsProvider";
+import { NextPageWithLayout } from "@/lib/types";
 
-export default function Page() {
+const Page: NextPageWithLayout = () => {
   const { data: canvases } = api.canvas.all.useQuery();
 
   return (
-    <TabsProvider>
-      <Suspense fallback={<div>Loading...</div>}>
-        <CanvasPreviewGrid canvases={canvases} />
-      </Suspense>
-    </TabsProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <CanvasPreviewGrid canvases={canvases} />
+    </Suspense>
   );
-}
+};
 
 export const getServerSideProps = (async (context) => {
   const session = await getSession(context);
@@ -38,3 +37,7 @@ export const getServerSideProps = (async (context) => {
     },
   };
 }) satisfies GetServerSideProps<{ session: Session | null }>;
+
+Page.getLayout = (page) => <TabsProvider>{page}</TabsProvider>;
+
+export default Page;
