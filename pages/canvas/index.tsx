@@ -6,14 +6,17 @@ import { getSession } from "next-auth/react";
 
 import { api } from "@/lib/api";
 import CanvasPreviewGrid from "@/components/canvas/blocks/CanvasPreviewGrid";
+import { TabsProvider } from "@/contexts/TabsProvider";
 
 export default function Page() {
   const { data: canvases } = api.canvas.all.useQuery();
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CanvasPreviewGrid canvases={canvases} />;
-    </Suspense>
+    <TabsProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <CanvasPreviewGrid canvases={canvases} />
+      </Suspense>
+    </TabsProvider>
   );
 }
 

@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
+import Hud from "@/components/canvas/Hud";
 
 type Tab = {
   label: string;
@@ -125,7 +126,7 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
         handleMove,
       }}
     >
-      {children}
+      <Hud>{children}</Hud>
     </TabsContext.Provider>
   );
 };

@@ -9,10 +9,12 @@ import { api } from "@/lib/api";
 
 import Search from "@/components/canvas/Search";
 import Block from "@/components/canvas/Block";
+import { TabsProvider } from "@/contexts/TabsProvider";
+import { NextPageWithLayout } from "../_app";
 
-export default async function Page({
-  search,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const Page: NextPageWithLayout<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = async ({ search }) => {
   const [canvases] = api.canvas.all.useSuspenseQuery();
   const createCanvas = api.canvas.create.useMutation();
 
@@ -27,7 +29,6 @@ export default async function Page({
 
   return (
     <div className="bg-stone-900 w-screen h-screen flex flex-col gap-2">
-      {/* TODO: Implement a loading indicator */}
       <Suspense fallback={<div>Loading...</div>}>
         <Block vertical={canvases.length === 0} />
 
@@ -35,7 +36,7 @@ export default async function Page({
       </Suspense>
     </div>
   );
-}
+};
 
 export const getServerSideProps = (async (context) => {
   const session = await getSession(context);
@@ -57,3 +58,5 @@ export const getServerSideProps = (async (context) => {
 }) satisfies GetServerSideProps<{
   search: string | string[] | undefined;
 }>;
+
+Page.getLayout = (page) => <TabsProvider>{page}</TabsProvider>;
