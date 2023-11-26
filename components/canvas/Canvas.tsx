@@ -9,7 +9,7 @@ import { ItemTypes } from "@/lib/constants";
 import CanvasStore from "@/lib/store";
 import { snapToGrid } from "@/lib/functions/snap-to-grid";
 import { useTabs } from "@/contexts/TabsProvider";
-import { t } from "@/app/api/trpc/client";
+import { api } from "@/lib/api";
 
 import { Position } from "./Position";
 import { Drag } from "./Drag";
@@ -31,18 +31,18 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 
   const username = session?.user?.name ?? "";
 
-  const [canvas, initialCanvasQuery] = t.canvas.get.useSuspenseQuery(id);
+  const [canvas, initialCanvasQuery] = api.canvas.get.useSuspenseQuery(id);
 
   // * The refetch isn't super ideal, but need to get it working.
   //   I am not sure how to replace it until I can figure out how to generate the id from the frontend, otherwise I am
   //      still not sure how you resolve the duplicates.
-  const addComponent = t.canvas.component.add.useMutation({
+  const addComponent = api.canvas.component.add.useMutation({
     onSettled: () => {
       initialCanvasQuery.refetch();
     },
   });
 
-  const moveComponent = t.canvas.component.move.useMutation({
+  const moveComponent = api.canvas.component.move.useMutation({
     onSettled: () => {
       initialCanvasQuery.refetch();
     },
@@ -149,7 +149,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
             const component = components[key];
             const Component = componentTypes[component.type];
 
-            const isSelecting = t.canvas.component.selecting.useMutation();
+            const isSelecting = api.canvas.component.selecting.useMutation();
 
             console.log("component", component.content);
 
