@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, createTRPCRouter } from "../trpc";
+import {
+  protectedProcedure,
+  publicProcedure,
+  createTRPCRouter,
+} from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
 export const ComponentSchema = z.object({

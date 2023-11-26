@@ -15,26 +15,11 @@ const Page: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search }) => {
   const { data: canvases } = api.canvas.all.useQuery();
-  // const createCanvas = api.canvas.create.useMutation({
-  //   onSettled: (data) => {
-  //     console.log("settled", data);
-  //
-  //     if (!data) return;
-  //     redirect(`/canvas/${data.id}`);
-  //   },
-  // });
-
-  // if (!search && canvases && canvases.length === 0) {
-  //   createCanvas.mutate({
-  //     name: "My First Canvas",
-  //     public: false,
-  //   });
-  // }
 
   return (
-    <div className="bg-stone-900 w-screen h-screen flex flex-col gap-2">
+    <div className="bg-stone-900 h-full flex flex-col gap-2">
       <Suspense fallback={<div>Loading...</div>}>
-        <Block vertical={(canvases && canvases.length === 0) || true} />
+        <Block vertical={(canvases && canvases.length === 0) || false} />
 
         {canvases && canvases.length > 0 ? <Search /> : <></>}
       </Suspense>

@@ -12,9 +12,12 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
+      name: string;
+      image: string;
       // ...other properties
       // role: UserRole;
     };
+    address: string;
   }
 
   // interface User {
@@ -69,6 +72,7 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
       session.address = token.sub;
+      session.user.id = token.sub;
       session.user.name = token.sub;
       session.user.image = `https://avatar.vercel.sh/${token.sub}.png`;
       return session;

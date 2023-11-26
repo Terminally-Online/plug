@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 
@@ -16,11 +16,11 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const path = usePathname();
 
-  const [client, setClient] = useState(false)
+  const [client, setClient] = useState(false);
 
-  useEffect(() => { 
-    setClient(true)
-  }, [])
+  useEffect(() => {
+    setClient(true);
+  }, []);
 
   useEffect(() => {
     switch (path) {
@@ -37,10 +37,10 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [path, handleAdd]);
 
-  if (!client) return null
+  if (!client) return null;
 
   return (
-    <div className="w-screen h-screen">
+    <>
       <div className="bg-stone-900 border-b-[1px] border-b-stone-950 fixed top-0 left-0 w-screen z-[99999]">
         <div className="flex flex-row items-center h-8">
           <Link
@@ -99,8 +99,8 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      {children}
-    </div>
+      <div className="pt-8 h-screen">{children}</div>
+    </>
   );
 };
 

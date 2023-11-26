@@ -33,19 +33,25 @@ export const CanvasSchema = z.object({
 
 export default createTRPCRouter({
   test: publicProcedure.query(() => "yay!"),
-  all: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
+  all: protectedProcedure
+    .input(z.union([z.string(), z.array(z.string())]).optional())
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
 
-    // * Get the canvases from the database.
-    const canvases = await ctx.db.canvas.findMany({
-      where: {
-        userId,
-      },
-    });
+      // * TODO: Implement support for search.
+      if (input && input.length > 0)
+        throw new TRPCError({ code: "NOT_IMPLEMENTED" });
 
-    // * Return the canvases.
-    return canvases;
-  }),
+      // * Get the canvases from the database.
+      const canvases = await ctx.db.canvas.findMany({
+        where: {
+          userId,
+        },
+      });
+
+      // * Return the canvases.
+      return canvases;
+    }),
   get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const canvas = await ctx.db.canvas.findUnique({
       where: {
@@ -58,13 +64,11 @@ export default createTRPCRouter({
 
     if (canvas.public) return canvas;
 
-    const userId = ctx.session?.user?.name;
-
-    console.log("userid when getting", ctx);
+    const userId = ctx.session.user.id;
 
     if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-    if (canvas.userId !== userId) throw new TRPCError({ code: "FORBIDDEN" });
+    if (canvas.userId !== userId) throw new TRPCError({ code: "UNAUTHORIZED" });
 
     return canvas as CanvasWithComponents;
   }),
@@ -73,17 +77,18 @@ export default createTRPCRouter({
       z.object({
         name: z.string(),
         public: z.boolean(),
+        color: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
-      console.log(ctx.session.user);
 
       // * Create the canvas in the database.
       return await ctx.db.canvas.create({
         data: {
           name: input.name,
           public: input.public,
+          color: input.color,
           user: {
             connectOrCreate: {
               where: { id: userId },
@@ -126,7 +131,7 @@ export default createTRPCRouter({
         data: {
           ...canvas,
           ...input,
-          // TODO: For now we are not updating components
+          // * TODO: For now we are not updating components
           components: undefined,
         },
         include: { components: true },
@@ -146,6 +151,5 @@ export default createTRPCRouter({
       };
     });
   }),
-  // TODO: onUpdate
   component: componentRouter,
 });

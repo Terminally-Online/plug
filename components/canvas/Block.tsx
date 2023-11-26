@@ -1,21 +1,32 @@
-"use client";
-
-import { FC, memo } from "react";
+import { type FC } from "react";
 
 import Link from "next/link";
 
 import { MagicWandIcon, PlusIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { useRouter } from "next/router";
 
 export type BlockProps = {
   vertical: boolean;
 };
 
 export const Block: FC<BlockProps> = ({ vertical }) => {
+  const router = useRouter();
+
+  const createCanvas = api.canvas.create.useMutation({
+    onSuccess: (data) => {
+      router.push(`/canvas/${data.id}`);
+    },
+  });
+
   const handleCreate = () => {
-    // TODO: Hook into the database and create a new canvas for the user -- Then redirect them to the canvas.
-    throw new Error("TODO: Implement this");
+    createCanvas.mutate({
+      name: "Untitled Canvas",
+      public: false,
+      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    });
   };
 
   return (
@@ -53,4 +64,4 @@ export const Block: FC<BlockProps> = ({ vertical }) => {
   );
 };
 
-export default memo(Block);
+export default Block;

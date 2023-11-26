@@ -74,3 +74,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+html,
+body {
+  background: #1c1917;
+  min-height: 100vh;
+}
+
+#__next {
+  min-height: 100vh;
+}
