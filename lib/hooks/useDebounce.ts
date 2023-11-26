@@ -1,18 +1,26 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from 'react'
 
-export const useDebounce = ({ initial, delay = 500 }: { initial: any, delay?: number }) => {
-  const [value, setValue] = useState<typeof initial>(initial)
-  const [debounced, setDebounced] = useState<typeof value>(value)
+export const useDebounce = ({
+	initial,
+	delay = 500
+}: {
+	initial: any
+	delay?: number
+}) => {
+	const [value, setValue] = useState<typeof initial>(initial)
+	const [debounced, setDebounced] = useState<typeof value>(value)
 
-  useEffect(() => { 
-    const timeout = setTimeout(() => { 
-      setDebounced(value)
-    }, delay)
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setDebounced(value)
+		}, delay)
 
-    return () => { clearTimeout(timeout) }
-  }, [value, delay])
+		return () => {
+			clearTimeout(timeout)
+		}
+	}, [value, delay])
 
-  return { value, debounced, debounce: setValue }
+	return { value, debounced, debounce: setValue }
 }

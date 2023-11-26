@@ -1,8 +1,8 @@
-import { createTRPCRouter } from "@/server/api/trpc";
-import canvasRouter from "@/server/api/routers/canvas";
+import canvasRouter from '@/server/api/routers/canvas'
+import { createTRPCRouter } from '@/server/api/trpc'
 
 export const appRouter = createTRPCRouter({
-  canvas: canvasRouter,
-});
+	canvas: canvasRouter
+})
 
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter

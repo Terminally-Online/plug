@@ -1,51 +1,52 @@
-import { Suspense } from "react";
+import Block from '@/components/canvas/Block'
+import Search from '@/components/canvas/Search'
+import { TabsProvider } from '@/contexts/TabsProvider'
 
-import { redirect } from "next/navigation";
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { Suspense } from 'react'
 
-import { getSession } from "next-auth/react";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { api } from '@/lib/api'
+import { type NextPageWithLayout } from '@/lib/types'
 
-import { type NextPageWithLayout } from "@/lib/types";
-import { api } from "@/lib/api";
-import Search from "@/components/canvas/Search";
-import Block from "@/components/canvas/Block";
-import { TabsProvider } from "@/contexts/TabsProvider";
+import { getSession } from 'next-auth/react'
 
 const Page: NextPageWithLayout<
-  InferGetServerSidePropsType<typeof getServerSideProps>
+	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search }) => {
-  const { data: canvases } = api.canvas.all.useQuery();
+	const { data: canvases } = api.canvas.all.useQuery(search)
 
-  return (
-    <div className="bg-stone-900 h-full flex flex-col gap-2">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Block vertical={(canvases && canvases.length === 0) || false} />
+	return (
+		<div className="bg-stone-900 h-full flex flex-col gap-2">
+			<Suspense fallback={<div>Loading...</div>}>
+				<Block
+					vertical={(canvases && canvases.length === 0) || false}
+				/>
 
-        {canvases && canvases.length > 0 ? <Search /> : <></>}
-      </Suspense>
-    </div>
-  );
-};
+				{canvases && canvases.length > 0 ? <Search /> : <></>}
+			</Suspense>
+		</div>
+	)
+}
 
-export const getServerSideProps = (async (context) => {
-  if (!(await getSession(context))) {
-    return {
-      redirect: {
-        destination: `/connect`,
-        permanent: false,
-      },
-    };
-  }
+export const getServerSideProps = (async context => {
+	if (!(await getSession(context))) {
+		return {
+			redirect: {
+				destination: `/connect`,
+				permanent: false
+			}
+		}
+	}
 
-  return {
-    props: {
-      search: context.query.search || "",
-    },
-  };
+	return {
+		props: {
+			search: context.query.search || ''
+		}
+	}
 }) satisfies GetServerSideProps<{
-  search: string | string[] | undefined;
-}>;
+	search: string | string[] | undefined
+}>
 
-Page.getLayout = (page) => <TabsProvider>{page}</TabsProvider>;
+Page.getLayout = page => <TabsProvider>{page}</TabsProvider>
 
-export default Page;
+export default Page
