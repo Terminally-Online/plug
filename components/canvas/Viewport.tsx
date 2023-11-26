@@ -13,11 +13,12 @@ import {
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
+import useSize from '@react-hook/size'
+
 import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
 import Canvas from './Canvas'
-import useSize from '@react-hook/size'
 
 export type ViewportProps = {
 	id: string
@@ -25,11 +26,11 @@ export type ViewportProps = {
 
 const Viewport: FC<ViewportProps> = ({ id }) => {
 	const canvasRef = useRef<HTMLDivElement>(null)
-
 	const frame = useRenderLoop(60)
+
 	const [width, height] = useSize(canvasRef)
 
-	const wheelListener = (e: WheelEvent) => {
+	const handleWheel = (e: WheelEvent) => {
 		e.stopPropagation()
 
 		const friction = 1
@@ -44,30 +45,27 @@ const Viewport: FC<ViewportProps> = ({ id }) => {
 		}
 	}
 
-	const pointerListener = (event: PointerEvent) => {
+	const handlerPointerMove = (event: PointerEvent) => {
 		CanvasStore.movePointer(event.clientX, event.clientY)
 	}
 
 	useEffect(() => {
 		if (width === 0 || height === 0) return
-
 		CanvasStore.initialize(width, height)
 	}, [width, height])
 
 	return (
-		<div className="bg-stone-900 w-full h-full text-black dark:text-white">
-			<div
-				className="w-full h-full relative overflow-hidden overscroll-none"
-				ref={canvasRef}
-				onWheel={wheelListener}
-				onPointerMove={pointerListener}
-			>
-				<DndProvider backend={HTML5Backend}>
-					<Suspense fallback={<div>Loading...</div>}>
-						<Canvas frame={frame} id={id} />
-					</Suspense>
-				</DndProvider>
-			</div>
+		<div
+			className="bg-stone-900 w-full h-full text-black dark:text-white overscroll-none w-full h-full relative overflow-hidden overscroll-none"
+			ref={canvasRef}
+			onWheel={handleWheel}
+			onPointerMove={handlerPointerMove}
+		>
+			<DndProvider backend={HTML5Backend}>
+				<Suspense fallback={<div>Loading...</div>}>
+					<Canvas frame={frame} id={id} />
+				</Suspense>
+			</DndProvider>
 		</div>
 	)
 }

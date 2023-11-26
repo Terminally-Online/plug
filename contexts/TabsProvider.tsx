@@ -52,8 +52,11 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 	const handleAdd = useCallback(
 		(tab: Tab) => {
 			setTabs(tabs => {
-				// * If we already have a tab with the same href, we don't need to add it.
-				if (tabs.find(t => t.href === tab.href)) return tabs
+				// * If we already have a tab with the same href, we need
+				//   to replace the element.
+				if (tabs.find(t => t.href === tab.href)) {
+					return tabs.map(t => (t.href === tab.href ? tab : t))
+				}
 
 				// * Go to the newly created page.
 				router.push(tab.href)
@@ -66,7 +69,6 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	const handleRemove = useCallback(
 		(index: number) => {
-			console.log('removing')
 			setTabs(tabs => {
 				const newTabs = [...tabs]
 

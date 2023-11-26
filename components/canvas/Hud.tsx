@@ -5,10 +5,10 @@ import { FC, PropsWithChildren, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
+import { Cross1Icon, HomeIcon, PlusIcon } from '@radix-ui/react-icons'
+
 import { useTabs } from '@/contexts/TabsProvider'
 import { cn } from '@/lib/utils'
-
-import { Cross1Icon, HomeIcon, PlusIcon } from '@radix-ui/react-icons'
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => {
 	const { tabs, createTab, handleAdd, handleRemove } = useTabs()
@@ -101,7 +101,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 				</div>
 			</div>
 
-			<div className="pt-8 h-screen">{children}</div>
+			<div className="pt-8 h-screen overscroll-none">{children}</div>
 		</>
 	)
 }

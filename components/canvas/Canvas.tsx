@@ -11,8 +11,6 @@ import { snapToGrid } from '@/lib/functions/snap-to-grid'
 import CanvasStore from '@/lib/store'
 import type { DragItem } from '@/lib/types'
 
-import { Box } from './blocks/Box'
-import { Markdown } from './blocks/Markdown'
 import Plug from './blocks/Plug'
 import { Drag } from './Drag'
 import { Position } from './Position'
@@ -30,22 +28,13 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 
 	const username = session?.user?.name ?? ''
 
-	const [canvas, initialCanvasQuery] = api.canvas.get.useSuspenseQuery(id)
+	const [canvas] = api.canvas.get.useSuspenseQuery(id)
 
 	// * The refetch isn't super ideal, but need to get it working.
 	//   I am not sure how to replace it until I can figure out how to generate the id from the frontend, otherwise I am
 	//      still not sure how you resolve the duplicates.
-	const addComponent = api.canvas.component.add.useMutation({
-		onSettled: () => {
-			initialCanvasQuery.refetch()
-		}
-	})
-
-	const moveComponent = api.canvas.component.move.useMutation({
-		onSettled: () => {
-			initialCanvasQuery.refetch()
-		}
-	})
+	const addComponent = api.canvas.component.add.useMutation()
+	const moveComponent = api.canvas.component.move.useMutation()
 
 	const components = useMemo(() => {
 		if (!canvas) return null
@@ -59,12 +48,11 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 		)
 	}, [canvas])
 
-	// TODO: Use this once we store the response in state instead of refetching.
-	// t.canvas.onUpdate.useSubscription(undefined, {
-	//   onData(updatedCanvas) {
-	//     setCanvas(updatedCanvas);
-	//   },
-	// });
+	api.canvas.onUpdate.useSubscription(undefined, {
+		onData(updatedCanvas) {
+			setCanvas(updatedCanvas)
+		}
+	})
 
 	useEffect(() => {
 		if (!canvas) return
@@ -154,8 +142,8 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 						const component = components[key]
 						const Component = componentTypes[component.type]
 
-						const isSelecting =
-							api.canvas.component.selecting.useMutation()
+						// const isSelecting =
+						// 	api.canvas.component.selecting.useMutation()
 
 						console.log('component', component.content)
 
@@ -163,15 +151,15 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 							<Position key={component.id} {...component}>
 								<Plug
 									id={component.id}
-									onClick={() => {
-										isSelecting.mutate({
-											id: canvas.id,
-											component: {
-												id: component.id,
-												selecting: username
-											}
-										})
-									}}
+									// onClick={() => {
+									// 	isSelecting.mutate({
+									// 		id: canvas.id,
+									// 		component: {
+									// 			id: component.id,
+									// 			selecting: username
+									// 		}
+									// 	})
+									// }}
 									selecting={component.selectingId}
 								>
 									{JSON.stringify(component.content)}
