@@ -81,19 +81,17 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 		>
 			<Suspense fallback={<div>Loading...</div>}>
 				<Canvas frame={frame} id={id}>
-					<DraggableStory
-						modifiers={[snapToGrid]}
-						style={style}
-						buttonStyle={buttonStyle}
-						key={gridSize}
-					/>
+					<Grid size={gridSize} onSizeChange={setGridSize}>
+						<DraggableStory
+							modifiers={[snapToGrid]}
+							style={style}
+							buttonStyle={buttonStyle}
+							key={gridSize}
+						/>
+					</Grid>
 				</Canvas>
-
-				<Position id="grid" left={0} top={0} width={800} height={800}>
-					<Grid size={gridSize} onSizeChange={setGridSize} />
-				</Position>
 			</Suspense>
-			.{' '}
+
 			{
 				<div className="fixed top-0 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
 					<p>User id: tester</p>

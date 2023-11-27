@@ -27,8 +27,8 @@ import { Wrapper } from '@/components/drag/wrapper/wrapper'
 import CanvasStore from '@/lib/store'
 
 const defaultCoordinates = {
-	x: 0,
-	y: 0
+	x: 5000,
+	y: 5000
 }
 
 interface Props {
@@ -83,26 +83,6 @@ export function DraggableStory({
 					style={style}
 					buttonStyle={buttonStyle}
 				/>
-
-				<DraggableItem
-					id="b"
-					axis={axis}
-					handle={handle}
-					top={y - CanvasStore.screen.y}
-					left={x - CanvasStore.screen.x}
-					style={style}
-					buttonStyle={buttonStyle}
-				/>
-
-				<DraggableItem
-					id="c"
-					axis={axis}
-					handle={handle}
-					top={y - CanvasStore.screen.y}
-					left={x - CanvasStore.screen.x}
-					style={style}
-					buttonStyle={buttonStyle}
-				/>
 			</Wrapper>
 		</DndContext>
 	)
@@ -146,37 +126,5 @@ function DraggableItem({
 			axis={axis}
 			{...attributes}
 		/>
-	)
-}
-
-export const SnapToGrid = () => {
-	const [gridSize, setGridSize] = React.useState(30)
-
-	const style = {
-		alignItems: 'flex-start'
-	}
-
-	const buttonStyle = {
-		marginLeft: gridSize - 20 + 1,
-		marginTop: gridSize - 20 + 1,
-		width: gridSize * 8 - 1,
-		height: gridSize * 2 - 1
-	}
-
-	const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize])
-
-	return (
-		<>
-			<OverflowWrapper>
-				<DraggableStory
-					modifiers={[snapToGrid]}
-					style={style}
-					buttonStyle={buttonStyle}
-					key={gridSize}
-				/>
-
-				<Grid size={gridSize} onSizeChange={setGridSize} />
-			</OverflowWrapper>
-		</>
 	)
 }

@@ -62,8 +62,8 @@ export const DEFAULT_CANVAS_STATE: CanvasState = {
 		y: 0
 	},
 	camera: {
-		x: 1.5 * RECT_W,
-		y: 1.5 * RECT_H,
+		x: 0.5 * 10000,
+		y: 0.5 * 10000,
 		z: 0,
 		locked: false
 	},
