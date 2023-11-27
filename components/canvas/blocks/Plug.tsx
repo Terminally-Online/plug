@@ -1,9 +1,6 @@
-'use client'
-
 import type { FC, PropsWithChildren } from 'react'
 import { memo, useCallback, useState } from 'react'
 
-import { t } from '@/app/api/trpc/client'
 import { pins } from '@/lib/constants'
 import type { Pin as PinType } from '@/lib/types'
 import { cn } from '@/lib/utils'

@@ -52,37 +52,39 @@ export interface CustomDragLayerProps {
 }
 
 export const Drag: FC<CustomDragLayerProps> = props => {
-	const { isDragging, item, initialOffset, currentOffset } = useDragLayer(
-		monitor => ({
-			item: monitor.getItem(),
-			itemType: monitor.getItemType(),
-			initialOffset: monitor.getInitialSourceClientOffset(),
-			currentOffset: monitor.getSourceClientOffset(),
-			isDragging: monitor.isDragging()
-		})
-	)
+	// const { isdragging, item, initialoffset, currentoffset } = usedraglayer(
+	// 	monitor => ({
+	// 		item: monitor.getitem(),
+	// 		itemtype: monitor.getitemtype(),
+	// 		initialoffset: monitor.getinitialsourceclientoffset(),
+	// 		currentoffset: monitor.getsourceclientoffset(),
+	// 		isdragging: monitor.isdragging()
+	// 	})
+	// )
+	//
+	// function renderItem() {
+	// 	if (!item || !item.children) return null
+	//
+	// 	return <Preview>{item.children}</Preview>
+	// }
+	//
+	// if (!isDragging) {
+	// 	return null
+	// }
 
-	function renderItem() {
-		if (!item || !item.children) return null
-
-		return <Preview>{item.children}</Preview>
-	}
-
-	if (!isDragging) {
-		return null
-	}
-
-	return (
-		<div style={layerStyles}>
-			<div
-				style={getItemStyles(
-					initialOffset,
-					currentOffset,
-					props.snapToGrid || true
-				)}
-			>
-				{renderItem()}
-			</div>
-		</div>
-	)
+	// return (
+	// 	<div style={layerStyles}>
+	// 		<div
+	// 			style={getItemStyles(
+	// 				initialOffset,
+	// 				currentOffset,
+	// 				props.snapToGrid || true
+	// 			)}
+	// 		>
+	// 			{renderItem()}
+	// 		</div>
+	// 	</div>
+	// )
+	//
+	return <>Drag</>
 }

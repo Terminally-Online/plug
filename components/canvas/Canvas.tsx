@@ -37,7 +37,11 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 		}
 	})
 
-	const handleMove = ({ id, top, left }: {
+	const handleMove = ({
+		id,
+		top,
+		left
+	}: {
 		id: string
 		top: number
 		left: number
@@ -81,29 +85,29 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 		})
 	}, [canvas, handleAdd])
 
-	const [, drop] = useDrop(
-		() => ({
-			accept: [ItemTypes.Box, ItemTypes.Markdown],
-			drop(item: DragItem, monitor) {
-				const delta = monitor.getDifferenceFromInitialOffset()
-
-				if (!delta) return
-
-				let { id, top, left } = item
-
-				left = Math.round(left + delta.x)
-				top = Math.round(top + delta.y)
-
-				if (snapToGrid) [left, top] = snapToGrid(left, top)
-
-				moveComponent.mutate({
-					id: canvas.id,
-					component: { id, left, top }
-				})
-			}
-		}),
-		[moveComponent]
-	)
+	// const [, drop] = useDrop(
+	// 	() => ({
+	// 		accept: [ItemTypes.Box, ItemTypes.Markdown],
+	// 		drop(item: DragItem, monitor) {
+	// 			const delta = monitor.getDifferenceFromInitialOffset()
+	//
+	// 			if (!delta) return
+	//
+	// 			let { id, top, left } = item
+	//
+	// 			left = Math.round(left + delta.x)
+	// 			top = Math.round(top + delta.y)
+	//
+	// 			if (snapToGrid) [left, top] = snapToGrid(left, top)
+	//
+	// 			moveComponent.mutate({
+	// 				id: canvas.id,
+	// 				component: { id, left, top }
+	// 			})
+	// 		}
+	// 	}),
+	// 	[moveComponent]
+	// )
 
 	const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		const isShiftClick = e.shiftKey
@@ -139,7 +143,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 	return (
 		<>
 			<div
-				ref={drop}
+				// ref={drop}
 				className="relative w-screen h-screen overscroll-none"
 				style={{
 					transform: `scale(${
@@ -151,26 +155,12 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 			>
 				{components &&
 					Object.keys(components).map(key => {
-						const componentTypes = {
-							[ItemTypes.Plug]: Plug
-						}
-
 						const component = components[key]
-						const Component = componentTypes[component.type]
 
 						return (
 							<Position key={component.id} {...component}>
 								<Plug
 									id={component.id}
-									// onClick={() => {
-									// 	isSelecting.mutate({
-									// 		id: canvas.id,
-									// 		component: {
-									// 			id: component.id,
-									// 			selecting: username
-									// 		}
-									// 	})
-									// }}
 									selecting={component.selectingId}
 								>
 									{JSON.stringify(component.content)}

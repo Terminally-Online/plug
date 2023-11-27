@@ -5,24 +5,38 @@ import {
 	Suspense,
 	useEffect,
 	useRef,
+	useState,
 	WheelEvent
 } from 'react'
 
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-
+import {
+	DndContext,
+	KeyboardSensor,
+	MouseSensor,
+	TouchSensor,
+	useSensor,
+	useSensors
+} from '@dnd-kit/core'
+import { Coordinates } from '@dnd-kit/core/dist/types'
 import useSize from '@react-hook/size'
 
 import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
+import {
+	DraggableStory,
+	SnapCenterToCursor,
+	SnapToGrid
+} from '../drag/DraggableStory'
 import Canvas from './Canvas'
+import { Draggable } from './Draggable'
+import Droppable from './Droppable'
 
 export type ViewportProps = {
 	id: string
 }
 
-const Viewport: FC<ViewportProps> = ({ id }) => {
+export const Viewport: FC<ViewportProps> = ({ id }) => {
 	const canvasRef = useRef<HTMLDivElement>(null)
 	const frame = useRenderLoop(60)
 
@@ -58,13 +72,13 @@ const Viewport: FC<ViewportProps> = ({ id }) => {
 			onWheel={handleWheel}
 			onPointerMove={handlerPointerMove}
 		>
-			<DndProvider backend={HTML5Backend}>
-				<Suspense fallback={<div>Loading...</div>}>
-					<Canvas frame={frame} id={id} />
-				</Suspense>
-			</DndProvider>
+			<SnapToGrid />
 		</div>
 	)
 }
 
 export default memo(Viewport)
+
+// <Suspense fallback={<div>Loading...</div>}>
+// 	<Canvas frame={frame} id={id} />
+// </Suspense>

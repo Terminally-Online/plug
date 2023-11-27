@@ -55,9 +55,7 @@ export const Position = ({
 				height: `${height}px`
 			}}
 		>
-			<Draggable id={id} role={id} left={left} top={top}>
-				{children}
-			</Draggable>
+			<Draggable>{children}</Draggable>
 
 			{DEBUG && (
 				<div
