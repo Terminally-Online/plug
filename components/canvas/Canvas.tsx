@@ -1,20 +1,19 @@
-import { type FC, useEffect, useMemo } from 'react'
+'use client'
 
-import { useSession } from 'next-auth/react'
+import { type FC, useEffect, useMemo, useState } from 'react'
 
 import { useDrop } from 'react-dnd'
 
+import Plug from '@/components/canvas/blocks/Plug'
+import { Drag } from '@/components/canvas/Drag'
+import { Position } from '@/components/canvas/Position'
+import Toolbar from '@/components/canvas/Toolbar'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
 import { snapToGrid } from '@/lib/functions/snap-to-grid'
 import CanvasStore from '@/lib/store'
 import type { DragItem } from '@/lib/types'
-
-import Plug from './blocks/Plug'
-import { Drag } from './Drag'
-import { Position } from './Position'
-import Toolbar from './Toolbar'
 
 export type CanvasProps = {
 	frame: string
@@ -24,21 +23,44 @@ export type CanvasProps = {
 export const Canvas: FC<CanvasProps> = ({ id }) => {
 	const { handleAdd } = useTabs()
 
-	const { data: session } = useSession()
+	const [initialCanvas] = api.canvas.get.useSuspenseQuery(id)
+	const [canvas, setCanvas] = useState(initialCanvas)
 
-	const username = session?.user?.name ?? ''
-
-	const [canvas] = api.canvas.get.useSuspenseQuery(id)
-
-	// * The refetch isn't super ideal, but need to get it working.
-	//   I am not sure how to replace it until I can figure out how to generate the id from the frontend, otherwise I am
-	//      still not sure how you resolve the duplicates.
 	const addComponent = api.canvas.component.add.useMutation()
-	const moveComponent = api.canvas.component.move.useMutation()
+	const moveComponent = api.canvas.component.move.useMutation({
+		onMutate(componentPosition) {
+			const { component } = componentPosition
+
+			const { id, top, left } = component
+
+			handleMove({ id, top, left })
+		}
+	})
+
+	const handleMove = ({ id, top, left }: {
+		id: string
+		top: number
+		left: number
+	}) => {
+		setCanvas(prevCanvas => {
+			if (!prevCanvas) return prevCanvas
+
+			const index = prevCanvas.components.findIndex(c => c.id === id)
+
+			if (index === -1) return prevCanvas
+
+			const newCanvas = { ...prevCanvas }
+			newCanvas.components[index] = {
+				...newCanvas.components[index],
+				top,
+				left
+			}
+
+			return newCanvas
+		})
+	}
 
 	const components = useMemo(() => {
-		if (!canvas) return null
-
 		return canvas.components.reduce(
 			(acc, component) => {
 				acc[component.id] = component
@@ -47,12 +69,6 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 			{} as Record<string, (typeof canvas.components)[0]>
 		)
 	}, [canvas])
-
-	api.canvas.onUpdate.useSubscription(undefined, {
-		onData(updatedCanvas) {
-			setCanvas(updatedCanvas)
-		}
-	})
 
 	useEffect(() => {
 		if (!canvas) return
@@ -141,11 +157,6 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 
 						const component = components[key]
 						const Component = componentTypes[component.type]
-
-						// const isSelecting =
-						// 	api.canvas.component.selecting.useMutation()
-
-						console.log('component', component.content)
 
 						return (
 							<Position key={component.id} {...component}>

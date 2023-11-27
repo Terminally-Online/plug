@@ -1,13 +1,20 @@
-import { EventEmitter } from 'stream'
+import { EventEmitter } from 'events'
 import { z } from 'zod'
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc'
-import componentRouter, { ComponentSchema } from './component'
 import { Prisma } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { observable } from '@trpc/server/observable'
 
-const emitter = new EventEmitter()
+import componentRouter, {
+	ComponentSchema
+} from '@/server/api/routers/component'
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure
+} from '@/server/api/trpc'
+
+export const emitter = new EventEmitter()
 
 export const canvasWithComponents =
 	Prisma.validator<Prisma.CanvasDefaultArgs>()({
@@ -29,7 +36,6 @@ export const CanvasSchema = z.object({
 })
 
 export default createTRPCRouter({
-	test: publicProcedure.query(() => 'yay!'),
 	all: protectedProcedure
 		.input(z.union([z.string(), z.array(z.string())]).optional())
 		.query(async ({ ctx, input }) => {

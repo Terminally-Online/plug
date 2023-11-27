@@ -4,6 +4,10 @@ import Viewport from '@/components/canvas/Viewport'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { NextPageWithLayout } from '@/lib/types'
 
+type PageProps = {
+	id: string
+}
+
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ id }) => {
@@ -15,14 +19,12 @@ export const getServerSideProps = (async context => {
 
 	if (!id || Array.isArray(id)) throw new Error('Single id required.')
 
+	const props = { id }
+
 	return {
-		props: {
-			id
-		}
+		props
 	}
-}) satisfies GetServerSideProps<{
-	id: string
-}>
+}) satisfies GetServerSideProps<PageProps>
 
 Page.getLayout = page => <TabsProvider>{page}</TabsProvider>
 

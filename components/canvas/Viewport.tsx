@@ -1,5 +1,3 @@
-'use client'
-
 import {
 	FC,
 	memo,
@@ -33,24 +31,23 @@ const Viewport: FC<ViewportProps> = ({ id }) => {
 	const handleWheel = (e: WheelEvent) => {
 		e.stopPropagation()
 
-		const friction = 1
-		const event = e as WheelEvent
-		const deltaX = event.deltaX * friction
-		const deltaY = event.deltaY * friction
+		const deltaX = e.deltaX
+		const deltaY = e.deltaY
 
-		if (!event.ctrlKey) {
+		if (!e.ctrlKey) {
 			CanvasStore.moveCamera(deltaX, deltaY)
 		} else {
 			CanvasStore.zoomCamera(deltaX, deltaY)
 		}
 	}
 
-	const handlerPointerMove = (event: PointerEvent) => {
-		CanvasStore.movePointer(event.clientX, event.clientY)
+	const handlerPointerMove = (e: PointerEvent) => {
+		CanvasStore.movePointer(e.clientX, e.clientY)
 	}
 
 	useEffect(() => {
 		if (width === 0 || height === 0) return
+
 		CanvasStore.initialize(width, height)
 	}, [width, height])
 

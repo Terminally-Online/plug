@@ -1,8 +1,7 @@
-import { createTRPCRouter, publicProcedure } from '../trpc'
-import canvasRouter from './canvas'
+import canvasRouter from '@/server/api/routers/canvas'
+import { createTRPCRouter } from '@/server/api/trpc'
 
 export const appRouter = createTRPCRouter({
-	healthcheck: publicProcedure.query(() => 'healthy'),
 	canvas: canvasRouter
 })
 

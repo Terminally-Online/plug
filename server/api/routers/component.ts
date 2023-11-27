@@ -1,12 +1,12 @@
+import { EventEmitter } from 'events'
 import { z } from 'zod'
 
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure
-} from '@/server/api/trpc'
+import { Prisma } from '@prisma/client'
+import { observable } from '@trpc/server/observable'
 
-import { TRPCError } from '@trpc/server'
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+
+const ee = new EventEmitter()
 
 export const ComponentSchema = z.object({
 	id: z.string(),
@@ -20,6 +20,10 @@ export const ComponentSchema = z.object({
 	updatedAt: z.string().optional()
 })
 
+export const component = Prisma.validator<Prisma.ComponentDefaultArgs>()({})
+
+export type Component = Prisma.CanvasGetPayload<typeof component>
+
 export default createTRPCRouter({
 	add: protectedProcedure
 		.input(
@@ -29,15 +33,6 @@ export default createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const canvas = await ctx.db.canvas.findUnique({
-				where: {
-					id: input.id
-				},
-				include: { components: true }
-			})
-
-			if (!canvas) throw new TRPCError({ code: 'NOT_FOUND' })
-
 			const component = await ctx.db.component.create({
 				data: {
 					...input.component,
@@ -45,9 +40,12 @@ export default createTRPCRouter({
 				}
 			})
 
+			ee.emit(input.id, component)
+
 			return component
 		}),
-	move: publicProcedure
+
+	move: protectedProcedure
 		.input(
 			z.object({
 				id: z.string(),
@@ -70,33 +68,37 @@ export default createTRPCRouter({
 				}
 			})
 
-			return component
-		}),
-	selecting: publicProcedure
-		.input(
-			z.object({
-				id: z.string(),
-				component: z.object({
-					id: z.string(),
-					selecting: z.string()
-				})
-			})
-		)
-		.mutation(async ({ ctx, input }) => {
-			const component = await ctx.db.component.update({
-				where: {
-					id: input.component.id,
-					canvasId: input.id
-				},
-				data: {
-					selecting: {
-						connect: {
-							id: input.component.selecting
-						}
-					}
-				}
-			})
+			ee.emit('move', input.component.id)
 
 			return component
+		}),
+
+	randomNumber: protectedProcedure.subscription(() => {
+		return observable<number>(emit => {
+			const interval = setInterval(() => {
+				emit.next(Math.random())
+			}, 1000)
+
+			return () => {
+				clearInterval(interval)
+			}
 		})
+	}),
+
+	onMove: protectedProcedure.subscription(() => {
+		return observable<string>(emit => {
+			console.log('ready to move')
+
+			const onMove = (data: string) => {
+				console.log('move', data)
+				emit.next(data)
+			}
+
+			ee.on('move', onMove)
+
+			return () => {
+				ee.off('move', onMove)
+			}
+		})
+	})
 })
