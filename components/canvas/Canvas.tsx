@@ -1,26 +1,27 @@
-'use client'
+import { type FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 
-import { type FC, useEffect, useMemo, useState } from 'react'
+import { createSnapModifier } from '@dnd-kit/modifiers'
 
-import { useDrop } from 'react-dnd'
-
-import Plug from '@/components/canvas/blocks/Plug'
-import { Drag } from '@/components/canvas/Drag'
-import { Position } from '@/components/canvas/Position'
 import Toolbar from '@/components/canvas/Toolbar'
+import { Position } from '@/components/drag/position/position'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
-import { snapToGrid } from '@/lib/functions/snap-to-grid'
 import CanvasStore from '@/lib/store'
-import type { DragItem } from '@/lib/types'
+
+import { DraggableStory, SnapToGrid } from '../drag/DraggableStory'
+import { Grid } from '../drag/grid/grid'
+import { OverflowWrapper } from '../drag/overflow/wrapper'
 
 export type CanvasProps = {
 	frame: string
 	id: string
 }
 
-export const Canvas: FC<CanvasProps> = ({ id }) => {
+export const Canvas: FC<PropsWithChildren<CanvasProps>> = ({
+	id,
+	children
+}) => {
 	const { handleAdd } = useTabs()
 
 	const [initialCanvas] = api.canvas.get.useSuspenseQuery(id)
@@ -85,6 +86,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 		})
 	}, [canvas, handleAdd])
 
+	// * This is the function that allowed react-dnd to work with an infinite canvas.
 	// const [, drop] = useDrop(
 	// 	() => ({
 	// 		accept: [ItemTypes.Box, ItemTypes.Markdown],
@@ -142,9 +144,9 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 
 	return (
 		<>
+			{/* ? This is what powers the ability to zoom in and out of the canvas. */}
 			<div
-				// ref={drop}
-				className="relative w-screen h-screen overscroll-none"
+				className="w-full h-full overscroll-none"
 				style={{
 					transform: `scale(${
 						(CanvasStore.scale.x, CanvasStore.scale.y)
@@ -153,23 +155,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 				}}
 				onClick={handleClick}
 			>
-				{components &&
-					Object.keys(components).map(key => {
-						const component = components[key]
-
-						return (
-							<Position key={component.id} {...component}>
-								<Plug
-									id={component.id}
-									selecting={component.selectingId}
-								>
-									{JSON.stringify(component.content)}
-								</Plug>
-							</Position>
-						)
-					})}
-
-				<Drag />
+				{children}
 			</div>
 
 			<Toolbar />

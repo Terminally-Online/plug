@@ -3,21 +3,15 @@
 			0deg,
 			transparent,
 			transparent calc(var(--grid-size) - 1px),
-			#ddd calc(var(--grid-size) - 1px),
-			#ddd var(--grid-size)
+			#292524 calc(var(--grid-size) - 1px),
+			#292524 var(--grid-size)
 		),
 		repeating-linear-gradient(
 			-90deg,
 			transparent,
 			transparent calc(var(--grid-size) - 1px),
-			#ddd calc(var(--grid-size) - 1px),
-			#ddd var(--grid-size)
+			#292524 calc(var(--grid-size) - 1px),
+			#292524 var(--grid-size)
 		);
 	background-size: var(--grid-size) var(--grid-size);
-}
-
-.RangeSlider {
-	position: fixed;
-	right: 20px;
-	bottom: 20px;
 }

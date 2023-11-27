@@ -1,12 +1,8 @@
-'use client'
-
 import { PropsWithChildren, useRef } from 'react'
 
 import { DEBUG } from '@/lib/constants'
 import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
-
-import { Draggable } from './Draggable'
 
 export type CanvasPosition = {
 	id: string

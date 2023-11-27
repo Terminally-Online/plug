@@ -24,6 +24,7 @@ import { Axis, Draggable } from '@/components/drag/draggable/draggable'
 import { Grid } from '@/components/drag/grid/grid'
 import { OverflowWrapper } from '@/components/drag/overflow/wrapper'
 import { Wrapper } from '@/components/drag/wrapper/wrapper'
+import CanvasStore from '@/lib/store'
 
 const defaultCoordinates = {
 	x: 0,
@@ -44,7 +45,6 @@ export function DraggableStory({
 	activationConstraint,
 	axis,
 	handle,
-	label = 'Go ahead, drag me.',
 	modifiers,
 	style,
 	buttonStyle
@@ -62,7 +62,8 @@ export function DraggableStory({
 	return (
 		<DndContext
 			sensors={sensors}
-			onDragEnd={({ delta }) => {
+			onDragEnd={props => {
+				const { delta } = props
 				setCoordinates(({ x, y }) => {
 					return {
 						x: x + delta.x,
@@ -74,11 +75,31 @@ export function DraggableStory({
 		>
 			<Wrapper>
 				<DraggableItem
+					id="a"
 					axis={axis}
-					label={label}
 					handle={handle}
-					top={y}
-					left={x}
+					top={y - CanvasStore.screen.y}
+					left={x - CanvasStore.screen.x}
+					style={style}
+					buttonStyle={buttonStyle}
+				/>
+
+				<DraggableItem
+					id="b"
+					axis={axis}
+					handle={handle}
+					top={y - CanvasStore.screen.y}
+					left={x - CanvasStore.screen.x}
+					style={style}
+					buttonStyle={buttonStyle}
+				/>
+
+				<DraggableItem
+					id="c"
+					axis={axis}
+					handle={handle}
+					top={y - CanvasStore.screen.y}
+					left={x - CanvasStore.screen.x}
 					style={style}
 					buttonStyle={buttonStyle}
 				/>
@@ -88,7 +109,7 @@ export function DraggableStory({
 }
 
 interface DraggableItemProps {
-	label: string
+	id: string
 	handle?: boolean
 	style?: React.CSSProperties
 	buttonStyle?: React.CSSProperties
@@ -99,7 +120,7 @@ interface DraggableItemProps {
 
 function DraggableItem({
 	axis,
-	label,
+	id,
 	style,
 	top,
 	left,
@@ -108,15 +129,16 @@ function DraggableItem({
 }: DraggableItemProps) {
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useDraggable({
-			id: 'draggable'
+			id
 		})
 
 	return (
 		<Draggable
+			id={id}
 			ref={setNodeRef}
 			dragging={isDragging}
 			handle={handle}
-			label={label}
+			label={''}
 			listeners={listeners}
 			style={{ ...style, top, left }}
 			buttonStyle={buttonStyle}
@@ -127,160 +149,34 @@ function DraggableItem({
 	)
 }
 
-export const BasicSetup = () => <DraggableStory />
-
-export const DragHandle = () => (
-	<DraggableStory label="Drag with the handle" handle />
-)
-
-export const PressDelay = () => (
-	<DraggableStory
-		label="Hold me to drag"
-		activationConstraint={{
-			delay: 250,
-			tolerance: 5
-		}}
-	/>
-)
-
-PressDelay.storyName = 'Press delay'
-
-export const PressDelayOrDistance = () => (
-	<DraggableStory
-		label="Activated dragging 3px or holding 250ms"
-		activationConstraint={{
-			delay: 250,
-			distance: 3,
-			tolerance: 10
-		}}
-	/>
-)
-
-PressDelayOrDistance.storyName = 'Press delay or minimum distance'
-
-export const MinimumDistance = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px"
-		activationConstraint={{
-			distance: 15
-		}}
-	/>
-)
-
-export const MinimumDistanceX = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px on the x axis"
-		activationConstraint={{
-			distance: { x: 15 }
-		}}
-	/>
-)
-
-MinimumDistanceX.storyName = 'Minimum Distance – X Axis'
-
-export const MinimumDistanceY = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px on the y axis"
-		activationConstraint={{
-			distance: { y: 15 }
-		}}
-	/>
-)
-
-MinimumDistanceY.storyName = 'Minimum Distance – Y Axis'
-
-export const MinimumDistanceXY = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px on the x and y axis"
-		activationConstraint={{
-			distance: { x: 15, y: 15 }
-		}}
-	/>
-)
-
-MinimumDistanceXY.storyName = 'Minimum Distance – X&Y Axis'
-
-export const MinimumDistanceXToleranceY = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px on the x axis and aborted after dragging 30px on the y axis"
-		activationConstraint={{
-			distance: { x: 15 },
-			tolerance: { y: 30 }
-		}}
-	/>
-)
-
-MinimumDistanceXToleranceY.storyName =
-	'Minimum Distance X Axis and Tolerance Y Axis'
-
-export const MinimumDistanceYToleranceX = () => (
-	<DraggableStory
-		label="I'm activated after dragging 15px on the y axis and aborted after dragging 30px on the x axis"
-		activationConstraint={{
-			distance: { y: 15 },
-			tolerance: { x: 30 }
-		}}
-	/>
-)
-
-MinimumDistanceYToleranceX.storyName =
-	'Minimum Distance Y Axis and Tolerance X Axis'
-
-export const HorizontalAxis = () => (
-	<DraggableStory
-		label="Draggable horizontally"
-		axis={Axis.Horizontal}
-		modifiers={[restrictToHorizontalAxis]}
-	/>
-)
-
-export const VerticalAxis = () => (
-	<DraggableStory
-		label="Draggable vertically"
-		axis={Axis.Vertical}
-		modifiers={[restrictToVerticalAxis]}
-	/>
-)
-
-export const RestrictToWindowEdges = () => (
-	<OverflowWrapper>
-		<DraggableStory
-			label="I'm only draggable within the window bounds"
-			modifiers={[restrictToWindowEdges]}
-		/>
-	</OverflowWrapper>
-)
-
 export const SnapToGrid = () => {
 	const [gridSize, setGridSize] = React.useState(30)
+
 	const style = {
 		alignItems: 'flex-start'
 	}
+
 	const buttonStyle = {
 		marginLeft: gridSize - 20 + 1,
 		marginTop: gridSize - 20 + 1,
 		width: gridSize * 8 - 1,
 		height: gridSize * 2 - 1
 	}
+
 	const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize])
 
 	return (
 		<>
-			<DraggableStory
-				label={`Snapping to ${gridSize}px increments`}
-				modifiers={[snapToGrid]}
-				style={style}
-				buttonStyle={buttonStyle}
-				key={gridSize}
-			/>
-			<Grid size={gridSize} onSizeChange={setGridSize} />
+			<OverflowWrapper>
+				<DraggableStory
+					modifiers={[snapToGrid]}
+					style={style}
+					buttonStyle={buttonStyle}
+					key={gridSize}
+				/>
+
+				<Grid size={gridSize} onSizeChange={setGridSize} />
+			</OverflowWrapper>
 		</>
 	)
 }
-
-export const SnapCenterToCursor = () => (
-	<DraggableStory
-		label="When you grab me, my center will move to where the cursor is."
-		modifiers={[snapCenterToCursor]}
-	></DraggableStory>
-)

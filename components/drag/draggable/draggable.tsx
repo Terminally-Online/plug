@@ -22,6 +22,7 @@ export enum Axis {
 }
 
 interface Props {
+	id: string
 	axis?: Axis
 	dragOverlay?: boolean
 	dragging?: boolean
@@ -36,6 +37,7 @@ interface Props {
 export const Draggable = forwardRef<HTMLButtonElement, Props>(
 	function Draggable(
 		{
+			id,
 			axis,
 			dragOverlay,
 			dragging,
@@ -51,6 +53,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 	) {
 		return (
 			<div
+				id={id}
 				className={cn(
 					classNames(
 						styles.Draggable,
@@ -83,6 +86,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 						  : draggable}
 					{handle ? <Handle {...(handle ? listeners : {})} /> : null}
 				</button>
+
 				{label ? <label>{label}</label> : null}
 			</div>
 		)

@@ -16,7 +16,7 @@ export function Grid({ size }: GridProps) {
 	return (
 		<div
 			className={cn(
-				'fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none',
+				'bg-stone-900 w-full h-full z-[-1] pointer-events-none',
 				classNames(styles.Grid)
 			)}
 			style={

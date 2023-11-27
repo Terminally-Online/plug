@@ -1,4 +1,4 @@
-import React, { FC, memo, PropsWithChildren } from 'react'
+import React, { FC, PropsWithChildren } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -10,7 +10,7 @@ export const Wrapper: FC<WrapperProps> = ({ children, center, className }) => {
 	return (
 		<div
 			className={cn(
-				'h-full flex w-full justify-start',
+				'bg-transparent h-full w-full justify-start box-border overscroll-none',
 				center ? 'items-center' : 'items-start',
 				className
 			)}
@@ -20,4 +20,4 @@ export const Wrapper: FC<WrapperProps> = ({ children, center, className }) => {
 	)
 }
 
-export default memo(Wrapper)
+export default Wrapper

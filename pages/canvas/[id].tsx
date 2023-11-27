@@ -1,6 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
-import Viewport from '@/components/canvas/Viewport'
+import { Viewport } from '@/components/viewport/viewport'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { NextPageWithLayout } from '@/lib/types'
 

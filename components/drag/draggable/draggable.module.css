@@ -38,14 +38,6 @@
 	--action-background: rgba(255, 255, 255, 0.1);
 }
 
-.Draggable.handle > button > svg {
-	margin-right: 5px;
-}
-
-.Draggable.handle > button > button {
-	margin-right: -10px;
-}
-
 .Draggable img {
 	width: 140px;
 	user-select: none;
