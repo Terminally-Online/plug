@@ -24,7 +24,7 @@ const Search: FC<SearchProps> = ({ baseUrl }) => {
 		// * This is designed to fire once debounced is ahead of search.
 		if (search !== debounced)
 			router.push(`${baseUrl ?? '/canvas/create'}?search=${debounced}`)
-	}, [search, debounced])
+	}, [baseUrl, router, search, debounced])
 
 	return (
 		<>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import {
 	DndContext,
@@ -11,18 +11,9 @@ import {
 	useSensor,
 	useSensors
 } from '@dnd-kit/core'
-import {
-	createSnapModifier,
-	restrictToHorizontalAxis,
-	restrictToVerticalAxis,
-	restrictToWindowEdges,
-	snapCenterToCursor
-} from '@dnd-kit/modifiers'
 import type { Coordinates } from '@dnd-kit/utilities'
 
 import { Axis, Draggable } from '@/components/drag/draggable/draggable'
-import { Grid } from '@/components/drag/grid/grid'
-import { OverflowWrapper } from '@/components/drag/overflow/wrapper'
 import { Wrapper } from '@/components/drag/wrapper/wrapper'
 import CanvasStore from '@/lib/store'
 

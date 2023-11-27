@@ -1,6 +1,6 @@
 import { type FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 
-import Toolbar from '@/components/canvas/Toolbar'
+import Toolbar from '@/components/viewport/toolbar'
 import { Position } from '@/components/drag/position/position'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'

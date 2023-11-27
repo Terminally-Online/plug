@@ -4,9 +4,10 @@ import { createServer } from 'node:http'
 import { parse } from 'node:url'
 import { WebSocketServer } from 'ws'
 
+import { applyWSSHandler } from '@trpc/server/adapters/ws'
+
 import { createContext } from './api/context'
 import { appRouter } from './api/routers/app'
-import { applyWSSHandler } from '@trpc/server/adapters/ws'
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'

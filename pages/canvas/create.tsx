@@ -5,7 +5,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { getSession } from 'next-auth/react'
 
 import Block from '@/components/canvas/Block'
-import Search from '@/components/canvas/Search'
+import Search from '@/components/canvas/search'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { type NextPageWithLayout } from '@/lib/types'

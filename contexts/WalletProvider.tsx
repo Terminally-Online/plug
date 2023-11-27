@@ -4,6 +4,7 @@ import { memo } from 'react'
 import { WagmiConfig } from 'wagmi'
 
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
+
 import { mainnet } from 'wagmi/chains'
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || ''

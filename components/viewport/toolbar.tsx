@@ -49,7 +49,7 @@ export const Toolbar = () => {
 			</div>
 
 			{
-				<div className="fixed top-24 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
+				<div className="fixed top-24 right-0 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
 					<p>
 						Camera: {Math.round(CanvasStore.camera.x)},{' '}
 						{Math.round(CanvasStore.camera.y)},{' '}

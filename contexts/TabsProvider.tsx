@@ -12,7 +12,7 @@ import {
 
 import { usePathname, useRouter } from 'next/navigation'
 
-import Hud from '@/components/canvas/Hud'
+import { Hud } from '@/components/viewport/hud'
 
 type Tab = {
 	label: string

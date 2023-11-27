@@ -1,8 +1,9 @@
 import type { FC } from 'react'
 import { memo } from 'react'
 
-import CanvasPreview from './CanvasPreview'
 import { Canvas } from '@prisma/client'
+
+import CanvasPreview from './CanvasPreview'
 
 export type CanvasPreviewGridProps = {
 	canvases: Array<Canvas> | undefined

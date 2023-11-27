@@ -1,9 +1,9 @@
 import type { FC } from 'react'
 import { memo, useState } from 'react'
 
-import { Pin } from '@/lib/types'
-
 import { LightningBoltIcon, UpdateIcon } from '@radix-ui/react-icons'
+
+import { Pin } from '@/lib/types'
 
 export type PlugSimulationState = {
 	success: boolean

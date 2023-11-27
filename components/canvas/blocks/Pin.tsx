@@ -1,5 +1,7 @@
 import { memo, useState } from 'react'
 
+import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,8 +21,6 @@ import {
 import CanvasStore from '@/lib/store'
 import { Pins, Pin as PinType } from '@/lib/types'
 import { cn } from '@/lib/utils'
-
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 

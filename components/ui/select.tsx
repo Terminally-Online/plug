@@ -2,8 +2,6 @@
 
 import * as React from 'react'
 
-import { cn } from '@/lib/utils'
-
 import * as SelectPrimitive from '@radix-ui/react-select'
 import {
 	CaretSortIcon,
@@ -11,6 +9,8 @@ import {
 	ChevronDownIcon,
 	ChevronUpIcon
 } from '@radix-ui/react-icons'
+
+import { cn } from '@/lib/utils'
 
 const Select = SelectPrimitive.Root
 
