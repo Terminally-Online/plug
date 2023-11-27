@@ -12,6 +12,11 @@ export type CanvasState = {
 	/// * An infinite canvas means not everything can be rendered at once.
 	shouldRender: boolean
 	pixelRatio: number /// * Resolution for dip calculations
+	scale: {
+		/// * Scale of the canvas
+		x: number
+		y: number
+	}
 	container: {
 		/// * Container dimensions (2d)
 		width: number
@@ -44,6 +49,10 @@ export type CanvasState = {
 export const DEFAULT_CANVAS_STATE: CanvasState = {
 	shouldRender: true,
 	pixelRatio: isWindow ? window.devicePixelRatio || 1 : 1,
+	scale: {
+		x: 1,
+		y: 1
+	},
 	container: {
 		width: 0,
 		height: 0
@@ -201,6 +210,9 @@ export default class CanvasStore {
 
 		const newScaleX = containerWidth / width
 		const newScaleY = containerHeight / height
+
+		this.data.scale = { x: newScaleX, y: newScaleY }
+
 		const { x: newX, y: newY } = scaleWithAnchorPoint(
 			this.pointer.x,
 			this.pointer.y,
