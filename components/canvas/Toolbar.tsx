@@ -47,6 +47,33 @@ export const Toolbar = () => {
 					</p>
 				</div>
 			</div>
+
+			{
+				<div className="fixed top-24 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
+					<p>
+						Camera: {Math.round(CanvasStore.camera.x)},{' '}
+						{Math.round(CanvasStore.camera.y)},{' '}
+						{Math.round(CanvasStore.camera.z)}
+					</p>
+					<p>
+						Container: {CanvasStore.container.width} x{' '}
+						{CanvasStore.container.height}
+					</p>
+					<p>Locked: {CanvasStore.camera.locked.toString()}</p>
+					<p>
+						Scale: {Math.round(CanvasStore.scale.x)},{' '}
+						{Math.round(CanvasStore.scale.y)}
+					</p>
+					<p>
+						Screen: {Math.round(CanvasStore.screen.x)},{' '}
+						{Math.round(CanvasStore.screen.y)}
+					</p>
+					<p>
+						Pointer: {Math.round(CanvasStore.pointer.x)},{' '}
+						{Math.round(CanvasStore.pointer.y)}
+					</p>
+				</div>
+			}
 		</>
 	)
 }

@@ -17,8 +17,7 @@ import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
 import Canvas from '../canvas/Canvas'
-import { Position } from '../canvas/Position'
-import { DraggableStory, SnapToGrid } from '../drag/DraggableStory'
+import { DraggableStory } from '../drag/DraggableStory'
 import { Grid } from '../drag/grid/grid'
 
 export type ViewportProps = {
@@ -74,7 +73,7 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 
 	return (
 		<div
-			className="w-full h-full text-black dark:text-white overflow-hidden overscroll-none"
+			className="w-screen h-full text-black dark:text-white overflow-hidden overscroll-none"
 			ref={canvasRef}
 			onWheel={handleWheel}
 			onPointerMove={handlerPointerMove}
@@ -93,9 +92,7 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 			</Suspense>
 
 			{
-				<div className="fixed top-0 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
-					<p>User id: tester</p>
-
+				<div className="fixed top-32 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
 					<p>
 						Camera: {Math.round(CanvasStore.camera.x)},{' '}
 						{Math.round(CanvasStore.camera.y)},{' '}

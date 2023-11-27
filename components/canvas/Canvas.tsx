@@ -1,17 +1,11 @@
 import { type FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 
-import { createSnapModifier } from '@dnd-kit/modifiers'
-
 import Toolbar from '@/components/canvas/Toolbar'
 import { Position } from '@/components/drag/position/position'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
 import CanvasStore from '@/lib/store'
-
-import { DraggableStory, SnapToGrid } from '../drag/DraggableStory'
-import { Grid } from '../drag/grid/grid'
-import { OverflowWrapper } from '../drag/overflow/wrapper'
 
 export type CanvasProps = {
 	frame: string

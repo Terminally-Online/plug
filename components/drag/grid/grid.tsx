@@ -18,7 +18,7 @@ export const Grid: FC<PropsWithChildren<GridProps>> = ({ size, children }) => {
 		<>
 			<div
 				className={cn(
-					'bg-stone-900 absolute w-full h-full z-[-1] pointer-events-none',
+					'bg-stone-900 absolute z-[-1] pointer-events-none',
 					classNames(styles.Grid)
 				)}
 				style={
