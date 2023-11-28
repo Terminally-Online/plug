@@ -8,15 +8,8 @@
 }
 
 .Draggable > button {
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	min-height: 54px;
 	flex-shrink: 1;
-	appearance: none;
-	outline: none;
-	border: 0;
-	padding: 8px 18px;
 	background-color: #181a22;
 	box-shadow: var(--box-shadow);
 	transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)

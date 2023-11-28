@@ -83,7 +83,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	return (
 		<div
 			className={cn(
-				'bg-stone-900 text-white cursor-move flex flex-col items-center justify-center',
+				'bg-stone-900 text-white cursor-move w-full flex flex-col items-center justify-center',
 				selecting ? 'border-[1px] border-red-500' : ''
 			)}
 			role={preview ? 'PlugPreview' : 'Plug'}

@@ -18,6 +18,7 @@ import { createSnapModifier } from '@dnd-kit/modifiers'
 import type { Transform } from '@dnd-kit/utilities'
 import { Component } from '@prisma/client'
 
+import Plug from '@/components/canvas/blocks/Plug'
 import { api } from '@/lib/api'
 import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
@@ -194,6 +195,12 @@ export type DraggableProps = {
 	transform?: Transform | null
 }
 
+const parse = (value: string | number | undefined) => {
+	if (typeof value === 'number') return value
+
+	return parseInt(value ?? '0')
+}
+
 export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 	function Draggable(
 		{
@@ -208,14 +215,8 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 		},
 		ref
 	) {
-		const left =
-			typeof style?.left === 'number'
-				? style.left
-				: parseInt(style?.left ?? '0')
-		const top =
-			typeof style?.top === 'number'
-				? style.top
-				: parseInt(style?.top ?? '0')
+		const left = parse(style?.left)
+		const top = parse(style?.top)
 
 		return (
 			<div
@@ -240,12 +241,14 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					{...props}
 					{...listeners}
 					ref={ref}
-					className="relative"
+					className="relative flex items-center content-center appearance-none border-none outline-none"
 					style={buttonStyle}
 					aria-label="Draggable"
 					data-cypress="draggable-item"
 				>
-					{draggable}
+					<Plug id={'test'} selecting={null}>
+						{'[]'}
+					</Plug>
 
 					<p className="absolute top-[110%] left-0 bg-red-400 text-red-700 font-bold rounded-sm p-2">
 						{Math.round(left)} x {Math.round(top)}
