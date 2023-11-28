@@ -1,11 +1,18 @@
 import { type FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
 
-import Toolbar from '@/components/viewport/toolbar'
+import { DragEndEvent } from '@dnd-kit/core'
+import { createSnapModifier } from '@dnd-kit/modifiers'
+import { Coordinates } from '@dnd-kit/utilities'
+
 import { Position } from '@/components/drag/position/position'
+import Toolbar from '@/components/viewport/toolbar'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
 import CanvasStore from '@/lib/store'
+
+import { DraggableStory } from '../drag/DraggableStory'
+import { Grid } from '../drag/grid/grid'
 
 export type CanvasProps = {
 	frame: string
@@ -31,6 +38,21 @@ export const Canvas: FC<PropsWithChildren<CanvasProps>> = ({
 			handleMove({ id, top, left })
 		}
 	})
+
+	const [gridSize, setGridSize] = useState(30)
+
+	const style = {
+		alignItems: 'flex-start'
+	}
+
+	const buttonStyle = {
+		marginLeft: gridSize - 20 + 1,
+		marginTop: gridSize - 20 + 1,
+		width: gridSize * 8 - 1,
+		height: gridSize * 2 - 1
+	}
+
+	const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize])
 
 	const handleMove = ({
 		id,
@@ -140,7 +162,7 @@ export const Canvas: FC<PropsWithChildren<CanvasProps>> = ({
 		<>
 			{/* ? This is what powers the ability to zoom in and out of the canvas. */}
 			<div
-				className="w-full h-full overscroll-none"
+				className="w-screen h-full overscroll-none"
 				style={{
 					transform: `scale(${
 						(CanvasStore.scale.x, CanvasStore.scale.y)
@@ -149,7 +171,14 @@ export const Canvas: FC<PropsWithChildren<CanvasProps>> = ({
 				}}
 				onClick={handleClick}
 			>
-				{children}
+				<Grid size={gridSize} onSizeChange={setGridSize}>
+					<DraggableStory
+						modifiers={[snapToGrid]}
+						style={style}
+						buttonStyle={buttonStyle}
+						key={gridSize}
+					/>
+				</Grid>
 			</div>
 
 			<Toolbar />

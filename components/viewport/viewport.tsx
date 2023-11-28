@@ -16,7 +16,7 @@ import useSize from '@react-hook/size'
 import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
-import Canvas from '../canvas/canvas'
+import Canvas from '../canvas/Canvas'
 import { DraggableStory } from '../drag/DraggableStory'
 import { Grid } from '../drag/grid/grid'
 
@@ -32,21 +32,6 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 	const frame = useRenderLoop(60)
 
 	const [width, height] = useSize(canvasRef)
-
-	const [gridSize, setGridSize] = useState(30)
-
-	const style = {
-		alignItems: 'flex-start'
-	}
-
-	const buttonStyle = {
-		marginLeft: gridSize - 20 + 1,
-		marginTop: gridSize - 20 + 1,
-		width: gridSize * 8 - 1,
-		height: gridSize * 2 - 1
-	}
-
-	const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize])
 
 	const handleWheel = (e: WheelEvent) => {
 		e.stopPropagation()
@@ -79,16 +64,7 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 			onPointerMove={handlerPointerMove}
 		>
 			<Suspense fallback={<div>Loading...</div>}>
-				<Canvas frame={frame} id={id}>
-					<Grid size={gridSize} onSizeChange={setGridSize}>
-						<DraggableStory
-							modifiers={[snapToGrid]}
-							style={style}
-							buttonStyle={buttonStyle}
-							key={gridSize}
-						/>
-					</Grid>
-				</Canvas>
+				<Canvas frame={frame} id={id} />
 			</Suspense>
 
 			{

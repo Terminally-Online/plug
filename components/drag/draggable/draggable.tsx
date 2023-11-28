@@ -27,7 +27,6 @@ interface Props {
 	dragOverlay?: boolean
 	dragging?: boolean
 	handle?: boolean
-	label?: string
 	listeners?: DraggableSyntheticListeners
 	style?: React.CSSProperties
 	buttonStyle?: React.CSSProperties
@@ -42,7 +41,6 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 			dragOverlay,
 			dragging,
 			handle,
-			label,
 			listeners,
 			transform,
 			style,
@@ -86,8 +84,6 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 						  : draggable}
 					{handle ? <Handle {...(handle ? listeners : {})} /> : null}
 				</button>
-
-				{label ? <label>{label}</label> : null}
 			</div>
 		)
 	}

@@ -17,22 +17,18 @@ import { Axis, Draggable } from '@/components/drag/draggable/draggable'
 import { Wrapper } from '@/components/drag/wrapper/wrapper'
 import CanvasStore from '@/lib/store'
 
-const defaultCoordinates = {
-	x: 5000,
-	y: 5000
-}
-
 interface Props {
+	initialCoordinates?: Coordinates
 	activationConstraint?: PointerActivationConstraint
 	axis?: Axis
 	handle?: boolean
 	modifiers?: Modifiers
 	buttonStyle?: React.CSSProperties
 	style?: React.CSSProperties
-	label?: string
 }
 
 export function DraggableStory({
+	initialCoordinates,
 	activationConstraint,
 	axis,
 	handle,
@@ -40,7 +36,16 @@ export function DraggableStory({
 	style,
 	buttonStyle
 }: Props) {
-	const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates)
+	const [coordinates, setCoordinates] = useState<Coordinates>({
+		a: {
+			x: 5000 - 120,
+			y: 5000 - 60
+		},
+		b: {
+			x: 5000 - 120,
+			y: 5000 + 50
+		}
+	})
 	const mouseSensor = useSensor(MouseSensor, {
 		activationConstraint
 	})
@@ -54,27 +59,37 @@ export function DraggableStory({
 		<DndContext
 			sensors={sensors}
 			onDragEnd={props => {
-				const { delta } = props
-				setCoordinates(({ x, y }) => {
+				const { active, delta } = props
+				console.log(active)
+				setCoordinates(previousCoordinates => {
+					const { x, y } = previousCoordinates[active.id]
+
 					return {
-						x: x + delta.x,
-						y: y + delta.y
+						...previousCoordinates,
+						[active.id]: {
+							x: x + delta.x,
+							y: y + delta.y
+						}
 					}
 				})
 			}}
 			modifiers={modifiers}
 		>
-			<Wrapper>
-				<DraggableItem
-					id="a"
-					axis={axis}
-					handle={handle}
-					top={y - CanvasStore.screen.y}
-					left={x - CanvasStore.screen.x}
-					style={style}
-					buttonStyle={buttonStyle}
-				/>
-			</Wrapper>
+			{Object.keys(coordinates).map(key => {
+				const { x, y } = coordinates[key]
+
+				return (
+					<DraggableItem
+						id={key}
+						axis={axis}
+						handle={handle}
+						top={y - CanvasStore.screen.y}
+						left={x - CanvasStore.screen.x}
+						style={style}
+						buttonStyle={buttonStyle}
+					/>
+				)
+			})}
 		</DndContext>
 	)
 }
@@ -109,7 +124,6 @@ function DraggableItem({
 			ref={setNodeRef}
 			dragging={isDragging}
 			handle={handle}
-			label={''}
 			listeners={listeners}
 			style={{ ...style, top, left }}
 			buttonStyle={buttonStyle}
