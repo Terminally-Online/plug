@@ -12,24 +12,44 @@
   - ALPHA:
 
     - [x] Add zoom buttons so that you don't have to scroll.
+
       - [x] Fix the zoom having adverse effects on react-dnd.
         - [x] If we cannot fix this, just disable zooming until we move to a proprietary dragging implementation. Not ideal but not sure what other option there event is.
               Notes: There have been several issues dating all the way back to 2015 that have never been resolved.
               Notes: There has not been a commit in 10 months. Think I made the wrong choice here.
               https://github.com/react-dnd/react-dnd/issues?q=is%3Aissue+is%3Aopen+zoom
-      - [ ] Better drag controls
+        - [ ] Right now we can zoom in on elements that we should not be able to.
+              Notes: I think this started happening when we updated to the Pages Router, but not completely sure. When debugging this you will want to comment out the Toolbar so that you can determine if it is that element causing the issue before doing anything else.
+              Notes: When we break the zooming, the grid gets larger as well even though it is a fixed element which leads me to believe that we are zooming in on the parent element and this should not be happening.
+      - [o] Better drag controls
         - [o] Replace react-dnd with https://docs.dndkit.com/introduction/installation
-          - [ ] Get the items lining up with the grid.
-          - [ ] Get back the infinite canvas movement.
-          - [ ] Save the position of a dragged item in the canvas.
-          - [ ] Make sure that it works even when are zoomed out.
-          - [ ] Make sure that we can only drag items within the bounds of the window.
+          - [x] Get the items lining up with the grid.
+                Notes: My base assumption that it is some padding causing this issue.
+                Conclusion: Just some extra margin that was being placed because of the weird `module.css` files that are still being used during the migration process away from react-dnd.
+          - [x] Get back the infinite canvas movement.
+                Notes: Should the grid move when we move the camera?
+            - [x] Make sure the grid works inside the infinite canvas.
+            - [x] Connect the two pieces.
+          - [x] Move components individually.
+          - [x] Save the position of a dragged item in the canvas.
+          - [x] Make sure that it works even when are zoomed out.
+          - [x] Make sure that we can only drag items within the bounds of the window.
+        - [x] Reenable the ability to add a component.
+          - [x] Add a debug identifier for the location of each component.
+          - [ ] Make sure the addition of components is ailgned to the grid.
+                Notes: I am really not sure what is going on here. Rather confused about this.
+                Notes: In the process of solving this and while the coordinates in the database appear to be right, the coordinates being shown on the elements are not accurate to the layout. I cannot tell if this is because we have collisions between the two elements, but I do not think so.
+          - [ ] Replace the placeholder component with a plug.
+          - [ ] Make sure a plug seamlessly fits in the grid.
+          - [ ] Make sure a connector between each pin is one grid.
         - [ ] Make CMD + 0 reset the scale to 100%.
       - [ ] Item selection functionality.
         - [ ] Be able to select a component.
         - [ ] Be able to delete it and select a group.
         - [ ] Drag selection.
+
     - [ ] Store the configuration of a plug in the database.
+    - [ ] CMD + Space + Drag to move the camera
     - [ ] Add noun trait bid.
     - [ ] Revocation on deletion after the first submission.
     - [o] Update the hello world to be the base noun plug.
