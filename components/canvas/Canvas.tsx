@@ -1,10 +1,13 @@
 import type { FC } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { createSnapModifier } from '@dnd-kit/modifiers'
+
 import Toolbar from '@/components/viewport/toolbar'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
+import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
 import { DraggableComponents } from '../drag/draggable/draggable'
@@ -56,8 +59,12 @@ export const Canvas: FC<CanvasProps> = ({ frame, id }) => {
 
 		if (!ready) return
 
-		const left = CanvasStore.pointer.x
-		const top = CanvasStore.pointer.y
+		// TODO: This is not right :)
+		const top =
+			-70 + Math.round(CanvasStore.pointer.y / gridSize) * gridSize
+		const left =
+			-10 + Math.round(CanvasStore.pointer.x / gridSize) * gridSize
+
 		const type = ItemTypes.Plug
 
 		addComponent.mutate({

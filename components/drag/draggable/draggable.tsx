@@ -3,7 +3,7 @@ import React, { forwardRef, useMemo, useState } from 'react'
 
 import classNames from 'classnames'
 
-import type { DraggableSyntheticListeners } from '@dnd-kit/core'
+import type { DragEndEvent, DraggableSyntheticListeners } from '@dnd-kit/core'
 import {
 	DndContext,
 	KeyboardSensor,
@@ -19,6 +19,7 @@ import type { Transform } from '@dnd-kit/utilities'
 import { Component } from '@prisma/client'
 
 import { api } from '@/lib/api'
+import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
 import { cn } from '@/lib/utils'
 
@@ -56,8 +57,8 @@ export const DraggableComponents: FC<
 	const buttonStyle = {
 		marginLeft: gridSize - 20 + 1,
 		marginTop: gridSize - 20 + 1,
-		width: gridSize * 12 - 1,
-		height: gridSize * 4 - 1
+		width: gridSize * 8 - 1,
+		height: gridSize * 3 - 1
 	}
 
 	const mouseSensor = useSensor(MouseSensor, {
@@ -80,33 +81,54 @@ export const DraggableComponents: FC<
 		}))
 	}
 
+	const handleDrag = ({ active, delta }: DragEndEvent) => {
+		const { top, left } = components[active.id]
+
+		moveComponent.mutate({
+			id,
+			component: {
+				id: active.id as string,
+				top: top + delta.y,
+				left: left + delta.x
+			}
+		})
+	}
+
 	return (
 		<DndContext
 			sensors={sensors}
-			onDragEnd={props => {
-				const { active, delta } = props
-				const { top, left } = components[active.id]
-				moveComponent.mutate({
-					id,
-					component: {
-						id: active.id as string,
-						top: top + delta.y,
-						left: left + delta.x
-					}
-				})
-			}}
+			onDragEnd={handleDrag}
 			modifiers={[snapToGrid]}
 		>
 			{Object.keys(components).map(key => {
 				const { left, top } = components[key]
 
+				if (
+					!inBounds(
+						{
+							left,
+							top,
+							width: buttonStyle.width,
+							height: buttonStyle.height
+						},
+						{
+							left: CanvasStore.screen.x,
+							top: CanvasStore.screen.y,
+							width: screen.width,
+							height: screen.height
+						}
+					)
+				)
+					return null
+
 				return (
 					<DraggableComponent
+						key={key}
 						id={key}
 						top={top - CanvasStore.screen.y}
 						left={left - CanvasStore.screen.x}
-						width={gridSize * 12 - 1}
-						height={gridSize * 4 - 1}
+						width={gridSize * 8 - 1}
+						height={gridSize * 3 - 1}
 						buttonStyle={buttonStyle}
 					/>
 				)
@@ -128,7 +150,9 @@ export const DraggableComponent: FC<DraggableComponentProps> = ({
 	id,
 	buttonStyle,
 	top,
-	left
+	left,
+	width,
+	height
 }) => {
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useDraggable({
@@ -141,7 +165,12 @@ export const DraggableComponent: FC<DraggableComponentProps> = ({
 			ref={setNodeRef}
 			dragging={isDragging}
 			listeners={listeners}
-			style={{ alignItems: 'flex-start', top, left }}
+			style={{
+				position: 'absolute',
+				alignItems: 'flex-start',
+				top,
+				left
+			}}
 			buttonStyle={buttonStyle}
 			transform={transform}
 			{...attributes}
@@ -177,7 +206,7 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 			<div
 				id={id}
 				className={cn(
-					'items-start',
+					'items-start w-max',
 					classNames(
 						styles.Draggable,
 						dragOverlay && styles.dragOverlay,
@@ -196,11 +225,16 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					{...props}
 					{...listeners}
 					ref={ref}
+					className="relative"
 					style={buttonStyle}
 					aria-label="Draggable"
 					data-cypress="draggable-item"
 				>
 					{draggable}
+
+					<p className="absolute top-[110%] left-0 bg-red-400 text-red-700 font-bold rounded-sm p-2">
+						{style?.top} {style?.left}
+					</p>
 				</button>
 			</div>
 		)

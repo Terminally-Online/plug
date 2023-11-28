@@ -23,6 +23,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 	}, [])
 
 	useEffect(() => {
+		// * We create a custom tab for the canvas creation route.
 		switch (path) {
 			case '/canvas/create':
 				handleAdd({

@@ -1,9 +1,15 @@
 import { useEffect } from 'react'
 
+import { HomeIcon, SewingPinIcon } from '@radix-ui/react-icons'
+
 import CanvasStore from '@/lib/store'
 
 export const Toolbar = () => {
 	const zoom = Math.round(CanvasStore.scale.x * 100)
+
+	const handleCenter = () => {
+		CanvasStore.centerCamera()
+	}
 
 	useEffect(() => {
 		const handleZoom = (e: KeyboardEvent) => {
@@ -32,9 +38,20 @@ export const Toolbar = () => {
 
 	return (
 		<>
-			<div className="fixed top-8 left-0 right-0 bg-red-300 border-b-[1px] border-stone-950">
+			<div className="fixed top-8 left-0 right-0 border-b-[1px] border-stone-950">
 				<div className="relative bg-stone-900 left-0 text-white flex flex-row items-stretch">
-					<p className="p-4 ml-auto text-center text-xs border-l-[1px] border-stone-950 text-white/60 tabular-nums">
+					<button
+						className="group p-4 w-min ml-auto text-center text-xs border-l-[1px] border-stone-950 text-white/60 tabular-nums hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out"
+						onClick={handleCenter}
+					>
+						<SewingPinIcon
+							className="opacity-60 group:hover:opacity-100"
+							width={16}
+							height={16}
+						/>
+					</button>
+
+					<p className="p-4 text-center text-xs border-l-[1px] border-stone-950 text-white/60 tabular-nums">
 						{zoom}%
 					</p>
 				</div>

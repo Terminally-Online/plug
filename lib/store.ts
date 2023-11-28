@@ -186,6 +186,14 @@ export default class CanvasStore {
 		}
 	}
 
+	public static centerCamera() {
+		this.data.camera = {
+			...this.data.camera,
+			x: 0.5 * 10000,
+			y: 0.5 * 10000
+		}
+	}
+
 	public static zoomCamera(deltaX: number, deltaY: number) {
 		if (this.data.camera.locked) return
 

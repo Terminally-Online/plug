@@ -18,7 +18,6 @@
 	border: 0;
 	padding: 8px 18px;
 	background-color: #181a22;
-	border-radius: 5px;
 	box-shadow: var(--box-shadow);
 	transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
 		scale(var(--scale, 1));
