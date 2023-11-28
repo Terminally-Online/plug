@@ -1,46 +1,170 @@
-import React, { forwardRef } from 'react'
+import type { CSSProperties, FC, PropsWithChildren } from 'react'
+import React, { forwardRef, useMemo, useState } from 'react'
 
 import classNames from 'classnames'
 
 import type { DraggableSyntheticListeners } from '@dnd-kit/core'
+import {
+	DndContext,
+	KeyboardSensor,
+	MouseSensor,
+	PointerActivationConstraint,
+	TouchSensor,
+	useDraggable,
+	useSensor,
+	useSensors
+} from '@dnd-kit/core'
+import { createSnapModifier } from '@dnd-kit/modifiers'
 import type { Transform } from '@dnd-kit/utilities'
+import { Component } from '@prisma/client'
 
+import { api } from '@/lib/api'
+import CanvasStore from '@/lib/store'
 import { cn } from '@/lib/utils'
 
-import { Handle } from '../item/handle'
-import {
-	draggable,
-	draggableHorizontal,
-	draggableVertical
-} from './draggable-svg'
+import { draggable } from './draggable-svg'
 import styles from './draggable.module.css'
 
-export enum Axis {
-	All,
-	Vertical,
-	Horizontal
+export type DraggableComponentsProps = {
+	id: string
+	initialComponents: Record<string, Component>
+	gridSize: number
+	activationConstraint?: PointerActivationConstraint
 }
 
-interface Props {
+export type DraggableMoveProps = {
 	id: string
-	axis?: Axis
+	top: number
+	left: number
+}
+
+export const DraggableComponents: FC<
+	PropsWithChildren<DraggableComponentsProps>
+> = ({ id, initialComponents, activationConstraint, gridSize }) => {
+	const [components, setComponents] = useState(initialComponents)
+
+	const moveComponent = api.canvas.component.move.useMutation({
+		onMutate(componentPosition) {
+			const { component } = componentPosition
+			const { id, top, left } = component
+			handleMove({ id, top, left })
+		}
+	})
+
+	const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize])
+
+	const buttonStyle = {
+		marginLeft: gridSize - 20 + 1,
+		marginTop: gridSize - 20 + 1,
+		width: gridSize * 12 - 1,
+		height: gridSize * 4 - 1
+	}
+
+	const mouseSensor = useSensor(MouseSensor, {
+		activationConstraint
+	})
+	const touchSensor = useSensor(TouchSensor, {
+		activationConstraint
+	})
+	const keyboardSensor = useSensor(KeyboardSensor, {})
+	const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor)
+
+	const handleMove = ({ id, top, left }: DraggableMoveProps) => {
+		setComponents(previousComponents => ({
+			...previousComponents,
+			[id]: {
+				...previousComponents[id],
+				top,
+				left
+			}
+		}))
+	}
+
+	return (
+		<DndContext
+			sensors={sensors}
+			onDragEnd={props => {
+				const { active, delta } = props
+				const { top, left } = components[active.id]
+				moveComponent.mutate({
+					id,
+					component: {
+						id: active.id as string,
+						top: top + delta.y,
+						left: left + delta.x
+					}
+				})
+			}}
+			modifiers={[snapToGrid]}
+		>
+			{Object.keys(components).map(key => {
+				const { left, top } = components[key]
+
+				return (
+					<DraggableComponent
+						id={key}
+						top={top - CanvasStore.screen.y}
+						left={left - CanvasStore.screen.x}
+						width={gridSize * 12 - 1}
+						height={gridSize * 4 - 1}
+						buttonStyle={buttonStyle}
+					/>
+				)
+			})}
+		</DndContext>
+	)
+}
+
+export type DraggableComponentProps = {
+	id: string
+	buttonStyle?: CSSProperties
+	top: number
+	left: number
+	width: number
+	height: number
+}
+
+export const DraggableComponent: FC<DraggableComponentProps> = ({
+	id,
+	buttonStyle,
+	top,
+	left
+}) => {
+	const { attributes, isDragging, listeners, setNodeRef, transform } =
+		useDraggable({
+			id
+		})
+
+	return (
+		<Draggable
+			id={id}
+			ref={setNodeRef}
+			dragging={isDragging}
+			listeners={listeners}
+			style={{ alignItems: 'flex-start', top, left }}
+			buttonStyle={buttonStyle}
+			transform={transform}
+			{...attributes}
+		/>
+	)
+}
+
+export type DraggableProps = {
+	id: string
 	dragOverlay?: boolean
 	dragging?: boolean
-	handle?: boolean
 	listeners?: DraggableSyntheticListeners
-	style?: React.CSSProperties
-	buttonStyle?: React.CSSProperties
+	style?: CSSProperties
+	buttonStyle?: CSSProperties
 	transform?: Transform | null
 }
 
-export const Draggable = forwardRef<HTMLButtonElement, Props>(
+export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 	function Draggable(
 		{
 			id,
-			axis,
 			dragOverlay,
 			dragging,
-			handle,
 			listeners,
 			transform,
 			style,
@@ -53,11 +177,11 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 			<div
 				id={id}
 				className={cn(
+					'items-start',
 					classNames(
 						styles.Draggable,
 						dragOverlay && styles.dragOverlay,
-						dragging && styles.dragging,
-						handle && styles.handle
+						dragging && styles.dragging
 					)
 				)}
 				style={
@@ -65,24 +189,18 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
 						...style,
 						'--translate-x': `${transform?.x ?? 0}px`,
 						'--translate-y': `${transform?.y ?? 0}px`
-					} as React.CSSProperties
+					} as CSSProperties
 				}
 			>
 				<button
 					{...props}
-					aria-label="Draggable"
-					data-cypress="draggable-item"
-					{...(handle ? {} : listeners)}
-					tabIndex={handle ? -1 : undefined}
+					{...listeners}
 					ref={ref}
 					style={buttonStyle}
+					aria-label="Draggable"
+					data-cypress="draggable-item"
 				>
-					{axis === Axis.Vertical
-						? draggableVertical
-						: axis === Axis.Horizontal
-						  ? draggableHorizontal
-						  : draggable}
-					{handle ? <Handle {...(handle ? listeners : {})} /> : null}
+					{draggable}
 				</button>
 			</div>
 		)

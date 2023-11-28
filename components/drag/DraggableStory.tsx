@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { FC, PropsWithChildren, useState } from 'react'
 
 import {
 	DndContext,
@@ -17,25 +17,19 @@ import { Axis, Draggable } from '@/components/drag/draggable/draggable'
 import { Wrapper } from '@/components/drag/wrapper/wrapper'
 import CanvasStore from '@/lib/store'
 
-interface Props {
-	initialCoordinates?: Coordinates
+export type DraggableProps = {
 	activationConstraint?: PointerActivationConstraint
-	axis?: Axis
-	handle?: boolean
 	modifiers?: Modifiers
 	buttonStyle?: React.CSSProperties
 	style?: React.CSSProperties
 }
 
-export function DraggableStory({
-	initialCoordinates,
+export const DraggableComponents: FC<PropsWithChildren<DraggableProps>> = ({
 	activationConstraint,
-	axis,
-	handle,
 	modifiers,
 	style,
 	buttonStyle
-}: Props) {
+}) => {
 	const [coordinates, setCoordinates] = useState<Coordinates>({
 		a: {
 			x: 5000 - 120,
@@ -60,7 +54,7 @@ export function DraggableStory({
 			sensors={sensors}
 			onDragEnd={props => {
 				const { active, delta } = props
-				console.log(active)
+
 				setCoordinates(previousCoordinates => {
 					const { x, y } = previousCoordinates[active.id]
 
@@ -81,8 +75,6 @@ export function DraggableStory({
 				return (
 					<DraggableItem
 						id={key}
-						axis={axis}
-						handle={handle}
 						top={y - CanvasStore.screen.y}
 						left={x - CanvasStore.screen.x}
 						style={style}
@@ -94,25 +86,21 @@ export function DraggableStory({
 	)
 }
 
-interface DraggableItemProps {
+export type DraggableItemProps = {
 	id: string
-	handle?: boolean
 	style?: React.CSSProperties
 	buttonStyle?: React.CSSProperties
-	axis?: Axis
 	top?: number
 	left?: number
 }
 
-function DraggableItem({
-	axis,
+export const DraggableItem: FC<DraggableItemProps> = ({
 	id,
 	style,
+	buttonStyle,
 	top,
-	left,
-	handle,
-	buttonStyle
-}: DraggableItemProps) {
+	left
+}) => {
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useDraggable({
 			id
@@ -123,12 +111,10 @@ function DraggableItem({
 			id={id}
 			ref={setNodeRef}
 			dragging={isDragging}
-			handle={handle}
 			listeners={listeners}
 			style={{ ...style, top, left }}
 			buttonStyle={buttonStyle}
 			transform={transform}
-			axis={axis}
 			{...attributes}
 		/>
 	)

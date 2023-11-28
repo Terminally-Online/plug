@@ -25,19 +25,6 @@
 	transition: box-shadow 300ms ease;
 }
 
-.Draggable > button :not(.handle) > button {
-	touch-action: none;
-	cursor: grab;
-}
-
-.Draggable > button :not(.handle) > button:focus-visible:not(.active &) {
-	box-shadow: 0 0 0 3px #4c9ffe;
-}
-
-.Draggable.handle > button {
-	--action-background: rgba(255, 255, 255, 0.1);
-}
-
 .Draggable img {
 	width: 140px;
 	user-select: none;

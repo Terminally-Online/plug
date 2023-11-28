@@ -4,26 +4,22 @@ import {
 	PointerEvent,
 	Suspense,
 	useEffect,
-	useMemo,
 	useRef,
-	useState,
 	WheelEvent
 } from 'react'
 
-import { createSnapModifier } from '@dnd-kit/modifiers'
 import useSize from '@react-hook/size'
 
 import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
 import Canvas from '../canvas/Canvas'
-import { DraggableStory } from '../drag/DraggableStory'
-import { Grid } from '../drag/grid/grid'
 
 export type ViewportProps = {
 	id: string
 }
 
+// * This component handles the render loop and the camera interactions.
 export const Viewport: FC<ViewportProps> = ({ id }) => {
 	const canvasRef = useRef<HTMLDivElement>(null)
 	// ? While this appears to do nothing, it is actually used to trigger a
@@ -66,33 +62,6 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 			<Suspense fallback={<div>Loading...</div>}>
 				<Canvas frame={frame} id={id} />
 			</Suspense>
-
-			{
-				<div className="fixed top-32 right-0 text-red-700 bg-red-400 text-red-700 font-bold p-2 m-2 z-10 rounded-sm">
-					<p>
-						Camera: {Math.round(CanvasStore.camera.x)},{' '}
-						{Math.round(CanvasStore.camera.y)},{' '}
-						{Math.round(CanvasStore.camera.z)}
-					</p>
-					<p>
-						Container: {CanvasStore.container.width} x{' '}
-						{CanvasStore.container.height}
-					</p>
-					<p>Locked: {CanvasStore.camera.locked.toString()}</p>
-					<p>
-						Scale: {Math.round(CanvasStore.scale.x)},{' '}
-						{Math.round(CanvasStore.scale.y)}
-					</p>
-					<p>
-						Screen: {Math.round(CanvasStore.screen.x)},{' '}
-						{Math.round(CanvasStore.screen.y)}
-					</p>
-					<p>
-						Pointer: {Math.round(CanvasStore.pointer.x)},{' '}
-						{Math.round(CanvasStore.pointer.y)}
-					</p>
-				</div>
-			}
 		</div>
 	)
 }
