@@ -15,6 +15,7 @@ import type { Coordinates } from '@dnd-kit/utilities'
 
 import { Axis, Draggable } from '@/components/drag/draggable/draggable'
 import { Wrapper } from '@/components/drag/wrapper/wrapper'
+import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
 
 const defaultCoordinates = {
@@ -50,6 +51,19 @@ export function DraggableStory({
 	const keyboardSensor = useSensor(KeyboardSensor, {})
 	const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor)
 
+	if (
+		!inBounds(
+			{ left: x, top: y, width: 10, height: 300 },
+			{
+				left: CanvasStore.screen.x,
+				top: CanvasStore.screen.y,
+				width: screen.width,
+				height: screen.height
+			}
+		)
+	)
+		return null
+
 	return (
 		<DndContext
 			sensors={sensors}
@@ -64,17 +78,15 @@ export function DraggableStory({
 			}}
 			modifiers={modifiers}
 		>
-			<Wrapper>
-				<DraggableItem
-					id="a"
-					axis={axis}
-					handle={handle}
-					top={y - CanvasStore.screen.y}
-					left={x - CanvasStore.screen.x}
-					style={style}
-					buttonStyle={buttonStyle}
-				/>
-			</Wrapper>
+			<DraggableItem
+				id="a"
+				axis={axis}
+				handle={handle}
+				top={y - CanvasStore.screen.y}
+				left={x - CanvasStore.screen.x}
+				style={style}
+				buttonStyle={buttonStyle}
+			/>
 		</DndContext>
 	)
 }
@@ -111,7 +123,7 @@ function DraggableItem({
 			handle={handle}
 			label={''}
 			listeners={listeners}
-			style={{ ...style, top, left }}
+			style={{ ...style, top, left, width: 'max-content' }}
 			buttonStyle={buttonStyle}
 			transform={transform}
 			axis={axis}
