@@ -20,7 +20,7 @@ export type CanvasProps = {
 }
 
 // * This component manages the base canvas and handles the addition of a new component.
-export const Canvas: FC<CanvasProps> = ({ frame, id }) => {
+export const Canvas: FC<CanvasProps> = ({ id }) => {
 	const { handleAdd } = useTabs()
 
 	const [initialCanvas] = api.canvas.get.useSuspenseQuery(id)

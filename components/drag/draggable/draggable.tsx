@@ -1,5 +1,5 @@
 import type { CSSProperties, FC, PropsWithChildren } from 'react'
-import React, { forwardRef, useMemo, useState } from 'react'
+import React, { forwardRef, useEffect, useMemo, useState } from 'react'
 
 import classNames from 'classnames'
 
@@ -93,6 +93,12 @@ export const DraggableComponents: FC<
 			}
 		})
 	}
+
+	// * Re-render when a parent component updates the base components.
+	// ? Is assumed to be the head of the canvas changes.
+	useEffect(() => {
+		setComponents(initialComponents)
+	}, [initialComponents])
 
 	return (
 		<DndContext
@@ -202,6 +208,15 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 		},
 		ref
 	) {
+		const left =
+			typeof style?.left === 'number'
+				? style.left
+				: parseInt(style?.left ?? '0')
+		const top =
+			typeof style?.top === 'number'
+				? style.top
+				: parseInt(style?.top ?? '0')
+
 		return (
 			<div
 				id={id}
@@ -233,7 +248,7 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					{draggable}
 
 					<p className="absolute top-[110%] left-0 bg-red-400 text-red-700 font-bold rounded-sm p-2">
-						{style?.top} {style?.left}
+						{Math.round(left)} x {Math.round(top)}
 					</p>
 				</button>
 			</div>
