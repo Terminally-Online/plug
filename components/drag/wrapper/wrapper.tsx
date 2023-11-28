@@ -10,7 +10,7 @@ export const Wrapper: FC<WrapperProps> = ({ children, center, className }) => {
 	return (
 		<div
 			className={cn(
-				'bg-transparent justify-start',
+				'bg-transparent h-full w-full justify-start box-border overscroll-none',
 				center ? 'items-center' : 'items-start',
 				className
 			)}
