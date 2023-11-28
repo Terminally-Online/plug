@@ -11,50 +11,34 @@
 
   - ALPHA:
 
-    - [x] Add zoom buttons so that you don't have to scroll.
-
-      - [x] Fix the zoom having adverse effects on react-dnd.
-        - [x] If we cannot fix this, just disable zooming until we move to a proprietary dragging implementation. Not ideal but not sure what other option there event is.
-              Notes: There have been several issues dating all the way back to 2015 that have never been resolved.
-              Notes: There has not been a commit in 10 months. Think I made the wrong choice here.
-              https://github.com/react-dnd/react-dnd/issues?q=is%3Aissue+is%3Aopen+zoom
-        - [ ] Right now we can zoom in on elements that we should not be able to.
-              Notes: I think this started happening when we updated to the Pages Router, but not completely sure. When debugging this you will want to comment out the Toolbar so that you can determine if it is that element causing the issue before doing anything else.
-              Notes: When we break the zooming, the grid gets larger as well even though it is a fixed element which leads me to believe that we are zooming in on the parent element and this should not be happening.
-      - [o] Better drag controls
-        - [o] Replace react-dnd with https://docs.dndkit.com/introduction/installation
-          - [x] Get the items lining up with the grid.
-                Notes: My base assumption that it is some padding causing this issue.
-                Conclusion: Just some extra margin that was being placed because of the weird `module.css` files that are still being used during the migration process away from react-dnd.
-          - [x] Get back the infinite canvas movement.
-                Notes: Should the grid move when we move the camera?
-            - [x] Make sure the grid works inside the infinite canvas.
-            - [x] Connect the two pieces.
-          - [x] Move components individually.
-          - [x] Save the position of a dragged item in the canvas.
-          - [x] Make sure that it works even when are zoomed out.
-          - [x] Make sure that we can only drag items within the bounds of the window.
-        - [x] Reenable the ability to add a component.
-          - [x] Add a debug identifier for the location of each component.
-          - [ ] Make sure the addition of components is ailgned to the grid.
-                Notes: I am really not sure what is going on here. Rather confused about this.
-                Notes: In the process of solving this and while the coordinates in the database appear to be right, the coordinates being shown on the elements are not accurate to the layout. I cannot tell if this is because we have collisions between the two elements, but I do not think so.
-          - [ ] Replace the placeholder component with a plug.
-          - [ ] Make sure a plug seamlessly fits in the grid.
-          - [ ] Make sure a connector between each pin is one grid.
-        - [ ] Make CMD + 0 reset the scale to 100%.
-      - [ ] Item selection functionality.
-        - [ ] Be able to select a component.
-        - [ ] Be able to delete it and select a group.
-        - [ ] Drag selection.
-
-    - [ ] Store the configuration of a plug in the database.
-    - [ ] CMD + Space + Drag to move the camera
-    - [ ] Add noun trait bid.
-    - [ ] Revocation on deletion after the first submission.
+    - [o] Expose plugs
+      - [ ] Replace the placeholder component with a plug.
+      - [ ] The positioning of new components from addComponent is a little wonky.
+            Notes: Spent a little time trying to fix it, got it good enough for now. Will want to figure out what is going on here and fix it though.
+        - [ ] Make sure a connector between each pin is on the grid.
+      - [ ] Store the configuration of a plug in the database.
+    - [ ] Add distance constraint so that dragging does not impact clicking on components.
+    - [ ] Camera Controls
+      - [ ] Make CMD + 0 reset the scale to 100%.
+      - [ ] Recenter the camera requires moving the mouse in the grid to trigger the next render because the camera controls are outside of react render loop.
+      - [ ] Make sure items outside of bounds disappear.
+      - [ ] CMD + Space + Drag to move the camera
+      - [ ] Right now we can zoom in on elements that we should not be able to.
+            Notes: I think this started happening when we updated to the Pages Router, but not completely sure. When debugging this you will want to comment out the Toolbar so that you can determine if it is that element causing the issue before doing anything else.
+            Notes: When we break the zooming, the grid gets larger as well even though it is a fixed element which leads me to believe that we are zooming in on the parent element and this should not be happening.
+      - [ ] Zooming out messes up the inbounds calculations.
+    - [ ] Item selection functionality.
+      - [ ] Be able to select a component.
+      - [ ] Be able to delete it and select a group.
+      - [ ] Drag selection.
+    - [ ] Fuse development.
+      - [ ] Add noun trait bid.
+    - [ ] Fuse integration.
+      - [ ] Revocation on deletion after the first submission.
     - [o] Update the hello world to be the base noun plug.
 
   - BETA:
+
     - [ ] There is an issue with EventEmitter where procedures are refusing to communicate with one another. In both routers, when making a subscription through an event emitter the vent never fires. The weird thing is that when I am not using an emitter, everything works fine with just an observable but the second I try and make an onUpdate it doesnt ever fire the event.
           Notes: I have tried so many things and I am tired of wasting time on this. Everything else is setup fine and subscriptions that are not going through emitters work fine so just cannot justify wasting any more time on this at this point. If people complain because I got users then this will be taken care of immediately!
     - [ ] Update `ws.prod.ts` to actually be ready for production.
@@ -88,12 +72,68 @@ WANTS:
       Notes: This is effectively `localization` for an api and its contained data.
 
 RELEASING:
-ALPHA: - [x] Get infinite canvas functional.
-Notes: It is really rather simple once you understand what an infinite canvas actually is. Especially because we do not even actually care about it being infinite for real. - [x] Drag components.
-Notes: We should just use react-dnd so that we do not have to worry about building our own drag implementation. - [x] Align items to the grid (grid snapping). - [x] Infinite canvas and drag and drop functional at the same time. - [x] Prevent a user from selecting the same pin multiple times in a plug. - [x] Prevent a user from adding a new pin when all available pins have been exhausted. - [x] Page where a user can see their canvases - [x] Tab functionality - [x] Active canvas - [x] Close a tab - [x] Add a tab - [x] Make adding a new tab direct to /canvas/create/ - [x] Do not allow having multiple of the same tab open. - [x] Figure out what 'closed connection' is originating from when signing in. - [x] Fully functional authentication implementation - [x] Implement a basic auth stack so that we can the basic api flowing.
-Notes: In development we should just use a mock auth provider and ignore this piece for now. - [x] Get the basic authentication ux designed and boiled. - [x] Implement everything that is needed to actually run the websocket server and make sure everything is running properly. - [x] When this is in place bundle it up into `pnpm dev` to run everything at once - [x] Run a websocket server to power trpc - [x] Get user canvases from the database. - [x] Pick back up by finishing the conversion to page router. `layout.tsx` is the next thing to figure out since it is handled differently. - [x] Sync state changes to the database. - [x] Easy framework to add and remove component types. - [x] Store the state of the canvas into the database. - [x] When we sync the state maybe we shouldn't even worry about saving when a component is updated and instead operate on just a set interval to check if changes have been made since the last broadcast and stream out the changes to the database. Realisticaly, my wanting to support websockets did not arise from the need of realtime collaboration. It was simply there to solve the issues that would arise when someone has two tabs open or someone is viewing a board that is not theirs. - [x] Retrieve the state of the canvas from the database. - [h] Need to get live updates in case we have multiple windows open.
-Notes: While it may seem like this is premature optimization, after having experience the difficulties of adding live responses without having properly planned for it. - [x] Figure out how to store complex component state in the canvas.
-Notes: We also have superjson as an option thought it will not completely solve the problem so it is likely not the right choice.
+
+- [o] ALPHA:
+  - [x] Add zoom buttons so that you don't have to scroll.
+    - [x] Fix the zoom having adverse effects on react-dnd.
+      - [x] If we cannot fix this, just disable zooming until we move to a proprietary dragging implementation. Not ideal but not sure what other option there event is.
+            Notes: There have been several issues dating all the way back to 2015 that have never been resolved.
+            Notes: There has not been a commit in 10 months. Think I made the wrong choice here.
+            https://github.com/react-dnd/react-dnd/issues?q=is%3Aissue+is%3Aopen+zoom
+    - [x] Better drag controls
+      - [x] Replace react-dnd with https://docs.dndkit.com/introduction/installation
+        - [x] Get the items lining up with the grid.
+              Notes: My base assumption that it is some padding causing this issue.
+              Conclusion: Just some extra margin that was being placed because of the weird `module.css` files that are still being used during the migration process away from react-dnd.
+        - [x] Get back the infinite canvas movement.
+              Notes: Should the grid move when we move the camera?
+          - [x] Make sure the grid works inside the infinite canvas.
+          - [x] Connect the two pieces.
+        - [x] Move components individually.
+        - [x] Save the position of a dragged item in the canvas.
+        - [x] Make sure that it works even when are zoomed out.
+        - [x] Make sure that we can only drag items within the bounds of the window.
+      - [x] Reenable the ability to add a component.
+        - [x] Add a debug identifier for the location of each component.
+        - [x] Make sure the addition of components is ailgned to the grid.
+              Notes: I am really not sure what is going on here. Rather confused about this.
+              Notes: In the process of solving this and while the coordinates in the database appear to be right, the coordinates being shown on the elements are not accurate to the layout. I cannot tell if this is because we have collisions between the two elements, but I do not think so.
+              Conclusion: I randomly fixed this. I expect it to come back. Right now the pointer coordinates are off by a very weird non-standard amount.
+        - [x] Trigger a render when a new component is added.
+  - [x] Get infinite canvas functional.
+        Notes: It is really rather simple once you understand what an infinite canvas actually is. Especially because we do not even actually care about it being infinite for real.
+  - [x] Drag components.
+        Notes: We should just use react-dnd so that we do not have to worry about building our own drag implementation.
+    - [x] Align items to the grid (grid snapping).
+      - [x] Infinite canvas and drag and drop functional at the same time.
+      - [x] Prevent a user from selecting the same pin multiple times in a plug.
+      - [x] Prevent a user from adding a new pin when all available pins have been exhausted.
+      - [x] Page where a user can see their canvases
+      - [x] Tab functionality
+      - [x] Active canvas
+      - [x] Close a tab
+      - [x] Add a tab
+      - [x] Make adding a new tab direct to /canvas/create/
+      - [x] Do not allow having multiple of the same tab open.
+      - [x] Figure out what 'closed connection' is originating from when signing in.
+      - [x] Fully functional authentication implementation
+      - [x] Implement a basic auth stack so that we can the basic api flowing.
+            Notes: In development we should just use a mock auth provider and ignore this piece for now.
+      - [x] Get the basic authentication ux designed and boiled.
+      - [x] Implement everything that is needed to actually run the websocket server and make sure everything is running properly.
+      - [x] When this is in place bundle it up into `pnpm dev` to run everything at once
+      - [x] Run a websocket server to power trpc
+      - [x] Get user canvases from the database.
+      - [x] Pick back up by finishing the conversion to page router. `layout.tsx` is the next thing to figure out since it is handled differently.
+      - [x] Sync state changes to the database.
+      - [x] Easy framework to add and remove component types.
+      - [x] Store the state of the canvas into the database.
+      - [x] When we sync the state maybe we shouldn't even worry about saving when a component is updated and instead operate on just a set interval to check if changes have been made since the last broadcast and stream out the changes to the database. Realisticaly, my wanting to support websockets did not arise from the need of realtime collaboration. It was simply there to solve the issues that would arise when someone has two tabs open or someone is viewing a board that is not theirs.
+      - [x] Retrieve the state of the canvas from the database.
+        - [h] Need to get live updates in case we have multiple windows open.
+          Notes: While it may seem like this is premature optimization, after having experience the difficulties of adding live responses without having properly planned for it.
+      - [x] Figure out how to store complex component state in the canvas.
+            Notes: We also have superjson as an option thought it will not completely solve the problem so it is likely not the right choice.
 
 DONE:
 
