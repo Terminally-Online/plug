@@ -10,38 +10,8 @@
 .Draggable > button {
 	min-height: 54px;
 	flex-shrink: 1;
-	background-color: #181a22;
-	box-shadow: var(--box-shadow);
 	transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
 		scale(var(--scale, 1));
-	transition: box-shadow 300ms ease;
-}
-
-.Draggable img {
-	width: 140px;
-	user-select: none;
-	pointer-events: none;
-}
-
-.Draggable label {
-	display: block;
-	flex-shrink: 1;
-	padding: 10px;
-	transition: opacity 250ms ease;
-
-	text-align: center;
-	font-size: 1rem;
-	font-weight: 300;
-	color: #8d8d8d;
-	user-select: none;
-	cursor: url('/cursor.svg'), auto;
-
-	animation-name: pulse;
-	animation-duration: 1.5s;
-	animation-delay: 2s;
-	animation-iteration-count: infinite;
-	animation-timing-function: ease;
-	animation-direction: alternate;
 }
 
 .Draggable.dragging {
@@ -55,12 +25,6 @@
 
 .Draggable.dragging > button {
 	--scale: 1.06;
-	--box-shadow: -1px 0 15px 0 rgba(34, 33, 81, 0.01),
-		0px 15px 15px 0 rgba(34, 33, 81, 0.25);
-}
-
-.Draggable.dragging > button:focus-visible {
-	--box-shadow: 0 0px 10px 2px #4c9ffe;
 }
 
 .Draggable.dragging label {
@@ -90,6 +54,5 @@
 	100% {
 		transform: translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
 			scale(var(--scale));
-		box-shadow: var(--box-shadow);
 	}
 }

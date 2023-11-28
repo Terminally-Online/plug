@@ -43,7 +43,7 @@ export const Pin = ({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<div className="relative border border-stone-950 rounded-md w-full">
+			<div className="relative bg-stone-900 w-full">
 				<p className="absolute top-[-10px] left-4 bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">
 					{selectedPin.type.slice(0, 1).toUpperCase() +
 						selectedPin.type.slice(1)}
@@ -59,7 +59,7 @@ export const Pin = ({
 						aria-expanded={open}
 						aria-label="Select a Pin"
 						className={cn(
-							'w-full justify-between border-b-[1px] border-transparent border-b-stone-950 rounded-b-none p-4 py-6',
+							'w-full justify-between border-b-[1px] border-transparent border-b-stone-950 p-4 py-6',
 							className
 						)}
 					>
@@ -80,7 +80,7 @@ export const Pin = ({
 				{Object.keys(selectedPin.schema.shape).map(key => (
 					<div
 						key={key}
-						className="w-full flex flex-col bg-stone-800 rounded-bl-sm rounded-br-sm"
+						className="w-full flex flex-col bg-stone-800"
 					>
 						<Input
 							type="text"

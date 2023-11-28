@@ -57,7 +57,7 @@ export const DraggableComponents: FC<
 
 	const buttonStyle = {
 		marginLeft: gridSize - 20 + 1,
-		marginTop: gridSize - 20 + 1,
+		marginTop: gridSize - 0 + 1,
 		width: gridSize * 8 - 1,
 		height: gridSize * 3 - 1
 	}
@@ -241,7 +241,7 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					{...props}
 					{...listeners}
 					ref={ref}
-					className="relative flex items-center content-center appearance-none border-none outline-none"
+					className="absolute inline-block flex items-center content-center appearance-none border-none outline-none"
 					style={buttonStyle}
 					aria-label="Draggable"
 					data-cypress="draggable-item"
@@ -251,7 +251,8 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					</Plug>
 
 					<p className="absolute top-[110%] left-0 bg-red-400 text-red-700 font-bold rounded-sm p-2">
-						{Math.round(left)} x {Math.round(top)}
+						{buttonStyle?.width} x {buttonStyle?.height} @
+						{Math.round(left)} x {Math.round(top)}{' '}
 					</p>
 				</button>
 			</div>
