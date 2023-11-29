@@ -82,9 +82,9 @@ interface ITypes {
      * }>
      */
     struct Current {
-		address ground;
-		uint256 voltage;
-		bytes data;
+		address ground; // address to 
+		uint256 voltage; // gas
+		bytes data;      // data
 	}
 
 	/**

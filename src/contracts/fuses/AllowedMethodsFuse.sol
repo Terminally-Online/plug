@@ -4,6 +4,9 @@ pragma solidity ^0.8.19;
 
 import {Fuse} from '../abstracts/Fuse.sol';
 
+
+// TODO: Implement a head index from the user to go straight to the element.
+
 contract AllowedMethodsFuse is Fuse {
 	/**
 	 * See {FuseEnforcer-enforceFuse}.

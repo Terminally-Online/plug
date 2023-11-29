@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 import {Fuse} from '../Fuse.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
-abstract contract ThresholdFuse is Fuse{
+abstract contract ThresholdFuse is Fuse {
 	using BytesLib for bytes;
 
 	/**
@@ -21,12 +21,10 @@ abstract contract ThresholdFuse is Fuse{
 
 		/// @dev Make sure the block number is before the threshold.
 		if ($operator == 0) {
-			if ($threshold <= _threshold())
-				revert('BlockNumberBeforeEnforcer:expired-pin');
+			if ($threshold <= _threshold()) revert('ThresholdFuse:expired-pin');
 		}
 		/// @dev Make sure the block number is after the threshold.
-		else if ($threshold >= _threshold())
-			revert('BlockNumberAfterEnforcer:early-pin');
+		else if ($threshold >= _threshold()) revert('ThresholdFuse:early-pin');
 
 		$success = true;
 	}
