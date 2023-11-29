@@ -1,5 +1,15 @@
 # @nftchance/plug-core
 
+## 0.2.0
+
+### Minor Changes
+
+-   5d07ade: feat: plug-focused nomenclature
+
+### Patch Changes
+
+-   681380c: feat: add nouns + small cleanup
+
 ## 0.1.10
 
 ### Patch Changes
