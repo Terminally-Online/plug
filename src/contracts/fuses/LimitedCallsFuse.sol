@@ -24,7 +24,7 @@ contract LimitedCallsFuse is Fuse {
 		bytes calldata $live,
 		Current calldata,
 		bytes32 $pinHash
-	) public override returns (bool $success) {
+	) public override returns (bytes memory $callback) {
 		/// @dev Confirm the allowed limit has not yet been reached by the sender
 		///      of the declared pin.
 		require(
@@ -32,7 +32,7 @@ contract LimitedCallsFuse is Fuse {
 			'LimitedCallsEnforcer:limit-exceeded'
 		);
 
-		$success = true;
+		$callback = bytes('');
 	}
 
 	/**

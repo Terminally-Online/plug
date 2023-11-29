@@ -37,12 +37,12 @@ contract RevocationFuse is Fuse, PlugCore {
 		bytes calldata,
 		Current calldata,
 		bytes32 $pinHash
-	) public view override returns (bool $success) {
+	) public view override returns (bytes memory $callback) {
 		/// @dev Ensure the pin has not been revoked.
 		require(!isRevoked[$pinHash], 'RevocationEnforcer:revoked');
 
 		/// @dev Otherwise, clear for takeoff.
-		$success = true;
+		$callback = bytes('');
 	}
 
 	/**

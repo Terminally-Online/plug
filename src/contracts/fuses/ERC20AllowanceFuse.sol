@@ -25,7 +25,7 @@ contract ERC20AllowanceFuse is Fuse {
 		bytes calldata $live,
 		Current calldata $current,
 		bytes32 $pinHash
-	) public override returns (bool) {
+	) public override returns (bytes memory $callback) {
 		/// @dev Determine the function being called by the transaction.
 		bytes4 targetSig = bytes4($current.data[0:4]);
 
@@ -52,7 +52,7 @@ contract ERC20AllowanceFuse is Fuse {
 		/// @dev Make sure amount spent will not exceed the limit.
 		require(spent <= limit, 'ERC20AllowanceEnforcer:allowance-exceeded');
 
-		return true;
+		$callback = bytes('');
 	}
 
 	/**

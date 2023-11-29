@@ -12,5 +12,5 @@ abstract contract Fuse is IFuse {
 		bytes calldata $live,
 		Current calldata $current,
 		bytes32 $pinHash
-	) public virtual returns (bool);
+	) public virtual returns (bytes memory $callback);
 }

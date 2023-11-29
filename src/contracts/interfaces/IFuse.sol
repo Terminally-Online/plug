@@ -16,5 +16,5 @@ interface IFuse is ITypes {
 		bytes calldata $live,
 		Current calldata $current,
 		bytes32 $pinHash
-	) external returns (bool);
+	) external returns (bytes calldata $callback);
 }

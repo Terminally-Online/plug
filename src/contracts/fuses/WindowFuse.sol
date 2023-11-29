@@ -64,12 +64,13 @@ contract WindowFuse is Fuse {
 		bytes calldata $live,
 		Current calldata,
 		bytes32 
-	) public view override returns (bool $success) {
+	) public view override returns (bytes memory $callback) {
 		uint256 schedule = $live.toUint256(0);
 
-		$success = isWithinWindow(schedule);
+		if (!isWithinWindow(schedule)) 
+			revert WindowFuseHelpers.WindowCaveatViolation();
 
-		if (!$success) revert WindowFuseHelpers.WindowCaveatViolation();
+		$callback = bytes('');
 	}
 
     /**

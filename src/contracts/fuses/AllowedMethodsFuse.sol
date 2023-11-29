@@ -15,7 +15,7 @@ contract AllowedMethodsFuse is Fuse {
 		bytes calldata $live,
 		Current calldata $current,
 		bytes32
-	) public pure override returns (bool) {
+	) public pure override returns (bytes memory $callback) {
 		/// @dev The signature of the function that is being called.
 		bytes4 targetSig = bytes4($current.data[0:4]);
 
@@ -26,7 +26,7 @@ contract AllowedMethodsFuse is Fuse {
 			/// @dev Slice the next 4 bytes from the terms array.
 			bytes4 allowedSig = bytes4($live[i:i + 4]);
 			/// @dev If we have a match, return true.
-			if (allowedSig == targetSig) return true;
+			if (allowedSig == targetSig) return bytes('');
 
 			/// @dev Go to the next 4 bytes.
 			unchecked {

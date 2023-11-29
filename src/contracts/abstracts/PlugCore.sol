@@ -139,6 +139,7 @@ abstract contract PlugCore is Types {
 		address pinSigner;
 		bytes32 authHash;
 		bytes32 pinHash;
+		bytes memory callback;
 
 		/// @dev Load the structs into a hot reference.
 		Plug memory intent;
@@ -200,14 +201,13 @@ abstract contract PlugCore is Types {
 				///      and ensure they are all valid.
 				for (k; k < pin.fuses.length; ) {
 					/// @dev Call the enforcer to determine if the fuse is valid.
-					require(
-						IFuse(pin.fuses[k].neutral).enforceFuse(
-							pin.fuses[k].live,
-							intent.current,
-							pinHash
-						),
-						'PlugCore:fuse-rejected'
+					callback = IFuse(pin.fuses[k].neutral).enforceFuse(
+						pin.fuses[k].live,
+						intent.current,
+						pinHash
 					);
+
+					// TODO: Execute the callback if there is one.
 
 					unchecked {
 						++k;

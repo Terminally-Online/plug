@@ -15,7 +15,7 @@ abstract contract ThresholdFuse is Fuse {
 		bytes calldata $terms,
 		Current calldata,
 		bytes32
-	) public view override returns (bool $success) {
+	) public view override returns (bytes memory $callback) {
 		/// @dev Decode the terms to get the logic operator and threshold.
 		(uint256 $operator, uint256 $threshold) = decode($terms);
 
@@ -26,7 +26,7 @@ abstract contract ThresholdFuse is Fuse {
 		/// @dev Make sure the block number is after the threshold.
 		else if ($threshold >= _threshold()) revert('ThresholdFuse:early-pin');
 
-		$success = true;
+		$callback = bytes('');
 	}
 
 	/**
