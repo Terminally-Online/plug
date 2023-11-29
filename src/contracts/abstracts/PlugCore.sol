@@ -207,7 +207,7 @@ abstract contract PlugCore is Types {
 						pinHash
 					);
 
-					// TODO: Execute the callback if there is one.
+					if (callback.length > 0) revert('PlugCore:not-implemented');
 
 					unchecked {
 						++k;
