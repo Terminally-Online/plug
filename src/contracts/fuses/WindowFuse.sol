@@ -65,13 +65,72 @@ contract WindowFuse is Fuse {
 		Current calldata,
 		bytes32 
 	) public view override returns (bool $success) {
-		$success = isWithinWindow($live.toUint256(0));
+		uint256 schedule = $live.toUint256(0);
+
+		$success = isWithinWindow(schedule);
 
 		if (!$success) revert WindowFuseHelpers.WindowCaveatViolation();
 	}
 
     /**
-     * See {IWindowCaveat-isWithinWindow}.
+     * @dev Unpack the schedule details from the schedule.
+     * @param $schedule The schedule to unpack.
+     * @return $startTime The time the schedule was declared.
+     * @return $repeatsEvery The number of seconds between each window.
+     * @return $duration The number of seconds each window lasts.
+	 * @return $daysOfWeek The days of the week the window is active.
+     */
+	function decode(
+		uint256 $schedule
+	) public pure returns (
+            uint32 $startTime,
+            uint32 $repeatsEvery,
+            uint32 $duration,
+            uint8 $daysOfWeek
+	) {
+        /// @dev Unpack the schedule details.
+        $daysOfWeek = uint8($schedule);
+        $duration = uint32($schedule >> DURATION_SHIFT);
+        $repeatsEvery = uint32($schedule >> REPEATS_EVERY_SHIFT);
+        $startTime = uint32($schedule >> START_TIME_SHIFT);
+	}
+
+    /**
+     * @dev Pack the schedule details into a schedule.
+     * @param $startTime The time the schedule was declared.
+     * @param $repeatsEvery The number of seconds between each window.
+     * @param $duration The number of seconds each window lasts.
+     * @return $schedule The packed schedule.
+     */
+    function encode(
+        uint32 $startTime,
+        uint32 $repeatsEvery,
+        uint32 $duration,
+        uint8 $daysOfWeek
+    ) external pure returns (uint256 $schedule) {
+        /// @dev Ensure the duration is greater than 0.
+        if ($duration == 0) revert WindowFuseHelpers.WindowLackingDuration();
+
+        /// @dev Must support at least one day.
+        if ($daysOfWeek == 0) revert WindowFuseHelpers.WindowLackingDays();
+
+        /// @dev Prevent weird overlapping windows.
+        if ($duration > $repeatsEvery)
+            revert WindowFuseHelpers.WindowLackingSufficientRepeatsEvery();
+
+        /// @dev Pack the schedule details.
+		$schedule =
+            (uint256($startTime) << START_TIME_SHIFT) |
+            (uint256($repeatsEvery) << REPEATS_EVERY_SHIFT) |
+            (uint256($duration) << DURATION_SHIFT) |
+            uint256($daysOfWeek);
+    }
+
+	/**
+     * @notice Check whether or not the current time is within the
+     *         the declared window of availability by the schedule.
+     * @param $schedule The schedule to check.
+     * @return $isWithinWindow Whether or not the current time is within the
      */
     function isWithinWindow(
         uint256 $schedule
@@ -82,7 +141,7 @@ contract WindowFuse is Fuse {
             uint32 repeatsEvery,
             uint32 duration,
             uint8 daysOfWeek
-        ) = fromSchedule($schedule);
+        ) = decode($schedule);
 
         /// @dev Ensure the current time is within the window.
         return _isWithinWindow(startTime, repeatsEvery, duration, daysOfWeek);
@@ -106,64 +165,13 @@ contract WindowFuse is Fuse {
     }
 
     /**
-     * @dev Unpack the schedule details from the schedule.
-     * @param $schedule The schedule to unpack.
-     * @return $startTime The time the schedule was declared.
-     * @return $repeatsEvery The number of seconds between each window.
-     * @return $duration The number of seconds each window lasts.
-     */
-    function fromSchedule(
-        uint256 $schedule
-    )
-        public
-        pure
-        returns (
-            uint32 $startTime,
-            uint32 $repeatsEvery,
-            uint32 $duration,
-            uint8 $daysOfWeek
-        )
-    {
-        /// @dev Unpack the schedule details.
-        $daysOfWeek = uint8($schedule);
-        $duration = uint32($schedule >> DURATION_SHIFT);
-        $repeatsEvery = uint32($schedule >> REPEATS_EVERY_SHIFT);
-        $startTime = uint32($schedule >> START_TIME_SHIFT);
-    }
-
-    /**
-     * @dev Pack the schedule details into a schedule.
-     * @param $startTime The time the schedule was declared.
-     * @param $repeatsEvery The number of seconds between each window.
-     * @param $duration The number of seconds each window lasts.
-     * @return $schedule The packed schedule.
-     */
-    function toSchedule(
-        uint32 $startTime,
-        uint32 $repeatsEvery,
-        uint32 $duration,
-        uint8 $daysOfWeek
-    ) external pure returns (uint256 $schedule) {
-        /// @dev Ensure the duration is greater than 0.
-        if ($duration == 0) revert WindowFuseHelpers.WindowLackingDuration();
-
-        /// @dev Must support at least one day.
-        if ($daysOfWeek == 0) revert WindowFuseHelpers.WindowLackingDays();
-
-        /// @dev Prevent weird overlapping windows.
-        if ($duration > $repeatsEvery)
-            revert WindowFuseHelpers.WindowLackingSufficientRepeatsEvery();
-
-        /// @dev Pack the schedule details.
-        $schedule =
-            (uint256($startTime) << START_TIME_SHIFT) |
-            (uint256($repeatsEvery) << REPEATS_EVERY_SHIFT) |
-            (uint256($duration) << DURATION_SHIFT) |
-            uint256($daysOfWeek);
-    }
-
-    /**
-     * See {IWindowCaveat-toWindows}.
+     * @dev Determine the next N window openings for a given schedule.
+     * @notice If you call this onchain you have sinned and you will not be forgiven.
+     *         This is simply a utility function to help you determine and/or
+     *         visualize the Openings of your schedule.
+     * @param $schedule The schedule to check.
+     * @param $n The number of window openings to return.
+     * @return $windows The next N window openings.
      */
     function toWindows(
         uint256 $schedule,
@@ -178,7 +186,7 @@ contract WindowFuse is Fuse {
             uint32 repeatsEvery,
             uint32 duration,
             uint8 daysOfWeek
-        ) = fromSchedule($schedule);
+        ) = decode($schedule);
 
         /// @dev Calculate the cursor used to get the next batch of results
         ///      after the return of the requested batch.
@@ -200,7 +208,11 @@ contract WindowFuse is Fuse {
     }
 
     /**
-     * See {IWindowCaveat-toWindow}.
+     * @dev Determine the active periods for a schedule window given a horizon
+     *      to filter to the points at which the `daysOfWeek` condition
+     *      is satisfied as a Window may contain multiple periods in which
+     *      it can be settled.
+     * @param $schedule The schedule to check.
      */
     function toWindow(
         uint256 $schedule
@@ -211,7 +223,7 @@ contract WindowFuse is Fuse {
             uint32 repeatsEvery,
             ,
             uint8 daysOfWeek
-        ) = fromSchedule($schedule);
+        ) = decode($schedule);
 
         /// @dev Ensure the current time is within the window.
         return _toWindow(startTime, repeatsEvery, daysOfWeek);
