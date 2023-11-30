@@ -45,6 +45,9 @@ contract NounsBidFuse is Fuse {
 		if (balances[$bidder] < $bid)
 			revert NounsBidSocketHelpers.InsufficientBalance();
 
+		/// @dev Make sure the bid - fees is large enough to cover
+		///		 the minimum bid.
+
 		/// @dev Callback to transfer the fee to the protocol.
 		$callback = bytes('');
 	}

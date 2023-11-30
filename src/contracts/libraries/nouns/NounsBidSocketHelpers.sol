@@ -19,6 +19,7 @@ library NounsBidSocketHelpers {
 	event Taken(
 		address indexed sender,
 		address indexed onBehalf,
+		address indexed asset,
 		uint256 nounId
 	);
 }
