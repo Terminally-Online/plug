@@ -130,12 +130,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 		/// @dev Set the bidder as the current winner of the auction.
 		bids[$nounId] = _msgSender();
 
-		emit NounsBidLib.Used(
-			msg.sender,
-			_msgSender(),
-			$value,
-			$nounId
-		);
+		emit NounsBidLib.Used(msg.sender, _msgSender(), $value, $nounId);
 	}
 
 	/**
@@ -157,12 +152,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 
 			if (!success) revert NounsBidLib.InsufficientOwnership();
 
-			emit NounsBidLib.Taken(
-				msg.sender,
-				_msgSender(),
-				$asset,
-				$value
-			);
+			emit NounsBidLib.Taken(msg.sender, _msgSender(), $asset, $value);
 		}
 		/// @dev If the asset is Nouns, then transfer the Nouns to the sender.
 		else if ($asset == address(nouns)) {
@@ -177,12 +167,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 
 			nouns.transferFrom(address(this), winner, $value);
 
-			emit NounsBidLib.Taken(
-				_msgSender(),
-				winner,
-				$asset,
-				$value
-			);
+			emit NounsBidLib.Taken(_msgSender(), winner, $asset, $value);
 		}
 		/// @dev If the asset is not ETH or Nouns, then revert.
 		else revert NounsBidLib.InsufficientReason();

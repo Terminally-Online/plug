@@ -52,7 +52,10 @@ contract PlugRevocationFuse is PlugFuse, PlugCore {
 	 * @param $signedPin The signed pin to revoke.
 	 * @param $domainHash The domain hash of the pin.
 	 */
-	function revoke(PlugTypesLib.LivePin calldata $signedPin, bytes32 $domainHash) public {
+	function revoke(
+		PlugTypesLib.LivePin calldata $signedPin,
+		bytes32 $domainHash
+	) public {
 		/// @dev Only allow signers of pins to revoke a signature.
 		///      Of course, revocation itself could be delegated.
 		require(

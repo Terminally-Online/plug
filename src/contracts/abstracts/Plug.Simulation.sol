@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.19;
 
-
 import {PlugCore} from './Plug.Core.sol';
 import {PlugTypesLib} from './Plug.Types.sol';
 import {IFuse} from '../interfaces/IFuse.sol';
@@ -86,9 +85,9 @@ abstract contract PlugSimulation is PlugCore {
 		for (uint256 i; i < $indexes.length; ) {
 			uint32 index = $indexes[i];
 
-			PlugTypesLib.Plug memory plug = $livePlugs[uint8(index)].plugs.plugs[
-				uint8(index >> 8)
-			];
+			PlugTypesLib.Plug memory plug = $livePlugs[uint8(index)]
+				.plugs
+				.plugs[uint8(index >> 8)];
 			PlugTypesLib.LivePin memory livePin = plug.pins[uint8(index >> 16)];
 
 			$results[i] = simulate(

@@ -12,7 +12,9 @@ interface IPlug {
 	 * @param $intent The plugs of plugs to execute.
 	 * @return success Whether the plugs of intent was successfully processed.
 	 */
-	function plugContract(PlugTypesLib.Plug[] calldata $intent) external returns (bool);
+	function plugContract(
+		PlugTypesLib.Plug[] calldata $intent
+	) external returns (bool);
 
 	/**
 	 * @notice Allows anyone to submit a plugs of signed plugs for processing.
