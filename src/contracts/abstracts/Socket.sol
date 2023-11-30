@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {IPlug} from '../interfaces/IPlug.sol';
-import {PlugCore} from './PlugCore.sol';
+import {Simulation} from './Simulation.sol';
 
 /**
  * @title Plug
@@ -14,7 +14,7 @@ import {PlugCore} from './PlugCore.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract Socket is PlugCore, IPlug {
+abstract contract Socket is Simulation, IPlug {
 	/**
 	 * @notice Instantiates a new Plug contract.
 	 * @param $name The name of the contract
@@ -23,7 +23,7 @@ abstract contract Socket is PlugCore, IPlug {
 	constructor(
 		string memory $name,
 		string memory $version
-	) PlugCore($name, $version) {}
+	) Simulation($name, $version) {}
 
 	/**
 	 * See {IPlug-plugContract}.
