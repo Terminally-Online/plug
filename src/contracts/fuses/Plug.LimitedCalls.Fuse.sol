@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import {Fuse} from '../abstracts/Fuse.sol';
+import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 /**
@@ -10,7 +10,7 @@ import {BytesLib} from '../libraries/BytesLib.sol';
  * @notice This Fuse Enforcer powers the ability to limit the number of times
  *         a delegate can call a function with the same pin hash.
  */
-contract LimitedCallsFuse is Fuse {
+contract PlugLimitedCallsFuse is PlugFuse {
 	/// @dev Use the BytesLib library for bytes manipulation.
 	using BytesLib for bytes;
 

@@ -4,10 +4,10 @@ pragma solidity ^0.8.19;
 
 import {ERC20} from 'solady/src/tokens/ERC20.sol';
 
-import {Fuse} from '../abstracts/Fuse.sol';
+import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
-contract ERC20AllowanceFuse is Fuse {
+contract PlugERC20AllowanceFuse is PlugFuse {
 	using BytesLib for bytes;
 
 	/// @dev Function signature of the ERC20 `transfer` method.

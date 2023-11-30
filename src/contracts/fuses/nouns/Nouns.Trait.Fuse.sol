@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
-import {Fuse} from '../../abstracts/Fuse.sol';
+import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
 
 interface INoun {
 	struct Seed {
@@ -43,7 +43,7 @@ interface INounsAuctionHouse {
  * @author @nftchance <chance@utc24.io>
  * @author @masonchain
  */
-contract NounsTraitFuse is Fuse, Ownable {
+contract NounsTraitFuse is PlugFuse, Ownable {
 	/// @dev Function hashes of the trait getters.
 	bytes32 public constant BACKGROUND_SELECTOR =
 		keccak256(abi.encodePacked('background(uint256 index)'));

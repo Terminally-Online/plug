@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.19;
 
-import {ThresholdFuse} from '../abstracts/fuses/ThresholdFuse.sol';
+import {ThresholdFuse} from '../abstracts/fuses/Plug.Threshold.Fuse.sol';
 
-contract BlockNumberFuse is ThresholdFuse {
+contract PlugBlockNumberFuse is ThresholdFuse {
 	/// @dev Returns the current block number.
 	function _threshold() internal view override returns (uint256) {
 		return block.number;

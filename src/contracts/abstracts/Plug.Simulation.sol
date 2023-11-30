@@ -3,9 +3,8 @@
 pragma solidity ^0.8.19;
 
 import {IFuse} from '../interfaces/IFuse.sol';
-import {PlugCore} from './Plug.Core.sol';
-
 import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
+import {PlugCore} from './Plug.Core.sol';
 
 /**
  * @title PlugSimulation

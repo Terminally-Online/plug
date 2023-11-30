@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 import {IFuse} from '../interfaces/IFuse.sol';
 
-abstract contract Fuse is IFuse {
+abstract contract PlugFuse is IFuse {
 	/**
 	 * See {IFuseEnforcer-enforceFuse}.
 	 */

@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.19;
 
-import {Fuse} from '../Fuse.sol';
+import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
-abstract contract ThresholdFuse is Fuse {
+abstract contract ThresholdFuse is PlugFuse {
 	using BytesLib for bytes;
 
 	/**

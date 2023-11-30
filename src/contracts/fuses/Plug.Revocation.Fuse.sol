@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 /// @dev Plug abstracts.
-import {Fuse} from '../abstracts/Fuse.sol';
+import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
 import {PlugCore} from '../abstracts/Plug.Core.sol';
 
 /// @dev Hash declarations and decoders for the Plug framework.
@@ -21,7 +21,7 @@ import {ECDSA} from 'solady/src/utils/ECDSA.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract RevocationFuse is Fuse, PlugCore {
+contract PlugRevocationFuse is PlugFuse, PlugCore {
 	/// @notice Use the ECDSA library for signature verification.
 	using ECDSA for bytes32;
 

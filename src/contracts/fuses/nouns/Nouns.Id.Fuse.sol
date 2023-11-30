@@ -2,8 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import {Fuse} from '../../abstracts/Fuse.sol';
-
+import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
 interface INounsAuctionHouse {
@@ -22,11 +21,11 @@ interface INounsAuctionHouse {
 
 /**
  * @title Nouns Id Fuse
- * @notice This Fuse enables the ability to declare a specific Noun tokenId 
+ * @notice This Fuse enables the ability to declare a specific Noun tokenId
  *		   that you you would like to bid on, on a regular basis.
  * @author @nftchance <chance@utc24.io>
  */
-contract NounsIdFuse is Fuse {
+contract NounsIdFuse is PlugFuse {
 	using BytesLib for bytes;
 
 	/// @dev The auction facilitator for Nouns.

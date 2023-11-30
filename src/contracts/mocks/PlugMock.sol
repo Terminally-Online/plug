@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.19;
 
-import {Socket} from '../abstracts/Socket.sol';
+import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 
 /**
  * @title Plug Mock
  * @notice A mock contract for testing the Plug framework.
  * @dev This contract is for testing purposes only.
  */
-contract PlugMock is Socket {
+contract PlugMock is PlugSocket {
 	/// @dev Active revert when echo is muted.
 	error EchoMuted();
 
@@ -24,7 +24,7 @@ contract PlugMock is Socket {
 	constructor(
 		string memory $name,
 		string memory $version
-	) Socket($name, $version) {}
+	) PlugSocket($name, $version) {}
 
 	/**
 	 * @notice A mock function for testing the framework.

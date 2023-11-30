@@ -2,13 +2,11 @@
 
 pragma solidity ^0.8.19;
 
+import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
 import {INounsAuctionHouse} from '../../interfaces/nouns/INounsAuctionHouse.sol';
-
 import {NounsBidLib} from '../../libraries/nouns/Nouns.Bid.Lib.sol';
 
-import {Fuse} from '../../abstracts/Fuse.sol';
-
-contract NounsBidFuse is Fuse {
+contract NounsBidFuse is PlugFuse {
 	INounsAuctionHouse public immutable auctionHouse;
 
 	/// @dev Keep track of the balances of each user.
