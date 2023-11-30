@@ -88,6 +88,7 @@
 		"@nftchance/plug-types": "^0.5.2",
 		"abitype": "^0.10.2",
 		"solady": "^0.0.132",
+		"tsx": "^4.1.3",
 		"viem": "^1.18.4"
 	},
 	"peerDependencies": {
