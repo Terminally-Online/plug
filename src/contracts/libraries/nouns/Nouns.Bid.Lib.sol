@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-library NounsBidSocketHelpers {
+library NounsBidLib {
 	error InsufficientBalance();
 	error InsufficientBid();
 	error InsufficientReason();

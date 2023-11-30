@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 import {INounsAuctionHouse} from '../../interfaces/nouns/INounsAuctionHouse.sol';
 
-import {NounsBidSocketHelpers} from '../../libraries/nouns/NounsBidSocketHelpers.sol';
+import {NounsBidLib} from '../../libraries/nouns/Nouns.Bid.Lib.sol';
 
 import {Fuse} from '../../abstracts/Fuse.sol';
 
@@ -32,18 +32,16 @@ contract NounsBidFuse is Fuse {
 
 		/// @dev Prevent the user from bidding on an auction that they
 		///      have already won / are winning.
-		if ($winner == $bidder)
-			revert NounsBidSocketHelpers.InsufficientReason();
+		if ($winner == $bidder) revert NounsBidLib.InsufficientReason();
 
 		/// @dev Prevent the user from bidding on an auction that has
 		///      not yet been settled.
 		if ($settled == false && $endTime <= block.timestamp)
 			if ($settleUnsettled == false)
-				revert NounsBidSocketHelpers.InsufficientSettlement();
+				revert NounsBidLib.InsufficientSettlement();
 
 		/// @dev Make sure the user has enough money to bid.
-		if (balances[$bidder] < $bid)
-			revert NounsBidSocketHelpers.InsufficientBalance();
+		if (balances[$bidder] < $bid) revert NounsBidLib.InsufficientBalance();
 
 		/// @dev Make sure the bid - fees is large enough to cover
 		///		 the minimum bid.

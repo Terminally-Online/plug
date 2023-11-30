@@ -6,22 +6,23 @@ import {INounsSeeder, INounsToken} from '../interfaces/nouns/INounsToken.sol';
 
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
-import {Socket} from '../abstracts/Socket.sol';
+import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 import {NounsBidSocketHelpers} from '../libraries/nouns/NounsBidSocketHelpers.sol';
 import {NounsBidFuse} from '../fuses/nouns/Nouns.Bid.Fuse.sol';
 
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 /**
- * @title Nouns Bid Balances
+ * @title Nouns Bid Socket
  * @notice This contract is responsible for coordinating the placing of bids in the
  *         Nouns Auction house and the following management of wins and losses without
  *         holding funds or collecting a TVL. ETH is automatically distributed when used,
  *         and Nouns are automatically distributed by the following bidder (in protocol)
  *         although the automated distribution can be front-run manually.
- * @author @nftchance <chance@utc24.io>
+ * @author @nftchance (chance@utc24.io)
+ * @author @masonchain
  */
-contract NounsBidSocket is NounsBidFuse, Ownable, Socket {
+contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 	using BytesLib for bytes;
 
 	/// @dev Accessible interface to the active Nouns Auction House.
@@ -46,7 +47,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, Socket {
 		address $auctionHouse,
 		address $nouns,
 		address $owner
-	) NounsBidFuse($auctionHouse) Socket('NounsBidSocket', '0.0.1') {
+	) NounsBidFuse($auctionHouse) PlugSocket('NounsBidSocket', '0.0.1') {
 		/// @dev Initialize the Auction House and Nouns interfaces.
 		nouns = INounsToken($nouns);
 
@@ -118,7 +119,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, Socket {
 		uint256 bidValue = $value - ($value / protocolFee);
 
 		/// @dev Account for the protocol fee.
-		balances[owner()] += $value - bidValue; 
+		balances[owner()] += $value - bidValue;
 
 		/// @dev Bid on the auction.
 		auctionHouse.createBid{value: bidValue}($nounId);
@@ -143,37 +144,47 @@ contract NounsBidSocket is NounsBidFuse, Ownable, Socket {
 	 * @param $value The token id of the Noun being withdrawn.
 	 */
 	function take(address $asset, uint256 $value) public {
-        /// @dev If the asset is ETH, then transfer the ETH to the sender.
-        if ($asset == DOLPHIN_ETH) {
-            /// @dev Make sure the sender has sufficient balance to cover the call.
-            if (balances[_msgSender()] < $value)
-                revert NounsBidSocketHelpers.InsufficientBalance();
+		/// @dev If the asset is ETH, then transfer the ETH to the sender.
+		if ($asset == DOLPHIN_ETH) {
+			/// @dev Make sure the sender has sufficient balance to cover the call.
+			if (balances[_msgSender()] < $value)
+				revert NounsBidSocketHelpers.InsufficientBalance();
 
-            balances[_msgSender()] -= $value;
+			balances[_msgSender()] -= $value;
 
 			/// @dev Transfer the ETH to the sender.
 			(bool success, ) = _msgSender().call{value: $value}('');
 
-            if (!success) revert NounsBidSocketHelpers.InsufficientOwnership();
+			if (!success) revert NounsBidSocketHelpers.InsufficientOwnership();
 
-			emit NounsBidSocketHelpers.Taken(msg.sender, _msgSender(), $asset, $value);
-        }
-        /// @dev If the asset is Nouns, then transfer the Nouns to the sender.
-        else if ($asset == address(nouns)) {
-            /// @dev Confirm that the auction has been settled to this contract.
-            if (nouns.ownerOf($value) != address(this))
-                revert NounsBidSocketHelpers.InsufficientOwnership();
+			emit NounsBidSocketHelpers.Taken(
+				msg.sender,
+				_msgSender(),
+				$asset,
+				$value
+			);
+		}
+		/// @dev If the asset is Nouns, then transfer the Nouns to the sender.
+		else if ($asset == address(nouns)) {
+			/// @dev Confirm that the auction has been settled to this contract.
+			if (nouns.ownerOf($value) != address(this))
+				revert NounsBidSocketHelpers.InsufficientOwnership();
 
 			address winner = bids[$value];
 
-            /// @dev Remove the winning bid from circulation.
-            delete bids[$value];
+			/// @dev Remove the winning bid from circulation.
+			delete bids[$value];
 
-            nouns.transferFrom(address(this), winner, $value);
+			nouns.transferFrom(address(this), winner, $value);
 
-			emit NounsBidSocketHelpers.Taken(_msgSender(), winner, $asset, $value);
-        }
-        /// @dev If the asset is not ETH or Nouns, then revert.
-        else revert NounsBidSocketHelpers.InsufficientReason();
+			emit NounsBidSocketHelpers.Taken(
+				_msgSender(),
+				winner,
+				$asset,
+				$value
+			);
+		}
+		/// @dev If the asset is not ETH or Nouns, then revert.
+		else revert NounsBidSocketHelpers.InsufficientReason();
 	}
 }

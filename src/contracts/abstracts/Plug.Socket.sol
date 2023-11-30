@@ -3,18 +3,18 @@
 pragma solidity ^0.8.19;
 
 import {IPlug} from '../interfaces/IPlug.sol';
-import {Simulation} from './Simulation.sol';
+import {PlugSimulation} from './Plug.Simulation.sol';
 
 /**
  * @title Plug
  * @notice The core contract for the Plug framework that enables
  *         counterfactual revokable pin of extremely
  *         granular pin and execution paths.
- * @author @nftchance
+ * @author @nftchance (chance@utc24.io)
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract Socket is Simulation, IPlug {
+abstract contract PlugSocket is PlugSimulation, IPlug {
 	/**
 	 * @notice Instantiates a new Plug contract.
 	 * @param $name The name of the contract
@@ -23,7 +23,7 @@ abstract contract Socket is Simulation, IPlug {
 	constructor(
 		string memory $name,
 		string memory $version
-	) Simulation($name, $version) {}
+	) PlugSimulation($name, $version) {}
 
 	/**
 	 * See {IPlug-plugContract}.

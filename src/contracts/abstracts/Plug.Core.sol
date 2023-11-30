@@ -3,9 +3,9 @@
 pragma solidity ^0.8.19;
 
 /// @dev Hash declarations and decoders for the Plug framework.
-import {Types} from './Types.sol';
+import {Types} from './Plug.Types.sol';
 /// @dev Error utilities for the Plug framework.
-import {PlugErrors} from '../libraries/PlugErrors.sol';
+import {PlugErrors} from '../libraries/Plug.Errors.sol';
 
 /// @dev Core Plug dependencies.
 import {IFuse} from '../interfaces/IFuse.sol';
