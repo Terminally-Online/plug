@@ -5,6 +5,7 @@ pragma solidity ^0.8.19;
 import {ERC20} from 'solady/src/tokens/ERC20.sol';
 
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 contract PlugERC20AllowanceFuse is PlugFuse {
@@ -23,7 +24,7 @@ contract PlugERC20AllowanceFuse is PlugFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata $current,
+		PlugTypesLib.Current calldata $current,
 		bytes32 $pinHash
 	) public override returns (bytes memory $callback) {
 		/// @dev Determine the function being called by the transaction.

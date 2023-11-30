@@ -3,9 +3,10 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
-library WindowFuseHelpers {
+library WindowFuseLib {
 	error WindowLackingDuration();
 	error WindowLackingDays();
 	error WindowLackingRepeatsEvery();
@@ -62,13 +63,13 @@ contract PlugWindowFuse is PlugFuse {
 
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		uint256 schedule = $live.toUint256(0);
 
 		if (!isWithinWindow(schedule))
-			revert WindowFuseHelpers.WindowCaveatViolation();
+			revert WindowFuseLib.WindowCaveatViolation();
 
 		$callback = bytes('');
 	}
@@ -114,14 +115,14 @@ contract PlugWindowFuse is PlugFuse {
 		uint8 $daysOfWeek
 	) external pure returns (uint256 $schedule) {
 		/// @dev Ensure the duration is greater than 0.
-		if ($duration == 0) revert WindowFuseHelpers.WindowLackingDuration();
+		if ($duration == 0) revert WindowFuseLib.WindowLackingDuration();
 
 		/// @dev Must support at least one day.
-		if ($daysOfWeek == 0) revert WindowFuseHelpers.WindowLackingDays();
+		if ($daysOfWeek == 0) revert WindowFuseLib.WindowLackingDays();
 
 		/// @dev Prevent weird overlapping windows.
 		if ($duration > $repeatsEvery)
-			revert WindowFuseHelpers.WindowLackingSufficientRepeatsEvery();
+			revert WindowFuseLib.WindowLackingSufficientRepeatsEvery();
 
 		/// @dev Pack the schedule details.
 		$schedule =
@@ -182,10 +183,10 @@ contract PlugWindowFuse is PlugFuse {
 	)
 		external
 		view
-		returns (WindowFuseHelpers.Window[] memory $windows, uint32 $cursor)
+		returns (WindowFuseLib.Window[] memory $windows, uint32 $cursor)
 	{
 		/// @dev Load the stack.
-		$windows = new WindowFuseHelpers.Window[]($n);
+		$windows = new WindowFuseLib.Window[]($n);
 
 		/// @dev Get the schedule details.
 		(
@@ -223,7 +224,7 @@ contract PlugWindowFuse is PlugFuse {
 	 */
 	function toWindow(
 		uint256 $schedule
-	) external pure returns (WindowFuseHelpers.Window memory $window) {
+	) external pure returns (WindowFuseLib.Window memory $window) {
 		/// @dev Get the schedule details.
 		(uint32 startTime, uint32 repeatsEvery, , uint8 daysOfWeek) = decode(
 			$schedule
@@ -243,7 +244,7 @@ contract PlugWindowFuse is PlugFuse {
 		uint32 $startTime,
 		uint32 $duration,
 		uint8 $daysOfWeek
-	) external pure returns (WindowFuseHelpers.Window memory $window) {
+	) external pure returns (WindowFuseLib.Window memory $window) {
 		/// @dev Ensure the current time is within the window.
 		return _toWindow($startTime, $duration, $daysOfWeek);
 	}
@@ -278,7 +279,7 @@ contract PlugWindowFuse is PlugFuse {
 		uint32 $startTime,
 		uint32 $duration,
 		uint8 $daysOfWeek
-	) internal pure returns (WindowFuseHelpers.Window memory $window) {
+	) internal pure returns (WindowFuseLib.Window memory $window) {
 		/// @dev Calculate when this Window ends.
 		uint32 windowEndTime = $startTime + $duration;
 
@@ -286,7 +287,7 @@ contract PlugWindowFuse is PlugFuse {
 		uint32 daysInWindow = $duration / SECONDS_PER_DAY;
 
 		/// @dev Load the stack.
-		$window.periods = new WindowFuseHelpers.Period[](daysInWindow);
+		$window.periods = new WindowFuseLib.Period[](daysInWindow);
 
 		/// @dev Loop through every day in the window backwards.
 		for (daysInWindow; daysInWindow >= 0; daysInWindow--) {
@@ -346,11 +347,11 @@ contract PlugWindowFuse is PlugFuse {
 
 		/// @dev Ensure the current time is after the start time.
 		if (currentTime < $startTime)
-			revert WindowFuseHelpers.WindowLackingStartTime();
+			revert WindowFuseLib.WindowLackingStartTime();
 
 		/// @dev Ensure the current time is on a supported day of the week.
 		if (!_isOnDayOfWeek($daysOfWeek, currentTime))
-			revert WindowFuseHelpers.WindowLackingDays();
+			revert WindowFuseLib.WindowLackingDays();
 
 		/// @dev Get the time since the declaration of the schedule.
 		uint32 timeElapsed = currentTime - $startTime;

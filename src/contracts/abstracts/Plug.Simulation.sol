@@ -2,9 +2,11 @@
 
 pragma solidity ^0.8.19;
 
+
+import {PlugCore} from './Plug.Core.sol';
+import {PlugTypesLib} from './Plug.Types.sol';
 import {IFuse} from '../interfaces/IFuse.sol';
 import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
-import {PlugCore} from './Plug.Core.sol';
 
 /**
  * @title PlugSimulation
@@ -30,7 +32,7 @@ abstract contract PlugSimulation is PlugCore {
 	 * @return results An array of results describing the status of the bundle.
 	 */
 	function simulate(
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) public view virtual returns (PlugSimulationLib.Result[] memory) {
 		uint256 resultsLength = length($livePlugs);
 
@@ -40,13 +42,13 @@ abstract contract PlugSimulation is PlugCore {
 			memory results = new PlugSimulationLib.Result[](resultsLength);
 
 		for (uint8 i; i < $livePlugs.length; i++) {
-			LivePlugs calldata livePlugs = $livePlugs[i];
+			PlugTypesLib.LivePlugs calldata livePlugs = $livePlugs[i];
 
 			for (uint8 j; j < livePlugs.plugs.plugs.length; j++) {
-				Plug memory plug = livePlugs.plugs.plugs[j];
+				PlugTypesLib.Plug memory plug = livePlugs.plugs.plugs[j];
 
 				for (uint8 k; k < plug.pins.length; k++) {
-					LivePin memory livePin = plug.pins[k];
+					PlugTypesLib.LivePin memory livePin = plug.pins[k];
 
 					for (uint8 l; l < livePin.pin.fuses.length; l++) {
 						results[results.length - resultsLength--] = simulate(
@@ -74,7 +76,7 @@ abstract contract PlugSimulation is PlugCore {
 	 */
 	function simulate(
 		uint32[] memory $indexes,
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) public view virtual returns (PlugSimulationLib.Result[] memory) {
 		if ($indexes.length == 0) return new PlugSimulationLib.Result[](0);
 
@@ -84,10 +86,10 @@ abstract contract PlugSimulation is PlugCore {
 		for (uint256 i; i < $indexes.length; ) {
 			uint32 index = $indexes[i];
 
-			Plug memory plug = $livePlugs[uint8(index)].plugs.plugs[
+			PlugTypesLib.Plug memory plug = $livePlugs[uint8(index)].plugs.plugs[
 				uint8(index >> 8)
 			];
-			LivePin memory livePin = plug.pins[uint8(index >> 16)];
+			PlugTypesLib.LivePin memory livePin = plug.pins[uint8(index >> 16)];
 
 			$results[i] = simulate(
 				plug,
@@ -111,9 +113,9 @@ abstract contract PlugSimulation is PlugCore {
 	 * @return $result The result of the simulation.
 	 */
 	function simulate(
-		Plug memory $plug,
-		LivePin memory $livePin,
-		Fuse memory $fuse
+		PlugTypesLib.Plug memory $plug,
+		PlugTypesLib.LivePin memory $livePin,
+		PlugTypesLib.Fuse memory $fuse
 	) public view virtual returns (PlugSimulationLib.Result memory $result) {
 		bytes32 pinHash = getLivePinHash($livePin);
 
@@ -144,7 +146,7 @@ abstract contract PlugSimulation is PlugCore {
 	 *         uint8 | 24 | fuseIndex
 	 */
 	function indexes(
-		Plug[] calldata $plugs
+		PlugTypesLib.Plug[] calldata $plugs
 	) public view virtual returns (uint24[] memory) {
 		return indexes(uint8(length($plugs)), $plugs);
 	}
@@ -161,17 +163,17 @@ abstract contract PlugSimulation is PlugCore {
 	 */
 	function indexes(
 		uint8 $fusesLength,
-		Plug[] calldata $plugs
+		PlugTypesLib.Plug[] calldata $plugs
 	) public view virtual returns (uint24[] memory) {
 		if ($fusesLength == 0) return new uint24[](0);
 
 		uint24[] memory fuseIndexes = new uint24[]($fusesLength);
 
 		for (uint8 i; i < $plugs.length; i++) {
-			Plug memory plug = $plugs[i];
+			PlugTypesLib.Plug memory plug = $plugs[i];
 
 			for (uint8 j; j < plug.pins.length; j++) {
-				Pin memory pin = plug.pins[j].pin;
+				PlugTypesLib.Pin memory pin = plug.pins[j].pin;
 
 				for (uint8 k; k < pin.fuses.length; k++) {
 					fuseIndexes[fuseIndexes.length - $fusesLength--] = uint24(
@@ -195,7 +197,7 @@ abstract contract PlugSimulation is PlugCore {
 	 *         uint8 | 24 | fuseIndex
 	 */
 	function indexes(
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) public view virtual returns (uint32[] memory) {
 		return indexes(length($livePlugs), $livePlugs);
 	}
@@ -211,7 +213,7 @@ abstract contract PlugSimulation is PlugCore {
 	 */
 	function indexes(
 		uint256 $fusesLength,
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) public view virtual returns (uint32[] memory) {
 		uint256 indexesLength = length($livePlugs);
 
@@ -242,10 +244,10 @@ abstract contract PlugSimulation is PlugCore {
 	 * @return $total The number of responses to expect for this bundle.
 	 **/
 	function length(
-		Plug[] calldata $plugs
+		PlugTypesLib.Plug[] calldata $plugs
 	) public view virtual returns (uint256 $total) {
 		for (uint8 i; i < $plugs.length; i++) {
-			Plug memory plug = $plugs[i];
+			PlugTypesLib.Plug memory plug = $plugs[i];
 
 			for (uint8 j; j < plug.pins.length; j++) {
 				$total += plug.pins[j].pin.fuses.length;
@@ -260,7 +262,7 @@ abstract contract PlugSimulation is PlugCore {
 	 * @return $total The number of responses to expect for this bundle.
 	 **/
 	function length(
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) public view virtual returns (uint256 $total) {
 		for (uint8 i; i < $livePlugs.length; i++) {
 			$total += length($livePlugs[i].plugs.plugs);

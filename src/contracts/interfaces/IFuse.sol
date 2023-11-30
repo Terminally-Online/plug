@@ -3,9 +3,9 @@
 pragma solidity ^0.8.19;
 
 /// @dev Shape declarations in the Plug framework.
-import {ITypes} from '../abstracts/Plug.Types.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 
-interface IFuse is ITypes {
+interface IFuse {
 	/**
 	 * @notice Enforces a fuse on a transaction.
 	 * @param $live The live wire the fuse is regulating.
@@ -14,7 +14,7 @@ interface IFuse is ITypes {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata $current,
+		PlugTypesLib.Current calldata $current,
 		bytes32 $pinHash
 	) external returns (bytes calldata $callback);
 }

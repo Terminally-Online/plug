@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../../abstracts/Plug.Types.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
 abstract contract ThresholdFuse is PlugFuse {
@@ -13,7 +14,7 @@ abstract contract ThresholdFuse is PlugFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $terms,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		/// @dev Decode the terms to get the logic operator and threshold.

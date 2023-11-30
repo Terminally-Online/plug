@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../../abstracts/Plug.Types.sol';
 import {INounsAuctionHouse} from '../../interfaces/nouns/INounsAuctionHouse.sol';
 import {NounsBidLib} from '../../libraries/nouns/Nouns.Bid.Lib.sol';
 
@@ -19,7 +20,7 @@ contract NounsBidFuse is PlugFuse {
 
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		(bool $settleUnsettled, address $bidder, uint256 $bid) = decode($live);

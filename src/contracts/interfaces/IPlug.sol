@@ -3,16 +3,16 @@
 pragma solidity ^0.8.19;
 
 /// @dev Shape declarations in the Plug framework.
-import {ITypes} from '../abstracts/Plug.Types.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 
-interface IPlug is ITypes {
+interface IPlug {
 	/**
 	 * @notice Allows a smart contract to submit a plugs of plugs for processing,
 	 *         allowing itself to be the delegate.
 	 * @param $intent The plugs of plugs to execute.
 	 * @return success Whether the plugs of intent was successfully processed.
 	 */
-	function plugContract(Plug[] calldata $intent) external returns (bool);
+	function plugContract(PlugTypesLib.Plug[] calldata $intent) external returns (bool);
 
 	/**
 	 * @notice Allows anyone to submit a plugs of signed plugs for processing.
@@ -20,6 +20,6 @@ interface IPlug is ITypes {
 	 * @return success Whether the plugs of plugs was successfully processed.
 	 */
 	function plug(
-		LivePlugs[] calldata $signedPlugs
+		PlugTypesLib.LivePlugs[] calldata $signedPlugs
 	) external returns (bool success);
 }

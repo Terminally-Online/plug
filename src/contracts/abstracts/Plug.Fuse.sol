@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.19;
 
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {IFuse} from '../interfaces/IFuse.sol';
 
 abstract contract PlugFuse is IFuse {
@@ -10,7 +11,7 @@ abstract contract PlugFuse is IFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata $current,
+		PlugTypesLib.Current calldata $current,
 		bytes32 $pinHash
 	) public virtual returns (bytes memory $callback);
 }

@@ -5,6 +5,7 @@ pragma solidity ^0.8.19;
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
 import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../../abstracts/Plug.Types.sol';
 
 interface INoun {
 	struct Seed {
@@ -79,7 +80,7 @@ contract NounsTraitFuse is PlugFuse, Ownable {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		(bytes32 selector, bytes32 trait) = decode($live);

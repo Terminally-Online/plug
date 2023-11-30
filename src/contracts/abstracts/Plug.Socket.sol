@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 
 import {IPlug} from '../interfaces/IPlug.sol';
 import {PlugSimulation} from './Plug.Simulation.sol';
+import {PlugTypesLib} from './Plug.Types.sol';
 
 /**
  * @title Plug
@@ -29,7 +30,7 @@ abstract contract PlugSocket is PlugSimulation, IPlug {
 	 * See {IPlug-plugContract}.
 	 */
 	function plugContract(
-		Plug[] calldata $plugs
+		PlugTypesLib.Plug[] calldata $plugs
 	) external returns (bool $success) {
 		$success = _plug($plugs, msg.sender);
 	}
@@ -38,7 +39,7 @@ abstract contract PlugSocket is PlugSimulation, IPlug {
 	 * See {IPlug-plug}.
 	 */
 	function plug(
-		LivePlugs[] calldata $livePlugs
+		PlugTypesLib.LivePlugs[] calldata $livePlugs
 	) external returns (bool $success) {
 		/// @dev Load the stack.
 		uint256 i;
@@ -46,13 +47,13 @@ abstract contract PlugSocket is PlugSimulation, IPlug {
 		/// @dev Loop through the signed plugs.
 		for (i; i < $livePlugs.length; ) {
 			/// @dev Load the signed intent as a hot reference.
-			LivePlugs calldata livePlugs = $livePlugs[i];
+			PlugTypesLib.LivePlugs calldata livePlugs = $livePlugs[i];
 
 			/// @dev Determine who signed the intent.
 			address intentSigner = getLivePlugsSigner(livePlugs);
 
 			/// @dev Load the plugs as a hot reference.
-			Plugs calldata plugs = livePlugs.plugs;
+			PlugTypesLib.Plugs calldata plugs = livePlugs.plugs;
 
 			/// @dev Prevent replay attacks by enforcing replay protection.
 			_enforceBreaker(intentSigner, plugs.breaker);

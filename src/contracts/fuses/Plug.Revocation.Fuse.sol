@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 
 /// @dev Plug abstracts.
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {PlugCore} from '../abstracts/Plug.Core.sol';
 
 /// @dev Hash declarations and decoders for the Plug framework.
@@ -35,7 +36,7 @@ contract PlugRevocationFuse is PlugFuse, PlugCore {
 	 */
 	function enforceFuse(
 		bytes calldata,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32 $pinHash
 	) public view override returns (bytes memory $callback) {
 		/// @dev Ensure the pin has not been revoked.
@@ -51,7 +52,7 @@ contract PlugRevocationFuse is PlugFuse, PlugCore {
 	 * @param $signedPin The signed pin to revoke.
 	 * @param $domainHash The domain hash of the pin.
 	 */
-	function revoke(LivePin calldata $signedPin, bytes32 $domainHash) public {
+	function revoke(PlugTypesLib.LivePin calldata $signedPin, bytes32 $domainHash) public {
 		/// @dev Only allow signers of pins to revoke a signature.
 		///      Of course, revocation itself could be delegated.
 		require(
@@ -78,7 +79,7 @@ contract PlugRevocationFuse is PlugFuse, PlugCore {
 	 * @return $signer The address of the signer.
 	 */
 	function getSigner(
-		LivePin memory $signedPin,
+		PlugTypesLib.LivePin memory $signedPin,
 		bytes32 $domainHash
 	) public view returns (address $signer) {
 		/// @dev Determine the digest of the pin and recover the signer.
@@ -94,7 +95,7 @@ contract PlugRevocationFuse is PlugFuse, PlugCore {
 	 * @return $digest The digest of the pin.
 	 */
 	function getDigest(
-		Pin memory $pin,
+		PlugTypesLib.Pin memory $pin,
 		bytes32 $domainHash
 	) public pure returns (bytes32 $digest) {
 		/// @dev Encode the pin and domain hash and hash them.

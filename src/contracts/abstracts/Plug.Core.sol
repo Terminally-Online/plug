@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.19;
 
+import {PlugTypes, PlugTypesLib} from './Plug.Types.sol';
 import {IFuse} from '../interfaces/IFuse.sol';
 import {PlugErrors} from '../libraries/Plug.Errors.sol';
-import {Types} from './Plug.Types.sol';
 
 /**
  * @title Plug Core
@@ -15,7 +15,7 @@ import {Types} from './Plug.Types.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-abstract contract PlugCore is Types {
+abstract contract PlugCore is PlugTypes {
 	using PlugErrors for bytes;
 
 	/// @notice Multi-dimensional account pin nonce management.
@@ -30,7 +30,7 @@ abstract contract PlugCore is Types {
 	constructor(
 		string memory $name,
 		string memory $version
-	) Types($name, $version) {}
+	) PlugTypes($name, $version) {}
 
 	/**
 	 * @notice Determine the address representing the message sender in the
@@ -80,7 +80,7 @@ abstract contract PlugCore is Types {
 	 */
 	function _enforceBreaker(
 		address $intendedSender,
-		Breaker memory $protection
+		PlugTypesLib.Breaker memory $protection
 	) internal {
 		/// @dev Ensure the nonce is in order.
 		require(
@@ -123,7 +123,7 @@ abstract contract PlugCore is Types {
 	 * @return $success Whether the transaction was successfully executed.
 	 */
 	function _plug(
-		Plug[] calldata $plugs,
+		PlugTypesLib.Plug[] calldata $plugs,
 		address $sender
 	) internal returns (bool $success) {
 		/// @dev Load the stack.
@@ -138,10 +138,10 @@ abstract contract PlugCore is Types {
 		bytes memory callback;
 
 		/// @dev Load the structs into a hot reference.
-		Plug memory intent;
-		LivePin memory signedPin;
-		Pin memory pin;
-		Current memory current;
+		PlugTypesLib.Plug memory intent;
+		PlugTypesLib.LivePin memory signedPin;
+		PlugTypesLib.Pin memory pin;
+		PlugTypesLib.Current memory current;
 
 		/// @dev Iterate over the plugs of plugs.
 		for (i; i < $plugs.length; ) {

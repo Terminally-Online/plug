@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../../abstracts/Plug.Types.sol';
 import {BytesLib} from '../../libraries/BytesLib.sol';
 
 interface INounsAuctionHouse {
@@ -40,7 +41,7 @@ contract NounsIdFuse is PlugFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		/// @dev Get the current state of the auction.

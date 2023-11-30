@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 
 contract PlugAllowedMethodsFuse is PlugFuse {
 	/**
@@ -10,7 +11,7 @@ contract PlugAllowedMethodsFuse is PlugFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata $current,
+		PlugTypesLib.Current calldata $current,
 		bytes32
 	) public pure override returns (bytes memory $callback) {
 		/// @dev The signature of the function that is being called.

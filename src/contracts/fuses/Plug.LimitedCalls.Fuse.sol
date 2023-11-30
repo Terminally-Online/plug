@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
+import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 /**
@@ -22,7 +23,7 @@ contract PlugLimitedCallsFuse is PlugFuse {
 	 */
 	function enforceFuse(
 		bytes calldata $live,
-		Current calldata,
+		PlugTypesLib.Current calldata,
 		bytes32 $pinHash
 	) public override returns (bytes memory $callback) {
 		/// @dev Confirm the allowed limit has not yet been reached by the sender
