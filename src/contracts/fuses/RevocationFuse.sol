@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 /// @dev Plug abstracts.
 import {Fuse} from '../abstracts/Fuse.sol';
-import {PlugCore} from '../abstracts/PlugCore.sol';
+import {PlugCore} from '../abstracts/Plug.Core.sol';
 
 /// @dev Hash declarations and decoders for the Plug framework.
 import {ECDSA} from 'solady/src/utils/ECDSA.sol';
