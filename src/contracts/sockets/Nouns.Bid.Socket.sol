@@ -7,7 +7,7 @@ import {INounsSeeder, INounsToken} from '../interfaces/nouns/INounsToken.sol';
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
 import {PlugSocket} from '../abstracts/Plug.Socket.sol';
-import {NounsBidSocketHelpers} from '../libraries/nouns/NounsBidSocketHelpers.sol';
+import {NounsBidLib} from '../libraries/nouns/Nouns.Bid.Lib.sol';
 import {NounsBidFuse} from '../fuses/nouns/Nouns.Bid.Fuse.sol';
 
 import {BytesLib} from '../libraries/BytesLib.sol';
@@ -86,7 +86,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 		/// @dev Account for the money deposited by the sender.
 		balances[$onBehalf] += msg.value;
 
-		emit NounsBidSocketHelpers.Given($onBehalf, msg.value);
+		emit NounsBidLib.Given($onBehalf, msg.value);
 	}
 
 	/**
@@ -130,7 +130,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 		/// @dev Set the bidder as the current winner of the auction.
 		bids[$nounId] = _msgSender();
 
-		emit NounsBidSocketHelpers.Used(
+		emit NounsBidLib.Used(
 			msg.sender,
 			_msgSender(),
 			$value,
@@ -148,16 +148,16 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 		if ($asset == DOLPHIN_ETH) {
 			/// @dev Make sure the sender has sufficient balance to cover the call.
 			if (balances[_msgSender()] < $value)
-				revert NounsBidSocketHelpers.InsufficientBalance();
+				revert NounsBidLib.InsufficientBalance();
 
 			balances[_msgSender()] -= $value;
 
 			/// @dev Transfer the ETH to the sender.
 			(bool success, ) = _msgSender().call{value: $value}('');
 
-			if (!success) revert NounsBidSocketHelpers.InsufficientOwnership();
+			if (!success) revert NounsBidLib.InsufficientOwnership();
 
-			emit NounsBidSocketHelpers.Taken(
+			emit NounsBidLib.Taken(
 				msg.sender,
 				_msgSender(),
 				$asset,
@@ -168,7 +168,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 		else if ($asset == address(nouns)) {
 			/// @dev Confirm that the auction has been settled to this contract.
 			if (nouns.ownerOf($value) != address(this))
-				revert NounsBidSocketHelpers.InsufficientOwnership();
+				revert NounsBidLib.InsufficientOwnership();
 
 			address winner = bids[$value];
 
@@ -177,7 +177,7 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 
 			nouns.transferFrom(address(this), winner, $value);
 
-			emit NounsBidSocketHelpers.Taken(
+			emit NounsBidLib.Taken(
 				_msgSender(),
 				winner,
 				$asset,
@@ -185,6 +185,6 @@ contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
 			);
 		}
 		/// @dev If the asset is not ETH or Nouns, then revert.
-		else revert NounsBidSocketHelpers.InsufficientReason();
+		else revert NounsBidLib.InsufficientReason();
 	}
 }
