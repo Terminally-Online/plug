@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.2
+
+### Patch Changes
+
+-   ca17edc: feat: include
+
 ## 0.2.1
 
 ### Patch Changes
