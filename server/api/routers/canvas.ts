@@ -45,12 +45,18 @@ export default createTRPCRouter({
 						where: {
 							name: { search },
 							userId
+						},
+						orderBy: {
+							updatedAt: 'desc'
 						}
 					})
 
 				return await ctx.db.canvas.findMany({
 					where: {
 						userId
+					},
+					orderBy: {
+						updatedAt: 'desc'
 					}
 				})
 			} catch (e) {
