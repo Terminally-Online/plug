@@ -40,7 +40,8 @@
 	"files": [
 		"/core",
 		"/dist",
-		"/src"
+		"/src",
+		"/artifacts"
 	],
 	"publishConfig": {
 		"access": "public"
