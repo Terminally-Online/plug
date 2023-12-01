@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.5
+
+### Patch Changes
+
+-   3d33571: feat: add artifacts export path
+
 ## 0.2.4
 
 ### Patch Changes
