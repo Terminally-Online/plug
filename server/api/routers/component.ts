@@ -1,12 +1,10 @@
-import { EventEmitter } from 'events'
 import { z } from 'zod'
 
 import { Prisma } from '@prisma/client'
 import { observable } from '@trpc/server/observable'
 
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
-
-const ee = new EventEmitter()
+import { emitter } from '@/server/emitter'
 
 export const ComponentSchema = z.object({
 	id: z.string(),
@@ -40,7 +38,7 @@ export default createTRPCRouter({
 				}
 			})
 
-			ee.emit(input.id, component)
+			emitter.emit(input.id, component)
 
 			return component
 		}),
@@ -68,7 +66,7 @@ export default createTRPCRouter({
 				}
 			})
 
-			ee.emit('move', input.component.id)
+			emitter.emit('move', input.component.id)
 
 			return component
 		}),
@@ -85,19 +83,19 @@ export default createTRPCRouter({
 		})
 	}),
 
-	onMove: protectedProcedure.subscription(() => {
+	onMove: protectedProcedure.subscription(({ ctx }) => {
 		return observable<string>(emit => {
-			console.log('ready to move')
+			console.log('ready to move', emitter, ctx.session)
 
 			const onMove = (data: string) => {
 				console.log('move', data)
 				emit.next(data)
 			}
 
-			ee.on('move', onMove)
+			emitter.on('move', onMove)
 
 			return () => {
-				ee.off('move', onMove)
+				emitter.off('move', onMove)
 			}
 		})
 	})

@@ -8,6 +8,7 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
 
 import { getServerAuthSession } from '@/server/auth'
 import { db } from '@/server/db'
+import { emitter } from '@/server/emitter'
 
 interface CreateContextOptions {
 	session: Session | null
@@ -16,7 +17,8 @@ interface CreateContextOptions {
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 	return {
 		session: opts.session,
-		db
+		db,
+		emitter
 	}
 }
 

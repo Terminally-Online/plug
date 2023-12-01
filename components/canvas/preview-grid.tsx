@@ -3,7 +3,7 @@ import { memo } from 'react'
 
 import { Canvas } from '@prisma/client'
 
-import CanvasPreview from './preview'
+import CanvasPreview from '@/components/canvas/preview'
 
 export type CanvasPreviewGridProps = {
 	canvases: Array<Canvas> | undefined

@@ -1,15 +1,14 @@
 import type { FC } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
+import { Scaler } from '@/components/canvas/scaler'
+import { DraggableComponents } from '@/components/drag/draggable/draggable-components'
+import { Grid } from '@/components/drag/grid/grid'
 import Toolbar from '@/components/viewport/toolbar'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
 import CanvasStore from '@/lib/store'
-
-import { DraggableComponents } from '../drag/draggable/draggable'
-import { Grid } from '../drag/grid/grid'
-import { Scaler } from './scaler'
 
 export type CanvasProps = {
 	frame: string

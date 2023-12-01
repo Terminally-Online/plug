@@ -1,13 +1,15 @@
 import next from 'next'
 
+import { getSession } from 'next-auth/react'
+
 import { createServer } from 'node:http'
 import { parse } from 'node:url'
 import { WebSocketServer } from 'ws'
 
 import { applyWSSHandler } from '@trpc/server/adapters/ws'
 
-import { createContext } from './api/context'
-import { appRouter } from './api/routers/app'
+import { appRouter } from './api/root'
+import { createInnerTRPCContext } from './api/trpc'
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -21,7 +23,17 @@ void app.prepare().then(() => {
 		await handle(req, res, parsedUrl)
 	})
 	const wss = new WebSocketServer({ server })
-	const handler = applyWSSHandler({ wss, router: appRouter, createContext })
+	const handler = applyWSSHandler({
+		wss,
+		router: appRouter,
+		createContext: async opts => {
+			const session = await getSession(opts)
+
+			return createInnerTRPCContext({
+				session
+			})
+		}
+	})
 
 	process.on('SIGTERM', () => {
 		console.log('SIGTERM')

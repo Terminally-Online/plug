@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events'
 import { z } from 'zod'
 
 import { Prisma } from '@prisma/client'
@@ -8,13 +7,8 @@ import { observable } from '@trpc/server/observable'
 import componentRouter, {
 	ComponentSchema
 } from '@/server/api/routers/component'
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure
-} from '@/server/api/trpc'
-
-export const emitter = new EventEmitter()
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { emitter } from '@/server/emitter'
 
 export const canvasWithComponents =
 	Prisma.validator<Prisma.CanvasDefaultArgs>()({
