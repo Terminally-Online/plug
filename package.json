@@ -49,7 +49,7 @@
 		"__BUILD__": "",
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
-		"build:contracts": "BUILD=true pnpm hardhat compile && tsx src/lib/functions/build.ts",
+		"build:contracts": "BUILD=true pnpm hardhat clean && BUILD=true pnpm hardhat compile",
 		"build:ts": "pnpm tsup && pnpm format",
 		"format": "pnpm prettier --write .",
 		"lint": "tsc",
