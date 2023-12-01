@@ -31,8 +31,9 @@
       - [ ] Be able to select a component.
       - [ ] Be able to delete it and select a group.
       - [ ] Drag selection.
-    - [ ] Fuse development.
-      - [ ] Add noun trait bid.
+    - [x] Fuse development.
+      - [x] Add noun trait bid.
+      - [x] Expose the contracts as exports from @nftchance/plug-core
     - [ ] Fuse integration.
       - [ ] Revocation on deletion after the first submission.
     - [o] Update the hello world to be the base noun plug.
