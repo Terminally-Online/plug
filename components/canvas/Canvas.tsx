@@ -1,13 +1,10 @@
 import type { FC } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
-import { createSnapModifier } from '@dnd-kit/modifiers'
-
 import Toolbar from '@/components/viewport/toolbar'
 import { useTabs } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { ItemTypes } from '@/lib/constants'
-import useRenderLoop from '@/lib/hooks/useRenderLoop'
 import CanvasStore from '@/lib/store'
 
 import { DraggableComponents } from '../drag/draggable/draggable'
@@ -101,6 +98,9 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 						id={id}
 						initialComponents={components}
 						gridSize={gridSize}
+						activationConstraint={{
+							distance: {x: 3, y: 3},
+						}}
 					/>
 				</Grid>
 			</Scaler>

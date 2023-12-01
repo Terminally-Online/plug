@@ -24,7 +24,6 @@ import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
 import { cn } from '@/lib/utils'
 
-import { draggable } from './draggable-svg'
 import styles from './draggable.module.css'
 
 export type DraggableComponentsProps = {
