@@ -112,7 +112,7 @@ async function generateExports(entry: string[], noExport?: string[]) {
 	}
 
 	exports['./artifacts'] = {
-		types: './artifacts/index.d.ts'
+		types: './artifacts/artifacts.d.ts'
 	}
 	exports['./package.json'] = './package.json'
 
