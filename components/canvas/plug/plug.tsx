@@ -5,9 +5,9 @@ import { pins } from '@/lib/constants'
 import type { Pin as PinType } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
-import Pin from './Pin'
-import PinAppendage from './PinAppendage'
-import PlugSimulation, { PlugSimulationState } from './PlugSimulation'
+import PinAppendage from '../pin/appendage'
+import Pin from '../pin/pin'
+import PlugSimulation, { PlugSimulationState } from './simulation'
 
 export type PlugProps = {
 	id: string
@@ -85,7 +85,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	return (
 		<div
 			className={cn(
-				'text-white cursor-move w-full flex flex-col items-stretch',
+				'text-white cursor-move w-full flex flex-col items-stretch'
 			)}
 			role={preview ? 'PlugPreview' : 'Plug'}
 			{...rest}

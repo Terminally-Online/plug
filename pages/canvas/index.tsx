@@ -5,7 +5,7 @@ import type { GetServerSideProps } from 'next'
 import { Session } from 'next-auth'
 import { getSession } from 'next-auth/react'
 
-import CanvasPreviewGrid from '@/components/canvas/blocks/CanvasPreviewGrid'
+import CanvasPreviewGrid from '@/components/canvas/preview-grid'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { NextPageWithLayout } from '@/lib/types'

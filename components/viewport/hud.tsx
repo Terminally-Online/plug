@@ -1,5 +1,3 @@
-'use client'
-
 import { FC, PropsWithChildren, useEffect, useState } from 'react'
 
 import Link from 'next/link'

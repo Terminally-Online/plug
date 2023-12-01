@@ -99,7 +99,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 						initialComponents={components}
 						gridSize={gridSize}
 						activationConstraint={{
-							distance: {x: 3, y: 3},
+							distance: { x: 3, y: 3 }
 						}}
 					/>
 				</Grid>

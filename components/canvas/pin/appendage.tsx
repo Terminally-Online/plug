@@ -1,8 +1,8 @@
 import { FC, memo } from 'react'
 
-import type { Pin } from '@/lib/types'
-import { cn } from '@/lib/utils'
 import { PlusIcon } from '@radix-ui/react-icons'
+
+import type { Pin } from '@/lib/types'
 
 export type PinAppendageProps = {
 	pin: Pin
@@ -19,9 +19,12 @@ export const PinAppendage: FC<PinAppendageProps> = ({
 }) => {
 	return (
 		<div className="relative flex flex-col items-center justify-center">
-			<div className="w-[1px] bg-stone-950" style={{ 
-				height: `${gridSize * 2}px` 
-			}}/>
+			<div
+				className="w-[1px] bg-stone-950"
+				style={{
+					height: `${gridSize * 2}px`
+				}}
+			/>
 
 			{isAvailable && pin.type === 'if' && (
 				<button

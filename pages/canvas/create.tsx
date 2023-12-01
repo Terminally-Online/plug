@@ -4,7 +4,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 import { getSession } from 'next-auth/react'
 
-import Block from '@/components/canvas/Block'
+import Block from '@/components/canvas/block'
 import Search from '@/components/canvas/search'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'

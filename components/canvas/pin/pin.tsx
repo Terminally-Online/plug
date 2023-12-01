@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { useState } from 'react'
 
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
 
@@ -64,7 +64,7 @@ export const Pin = ({
 							'w-full justify-between rounded-[0px] border-none',
 							className
 						)}
-						style={{ height: gridSize * 2  - 1}}
+						style={{ height: gridSize * 2 - 1 }}
 					>
 						<Avatar className="mr-2 h-4 w-4">
 							<AvatarImage
@@ -83,13 +83,14 @@ export const Pin = ({
 				<div className="border-t-[1px] border-stone-950">
 					{Object.keys(selectedPin.schema.shape).map(key => (
 						<Input
-							type="text"
+							key={key}
 							id={key}
+							type="text"
 							placeholder={key
 								.replace(/-/g, ' ')
 								.replace(/\w\S*/g, w =>
 									w.replace(/^\w/, c => c.toUpperCase())
-							)}
+								)}
 							autoComplete="off"
 							className="rounded-none border-none"
 							style={{ height: gridSize - 1 }}

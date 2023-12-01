@@ -18,7 +18,7 @@ import { createSnapModifier } from '@dnd-kit/modifiers'
 import type { Transform } from '@dnd-kit/utilities'
 import { Component } from '@prisma/client'
 
-import Plug from '@/components/canvas/blocks/Plug'
+import Plug from '@/components/canvas/plug/plug'
 import { api } from '@/lib/api'
 import { inBounds } from '@/lib/functions/math-utils'
 import CanvasStore from '@/lib/store'
@@ -193,12 +193,6 @@ export type DraggableProps = {
 	gridSize: number
 }
 
-const parse = (value: string | number | undefined) => {
-	if (typeof value === 'number') return value
-
-	return parseInt(value ?? '0')
-}
-
 export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 	function Draggable(
 		{
@@ -237,15 +231,14 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					{...props}
 					{...listeners}
 					ref={ref}
-					className="absolute inline-block flex items-center content-center appearance-none border-none outline-none"
 					style={buttonStyle}
+					className="absolute flex items-center content-center appearance-none border-none outline-none"
 					aria-label="Draggable"
 					data-cypress="draggable-item"
 				>
-					<Plug id={'test'} gridSize={gridSize} selecting={null}>
+					<Plug id={id} gridSize={gridSize} selecting={null}>
 						{'[]'}
 					</Plug>
-
 				</button>
 			</div>
 		)

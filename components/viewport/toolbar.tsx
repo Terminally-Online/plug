@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { HomeIcon, SewingPinIcon } from '@radix-ui/react-icons'
+import { SewingPinIcon } from '@radix-ui/react-icons'
 
 import CanvasStore from '@/lib/store'
 
