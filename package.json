@@ -39,7 +39,8 @@
 	},
 	"files": [
 		"/core",
-		"/dist"
+		"/dist",
+		"/src"
 	],
 	"publishConfig": {
 		"access": "public"
