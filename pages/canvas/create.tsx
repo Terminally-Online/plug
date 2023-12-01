@@ -14,9 +14,6 @@ const Page: NextPageWithLayout<
 > = ({ search }) => {
 	const [canvases] = api.canvas.all.useSuspenseQuery(search)
 
-	const hasSearch = search !== undefined && search !== ''
-	const vertical = !hasSearch && canvases && canvases.length === 0
-
 	return (
 		<>
 			<Block />
