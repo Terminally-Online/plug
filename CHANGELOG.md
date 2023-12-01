@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.1
+
+### Patch Changes
+
+-   445e859: feat: add protocol contracts to package
+
 ## 0.2.0
 
 ### Minor Changes
