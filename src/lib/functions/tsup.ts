@@ -82,7 +82,7 @@ export function getConfig({ dev, noExport, ...options }: GetConfig): Options {
 }
 
 type Exports = {
-	[key: string]: string | { types?: string; default: string }
+	[key: string]: string | { types?: string; default?: string }
 }
 
 /**
@@ -111,6 +111,9 @@ async function generateExports(entry: string[], noExport?: string[]) {
 		}
 	}
 
+	exports['./artifacts'] = {
+		types: './artifacts/index.d.ts'
+	}
 	exports['./package.json'] = './package.json'
 
 	const packageJson = await fs.readJSON('package.json')
