@@ -12,6 +12,7 @@ import PlugSimulation, { PlugSimulationState } from './PlugSimulation'
 export type PlugProps = {
 	id: string
 	selecting: string | null
+	gridSize: number
 	preview?: boolean
 } & JSX.IntrinsicElements['div']
 
@@ -19,6 +20,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	id,
 	children,
 	preview,
+	gridSize,
 	selecting,
 	...rest
 }) => {
@@ -83,23 +85,24 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	return (
 		<div
 			className={cn(
-				'text-white cursor-move w-full flex flex-col',
-				selecting ? 'border-[1px] border-red-500' : ''
+				'text-white cursor-move w-full flex flex-col items-stretch',
 			)}
 			role={preview ? 'PlugPreview' : 'Plug'}
 			{...rest}
 		>
 			{selectedPins.map((pin, index) => (
-				<div key={index} className="w-full h-full">
+				<div key={index}>
 					<Pin
 						selectedPin={pin}
 						pins={availablePins}
+						gridSize={gridSize}
 						onPinChange={newPin => handleChange(index, newPin)}
 					/>
 
 					<PinAppendage
 						pin={pin}
 						onClick={() => handleAddition(index)}
+						gridSize={gridSize}
 						isAvailable={availablePins.length > 0}
 					/>
 				</div>

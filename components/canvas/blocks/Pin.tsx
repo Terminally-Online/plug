@@ -27,6 +27,7 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 interface PinProps extends PopoverTriggerProps {
 	selectedPin: PinType
 	pins: Pins
+	gridSize: number
 	onPinChange: (pin: PinType) => void
 }
 
@@ -34,6 +35,7 @@ export const Pin = ({
 	className,
 	selectedPin,
 	pins,
+	gridSize,
 	onPinChange
 }: PinProps) => {
 	const [open, setOpen] = useState(false)
@@ -43,7 +45,7 @@ export const Pin = ({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<div className="relative bg-stone-900 w-full">
+			<div className="relative bg-stone-900 flex flex-col items-stretch">
 				<p className="absolute top-[-10px] left-4 bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">
 					{selectedPin.type.slice(0, 1).toUpperCase() +
 						selectedPin.type.slice(1)}
@@ -59,9 +61,10 @@ export const Pin = ({
 						aria-expanded={open}
 						aria-label="Select a Pin"
 						className={cn(
-							'w-full justify-between border-b-[1px] border-transparent border-b-stone-950 p-4 py-6',
+							'w-full justify-between rounded-[0px] border-none',
 							className
 						)}
+						style={{ height: gridSize * 2  - 1}}
 					>
 						<Avatar className="mr-2 h-4 w-4">
 							<AvatarImage
@@ -77,11 +80,8 @@ export const Pin = ({
 					</Button>
 				</PopoverTrigger>
 
-				{Object.keys(selectedPin.schema.shape).map(key => (
-					<div
-						key={key}
-						className="w-full flex flex-col bg-stone-800"
-					>
+				<div className="border-t-[1px] border-stone-950">
+					{Object.keys(selectedPin.schema.shape).map(key => (
 						<Input
 							type="text"
 							id={key}
@@ -89,12 +89,13 @@ export const Pin = ({
 								.replace(/-/g, ' ')
 								.replace(/\w\S*/g, w =>
 									w.replace(/^\w/, c => c.toUpperCase())
-								)}
+							)}
 							autoComplete="off"
-							className="border-transparent"
+							className="rounded-none border-none"
+							style={{ height: gridSize - 1 }}
 						/>
-					</div>
-				))}
+					))}
+				</div>
 			</div>
 
 			<PopoverContent className="w-[400px] p-0">
@@ -151,4 +152,4 @@ export const Pin = ({
 	)
 }
 
-export default memo(Pin)
+export default Pin

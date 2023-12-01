@@ -56,9 +56,9 @@ export const DraggableComponents: FC<
 
 	const buttonStyle = {
 		marginLeft: gridSize - 20 + 1,
-		marginTop: gridSize - 0 + 1,
+		marginTop: gridSize - 40 + 1,
 		width: gridSize * 8 - 1,
-		height: gridSize * 3 - 1
+		height: gridSize * 3 + 1
 	}
 
 	const mouseSensor = useSensor(MouseSensor, {
@@ -133,8 +133,7 @@ export const DraggableComponents: FC<
 						id={key}
 						top={top - CanvasStore.screen.y}
 						left={left - CanvasStore.screen.x}
-						width={gridSize * 8 - 1}
-						height={gridSize * 3 - 1}
+						gridSize={gridSize}
 						buttonStyle={buttonStyle}
 					/>
 				)
@@ -148,8 +147,7 @@ export type DraggableComponentProps = {
 	buttonStyle?: CSSProperties
 	top: number
 	left: number
-	width: number
-	height: number
+	gridSize: number
 }
 
 export const DraggableComponent: FC<DraggableComponentProps> = ({
@@ -157,8 +155,7 @@ export const DraggableComponent: FC<DraggableComponentProps> = ({
 	buttonStyle,
 	top,
 	left,
-	width,
-	height
+	gridSize
 }) => {
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useDraggable({
@@ -179,6 +176,7 @@ export const DraggableComponent: FC<DraggableComponentProps> = ({
 			}}
 			buttonStyle={buttonStyle}
 			transform={transform}
+			gridSize={gridSize}
 			{...attributes}
 		/>
 	)
@@ -192,6 +190,7 @@ export type DraggableProps = {
 	style?: CSSProperties
 	buttonStyle?: CSSProperties
 	transform?: Transform | null
+	gridSize: number
 }
 
 const parse = (value: string | number | undefined) => {
@@ -210,13 +209,11 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 			transform,
 			style,
 			buttonStyle,
+			gridSize,
 			...props
 		},
 		ref
 	) {
-		const left = parse(style?.left)
-		const top = parse(style?.top)
-
 		return (
 			<div
 				id={id}
@@ -245,14 +242,10 @@ export const Draggable = forwardRef<HTMLButtonElement, DraggableProps>(
 					aria-label="Draggable"
 					data-cypress="draggable-item"
 				>
-					<Plug id={'test'} selecting={null}>
+					<Plug id={'test'} gridSize={gridSize} selecting={null}>
 						{'[]'}
 					</Plug>
 
-					<p className="absolute top-[110%] left-0 bg-red-400 text-red-700 font-bold rounded-sm p-2">
-						{buttonStyle?.width} x {buttonStyle?.height} @
-						{Math.round(left)} x {Math.round(top)}{' '}
-					</p>
 				</button>
 			</div>
 		)
