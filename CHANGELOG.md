@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.3
+
+### Patch Changes
+
+-   b6c40d4: fix: src/ as key entrypoint for solidity
+
 ## 0.2.2
 
 ### Patch Changes
