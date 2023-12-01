@@ -32,22 +32,23 @@ export const CanvasSchema = z.object({
 export default createTRPCRouter({
 	all: protectedProcedure
 		.input(z.union([z.string(), z.array(z.string())]).optional())
-		.query(async ({ ctx, input }) => {
-			const userId = ctx.session.user.id
+		.query(async ({ ctx, input: search }) => {
+			const userId = ctx.session.user.name
 
-			// * TODO: Implement support for search.
-			if (input && input.length > 0)
-				throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+			if (Array.isArray(search))
+				throw new TRPCError({ code: 'BAD_REQUEST' })
 
 			// * Get the canvases from the database.
-			const canvases = await ctx.db.canvas.findMany({
-				where: {
-					userId
-				}
-			})
-
-			// * Return the canvases.
-			return canvases
+			try {
+				return await ctx.db.canvas.findMany({
+					where: {
+						name: { search },
+						userId
+					}
+				})
+			} catch (e) {
+				return []
+			}
 		}),
 	get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
 		const canvas = await ctx.db.canvas.findUnique({
@@ -61,7 +62,7 @@ export default createTRPCRouter({
 
 		if (canvas.public) return canvas
 
-		const userId = ctx.session.user.id
+		const userId = ctx.session.user.name
 
 		if (!userId) throw new TRPCError({ code: 'UNAUTHORIZED' })
 
@@ -79,10 +80,12 @@ export default createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const userId = ctx.session.user.id
+			const userId = ctx.session.user.name
+
+			console.log(userId, ctx.session)
 
 			// * Create the canvas in the database.
-			return await ctx.db.canvas.create({
+			const canvas = await ctx.db.canvas.create({
 				data: {
 					name: input.name,
 					public: input.public,
@@ -96,6 +99,10 @@ export default createTRPCRouter({
 				},
 				include: { components: true }
 			})
+
+			emitter.emit('create-canvas', canvas)
+
+			return canvas
 		}),
 	update: protectedProcedure
 		.input(
@@ -108,7 +115,7 @@ export default createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const userId = ctx.session.user.id
+			const userId = ctx.session.user.name
 
 			const canvas = await ctx.db.canvas.findUnique({
 				where: {
@@ -142,6 +149,15 @@ export default createTRPCRouter({
 
 			return updatedCanvas
 		}),
+	onCreate: protectedProcedure.subscription(() => {
+		return observable<CanvasWithComponents>(emit => {
+			emitter.on('create-canvas', emit.next)
+
+			return () => {
+				emitter.off('create-canvas', emit.next)
+			}
+		})
+	}),
 	onUpdate: protectedProcedure.subscription(() => {
 		return observable<CanvasWithComponents>(emit => {
 			emitter.on('update', emit.next)

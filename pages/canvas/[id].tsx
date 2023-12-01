@@ -1,5 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
+import { getSession } from 'next-auth/react'
+
 import { Viewport } from '@/components/viewport/viewport'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { NextPageWithLayout } from '@/lib/types'
@@ -15,6 +17,17 @@ const Page: NextPageWithLayout<
 }
 
 export const getServerSideProps = (async context => {
+	const session = await getSession(context)
+
+	if (!session) {
+		return {
+			redirect: {
+				destination: `/connect`,
+				permanent: false
+			}
+		}
+	}
+
 	const { id } = context.query
 
 	if (!id || Array.isArray(id)) throw new Error('Single id required.')

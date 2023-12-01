@@ -1,11 +1,10 @@
-import { Suspense } from 'react'
-
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 import { getSession } from 'next-auth/react'
 
 import Block from '@/components/canvas/block'
-import Search from '@/components/canvas/search'
+import CanvasPreviewGrid from '@/components/canvas/preview-grid'
+import { Search } from '@/components/canvas/search'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { type NextPageWithLayout } from '@/lib/types'
@@ -13,18 +12,17 @@ import { type NextPageWithLayout } from '@/lib/types'
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search }) => {
-	const { data: canvases } = api.canvas.all.useQuery(search)
+	const [canvases] = api.canvas.all.useSuspenseQuery(search)
+
+	const hasSearch = search !== undefined && search !== ''
+	const vertical = !hasSearch && canvases && canvases.length === 0
 
 	return (
-		<div className="bg-stone-900 h-full flex flex-col gap-2">
-			<Suspense fallback={<div>Loading...</div>}>
-				<Block
-					vertical={(canvases && canvases.length === 0) || false}
-				/>
-
-				{canvases && canvases.length > 0 ? <Search /> : <></>}
-			</Suspense>
-		</div>
+		<>
+			<Block />
+			{canvases ? <Search /> : <></>}
+			<CanvasPreviewGrid canvases={canvases} />
+		</>
 	)
 }
 

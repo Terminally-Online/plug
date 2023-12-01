@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import { useState } from 'react'
 
 import type { GetServerSideProps } from 'next'
 
@@ -11,13 +11,36 @@ import { api } from '@/lib/api'
 import { NextPageWithLayout } from '@/lib/types'
 
 const Page: NextPageWithLayout = () => {
-	const { data: canvases } = api.canvas.all.useQuery()
+	const [initialCanvases] = api.canvas.all.useSuspenseQuery()
+	const [canvases, setCanvases] = useState(initialCanvases)
 
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<CanvasPreviewGrid canvases={canvases} />
-		</Suspense>
-	)
+	api.canvas.onCreate.useSubscription(undefined, {
+		onData(canvas) {
+			setCanvases(prevCanvases => [...prevCanvases, canvas])
+		}
+	})
+
+	api.canvas.onUpdate.useSubscription(undefined, {
+		onData(canvas) {
+			setCanvases(prevCanvases => {
+				const index = prevCanvases.findIndex(
+					({ id }) => id === canvas.id
+				)
+
+				if (index === -1) {
+					return prevCanvases
+				}
+
+				const updatedCanvases = [...prevCanvases]
+
+				updatedCanvases[index] = canvas
+
+				return updatedCanvases
+			})
+		}
+	})
+
+	return <CanvasPreviewGrid canvases={canvases} />
 }
 
 export const getServerSideProps = (async context => {

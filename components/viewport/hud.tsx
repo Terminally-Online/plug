@@ -42,11 +42,11 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 
 	return (
 		<>
-			<div className="bg-stone-900 border-b-[1px] border-b-stone-950 fixed top-0 left-0 w-screen z-[99999]">
-				<div className="flex flex-row items-center h-8">
+			<div className="fixed left-0 top-0 z-[99999] w-screen border-b-[1px] border-b-stone-950 bg-stone-900">
+				<div className="flex h-8 flex-row items-center">
 					<Link
 						href="/canvas"
-						className="bg-stone-800 text-white/60 p-2 h-full flex items-center justify-center text-md font-bold pointer-events-auto hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out"
+						className="text-md pointer-events-auto flex h-full items-center justify-center bg-stone-800 p-2 font-bold text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 					>
 						<HomeIcon width={16} height={16} />
 					</Link>
@@ -55,15 +55,15 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						<button
 							key={href}
 							className={cn(
-								'group border-l-[1px] border-l-stone-950 h-full px-4 text-white/60 hover:bg-stone-950 hover:text-white active:bg-white hover:active:bg-white active:text-stone-950/60 active:hover:text-stone-950 text-sm transition-all duration-200 ease-in-out flex flex-row items-center gap-4',
+								'group flex h-full flex-row items-center gap-4 border-l-[1px] border-l-stone-950 px-4 text-sm text-white/60 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950/60 hover:active:bg-white active:hover:text-stone-950',
 								active ? 'active' : ''
 							)}
 							onClick={() => router.push(href)}
 							suppressHydrationWarning
 						>
-							<div className="h-full flex flex-row items-center gap-4">
+							<div className="flex h-full flex-row items-center gap-4">
 								<div
-									className="w-2 h-2 rounded-full"
+									className="h-2 w-2 rounded-full"
 									style={{ backgroundColor: color }}
 								/>
 								{label}
@@ -72,7 +72,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 							<button
 								type="button"
 								className={cn(
-									'h-full flex items-center justify-center opacity-0 group-hover:opacity-100 text-white/60 hover:text-white active:text-stone-950 transition-all duration-200 ease-in-out active:text-stone-950/60',
+									'flex h-full items-center justify-center text-white/60 opacity-0 transition-all duration-200 ease-in-out hover:text-white group-hover:opacity-100 active:text-stone-950 active:text-stone-950/60',
 									active ? 'active' : ''
 								)}
 								onClick={e => {
@@ -89,7 +89,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 					{createTab === undefined ? (
 						<button
 							type="button"
-							className="px-2 h-full flex items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 text-white/60 hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out"
+							className="flex h-full items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 px-2 text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 							onClick={() => {
 								router.push('/canvas/create')
 							}}
@@ -100,7 +100,9 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 				</div>
 			</div>
 
-			<div className="pt-8 h-screen overscroll-none">{children}</div>
+			<div className="flex h-screen flex-col overscroll-none pt-8">
+				{children}
+			</div>
 		</>
 	)
 }

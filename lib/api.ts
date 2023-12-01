@@ -1,10 +1,5 @@
-import { NextPageContext } from 'next'
-
-import getConfig from 'next/config'
-
 import superjson from 'superjson'
 
-import { createWSClient, httpBatchLink, loggerLink, wsLink } from '@trpc/client'
 import { createTRPCNext } from '@trpc/next'
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server'
 

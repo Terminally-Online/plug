@@ -1,5 +1,3 @@
-import { EventEmitter } from 'stream'
-
 import { observable } from '@trpc/server/observable'
 
 import canvasRouter from '@/server/api/routers/canvas'

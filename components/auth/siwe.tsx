@@ -1,5 +1,6 @@
 import { type FC, useState } from 'react'
 
+import { signOut } from 'next-auth/react'
 import { getCsrfToken, signIn, useSession } from 'next-auth/react'
 
 import { SiweMessage } from 'siwe'
@@ -69,7 +70,11 @@ const Siwe: FC<SiweProps> = ({
 
 	return (
 		<>
-			<button onClick={handleLogin}>Sign-in</button>
+			{!session ? (
+				<button onClick={handleLogin}>Sign-in</button>
+			) : (
+				<button onClick={() => signOut()}>Sign out</button>
+			)}
 
 			{error}
 		</>

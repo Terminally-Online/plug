@@ -31,12 +31,12 @@ export const CanvasPreview: FC<CanvasPreviewProps> = ({ canvas }) => {
 	return (
 		<Link
 			href={href}
-			className="p-4 flex flex-row items-end border-[1px] border-stone-950 text-white hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out"
+			className="flex flex-row items-end border-[1px] border-stone-950 bg-stone-900 p-4 text-white transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 		>
 			<div className="flex flex-col gap-2">
-				<h1 className="text-lg font-bold flex flex-row items-center gap-4">
+				<h1 className="flex flex-row items-center gap-4 text-lg font-bold">
 					<div
-						className="w-4 h-4 rounded-full border-[1px] border-stone-950"
+						className="h-4 w-4 rounded-full border-[1px] border-stone-950"
 						style={{ background: color }}
 					/>
 					{name}

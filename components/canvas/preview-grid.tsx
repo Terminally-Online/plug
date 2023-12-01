@@ -1,34 +1,36 @@
 import type { FC } from 'react'
-import { memo } from 'react'
+
+import Link from 'next/link'
+import { redirect, usePathname } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 import { Canvas } from '@prisma/client'
 
 import CanvasPreview from '@/components/canvas/preview'
 
+import { Button } from '../ui/button'
+
 export type CanvasPreviewGridProps = {
-	canvases: Array<Canvas> | undefined
+	canvases: Array<Canvas>
 }
 
-export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => {
-	if (!canvases) return null
+export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
+	<div className="relative grid h-full grid-cols-3 grid-rows-4 gap-[1px] bg-stone-900 bg-stone-900">
+		{canvases && canvases.length > 0 ? (
+			<>
+				{canvases.map(canvas => (
+					<CanvasPreview key={canvas.id} canvas={canvas} />
+				))}{' '}
+			</>
+		) : (
+			<div className="col-span-3 row-span-4 flex flex-col items-center justify-center gap-2 border-t-[1px] border-stone-950 text-white">
+				<h1 className="text-2xl">No Results</h1>
+				<p className="text-sm opacity-60">
+					We couldn't find any canvases matching your search.
+				</p>
+			</div>
+		)}
+	</div>
+)
 
-	return (
-		<div className="w-full h-full bg-stone-900">
-			{canvases.length === 0 ? (
-				<div className="h-full flex items-center justify-center">
-					<h1 className="bg-stone-900 text-white text-xl font-bold text-center">
-						No canvases found
-					</h1>
-				</div>
-			) : (
-				<div className="w-full h-full bg-stone-900 grid grid-cols-3 grid-rows-4">
-					{canvases.map(canvas => (
-						<CanvasPreview key={canvas.id} canvas={canvas} />
-					))}
-				</div>
-			)}
-		</div>
-	)
-}
-
-export default memo(CanvasPreviewGrid)
+export default CanvasPreviewGrid
