@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.4
+
+### Patch Changes
+
+-   013ac9d: feat: add artifacts
+
 ## 0.2.3
 
 ### Patch Changes
