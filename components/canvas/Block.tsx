@@ -28,10 +28,10 @@ export const Block: FC = () => {
 	return (
 		<div className={cn('flex w-full')}>
 			<button
-				className="group flex h-full w-full flex-col items-center justify-center gap-2 border-[1px] border-r-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-12 text-center text-white transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
+				className="group flex h-full w-full flex-col items-center justify-center gap-2 border-[1px] border-r-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white"
 				onClick={handleCreate}
 			>
-				<div className="w-min rounded-full border-[1px] border-stone-950 bg-transparent p-2">
+				<div className="w-min rounded-full border-[1px] border-stone-950 bg-transparent p-2 transition-all duration-200 ease-in-out group-hover:border-white/20">
 					<PlusIcon width={18} height={18} className="opacity-60" />
 				</div>
 
@@ -43,9 +43,9 @@ export const Block: FC = () => {
 
 			<Link
 				href="canvas/templates"
-				className="group flex h-full w-full flex-col items-center justify-center gap-2 border-[0px] border-b-[1px] border-l-[1px] border-stone-950 bg-stone-900 p-8 py-12 text-center text-white transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
+				className="group flex h-full w-full flex-col items-center justify-center gap-2 border-[1px] border-r-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white"
 			>
-				<div className="w-min rounded-full border-[1px] border-stone-950 bg-stone-900 p-2 group-hover:bg-white">
+				<div className="w-min rounded-full border-[1px] border-stone-950 bg-transparent p-2 transition-all duration-200 ease-in-out group-hover:border-white/20">
 					<MagicWandIcon
 						width={18}
 						height={18}

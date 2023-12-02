@@ -11,6 +11,8 @@ import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
 import { type NextPageWithLayout } from '@/lib/types'
 
+export const revalidate = 0
+
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search }) => {
@@ -42,6 +44,7 @@ const Page: NextPageWithLayout<
 			})
 		}
 	})
+
 	return (
 		<>
 			<Block />

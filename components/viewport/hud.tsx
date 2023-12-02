@@ -43,10 +43,10 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<>
 			<div className="fixed left-0 top-0 z-[99999] w-screen border-b-[1px] border-b-stone-950 bg-stone-900">
-				<div className="flex h-8 flex-row items-center">
+				<div className="flex h-12 flex-row items-center">
 					<Link
 						href="/canvas"
-						className="text-md pointer-events-auto flex h-full items-center justify-center bg-stone-800 p-2 font-bold text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
+						className="text-md pointer-events-auto flex h-full items-center justify-center bg-stone-800 p-2 px-4 font-bold text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 					>
 						<HomeIcon width={16} height={16} />
 					</Link>
@@ -55,7 +55,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						<button
 							key={href}
 							className={cn(
-								'group flex h-full flex-row items-center gap-4 border-l-[1px] border-l-stone-950 px-4 text-sm text-white/60 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950/60 hover:active:bg-white active:hover:text-stone-950',
+								'group flex h-full flex-row items-center gap-4 border-r-[1px] border-r-stone-950 px-4 text-sm text-white/60 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950/60 hover:active:bg-white active:hover:text-stone-950',
 								active ? 'active' : ''
 							)}
 							onClick={() => router.push(href)}
@@ -86,10 +86,10 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						</button>
 					))}
 
-					{createTab === undefined ? (
+					{createTab === undefined && path !== '/canvas' ? (
 						<button
 							type="button"
-							className="flex h-full items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 px-2 text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
+							className="flex h-full items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 px-4 text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 							onClick={() => {
 								router.push('/canvas/create')
 							}}
