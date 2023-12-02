@@ -100,7 +100,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 				</div>
 			</div>
 
-			<div className="flex h-screen flex-col overscroll-none pt-8">
+			<div className="flex h-screen flex-col overscroll-none bg-stone-900 pt-8">
 				{children}
 			</div>
 		</>

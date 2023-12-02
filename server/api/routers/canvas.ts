@@ -35,15 +35,19 @@ export default createTRPCRouter({
 		.query(async ({ ctx, input: search }) => {
 			const userId = ctx.session.user.name
 
-			// ? I am not sure what to do about arrays. Prisma syntax is enough for now.
-			if (Array.isArray(search))
-				throw new TRPCError({ code: 'BAD_REQUEST' })
+			const searchArray: (string | undefined)[] = Array.isArray(search)
+				? search
+				: search
+				  ? search.split(' ')
+				  : []
+
+			const syntaxSearch = searchArray.join(' | ')
 
 			try {
 				if (search !== undefined && search !== '')
 					return await ctx.db.canvas.findMany({
 						where: {
-							name: { search },
+							name: { search: syntaxSearch },
 							userId
 						},
 						orderBy: {

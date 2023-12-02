@@ -1,17 +1,20 @@
 import { useState } from 'react'
 
-import type { GetServerSideProps } from 'next'
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
-import { Session } from 'next-auth'
 import { getSession } from 'next-auth/react'
 
+import Block from '@/components/canvas/block'
 import CanvasPreviewGrid from '@/components/canvas/preview-grid'
+import { Search } from '@/components/canvas/search'
 import { TabsProvider } from '@/contexts/TabsProvider'
 import { api } from '@/lib/api'
-import { NextPageWithLayout } from '@/lib/types'
+import { type NextPageWithLayout } from '@/lib/types'
 
-const Page: NextPageWithLayout = () => {
-	const [initialCanvases] = api.canvas.all.useSuspenseQuery()
+const Page: NextPageWithLayout<
+	InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ search }) => {
+	const [initialCanvases] = api.canvas.all.useSuspenseQuery(search)
 	const [canvases, setCanvases] = useState(initialCanvases)
 
 	api.canvas.onCreate.useSubscription(undefined, {
@@ -39,14 +42,17 @@ const Page: NextPageWithLayout = () => {
 			})
 		}
 	})
-
-	return <CanvasPreviewGrid canvases={canvases} />
+	return (
+		<>
+			<Block />
+			{canvases ? <Search results={canvases.length} /> : <></>}
+			<CanvasPreviewGrid canvases={canvases} />
+		</>
+	)
 }
 
 export const getServerSideProps = (async context => {
-	const session = await getSession(context)
-
-	if (!session) {
+	if (!(await getSession(context))) {
 		return {
 			redirect: {
 				destination: `/connect`,
@@ -57,10 +63,12 @@ export const getServerSideProps = (async context => {
 
 	return {
 		props: {
-			session
+			search: context.query.search || ''
 		}
 	}
-}) satisfies GetServerSideProps<{ session: Session | null }>
+}) satisfies GetServerSideProps<{
+	search: string | string[] | undefined
+}>
 
 Page.getLayout = page => <TabsProvider>{page}</TabsProvider>
 

@@ -17,7 +17,7 @@ const Page: NextPageWithLayout<
 	return (
 		<>
 			<Block />
-			{canvases ? <Search /> : <></>}
+			{canvases ? <Search results={canvases.length} /> : <></>}
 			<CanvasPreviewGrid canvases={canvases} />
 		</>
 	)

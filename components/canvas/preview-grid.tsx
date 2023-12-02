@@ -1,21 +1,15 @@
 import type { FC } from 'react'
 
-import Link from 'next/link'
-import { redirect, usePathname } from 'next/navigation'
-import { useRouter } from 'next/router'
-
 import { Canvas } from '@prisma/client'
 
 import CanvasPreview from '@/components/canvas/preview'
-
-import { Button } from '../ui/button'
 
 export type CanvasPreviewGridProps = {
 	canvases: Array<Canvas>
 }
 
 export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
-	<div className="relative grid h-full grid-cols-3 grid-rows-4 gap-[1px] bg-stone-900 bg-stone-900">
+	<div className="relative grid grid-cols-3 gap-[1px] border-t-[1px] border-stone-950 bg-stone-900 bg-stone-900">
 		{canvases && canvases.length > 0 ? (
 			<>
 				{canvases.map(canvas => (

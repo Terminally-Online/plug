@@ -31,7 +31,7 @@ export const CanvasPreview: FC<CanvasPreviewProps> = ({ canvas }) => {
 	return (
 		<Link
 			href={href}
-			className="flex min-h-[220px] flex-row items-end border-[1px] border-stone-950 bg-stone-900 p-4 text-white transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
+			className="flex min-h-[220px] flex-row items-end border-[1px] border-l-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-4 text-white transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 		>
 			<div className="flex flex-col gap-2">
 				<h1 className="flex flex-row items-center gap-4 text-lg font-bold">
