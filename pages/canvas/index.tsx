@@ -4,20 +4,49 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 import { getSession } from 'next-auth/react'
 
+import { useMotionValueEvent, useScroll } from 'framer-motion'
+
 import Block from '@/components/canvas/block'
 import CanvasPreviewGrid from '@/components/canvas/preview-grid'
 import { Search } from '@/components/canvas/search'
 import { TabsProvider } from '@/contexts/TabsProvider'
-import { api } from '@/lib/api'
+import { api, RouterOutputs } from '@/lib/api'
 import { type NextPageWithLayout } from '@/lib/types'
 
-export const revalidate = 0
+export const revalidate = 1
 
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search }) => {
-	const [initialCanvases] = api.canvas.all.useSuspenseQuery(search)
-	const [canvases, setCanvases] = useState(initialCanvases)
+	const { scrollYProgress } = useScroll()
+
+	const [page, setPage] = useState(0)
+	const [count, setCount] = useState(0)
+	const [loading, setLoading] = useState(false)
+
+	const [canvases, setCanvases] = useState<RouterOutputs['canvas']['all']>([])
+
+	const { fetchNextPage } = api.canvas.infinite.useInfiniteQuery(
+		{ search },
+		{
+			getNextPageParam(lastPage) {
+				return lastPage.nextCursor
+			},
+			onSuccess(data) {
+				if (!data.pages[page]) return
+
+				setCanvases(prevCanvases => [
+					...prevCanvases,
+					...data.pages[page].items
+				])
+
+				setCount(data.pages[page].count)
+				setPage(prevPage => prevPage + 1)
+
+				setLoading(false)
+			}
+		}
+	)
 
 	api.canvas.onCreate.useSubscription(undefined, {
 		onData(canvas) {
@@ -45,10 +74,18 @@ const Page: NextPageWithLayout<
 		}
 	})
 
+	useMotionValueEvent(scrollYProgress, 'change', latest => {
+		if (loading) return
+		if (latest < 0.8) return
+
+		setLoading(true)
+		fetchNextPage()
+	})
+
 	return (
 		<>
 			<Block />
-			{canvases ? <Search results={canvases.length} /> : <></>}
+			{canvases ? <Search results={count} /> : <></>}
 			<CanvasPreviewGrid canvases={canvases} />
 		</>
 	)

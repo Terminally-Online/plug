@@ -16,8 +16,8 @@ export type SearchProps = {
 
 export const Search: FC<SearchProps> = ({ baseUrl, results = 0 }) => {
 	const router = useRouter()
-	const searchParams = useSearchParams()
 
+	const searchParams = useSearchParams()
 	const search = searchParams.get('search') ?? ''
 
 	const { debounce, value, debounced } = useDebounce({ initial: search })
@@ -29,46 +29,43 @@ export const Search: FC<SearchProps> = ({ baseUrl, results = 0 }) => {
 			// * Add the search param to the URL.
 			const newUrl = `${baseUrl ?? '/canvas/'}?${searchParams.toString()}`
 			// * Push the new URL to the router.
-			router.push(newUrl)
+			router.replace(newUrl)
 		}
 	}, [baseUrl, router, search, debounced])
 
 	return (
-		<div className="group flex flex-row items-center">
-			<div
-				className={cn(
-					'transition-bg group flex w-full flex-row items-center bg-stone-900 px-4 duration-200 ease-in-out hover:bg-stone-950',
+		<div
+			className={cn(
+				'transition-bg group sticky top-12 z-[999] flex w-full flex-row items-center border-b-[1px] border-stone-950 bg-stone-900 px-4 duration-200 ease-in-out hover:bg-stone-950',
+				search && search.length > 0 ? 'bg-stone-950' : ''
+			)}
+		>
+			<ChevronRightIcon
+				width={16}
+				height={16}
+				className="flex h-full text-white opacity-60 group-hover:opacity-100"
+			/>
 
-					search && search.length > 0 ? 'bg-stone-950' : ''
-				)}
-			>
-				<ChevronRightIcon
-					width={16}
-					height={16}
-					className="flex h-full text-white opacity-60 group-hover:opacity-100"
-				/>
-
-				<Input
-					placeholder="SEARCH ALL CANVASES"
-					className={cn('w-full bg-transparent py-8 text-white')}
-					value={value}
-					onChange={e => {
-						debounce(e.target.value)
-					}}
-				/>
-				{search && search !== '' && (
-					<button onClick={() => debounce('')} className="ml-auto">
-						<Cross2Icon
-							width={16}
-							height={16}
-							className="text-white opacity-60"
-						/>
-					</button>
-				)}
-				<p className="ml-auto block w-max min-w-[100px] text-right text-sm tabular-nums text-white opacity-60 group-hover:opacity-100">
-					{results} results.
-				</p>
-			</div>
+			<Input
+				placeholder="SEARCH ALL CANVASES"
+				className={cn('relative w-full bg-transparent py-8 text-white')}
+				value={value}
+				onChange={e => {
+					debounce(e.target.value)
+				}}
+			/>
+			{search && search !== '' && (
+				<button onClick={() => debounce('')} className="ml-auto">
+					<Cross2Icon
+						width={16}
+						height={16}
+						className="text-white opacity-60"
+					/>
+				</button>
+			)}
+			<p className="ml-auto block w-max min-w-[100px] text-right text-sm tabular-nums text-white opacity-60 group-hover:opacity-100">
+				{results} results.
+			</p>
 		</div>
 	)
 }

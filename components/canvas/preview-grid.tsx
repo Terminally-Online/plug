@@ -9,7 +9,7 @@ export type CanvasPreviewGridProps = {
 }
 
 export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
-	<div className="relative grid grid-cols-3 gap-[1px] border-t-[1px] border-stone-950 bg-stone-900 bg-stone-900">
+	<div className="relative grid grid-cols-3 gap-[1px] bg-stone-900 bg-stone-900">
 		{canvases && canvases.length > 0 ? (
 			<>
 				{canvases.map(canvas => (

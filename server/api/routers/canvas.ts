@@ -67,6 +67,63 @@ export default createTRPCRouter({
 				return []
 			}
 		}),
+
+	infinite: protectedProcedure
+		.input(
+			z.object({
+				cursor: z.string().nullish(),
+				search: z.union([z.string(), z.array(z.string())]).optional()
+			})
+		)
+		.query(async ({ ctx, input }) => {
+			const userId = ctx.session.user.name
+
+			const { cursor, search } = input
+
+			const searchArray: (string | undefined)[] = Array.isArray(search)
+				? search
+				: search
+				  ? search.split(' ')
+				  : []
+
+			const syntaxSearch = searchArray.join(' | ')
+
+			let where
+			if (search !== undefined && search !== '')
+				where = {
+					name: { search: syntaxSearch },
+					userId
+				}
+			else where = { userId }
+
+			const count = await ctx.db.canvas.count({ where })
+
+			const canvases = await ctx.db.canvas.findMany({
+				where,
+				orderBy: {
+					updatedAt: 'desc'
+				},
+				cursor: cursor
+					? {
+							id: cursor
+					  }
+					: undefined,
+				take: 10 + 1
+			})
+
+			let nextCursor: typeof cursor | undefined = undefined
+			if (canvases.length > 10) {
+				const nextItem = canvases.pop()
+				nextCursor = nextItem!.id
+			}
+
+			return {
+				items: canvases,
+				nextCursor,
+				count
+			}
+		}),
+
 	get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
 		const canvas = await ctx.db.canvas.findUnique({
 			where: {
@@ -88,6 +145,7 @@ export default createTRPCRouter({
 
 		return canvas as CanvasWithComponents
 	}),
+
 	create: protectedProcedure
 		.input(
 			z.object({
