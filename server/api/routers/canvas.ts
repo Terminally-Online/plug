@@ -29,43 +29,48 @@ export const CanvasSchema = z.object({
 	updatedAt: z.string().optional()
 })
 
+const whereWithSearch = (
+	where: Prisma.CanvasWhereInput,
+	fieldName: string,
+	search: string | string[] | undefined
+) => {
+	const searchArray: (string | undefined)[] = Array.isArray(search)
+		? search
+		: search
+		  ? search.split(' ')
+		  : []
+
+	const searchSyntax = searchArray.join(' | ')
+
+	const searchClause =
+		searchSyntax && searchSyntax.length > 0
+			? {
+					[`${fieldName}`]: {
+						search: searchSyntax
+					}
+			  }
+			: {}
+
+	return {
+		where: {
+			...where,
+			...searchClause
+		}
+	}
+}
+
 export default createTRPCRouter({
 	all: protectedProcedure
 		.input(z.union([z.string(), z.array(z.string())]).optional())
 		.query(async ({ ctx, input: search }) => {
 			const userId = ctx.session.user.name
 
-			const searchArray: (string | undefined)[] = Array.isArray(search)
-				? search
-				: search
-				  ? search.split(' ')
-				  : []
-
-			const syntaxSearch = searchArray.join(' | ')
-
-			try {
-				if (search !== undefined && search !== '')
-					return await ctx.db.canvas.findMany({
-						where: {
-							name: { search: syntaxSearch },
-							userId
-						},
-						orderBy: {
-							updatedAt: 'desc'
-						}
-					})
-
-				return await ctx.db.canvas.findMany({
-					where: {
-						userId
-					},
-					orderBy: {
-						updatedAt: 'desc'
-					}
-				})
-			} catch (e) {
-				return []
-			}
+			return await ctx.db.canvas.findMany({
+				...whereWithSearch({ userId }, 'name', search),
+				orderBy: {
+					updatedAt: 'desc'
+				}
+			})
 		}),
 
 	infinite: protectedProcedure
@@ -99,7 +104,7 @@ export default createTRPCRouter({
 			const count = await ctx.db.canvas.count({ where })
 
 			const canvases = await ctx.db.canvas.findMany({
-				where,
+				...whereWithSearch({ userId }, 'name', search),
 				orderBy: {
 					updatedAt: 'desc'
 				},
@@ -157,8 +162,6 @@ export default createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			const userId = ctx.session.user.name
 
-			console.log(userId, ctx.session)
-
 			// * Create the canvas in the database.
 			const canvas = await ctx.db.canvas.create({
 				data: {
@@ -213,7 +216,6 @@ export default createTRPCRouter({
 					data: {
 						...canvas,
 						...input,
-						// * TODO: For now we are not updating components
 						components: undefined
 					},
 					include: { components: true }
