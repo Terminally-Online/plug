@@ -21,11 +21,13 @@ const Templates: NextPageWithLayout<
 > = ({ search, sort }) => {
 	const { scrollYProgress } = useScroll()
 
-	const [page, setPage] = useState(0)
-	const [count, setCount] = useState(0)
-	const [loading, setLoading] = useState(false)
-
-	const [canvases, setCanvases] = useState<RouterOutputs["canvas"]["all"]>([])
+	const [canvasState, setCanvasState] = useState<{
+		loading?: boolean
+		count?: number
+		search?: string | string[]
+		sort?: string | string[]
+		canvases: RouterOutputs["canvas"]["all"]
+	}>({ search, canvases: [] })
 
 	const { fetchNextPage } = api.canvas.infinite.useInfiniteQuery(
 		{ search, sort, limit: 20 },
@@ -34,26 +36,49 @@ const Templates: NextPageWithLayout<
 				return lastPage.nextCursor
 			},
 			onSuccess(data) {
-				if (!data.pages[page]) return
+				setCanvasState(prevCanvasState => {
+					const page = data.pages.length - 1
 
-				setCanvases(prevCanvases => [
-					...prevCanvases,
-					...data.pages[page].items
-				])
+					// ? Clear the list and start over instead of appending.
+					if (
+						prevCanvasState.search !== search ||
+						prevCanvasState.sort !== sort
+					)
+						return {
+							loading: false,
+							count: data.pages[page].count,
+							search,
+							canvases: data.pages[page].items
+						}
 
-				setCount(data.pages[page].count)
-				setPage(prevPage => prevPage + 1)
-
-				setLoading(false)
+					return {
+						loading: false,
+						count: data.pages[page].count,
+						search,
+						canvases: [
+							...prevCanvasState.canvases,
+							...data.pages[page].items
+						]
+					}
+				})
 			}
 		}
 	)
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (loading || latest < 0.8) return
+		if (canvasState.loading) return
+		if (latest < 0.8) return
 
-		setLoading(true)
-		fetchNextPage()
+		const hasNext = canvasState.canvases.length < (canvasState.count ?? 0)
+
+		// ? Do not keep fetching if we've reached the end of the list.
+		if (hasNext) {
+			setCanvasState(prevState => {
+				fetchNextPage()
+
+				return { ...prevState, loading: true }
+			})
+		}
 	})
 
 	return (
@@ -62,13 +87,13 @@ const Templates: NextPageWithLayout<
 				<Welcome />
 
 				<div className="top-18 sticky col-span-3 h-full border-r-[1px] border-stone-950">
-					<Search search={search} results={count} />
+					<Search search={search} results={canvasState.count} />
 					<SortBy />
 				</div>
 			</div>
 
 			<div className="col-span-9">
-				<CanvasPreviewGrid canvases={canvases} />
+				<CanvasPreviewGrid canvases={canvasState.canvases} />
 			</div>
 		</div>
 	)

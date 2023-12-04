@@ -35,8 +35,6 @@ const Page: NextPageWithLayout<
 				setCanvasState(prevCanvasState => {
 					const page = data.pages.length - 1
 
-					if (page === -1) return prevCanvasState
-
 					// ? Clear the list and start over instead of appending.
 					if (prevCanvasState.search !== search)
 						return {
