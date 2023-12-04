@@ -9,7 +9,7 @@ export type CanvasPreviewGridProps = {
 }
 
 export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
-	<div className="relative grid grid-cols-3 gap-[1px] bg-stone-900 bg-stone-900">
+	<div className="relative grid h-full grid-cols-3 gap-[1px] bg-stone-900">
 		{canvases && canvases.length > 0 ? (
 			<>
 				{canvases.map(canvas => (
@@ -17,7 +17,7 @@ export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
 				))}{" "}
 			</>
 		) : (
-			<div className="col-span-3 row-span-4 flex flex-col items-center justify-center gap-2 border-t-[1px] border-stone-950 text-white">
+			<div className="col-span-3 row-span-4 flex h-full flex-col items-center justify-center gap-2 border-b-[1px] border-stone-950 text-white">
 				<h1 className="text-2xl">No Results</h1>
 				<p className="text-sm opacity-60">
 					We couldn't find any canvases matching your search.

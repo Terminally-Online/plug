@@ -21,6 +21,7 @@ export const Search: FC<SearchProps> = ({ search, results = 0 }) => {
 
 	useEffect(() => {
 		if (search !== debounced) {
+			// * If all the text was removed, remove the url param from the query.
 			if (debounced === "") {
 				const query = { ...router.query }
 				delete query.search

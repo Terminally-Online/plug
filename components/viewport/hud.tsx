@@ -1,7 +1,8 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import { useRouter } from "next/router"
 
 import { Cross1Icon, HomeIcon } from "@radix-ui/react-icons"
 
@@ -44,12 +45,17 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 		<>
 			<div className="fixed left-0 top-0 z-[99999] w-screen border-b-[1px] border-b-stone-950 bg-stone-900">
 				<div className="flex h-12 flex-row items-center">
-					<Link
-						href="/canvas"
+					<button
+						onClick={() =>
+							router.push({
+								pathname: "/canvas/",
+								query: {}
+							})
+						}
 						className="text-md pointer-events-auto flex h-full items-center justify-center bg-stone-800 p-2 px-4 font-bold text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 					>
 						<HomeIcon width={16} height={16} />
-					</Link>
+					</button>
 
 					{tabs.map(({ label, color, href, active }, index) => (
 						<button
@@ -88,7 +94,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 				</div>
 			</div>
 
-			<div className="flex h-full min-h-screen flex-col overscroll-none bg-stone-900 pt-12">
+			<div className="absolute inset-0 flex h-full min-h-screen flex-col overscroll-none bg-stone-900 pt-12">
 				{children}
 			</div>
 		</>
