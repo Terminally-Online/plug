@@ -18,11 +18,12 @@ const Page: NextPageWithLayout<
 > = ({ search }) => {
 	const { scrollYProgress } = useScroll()
 
-	const [page, setPage] = useState(0)
-	const [count, setCount] = useState(0)
-	const [loading, setLoading] = useState(false)
-
-	const [canvases, setCanvases] = useState<RouterOutputs["canvas"]["all"]>([])
+	const [canvasState, setCanvasState] = useState<{
+		loading?: boolean
+		count?: number
+		search?: string | string[]
+		canvases: RouterOutputs["canvas"]["all"]
+	}>({ search, canvases: [] })
 
 	const { fetchNextPage } = api.canvas.infinite.useInfiniteQuery(
 		{ search },
@@ -31,60 +32,92 @@ const Page: NextPageWithLayout<
 				return lastPage.nextCursor
 			},
 			onSuccess(data) {
-				if (!data.pages[page]) return
+				setCanvasState(prevCanvasState => {
+					const page = data.pages.length - 1
 
-				setCanvases(prevCanvases => [
-					...prevCanvases,
-					...data.pages[page].items
-				])
+					if (page === -1) return prevCanvasState
 
-				setCount(data.pages[page].count)
-				setPage(prevPage => prevPage + 1)
+					// ? Clear the list and start over instead of appending.
+					if (prevCanvasState.search !== search)
+						return {
+							loading: false,
+							count: data.pages[page].count,
+							search,
+							canvases: data.pages[page].items
+						}
 
-				setLoading(false)
+					return {
+						loading: false,
+						count: data.pages[page].count,
+						search,
+						canvases: [
+							...prevCanvasState.canvases,
+							...data.pages[page].items
+						]
+					}
+				})
 			}
 		}
 	)
 
 	api.canvas.onCreate.useSubscription(undefined, {
 		onData(canvas) {
-			setCanvases(prevCanvases => [...prevCanvases, canvas])
+			setCanvasState(prevCanvasState => {
+				return {
+					...prevCanvasState,
+					canvases: [canvas, ...prevCanvasState.canvases]
+				}
+			})
 		}
 	})
 
 	api.canvas.onUpdate.useSubscription(undefined, {
 		onData(canvas) {
-			setCanvases(prevCanvases => {
-				const index = prevCanvases.findIndex(
+			setCanvasState(prevState => {
+				const index = prevState.canvases.findIndex(
 					({ id }) => id === canvas.id
 				)
 
 				if (index === -1) {
-					return prevCanvases
+					return prevState
 				}
 
-				const updatedCanvases = [...prevCanvases]
+				const updatedCanvases = [...prevState.canvases]
 
 				updatedCanvases[index] = canvas
 
-				return updatedCanvases
+				return { ...prevState, canvases: updatedCanvases }
 			})
 		}
 	})
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (loading) return
+		if (canvasState.loading) return
 		if (latest < 0.8) return
 
-		setLoading(true)
-		fetchNextPage()
+		const hasNext = canvasState.canvases.length < (canvasState.count ?? 0)
+
+		// ? Do not keep fetching if we've reached the end of the list.
+		if (hasNext) {
+			setCanvasState(prevState => {
+				fetchNextPage()
+
+				return { ...prevState, loading: true }
+			})
+		}
 	})
 
 	return (
 		<>
 			<Block />
-			{canvases ? <Search results={count} /> : <></>}
-			<CanvasPreviewGrid canvases={canvases} />
+
+			{canvasState.canvases ? (
+				<Search search={search} results={canvasState.count} />
+			) : (
+				<></>
+			)}
+
+			<CanvasPreviewGrid canvases={canvasState.canvases} />
 		</>
 	)
 }

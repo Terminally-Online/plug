@@ -19,8 +19,6 @@ import { NextPageWithLayout } from "@/lib/types"
 const Templates: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ search, sort }) => {
-	sort
-
 	const { scrollYProgress } = useScroll()
 
 	const [page, setPage] = useState(0)
@@ -52,8 +50,7 @@ const Templates: NextPageWithLayout<
 	)
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (loading) return
-		if (latest < 0.8) return
+		if (loading || latest < 0.8) return
 
 		setLoading(true)
 		fetchNextPage()
@@ -65,7 +62,7 @@ const Templates: NextPageWithLayout<
 				<Welcome />
 
 				<div className="top-18 sticky col-span-3 h-full border-r-[1px] border-stone-950">
-					<Search results={count} search={search} />
+					<Search search={search} results={count} />
 					<SortBy />
 				</div>
 			</div>

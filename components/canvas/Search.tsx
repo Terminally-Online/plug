@@ -59,7 +59,7 @@ export const Search: FC<SearchProps> = ({ search, results = 0 }) => {
 				className={cn(
 					"relative w-full bg-transparent py-8 uppercase text-white"
 				)}
-				value={value}
+				value={value ?? search}
 				onChange={e => {
 					debounce(e.target.value)
 				}}

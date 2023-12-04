@@ -8,7 +8,7 @@ import { ChevronDownIcon, FilterIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const keys = {
-	default: "",
+	default: "Default",
 	newest: "Newest",
 	oldest: "Oldest",
 	active: "Active"
@@ -63,7 +63,7 @@ export const SortBy = () => {
 				/>
 				<span>
 					SORT BY
-					{selected !== "" && (
+					{selected !== "" && selected !== "default" && (
 						<>
 							{": "}
 							<span className="ml-auto text-white">
@@ -95,26 +95,24 @@ export const SortBy = () => {
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.2 }}
 					>
-						{Object.entries(keys)
-							.filter(([key]) => key !== "default")
-							.map(([key, value]) => (
-								<motion.button
-									key={key}
-									className="group flex cursor-pointer flex-row items-center gap-2 border-b-[1px] border-stone-950 bg-stone-900 p-4 text-muted-foreground transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{ opacity: 0 }}
-									transition={{ duration: 0.2 }}
-									onClick={() => handleSelect(key as KeyKey)}
+						{Object.entries(keys).map(([key, value]) => (
+							<motion.button
+								key={key}
+								className="group flex cursor-pointer flex-row items-center gap-2 border-b-[1px] border-stone-950 bg-stone-900 p-4 text-muted-foreground transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.2 }}
+								onClick={() => handleSelect(key as KeyKey)}
+							>
+								<label
+									htmlFor={key}
+									className="border-l-[1px] border-muted-foreground pl-8 group-hover:border-white"
 								>
-									<label
-										htmlFor={key}
-										className="border-l-[1px] border-muted-foreground pl-8 group-hover:border-white"
-									>
-										{value.toUpperCase()}
-									</label>
-								</motion.button>
-							))}
+									{value.toUpperCase()}
+								</label>
+							</motion.button>
+						))}
 					</motion.div>
 				</AnimatePresence>
 			)}
