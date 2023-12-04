@@ -3,13 +3,13 @@ import { FC, PropsWithChildren, useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 
-import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
+import { Cross1Icon, HomeIcon } from "@radix-ui/react-icons"
 
 import { useTabs } from "@/contexts/TabsProvider"
 import { cn } from "@/lib/utils"
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => {
-	const { tabs, createTab, handleAdd, handleRemove } = useTabs()
+	const { tabs, handleAdd, handleRemove } = useTabs()
 
 	const router = useRouter()
 	const path = usePathname()
@@ -85,22 +85,10 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 							</button>
 						</button>
 					))}
-
-					{createTab === undefined && path !== "/canvas" ? (
-						<button
-							type="button"
-							className="flex h-full items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 px-4 text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
-							onClick={() => {
-								router.push("/canvas/create")
-							}}
-						>
-							<PlusIcon width={16} height={16} />
-						</button>
-					) : null}
 				</div>
 			</div>
 
-			<div className="flex h-full min-h-screen flex-col overscroll-none bg-stone-900 pt-8">
+			<div className="flex h-full min-h-screen flex-col overscroll-none bg-stone-900 pt-12">
 				{children}
 			</div>
 		</>

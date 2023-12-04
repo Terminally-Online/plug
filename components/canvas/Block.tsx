@@ -7,7 +7,7 @@ import { MagicWandIcon, PlusIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
 
 export const Block: FC = () => (
-	<div className={cn("flex w-full")}>
+	<div className="flex w-full">
 		<Link
 			href="/canvas/create"
 			className="group flex h-full w-full flex-col items-center justify-center gap-2 border-[1px] border-r-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white"

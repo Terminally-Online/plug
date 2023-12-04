@@ -83,16 +83,13 @@ export default createTRPCRouter({
 		})
 	}),
 
-	onMove: protectedProcedure.subscription(({ ctx }) => {
+	onMove: protectedProcedure.subscription(() => {
 		return observable<string>(emit => {
-			console.log("ready to move", emitter, ctx.session)
-
 			const onMove = (data: string) => {
-				console.log("move", data)
 				emit.next(data)
 			}
 
-			emitter.on("move", onMove)
+			emitter.on("move", emit.next)
 
 			return () => {
 				emitter.off("move", onMove)
