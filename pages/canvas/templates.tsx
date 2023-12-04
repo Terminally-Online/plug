@@ -65,11 +65,7 @@ const Templates: NextPageWithLayout<
 				<Welcome />
 
 				<div className="top-18 sticky col-span-3 h-full border-r-[1px] border-stone-950">
-					<Search
-						baseUrl={"/canvas/templates"}
-						results={count}
-						search={search}
-					/>
+					<Search results={count} search={search} />
 					<SortBy />
 				</div>
 			</div>

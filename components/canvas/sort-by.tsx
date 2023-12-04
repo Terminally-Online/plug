@@ -14,14 +14,15 @@ const keys = {
 	active: "Active"
 }
 
+type KeyKey = keyof typeof keys
+
 export const SortBy = () => {
 	const router = useRouter()
 
 	const [collapsed, setCollapsed] = useState(true)
-	const [selected, setSelected] =
-		useState<(typeof keys)[keyof typeof keys]>("")
+	const [selected, setSelected] = useState<(typeof keys)[KeyKey]>("")
 
-	const handleSelect = (key: keyof typeof keys) => {
+	const handleSelect = (key: KeyKey) => {
 		setCollapsed(true)
 		setSelected(key)
 	}
@@ -66,9 +67,7 @@ export const SortBy = () => {
 						<>
 							{": "}
 							<span className="ml-auto text-white">
-								{keys[
-									selected as keyof typeof keys
-								].toUpperCase()}
+								{keys[selected as KeyKey].toUpperCase()}
 							</span>
 						</>
 					)}
@@ -106,9 +105,7 @@ export const SortBy = () => {
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 									transition={{ duration: 0.2 }}
-									onClick={() =>
-										handleSelect(key as keyof typeof keys)
-									}
+									onClick={() => handleSelect(key as KeyKey)}
 								>
 									<label
 										htmlFor={key}

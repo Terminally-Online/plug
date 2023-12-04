@@ -1,9 +1,22 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { HandIcon, XIcon } from "lucide-react"
 
 export const Welcome = () => {
 	const [closed, setClosed] = useState(false)
+
+	const handleClose = () => {
+		localStorage.setItem("templates-welcome", "true")
+
+		setClosed(true)
+	}
+
+	useEffect(() => {
+		const hasClosedTemplateWelcome =
+			localStorage.getItem("templates-welcome") === "true"
+
+		if (hasClosedTemplateWelcome === false) setClosed(false)
+	}, [])
 
 	return (
 		<>
@@ -11,7 +24,7 @@ export const Welcome = () => {
 				<div className="group relative col-span-3 flex flex-col items-center justify-center gap-2 border-[1px] border-l-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white">
 					<div
 						className="absolute right-4 top-4 cursor-pointer text-white"
-						onClick={() => setClosed(true)}
+						onClick={handleClose}
 					>
 						<XIcon width={10} height={10} className="opacity-60" />
 					</div>
