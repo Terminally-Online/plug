@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils"
 
 const keys = {
 	default: "",
-	popular: "Popular",
 	newest: "Newest",
-	oldest: "Oldest"
+	oldest: "Oldest",
+	active: "Active"
 }
 
 export const SortBy = () => {
@@ -27,6 +27,17 @@ export const SortBy = () => {
 	}
 
 	useEffect(() => {
+		if (selected === "" || selected === "default") {
+			const query = { ...router.query }
+			delete query.sort
+
+			router.push({
+				query
+			})
+
+			return
+		}
+
 		router.push({
 			query: {
 				...router.query,

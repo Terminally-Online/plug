@@ -1,7 +1,7 @@
 import type { FC } from "react"
 import { useEffect } from "react"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/router"
 
 import { ChevronRightIcon, Cross2Icon } from "@radix-ui/react-icons"
 
@@ -10,28 +10,36 @@ import { useDebounce } from "@/lib/hooks/useDebounce"
 import { cn } from "@/lib/utils"
 
 export type SearchProps = {
-	baseUrl?: string
+	search?: string | string[]
 	results?: number
 }
 
-export const Search: FC<SearchProps> = ({ baseUrl, results = 0 }) => {
+export const Search: FC<SearchProps> = ({ search, results = 0 }) => {
 	const router = useRouter()
-
-	const searchParams = useSearchParams()
-	const search = searchParams.get("search") ?? ""
 
 	const { debounce, value, debounced } = useDebounce({ initial: search })
 
 	useEffect(() => {
 		if (search !== debounced) {
-			const searchParams = new URLSearchParams()
-			searchParams.set("search", debounced)
-			// * Add the search param to the URL.
-			const newUrl = `${baseUrl ?? "/canvas/"}?${searchParams.toString()}`
-			// * Push the new URL to the router.
-			router.replace(newUrl)
+			if (debounced === "") {
+				const query = { ...router.query }
+				delete query.search
+
+				router.push({
+					query
+				})
+
+				return
+			}
+
+			router.push({
+				query: {
+					...router.query,
+					search: debounced
+				}
+			})
 		}
-	}, [baseUrl, router, search, debounced])
+	}, [router, search, debounced])
 
 	return (
 		<div

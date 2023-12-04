@@ -78,13 +78,14 @@ export default createTRPCRouter({
 			z.object({
 				cursor: z.string().nullish(),
 				limit: z.number().optional().default(10),
+				sort: z.union([z.string(), z.array(z.string())]).optional(),
 				search: z.union([z.string(), z.array(z.string())]).optional()
 			})
 		)
 		.query(async ({ ctx, input }) => {
 			const userId = ctx.session.user.name
 
-			const { cursor, search } = input
+			const { cursor, search, sort } = input
 
 			const searchArray: (string | undefined)[] = Array.isArray(search)
 				? search
@@ -102,15 +103,22 @@ export default createTRPCRouter({
 				}
 			else where = { userId }
 
+			if (Array.isArray(sort))
+				throw new TRPCError({ code: "NOT_IMPLEMENTED" })
+
+			let orderBy = {}
+			if (sort === "newest") orderBy = { createdAt: "desc" }
+			else if (sort === "oldest") orderBy = { createdAt: "asc" }
+			else if (sort === "active") orderBy = { updatedAt: "desc" }
+			else orderBy = { updatedAt: "desc" }
+
 			const count = await ctx.db.canvas.count({ where })
 
 			const limit = input.limit + 1
 
 			const canvases = await ctx.db.canvas.findMany({
 				...whereWithSearch({ userId }, "name", search),
-				orderBy: {
-					updatedAt: "desc"
-				},
+				orderBy,
 				cursor: cursor
 					? {
 							id: cursor

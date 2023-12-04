@@ -14,17 +14,13 @@ import { TabsProvider } from "@/contexts/TabsProvider"
 import { api, RouterOutputs } from "@/lib/api"
 import { NextPageWithLayout } from "@/lib/types"
 
-// TODO: Update the search bar to just work with any url.
-// TODO: Implement a select that allows you to choose from a dropdown.
-//	- This select should be used for:
-//		- Sorting
-// TODO: Sort by createdAt, updatedAt, and name.
-
 // TODO: After alpha we will want to add selection of tags.
 
 const Templates: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ search }) => {
+> = ({ search, sort }) => {
+	sort
+
 	const { scrollYProgress } = useScroll()
 
 	const [page, setPage] = useState(0)
@@ -34,7 +30,7 @@ const Templates: NextPageWithLayout<
 	const [canvases, setCanvases] = useState<RouterOutputs["canvas"]["all"]>([])
 
 	const { fetchNextPage } = api.canvas.infinite.useInfiniteQuery(
-		{ search, limit: 20 },
+		{ search, sort, limit: 20 },
 		{
 			getNextPageParam(lastPage) {
 				return lastPage.nextCursor
@@ -69,7 +65,11 @@ const Templates: NextPageWithLayout<
 				<Welcome />
 
 				<div className="top-18 sticky col-span-3 h-full border-r-[1px] border-stone-950">
-					<Search baseUrl={"/canvas/templates"} results={count} />
+					<Search
+						baseUrl={"/canvas/templates"}
+						results={count}
+						search={search}
+					/>
 					<SortBy />
 				</div>
 			</div>
@@ -93,11 +93,13 @@ export const getServerSideProps = (async context => {
 
 	return {
 		props: {
-			search: context.query.search || ""
+			search: context.query.search || "",
+			sort: context.query.sort || ""
 		}
 	}
 }) satisfies GetServerSideProps<{
 	search: string | string[] | undefined
+	sort: string | string[] | undefined
 }>
 
 Templates.getLayout = page => <TabsProvider>{page}</TabsProvider>
