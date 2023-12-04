@@ -48,6 +48,7 @@ const Templates: NextPageWithLayout<
 							loading: false,
 							count: data.pages[page].count,
 							search,
+							sort,
 							canvases: data.pages[page].items
 						}
 
@@ -55,6 +56,7 @@ const Templates: NextPageWithLayout<
 						loading: false,
 						count: data.pages[page].count,
 						search,
+						sort,
 						canvases: [
 							...prevCanvasState.canvases,
 							...data.pages[page].items
