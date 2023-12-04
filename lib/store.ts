@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
-import { CAMERA_ANGLE, RECT_H, RECT_W } from './constants'
+import { CAMERA_ANGLE, RECT_H, RECT_W } from "./constants"
 import {
 	cameraToScreenCoordinates,
 	scaleWithAnchorPoint
-} from './functions/camera-utils'
+} from "./functions/camera-utils"
 
-const isWindow = typeof window !== 'undefined'
+const isWindow = typeof window !== "undefined"
 
 export type CanvasState = {
 	/// * An infinite canvas means not everything can be rendered at once.

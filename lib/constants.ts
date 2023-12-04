@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from "zod"
 
-import { radians } from './functions/math-utils'
-import { Pins } from './types'
+import { radians } from "./functions/math-utils"
+import { Pins } from "./types"
 
 export const DEBUG = true
 
@@ -10,9 +10,9 @@ export const RECT_W = 1000
 export const RECT_H = 1000
 
 export const ItemTypes = {
-	Markdown: 'MARKDOWN',
-	Box: 'BOX',
-	Plug: 'PLUG'
+	Markdown: "MARKDOWN",
+	Box: "BOX",
+	Plug: "PLUG"
 } as const
 
 const nounsSchema = z.object({
@@ -25,53 +25,53 @@ const thresholdSchema = z.object({
 
 export const pins: Pins = [
 	{
-		label: 'Nouns',
+		label: "Nouns",
 		pins: [
 			{
-				label: 'Can Bid on Noun',
-				value: 'can-bid',
-				type: 'if',
+				label: "Can Bid on Noun",
+				value: "can-bid",
+				type: "if",
 				schema: nounsSchema
 			},
 			{
-				label: 'Place Bid on Noun',
-				value: 'place-bid',
-				type: 'then',
+				label: "Place Bid on Noun",
+				value: "place-bid",
+				type: "then",
 				schema: nounsSchema
 			}
 		]
 	},
 	{
-		label: 'Schedule',
+		label: "Schedule",
 		pins: [
 			{
-				label: 'Within Window',
-				value: 'within-window',
-				type: 'if',
+				label: "Within Window",
+				value: "within-window",
+				type: "if",
 				schema: thresholdSchema
 			},
 			{
-				label: 'Before Block Number',
-				value: 'before-block-number',
-				type: 'if',
+				label: "Before Block Number",
+				value: "before-block-number",
+				type: "if",
 				schema: thresholdSchema
 			},
 			{
-				label: 'After Block Number',
-				value: 'after-block-number',
-				type: 'if',
+				label: "After Block Number",
+				value: "after-block-number",
+				type: "if",
 				schema: thresholdSchema
 			},
 			{
-				label: 'Before Timestamp',
-				value: 'before-timestamp',
-				type: 'if',
+				label: "Before Timestamp",
+				value: "before-timestamp",
+				type: "if",
 				schema: thresholdSchema
 			},
 			{
-				label: 'After Timestamp',
-				value: 'after-timestamp',
-				type: 'if',
+				label: "After Timestamp",
+				value: "after-timestamp",
+				type: "if",
 				schema: thresholdSchema
 			}
 		]

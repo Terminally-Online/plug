@@ -1,14 +1,14 @@
-import { z } from 'zod'
+import { z } from "zod"
 
-import { Prisma } from '@prisma/client'
-import { TRPCError } from '@trpc/server'
-import { observable } from '@trpc/server/observable'
+import { Prisma } from "@prisma/client"
+import { TRPCError } from "@trpc/server"
+import { observable } from "@trpc/server/observable"
 
 import componentRouter, {
 	ComponentSchema
-} from '@/server/api/routers/component'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
-import { emitter } from '@/server/emitter'
+} from "@/server/api/routers/component"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { emitter } from "@/server/emitter"
 
 export const canvasWithComponents =
 	Prisma.validator<Prisma.CanvasDefaultArgs>()({
@@ -37,10 +37,10 @@ const whereWithSearch = (
 	const searchArray: (string | undefined)[] = Array.isArray(search)
 		? search
 		: search
-		  ? search.split(' ')
+		  ? search.split(" ")
 		  : []
 
-	const searchSyntax = searchArray.join(' | ')
+	const searchSyntax = searchArray.join(" | ")
 
 	const searchClause =
 		searchSyntax && searchSyntax.length > 0
@@ -66,9 +66,9 @@ export default createTRPCRouter({
 			const userId = ctx.session.user.name
 
 			return await ctx.db.canvas.findMany({
-				...whereWithSearch({ userId }, 'name', search),
+				...whereWithSearch({ userId }, "name", search),
 				orderBy: {
-					updatedAt: 'desc'
+					updatedAt: "desc"
 				}
 			})
 		}),
@@ -88,13 +88,13 @@ export default createTRPCRouter({
 			const searchArray: (string | undefined)[] = Array.isArray(search)
 				? search
 				: search
-				  ? search.split(' ')
+				  ? search.split(" ")
 				  : []
 
-			const syntaxSearch = searchArray.join(' | ')
+			const syntaxSearch = searchArray.join(" | ")
 
 			let where
-			if (search !== undefined && search !== '')
+			if (search !== undefined && search !== "")
 				where = {
 					name: { search: syntaxSearch },
 					userId
@@ -104,9 +104,9 @@ export default createTRPCRouter({
 			const count = await ctx.db.canvas.count({ where })
 
 			const canvases = await ctx.db.canvas.findMany({
-				...whereWithSearch({ userId }, 'name', search),
+				...whereWithSearch({ userId }, "name", search),
 				orderBy: {
-					updatedAt: 'desc'
+					updatedAt: "desc"
 				},
 				cursor: cursor
 					? {
@@ -137,16 +137,16 @@ export default createTRPCRouter({
 			include: { components: true }
 		})
 
-		if (!canvas) throw new TRPCError({ code: 'NOT_FOUND' })
+		if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
 		if (canvas.public) return canvas
 
 		const userId = ctx.session.user.name
 
-		if (!userId) throw new TRPCError({ code: 'UNAUTHORIZED' })
+		if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
 
 		if (canvas.userId !== userId)
-			throw new TRPCError({ code: 'UNAUTHORIZED' })
+			throw new TRPCError({ code: "UNAUTHORIZED" })
 
 		return canvas as CanvasWithComponents
 	}),
@@ -178,7 +178,7 @@ export default createTRPCRouter({
 				include: { components: true }
 			})
 
-			emitter.emit('create-canvas', canvas)
+			emitter.emit("create-canvas", canvas)
 
 			return canvas
 		}),
@@ -202,10 +202,10 @@ export default createTRPCRouter({
 				include: { components: true }
 			})
 
-			if (!canvas) throw new TRPCError({ code: 'NOT_FOUND' })
+			if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
 			if (canvas.userId !== userId)
-				throw new TRPCError({ code: 'FORBIDDEN' })
+				throw new TRPCError({ code: "FORBIDDEN" })
 
 			// * Update the fields that were passed in.
 			const updatedCanvas: CanvasWithComponents =
@@ -222,25 +222,25 @@ export default createTRPCRouter({
 				})
 
 			// * Emit an update event.
-			emitter.emit('update', updatedCanvas)
+			emitter.emit("update", updatedCanvas)
 
 			return updatedCanvas
 		}),
 	onCreate: protectedProcedure.subscription(() => {
 		return observable<CanvasWithComponents>(emit => {
-			emitter.on('create-canvas', emit.next)
+			emitter.on("create-canvas", emit.next)
 
 			return () => {
-				emitter.off('create-canvas', emit.next)
+				emitter.off("create-canvas", emit.next)
 			}
 		})
 	}),
 	onUpdate: protectedProcedure.subscription(() => {
 		return observable<CanvasWithComponents>(emit => {
-			emitter.on('update', emit.next)
+			emitter.on("update", emit.next)
 
 			return () => {
-				emitter.off('update', emit.next)
+				emitter.off("update", emit.next)
 			}
 		})
 	}),

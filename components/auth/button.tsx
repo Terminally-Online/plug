@@ -1,13 +1,13 @@
-'use client'
+"use client"
 
-import { FC, memo, PropsWithChildren } from 'react'
+import { FC, memo, PropsWithChildren } from "react"
 
-import { getCsrfToken, signIn } from 'next-auth/react'
+import { getCsrfToken, signIn } from "next-auth/react"
 
-import { SiweMessage } from 'siwe'
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
+import { SiweMessage } from "siwe"
+import { useAccount, useNetwork, useSignMessage } from "wagmi"
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useWeb3Modal } from "@web3modal/wagmi/react"
 
 export type ButtonProps = {
 	callbackUrl?: string
@@ -15,7 +15,7 @@ export type ButtonProps = {
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
-	callbackUrl = '/canvas/',
+	callbackUrl = "/canvas/",
 	redirect = true
 }) => {
 	const { signMessageAsync } = useSignMessage()
@@ -34,9 +34,9 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 				domain: window.location.host,
 				address,
 				statement:
-					'Sign into with Plug by signing this message to prove that you are the owner of this address.',
+					"Sign into with Plug by signing this message to prove that you are the owner of this address.",
 				uri: window.location.origin,
-				version: '1',
+				version: "1",
 				chainId: chain?.id,
 				nonce: await getCsrfToken()
 			})
@@ -44,7 +44,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 				message: message.prepareMessage()
 			})
 
-			signIn('credentials', {
+			signIn("credentials", {
 				message: JSON.stringify(message),
 				redirect,
 				signature,
@@ -57,7 +57,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 
 	return (
 		<button type="button" onClick={handleLogin}>
-			{isConnected ? 'Sign In' : 'Connect Wallet'}
+			{isConnected ? "Sign In" : "Connect Wallet"}
 		</button>
 	)
 }

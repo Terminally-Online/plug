@@ -1,12 +1,12 @@
-import { NextPageContext } from 'next'
+import { NextPageContext } from "next"
 
-import { createWSClient, httpBatchLink, loggerLink, wsLink } from '@trpc/client'
+import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
 
-import { type AppRouter } from '@/server/api/root'
+import { type AppRouter } from "@/server/api/root"
 
 const getBaseUrl = () => {
 	// browser should use relative url
-	if (typeof window !== 'undefined') return ''
+	if (typeof window !== "undefined") return ""
 
 	// SSR should use vercel url
 	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
@@ -16,7 +16,7 @@ const getBaseUrl = () => {
 }
 
 function getEndingLink(ctx: NextPageContext | undefined) {
-	if (typeof window === 'undefined') {
+	if (typeof window === "undefined") {
 		return httpBatchLink({
 			url: `${process.env.APP_URL || getBaseUrl()}/api/trpc`,
 			headers() {
@@ -25,7 +25,7 @@ function getEndingLink(ctx: NextPageContext | undefined) {
 				}
 				return {
 					...ctx.req.headers,
-					'x-ssr': '1'
+					"x-ssr": "1"
 				}
 			}
 		})
@@ -41,8 +41,8 @@ function getEndingLink(ctx: NextPageContext | undefined) {
 export const createLinks = (ctx: NextPageContext | undefined) => [
 	loggerLink({
 		enabled: opts =>
-			process.env.NODE_ENV === 'development' ||
-			(opts.direction === 'down' && opts.result instanceof Error)
+			process.env.NODE_ENV === "development" ||
+			(opts.direction === "down" && opts.result instanceof Error)
 	}),
 	getEndingLink(ctx)
 ]

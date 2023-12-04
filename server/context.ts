@@ -1,15 +1,15 @@
-import { Session } from 'next-auth'
-import { getSession } from 'next-auth/react'
+import { Session } from "next-auth"
+import { getSession } from "next-auth/react"
 
-import { IncomingMessage } from 'http'
-import ws from 'ws'
+import { IncomingMessage } from "http"
+import ws from "ws"
 
-import * as trpcNext from '@trpc/server/adapters/next'
-import { NodeHTTPCreateContextFnOptions } from '@trpc/server/adapters/node-http'
+import * as trpcNext from "@trpc/server/adapters/next"
+import { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http"
 
-import { db } from '@/server/db'
+import { db } from "@/server/db"
 
-import { getServerAuthSession } from './auth'
+import { getServerAuthSession } from "./auth"
 
 export const createContext = async (
 	opts:

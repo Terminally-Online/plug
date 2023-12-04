@@ -1,12 +1,12 @@
-import { FC, PropsWithChildren, useEffect, useState } from 'react'
+import { FC, PropsWithChildren, useEffect, useState } from "react"
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 
-import { Cross1Icon, HomeIcon, PlusIcon } from '@radix-ui/react-icons'
+import { Cross1Icon, HomeIcon, PlusIcon } from "@radix-ui/react-icons"
 
-import { useTabs } from '@/contexts/TabsProvider'
-import { cn } from '@/lib/utils'
+import { useTabs } from "@/contexts/TabsProvider"
+import { cn } from "@/lib/utils"
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => {
 	const { tabs, createTab, handleAdd, handleRemove } = useTabs()
@@ -23,7 +23,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 	useEffect(() => {
 		// * We create a custom tab for the canvas creation route.
 		switch (path) {
-			case '/canvas/create':
+			case "/canvas/create":
 				handleAdd({
 					label: `New Canvas`,
 					color: `#${Math.floor(Math.random() * 16777215).toString(
@@ -55,8 +55,8 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						<button
 							key={href}
 							className={cn(
-								'group flex h-full flex-row items-center gap-4 border-r-[1px] border-r-stone-950 px-4 text-sm text-white/60 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950/60 hover:active:bg-white active:hover:text-stone-950',
-								active ? 'active' : ''
+								"group flex h-full flex-row items-center gap-4 border-r-[1px] border-r-stone-950 px-4 text-sm text-white/60 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950/60 hover:active:bg-white active:hover:text-stone-950",
+								active ? "active" : ""
 							)}
 							onClick={() => router.push(href)}
 							suppressHydrationWarning
@@ -72,8 +72,8 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 							<button
 								type="button"
 								className={cn(
-									'flex h-full items-center justify-center text-white/60 opacity-0 transition-all duration-200 ease-in-out hover:text-white group-hover:opacity-100 active:text-stone-950 active:text-stone-950/60',
-									active ? 'active' : ''
+									"flex h-full items-center justify-center text-white/60 opacity-0 transition-all duration-200 ease-in-out hover:text-white group-hover:opacity-100 active:text-stone-950 active:text-stone-950/60",
+									active ? "active" : ""
 								)}
 								onClick={e => {
 									// ? Without this here, the close button would also fire navigation to the canvas route.
@@ -86,12 +86,12 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						</button>
 					))}
 
-					{createTab === undefined && path !== '/canvas' ? (
+					{createTab === undefined && path !== "/canvas" ? (
 						<button
 							type="button"
 							className="flex h-full items-center justify-center border-x-[1px] border-x-stone-950 bg-stone-800 px-4 text-white/60 transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950"
 							onClick={() => {
-								router.push('/canvas/create')
+								router.push("/canvas/create")
 							}}
 						>
 							<PlusIcon width={16} height={16} />

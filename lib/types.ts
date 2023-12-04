@@ -1,10 +1,10 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode } from "react"
 
-import { NextPage } from 'next'
+import { NextPage } from "next"
 
-import { z } from 'zod'
+import { z } from "zod"
 
-import { ItemTypes, pins } from './constants'
+import { ItemTypes, pins } from "./constants"
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 	getLayout?: (page: ReactElement) => ReactNode
@@ -34,9 +34,9 @@ export type Pins = Array<{
 	pins: Array<{
 		label: string
 		value: string
-		type: 'if' | 'then'
+		type: "if" | "then"
 		schema: z.ZodObject<any>
 	}>
 }>
 
-export type Pin = (typeof pins)[number]['pins'][number]
+export type Pin = (typeof pins)[number]["pins"][number]

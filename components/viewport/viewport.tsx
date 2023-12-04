@@ -6,14 +6,14 @@ import {
 	useEffect,
 	useRef,
 	WheelEvent
-} from 'react'
+} from "react"
 
-import useSize from '@react-hook/size'
+import useSize from "@react-hook/size"
 
-import useRenderLoop from '@/lib/hooks/useRenderLoop'
-import CanvasStore from '@/lib/store'
+import useRenderLoop from "@/lib/hooks/useRenderLoop"
+import CanvasStore from "@/lib/store"
 
-import Canvas from '../canvas/canvas'
+import Canvas from "../canvas/canvas"
 
 export type ViewportProps = {
 	id: string
@@ -54,7 +54,7 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 
 	return (
 		<div
-			className="w-screen h-full text-black dark:text-white overflow-hidden overscroll-none"
+			className="h-full w-screen overflow-hidden overscroll-none text-black dark:text-white"
 			ref={canvasRef}
 			onWheel={handleWheel}
 			onPointerMove={handlerPointerMove}

@@ -1,7 +1,7 @@
-import type { FC, PropsWithChildren } from 'react'
-import React, { useEffect, useMemo, useState } from 'react'
+import type { FC, PropsWithChildren } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 
-import type { DragEndEvent } from '@dnd-kit/core'
+import type { DragEndEvent } from "@dnd-kit/core"
 import {
 	DndContext,
 	KeyboardSensor,
@@ -10,13 +10,13 @@ import {
 	TouchSensor,
 	useSensor,
 	useSensors
-} from '@dnd-kit/core'
-import { createSnapModifier } from '@dnd-kit/modifiers'
-import { Component } from '@prisma/client'
+} from "@dnd-kit/core"
+import { createSnapModifier } from "@dnd-kit/modifiers"
+import { Component } from "@prisma/client"
 
-import { api } from '@/lib/api'
+import { api } from "@/lib/api"
 
-import { DraggableComponent } from './draggable-component'
+import { DraggableComponent } from "./draggable-component"
 
 export type DraggableComponentsProps = {
 	id: string

@@ -1,8 +1,8 @@
-import type { FC } from 'react'
+import type { FC } from "react"
 
-import { Canvas } from '@prisma/client'
+import { Canvas } from "@prisma/client"
 
-import CanvasPreview from '@/components/canvas/preview'
+import CanvasPreview from "@/components/canvas/preview"
 
 export type CanvasPreviewGridProps = {
 	canvases: Array<Canvas>
@@ -14,7 +14,7 @@ export const CanvasPreviewGrid: FC<CanvasPreviewGridProps> = ({ canvases }) => (
 			<>
 				{canvases.map(canvas => (
 					<CanvasPreview key={canvas.id} canvas={canvas} />
-				))}{' '}
+				))}{" "}
 			</>
 		) : (
 			<div className="col-span-3 row-span-4 flex flex-col items-center justify-center gap-2 border-t-[1px] border-stone-950 text-white">

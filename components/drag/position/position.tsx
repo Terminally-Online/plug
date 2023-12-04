@@ -1,8 +1,8 @@
-import { PropsWithChildren, useRef } from 'react'
+import { PropsWithChildren, useRef } from "react"
 
-import { DEBUG } from '@/lib/constants'
-import { inBounds } from '@/lib/functions/math-utils'
-import CanvasStore from '@/lib/store'
+import { DEBUG } from "@/lib/constants"
+import { inBounds } from "@/lib/functions/math-utils"
+import CanvasStore from "@/lib/store"
 
 export type CanvasPosition = {
 	id: string
@@ -55,15 +55,15 @@ export const Position = ({
 
 			{DEBUG && (
 				<div
-					className="absolute bg-red-400 p-2 rounded-sm text-xs text-red-700 font-bold tabular-nums"
+					className="absolute rounded-sm bg-red-400 p-2 text-xs font-bold tabular-nums text-red-700"
 					style={{
-						top: '-60px',
-						width: 'max-content'
+						top: "-60px",
+						width: "max-content"
 					}}
 				>
 					<p>
-						{Math.round(left - screen.x)} x{' '}
-						{Math.round(top - screen.y)} @ {width ?? 0} x{' '}
+						{Math.round(left - screen.x)} x{" "}
+						{Math.round(top - screen.y)} @ {width ?? 0} x{" "}
 						{height ?? 0}
 					</p>
 				</div>

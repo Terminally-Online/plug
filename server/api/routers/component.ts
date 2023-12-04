@@ -1,16 +1,16 @@
-import { z } from 'zod'
+import { z } from "zod"
 
-import { Prisma } from '@prisma/client'
-import { observable } from '@trpc/server/observable'
+import { Prisma } from "@prisma/client"
+import { observable } from "@trpc/server/observable"
 
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
-import { emitter } from '@/server/emitter'
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { emitter } from "@/server/emitter"
 
 export const ComponentSchema = z.object({
 	id: z.string(),
 	top: z.number(),
 	left: z.number(),
-	type: z.union([z.literal('PLUG'), z.literal('BOX'), z.literal('MARKDOWN')]),
+	type: z.union([z.literal("PLUG"), z.literal("BOX"), z.literal("MARKDOWN")]),
 	width: z.number(),
 	height: z.number(),
 	content: z.string(),
@@ -66,7 +66,7 @@ export default createTRPCRouter({
 				}
 			})
 
-			emitter.emit('move', input.component.id)
+			emitter.emit("move", input.component.id)
 
 			return component
 		}),
@@ -85,17 +85,17 @@ export default createTRPCRouter({
 
 	onMove: protectedProcedure.subscription(({ ctx }) => {
 		return observable<string>(emit => {
-			console.log('ready to move', emitter, ctx.session)
+			console.log("ready to move", emitter, ctx.session)
 
 			const onMove = (data: string) => {
-				console.log('move', data)
+				console.log("move", data)
 				emit.next(data)
 			}
 
-			emitter.on('move', onMove)
+			emitter.on("move", onMove)
 
 			return () => {
-				emitter.off('move', onMove)
+				emitter.off("move", onMove)
 			}
 		})
 	})

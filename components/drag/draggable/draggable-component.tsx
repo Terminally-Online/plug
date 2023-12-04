@@ -1,11 +1,11 @@
-import type { FC } from 'react'
+import type { FC } from "react"
 
-import { useDraggable } from '@dnd-kit/core'
+import { useDraggable } from "@dnd-kit/core"
 
-import { inBounds } from '@/lib/functions/math-utils'
-import CanvasStore from '@/lib/store'
+import { inBounds } from "@/lib/functions/math-utils"
+import CanvasStore from "@/lib/store"
 
-import { Draggable } from './draggable'
+import { Draggable } from "./draggable"
 
 export type DraggableComponentProps = {
 	id: string
@@ -60,8 +60,8 @@ export const DraggableComponent: FC<DraggableComponentProps> = ({
 			transform={transform}
 			gridSize={gridSize}
 			style={{
-				position: 'absolute',
-				alignItems: 'flex-start',
+				position: "absolute",
+				alignItems: "flex-start",
 				top: top - CanvasStore.screen.y,
 				left: left - CanvasStore.screen.x
 			}}

@@ -1,14 +1,14 @@
-import { type Session } from 'next-auth'
+import { type Session } from "next-auth"
 
-import superjson from 'superjson'
-import { ZodError } from 'zod'
+import superjson from "superjson"
+import { ZodError } from "zod"
 
-import { initTRPC, TRPCError } from '@trpc/server'
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { initTRPC, TRPCError } from "@trpc/server"
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next"
 
-import { getServerAuthSession } from '@/server/auth'
-import { db } from '@/server/db'
-import { emitter } from '@/server/emitter'
+import { getServerAuthSession } from "@/server/auth"
+import { db } from "@/server/db"
+import { emitter } from "@/server/emitter"
 
 interface CreateContextOptions {
 	session: Session | null
@@ -74,8 +74,8 @@ export const publicProcedure = t.procedure
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 	if (!ctx.session?.user) {
 		throw new TRPCError({
-			code: 'UNAUTHORIZED',
-			message: 'enforceUserIsAuthed() failed'
+			code: "UNAUTHORIZED",
+			message: "enforceUserIsAuthed() failed"
 		})
 	}
 	return next({

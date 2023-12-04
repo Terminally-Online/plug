@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 export class RenderLoop {
 	private lastFrameTime: number = 0

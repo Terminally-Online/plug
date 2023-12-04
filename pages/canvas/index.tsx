@@ -1,19 +1,17 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next"
 
-import { getSession } from 'next-auth/react'
+import { getSession } from "next-auth/react"
 
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from "framer-motion"
 
-import Block from '@/components/canvas/block'
-import CanvasPreviewGrid from '@/components/canvas/preview-grid'
-import { Search } from '@/components/canvas/search'
-import { TabsProvider } from '@/contexts/TabsProvider'
-import { api, RouterOutputs } from '@/lib/api'
-import { type NextPageWithLayout } from '@/lib/types'
-
-export const revalidate = 1
+import Block from "@/components/canvas/block"
+import CanvasPreviewGrid from "@/components/canvas/preview-grid"
+import { Search } from "@/components/canvas/search"
+import { TabsProvider } from "@/contexts/TabsProvider"
+import { api, RouterOutputs } from "@/lib/api"
+import { type NextPageWithLayout } from "@/lib/types"
 
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
@@ -24,7 +22,7 @@ const Page: NextPageWithLayout<
 	const [count, setCount] = useState(0)
 	const [loading, setLoading] = useState(false)
 
-	const [canvases, setCanvases] = useState<RouterOutputs['canvas']['all']>([])
+	const [canvases, setCanvases] = useState<RouterOutputs["canvas"]["all"]>([])
 
 	const { fetchNextPage } = api.canvas.infinite.useInfiniteQuery(
 		{ search },
@@ -74,7 +72,7 @@ const Page: NextPageWithLayout<
 		}
 	})
 
-	useMotionValueEvent(scrollYProgress, 'change', latest => {
+	useMotionValueEvent(scrollYProgress, "change", latest => {
 		if (loading) return
 		if (latest < 0.8) return
 
@@ -103,7 +101,7 @@ export const getServerSideProps = (async context => {
 
 	return {
 		props: {
-			search: context.query.search || ''
+			search: context.query.search || ""
 		}
 	}
 }) satisfies GetServerSideProps<{

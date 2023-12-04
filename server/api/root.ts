@@ -1,13 +1,13 @@
-import { observable } from '@trpc/server/observable'
+import { observable } from "@trpc/server/observable"
 
-import canvasRouter from '@/server/api/routers/canvas'
+import canvasRouter from "@/server/api/routers/canvas"
 import {
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure
-} from '@/server/api/trpc'
+} from "@/server/api/trpc"
 
-import { emitter } from '../emitter'
+import { emitter } from "../emitter"
 
 let counter = 0
 
@@ -15,10 +15,10 @@ export const appRouter = createTRPCRouter({
 	canvas: canvasRouter,
 
 	public: publicProcedure.query(() => {
-		return 'you can see this message!'
+		return "you can see this message!"
 	}),
 	protected: protectedProcedure.query(() => {
-		return 'This is protected content. You can access this content because you are signed in.'
+		return "This is protected content. You can access this content because you are signed in."
 	}),
 	randomNumber: publicProcedure.subscription(() => {
 		return observable<number>(emit => {
@@ -34,7 +34,7 @@ export const appRouter = createTRPCRouter({
 
 	increment: protectedProcedure.mutation(() => {
 		counter++
-		emitter.emit('increment', counter)
+		emitter.emit("increment", counter)
 		return counter
 	}),
 
@@ -44,10 +44,10 @@ export const appRouter = createTRPCRouter({
 				emit.next(count)
 			}
 
-			emitter.on('increment', listener)
+			emitter.on("increment", listener)
 
 			return () => {
-				emitter.off('increment', listener)
+				emitter.off("increment", listener)
 			}
 		})
 	})

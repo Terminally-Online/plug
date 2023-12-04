@@ -1,11 +1,11 @@
-import superjson from 'superjson'
+import superjson from "superjson"
 
-import { createTRPCNext } from '@trpc/next'
-import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server'
+import { createTRPCNext } from "@trpc/next"
+import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server"
 
-import { type AppRouter } from '@/server/api/root'
+import { type AppRouter } from "@/server/api/root"
 
-import { createLinks } from './links'
+import { createLinks } from "./links"
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({

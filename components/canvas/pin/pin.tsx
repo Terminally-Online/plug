@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
 	Command,
 	CommandEmpty,
@@ -11,16 +11,16 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList
-} from '@/components/ui/command'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/command"
+import { Input } from "@/components/ui/input"
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger
-} from '@/components/ui/popover'
-import CanvasStore from '@/lib/store'
-import { Pins, Pin as PinType } from '@/lib/types'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/popover"
+import CanvasStore from "@/lib/store"
+import { Pins, Pin as PinType } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -45,12 +45,12 @@ export const Pin = ({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<div className="relative bg-stone-900 flex flex-col items-stretch">
-				<p className="absolute top-[-10px] left-4 bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">
+			<div className="relative flex flex-col items-stretch bg-stone-900">
+				<p className="absolute left-4 top-[-10px] rounded-full border-[1px] border-stone-950 bg-stone-900 p-[1px] px-[8px] text-xs text-white/60">
 					{selectedPin.type.slice(0, 1).toUpperCase() +
 						selectedPin.type.slice(1)}
 				</p>
-				<p className="absolute top-[-10px] right-4 text-right bg-stone-900 border-[1px] border-stone-950 rounded-full text-xs text-white/60 p-[1px] px-[8px]">
+				<p className="absolute right-4 top-[-10px] rounded-full border-[1px] border-stone-950 bg-stone-900 p-[1px] px-[8px] text-right text-xs text-white/60">
 					Pending
 				</p>
 
@@ -61,7 +61,7 @@ export const Pin = ({
 						aria-expanded={open}
 						aria-label="Select a Pin"
 						className={cn(
-							'w-full justify-between rounded-[0px] border-none',
+							"w-full justify-between rounded-[0px] border-none",
 							className
 						)}
 						style={{ height: gridSize * 2 - 1 }}
@@ -87,7 +87,7 @@ export const Pin = ({
 							id={key}
 							type="text"
 							placeholder={key
-								.replace(/-/g, ' ')
+								.replace(/-/g, " ")
 								.replace(/\w\S*/g, w =>
 									w.replace(/^\w/, c => c.toUpperCase())
 								)}
@@ -134,11 +134,11 @@ export const Pin = ({
 
 											<CheckIcon
 												className={cn(
-													'ml-auto h-4 w-4',
+													"ml-auto h-4 w-4",
 													selectedPin.value ===
 														pin.value
-														? 'opacity-100'
-														: 'opacity-0'
+														? "opacity-100"
+														: "opacity-0"
 												)}
 											/>
 										</CommandItem>

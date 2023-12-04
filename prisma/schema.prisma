@@ -1,5 +1,5 @@
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
@@ -8,7 +8,6 @@ datasource db {
     url      = "postgresql://postgres:postgres@localhost:5434/postgres"
 }
 
-// Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String

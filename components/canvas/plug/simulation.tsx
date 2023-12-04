@@ -1,9 +1,9 @@
-import type { FC } from 'react'
-import { memo, useState } from 'react'
+import type { FC } from "react"
+import { memo, useState } from "react"
 
-import { LightningBoltIcon, UpdateIcon } from '@radix-ui/react-icons'
+import { LightningBoltIcon, UpdateIcon } from "@radix-ui/react-icons"
 
-import { Pin } from '@/lib/types'
+import { Pin } from "@/lib/types"
 
 export type PlugSimulationState = {
 	success: boolean
@@ -20,7 +20,7 @@ export const PlugSimulation: FC<PlugSimulationProps> = ({
 }) => {
 	const [isLoading, setIsLoading] = useState(false)
 
-	const endsWithThen = pins[pins.length - 1].type === 'then'
+	const endsWithThen = pins[pins.length - 1].type === "then"
 
 	if (!endsWithThen) return null
 
@@ -48,18 +48,18 @@ export const PlugSimulation: FC<PlugSimulationProps> = ({
 	return (
 		<button
 			type="button"
-			className="flex flex-row items-center justify-center gap-2 bg-stone-800 w-full p-2 rounded-sm border-[1px] border-stone-950 text-sm font-bold hover:bg-white hover:text-stone-950 transition-all duration-200 ease-in-out disabled:bg-white/60 disabled:text-stone-950"
+			className="flex w-full flex-row items-center justify-center gap-2 rounded-sm border-[1px] border-stone-950 bg-stone-800 p-2 text-sm font-bold transition-all duration-200 ease-in-out hover:bg-white hover:text-stone-950 disabled:bg-white/60 disabled:text-stone-950"
 			onClick={handleClick}
 			disabled={isLoading}
 		>
 			{isLoading ? (
 				<>
-					<UpdateIcon className="w-3 h-3 opacity-60 animate-spin" />
+					<UpdateIcon className="h-3 w-3 animate-spin opacity-60" />
 					Simulating
 				</>
 			) : (
 				<>
-					<LightningBoltIcon className="w-3 h-3 opacity-60" />
+					<LightningBoltIcon className="h-3 w-3 opacity-60" />
 					Simulate
 				</>
 			)}

@@ -1,20 +1,20 @@
-import type { FC, PropsWithChildren } from 'react'
-import { memo, useCallback, useState } from 'react'
+import type { FC, PropsWithChildren } from "react"
+import { memo, useCallback, useState } from "react"
 
-import { pins } from '@/lib/constants'
-import type { Pin as PinType } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { pins } from "@/lib/constants"
+import type { Pin as PinType } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
-import PinAppendage from '../pin/appendage'
-import Pin from '../pin/pin'
-import PlugSimulation, { PlugSimulationState } from './simulation'
+import PinAppendage from "../pin/appendage"
+import Pin from "../pin/pin"
+import PlugSimulation, { PlugSimulationState } from "./simulation"
 
 export type PlugProps = {
 	id: string
 	selecting: string | null
 	gridSize: number
 	preview?: boolean
-} & JSX.IntrinsicElements['div']
+} & JSX.IntrinsicElements["div"]
 
 export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	id,
@@ -54,7 +54,7 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 			newSelectedPins[index] = pin
 
 			// * If we have terminated the chain remove trailing pins.
-			if (pin.type === 'then')
+			if (pin.type === "then")
 				newSelectedPins.splice(
 					index + 1,
 					newSelectedPins.length - index
@@ -85,9 +85,9 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	return (
 		<div
 			className={cn(
-				'text-white cursor-move w-full flex flex-col items-stretch'
+				"flex w-full cursor-move flex-col items-stretch text-white"
 			)}
-			role={preview ? 'PlugPreview' : 'Plug'}
+			role={preview ? "PlugPreview" : "Plug"}
 			{...rest}
 		>
 			{selectedPins.map((pin, index) => (

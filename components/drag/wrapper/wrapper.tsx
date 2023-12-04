@@ -1,6 +1,6 @@
-import React, { FC, PropsWithChildren } from 'react'
+import React, { FC, PropsWithChildren } from "react"
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils"
 
 export type WrapperProps = {
 	center?: boolean
@@ -10,8 +10,8 @@ export const Wrapper: FC<WrapperProps> = ({ children, center, className }) => {
 	return (
 		<div
 			className={cn(
-				'bg-transparent h-full w-full justify-start box-border overscroll-none',
-				center ? 'items-center' : 'items-start',
+				"box-border h-full w-full justify-start overscroll-none bg-transparent",
+				center ? "items-center" : "items-start",
 				className
 			)}
 		>

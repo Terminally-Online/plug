@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import {
 	createContext,
@@ -8,11 +8,11 @@ import {
 	useContext,
 	useEffect,
 	useState
-} from 'react'
+} from "react"
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from "next/navigation"
 
-import { Hud } from '@/components/viewport/hud'
+import { Hud } from "@/components/viewport/hud"
 
 type Tab = {
 	label: string
@@ -40,14 +40,14 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 	const path = usePathname()
 
 	const [tabs, setTabs] = useState<Tab[]>(() => {
-		if (typeof window === 'undefined') return []
+		if (typeof window === "undefined") return []
 
-		const savedTabs = localStorage.getItem('tabs')
+		const savedTabs = localStorage.getItem("tabs")
 
 		return savedTabs ? JSON.parse(savedTabs) : []
 	})
 
-	const createTab = tabs.find(tab => tab.href === '/canvas/create')
+	const createTab = tabs.find(tab => tab.href === "/canvas/create")
 
 	const handleAdd = useCallback(
 		(tab: Tab) => {
@@ -84,7 +84,7 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 						router.push(lastTab.href)
 					}
 					// * If there are no more tabs, we need to redirect to the home page.
-					else router.push('/canvas')
+					else router.push("/canvas")
 				}
 
 				return newTabs
@@ -106,7 +106,7 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 	}, [])
 
 	useEffect(() => {
-		localStorage.setItem('tabs', JSON.stringify(tabs))
+		localStorage.setItem("tabs", JSON.stringify(tabs))
 	}, [tabs])
 
 	useEffect(() => {

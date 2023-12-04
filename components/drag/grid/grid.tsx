@@ -1,11 +1,11 @@
-import React, { FC, PropsWithChildren } from 'react'
+import React, { FC, PropsWithChildren } from "react"
 
-import classNames from 'classnames'
+import classNames from "classnames"
 
-import CanvasStore from '@/lib/store'
-import { cn } from '@/lib/utils'
+import CanvasStore from "@/lib/store"
+import { cn } from "@/lib/utils"
 
-import styles from './Grid.module.css'
+import styles from "./Grid.module.css"
 
 export interface GridProps {
 	size: number
@@ -18,12 +18,12 @@ export const Grid: FC<PropsWithChildren<GridProps>> = ({ size, children }) => {
 		<>
 			<div
 				className={cn(
-					'bg-stone-900 absolute z-[-1] pointer-events-none',
+					"pointer-events-none absolute z-[-1] bg-stone-900",
 					classNames(styles.Grid)
 				)}
 				style={
 					{
-						'--grid-size': `${size}px`,
+						"--grid-size": `${size}px`,
 						left: -1 * CanvasStore.screen.x,
 						top: -1 * CanvasStore.screen.y,
 						width: 10000,

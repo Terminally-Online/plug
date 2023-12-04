@@ -1,18 +1,18 @@
-import { type GetServerSidePropsContext } from 'next'
+import { type GetServerSidePropsContext } from "next"
 
 import {
 	type DefaultSession,
 	getServerSession,
 	type NextAuthOptions
-} from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { getCsrfToken } from 'next-auth/react'
+} from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
+import { getCsrfToken } from "next-auth/react"
 
-import { SiweMessage } from 'siwe'
+import { SiweMessage } from "siwe"
 
-declare module 'next-auth' {
+declare module "next-auth" {
 	interface Session extends DefaultSession {
-		user: DefaultSession['user'] & {
+		user: DefaultSession["user"] & {
 			id: string
 			name: string
 			image: string
@@ -24,31 +24,31 @@ declare module 'next-auth' {
 const authOptions: NextAuthOptions = {
 	providers: [
 		CredentialsProvider({
-			name: 'Ethereum',
+			name: "Ethereum",
 			credentials: {
 				message: {
-					label: 'Message',
-					type: 'text',
-					placeholder: '0x0'
+					label: "Message",
+					type: "text",
+					placeholder: "0x0"
 				},
 				signature: {
-					label: 'Signature',
-					type: 'text',
-					placeholder: '0x0'
+					label: "Signature",
+					type: "text",
+					placeholder: "0x0"
 				}
 			},
 			async authorize(credentials, req) {
 				try {
 					const siwe = new SiweMessage(
-						JSON.parse(credentials?.message || '{}')
+						JSON.parse(credentials?.message || "{}")
 					)
 					const nextAuthUrl = new URL(
 						process.env.NEXTAUTH_URL ||
-							'http://localhost:3000/api/auth'
+							"http://localhost:3000/api/auth"
 					)
 
 					const result = await siwe.verify({
-						signature: credentials?.signature || '',
+						signature: credentials?.signature || "",
 						domain: nextAuthUrl.host,
 						nonce: await getCsrfToken({
 							req: { headers: req.headers }
@@ -77,14 +77,14 @@ const authOptions: NextAuthOptions = {
 		}
 	},
 	session: {
-		strategy: 'jwt'
+		strategy: "jwt"
 	},
 	secret: process.env.NEXTAUTH_SECRET
 }
 
 export const getServerAuthSession = (ctx: {
-	req: GetServerSidePropsContext['req']
-	res: GetServerSidePropsContext['res']
+	req: GetServerSidePropsContext["req"]
+	res: GetServerSidePropsContext["res"]
 }) => {
 	return getServerSession(ctx.req, ctx.res, authOptions)
 }

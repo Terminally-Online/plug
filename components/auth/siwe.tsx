@@ -1,12 +1,12 @@
-import { type FC, useState } from 'react'
+import { type FC, useState } from "react"
 
-import { signOut } from 'next-auth/react'
-import { getCsrfToken, signIn, useSession } from 'next-auth/react'
+import { signOut } from "next-auth/react"
+import { getCsrfToken, signIn, useSession } from "next-auth/react"
 
-import { SiweMessage } from 'siwe'
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
+import { SiweMessage } from "siwe"
+import { useAccount, useNetwork, useSignMessage } from "wagmi"
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useWeb3Modal } from "@web3modal/wagmi/react"
 
 export type SiweProps = Partial<{
 	callbackUrl: string
@@ -14,7 +14,7 @@ export type SiweProps = Partial<{
 }>
 
 const Siwe: FC<SiweProps> = ({
-	callbackUrl = '/protected',
+	callbackUrl = "/protected",
 	redirect = false
 } = {}) => {
 	const { chain } = useNetwork()
@@ -30,7 +30,7 @@ const Siwe: FC<SiweProps> = ({
 	const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
 
-		console.log('handling', isAuthenticated)
+		console.log("handling", isAuthenticated)
 
 		// ? This user is already authenticated.
 		if (isAuthenticated) return
@@ -43,9 +43,9 @@ const Siwe: FC<SiweProps> = ({
 					domain: window.location.host,
 					address,
 					statement:
-						'Sign in to Plug by signing this message to prove your identity.',
+						"Sign in to Plug by signing this message to prove your identity.",
 					uri: window.location.origin,
-					version: '1',
+					version: "1",
 					chainId: chain?.id,
 					nonce: await getCsrfToken()
 				})
@@ -53,7 +53,7 @@ const Siwe: FC<SiweProps> = ({
 					message: message.prepareMessage()
 				})
 
-				signIn('credentials', {
+				signIn("credentials", {
 					message: JSON.stringify(message),
 					redirect,
 					signature,

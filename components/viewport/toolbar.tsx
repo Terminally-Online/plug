@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect } from "react"
 
-import { SewingPinIcon } from '@radix-ui/react-icons'
+import { SewingPinIcon } from "@radix-ui/react-icons"
 
-import CanvasStore from '@/lib/store'
+import CanvasStore from "@/lib/store"
 
 export const Toolbar = () => {
 	const zoom = Math.round(CanvasStore.scale.x * 100)
@@ -14,9 +14,9 @@ export const Toolbar = () => {
 	useEffect(() => {
 		const handleZoom = (e: KeyboardEvent) => {
 			const keys = [
-				['+', -10],
-				['-', 10],
-				['=', -10]
+				["+", -10],
+				["-", 10],
+				["=", -10]
 			]
 
 			for (const [key, value] of keys) {
@@ -24,16 +24,16 @@ export const Toolbar = () => {
 					e.preventDefault()
 
 					const zoom =
-						typeof value === 'number' ? value : parseInt(value)
+						typeof value === "number" ? value : parseInt(value)
 
 					CanvasStore.zoomCamera(zoom, zoom)
 				}
 			}
 		}
 
-		window.addEventListener('keydown', handleZoom)
+		window.addEventListener("keydown", handleZoom)
 
-		return () => window.removeEventListener('keydown', handleZoom)
+		return () => window.removeEventListener("keydown", handleZoom)
 	}, [])
 
 	return (
@@ -68,25 +68,25 @@ export const Toolbar = () => {
 			{
 				<div className="fixed right-0 top-24 z-10 m-2 rounded-sm bg-red-400 p-2 font-bold text-red-700">
 					<p>
-						Camera: {Math.round(CanvasStore.camera.x)},{' '}
-						{Math.round(CanvasStore.camera.y)},{' '}
+						Camera: {Math.round(CanvasStore.camera.x)},{" "}
+						{Math.round(CanvasStore.camera.y)},{" "}
 						{Math.round(CanvasStore.camera.z)}
 					</p>
 					<p>
-						Container: {CanvasStore.container.width} x{' '}
+						Container: {CanvasStore.container.width} x{" "}
 						{CanvasStore.container.height}
 					</p>
 					<p>Locked: {CanvasStore.camera.locked.toString()}</p>
 					<p>
-						Scale: {Math.round(CanvasStore.scale.x)},{' '}
+						Scale: {Math.round(CanvasStore.scale.x)},{" "}
 						{Math.round(CanvasStore.scale.y)}
 					</p>
 					<p>
-						Screen: {Math.round(CanvasStore.screen.x)},{' '}
+						Screen: {Math.round(CanvasStore.screen.x)},{" "}
 						{Math.round(CanvasStore.screen.y)}
 					</p>
 					<p>
-						Pointer: {Math.round(CanvasStore.pointer.x)},{' '}
+						Pointer: {Math.round(CanvasStore.pointer.x)},{" "}
 						{Math.round(CanvasStore.pointer.y)}
 					</p>
 				</div>
