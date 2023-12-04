@@ -5,11 +5,11 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { getSession } from "next-auth/react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
-import { HandIcon } from "lucide-react"
 
 import CanvasPreviewGrid from "@/components/canvas/preview-grid"
 import { Search } from "@/components/canvas/search"
 import SortBy from "@/components/canvas/sort-by"
+import Welcome from "@/components/canvas/welcome"
 import { TabsProvider } from "@/contexts/TabsProvider"
 import { api, RouterOutputs } from "@/lib/api"
 import { NextPageWithLayout } from "@/lib/types"
@@ -66,23 +66,7 @@ const Templates: NextPageWithLayout<
 	return (
 		<div className="grid grid-cols-12 grid-rows-1">
 			<div className="col-span-3 flex flex-col">
-				<div className="group col-span-3 flex flex-col items-center justify-center gap-2 border-[1px] border-l-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white">
-					<div className="w-min rounded-full border-[1px] border-stone-950 bg-transparent p-2 transition-all duration-200 ease-in-out group-hover:border-white/20">
-						<HandIcon
-							width={18}
-							height={18}
-							className="opacity-60"
-						/>
-					</div>
-
-					<h1 className="max-w-[280px] text-2xl">
-						Welcome to the Plug Discovery Hub.
-					</h1>
-					<p className="max-w-[240px] text-sm opacity-60">
-						Here you can find templates to get you started that have
-						been made by the Plug community and team.
-					</p>
-				</div>
+				<Welcome />
 
 				<div className="top-18 sticky col-span-3 h-full border-r-[1px] border-stone-950">
 					<Search baseUrl={"/canvas/templates"} results={count} />
