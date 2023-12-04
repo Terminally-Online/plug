@@ -77,6 +77,7 @@ export default createTRPCRouter({
 		.input(
 			z.object({
 				cursor: z.string().nullish(),
+				limit: z.number().optional().default(10),
 				search: z.union([z.string(), z.array(z.string())]).optional()
 			})
 		)
@@ -103,6 +104,8 @@ export default createTRPCRouter({
 
 			const count = await ctx.db.canvas.count({ where })
 
+			const limit = input.limit + 1
+
 			const canvases = await ctx.db.canvas.findMany({
 				...whereWithSearch({ userId }, "name", search),
 				orderBy: {
@@ -113,7 +116,7 @@ export default createTRPCRouter({
 							id: cursor
 					  }
 					: undefined,
-				take: 10 + 1
+				take: limit
 			})
 
 			let nextCursor: typeof cursor | undefined = undefined

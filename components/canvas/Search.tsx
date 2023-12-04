@@ -48,7 +48,9 @@ export const Search: FC<SearchProps> = ({ baseUrl, results = 0 }) => {
 
 			<Input
 				placeholder="SEARCH ALL CANVASES"
-				className={cn("relative w-full bg-transparent py-8 text-white")}
+				className={cn(
+					"relative w-full bg-transparent py-8 uppercase text-white"
+				)}
 				value={value}
 				onChange={e => {
 					debounce(e.target.value)
@@ -63,7 +65,7 @@ export const Search: FC<SearchProps> = ({ baseUrl, results = 0 }) => {
 					/>
 				</button>
 			)}
-			<p className="ml-auto block w-max min-w-[100px] text-right text-sm tabular-nums text-white opacity-60 group-hover:opacity-100">
+			<p className="ml-auto block w-max min-w-[100px] select-none text-right text-sm tabular-nums text-white opacity-60 group-hover:opacity-100">
 				{results} results
 			</p>
 		</div>
