@@ -11,17 +11,40 @@
 
   - ALPHA:
 
+    Core protocol:
+
+    - [x] Fuse development.
+      - [x] Add noun trait bid.
+      - [x] Expose the contracts as exports from @nftchance/plug-core
+    - [x] There is an issue with EventEmitter where procedures are refusing to communicate with one another. In both routers, when making a subscription through an event emitter the vent never fires. The weird thing is that when I am not using an emitter, everything works fine with just an observable but the second I try and make an onUpdate it doesnt ever fire the event.
+          Notes: I have tried so many things and I am tired of wasting time on this. Everything else is setup fine and subscriptions that are not going through emitters work fine so just cannot justify wasting any more time on this at this point. If people complain because I got users then this will be taken care of immediately!
+    - [x] Update `ws.prod.ts` to actually be ready for production.
+    - [x] Improved account page.
+    - [x] Infinite query to retrieve the canvases of an account.
+    - [x] Improved /create experience to introduce grace period before actual creation.
+    - [x] Searching canvases on the account page.
+    - [ ] Make the websocket subscriptions relative to the context of the subscription rather than being a general catch-all subscription.
+          Notes: Creation events should only notify of ones own account.
+          Notes: Update events should only notify of ones own account.
+      - [ ] onAdd
+      - [ ] onUpdate
     - [o] Expose plugs
-      - [ ] Replace the placeholder component with a plug.
-      - [ ] The positioning of new components from addComponent is a little wonky.
+      - [x] Replace the placeholder component with a plug.
+      - [x] The positioning of new components from addComponent is a little wonky.
             Notes: Spent a little time trying to fix it, got it good enough for now. Will want to figure out what is going on here and fix it though.
-        - [ ] Make sure a connector between each pin is on the grid.
+        - [x] Make sure a connector between each pin is on the grid.
       - [ ] Store the configuration of a plug in the database.
-    - [ ] Add distance constraint so that dragging does not impact clicking on components.
+
+    Canvas:
+
+    - [ ] Bezier curves that connect each Pin in a Plug.
+    - [x] Add distance constraint so that dragging does not impact clicking on components.
+    - [ ] Drag controls
+      - [ ] Right now when dropping a plug with multiple pins it is no longer on the grid.
     - [ ] Camera Controls
       - [ ] Make CMD + 0 reset the scale to 100%.
       - [ ] Recenter the camera requires moving the mouse in the grid to trigger the next render because the camera controls are outside of react render loop.
-      - [ ] Make sure items outside of bounds disappear.
+      - [x] Make sure items outside of bounds disappear.
       - [ ] CMD + Space + Drag to move the camera
       - [ ] Right now we can zoom in on elements that we should not be able to.
             Notes: I think this started happening when we updated to the Pages Router, but not completely sure. When debugging this you will want to comment out the Toolbar so that you can determine if it is that element causing the issue before doing anything else.
@@ -31,23 +54,24 @@
       - [ ] Be able to select a component.
       - [ ] Be able to delete it and select a group.
       - [ ] Drag selection.
-    - [x] Fuse development.
-      - [x] Add noun trait bid.
-      - [x] Expose the contracts as exports from @nftchance/plug-core
+
+    Templates:
+
+    - [ ] Templates page
+          Tab Manager:
+    - [ ] Move the tab logic into the database and use websockets to update everything.
+          Fuse Integration:
     - [ ] Fuse integration.
       - [ ] Revocation on deletion after the first submission.
-    - [o] Update the hello world to be the base noun plug.
+    - [ ] Update the hello world to be the base noun plug.
 
   - BETA:
 
-    - [ ] There is an issue with EventEmitter where procedures are refusing to communicate with one another. In both routers, when making a subscription through an event emitter the vent never fires. The weird thing is that when I am not using an emitter, everything works fine with just an observable but the second I try and make an onUpdate it doesnt ever fire the event.
-          Notes: I have tried so many things and I am tired of wasting time on this. Everything else is setup fine and subscriptions that are not going through emitters work fine so just cannot justify wasting any more time on this at this point. If people complain because I got users then this will be taken care of immediately!
-    - [ ] Update `ws.prod.ts` to actually be ready for production.
     - [ ] Improve authentication implementation to support the use of email based accounts.
           Notes: Realistically, there is no reason to limit to hot-wallets meaning wallets that are yet to be cold-started should still be able to architecture setups as well as sign orders.
           Notes: There is also privy, but pricing is way more expensive. Imagine paying hundreds just for logging in alone. Bad.
       - [ ] Add the ability to be an anonymous user (until signed in)
-        - [ ] Implement the page redirects as a middleware so that we do not ever even get routed there. The reason this has not just been done is because I do not want to make two calls to the database (1 in the middleware and then another on the page) to determine if it is public / the accessing user has access so just not worrying about this for now. In MVP just going to design for public, but still require that users be logged in.
+        - [x] Implement the page redirects as a middleware so that we do not ever even get routed there. The reason this has not just been done is because I do not want to make two calls to the database (1 in the middleware and then another on the page) to determine if it is public / the accessing user has access so just not worrying about this for now. In MVP just going to design for public, but still require that users be logged in.
           - [ ] When we do this, we will want to categorize them as a 'Anonymous Cow/Cat/Dog' and show them as active on the board when they are viewing it.
           - [ ] For anonymous users, everything will always be read-only.
     - [ ] Add 'home' button to center the screen on the center of the board.
