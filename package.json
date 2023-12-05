@@ -65,7 +65,7 @@
 		"ci:publish": "changeset publish"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.26.2",
+		"@changesets/cli": "^2.27.1",
 		"@nomicfoundation/hardhat-network-helpers": "^1.0.10",
 		"@nomicfoundation/hardhat-toolbox": "^3.0.0",
 		"@nomicfoundation/hardhat-toolbox-viem": "^1.0.0",
