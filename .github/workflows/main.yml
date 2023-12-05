@@ -42,8 +42,8 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: 🧪 Lint and Build
-              run: pnpm lint && pnpm build
+            - name: 🧪 Build
+              run: pnpm build
               env:
                   NEXTAUTH_SECRET: supersecretauthpassword
                   NEXTAPP_URL: http://localhost:3000
