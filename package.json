@@ -36,7 +36,7 @@
 			"default": "./dist/core/sdk.js"
 		},
 		"./artifacts": {
-			"types": "./artifacts/index.d.ts"
+			"types": "./artifacts/artifacts.d.ts"
 		},
 		"./package.json": "./package.json"
 	},
