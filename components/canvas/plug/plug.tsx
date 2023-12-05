@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react"
-import { memo, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 import { pins } from "@/lib/constants"
 import type { Pin as PinType } from "@/lib/types"
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 import PinAppendage from "../pin/appendage"
 import Pin from "../pin/pin"
-import PlugSimulation, { PlugSimulationState } from "./simulation"
+import PlugSimulation from "./simulation"
 
 export type PlugProps = {
 	id: string
@@ -27,18 +27,12 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 	// * Deconstruct the values that were sent from the database.
 	// TODO: Acknowledge that this is dangerous and not ideal.
 	const values = JSON.parse(children as string) as Array<PinType>
+	values
 
 	const [selectedPins, setSelectedPins] = useState([pins[0].pins[0]])
-	const [simulation, setSimulation] = useState<PlugSimulationState | null>(
-		null
-	)
-
-	const handlePost = () => {
-		id
-		// TODO: Post into the database when selectedPins is updated.
-		//    NOTES: This will only orchestrate the state of the plug and not the actual canvas state of the plug (position, size, etc.)
-		//    NOTES: Also do note that we cannot simply retrieve the state of the Plug from here because to have gotten here we needed to already know its position in order to properly place it on the Canvas.
-	}
+	const [signature, setSignature] = useState<string | undefined>()
+	signature
+	setSignature
 
 	// * Remove the selectedPins from the pins so that you can only choose each pin once.
 	const availablePins = pins
@@ -77,11 +71,6 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 		[availablePins]
 	)
 
-	const handleSimulation = (state: PlugSimulationState) => {
-		// TODO: Not sure what is done here yet, but something.
-		setSimulation(state)
-	}
-
 	return (
 		<div
 			className={cn(
@@ -108,12 +97,9 @@ export const Plug: FC<PropsWithChildren<PlugProps>> = ({
 				</div>
 			))}
 
-			<PlugSimulation
-				pins={selectedPins}
-				onSimulation={handleSimulation}
-			/>
+			<PlugSimulation pins={selectedPins} />
 		</div>
 	)
 }
 
-export default memo(Plug)
+export default Plug

@@ -13,7 +13,6 @@ export type CanvasPosition = {
 }
 
 export const Position = ({
-	id,
 	left,
 	top,
 	width,

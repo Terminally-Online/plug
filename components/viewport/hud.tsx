@@ -74,12 +74,14 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 							onClick={() => router.push(href)}
 							suppressHydrationWarning
 						>
-							<div className="flex h-full flex-row items-center gap-4">
+							<div className="flex h-full flex-row items-center gap-4 ">
 								<div
 									className="h-2 w-2 rounded-full"
 									style={{ backgroundColor: color }}
 								/>
-								{label}
+								<div className="max-w-[140px] overflow-hidden overflow-ellipsis whitespace-nowrap">
+									{label}
+								</div>
 							</div>
 
 							<button

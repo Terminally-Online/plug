@@ -1,27 +1,12 @@
-import type { CSSProperties, FC, PropsWithChildren } from "react"
-import React, { forwardRef, useEffect, useMemo, useState } from "react"
+import type { CSSProperties } from "react"
+import React, { forwardRef } from "react"
 
 import classNames from "classnames"
 
-import type { DragEndEvent, DraggableSyntheticListeners } from "@dnd-kit/core"
-import {
-	DndContext,
-	KeyboardSensor,
-	MouseSensor,
-	PointerActivationConstraint,
-	TouchSensor,
-	useDraggable,
-	useSensor,
-	useSensors
-} from "@dnd-kit/core"
-import { createSnapModifier } from "@dnd-kit/modifiers"
+import type { DraggableSyntheticListeners } from "@dnd-kit/core"
 import type { Transform } from "@dnd-kit/utilities"
-import { Component } from "@prisma/client"
 
 import Plug from "@/components/canvas/plug/plug"
-import { api } from "@/lib/api"
-import { inBounds } from "@/lib/functions/math-utils"
-import CanvasStore from "@/lib/store"
 import { cn } from "@/lib/utils"
 
 import styles from "./draggable.module.css"

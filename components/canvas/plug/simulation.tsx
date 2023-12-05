@@ -1,5 +1,5 @@
 import type { FC } from "react"
-import { memo, useState } from "react"
+import { useState } from "react"
 
 import { LightningBoltIcon, UpdateIcon } from "@radix-ui/react-icons"
 
@@ -11,13 +11,9 @@ export type PlugSimulationState = {
 
 export type PlugSimulationProps = {
 	pins: Array<Pin>
-	onSimulation: (state: PlugSimulationState) => void
 }
 
-export const PlugSimulation: FC<PlugSimulationProps> = ({
-	pins,
-	onSimulation
-}) => {
+export const PlugSimulation: FC<PlugSimulationProps> = ({ pins }) => {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const endsWithThen = pins[pins.length - 1].type === "then"
@@ -37,10 +33,9 @@ export const PlugSimulation: FC<PlugSimulationProps> = ({
 		})
 
 		const response = await request
+		response
 
 		setIsLoading(false)
-
-		onSimulation(response)
 
 		// TODO: Handle the rest of the stuff.
 	}
@@ -55,16 +50,16 @@ export const PlugSimulation: FC<PlugSimulationProps> = ({
 			{isLoading ? (
 				<>
 					<UpdateIcon className="h-3 w-3 animate-spin opacity-60" />
-					Simulating
+					Signing
 				</>
 			) : (
 				<>
 					<LightningBoltIcon className="h-3 w-3 opacity-60" />
-					Simulate
+					Sign
 				</>
 			)}
 		</button>
 	)
 }
 
-export default memo(PlugSimulation)
+export default PlugSimulation

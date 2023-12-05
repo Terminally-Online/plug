@@ -23,6 +23,12 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 	const [canvas, setCanvas] = useState(initialCanvas)
 	const [gridSize, setGridSize] = useState(30)
 
+	api.canvas.onUpdate.useSubscription(undefined, {
+		onData(canvas) {
+			setCanvas(canvas)
+		}
+	})
+
 	const addComponent = api.canvas.component.add.useMutation({
 		onSuccess(component) {
 			setCanvas(previousCanvas => {
@@ -104,7 +110,7 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 				</Grid>
 			</Scaler>
 
-			<Toolbar />
+			<Toolbar id={id} name={canvas.name} />
 		</>
 	)
 }

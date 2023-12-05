@@ -200,7 +200,7 @@ export default createTRPCRouter({
 				name: z.string().optional(),
 				color: z.string().optional(),
 				public: z.boolean().optional(),
-				components: z.array(ComponentSchema)
+				components: z.array(ComponentSchema).optional()
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
