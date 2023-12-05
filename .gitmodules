@@ -1,3 +1,6 @@
+[submodule "packages/app"]
+	path = packages/app
+	url = https://github.com/nftchance/plug-app
 [submodule "packages/core"]
 	path = packages/core
 	url = https://github.com/nftchance/plug-core
