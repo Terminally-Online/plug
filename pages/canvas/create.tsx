@@ -49,7 +49,7 @@ const Page: NextPageWithLayout = () => {
 		}, 1000)
 
 		return () => clearInterval(interval)
-	}, [])
+	}, [tip])
 
 	useEffect(() => {
 		if (!redirecting) return
@@ -63,7 +63,7 @@ const Page: NextPageWithLayout = () => {
 		}, 2500)
 
 		return () => clearTimeout(timeout)
-	}, [redirecting])
+	}, [createCanvas, redirecting])
 
 	return (
 		<>

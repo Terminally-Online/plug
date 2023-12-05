@@ -45,7 +45,7 @@ export const SortBy = () => {
 				sort: selected
 			}
 		})
-	}, [selected])
+	}, [router, selected])
 
 	return (
 		<>

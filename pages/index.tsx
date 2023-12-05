@@ -156,7 +156,7 @@ const Page: NextPageWithLayout = () => {
 							<p className="ml-10 bg-gradient-to-t from-black to-black/60 bg-clip-text text-justify text-transparent dark:from-white dark:to-white/60">
 								Unlocks the power of conditional execution for
 								transactions on EVM blockchains. From simple to
-								complex, Plug can scale till your heart's
+								complex, Plug can scale till your heart{'\''}s
 								content.
 							</p>
 						</div>

@@ -16,10 +16,14 @@ export const useRenderLoop = (fps: number = 15) => {
 
 	useEffect(() => {
 		CanvasStore.shouldRender = true
-		loop.current.start()
 
-		return () => loop.current.stop()
+		const current = loop.current
+
+		current.start()
+
+		return () => { current.stop() }
 	}, [])
+
 	return frame
 }
 

@@ -57,7 +57,7 @@ export const Toolbar: FC<PropsWithChildren<ToolbarProps>> = ({ id, name }) => {
 			id,
 			name: debounced
 		})
-	}, [debounced, updateCanvas])
+	}, [debounced, id, name, updateCanvas])
 
 	return (
 		<>
