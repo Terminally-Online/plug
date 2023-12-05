@@ -29,7 +29,7 @@ const Page: NextPageWithLayout = () => {
 	const [tip, setTip] = useState(loadingTips[0])
 	const [redirecting, setRedirecting] = useState(false)
 
-	const createCanvas = api.canvas.create.useMutation({
+	const createCanvas = api.canvas.add.useMutation({
 		onSuccess: data => {
 			router.push(`/canvas/${data.id}`)
 		}
