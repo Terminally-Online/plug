@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
+
 const nextConfig = {
 	serverRuntimeConfig: {
 		// Will only be available on the server side
@@ -12,6 +15,9 @@ const nextConfig = {
 	eslint: { ignoreDuringBuilds: !!process.env.CI },
 	webpack: config => {
 		config.externals.push("pino-pretty", "lokijs", "encoding")
+
+		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
+
 		return config
 	}
 }
