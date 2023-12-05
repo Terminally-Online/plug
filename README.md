@@ -7,12 +7,13 @@ The key functionality is powered by the following packages (each have their own 
 ```ml
 packages
 ├─ client — "Raw playground to build, sign and save Plug objects."
-├─ core — "Intent framework smart contracts and management utilities."
+├─ core — "Plug framework smart contracts and management utilities."
 ├─ docs — "In-depth documentation for both end-users and developers."
 ├─ landing — "Marketing landing page for the Plug ecosystem."
 ├─ server — "API backend that powers the server, client interface and sdk when needed."
 └─ types — "Automatically generate the types and decoders of your intent framework."
 ```
+
 > **Important**
 > While Plug is a protocol, it has been designed to first solve for the problems experienced by end-users, not developers. You can find in-depth documentation [here](https://onplug.io).
 
