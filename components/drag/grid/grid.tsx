@@ -5,7 +5,7 @@ import classNames from "classnames"
 import CanvasStore from "@/lib/store"
 import { cn } from "@/lib/utils"
 
-import styles from "./Grid.module.css"
+import styles from "./grid.module.css"
 
 export interface GridProps {
 	size: number
