@@ -16,7 +16,7 @@ jobs:
         name: 🏗️ Build
         runs-on: ubuntu-latest
         steps:
-            - name: 🛒 Checkout 
+            - name: 🛒 Checkout
               uses: actions/checkout@v4
 
             - name: ⚙️  Setup Action
@@ -33,23 +33,20 @@ jobs:
             - name: 🫙 Restore cache
               uses: actions/cache@v3
               with:
-                path: |
-                  .next/cache
-                key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-                restore-keys: |
-                  ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+                  path: |
+                      .next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
             - name: 📦 Install dependencies
               run: pnpm install --frozen-lockfile
 
-
             - name: 🧪 Lint and Build
               run: pnpm lint && pnpm build
               env:
-                NEXTAUTH_SECRET=supersecretauthpassword
-                NEXTAPP_URL=http://localhost:3000
-                NEXTWS_URL=ws://localhost:3001
-                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
-                NEXTWALLETCONNECT_ID=getyourownplease
-              
-              
+                  NEXTAUTH_SECRET: supersecretauthpassword
+                  NEXTAPP_URL: http://localhost:3000
+                  NEXTWS_URL: ws://localhost:3001
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+                  NEXTWALLETCONNECT_ID: getyourownplease
