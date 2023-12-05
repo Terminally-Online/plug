@@ -1,5 +1,8 @@
 # 🔌 Plug App
 
+> [!NOTE]
+> This repository is a submodule of the larger [Plug monorepo](https://github.com/nftchance/plug) that contains all the required pieces to run the entire Plug stack yourself.
+
 The application of Plug powers the front-end user interface that enables the capability of building complex declarative EVM transactions (intents) in a trustless node-based editor.
 
 The key functionality is powered by the following packages (each have their own function):
@@ -38,6 +41,6 @@ pnpm dev
 >
 > By default, the app will try running a database through Docker. If it fails however, the build will proceed.
 >
-> For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made 
+> For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made
 > automatically. If you would like to use your own, update the `dev:db` script in `package.json`.
 > For production development, it cannot be on the edge due to the use of Prisma.
