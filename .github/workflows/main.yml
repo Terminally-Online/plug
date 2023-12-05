@@ -45,3 +45,11 @@ jobs:
 
             - name: 🧪 Lint and Build
               run: pnpm lint && pnpm build
+              env:
+                NEXTAUTH_SECRET=supersecretauthpassword
+                NEXTAPP_URL=http://localhost:3000
+                NEXTWS_URL=ws://localhost:3001
+                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+                NEXTWALLETCONNECT_ID=getyourownplease
+              
+              

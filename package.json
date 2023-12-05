@@ -3,13 +3,19 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev:db": "cross-env PORT=5432 tsx watch lib/db.ts",
+		"dev:db": "cross-env PORT=5432 tsx lib/db.ts --tsconfig tsconfig.server.json",
 		"dev:next": "next dev",
 		"dev:wss": "cross-env PORT=3001 tsx watch ./server/ws.dev.ts --tsconfig tsconfig.server.json",
 		"dev": "run-p dev:*",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
+		"build": "run-s build:*",
+		"build:lint": "next lint",
+		"build:prisma": "pnpm prisma:generate",
+		"build:next": "next build",
+		"prisma:generate": "cross-env pnpm prisma generate",
+		"prisma:migrate": "cross-env pnpm prisma migrate dev",
+		"prisma:push": "cross-env pnpm prisma db push",
+		"prisma:pull": "cross-env pnpm prisma db pull",
+		"start": "next start"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.1.0",

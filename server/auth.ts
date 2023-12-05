@@ -43,7 +43,7 @@ const authOptions: NextAuthOptions = {
 						JSON.parse(credentials?.message || "{}")
 					)
 					const nextAuthUrl = new URL(
-						process.env.NEXTAUTH_URL ||
+						process.env.NEXTAPP_URL ||
 							"http://localhost:3000/api/auth"
 					)
 

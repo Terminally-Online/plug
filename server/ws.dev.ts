@@ -21,8 +21,7 @@ const handler = applyWSSHandler({
 	}
 })
 
-const statusString = `  
-   ◍ Plug Websockets ${version} 
+const statusString = `   ◍ Plug Websockets ${version} 
    - Local: ws://localhost:3001
    - Environments: .env
 `

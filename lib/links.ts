@@ -18,7 +18,7 @@ const getBaseUrl = () => {
 function getEndingLink(ctx: NextPageContext | undefined) {
 	if (typeof window === "undefined") {
 		return httpBatchLink({
-			url: `${process.env.APP_URL || getBaseUrl()}/api/trpc`,
+			url: `${process.env.NEXTAPP_URL || getBaseUrl()}/api/trpc`,
 			headers() {
 				if (!ctx?.req?.headers) {
 					return {}
@@ -31,7 +31,7 @@ function getEndingLink(ctx: NextPageContext | undefined) {
 		})
 	}
 	const client = createWSClient({
-		url: process.env.WS_URL || `ws://localhost:3001`
+		url: process.env.NEXTWS_URL || `ws://localhost:3001`
 	})
 	return wsLink<AppRouter>({
 		client

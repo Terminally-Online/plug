@@ -26,22 +26,10 @@ function startDatabase(
 			console.log(`${outputString}
    - Local: postgres://postgres:${databasePassword}@localhost:${port}/${databaseName}
    - Container Name: ${containerName}
-   ${envString}\n
-			`)
+   ${envString}
+`)
 		}
 	)
-}
-
-function stopDatabase(containerName: string) {
-	exec(`docker stop ${containerName}`, err => {
-		if (err) {
-			console.error("Error stopping the PostgreSQL container:", err)
-
-			return
-		}
-
-		console.log("PostgreSQL container stopped.")
-	})
 }
 
 const containerName = process.env.CONTAINER_NAME ?? "emporium"
@@ -50,9 +38,3 @@ const databasePort = process.env.DATABASE_PORT ?? "5432"
 const databasePassword = process.env.DATABASE_PASSWORD ?? "postgres"
 
 startDatabase(containerName, databaseName, databasePassword, databasePort)
-
-process.on("SIGTERM", () => {
-	stopDatabase(containerName)
-
-	setTimeout(() => process.exit(0), 1000)
-})
