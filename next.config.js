@@ -11,10 +11,16 @@ const nextConfig = {
 		APP_URL: process.env.NEXTAPP_URL,
 		WS_URL: process.env.NEXTWS_URL
 	},
+	poweredByHeader: false,
+	trailingSlash: true,
 	/** We run eslint as a separate task in CI */
 	eslint: { ignoreDuringBuilds: !!process.env.CI },
 	webpack: config => {
 		config.externals.push("pino-pretty", "lokijs", "encoding")
+		config.externals.push({
+			"utf-8-validate": "commonjs utf-8-validate",
+			bufferutil: "commonjs bufferutil"
+		})
 
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
