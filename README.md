@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🔌 Plug App
+
+The application of Plug powers the front-end user interface that enables the capability of building complex declarative EVM transactions (intents) in a trustless node-based editor.
+
+The key functionality is powered by the following packages (each have their own function):
+
+```ml
+services
+├─ authentication — "NextAuth & SIWE"
+├─ client — "TRPC"
+├─ database — "Docker & PostgreSQL & Prisma"
+├─ ethereum — "Viem & Wagmi & WalletConnect"
+├─ server — "API backend that powers the server, client interface and sdk when needed."
+├─ style — "Tailwind"
+└─ web — "Next"
+```
+
+## Dependencies
+
+In order to run `@nftchance/plug-app` is it necessary to install all the following dependencies first:
+
+```ml
+├─ docker — "Pipeline to run containerized code processes."
+└─ pnpm — "Efficient package manager for Node modules."
+```
 
 ## Getting Started
 
-First, run a Postgres database:
+To run an instance of `@nftchance/plug-app` is incredibly straightforward. Open your terminal and run:
 
 ```bash
-docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5434:5432 -d postgres
-```
-
-If you spend a lot of time in the terminal or working with postgres database it is probably worth adding these helper alias to your `~/.zshrc`:
-
-```bash
-# log the postgres database url
-alias pdb_log_url="echo 'postgres://postgres:postgres@localhost:5434/postgres'"
-# start a postgres database with docker
-alias pdbs="pdb_log_url && docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5434:5432 -d postgres"
-# access the postgres database
-alias pdbg="docker exec -it postgres psql -U postgres"
-# clean up the postgres database
-alias pdbc="docker stop postgres && docker rm postgres"
-# start and access the postgres database
-alias pdb="pdbs && pdbg"
-```
-
-With the database up and running you will need to run the migration withs:
-
-```bash
-npx prisma migrate
-```
-
-Finally, you are ready to run the development server:
-
-```bash
+pnpm i
 pnpm dev
 ```
+
+> [!TIP]
+> You will need a PostgreSQL database running in order to read and save the data of your application.
+>
+> By default, the app will try running a database through Docker. If it fails however, the build will proceed.
+>
+> For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made 
+> automatically. If you would like to use your own, update the `dev:db` script in `package.json`.
+> For production development, it cannot be on the edge due to the use of Prisma.
