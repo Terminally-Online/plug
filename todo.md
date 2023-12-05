@@ -16,18 +16,22 @@
       - [x] Add distance constraint so that dragging does not impact clicking on components.
       - [ ] Move Pins out from the Plug component container so that they themselves are draggable.
             Notes: Plugs is just a string of linked pins, not really a single component.
+            Notes: We basically already have everything setup for this, we just need to move the dragging one component lower.
       - [ ] Pin appendages placed on the head of a pin.
             Notes: The connector will always be on the right side for output, and left side for linked pins.
-            Notes: Critical to note here is that the input of the following pin is not consumed.
+            Notes: Critical to note here is that the input of the following pin is not consumed. - [ ] Each pin will have a starter and ender connector. - [ ] If the item is a `then`, it will not have an ender connector as it is the "end". - [ ] Walk backwards through the linkage of a Sign pin to build the linearized loop.
       - [ ] Draw colored lines between the linked pins.
             Notes: We will just use a random color.
       - [ ] Bezier curves that connect each Pin in a Plug.
+            Notes: This is just a basic SVG path. - [ ] Add offset to the connection of the paths so that they do not look weird when dragged and overlapping.
       - [ ] Store the configuration of a Pin in the database.
       - [ ] Store the linkage in the database.
       - [ ] Make the grid mostly transparent with a mouse effect that only shows the grid around where the mouse is.
 
       - [ ] Given the capabilities of this app it is now probably worth looking into determining if we can pass in the
-            inputs of previous pins.
+            inputs of previous pins inside the protocol.
+            Notes: Right now we are facing stack too deep issues, but we can remove a good amount of that if we require
+            the use of a linearized loop instead of using the nested for loop architecture that is in place right now.
 
       - Drag controls:
 
