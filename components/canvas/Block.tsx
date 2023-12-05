@@ -4,8 +4,6 @@ import Link from "next/link"
 
 import { MagicWandIcon, PlusIcon } from "@radix-ui/react-icons"
 
-import { cn } from "@/lib/utils"
-
 export const Block: FC = () => (
 	<div className="flex w-full">
 		<Link
