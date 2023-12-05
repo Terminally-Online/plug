@@ -7,7 +7,7 @@
 		"dev:next": "next dev",
 		"dev:wss": "cross-env PORT=3001 tsx watch ./server/ws.dev.ts --tsconfig tsconfig.server.json",
 		"dev": "cross-env run-p dev:*",
-		"build": "cross-env run-s build:*",
+		"build": "next build",
 		"build:lint": "next lint",
 		"build:prisma": "pnpm prisma:generate",
 		"build:next": "next build",
