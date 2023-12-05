@@ -13,7 +13,7 @@ import useSize from "@react-hook/size"
 import useRenderLoop from "@/lib/hooks/useRenderLoop"
 import CanvasStore from "@/lib/store"
 
-import Canvas from "../canvas/canvas"
+import Canvas from "@/components/canvas/canvas"
 
 export type ViewportProps = {
 	id: string
