@@ -94,7 +94,7 @@
 		"abitype": "^0.10.2",
 		"solady": "^0.0.145",
 		"tsx": "^4.1.3",
-		"viem": "^1.18.4"
+		"viem": "^1.19.11"
 	},
 	"peerDependencies": {
 		"abitype": ">=0.10.2",
