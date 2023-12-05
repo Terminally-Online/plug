@@ -54,16 +54,8 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-enum ComponentType {
-    MARKDOWN
-    BOX
-    PLUG
-}
-
 model Component {
     id String @id @default(uuid())
-
-    type ComponentType @default(PLUG)
 
     top    Float
     left   Float

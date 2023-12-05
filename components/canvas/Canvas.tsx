@@ -7,7 +7,6 @@ import { Grid } from "@/components/drag/grid/grid"
 import Toolbar from "@/components/viewport/toolbar"
 import { useTabs } from "@/contexts/TabsProvider"
 import { api } from "@/lib/api"
-import { ItemTypes } from "@/lib/constants"
 import CanvasStore from "@/lib/store"
 
 export type CanvasProps = {
@@ -67,14 +66,11 @@ export const Canvas: FC<CanvasProps> = ({ id }) => {
 		const left =
 			-10 + Math.round(CanvasStore.pointer.x / gridSize) * gridSize
 
-		const type = ItemTypes.Plug
-
 		addComponent.mutate({
 			id,
 			component: {
 				left,
 				top,
-				type,
 				width: gridSize * 12 - 1,
 				height: gridSize * 4 - 1,
 				content: ""

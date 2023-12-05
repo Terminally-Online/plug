@@ -27,8 +27,8 @@ export type DraggableComponentsProps = {
 
 export type DraggableMoveProps = {
 	id: string
-	top: number
-	left: number
+	top?: number
+	left?: number
 }
 
 export const DraggableComponents: FC<
@@ -44,7 +44,7 @@ export const DraggableComponents: FC<
 		}
 	})
 
-	api.canvas.component.onMove.useSubscription(undefined, {
+	api.canvas.component.onMove.useSubscription(id, {
 		onData(component) {
 			console.log(component)
 		}
@@ -66,8 +66,8 @@ export const DraggableComponents: FC<
 			...previousComponents,
 			[id]: {
 				...previousComponents[id],
-				top,
-				left
+				top: top ?? previousComponents[id].top,
+				left: left ?? previousComponents[id].left
 			}
 		}))
 	}

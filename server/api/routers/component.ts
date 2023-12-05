@@ -1,26 +1,30 @@
 import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
+import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { emitter } from "@/server/emitter"
 
+export const component = Prisma.validator<Prisma.ComponentDefaultArgs>()({})
+
+export type Component = Prisma.ComponentGetPayload<typeof component>
+
 export const ComponentSchema = z.object({
 	id: z.string(),
 	top: z.number(),
 	left: z.number(),
-	type: z.union([z.literal("PLUG"), z.literal("BOX"), z.literal("MARKDOWN")]),
 	width: z.number(),
 	height: z.number(),
-	content: z.string(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional()
+	content: z.string()
 })
 
-export const component = Prisma.validator<Prisma.ComponentDefaultArgs>()({})
-
-export type Component = Prisma.CanvasGetPayload<typeof component>
+const events = {
+	add: "add-component",
+	move: "move-component",
+	update: "update-component"
+}
 
 export default createTRPCRouter({
 	add: protectedProcedure
@@ -31,69 +35,152 @@ export default createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const component = await ctx.db.component.create({
-				data: {
-					...input.component,
-					canvasId: input.id
-				}
-			})
+			try {
+				const canvas = await ctx.db.canvas.findUnique({
+					where: {
+						id: input.id
+					}
+				})
 
-			emitter.emit(input.id, component)
+				if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
-			return component
+				if (canvas.userId !== ctx.session.user.name)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
+				const component = await ctx.db.component.create({
+					data: {
+						...input.component,
+						canvasId: input.id
+					}
+				})
+
+				emitter.emit(events.add, component)
+
+				return component
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
 
 	move: protectedProcedure
 		.input(
-			z.object({
-				id: z.string(),
-				component: z.object({
+			z
+				.object({
 					id: z.string(),
-					top: z.number(),
-					left: z.number()
+					component: z.object({
+						id: z.string(),
+						top: z.number().optional(),
+						left: z.number().optional()
+					})
 				})
-			})
+				.transform(data => {
+					if (!data.component.left && !data.component.top)
+						throw new TRPCError({ code: "BAD_REQUEST" })
+
+					return data
+				})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const component = await ctx.db.component.update({
-				where: {
-					id: input.component.id,
-					canvasId: input.id
-				},
-				data: {
-					top: input.component.top,
-					left: input.component.left
-				}
-			})
+			try {
+				const canvas = await ctx.db.canvas.findUnique({
+					where: {
+						id: input.id
+					}
+				})
 
-			emitter.emit("move", input.component.id)
+				if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
-			return component
+				if (canvas.userId !== ctx.session.user.name)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
+				const component = await ctx.db.component.update({
+					where: {
+						id: input.component.id,
+						canvasId: input.id
+					},
+					data: {
+						top: input.component.top,
+						left: input.component.left
+					}
+				})
+
+				emitter.emit(events.move, component)
+
+				return component
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
 
-	randomNumber: protectedProcedure.subscription(() => {
-		return observable<number>(emit => {
-			const interval = setInterval(() => {
-				emit.next(Math.random())
-			}, 1000)
+	onAdd: protectedProcedure
+		.input(z.string())
+		.subscription(async ({ ctx, input }) => {
+			try {
+				const canvas = await ctx.db.canvas.findUnique({
+					where: {
+						id: input
+					}
+				})
 
-			return () => {
-				clearInterval(interval)
+				if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
+
+				if (
+					canvas.userId !== ctx.session.user.name &&
+					canvas.public === false
+				)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
+				return observable<Component>(emit => {
+					const handleAdd = (data: Component) => {
+						if (input !== data.canvasId) return
+
+						emit.next(data)
+					}
+
+					emitter.on(events.add, handleAdd)
+
+					return () => {
+						emitter.off(events.add, handleAdd)
+					}
+				})
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
+
+	onMove: protectedProcedure
+		.input(z.string())
+		.subscription(async ({ ctx, input }) => {
+			try {
+				const canvas = await ctx.db.canvas.findUnique({
+					where: {
+						id: input
+					}
+				})
+
+				if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
+
+				if (
+					canvas.userId !== ctx.session.user.name &&
+					canvas.public === false
+				)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
+				return observable<Component>(emit => {
+					const handleMove = (data: Component) => {
+						if (input !== data.canvasId) return
+
+						emit.next(data)
+					}
+
+					emitter.on(events.move, handleMove)
+
+					return () => {
+						emitter.off(events.move, handleMove)
+					}
+				})
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		})
-	}),
-
-	onMove: protectedProcedure.subscription(() => {
-		return observable<string>(emit => {
-			const onMove = (data: string) => {
-				emit.next(data)
-			}
-
-			emitter.on("move", emit.next)
-
-			return () => {
-				emitter.off("move", onMove)
-			}
-		})
-	})
 })

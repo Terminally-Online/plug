@@ -58,7 +58,7 @@ const Page: NextPageWithLayout<
 		}
 	)
 
-	api.canvas.onCreate.useSubscription(undefined, {
+	api.canvas.onAdd.useSubscription(undefined, {
 		onData(canvas) {
 			setCanvasState(prevCanvasState => {
 				return {

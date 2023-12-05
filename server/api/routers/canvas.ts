@@ -19,21 +19,11 @@ export type CanvasWithComponents = Prisma.CanvasGetPayload<
 	typeof canvasWithComponents
 >
 
-export const CanvasSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	public: z.boolean(),
-	color: z.string(),
-	components: z.array(ComponentSchema),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional()
-})
-
 const whereWithSearch = (
 	where: Prisma.CanvasWhereInput,
 	fieldName: string,
 	search: string | string[] | undefined
-) => {
+): Record<"where", Prisma.CanvasWhereInput> => {
 	const searchArray: (string | undefined)[] = Array.isArray(search)
 		? search
 		: search
@@ -59,18 +49,24 @@ const whereWithSearch = (
 	}
 }
 
+const events = { add: "add-canvas", update: "update-canvas" }
+
 export default createTRPCRouter({
 	all: protectedProcedure
 		.input(z.union([z.string(), z.array(z.string())]).optional())
 		.query(async ({ ctx, input: search }) => {
 			const userId = ctx.session.user.name
 
-			return await ctx.db.canvas.findMany({
-				...whereWithSearch({ userId }, "name", search),
-				orderBy: {
-					updatedAt: "desc"
-				}
-			})
+			try {
+				return await ctx.db.canvas.findMany({
+					...whereWithSearch({ userId }, "name", search),
+					orderBy: {
+						updatedAt: "desc"
+					}
+				})
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
 
 	infinite: protectedProcedure
@@ -83,116 +79,136 @@ export default createTRPCRouter({
 			})
 		)
 		.query(async ({ ctx, input }) => {
-			const userId = ctx.session.user.name
+			try {
+				const userId = ctx.session.user.name
 
-			const { cursor, search, sort } = input
+				const { cursor, search, sort } = input
 
-			const searchArray: (string | undefined)[] = Array.isArray(search)
-				? search
-				: search
-				  ? search.split(" ")
-				  : []
+				const searchArray: (string | undefined)[] = Array.isArray(
+					search
+				)
+					? search
+					: search
+					  ? search.split(" ")
+					  : []
 
-			const syntaxSearch = searchArray.join(" | ")
+				const syntaxSearch = searchArray.join(" | ")
 
-			let where
-			if (search !== undefined && search !== "")
-				where = {
-					name: { search: syntaxSearch },
-					userId
+				let where
+				if (search !== undefined && search !== "")
+					where = {
+						name: { search: syntaxSearch },
+						userId
+					}
+				else where = { userId }
+
+				if (Array.isArray(sort))
+					throw new TRPCError({ code: "NOT_IMPLEMENTED" })
+
+				let orderBy = {}
+				if (sort === "newest") orderBy = { createdAt: "desc" }
+				else if (sort === "oldest") orderBy = { createdAt: "asc" }
+				else if (sort === "active") orderBy = { updatedAt: "desc" }
+				else orderBy = { updatedAt: "desc" }
+
+				const count = await ctx.db.canvas.count({ where })
+
+				const limit = input.limit + 1
+
+				const canvases = await ctx.db.canvas.findMany({
+					...whereWithSearch({ userId }, "name", search),
+					orderBy,
+					cursor: cursor
+						? {
+								id: cursor
+						  }
+						: undefined,
+					take: limit
+				})
+
+				let nextCursor: typeof cursor | undefined = undefined
+				if (canvases.length > 10) {
+					const nextItem = canvases.pop()
+					nextCursor = nextItem!.id
 				}
-			else where = { userId }
 
-			if (Array.isArray(sort))
-				throw new TRPCError({ code: "NOT_IMPLEMENTED" })
-
-			let orderBy = {}
-			if (sort === "newest") orderBy = { createdAt: "desc" }
-			else if (sort === "oldest") orderBy = { createdAt: "asc" }
-			else if (sort === "active") orderBy = { updatedAt: "desc" }
-			else orderBy = { updatedAt: "desc" }
-
-			const count = await ctx.db.canvas.count({ where })
-
-			const limit = input.limit + 1
-
-			const canvases = await ctx.db.canvas.findMany({
-				...whereWithSearch({ userId }, "name", search),
-				orderBy,
-				cursor: cursor
-					? {
-							id: cursor
-					  }
-					: undefined,
-				take: limit
-			})
-
-			let nextCursor: typeof cursor | undefined = undefined
-			if (canvases.length > 10) {
-				const nextItem = canvases.pop()
-				nextCursor = nextItem!.id
-			}
-
-			return {
-				items: canvases,
-				nextCursor,
-				count
+				return {
+					items: canvases,
+					nextCursor,
+					count
+				}
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
 
 	get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-		const canvas = await ctx.db.canvas.findUnique({
-			where: {
-				id: input
-			},
-			include: { components: true }
-		})
+		try {
+			const canvas = await ctx.db.canvas.findUnique({
+				where: {
+					id: input
+				},
+				include: { components: true }
+			})
 
-		if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
+			if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
-		if (canvas.public) return canvas
+			if (canvas.public) return canvas
 
-		const userId = ctx.session.user.name
+			const userId = ctx.session.user.name
 
-		if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
+			if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
 
-		if (canvas.userId !== userId)
-			throw new TRPCError({ code: "UNAUTHORIZED" })
+			if (canvas.userId !== userId)
+				throw new TRPCError({ code: "UNAUTHORIZED" })
 
-		return canvas as CanvasWithComponents
+			return canvas as CanvasWithComponents
+		} catch (e) {
+			throw new TRPCError({ code: "BAD_REQUEST" })
+		}
 	}),
 
-	create: protectedProcedure
+	add: protectedProcedure
 		.input(
 			z.object({
-				name: z.string(),
-				public: z.boolean(),
-				color: z.string()
+				name: z.string().optional().default("Untitled Canvas"),
+				public: z.boolean().optional().default(true),
+				color: z
+					.string()
+					.optional()
+					.default(
+						`#${Math.floor(Math.random() * 16777215).toString(16)}`
+					)
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
 			const userId = ctx.session.user.name
 
-			// * Create the canvas in the database.
-			const canvas = await ctx.db.canvas.create({
-				data: {
-					name: input.name,
-					public: input.public,
-					color: input.color,
-					user: {
-						connectOrCreate: {
-							where: { id: userId },
-							create: { id: userId }
+			try {
+				// * Create the canvas in the database.
+				const canvas = await ctx.db.canvas.create({
+					data: {
+						name: input.name,
+						public: input.public,
+						color: input.color,
+						user: {
+							connectOrCreate: {
+								where: { id: userId },
+								create: { id: userId }
+							}
 						}
-					}
-				},
-				include: { components: true }
-			})
+					},
+					include: { components: true }
+				})
 
-			emitter.emit("create-canvas", canvas)
+				emitter.emit(events.add, canvas)
 
-			return canvas
+				return canvas
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
+
 	update: protectedProcedure
 		.input(
 			z.object({
@@ -206,52 +222,79 @@ export default createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			const userId = ctx.session.user.name
 
-			const canvas = await ctx.db.canvas.findUnique({
-				where: {
-					id: input.id
-				},
-				include: { components: true }
-			})
-
-			if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
-
-			if (canvas.userId !== userId)
-				throw new TRPCError({ code: "FORBIDDEN" })
-
-			// * Update the fields that were passed in.
-			const updatedCanvas: CanvasWithComponents =
-				await ctx.db.canvas.update({
+			try {
+				const canvas = await ctx.db.canvas.findUnique({
 					where: {
 						id: input.id
-					},
-					data: {
-						...canvas,
-						...input,
-						components: undefined
 					},
 					include: { components: true }
 				})
 
-			// * Emit an update event.
-			emitter.emit("update", updatedCanvas)
+				if (!canvas) throw new TRPCError({ code: "NOT_FOUND" })
 
-			return updatedCanvas
+				if (canvas.userId !== userId)
+					throw new TRPCError({ code: "FORBIDDEN" })
+
+				// * Update the fields that were passed in.
+				const updatedCanvas: CanvasWithComponents =
+					await ctx.db.canvas.update({
+						where: {
+							id: input.id
+						},
+						data: {
+							...canvas,
+							...input,
+							components: undefined
+						},
+						include: { components: true }
+					})
+
+				// * Emit an update event.
+				emitter.emit(events.update, updatedCanvas)
+
+				return updatedCanvas
+			} catch (e) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
-	onCreate: protectedProcedure.subscription(() => {
+
+	// ? Allow a user to listen to the creation of their own canvases.
+	onAdd: protectedProcedure.subscription(({ ctx }) => {
 		return observable<CanvasWithComponents>(emit => {
-			emitter.on("create-canvas", emit.next)
+			const handleCreate = (canvas: CanvasWithComponents) => {
+				const canView = canvas.userId === ctx.session.user.name
+
+				if (!canView) return
+
+				emit.next(canvas)
+			}
+
+			emitter.on(events.add, handleCreate)
 
 			return () => {
-				emitter.off("create-canvas", emit.next)
+				emitter.off(events.add, handleCreate)
 			}
 		})
 	}),
-	onUpdate: protectedProcedure.subscription(() => {
+
+	// ? Allow a user to listen to the updates of their own canvases.
+	// * This would include name changes, color changes, etc.
+	//	  -- The components are not streamed here.
+	onUpdate: protectedProcedure.subscription(({ ctx }) => {
 		return observable<CanvasWithComponents>(emit => {
-			emitter.on("update", emit.next)
+			const handleUpdate = (canvas: CanvasWithComponents) => {
+				const canView =
+					canvas.userId === ctx.session.user.name || canvas.public
+
+				if (!canView) return
+
+				emit.next(canvas)
+			}
+
+			emitter.on(events.update, handleUpdate)
 
 			return () => {
-				emitter.off("update", emit.next)
+				emitter.off(events.update, handleUpdate)
 			}
 		})
 	}),
