@@ -23,8 +23,6 @@ const loadingTips = [
 	"Have fun!"
 ]
 
-export const revalidate = 0
-
 const Page: NextPageWithLayout = () => {
 	const router = useRouter()
 

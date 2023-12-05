@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRouter } from "next/router"
 
@@ -31,6 +30,14 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 						16
 					)}`,
 					href: `/canvas/create`,
+					active: true
+				})
+				break
+			case "/canvas/templates":
+				handleAdd({
+					label: `Templates`,
+					color: "#FF8C00",
+					href: `/canvas/templates`,
 					active: true
 				})
 				break

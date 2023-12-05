@@ -21,15 +21,17 @@ type Tab = {
 	active?: boolean
 }
 
+const ephemeralTabs: string[] = ["/canvas/create", "/canvas/templates"]
+
 export const TabsContext = createContext<{
 	tabs: Tab[]
-	createTab: Tab | undefined
+	ephemeralTabs: string[]
 	handleAdd: (tab: Tab) => void
 	handleRemove: (index: number) => void
 	handleMove: (index: number, newIndex: number) => void
 }>({
 	tabs: [],
-	createTab: undefined,
+	ephemeralTabs: [],
 	handleAdd: () => {},
 	handleRemove: () => {},
 	handleMove: () => {}
@@ -46,8 +48,6 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 
 		return savedTabs ? JSON.parse(savedTabs) : []
 	})
-
-	const createTab = tabs.find(tab => tab.href === "/canvas/create")
 
 	const handleAdd = useCallback(
 		(tab: Tab) => {
@@ -117,13 +117,10 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 				active: tab.href === path
 			}))
 
-			// * If we have a create tab, and our active path is not the create tab, we need to
-			//   remove the create tab.
-			if (createTab && path !== createTab.href) {
-				return activatedTabs.filter(tab => tab.href !== createTab.href)
-			}
-
-			return activatedTabs
+			// * If we have any ephemeral tabs that we are not on, remove them.
+			return activatedTabs.filter(
+				tab => !ephemeralTabs.includes(tab.href) || tab.active
+			)
 		})
 	}, [path])
 
@@ -131,7 +128,7 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 		<TabsContext.Provider
 			value={{
 				tabs,
-				createTab,
+				ephemeralTabs,
 				handleAdd,
 				handleRemove,
 				handleMove
