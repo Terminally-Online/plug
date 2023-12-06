@@ -3,14 +3,6 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 
 const nextConfig = {
-	serverRuntimeConfig: {
-		// Will only be available on the server side
-	},
-	publicRuntimeConfig: {
-		// Will be available on both server and client
-		APP_URL: process.env.NEXTAPP_URL,
-		WS_URL: process.env.NEXTWS_URL
-	},
 	poweredByHeader: false,
 	trailingSlash: true,
 	/** We run eslint as a separate task in CI */

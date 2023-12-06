@@ -10,6 +10,8 @@ import { getCsrfToken } from "next-auth/react"
 
 import { SiweMessage } from "siwe"
 
+import { getBaseUrl } from "@/lib/links"
+
 declare module "next-auth" {
 	interface Session extends DefaultSession {
 		user: DefaultSession["user"] & {
@@ -42,10 +44,7 @@ const authOptions: NextAuthOptions = {
 					const siwe = new SiweMessage(
 						JSON.parse(credentials?.message || "{}")
 					)
-					const nextAuthUrl = new URL(
-						process.env.NEXTAPP_URL ||
-							"http://localhost:3000/api/auth"
-					)
+					const nextAuthUrl = new URL(`${getBaseUrl()}/api/auth`)
 
 					const result = await siwe.verify({
 						signature: credentials?.signature || "",
@@ -79,7 +78,7 @@ const authOptions: NextAuthOptions = {
 	session: {
 		strategy: "jwt"
 	},
-	secret: process.env.NEXTAUTH_SECRET
+	secret: process.env.NEXT_AUTH_SECRET
 }
 
 export const getServerAuthSession = (ctx: {
