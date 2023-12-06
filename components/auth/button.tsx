@@ -150,7 +150,12 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 
 			<AnimatePresence>
 				{error && isError && (
-					<motion.p className="mt-2 flex w-full justify-center px-12 text-center text-red-500">
+					<motion.p 
+						className="mt-2 flex w-full justify-center px-12 text-center text-red-500"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+					>
 						{error.message}
 					</motion.p>
 				)}
