@@ -3,10 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev:db": "tsx lib/db.ts --tsconfig tsconfig.server.json",
-		"dev:prisma": "pnpm prisma:migrate && pnpm prisma:push",
+		"predev:db": "tsx lib/db.ts --tsconfig tsconfig.server.json",
+		"predev:prisma": "pnpm prisma:migrate && pnpm prisma:push",
 		"dev:next": "next dev",
 		"dev:wss": "tsx watch ./server/ws.dev.ts --tsconfig tsconfig.server.json",
+		"predev": "run-s predev:*",
 		"dev": "run-p dev:*",
 		"build": "run-s build:*",
 		"build:lint": "next lint",
