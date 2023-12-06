@@ -20,7 +20,7 @@ services
 
 ## Dependencies
 
-In order to run `@nftchance/plug-app` is it necessary to install all the following dependencies first:
+In order to run `@nftchance/plug-app` it is necessary to install all of the following dependencies first:
 
 ```ml
 ├─ docker — "Pipeline to run containerized code processes."
@@ -43,4 +43,5 @@ pnpm dev
 >
 > For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made
 > automatically. If you would like to use your own, update the `dev:db` script in `package.json`.
+> 
 > For production development, it cannot be on the edge due to the use of Prisma.
