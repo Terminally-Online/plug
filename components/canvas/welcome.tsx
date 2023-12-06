@@ -22,12 +22,12 @@ export const Welcome = () => {
 		<>
 			{!closed && (
 				<div className="group relative col-span-3 flex flex-col items-center justify-center gap-2 border-[1px] border-l-[0px] border-t-[0px] border-stone-950 bg-stone-900 p-8 py-24 text-center text-white transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white">
-					<div
+					<button
 						className="absolute right-4 top-4 cursor-pointer text-white"
 						onClick={handleClose}
 					>
 						<XIcon width={10} height={10} className="opacity-60" />
-					</div>
+					</button>
 
 					<div className="w-min rounded-full border-[1px] border-stone-950 bg-transparent p-2 transition-all duration-200 ease-in-out group-hover:border-white/20">
 						<HandIcon

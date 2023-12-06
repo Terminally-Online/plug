@@ -21,7 +21,9 @@ export const useRenderLoop = (fps: number = 15) => {
 
 		current.start()
 
-		return () => { current.stop() }
+		return () => {
+			current.stop()
+		}
 	}, [])
 
 	return frame
