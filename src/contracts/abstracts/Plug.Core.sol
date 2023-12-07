@@ -22,17 +22,6 @@ abstract contract PlugCore is PlugTypes {
 	mapping(address => mapping(uint256 => uint256)) public nonce;
 
 	/**
-	 * @notice Load the Core alongside all the Types driving
-	 *         the parent consumer.
-	 * @param $name The name of the contract
-	 * @param $version The version of the contract
-	 */
-	constructor(
-		string memory $name,
-		string memory $version
-	) PlugTypes($name, $version) {}
-
-	/**
 	 * @notice Determine the address representing the message sender in the
 	 *         current context. This is important for pins, as the
 	 *         message sender may be the framework itself, in which case

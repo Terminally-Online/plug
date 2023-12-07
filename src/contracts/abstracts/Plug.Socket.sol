@@ -17,16 +17,6 @@ import {PlugTypesLib} from './Plug.Types.sol';
  */
 abstract contract PlugSocket is PlugSimulation, IPlug {
 	/**
-	 * @notice Instantiates a new Plug contract.
-	 * @param $name The name of the contract
-	 * @param $version The version of the contract
-	 */
-	constructor(
-		string memory $name,
-		string memory $version
-	) PlugSimulation($name, $version) {}
-
-	/**
 	 * See {IPlug-plugContract}.
 	 */
 	function plugContract(

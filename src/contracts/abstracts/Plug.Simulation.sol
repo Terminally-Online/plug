@@ -16,16 +16,6 @@ import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
  */
 abstract contract PlugSimulation is PlugCore {
 	/**
-	 * @notice Instantiates a new Plug contract.
-	 * @param $name The name of the contract
-	 * @param $version The version of the contract
-	 */
-	constructor(
-		string memory $name,
-		string memory $version
-	) PlugCore($name, $version) {}
-
-	/**
 	 * @notice Simulate the entire bundle of LivePlugs.
 	 * @param $livePlugs The bundle of LivePlugs to process in the simulation.
 	 * @return results An array of results describing the status of the bundle.

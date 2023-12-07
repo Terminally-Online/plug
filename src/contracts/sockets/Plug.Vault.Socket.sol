@@ -6,8 +6,12 @@ import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
 contract PlugVaultSocket is PlugSocket, Ownable {
-	constructor(address $owner) PlugSocket('PlugVaultSocket', '0.0.1') {
+	constructor(address $owner) {
+		/// @dev Initialize the owner.
 		_initializeOwner($owner);
+
+		/// @dev Initialize the Plug Socket.
+		_initializeSocket('PlugVaultSocket', '0.0.1');
 	}
 
 	/**

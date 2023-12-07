@@ -47,12 +47,15 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 		address $auctionHouse,
 		address $nouns,
 		address $owner
-	) NounsBidFuse($auctionHouse) PlugSocket('NounsBidSocket', '0.0.1') {
+	) NounsBidFuse($auctionHouse) {
 		/// @dev Initialize the Auction House and Nouns interfaces.
 		nouns = INounsToken($nouns);
 
 		/// @dev Initialize the owner.
 		_initializeOwner($owner);
+
+		/// @dev Initialize the Plug Socket.
+		_initializeSocket('NounsBidSocket', '0.0.1');
 	}
 
 	receive() external payable {

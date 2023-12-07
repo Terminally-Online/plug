@@ -14,9 +14,9 @@ import {LibClone} from 'solady/src/utils/LibClone.sol';
  *         are deployed using the Beacon Proxy pattern, and the owner can upgrade the
  *         implementation at any time.
  * @author @nftchance (chance@utc24.io)
- * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol#L47-L57)
+ * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)
  */
-contract PlugVaultSocketDeployer {
+contract PlugVaultDeployerSocket {
 	/// @dev The address of the active Plug Vault implementation.
 	address public immutable implementation;
 

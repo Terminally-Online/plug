@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 /// @dev Plug abstracts.
 import {PlugFuse} from '../abstracts/Plug.Fuse.sol';
 import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
-import {PlugCore} from '../abstracts/Plug.Core.sol';
+import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 
 /// @dev Hash declarations and decoders for the Plug framework.
 import {ECDSA} from 'solady/src/utils/ECDSA.sol';
@@ -22,14 +22,16 @@ import {ECDSA} from 'solady/src/utils/ECDSA.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract PlugRevocationFuse is PlugFuse, PlugCore {
+contract PlugRevocationFuse is PlugFuse, PlugSocket {
 	/// @notice Use the ECDSA library for signature verification.
 	using ECDSA for bytes32;
 
 	/// @dev Mapping of revoked pins.
 	mapping(bytes32 => bool) isRevoked;
 
-	constructor() PlugCore('RevocationEnforcer', '1') {}
+	constructor() {
+		_initializeSocket('RevocationEnforcer', '0.0.1');
+	}
 
 	/**
 	 * See {FuseEnforcer-enforceFuse}.
