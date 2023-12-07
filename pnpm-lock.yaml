@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@nftchance/plug-types':
     specifier: ^0.5.2
-    version: 0.5.2(esbuild@0.18.20)(typescript@5.0.4)
+    version: 0.5.2(esbuild@0.19.8)(typescript@5.0.4)
   abitype:
     specifier: ^0.10.3
     version: 0.10.3(typescript@5.0.4)(zod@3.22.4)
@@ -68,8 +68,8 @@ devDependencies:
     specifier: ^8.0.1
     version: 8.0.1
   fs-extra:
-    specifier: ^11.1.1
-    version: 11.1.1
+    specifier: ^11.2.0
+    version: 11.2.0
   hardhat:
     specifier: ^2.19.2
     version: 2.19.2(ts-node@10.9.1)(typescript@5.0.4)
@@ -450,7 +450,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/android-arm@0.18.20:
@@ -468,7 +467,6 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/android-x64@0.18.20:
@@ -486,7 +484,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/darwin-arm64@0.18.20:
@@ -504,7 +501,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/darwin-x64@0.18.20:
@@ -522,7 +518,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/freebsd-arm64@0.18.20:
@@ -540,7 +535,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/freebsd-x64@0.18.20:
@@ -558,7 +552,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-arm64@0.18.20:
@@ -576,7 +569,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-arm@0.18.20:
@@ -594,7 +586,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-ia32@0.18.20:
@@ -612,7 +603,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-loong64@0.18.20:
@@ -630,7 +620,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-mips64el@0.18.20:
@@ -648,7 +637,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-ppc64@0.18.20:
@@ -666,7 +654,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-riscv64@0.18.20:
@@ -684,7 +671,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-s390x@0.18.20:
@@ -702,7 +688,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-x64@0.18.20:
@@ -720,7 +705,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/netbsd-x64@0.18.20:
@@ -738,7 +722,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/openbsd-x64@0.18.20:
@@ -756,7 +739,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/sunos-x64@0.18.20:
@@ -774,7 +756,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/win32-arm64@0.18.20:
@@ -792,7 +773,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/win32-ia32@0.18.20:
@@ -810,7 +790,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/win32-x64@0.18.20:
@@ -828,7 +807,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@ethereumjs/rlp@4.0.1:
@@ -1229,19 +1207,19 @@ packages:
       tweetnacl-util: 0.15.1
     dev: true
 
-  /@nftchance/plug-types@0.5.2(esbuild@0.18.20)(typescript@5.0.4):
+  /@nftchance/plug-types@0.5.2(esbuild@0.19.8)(typescript@5.0.4):
     resolution: {integrity: sha512-y64atnYB/ZRig6CDQY5wgxWcRLW+CXKfLa2N6X03AjFQyC+GWUjLatidDCofJ8FczJNGlR0wjo0cBHWrB2cKpg==}
     hasBin: true
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.1.0)
       abitype: 0.10.3(typescript@5.0.4)(zod@3.22.4)
-      bundle-require: 4.0.2(esbuild@0.18.20)
+      bundle-require: 4.0.2(esbuild@0.19.8)
       commander: 11.1.0
       dedent: 1.5.1
       ethers: 6.8.1
       execa: 8.0.1
       find-up: 6.3.0
-      fs-extra: 11.1.1
+      fs-extra: 11.2.0
       pathe: 1.1.1
       picocolors: 1.0.0
       prettier: 3.1.0
@@ -2548,16 +2526,6 @@ packages:
       ieee754: 1.2.1
     dev: true
 
-  /bundle-require@4.0.2(esbuild@0.18.20):
-    resolution: {integrity: sha512-jwzPOChofl67PSTW2SGubV9HBQAhhR2i6nskiOThauo9dzwDUgOWQScFVaJkjEfYX+UXiD+LEx8EblQMc2wIag==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    peerDependencies:
-      esbuild: '>=0.17'
-    dependencies:
-      esbuild: 0.18.20
-      load-tsconfig: 0.2.5
-    dev: false
-
   /bundle-require@4.0.2(esbuild@0.19.8):
     resolution: {integrity: sha512-jwzPOChofl67PSTW2SGubV9HBQAhhR2i6nskiOThauo9dzwDUgOWQScFVaJkjEfYX+UXiD+LEx8EblQMc2wIag==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -2566,7 +2534,6 @@ packages:
     dependencies:
       esbuild: 0.19.8
       load-tsconfig: 0.2.5
-    dev: true
 
   /bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
@@ -3223,7 +3190,6 @@ packages:
       '@esbuild/win32-arm64': 0.19.8
       '@esbuild/win32-ia32': 0.19.8
       '@esbuild/win32-x64': 0.19.8
-    dev: true
 
   /escalade@3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
@@ -3625,8 +3591,8 @@ packages:
       rimraf: 2.7.1
     dev: true
 
-  /fs-extra@11.1.1:
-    resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
+  /fs-extra@11.2.0:
+    resolution: {integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==}
     engines: {node: '>=14.14'}
     dependencies:
       graceful-fs: 4.2.11
