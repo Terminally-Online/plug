@@ -68,7 +68,7 @@ contract PlugFactorySocket is PlugVaultSocket {
 
 			/// @dev Emit an event for the creation of the Vault to make tracking
 			///		 things easier offchain.
-			emit PlugVaultDeployerSocketLib.SocketDeployed(
+			emit PlugFactorySocketLib.SocketDeployed(
 				$implementation,
 				$admin,
 				$salt
