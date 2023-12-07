@@ -18,8 +18,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@prisma/client@5.7.0)(next-auth@4.24.5)
   '@next/third-parties':
-    specifier: ^14.0.3
-    version: 14.0.3(next@14.0.4)(react@18.2.0)
+    specifier: ^14.0.4
+    version: 14.0.4(next@14.0.4)(react@18.2.0)
   '@prisma/client':
     specifier: ^5.7.0
     version: 5.7.0(prisma@5.7.0)
@@ -948,8 +948,8 @@ packages:
     dev: false
     optional: true
 
-  /@next/third-parties@14.0.3(next@14.0.4)(react@18.2.0):
-    resolution: {integrity: sha512-TTFuDDenb2dzO84g+S7jMfhqvw2+4bi3Xu6qdtWk1vpywHeSZNSSY9clwF15YxdBvrdRXV/Gez1AjDjCfiQiOA==}
+  /@next/third-parties@14.0.4(next@14.0.4)(react@18.2.0):
+    resolution: {integrity: sha512-K17BnacV2QOnI2o5DpeuwW/hnRjIgb8TSSMJC+y36330zh4skERb10FRhdc/0QTVuUc6k8jVJhURxdJu097GOQ==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0
       react: ^18.2.0
