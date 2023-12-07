@@ -11,6 +11,14 @@
 
   - ALPHA:
 
+    - Protocol:
+
+      - [ ] Deprecate the inclusion of delegatable functionality.
+            NOTE: An interesting thing that has arisen out of the recent app development is that "delegated" permissions really isn't the explicit intent of the protocol anymore.
+            NOTE: Previously objects were designed to be highly permissible allowing the ability to combine multiple pins and plugs into a single signed batch. Realistically though, that is not only quite complicated in theory but introduces a significant level of technical overhead.
+            NOTE: Along with the introduced authentication complexity and low chance of that ever actually being used, it means that we are fighting an already prohibitive system to implement if-this-then-that-else logic.
+            NOTE: If we were to make this change it would mean we can remove the pin-based set of signatures.
+
     - Canvas:
 
       - [x] Add distance constraint so that dragging does not impact clicking on components.
@@ -75,6 +83,13 @@
             CONCLUSION: Also got to include the submodules.
       - [ ] Get landing page and app live in a staging environment.
             NOTE: This will not be a real staging environment, but it will be until we kill the landing app and move everything over which will happen come time of the first release.
+
+    - [ ] Deprecate `packages/landing`
+          NOTE: Do not do this until you are ready to roll out alpha because it replaces the early access signup with an enter app button.
+    - [ ] Deprecate `packages/client`
+          CONCLUSION: This actually is not going to be done because it will be a reference point for those that would like to build their own interface / provide an alternative to the BUSL licensed app.
+    - [ ] Deprecate `packages/server`
+          NOTE: Not really sure what is going to happen to this actually.
 
   - BETA:
 
