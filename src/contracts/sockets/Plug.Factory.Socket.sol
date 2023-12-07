@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {PlugVaultSocket} from './Plug.Vault.Socket.sol';
-import {PlugVaultDeployerSocketLib} from '../libraries/Plug.Vault.Deployer.Socket.Lib.sol';
+import {PlugFactorySocketLib} from '../libraries/Plug.Factory.Socket.Lib.sol';
 import {LibClone} from 'solady/src/utils/LibClone.sol';
 
 /**
