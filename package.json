@@ -1,20 +1,21 @@
 {
-  "name": "@nftchance/plug-docs",
-  "scripts": {
-    "generate": "rm -rf ./generated/ && pnpm plug docs",
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
-  },
-  "dependencies": {
-    "@nftchance/plug-types": "^0.5.0",
-    "fs-extra": "^11.1.1",
-    "pathe": "^1.1.1",
-    "vitepress": "^1.0.0-rc.24",
-    "vue": "^3.3.7"
-  },
-  "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
-    "typescript": "^5.2.2"
-  }
+    "name": "@nftchance/plug-docs",
+    "license": "MIT",
+    "scripts": {
+        "generate": "rm -rf ./generated/ && pnpm plug docs",
+        "docs:dev": "vitepress dev",
+        "docs:build": "vitepress build",
+        "docs:preview": "vitepress preview"
+    },
+    "dependencies": {
+        "@nftchance/plug-types": "^0.5.0",
+        "fs-extra": "^11.1.1",
+        "pathe": "^1.1.1",
+        "vitepress": "^1.0.0-rc.24",
+        "vue": "^3.3.7"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^11.0.4",
+        "typescript": "^5.2.2"
+    }
 }
