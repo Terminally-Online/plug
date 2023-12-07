@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.19;
 
+import {PlugVaultSocket} from './Plug.Vault.Socket.sol';
 import {PlugVaultDeployerSocketLib} from '../libraries/Plug.Vault.Deployer.Socket.Lib.sol';
-
 import {LibClone} from 'solady/src/utils/LibClone.sol';
 
 /**
- * @title Plug Vault Socket Deployer
+ * @title Plug Factory
  * @notice This contract is responsible for deploying new Plug Vaults that can be used
  *         as personal relays for an individual. The owner can execute transactions through
  *         the vaults, and the vaults can be used to store funds and/or NFTs. The vaults
@@ -16,23 +16,28 @@ import {LibClone} from 'solady/src/utils/LibClone.sol';
  * @author @nftchance (chance@utc24.io)
  * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)
  */
-contract PlugVaultDeployerSocket {
-	/// @dev The address of the active Plug Vault implementation.
-	address public immutable implementation;
-
-	constructor(address $implementation) {
-		/// @dev Set the version of vaults to deploy.
-		implementation = $implementation;
+contract PlugFactorySocket is PlugVaultSocket {
+	/**
+	 * @notice Initializes a new Plug Vault contract.
+	 * @dev A vault is instantiated inside the factory in case funds are sent to the
+	 *      factory by mistake.
+	 * @param $owner The owner of the vault.
+	 * @param $name The name of the contract
+	 * @param $version The version of the contract
+	 */
+	constructor(address $owner, string memory $name, string memory $version) {
+		_initializeVault($owner, $name, $version);
 	}
 
 	/**
-	 * @notice Deploy a new Plug Vault that can be used as a personal relay.
+	 * @notice Deploy a new Plug contract and initialize it.
 	 * @param $admin The admin of the vault.
 	 * @param $salt The salt of the vault.
 	 * @return $alreadyDeployed Whether or not the vault was already deployed.
 	 * @return $vault The address of the deployed vault.
 	 */
 	function deploy(
+		address $implementation,
 		address $admin,
 		bytes32 $salt
 	) external returns (bool $alreadyDeployed, address $vault) {
@@ -41,7 +46,7 @@ contract PlugVaultDeployerSocket {
 
 		/// @dev Deploy the new vault using a Beacon Proxy pattern.
 		($alreadyDeployed, $vault) = LibClone.createDeterministicERC1967(
-			implementation,
+			$implementation,
 			$salt
 		);
 
@@ -64,7 +69,7 @@ contract PlugVaultDeployerSocket {
 			/// @dev Emit an event for the creation of the Vault to make tracking
 			///		 things easier offchain.
 			emit PlugVaultDeployerSocketLib.SocketDeployed(
-				msg.sender,
+				$implementation,
 				$admin,
 				$salt
 			);
@@ -76,9 +81,12 @@ contract PlugVaultDeployerSocket {
 	 * @param $salt The salt of the vault.
 	 * @return $vault The predicted address of the vault.
 	 */
-	function getAddress(bytes32 $salt) public view returns (address $vault) {
+	function getAddress(
+		address $implementation,
+		bytes32 $salt
+	) public view returns (address $vault) {
 		$vault = LibClone.predictDeterministicAddressERC1967(
-			implementation,
+			$implementation,
 			$salt,
 			address(this)
 		);
@@ -89,12 +97,9 @@ contract PlugVaultDeployerSocket {
 	 * @dev This is used to mine vanity addresses.
 	 * @return $initCodeHash The init code hash of the vaults.
 	 */
-	function initCodeHash()
-		public
-		view
-		virtual
-		returns (bytes32 $initCodeHash)
-	{
-		$initCodeHash = LibClone.initCodeHashERC1967(implementation);
+	function initCodeHash(
+		address $implementation
+	) public view virtual returns (bytes32 $initCodeHash) {
+		$initCodeHash = LibClone.initCodeHashERC1967($implementation);
 	}
 }

@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 library PlugVaultDeployerSocketLib {
 	event SocketDeployed(
-		address indexed $deployer,
+		address indexed $implementation,
 		address indexed $vault,
 		bytes32 $salt
 	);
