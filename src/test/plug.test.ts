@@ -31,7 +31,8 @@ describe('Plug', function () {
 			neutral: getAddress(owner.account.address),
 			live: BASE_AUTH,
 			fuses: [],
-			salt: BASE_AUTH
+			salt: BASE_AUTH,
+			forced: true
 		} as const
 
 		// * Sign the pin to make it executable.
@@ -67,7 +68,8 @@ describe('Plug', function () {
 			neutral: getAddress(owner.account.address),
 			live: BASE_AUTH,
 			fuses: [],
-			salt: BASE_AUTH
+			salt: BASE_AUTH,
+			forced: true
 		} as const
 
 		// * Sign the pin to make it executable.
@@ -101,7 +103,8 @@ describe('Plug', function () {
 						ground: getAddress(owner.account.address),
 						voltage: 21000n,
 						data: encodedTransaction
-					}
+					},
+					forced: true
 				}
 			]
 		})
@@ -136,7 +139,8 @@ describe('Plug', function () {
 						ground: contract.address,
 						voltage: 21000n,
 						data: encodedTransaction
-					}
+					},
+					forced: true
 				}
 			]
 		})

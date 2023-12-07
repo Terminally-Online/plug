@@ -89,6 +89,26 @@ abstract contract PlugCore is PlugTypes {
 		);
 	}
 
+	function _enforceFuse(
+		PlugTypesLib.Fuse memory $fuse,
+		PlugTypesLib.Current memory $current,
+		bytes32 $pinHash
+	) internal returns (bool $success, bytes memory $returnData) {
+		/// @dev Call the Fuse to determine if it is valid.
+		($success, $returnData) = address($fuse.neutral).call(
+			abi.encodeWithSelector(
+				IFuse($fuse.neutral).enforceFuse.selector,
+				$fuse.live,
+				$current,
+				$pinHash
+			)
+		);
+
+		/// @dev If the Fuse failed and is not optional, bubble up the revert.
+		if ($success == false && $fuse.forced == true)
+			$returnData.bubbleRevert();
+	}
+
 	/**
 	 * @notice Execution a built transaction.
 	 * @param $to The address of the contract to execute.
@@ -133,9 +153,7 @@ abstract contract PlugCore is PlugTypes {
 		address canGrant;
 		address intendedSender;
 		address pinSigner;
-		bytes32 authHash;
 		bytes32 pinHash;
-		bytes memory callback;
 
 		/// @dev Load the structs into a hot reference.
 		PlugTypesLib.Plug memory intent;
@@ -148,15 +166,8 @@ abstract contract PlugCore is PlugTypes {
 			/// @dev Load the intent from the plugs.
 			intent = $plugs[i];
 
-			/// @dev If there are no pins, this intent comes from the signer
-			if (intent.pins.length == 0) {
-				canGrant = intendedSender = $sender;
-			}
-
-			/// @dev Reset the hot reference to the authHash.
-			authHash = 0x0;
-			j = 0;
-			k = 0;
+			/// @dev Reset the hot reference to the pinHash.
+			pinHash = 0x0;
 
 			/// @dev Load the transaction from the intent.
 			current = intent.current;
@@ -166,56 +177,50 @@ abstract contract PlugCore is PlugTypes {
 				'PlugCore:invalid-intent-target'
 			);
 
-			/// @dev Iterate over the authority pins.
-			for (j; j < intent.pins.length; j++) {
-				/// @dev Load the pin from the intent.
-				signedPin = intent.pins[j];
+			/// @dev If there are no pins, this intent comes from the signer
+			if (intent.pins.length == 0) {
+				canGrant = intendedSender = $sender;
+			} else {
+				/// @dev Iterate over the authority pins.
+				for (j = 0; j < intent.pins.length; j++) {
+					/// @dev Load the pin from the intent.
+					signedPin = intent.pins[j];
 
-				/// @dev Determine the signer of the pin.
-				pinSigner = getLivePinSigner(signedPin);
+					/// @dev Determine the signer of the pin.
+					pinSigner = getLivePinSigner(signedPin);
 
-				/// @dev Implied sending account is the signer of the first pin.
-				if (j == 0) canGrant = intendedSender = pinSigner;
+					/// @dev Implied sending account is the signer of the first pin.
+					if (j == 0) canGrant = intendedSender = pinSigner;
 
-				/// @dev Ensure the pin signer has authority to grant
-				///      the claimed pin.
-				require(pinSigner == canGrant, 'PlugCore:invalid-pin-signer');
-
-				/// @dev Warm up the pin reference.
-				pin = signedPin.pin;
-
-				/// @dev Ensure the pin is valid.
-				require(
-					pin.live == authHash,
-					'PlugCore:invalid-authority-pin-link'
-				);
-
-				/// @dev Retrieve the packet hash for the pin.
-				pinHash = getLivePinHash(signedPin);
-
-				/// @dev Loop through all the execution fuses declared in the pin
-				///      and ensure they are all valid.
-				for (k; k < pin.fuses.length; ) {
-					/// @dev Call the enforcer to determine if the fuse is valid.
-					callback = IFuse(pin.fuses[k].neutral).enforceFuse(
-						pin.fuses[k].live,
-						intent.current,
-						pinHash
+					/// @dev Ensure the pin signer has authority to grant
+					///      the claimed pin.
+					require(
+						pinSigner == canGrant,
+						'PlugCore:invalid-pin-signer'
 					);
 
-					if (callback.length > 0) revert('PlugCore:not-implemented');
+					/// @dev Warm up the pin reference.
+					pin = signedPin.pin;
 
-					unchecked {
-						++k;
+					/// @dev Ensure the pin is valid.
+					require(
+						pin.live == pinHash,
+						'PlugCore:invalid-authority-pin-link'
+					);
+
+					/// @dev Retrieve the packet hash for the pin.
+					pinHash = getLivePinHash(signedPin);
+
+					/// @dev Loop through all the execution fuses declared in the pin
+					///      and ensure they are in a state of acceptable execution.
+					for (k = 0; k < pin.fuses.length; k++) {
+						/// @dev Call the Fuse to determine if it is valid.
+						_enforceFuse(pin.fuses[k], current, pinHash);
 					}
+
+					/// @dev Set the next pin signer as the current pin signer.
+					canGrant = pin.neutral;
 				}
-
-				/// @dev Store the hash of this pin in `authHash` to verify the
-				///      next pin can be verified against it.
-				authHash = pinHash;
-
-				/// @dev Set the next pin signer as the current pin signer.
-				canGrant = pin.neutral;
 			}
 
 			/// @dev Verify the delegate at the end of the pin chain is the signer.
