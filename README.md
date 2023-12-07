@@ -21,3 +21,26 @@ To run an instance of `@nftchance/plug-core` is incredibly straightforward. Open
 pnpm i
 pnpm dev
 ```
+
+## Generating The Framework Types
+
+The foundation of the protocol is automatically generated so that active development can be strictly focused on the actual logic of the framework. With this in place you should never manually edit `Plug.Types.sol` and instead should always open your terminal and run:
+
+```bash
+pnpm plug generate
+```
+
+By running this command, an up to date `Plug.Types.sol` will be generated and you will have everything you need at your disposal. 
+
+> [!TIP]
+> You will only need to do this when `@nftchance/plug-types` has been updated, the most up to date version is always included as a commit in the repository.
+
+## Building The Package For Distribution
+
+For version management assistance, `@nftchance/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run: 
+
+```bash
+pnpm changeset add
+```
+
+With a changeset created all you have to do is submit your commit/PR to the repository. Everything else will be handled for you.
