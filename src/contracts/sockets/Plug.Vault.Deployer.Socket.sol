@@ -2,78 +2,99 @@
 
 pragma solidity ^0.8.19;
 
-import {PlugSocket} from '../abstracts/Plug.Socket.sol';
-import {Ownable} from 'solady/src/auth/Ownable.sol';
-import {ERC1967Factory} from 'solady/src/utils/ERC1967Factory.sol';
+import {PlugVaultDeployerSocketLib} from '../libraries/Plug.Vault.Deployer.Socket.Lib.sol';
+
+import {LibClone} from 'solady/src/utils/LibClone.sol';
 
 /**
  * @title Plug Vault Socket Deployer
  * @notice This contract is responsible for deploying new Plug Vaults that can be used
- *         as personal relays for the owner. The owner can execute transactions through
+ *         as personal relays for an individual. The owner can execute transactions through
  *         the vaults, and the vaults can be used to store funds and/or NFTs. The vaults
  *         are deployed using the Beacon Proxy pattern, and the owner can upgrade the
  *         implementation at any time.
  * @author @nftchance (chance@utc24.io)
+ * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol#L47-L57)
  */
-contract PlugVaultSocketDeployer is PlugSocket, ERC1967Factory {
+contract PlugVaultSocketDeployer {
 	/// @dev The address of the active Plug Vault implementation.
-	address implementation;
+	address public immutable implementation;
 
-	/// @dev The nonce of the sender to determine the next vault address.
-	mapping(address => uint256) senderToNonce;
-
-	constructor(
-		address $implementation
-	) PlugSocket('PlugVaultSocket', '0.0.1') {
+	constructor(address $implementation) {
 		/// @dev Set the version of vaults to deploy.
 		implementation = $implementation;
 	}
 
 	/**
 	 * @notice Deploy a new Plug Vault that can be used as a personal relay.
-	 * @param $data The data to initialize the vault with.
+	 * @param $admin The admin of the vault.
+	 * @param $salt The salt of the vault.
+	 * @return $alreadyDeployed Whether or not the vault was already deployed.
 	 * @return $vault The address of the deployed vault.
 	 */
-	function deploy(bytes calldata $data) external returns (address $vault) {
-		$vault = deployDeterministicAndCall(
+	function deploy(
+		address $admin,
+		bytes32 $salt
+	) external returns (bool $alreadyDeployed, address $vault) {
+		/// @dev Make sure the user has provided a valid salt.
+		LibClone.checkStartsWith($salt, $admin);
+
+		/// @dev Deploy the new vault using a Beacon Proxy pattern.
+		($alreadyDeployed, $vault) = LibClone.createDeterministicERC1967(
 			implementation,
-			_msgSender(),
-			keccak256(
-				abi.encodePacked(_msgSender(), senderToNonce[_msgSender()]++)
-			),
-			$data
+			$salt
 		);
+
+		/// @dev If the vault was not already deployed, initialize it.
+		if ($alreadyDeployed == false) {
+			/// @solidity memory-safe-assembly
+			assembly {
+				/// @dev Store the `$admin` argument.
+				mstore(0x14, $admin)
+				/// @dev Store the call data for the `initialize(address)` function.
+				mstore(0x00, 0xc4d66de8000000000000000000000000)
+				if iszero(
+					call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)
+				) {
+					returndatacopy(mload(0x40), 0x00, returndatasize())
+					revert(mload(0x40), returndatasize())
+				}
+			}
+
+			/// @dev Emit an event for the creation of the Vault to make tracking
+			///		 things easier offchain.
+			emit PlugVaultDeployerSocketLib.SocketDeployed(
+				msg.sender,
+				$admin,
+				$salt
+			);
+		}
 	}
 
 	/**
 	 * @notice Predict the address of a new Plug Vault.
-	 * @param $admin The admin of the vault.
-	 * @param $nonce The nonce of the admin.
-	 * @return $address The predicted address of the vault.
+	 * @param $salt The salt of the vault.
+	 * @return $vault The predicted address of the vault.
 	 */
-	function getAddress(
-		address $admin,
-		uint256 $nonce
-	) public view returns (address) {
-		bytes32 salt = keccak256(abi.encodePacked($admin, $nonce));
-
-		return predictDeterministicAddress(salt);
+	function getAddress(bytes32 $salt) public view returns (address $vault) {
+		$vault = LibClone.predictDeterministicAddressERC1967(
+			implementation,
+			$salt,
+			address(this)
+		);
 	}
 
 	/**
-	 * @notice Get all of the addresses of the vaults for a given admin.
-	 * @param $admin The admin of the vaults.
-	 * @return $addresses The addresses of the vaults.
+	 * @notice Get the init code hash of the vaults.
+	 * @dev This is used to mine vanity addresses.
+	 * @return $initCodeHash The init code hash of the vaults.
 	 */
-	function getAddresses(
-		address $admin
-	) public view returns (address[] memory) {
-		uint256 vaults = senderToNonce[$admin];
-
-		address[] memory addresses = new address[](vaults);
-
-		for (uint256 i = 0; i < vaults; i++) {
-			addresses[i] = getAddress($admin, i);
-		}
+	function initCodeHash()
+		public
+		view
+		virtual
+		returns (bytes32 $initCodeHash)
+	{
+		$initCodeHash = LibClone.initCodeHashERC1967(implementation);
 	}
 }
