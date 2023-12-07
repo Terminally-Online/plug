@@ -5,7 +5,7 @@ import { PlugSDK } from '@/core/sdk'
 
 import { constants } from '@nftchance/plug-types'
 
-export const [name, version] = ['PlugMock', '0.0.0']
+export const [name, version] = ['PlugMockSocket', '0.0.0']
 
 export default async function () {
 	const chainId = await getChainId(network)

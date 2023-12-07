@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.19;
 
@@ -13,7 +13,7 @@ import {NounsBidFuse} from '../fuses/nouns/Nouns.Bid.Fuse.sol';
 import {BytesLib} from '../libraries/BytesLib.sol';
 
 /**
- * @title Nouns Bid Socket
+ * @title Plug Nouns Bid Socket
  * @notice This contract is responsible for coordinating the placing of bids in the
  *         Nouns Auction house and the following management of wins and losses without
  *         holding funds or collecting a TVL. ETH is automatically distributed when used,
@@ -22,7 +22,7 @@ import {BytesLib} from '../libraries/BytesLib.sol';
  * @author @nftchance (chance@utc24.io)
  * @author @masonchain
  */
-contract NounsBidSocket is NounsBidFuse, Ownable, PlugSocket {
+contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 	using BytesLib for bytes;
 
 	/// @dev Accessible interface to the active Nouns Auction House.

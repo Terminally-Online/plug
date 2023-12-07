@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.19;
 
@@ -9,7 +9,7 @@ import {PlugSocket} from '../abstracts/Plug.Socket.sol';
  * @notice A mock contract for testing the Plug framework.
  * @dev This contract is for testing purposes only.
  */
-contract PlugMock is PlugSocket {
+contract PlugMockSocket is PlugSocket {
 	/// @dev Active revert when echo is muted.
 	error EchoMuted();
 
