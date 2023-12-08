@@ -37,8 +37,8 @@ contract PlugMockSocket is PlugSocket {
 		emit EchoInvoked(msg.sender, _msgSender(), $message);
 	}
 
-	function pureEcho() external pure returns (string memory $message) {
-		$message = 'Hello World';
+	function emptyEcho() external {
+		emit EchoInvoked(msg.sender, _msgSender(), 'Hello World');
 	}
 
 	/**

@@ -118,7 +118,7 @@ abstract contract PlugCore is PlugTypes {
 		/// @dev Warm up the slot for the return data.
 		bytes memory errorMessage;
 
-		/// @dev Make the external call that was delegated.
+		/// @dev Make the external call with a standard call.
 		($success, errorMessage) = address($to).call{gas: $voltage}(full);
 
 		/// @dev If the call failed, bubble up the revert reason if possible.
