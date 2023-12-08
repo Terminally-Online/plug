@@ -12,8 +12,8 @@ dependencies:
     specifier: ^0.10.3
     version: 0.10.3(typescript@5.0.4)(zod@3.22.4)
   solady:
-    specifier: ^0.0.145
-    version: 0.0.145
+    specifier: ^0.0.146
+    version: 0.0.146
   tsx:
     specifier: ^4.6.2
     version: 4.6.2
@@ -5661,6 +5661,10 @@ packages:
 
   /solady@0.0.145:
     resolution: {integrity: sha512-A6DORrEb3BXqcwxltXPjDeFNFhRcat06SXK2Vl+8zDeUnXX3+06cVkZNyeqqTHeaeqM9XSCKJNop5S2fpS6sAQ==}
+    dev: false
+
+  /solady@0.0.146:
+    resolution: {integrity: sha512-jHAkXBNm8gHdcwG2tIJYNeWwp9BR39FKj8PmWTFQLZH3Vm1oXUkiFEXG0I1vgleBogK11d5XsmVyYN5ngNkDkw==}
     dev: false
 
   /solc@0.7.3(debug@4.3.4):
