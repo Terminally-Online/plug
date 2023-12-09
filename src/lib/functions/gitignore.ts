@@ -4,6 +4,9 @@ export const gitignore = (ignorePaths: Array<string>) => dedent`
 # Generated file. Do not edit directly.
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
+# Mac OS files
+.DS_Store
+
 # Logs
 
 logs

@@ -30,14 +30,14 @@ The foundation of the protocol is automatically generated so that active develop
 pnpm plug generate
 ```
 
-By running this command, an up to date `Plug.Types.sol` will be generated and you will have everything you need at your disposal. 
+By running this command, an up to date `Plug.Types.sol` will be generated and you will have everything you need at your disposal.
 
 > [!TIP]
 > You will only need to do this when `@nftchance/plug-types` has been updated, the most up to date version is always included as a commit in the repository.
 
 ## Building The Package For Distribution
 
-For version management assistance, `@nftchance/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run: 
+For version management assistance, `@nftchance/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run:
 
 ```bash
 pnpm changeset add

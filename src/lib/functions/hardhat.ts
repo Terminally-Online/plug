@@ -7,7 +7,9 @@ import { constants } from '@nftchance/plug-types'
 
 export const [name, version] = ['PlugMockSocket', '0.0.0']
 
-export default async function ([name, version]: [string, string] = ['PlugMockSocket', '0.0.0']) {
+export default async function (
+	[name, version]: [string, string] = ['PlugMockSocket', '0.0.0']
+) {
 	const chainId = await getChainId(network)
 
 	const [owner, notOwner] = await hre.viem.getWalletClients()
