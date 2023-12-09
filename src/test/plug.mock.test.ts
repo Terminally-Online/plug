@@ -1,5 +1,5 @@
-import deploy, { name, version } from '@/lib/functions/hardhat'
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox-viem/network-helpers'
+import deploy, { name, version } from '../lib/functions/hardhat'
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'
 import { encodeFunctionData, getAddress } from 'viem'
@@ -167,7 +167,7 @@ describe('Plug Mock', function () {
 
 		if (!LivePlugs) expect.fail('Plug could not be signed.')
 
-		await contract.write.plug([[LivePlugs]])
+		await contract.write.plug([[LivePlugs]])	
 	})
 
 	it('fail: plug(): mutedEcho()', async function () {
@@ -179,7 +179,9 @@ describe('Plug Mock', function () {
 		})
 
 		const signedPlugs = await util.sign(owner, 'Plugs', {
-			breaker: { nonce: 1n, queue: 0n },
+			breaker: { nonce: 1n,
+				queue: 0n
+			},
 			plugs: [
 				{
 					pins: [],
@@ -204,4 +206,5 @@ describe('Plug Mock', function () {
 			'EchoMuted'
 		)
 	})
+
 })

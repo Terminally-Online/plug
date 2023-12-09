@@ -1,6 +1,6 @@
 import hre from 'hardhat'
 
-import { PlugSDK } from '@/core/sdk'
+import { PlugSDK } from '../core/sdk'
 
 const RUN = false
 

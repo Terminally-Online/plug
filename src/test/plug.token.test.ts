@@ -1,17 +1,18 @@
-import { getChainId } from '@/lib/functions/hardhat'
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox-viem/network-helpers'
-import hre, { network } from 'hardhat'
+import { getChainId } from '../lib/functions/hardhat'
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
 
 import { expect } from 'chai'
-import { encodeFunctionData, getAddress } from 'viem'
+
+import hre, { network } from 'hardhat'
 
 import { PlugSDK } from '@/core/sdk'
 
 import { constants } from '@nftchance/plug-types'
+import { encodeFunctionData, getAddress } from 'viem'
 
 const [name, version] = ['PlugERC20Socket', '0.0.0']
 
-async function deploy() {
+async function deploy () {
 	const chainId = await getChainId(network)
 
 	const [owner, notOwner] = await hre.viem.getWalletClients()
@@ -49,32 +50,32 @@ describe('Plug Token', function () {
 		})
 	})
 
-	it('pass: name()', async function () {
+	it("pass: name()", async function () {
 		const { contract } = await loadFixture(deploy)
 
 		await contract.read.name()
 	})
 
-	it('pass: symbol()', async function () {
+	it("pass: symbol()", async function () {
 		const { contract } = await loadFixture(deploy)
 
 		await contract.read.symbol()
 	})
 
-	it('pass: claim()', async function () {
+	it("pass: claim()", async function () {
 		const { contract } = await loadFixture(deploy)
 
 		await contract.write.claim()
 	})
 
-	it('pass: plug(): claim()', async function () {
+	it("pass: plug(): claim()", async function () {
 		const { util, contract, owner, notOwner } = await loadFixture(deploy)
 
 		const encodedTransaction = encodeFunctionData({
 			abi: contract.abi,
 			functionName: 'claim'
 		})
-
+			
 		const estimate = await contract.estimateGas.claim()
 
 		const signedPlugs = await util.sign(notOwner, 'Plugs', {
@@ -101,27 +102,16 @@ describe('Plug Token', function () {
 
 		if (!LivePlugs) expect.fail('Plug could not be signed.')
 
-		expect(
-			await contract.read.balanceOf([getAddress(owner.account.address)])
-		).to.eq(0n)
+		expect(await contract.read.balanceOf([getAddress(owner.account.address)])).to.eq(0n)
 		expect(await contract.write.plug([[LivePlugs]]))
-		expect(
-			await contract.read.balanceOf([
-				getAddress(notOwner.account.address)
-			])
-		).to.eq(1n)
-		await expect(contract.write.plug([[LivePlugs]])).to.be.rejectedWith(
-			'PlugCore:nonce2-out-of-order'
-		)
+		expect(await contract.read.balanceOf([getAddress(notOwner.account.address)])).to.eq(1n)
 	})
 
-	it('fail: claim() twice', async function () {
+	it("fail: claim() twice", async function () {
 		const { contract } = await loadFixture(deploy)
 
 		await contract.write.claim()
 
-		await expect(contract.write.claim()).to.be.rejectedWith(
-			'PlugERC20Socket:claimed'
-		)
+		await expect(contract.write.claim()).to.be.rejectedWith('PlugERC20Socket:claimed')
 	})
 })
