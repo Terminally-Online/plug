@@ -6,6 +6,7 @@ export const gitignore = (ignorePaths: Array<string>) => dedent`
 
 # Mac OS files
 .DS_Store
+*/.DS_Store
 
 # Logs
 
