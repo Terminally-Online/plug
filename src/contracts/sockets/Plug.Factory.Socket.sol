@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.19;
 
+import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 import {PlugVaultSocket} from './Plug.Vault.Socket.sol';
 import {PlugFactorySocketLib} from '../libraries/Plug.Factory.Socket.Lib.sol';
 import {LibClone} from 'solady/src/utils/LibClone.sol';
@@ -16,17 +17,16 @@ import {LibClone} from 'solady/src/utils/LibClone.sol';
  * @author @nftchance (chance@utc24.io)
  * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)
  */
-contract PlugFactorySocket is PlugVaultSocket {
+contract PlugFactorySocket is PlugSocket {
 	/**
 	 * @notice Initializes a new Plug Vault contract.
 	 * @dev A vault is instantiated inside the factory in case funds are sent to the
 	 *      factory by mistake.
-	 * @param $owner The owner of the vault.
 	 * @param $name The name of the contract
 	 * @param $version The version of the contract
 	 */
-	constructor(address $owner, string memory $name, string memory $version) {
-		_initializeVault($owner, $name, $version);
+	constructor(string memory $name, string memory $version) {
+		_initializeSocket($name, $version);
 	}
 
 	/**
@@ -52,19 +52,22 @@ contract PlugFactorySocket is PlugVaultSocket {
 
 		/// @dev If the vault was not already deployed, initialize it.
 		if ($alreadyDeployed == false) {
+			PlugVaultSocket($vault).initialize($admin);
+
 			/// @solidity memory-safe-assembly
-			assembly {
-				/// @dev Store the `$admin` argument.
-				mstore(0x14, $admin)
-				/// @dev Store the call data for the `initialize(address)` function.
-				mstore(0x00, 0xc4d66de8000000000000000000000000)
-				if iszero(
-					call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)
-				) {
-					returndatacopy(mload(0x40), 0x00, returndatasize())
-					revert(mload(0x40), returndatasize())
-				}
-			}
+			// assembly {
+			// 	/// @dev Store the `$admin` argument.
+			// 	mstore(0x14, $admin)
+			// 	/// @dev Store the call data for the `initialize(address)` function.
+			// 	mstore(0x00, 0xc4d66de8000000000000000000000000)
+			// 	if iszero(
+			// 		call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)
+			// 	) {
+			// 		returndatacopy(mload(0x40), 0x00, returndatasize())
+			// 		revert(mload(0x40), returndatasize())
+			// 	}
+			// }
+
 
 			/// @dev Emit an event for the creation of the Vault to make tracking
 			///		 things easier offchain.
