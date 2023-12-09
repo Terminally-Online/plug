@@ -1,5 +1,5 @@
-import { getChainId } from '../lib/functions/hardhat'
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
+import { getChainId } from '@/lib/functions/hardhat'
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox-viem/network-helpers'
 import hre, { network } from 'hardhat'
 
 import { expect } from 'chai'

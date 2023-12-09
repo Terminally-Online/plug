@@ -1,7 +1,7 @@
 // * This test is in place to make sure that Plug is not exposed to the same issue that
 //   was discosed by OpenZeppelin here: https://blog.openzeppelin.com/arbitrary-address-spoofing-vulnerability-erc2771context-multicall-public-disclosure
-import { getChainId } from '../lib/functions/hardhat'
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers'
+import { getChainId } from '@/lib/functions/hardhat'
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox-viem/network-helpers'
 import hre, { network } from 'hardhat'
 
 import { expect } from 'chai'
