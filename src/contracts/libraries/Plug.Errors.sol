@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.23;
 
 library PlugErrors {
 	/**
@@ -20,7 +20,7 @@ library PlugErrors {
 		/// @dev Panic(uint256) (>=0.8.0)
 		if (errorSelector == bytes4(0x4e487b71)) {
 			string memory reason = 'PlugCore:target-panicked-0x';
-			uint errorCode;
+			uint256 errorCode;
 
 			assembly {
 				errorCode := mload(add($revertData, 0x24))
@@ -45,7 +45,7 @@ library PlugErrors {
 
 		/// @dev Error(string) (>= 0.7.0)
 		/// @dev Custom errors (>= 0.8.0)
-		uint len = $revertData.length;
+		uint256 len = $revertData.length;
 		assembly {
 			revert(add($revertData, 32), len)
 		}

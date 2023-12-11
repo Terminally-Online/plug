@@ -18,7 +18,7 @@
 		"declarationMap": true,
 		"skipLibCheck": true,
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./*"]
 		},
 
 		"downlevelIteration": true,
@@ -30,7 +30,7 @@
 		"resolveJsonModule": true,
 		"strictNullChecks": true
 	},
-	"include": ["src/**/*"],
-	"files": ["src/index.ts", "hardhat.config.ts"],
+	"include": ["src/**/*", "lib/**/*"],
+	"files": ["src/index.ts"],
 	"exclude": ["node_modules", "dist", "tsup.config.ts"]
 }

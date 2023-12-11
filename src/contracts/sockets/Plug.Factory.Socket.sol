@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.23;
 
 import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 import {PlugVaultSocket} from './Plug.Vault.Socket.sol';
@@ -40,33 +40,32 @@ contract PlugFactorySocket is PlugSocket {
 		address $implementation,
 		address $admin,
 		bytes32 $salt
-	) external returns (bool $alreadyDeployed, address $vault) {
+	) public payable virtual returns (bool $alreadyDeployed, address $vault) {
 		/// @dev Make sure the user has provided a valid salt.
 		LibClone.checkStartsWith($salt, $admin);
 
 		/// @dev Deploy the new vault using a Beacon Proxy pattern.
 		($alreadyDeployed, $vault) = LibClone.createDeterministicERC1967(
+			msg.value,
 			$implementation,
 			$salt
 		);
 
 		/// @dev If the vault was not already deployed, initialize it.
-		if ($alreadyDeployed == false) {
-			PlugVaultSocket($vault).initialize($admin);
-
+		if (!$alreadyDeployed) {
 			/// @solidity memory-safe-assembly
-			// assembly {
-			// 	/// @dev Store the `$admin` argument.
-			// 	mstore(0x14, $admin)
-			// 	/// @dev Store the call data for the `initialize(address)` function.
-			// 	mstore(0x00, 0xc4d66de8000000000000000000000000)
-			// 	if iszero(
-			// 		call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)
-			// 	) {
-			// 		returndatacopy(mload(0x40), 0x00, returndatasize())
-			// 		revert(mload(0x40), returndatasize())
-			// 	}
-			// }
+			assembly {
+				/// @dev Store the `$admin` argument.
+				mstore(0x14, $admin)
+				/// @dev Store the call data for the `initialize(address)` function.
+				mstore(0x00, 0xc4d66de8000000000000000000000000)
+				if iszero(
+					call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)
+				) {
+					returndatacopy(mload(0x40), 0x00, returndatasize())
+					revert(mload(0x40), returndatasize())
+				}
+			}
 
 
 			/// @dev Emit an event for the creation of the Vault to make tracking

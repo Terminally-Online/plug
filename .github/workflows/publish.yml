@@ -29,6 +29,17 @@ jobs:
             - name: ✨ Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: ✨ Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+              with:
+                  version: nightly
+
+            - name: 🙏 Run Forge Build
+              run: |
+                  forge --version
+                  forge build --sizes
+              id: build
+
             - name: 📦 Build package
               run: pnpm build
 

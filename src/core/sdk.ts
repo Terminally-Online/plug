@@ -7,9 +7,9 @@ import {
 	WalletClient
 } from 'viem'
 
-import { Plug } from '@/core/plug'
+import { Plug } from '@/src/core/plug'
 
-import { TypedDataToKeysWithLivePair } from '../lib/types'
+import { TypedDataToKeysWithLivePair } from '../../lib/types'
 
 export class PlugSDK<
 	C extends WalletClient,

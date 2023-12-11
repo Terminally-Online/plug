@@ -1,6 +1,8 @@
-import hre from 'hardhat'
+import { createWalletClient, getContract, http } from 'viem'
 
-import { PlugSDK } from '../core/sdk'
+import { PlugSDK } from '@/src/core/sdk'
+
+import { mainnet } from 'viem/chains'
 
 const RUN = false
 
@@ -34,8 +36,11 @@ export default async function () {
 		]
 	} as const
 
-	const contract = await hre.viem.deployContract(name)
-	const [owner] = await hre.viem.getWalletClients()
+	const contract = getContract({ address: '0x0', abi: [] })
+	const owner = createWalletClient({
+		chain: mainnet,
+		transport: http()
+	})
 
 	// * Create the util with the debug types.
 	const util = new PlugSDK(name, version, 1, DEBUG_TYPES, contract)
@@ -44,26 +49,26 @@ export default async function () {
 	//   though we are cannot sign it.
 	util.build('Person', {
 		name: 'Bob',
-		wallet: owner.account.address
+		wallet: '0x0'
 	})
 
 	// @ts-expect-error - SHOULD_FAIL is not a valid type.
 	await util.sign(owner, 'SHOULD_FAIL', {
 		name: 'Bob',
-		wallet: owner.account.address
+		wallet: '0x0'
 	})
 
 	// * Can sign mail.
 	const mail = await util.sign(owner, 'Mail', {
-		from: { name: 'Bob', wallet: owner.account.address },
-		to: { name: 'Alice', wallet: owner.account.address },
+		from: { name: 'Bob', wallet: '0x0' },
+		to: { name: 'Alice', wallet: '0x0' },
 		contents: 'Hello, world!'
 	})
 
 	// * Cannot create an intent with fields that do not belong.
 	await util.sign(owner, 'Mail', {
-		from: { name: 'Bob', wallet: owner.account.address },
-		to: { name: 'Alice', wallet: owner.account.address },
+		from: { name: 'Bob', wallet: '0x0' },
+		to: { name: 'Alice', wallet: '0x0' },
 		contents: 'Hello, world!',
 		// @ts-expect-error - Doesnt exist on Mail.
 		mail: []
@@ -73,10 +78,10 @@ export default async function () {
 
 	// * Can create another type that references the mail type.
 	const email = await util.sign(owner, 'Email', {
-		from: { name: 'Bob', wallet: owner.account.address },
+		from: { name: 'Bob', wallet: '0x0' },
 		to: [
-			{ name: 'Alice', wallet: owner.account.address },
-			{ name: 'Charlie', wallet: owner.account.address }
+			{ name: 'Alice', wallet: '0x0' },
+			{ name: 'Charlie', wallet: '0x0' }
 		],
 		mail: [mail.intent]
 	})

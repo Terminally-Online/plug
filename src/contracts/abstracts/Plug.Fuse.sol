@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.23;
 
 import {PlugTypesLib} from '../abstracts/Plug.Types.sol';
 import {IFuse} from '../interfaces/IFuse.sol';
