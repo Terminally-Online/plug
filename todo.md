@@ -13,11 +13,26 @@
 
     - Protocol:
 
-      - [ ] Deprecate the inclusion of delegatable functionality.
-            NOTE: An interesting thing that has arisen out of the recent app development is that "delegated" permissions really isn't the explicit intent of the protocol anymore.
-            NOTE: Previously objects were designed to be highly permissible allowing the ability to combine multiple pins and plugs into a single signed batch. Realistically though, that is not only quite complicated in theory but introduces a significant level of technical overhead.
-            NOTE: Along with the introduced authentication complexity and low chance of that ever actually being used, it means that we are fighting an already prohibitive system to implement if-this-then-that-else logic.
-            NOTE: If we were to make this change it would mean we can remove the pin-based set of signatures.
+      - [x] Replace the use of constructors with an internal \_initializeSocket()
+      - [x] Vault implementation.
+            CONCLUSION: It turns out there still isn't a commonly agreed on vault implementation because they are designed to do very different things. - [ ] While we are not going to use ERC4626, it will be worthwhile to look into and determine if there are any features that need to be yoinked.
+      - [x] Factory implementation for vaults and other contracts.
+            CONCLUSION: This architecture was settled on because it allows us to reuse the same factory for all of our deployments while providing a simple interface that can be used for vanity address mining. While it is highly unlikely that we will do any address mining for a user, it will be worthwhile to do so for our fuses. Especially if we can get a cool vanity tag.
+      - [x] Finalize the implementation of changes to the verification implementation.
+        - [x] .forced was in the process of being implemented before I had to pivot and migrate away from the use of constructors.
+      - [x] Confirm the protocol is not vulnerable to the same kind of attack as: https://blog.openzeppelin.com/arbitrary-address-spoofing-vulnerability-erc2771context-multicall-public-disclosure
+            NOTE: While the architecture of the protocol in general is quite similar to what lead to the vulernability being possible, I do not think it is possible because we have force-resolved the sender at all times and never assume the response from a Fuse or execution can be trusted.
+            NOTE: Actually, I think we may also be vulnerable because you would just replace `multicall` with `plug`
+
+        - [ ] Update the sender to be stored in a relative hot slot on the contract during the processing of a transaction rather than appending it to the
+              NOTE: Right now the current model utilizes \_msgSender() by appending the sender to the calldata. Unfortunately, this is just like a walking footgun because you have to keep an immense amount of trust assumptions in mind:
+
+              - [ ] Transaction data that is not updated could be poisoned.
+              - [ ] The accepted context of receivers must be highly restrictive.
+              - [ ] Even with this implementation, the signer / sender cannot be recovered.
+                  NOTE: This has resulted in Fuses being limited in their capability because recovering the active sender is not straight forward whatsoever.
+
+      - [ ] Linearize the solving of the array.
 
     - Canvas:
 
@@ -27,7 +42,10 @@
             NOTE: We basically already have everything setup for this, we just need to move the dragging one component lower.
       - [ ] Pin appendages placed on the head of a pin.
             NOTE: The connector will always be on the right side for output, and left side for linked pins.
-            NOTE: Critical to note here is that the input of the following pin is not consumed. - [ ] Each pin will have a starter and ender connector. - [ ] If the item is a `then`, it will not have an ender connector as it is the "end". - [ ] Walk backwards through the linkage of a Sign pin to build the linearized loop.
+            NOTE: Critical to note here is that the input of the following pin is not consumed.
+        - [ ] Each pin will have a starter and ender connector.
+        - [ ] If the item is a `then`, it will not have an ender connector as it is the "end".
+        - [ ] Walk backwards through the linkage of a Sign pin to build the linearized loop.
       - [ ] Draw colored lines between the linked pins.
             NOTE: We will just use a random color.
       - [ ] Bezier curves that connect each Pin in a Plug.
@@ -61,13 +79,12 @@
           - [ ] Be able to delete it and select a group.
           - [ ] Drag selection.
 
-      - [ ] Right now you can add too many tabs for the tab manager to display.
-
-    - Templates:
+    - Templates & Tabs:
 
       - [x] Templates page
         - [x] Tab Manager
       - [ ] Move the tab logic into the database and use websockets to update everything.
+      - [ ] Right now you can add too many tabs for the tab manager to display.
 
     - Fuse Integration:
 
@@ -81,8 +98,9 @@
             CONCLUSION: Next through a huge fight when it came time and I am still not sure how I fixed it.
       - [x] Hand over dependency management to dependabot as we reach a state of not touching certain pieces anymore.
             CONCLUSION: Also got to include the submodules.
-      - [ ] Get landing page and app live in a staging environment.
+      - [x] Get landing page and app live in a staging environment.
             NOTE: This will not be a real staging environment, but it will be until we kill the landing app and move everything over which will happen come time of the first release.
+      - [ ] Get the websocket running in the staging environment.
 
     - [ ] Deprecate `packages/landing`
           NOTE: Do not do this until you are ready to roll out alpha because it replaces the early access signup with an enter app button.
