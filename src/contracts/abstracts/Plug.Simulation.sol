@@ -17,41 +17,39 @@ import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
 abstract contract PlugSimulation is PlugCore {
 	/**
 	 * @notice Simulate the entire bundle of LivePlugs.
-	 * @param $livePlugs The bundle of LivePlugs to process in the simulation.
-	 * @return results An array of results describing the status of the bundle.
+	 * @param $plugs The bundle of Plugs to process in the simulation.
+	 * @return $results An array of results describing the status of the bundle.
 	 */
-	function simulate(
-		PlugTypesLib.LivePlugs[] calldata $livePlugs
-	) public view virtual returns (PlugSimulationLib.Result[] memory) {
-		uint256 resultsLength = length($livePlugs);
+    function simulate(
+        PlugTypesLib.Plug[] calldata $plugs
+    ) public view virtual returns (PlugSimulationLib.Result[] memory $results) {
+        uint256 plugsLength = $plugs.length;
 
-		if (resultsLength == 0) return new PlugSimulationLib.Result[](0);
+        if (plugsLength == 0) return new PlugSimulationLib.Result[](0);
 
-		PlugSimulationLib.Result[]
-			memory results = new PlugSimulationLib.Result[](resultsLength);
+        PlugSimulationLib.Result[]
+        memory results = new PlugSimulationLib.Result[](plugsLength);
 
-		for (uint8 i; i < $livePlugs.length; i++) {
-			PlugTypesLib.LivePlugs calldata livePlugs = $livePlugs[i];
+        for (uint8 i; i < $plugs.length; i++) {
+            PlugTypesLib.Plug memory plug = $plugs[i];
 
-			for (uint8 j; j < livePlugs.plugs.plugs.length; j++) {
-				PlugTypesLib.Plug memory plug = livePlugs.plugs.plugs[j];
+            if(plug.pins.length == 0) continue;
 
-				for (uint8 k; k < plug.pins.length; k++) {
-					PlugTypesLib.LivePin memory livePin = plug.pins[k];
+            for (uint8 j; j < plug.pins.length; j++) {
+                PlugTypesLib.LivePin memory livePin = plug.pins[j];
 
-					for (uint8 l; l < livePin.pin.fuses.length; l++) {
-						results[results.length - resultsLength--] = simulate(
-							plug,
-							livePin,
-							livePin.pin.fuses[l]
-						);
-					}
-				}
-			}
-		}
+                if(plug.pins.length == 0) continue;
 
-		return results;
-	}
+                for (uint8 l; l < livePin.pin.fuses.length; l++) {
+                    $results[results.length - plugsLength--] = simulate(
+                        plug,
+                        livePin,
+                        livePin.pin.fuses[l]
+                    );
+                }
+            }
+        }
+    }
 
 	/**
 	 * @notice Simulate the execution of a bundle of live plugs through explicit indexes.

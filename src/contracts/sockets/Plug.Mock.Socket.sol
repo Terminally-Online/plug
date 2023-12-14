@@ -28,7 +28,7 @@ contract PlugMockSocket is PlugSocket {
 		/// @dev Initialize the Plug Socket.
 		_initializeSocket($name, $version);
 	}
-	
+
 	/**
 	 * @notice A mock function for testing the framework.
 	 * @param $message The message to echo.
@@ -44,7 +44,10 @@ contract PlugMockSocket is PlugSocket {
 	/**
 	 * @notice A mock function for testing the framework.
 	 */
-	function mutedEcho() external pure {
-		revert EchoMuted();
+	function mutedEcho(uint256 $echo) external pure returns (uint256 $slot) {
+        if($echo % 8 == 0) {
+            $slot = 1;
+        }
+        $slot = 2;
 	}
 }

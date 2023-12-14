@@ -26,10 +26,6 @@ abstract contract PlugCore is PlugTypes {
 	 *         current context. This is important for pins, as the
 	 *         message sender may be the framework itself, in which case
 	 *         the sender must be extracted from the data.
-	 * @dev Because of this function, when building on top of the framework,
-	 *      you should never use `msg.sender` directly, but instead use
-	 *      `_msgSender()`, which will correctly identify the sender whether
-	 *      it's the framework or an external account.
 	 * @return $sender The address of the message sender.
 	 */
 	function _msgSender() internal view virtual returns (address $sender) {
@@ -94,47 +90,49 @@ abstract contract PlugCore is PlugTypes {
 		);
 
 		/// @dev If the Fuse failed and is not optional, bubble up the revert.
-		if ($success == false && $fuse.forced == true)
-			$returnData.bubbleRevert();
+		if (!$success && $fuse.forced) $returnData.bubbleRevert();
 	}
 
 	/**
 	 * @notice Execution a built transaction.
 	 * @param $to The address of the contract to execute.
 	 * @param $data The data to execute on the contract.
-	 * @param $voltage The gas limit for the transaction.
+	 * @param $voltage The value to send with the transaction.
 	 * @param $sender The address of the sender.
-	 * @return $success Whether the transaction was successfully executed.
+	 * @return $result The return data of the transaction.
 	 */
 	function _execute(
 		address $to,
 		bytes memory $data,
 		uint256 $voltage,
 		address $sender
-	) internal returns (bool $success) {
+	) internal returns (bytes memory $result) {
 		/// @dev Build the final call data.
 		bytes memory full = abi.encodePacked($data, $sender);
 
 		/// @dev Warm up the slot for the return data.
-		bytes memory errorMessage;
+        bool success;
 
 		/// @dev Make the external call with a standard call.
-		($success, errorMessage) = address($to).call{gas: $voltage}(full);
+		(success, $result) = address($to).call{gas: gasleft(), value: $voltage}(full);
 
 		/// @dev If the call failed, bubble up the revert reason if possible.
-		if ($success == false) errorMessage.bubbleRevert();
+		if (!success) $result.bubbleRevert();
 	}
 
 	/**
-	 * @notice Execute a plugs of plugs
+	 * @notice Execute an array of plugs
 	 * @param $plugs The plugs of plugs to execute.
 	 * @param $sender The address of the sender.
-	 * @return $success Whether the transaction was successfully executed.
+	 * @return $results The return data of the plugs.
 	 */
 	function _plug(
 		PlugTypesLib.Plug[] calldata $plugs,
 		address $sender
-	) internal returns (bool $success) {
+	) internal returns (bytes[] memory $results) {
+        /// @dev Warm up the results array.
+        $results = new bytes[]($plugs.length);
+
 		/// @dev Load the stack.
 		uint256 i;
 		uint256 j;
@@ -145,35 +143,30 @@ abstract contract PlugCore is PlugTypes {
 		bytes32 pinHash;
 
 		/// @dev Load the structs into a hot reference.
-		PlugTypesLib.Plug memory intent;
+		PlugTypesLib.Plug memory plug;
 		PlugTypesLib.LivePin memory signedPin;
 		PlugTypesLib.Pin memory pin;
 		PlugTypesLib.Current memory current;
 
-		/// @dev Iterate over the plugs of plugs.
-		for (i; i < $plugs.length; ) {
-			/// @dev Load the intent from the plugs.
-			intent = $plugs[i];
+		/// @dev Iterate over the plugs.
+		for (i; i < $plugs.length; i++) {
+			/// @dev Load the plug from the plugs.
+			plug = $plugs[i];
 
 			/// @dev Reset the hot reference to the pinHash.
 			pinHash = 0x0;
 
-			/// @dev Load the transaction from the intent.
-			current = intent.current;
+			/// @dev Load the transaction from the plug.
+			current = plug.current;
 
-			require(
-				current.ground == address(this),
-				'PlugCore:invalid-intent-target'
-			);
-
-			/// @dev If there are no pins, this intent comes from the signer
-			if (intent.pins.length == 0) {
+			/// @dev If there are no pins, this plug comes from the signer
+			if (plug.pins.length == 0) {
 				canGrant = intendedSender = $sender;
 			} else {
 				/// @dev Iterate over the authority pins.
-				for (j = 0; j < intent.pins.length; j++) {
-					/// @dev Load the pin from the intent.
-					signedPin = intent.pins[j];
+				for (j = 0; j < plug.pins.length; j++) {
+					/// @dev Load the pin from the plug.
+					signedPin = plug.pins[j];
 
 					/// @dev Determine the signer of the pin.
 					pinSigner = getLivePinSigner(signedPin);
@@ -210,17 +203,13 @@ abstract contract PlugCore is PlugTypes {
 			/// @dev Verify the delegate at the end of the pin chain is the signer.
 			require(canGrant == $sender, 'PlugCore:invalid-signer');
 
-			/// @dev Execute the transaction.
-			$success = _execute(
-				current.ground,
-				current.data,
-				current.voltage,
-				intendedSender
-			);
-
-			unchecked {
-				++i;
-			}
+            /// @dev Execute the transaction.
+            $results[i] = _execute(
+                current.ground,
+                current.data,
+                current.voltage,
+                intendedSender
+            );
 		}
 	}
 }

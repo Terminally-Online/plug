@@ -8,14 +8,14 @@ import {INounsAuctionHouse} from '../../interfaces/nouns/INounsAuctionHouse.sol'
 import {NounsBidLib} from '../../libraries/nouns/Nouns.Bid.Lib.sol';
 
 contract NounsBidFuse is PlugFuse {
-	INounsAuctionHouse public immutable auctionHouse;
+	INounsAuctionHouse public immutable AUCTION_HOUSE;
 
 	/// @dev Keep track of the balances of each user.
 	mapping(address => uint256) public balances;
 
 	constructor(address $auctionHouse) {
 		/// @dev Initialize the Auction House and Nouns interfaces.
-		auctionHouse = INounsAuctionHouse($auctionHouse);
+		AUCTION_HOUSE = INounsAuctionHouse($auctionHouse);
 	}
 
 	function enforceFuse(
@@ -26,7 +26,7 @@ contract NounsBidFuse is PlugFuse {
 		(bool $settleUnsettled, address $bidder, uint256 $bid) = decode($live);
 
 		/// @dev Get the current state of the auction.
-		(, , , uint256 $endTime, address $winner, bool $settled) = auctionHouse
+		(, , , uint256 $endTime, address $winner, bool $settled) = AUCTION_HOUSE
 			.auction();
 
 		/// @dev Prevent the user from bidding on an auction that they
@@ -35,9 +35,8 @@ contract NounsBidFuse is PlugFuse {
 
 		/// @dev Prevent the user from bidding on an auction that has
 		///      not yet been settled.
-		if ($settled == false && $endTime <= block.timestamp)
-			if ($settleUnsettled == false)
-				revert NounsBidLib.InsufficientSettlement();
+		if (!$settled && $endTime <= block.timestamp && !$settleUnsettled)
+			revert NounsBidLib.InsufficientSettlement();
 
 		/// @dev Make sure the user has enough money to bid.
 		if (balances[$bidder] < $bid) revert NounsBidLib.InsufficientBalance();

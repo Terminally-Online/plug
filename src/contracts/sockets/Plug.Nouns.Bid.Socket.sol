@@ -26,7 +26,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 	using BytesLib for bytes;
 
 	/// @dev Accessible interface to the active Nouns Auction House.
-	INounsToken public immutable nouns;
+	INounsToken public immutable NOUN;
 
 	/// @dev The hippest way to reference ETH with a token address.
 	address private constant DOLPHIN_ETH =
@@ -35,7 +35,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 	/// @dev On bid execution, 0.0002% of the bid is sent to the protocol.
 	/// @notice In effect, that means it costs < $5 to prevent thousands
 	///         in lost economic value and/or collection appraisal (RFV).
-	uint256 private constant protocolFee = 2;
+	uint256 private constant PROTOCOL_FEE = 2;
 
 	/// @dev Details of which Noun is active.
 	uint256 currentNoun;
@@ -49,7 +49,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 		address $owner
 	) NounsBidFuse($auctionHouse) {
 		/// @dev Initialize the Auction House and Nouns interfaces.
-		nouns = INounsToken($nouns);
+		NOUN = INounsToken($nouns);
 
 		/// @dev Initialize the owner.
 		_initializeOwner($owner);
@@ -58,7 +58,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 		_initializeSocket('NounsBidSocket', '0.0.1');
 	}
 
-	receive() external payable {
+	receive() external payable virtual override {
 		_receive();
 	}
 
@@ -67,7 +67,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 	 */
 	function _receive() internal {
 		/// @dev Prevent receiving funds from anyone other than the Auction House.
-		if (msg.sender == address(auctionHouse)) {
+		if (msg.sender == address(AUCTION_HOUSE)) {
 			/// @dev Determine who the last bidder was.
 			address bidder = bids[currentNoun];
 
@@ -98,34 +98,34 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 	 */
 	function use(uint256 $value) internal {
 		/// @dev Get the current state of the auction.
-		(uint256 $nounId, , , uint256 $endTime, , bool $settled) = auctionHouse
+		(uint256 $nounId, , , uint256 $endTime, , bool $settled) = AUCTION_HOUSE
 			.auction();
 
 		/// @dev If the auction has concluded and a new auction has not
 		///      been scheduled, then settle the active auction and create one.
-		if ($endTime <= block.timestamp && $settled == false) {
-			auctionHouse.settleCurrentAndCreateNewAuction();
+		if ($endTime <= block.timestamp && !$settled) {
+			AUCTION_HOUSE.settleCurrentAndCreateNewAuction();
 
 			/// @dev Get the current state of the active auction.
-			($nounId, , , , , ) = auctionHouse.auction();
+			($nounId, , , , , ) = AUCTION_HOUSE.auction();
 		}
 
 		/// @dev If a Noun was won, but has not yet been transferred to
 		///      to the winner, then transfer it to the winner.
 		if ($nounId > currentNoun && bids[currentNoun] != address(0))
-			take(address(nouns), currentNoun);
+			take(address(NOUN), currentNoun);
 
 		/// @dev Update the balance of the sender.
 		balances[_msgSender()] -= $value;
 
 		/// @dev Update the value that is being bid.
-		uint256 bidValue = $value - ($value / protocolFee);
+		uint256 bidValue = $value - ($value / PROTOCOL_FEE);
 
 		/// @dev Account for the protocol fee.
 		balances[owner()] += $value - bidValue;
 
 		/// @dev Bid on the auction.
-		auctionHouse.createBid{value: bidValue}($nounId);
+		AUCTION_HOUSE.createBid{value: bidValue}($nounId);
 
 		/// @dev Track the current noun.
 		currentNoun = $nounId;
@@ -158,9 +158,9 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 			emit NounsBidLib.Taken(msg.sender, _msgSender(), $asset, $value);
 		}
 		/// @dev If the asset is Nouns, then transfer the Nouns to the sender.
-		else if ($asset == address(nouns)) {
+		else if ($asset == address(NOUN)) {
 			/// @dev Confirm that the auction has been settled to this contract.
-			if (nouns.ownerOf($value) != address(this))
+			if (NOUN.ownerOf($value) != address(this))
 				revert NounsBidLib.InsufficientOwnership();
 
 			address winner = bids[$value];
@@ -168,7 +168,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
 			/// @dev Remove the winning bid from circulation.
 			delete bids[$value];
 
-			nouns.transferFrom(address(this), winner, $value);
+			NOUN.transferFrom(address(this), winner, $value);
 
 			emit NounsBidLib.Taken(_msgSender(), winner, $asset, $value);
 		}

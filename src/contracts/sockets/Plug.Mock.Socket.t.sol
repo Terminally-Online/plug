@@ -42,9 +42,8 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
 		mock.emptyEcho();
     }
 
-    function testFail_MutedEcho() public {
-		vm.expectRevert('EchoMuted');
-		mock.mutedEcho();
+    function test_MutedEcho(uint256 $echo) public view {
+		mock.mutedEcho($echo);
     }
 
     function test_GetLivePlugsSigner() public {
@@ -109,7 +108,7 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         );
         PlugTypesLib.Current memory current = PlugTypesLib.Current({
             ground: address(mock),
-            voltage: 21000,
+            voltage: 0,
             data: encodedTransaction
         });
         PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({
@@ -135,9 +134,7 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         });
         address plugsSigner = mock.getLivePlugsSigner(livePlugs);
         assertEq(plugsSigner, signer);
-        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
-        livePlugsArray[0] = livePlugs;
-        mock.plug(livePlugsArray);
+        mock.plug(livePlugs);
     }
 
 
@@ -173,8 +170,6 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         });
         address plugsSigner = mock.getLivePlugsSigner(livePlugs);
         assertEq(plugsSigner, signer);
-        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
-        livePlugsArray[0] = livePlugs;
-        mock.plug(livePlugsArray);
+        mock.plug(livePlugs);
     }
 }

@@ -62,14 +62,14 @@ contract NounsTraitFuse is PlugFuse, Ownable {
 	///         the function to be called by decoding the selector from the live wire.
 	address art;
 	/// @dev The ellusive Noun token.
-	INoun noun;
+	INoun NOUN;
 	/// @dev The auction facilitator for Nouns.
-	INounsAuctionHouse auctionHouse;
+	INounsAuctionHouse AUCTION_HOUSE;
 
 	constructor(INoun $noun, INounsAuctionHouse $auctionHouse, address $art) {
 		/// @dev Prepare the inferaces.
-		noun = $noun;
-		auctionHouse = $auctionHouse;
+		NOUN = $noun;
+		AUCTION_HOUSE = $auctionHouse;
 
 		/// @dev Set the scope of the Fuse.
 		art = $art;
@@ -137,10 +137,10 @@ contract NounsTraitFuse is PlugFuse, Ownable {
 		bytes32 $selector
 	) public view virtual returns (bytes32 $traitHash) {
 		/// @dev Get the current state of the auction.
-		(uint256 nounId, , , , , ) = auctionHouse.auction();
+		(uint256 nounId, , , , , ) = AUCTION_HOUSE.auction();
 
 		/// @dev Retrieve the metadata seeds of the current Noun.
-		INoun.Seed memory seeds = noun.seeds(nounId);
+		INoun.Seed memory seeds = NOUN.seeds(nounId);
 
 		/// @dev Get the seed for the specified trait from the Seed struct.
 		uint256 traitSeed;

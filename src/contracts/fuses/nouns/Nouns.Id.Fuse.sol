@@ -30,10 +30,10 @@ contract NounsIdFuse is PlugFuse {
 	using BytesLib for bytes;
 
 	/// @dev The auction facilitator for Nouns.
-	INounsAuctionHouse auctionHouse;
+	INounsAuctionHouse AUCTION_HOUSE;
 
 	constructor(INounsAuctionHouse $auctionHouse) {
-		auctionHouse = $auctionHouse;
+		AUCTION_HOUSE = $auctionHouse;
 	}
 
 	/**
@@ -45,7 +45,7 @@ contract NounsIdFuse is PlugFuse {
 		bytes32
 	) public view override returns (bytes memory $callback) {
 		/// @dev Get the current state of the auction.
-		(uint256 nounId, , , , , ) = auctionHouse.auction();
+		(uint256 nounId, , , , , ) = AUCTION_HOUSE.auction();
 
 		require(nounId == decode($live), 'NounsTokenId:invalid-noun-id');
 

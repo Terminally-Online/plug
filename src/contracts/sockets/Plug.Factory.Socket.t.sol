@@ -21,8 +21,8 @@ contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus  {
 		factory = new PlugFactorySocket('PlugMockSocket', '0.0.0');
 	}
 
-	function test_DeployDeterministic(uint256) public { 
-		vm.deal(address(this), 100 ether);	
+	function test_DeployDeterministic(uint256) public {
+		vm.deal(address(this), 100 ether);
 		address owner = _randomNonZeroAddress();
 		uint256 initialValue = _random() % 100 ether;
 		bytes32 salt = _random() % 8 == 0 ? bytes32(_random()) : bytes32(uint256(uint96(_random())));
@@ -30,19 +30,19 @@ contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus  {
 		bool alreadyDeployed;
 		address vault;
 
-		if(uint256(salt) >> 96 != uint160(owner) && uint256(salt) >> 96 != 0) { 
+		if(uint256(salt) >> 96 != uint160(owner) && uint256(salt) >> 96 != 0) {
 			vm.expectRevert(LibClone.SaltDoesNotStartWith.selector);
 			(alreadyDeployed, vault) = factory.deploy{ value: initialValue }(address(implementation), owner, salt);
 			return;
-		} else { 
+		} else {
 			(alreadyDeployed, vault) = factory.deploy{ value: initialValue }(address(implementation), owner, salt);
 		}
 
 		assertEq(address(vault).balance, initialValue);
-		assertEq(PlugVaultSocket(payable(vault)).owner(), owner);
+		assertEq(PlugVaultSocket(payable(vault)).isSigner(owner), true);
 	}
 
-	function test_RepeatedDeployDeterministic() public { 
+	function test_RepeatedDeployDeterministic() public {
 		bytes32 salt = bytes32(_random() & uint256(type(uint96).max));
 		address expectedInstance = factory.getAddress(address(implementation), salt);
 		(, address instance) = factory.deploy{ value: 123}(address(implementation), address(this), salt);
@@ -55,7 +55,7 @@ contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus  {
 		assertEq(instance, expectedInstance);
 	}
 
-	function test_RepeatedDeployDeterministic(uint256) public { 
+	function test_RepeatedDeployDeterministic(uint256) public {
 		address owner = _randomNonZeroAddress();
 		bytes32 salt =
 			bytes32((_random() & uint256(type(uint96).max)) | (uint256(uint160(owner)) << 96));
@@ -74,7 +74,7 @@ contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus  {
 		assertEq(expectedInstance, instance);
 	}
 
-	function test_InitCodeHash() public view { 
+	function test_InitCodeHash() public view {
 		factory.initCodeHash(address(implementation));
 	}
 }
