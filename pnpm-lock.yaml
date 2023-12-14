@@ -27,7 +27,7 @@ devDependencies:
     version: 0.6.4
   '@trivago/prettier-plugin-sort-imports':
     specifier: ^4.2.1
-    version: 4.3.0(prettier@3.1.0)
+    version: 4.3.0(prettier@3.1.1)
   '@types/chai':
     specifier: ^4.3.11
     version: 4.3.11
@@ -62,8 +62,8 @@ devDependencies:
     specifier: ^4.1.5
     version: 4.1.5
   prettier:
-    specifier: ^3.1.0
-    version: 3.1.0
+    specifier: ^3.1.1
+    version: 3.1.1
   solhint:
     specifier: ^4.0.0
     version: 4.0.0(typescript@5.3.3)
@@ -1189,7 +1189,7 @@ packages:
     resolution: {integrity: sha512-uMNHgkHN65m1eU+WRX0buWQ3nnzqqdG+cC+0iTwkuJBouJskYQjQ63bzWAs3GP6WM/ergYWXCEI8+kpRwMPuxA==}
     hasBin: true
     dependencies:
-      '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.1.0)
+      '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.1.1)
       abitype: 0.10.3(typescript@5.3.3)(zod@3.22.4)
       bundle-require: 4.0.2(esbuild@0.19.8)
       commander: 11.1.0
@@ -1200,7 +1200,7 @@ packages:
       fs-extra: 11.2.0
       pathe: 1.1.1
       picocolors: 1.0.0
-      prettier: 3.1.0
+      prettier: 3.1.1
       solady: 0.0.145
       zod: 3.22.4
     transitivePeerDependencies:
@@ -1776,7 +1776,7 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@trivago/prettier-plugin-sort-imports@4.3.0(prettier@3.1.0):
+  /@trivago/prettier-plugin-sort-imports@4.3.0(prettier@3.1.1):
     resolution: {integrity: sha512-r3n0onD3BTOVUNPhR4lhVK4/pABGpbA7bW3eumZnYdKaHkf1qEC+Mag6DPbGNuuh0eG8AaYj+YqmVHSiGslaTQ==}
     peerDependencies:
       '@vue/compiler-sfc': 3.x
@@ -1791,7 +1791,7 @@ packages:
       '@babel/types': 7.17.0
       javascript-natural-sort: 0.7.1
       lodash: 4.17.21
-      prettier: 3.1.0
+      prettier: 3.1.1
     transitivePeerDependencies:
       - supports-color
 
@@ -4937,8 +4937,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@3.1.0:
-    resolution: {integrity: sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==}
+  /prettier@3.1.1:
+    resolution: {integrity: sha512-22UbSzg8luF4UuZtzgiUOfcGM8s4tjBv6dJRT7j275NXsy2jb4aJa4NNveul5x4eqlF1wuhuR2RElK71RvmVaw==}
     engines: {node: '>=14'}
     hasBin: true
 
