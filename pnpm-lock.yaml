@@ -12,8 +12,8 @@ dependencies:
     specifier: ^0.10.3
     version: 0.10.3(typescript@5.3.3)(zod@3.22.4)
   solady:
-    specifier: ^0.0.149
-    version: 0.0.149
+    specifier: ^0.0.150
+    version: 0.0.150
   viem:
     specifier: ^1.19.14
     version: 1.19.14(typescript@5.3.3)
@@ -5439,8 +5439,8 @@ packages:
     resolution: {integrity: sha512-A6DORrEb3BXqcwxltXPjDeFNFhRcat06SXK2Vl+8zDeUnXX3+06cVkZNyeqqTHeaeqM9XSCKJNop5S2fpS6sAQ==}
     dev: false
 
-  /solady@0.0.149:
-    resolution: {integrity: sha512-1uKAB6yynao6Rk74a9Nd+6cHEf/XCQzfPXMKYiNymNgT85W0kURqcPSUPvrzcv9ui2PhQZc12BpA2uIzEph+mg==}
+  /solady@0.0.150:
+    resolution: {integrity: sha512-X9INNf2hzEm+qDFWk8zjzD4/ZNIdYYuDiI8i2BAc3RO3ICJ/srUnfOCP/RDTpD6BYVChU0Mr3QWGqWtHXfYpMw==}
     dev: false
 
   /solc@0.7.3(debug@4.3.4):
