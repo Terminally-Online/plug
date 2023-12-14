@@ -13,26 +13,8 @@
 
     - Protocol:
 
-      - [x] Replace the use of constructors with an internal \_initializeSocket()
-      - [x] Vault implementation.
-            CONCLUSION: It turns out there still isn't a commonly agreed on vault implementation because they are designed to do very different things. - [ ] While we are not going to use ERC4626, it will be worthwhile to look into and determine if there are any features that need to be yoinked.
-      - [x] Factory implementation for vaults and other contracts.
-            CONCLUSION: This architecture was settled on because it allows us to reuse the same factory for all of our deployments while providing a simple interface that can be used for vanity address mining. While it is highly unlikely that we will do any address mining for a user, it will be worthwhile to do so for our fuses. Especially if we can get a cool vanity tag.
-      - [x] Finalize the implementation of changes to the verification implementation.
-        - [x] .forced was in the process of being implemented before I had to pivot and migrate away from the use of constructors.
-      - [x] Confirm the protocol is not vulnerable to the same kind of attack as: https://blog.openzeppelin.com/arbitrary-address-spoofing-vulnerability-erc2771context-multicall-public-disclosure
-            NOTE: While the architecture of the protocol in general is quite similar to what lead to the vulernability being possible, I do not think it is possible because we have force-resolved the sender at all times and never assume the response from a Fuse or execution can be trusted.
-            NOTE: Actually, I think we may also be vulnerable because you would just replace `multicall` with `plug`
-
-        - [ ] Update the sender to be stored in a relative hot slot on the contract during the processing of a transaction rather than appending it to the
-              NOTE: Right now the current model utilizes \_msgSender() by appending the sender to the calldata. Unfortunately, this is just like a walking footgun because you have to keep an immense amount of trust assumptions in mind:
-
-              - [ ] Transaction data that is not updated could be poisoned.
-              - [ ] The accepted context of receivers must be highly restrictive.
-              - [ ] Even with this implementation, the signer / sender cannot be recovered.
-                  NOTE: This has resulted in Fuses being limited in their capability because recovering the active sender is not straight forward whatsoever.
-
-      - [ ] Linearize the solving of the array.
+      - [ ] Add a passthrough lane to the fuses so that data can be passed through them.
+            NOTE: This will be a sidecar to the active data of the fuse so that it can maintain its conditions while maybe manipulating the pass through.
 
     - Canvas:
 
@@ -145,6 +127,16 @@ RELEASING:
         - [x] Fuse development.
           - [x] Add noun trait bid.
           - [x] Expose the contracts as exports from @nftchance/plug-core
+        - [x] Replace the use of constructors with an internal \_initializeSocket()
+        - [x] Vault implementation.
+              CONCLUSION: It turns out there still isn't a commonly agreed on vault implementation because they are designed to do very different things. - [ ] While we are not going to use ERC4626, it will be worthwhile to look into and determine if there are any features that need to be yoinked.
+        - [x] Factory implementation for vaults and other contracts.
+              CONCLUSION: This architecture was settled on because it allows us to reuse the same factory for all of our deployments while providing a simple interface that can be used for vanity address mining. While it is highly unlikely that we will do any address mining for a user, it will be worthwhile to do so for our fuses. Especially if we can get a cool vanity tag.
+        - [x] Finalize the implementation of changes to the verification implementation.
+          - [x] .forced was in the process of being implemented before I had to pivot and migrate away from the use of constructors.
+        - [x] Confirm the protocol is not vulnerable to the same kind of attack as: https://blog.openzeppelin.com/arbitrary-address-spoofing-vulnerability-erc2771context-multicall-public-disclosure
+              NOTE: While the architecture of the protocol in general is quite similar to what lead to the vulernability being possible, I do not think it is possible because we have force-resolved the sender at all times and never assume the response from a Fuse or execution can be trusted.
+              NOTE: Actually, I think we may also be vulnerable because you would just replace `multicall` with `plug`
 
       - Core app / api:
 
