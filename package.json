@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@prb/test": "^0.6.4",
     "@trivago/prettier-plugin-sort-imports": "^4.2.1",
     "@types/chai": "^4.3.11",
     "@types/chai-as-promised": "^7.1.6",
@@ -28,13 +29,11 @@
     "dedent": "^1.5.1",
     "execa": "^8.0.1",
     "fs-extra": "^11.2.0",
-    "hardhat": "^2.19.2",
-    "hardhat-gas-reporter": "^1.0.8",
     "nodemon": "^3.0.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.1.0",
+    "solhint": "^4.0.0",
     "solidity-coverage": "^0.8.0",
-    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.0.1",
     "tsx": "^4.6.2",
@@ -42,10 +41,8 @@
   },
   "dependencies": {
     "@nftchance/plug-types": "^0.8.0",
-    "@prb/test": "^0.6.4",
     "abitype": "^0.10.3",
     "solady": "^0.0.146",
-    "solhint": "^4.0.0",
     "viem": "^1.19.11"
   },
   "repository": {
