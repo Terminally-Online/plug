@@ -24,7 +24,6 @@ contract PlugClampFuseTest is PRBTest, StdCheats, TestPlus {
             voltage: 0,
             data: abi.encodePacked(uint256(51))
         }), bytes32(0));
-
         assertEq(abi.decode(pass, (uint256)), 50);
     }
 }
