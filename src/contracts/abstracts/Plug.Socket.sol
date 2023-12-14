@@ -2,11 +2,9 @@
 
 pragma solidity 0.8.23;
 
-import {PlugSimulation} from './Plug.Simulation.sol';
-import {Receiver} from 'solady/src/accounts/Receiver.sol';
-import {IPlug} from '../interfaces/IPlug.sol';
-
-import {PlugTypesLib} from './Plug.Types.sol';
+import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
+import { PlugSimulation } from "./Plug.Simulation.sol";
+import { PlugTypesLib } from "./Plug.Types.sol";
 
 /**
  * @title Plug
@@ -17,13 +15,11 @@ import {PlugTypesLib} from './Plug.Types.sol';
  * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
  * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract PlugSocket is PlugSimulation, Receiver, IPlug {
-	/**
-	 * See {IPlug-plug}.
-	 */
-	function plug(
-		PlugTypesLib.LivePlugs calldata $livePlugs
-	) external payable returns (bytes[] memory $results) {
+contract PlugSocket is PlugSocketInterface, PlugSimulation {
+    /**
+     * See {IPlug-plug}.
+     */
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable returns (bytes[] memory $results) {
         /// @dev Determine who signed the intent.
         address intentSigner = getLivePlugsSigner($livePlugs);
 
@@ -38,16 +34,14 @@ contract PlugSocket is PlugSimulation, Receiver, IPlug {
 
         /// @dev Invoke the plugs.
         $results = _plug(plugs.plugs, intentSigner);
-	}
+    }
 
-	/**
-	 * See {IPlug-plugContract}.
-	 */
-	function plugContract(
-		PlugTypesLib.Plug[] calldata $plugs
-	) external payable returns (bytes[] memory $result) {
-		$result = _plug($plugs, msg.sender);
-	}
+    /**
+     * See {IPlug-plugContract}.
+     */
+    function plugContract(PlugTypesLib.Plug[] calldata $plugs) external payable returns (bytes[] memory $result) {
+        $result = _plug($plugs, msg.sender);
+    }
 
     /**
      * @notice Confirm that signer of the intent has permission to declare
@@ -55,5 +49,5 @@ contract PlugSocket is PlugSimulation, Receiver, IPlug {
      * @dev If you would like to limit the available signers override this
      *      function in your contract with the additional logic.
      */
-    function _enforceSigner(address $signer) internal view virtual {}
+    function _enforceSigner(address $signer) internal view virtual { }
 }

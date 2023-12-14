@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.23;
 
-import {PlugCore} from './Plug.Core.sol';
-import {PlugTypesLib} from './Plug.Types.sol';
-import {IFuse} from '../interfaces/IFuse.sol';
-import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
+import { PlugCore } from "./Plug.Core.sol";
+import { PlugTypesLib } from "./Plug.Types.sol";
+import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugSimulationLib } from "../libraries/Plug.Simulation.Lib.sol";
 
 /**
  * @title PlugSimulation
@@ -15,244 +15,72 @@ import {PlugSimulationLib} from '../libraries/Plug.Simulation.Lib.sol';
  * @author @nftchance (chance@utc24.io)
  */
 abstract contract PlugSimulation is PlugCore {
-	/**
-	 * @notice Simulate the entire bundle of LivePlugs.
-	 * @param $plugs The bundle of Plugs to process in the simulation.
-	 * @return $results An array of results describing the status of the bundle.
-	 */
-    function simulate(
-        PlugTypesLib.Plug[] calldata $plugs
-    ) public view virtual returns (PlugSimulationLib.Result[] memory $results) {
+    /**
+     * @notice Simulate the entire bundle of LivePlugs.
+     * @param $plugs The bundle of Plugs to process in the simulation.
+     * @return $results An array of results describing the status of the bundle.
+     */
+    function simulate(PlugTypesLib.Plug[] calldata $plugs)
+        public
+        view
+        virtual
+        returns (PlugSimulationLib.Result[] memory $results)
+    {
         uint256 plugsLength = $plugs.length;
 
         if (plugsLength == 0) return new PlugSimulationLib.Result[](0);
 
-        PlugSimulationLib.Result[]
-        memory results = new PlugSimulationLib.Result[](plugsLength);
+        PlugSimulationLib.Result[] memory results = new PlugSimulationLib.Result[](plugsLength);
 
         for (uint8 i; i < $plugs.length; i++) {
             PlugTypesLib.Plug memory plug = $plugs[i];
 
-            if(plug.pins.length == 0) continue;
+            if (plug.pins.length == 0) continue;
 
             for (uint8 j; j < plug.pins.length; j++) {
-                PlugTypesLib.LivePin memory livePin = plug.pins[j];
+                PlugTypesLib.Pin memory pin = plug.pins[j].pin;
 
-                if(plug.pins.length == 0) continue;
+                if (pin.fuses.length == 0) continue;
 
-                for (uint8 l; l < livePin.pin.fuses.length; l++) {
-                    $results[results.length - plugsLength--] = simulate(
+                /// @dev Get the pin hash from the live pin.
+                bytes32 pinHash = getLivePinHash(plug.pins[j]);
+
+                for (uint8 l; l < pin.fuses.length; l++) {
+                    (plug.current.data, $results[results.length - plugsLength--]) = simulate(
+                        pinHash,
                         plug,
-                        livePin,
-                        livePin.pin.fuses[l]
+                        pin.fuses[l]
                     );
                 }
             }
         }
     }
 
-	/**
-	 * @notice Simulate the execution of a bundle of live plugs through explicit indexes.
-	 * @param $indexes The indexes of the plugs to simulate.
-	 *        uint8 | 00 | livePlugsIndex
-	 *        uint8 | 08 | plugsIndex
-	 *        uint8 | 16 | pinIndex
-	 *        uint8 | 24 | fuseIndex
-	 * @param $livePlugs The live plugs to simulate.
-	 * @return $results The results of the simulation.
-	 */
-	function simulate(
-		uint32[] memory $indexes,
-		PlugTypesLib.LivePlugs[] calldata $livePlugs
-	) public view virtual returns (PlugSimulationLib.Result[] memory) {
-		if ($indexes.length == 0) return new PlugSimulationLib.Result[](0);
+    /**
+     * @notice Simulate the execution of a specific Plug Fuse.
+     * @param $pinHash The hash of the pin to simulate.
+     * @param $plug The plug to simulate.
+     * @param $fuse The fuse to simulate.
+     * @return $through The data that was passed through the fuse.
+     * @return $result The result of the simulation.
+     */
+    function simulate(
+        bytes32 $pinHash,
+        PlugTypesLib.Plug memory $plug,
+        PlugTypesLib.Fuse memory $fuse
+    )
+        public
+        view
+        virtual
+        returns (bytes memory $through, PlugSimulationLib.Result memory $result)
+    {
+        /// @Dev Slot to ensure the simulation is successful.
+        bool success;
 
-		PlugSimulationLib.Result[]
-			memory $results = new PlugSimulationLib.Result[]($indexes.length);
+        (success, $through) = address($fuse.neutral).staticcall(
+            abi.encodeWithSelector(PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $plug.current, $pinHash)
+        );
 
-		for (uint256 i; i < $indexes.length; ) {
-			uint32 index = $indexes[i];
-
-			PlugTypesLib.Plug memory plug = $livePlugs[uint8(index)]
-				.plugs
-				.plugs[uint8(index >> 8)];
-			PlugTypesLib.LivePin memory livePin = plug.pins[uint8(index >> 16)];
-
-			$results[i] = simulate(
-				plug,
-				livePin,
-				livePin.pin.fuses[uint8(index >> 24)]
-			);
-
-			unchecked {
-				++i;
-			}
-		}
-
-		return $results;
-	}
-
-	/**
-	 * @notice Simulate the execution of a specific Plug Fuse.
-	 * @param $plug The plug to simulate.
-	 * @param $livePin The live pin to simulate.
-	 * @param $fuse The fuse to simulate.
-	 * @return $result The result of the simulation.
-	 */
-	function simulate(
-		PlugTypesLib.Plug memory $plug,
-		PlugTypesLib.LivePin memory $livePin,
-		PlugTypesLib.Fuse memory $fuse
-	) public view virtual returns (PlugSimulationLib.Result memory $result) {
-		bytes32 pinHash = getLivePinHash($livePin);
-
-		(bool $success, bytes memory $callback) = address($fuse.neutral)
-			.staticcall(
-				abi.encodeWithSelector(
-					IFuse($fuse.neutral).enforceFuse.selector,
-					$fuse.live,
-					$plug.current,
-					pinHash
-				)
-			);
-
-		$result = PlugSimulationLib.Result({
-			success: $success,
-			callback: $callback
-		});
-	}
-
-	/**
-	 * @notice Overloaded implementation of indexes to push automatic resolution for
-	 *         the length of the bundle rather than building it "offchain" before calling.
-	 * @param $plugs The raw plugs to simulate.
-	 * @return $indexes The indexes of the plugs to simulate.
-	 *         uint8 | 00 | livePlugsIndex
-	 *         uint8 | 08 | plugsIndex
-	 *         uint8 | 16 | pinIndex
-	 *         uint8 | 24 | fuseIndex
-	 */
-	function indexes(
-		PlugTypesLib.Plug[] calldata $plugs
-	) public view virtual returns (uint24[] memory) {
-		return indexes(uint8(length($plugs)), $plugs);
-	}
-
-	/**
-	 * @notice Get the indexes of the plugs to simulate.
-	 * @param $fusesLength The length of the total number of fuses in this Plug bundle.
-	 * @param $plugs The raw plugs to simulate.
-	 * @return $indexes The indexes of the plugs to simulate.
-	 *         uint8 | 00 | livePlugsIndex
-	 *         uint8 | 08 | plugsIndex
-	 *         uint8 | 16 | pinIndex
-	 *         uint8 | 24 | fuseIndex
-	 */
-	function indexes(
-		uint8 $fusesLength,
-		PlugTypesLib.Plug[] calldata $plugs
-	) public view virtual returns (uint24[] memory) {
-		if ($fusesLength == 0) return new uint24[](0);
-
-		uint24[] memory fuseIndexes = new uint24[]($fusesLength);
-
-		for (uint8 i; i < $plugs.length; i++) {
-			PlugTypesLib.Plug memory plug = $plugs[i];
-
-			for (uint8 j; j < plug.pins.length; j++) {
-				PlugTypesLib.Pin memory pin = plug.pins[j].pin;
-
-				for (uint8 k; k < pin.fuses.length; k++) {
-					fuseIndexes[fuseIndexes.length - $fusesLength--] = uint24(
-						(k << 16) | (j << 8) | (i << 0)
-					);
-				}
-			}
-		}
-
-		return fuseIndexes;
-	}
-
-	/**
-	 * @notice Overloaded implementation of indexes to push automatic resolution for
-	 *         the length of the bundle rather than building it "offchain" before calling.
-	 * @param $livePlugs The live plugs to simulate.
-	 * @return $indexesArray The indexes of the plugs to simulate.
-	 *         uint8 | 00 | livePlugsIndex
-	 *         uint8 | 08 | plugsIndex
-	 *         uint8 | 16 | pinIndex
-	 *         uint8 | 24 | fuseIndex
-	 */
-	function indexes(
-		PlugTypesLib.LivePlugs[] calldata $livePlugs
-	) public view virtual returns (uint32[] memory) {
-		return indexes(length($livePlugs), $livePlugs);
-	}
-
-	/**
-	 * @notice Get the indexes of the plugs to simulate.
-	 * @param $livePlugs The live plugs to simulate.
-	 * @return $indexesArray The indexes of the plugs to simulate.
-	 *         uint8 | 00 | livePlugsIndex
-	 *         uint8 | 08 | plugsIndex
-	 *         uint8 | 16 | pinIndex
-	 *         uint8 | 24 | fuseIndex
-	 */
-	function indexes(
-		uint256 $fusesLength,
-		PlugTypesLib.LivePlugs[] calldata $livePlugs
-	) public view virtual returns (uint32[] memory) {
-		uint256 indexesLength = length($livePlugs);
-
-		if (indexesLength == 0) return new uint32[](0);
-
-		uint32[] memory $indexesArray = new uint32[](indexesLength);
-
-		for (uint256 i; i < indexesLength; i++) {
-			uint24[] memory fuseIndexes = indexes(
-				uint8($fusesLength),
-				$livePlugs[i].plugs.plugs
-			);
-
-			/// @dev Loop through every index and place the livePlugs
-			///		 index as the first 8 bits.
-			for (uint8 j; j < fuseIndexes.length; j++) {
-				/// @dev Append the livePlugs index to the fuse index.
-				$indexesArray[i] = uint32(fuseIndexes[j] << 8) | j;
-			}
-		}
-
-		return $indexesArray;
-	}
-
-	/**
-	 * @notice Determine the length of responses this bundle of Plugs requires.
-	 * @param $plugs The bundle of Plugs being simulated.
-	 * @return $total The number of responses to expect for this bundle.
-	 **/
-	function length(
-		PlugTypesLib.Plug[] calldata $plugs
-	) public view virtual returns (uint256 $total) {
-		for (uint8 i; i < $plugs.length; i++) {
-			PlugTypesLib.Plug memory plug = $plugs[i];
-
-			for (uint8 j; j < plug.pins.length; j++) {
-				$total += plug.pins[j].pin.fuses.length;
-			}
-		}
-	}
-
-	/**
-	 * @notice Determine the length of responses this bundle of Plugs requires.
-	 * @dev This function is overloaded with the primary types used to interact.
-	 * @param $livePlugs The bundle of LivePlugs being simulated.
-	 * @return $total The number of responses to expect for this bundle.
-	 **/
-	function length(
-		PlugTypesLib.LivePlugs[] calldata $livePlugs
-	) public view virtual returns (uint256 $total) {
-		for (uint8 i; i < $livePlugs.length; i++) {
-			$total += length($livePlugs[i].plugs.plugs);
-		}
-	}
+        $result = PlugSimulationLib.Result({ success: success, callback: $through });
+    }
 }

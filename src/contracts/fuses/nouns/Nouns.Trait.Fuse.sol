@@ -2,35 +2,28 @@
 
 pragma solidity 0.8.23;
 
-import {Ownable} from 'solady/src/auth/Ownable.sol';
+import { Ownable } from "solady/src/auth/Ownable.sol";
 
-import {PlugFuse} from '../../abstracts/Plug.Fuse.sol';
-import {PlugTypesLib} from '../../abstracts/Plug.Types.sol';
+import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
+import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
 
 interface INoun {
-	struct Seed {
-		uint48 background;
-		uint48 body;
-		uint48 accessory;
-		uint48 head;
-		uint48 glasses;
-	}
+    struct Seed {
+        uint48 background;
+        uint48 body;
+        uint48 accessory;
+        uint48 head;
+        uint48 glasses;
+    }
 
-	function seeds(uint256) external view returns (Seed memory);
+    function seeds(uint256) external view returns (Seed memory);
 }
 
 interface INounsAuctionHouse {
-	function auction()
-		external
-		view
-		returns (
-			uint256 nounId,
-			uint256 amount,
-			uint256 startTime,
-			uint256 endTime,
-			address bidder,
-			bool settled
-		);
+    function auction()
+        external
+        view
+        returns (uint256 nounId, uint256 amount, uint256 startTime, uint256 endTime, address bidder, bool settled);
 }
 
 /**
@@ -44,140 +37,135 @@ interface INounsAuctionHouse {
  * @author @nftchance <chance@utc24.io>
  * @author @masonchain
  */
-contract NounsTraitFuse is PlugFuse, Ownable {
-	/// @dev Function hashes of the trait getters.
-	bytes32 public constant BACKGROUND_SELECTOR =
-		keccak256(abi.encodePacked('background(uint256 index)'));
-	bytes32 public constant HEAD_SELECTOR =
-		keccak256(abi.encodePacked('head(uint256 index)'));
-	bytes32 public constant GLASSES_SELECTOR =
-		keccak256(abi.encodePacked('glasses(uint256 index)'));
-	bytes32 public constant BODY_SELECTOR =
-		keccak256(abi.encodePacked('body(uint256 index)'));
-	bytes32 public constant ACCESSORY_SELECTOR =
-		keccak256(abi.encodePacked('accessory(uint256 index)'));
+contract NounsTraitFuse is PlugFuseInterface, Ownable {
+    /// @dev Function hashes of the trait getters.
+    bytes32 public constant BACKGROUND_SELECTOR = keccak256(abi.encodePacked("background(uint256 index)"));
+    bytes32 public constant HEAD_SELECTOR = keccak256(abi.encodePacked("head(uint256 index)"));
+    bytes32 public constant GLASSES_SELECTOR = keccak256(abi.encodePacked("glasses(uint256 index)"));
+    bytes32 public constant BODY_SELECTOR = keccak256(abi.encodePacked("body(uint256 index)"));
+    bytes32 public constant ACCESSORY_SELECTOR = keccak256(abi.encodePacked("accessory(uint256 index)"));
 
-	/// @dev Metadata storage contract for Nouns.
-	/// @notice We use a raw address instead of interface here because we are dynamically building
-	///         the function to be called by decoding the selector from the live wire.
-	address art;
-	/// @dev The ellusive Noun token.
-	INoun NOUN;
-	/// @dev The auction facilitator for Nouns.
-	INounsAuctionHouse AUCTION_HOUSE;
+    /// @dev Metadata storage contract for Nouns.
+    /// @notice We use a raw address instead of interface here because we are dynamically building
+    ///         the function to be called by decoding the selector from the live wire.
+    address art;
+    /// @dev The ellusive Noun token.
+    INoun NOUN;
+    /// @dev The auction facilitator for Nouns.
+    INounsAuctionHouse AUCTION_HOUSE;
 
-	constructor(INoun $noun, INounsAuctionHouse $auctionHouse, address $art) {
-		/// @dev Prepare the inferaces.
-		NOUN = $noun;
-		AUCTION_HOUSE = $auctionHouse;
+    constructor(INoun $noun, INounsAuctionHouse $auctionHouse, address $art) {
+        /// @dev Prepare the inferaces.
+        NOUN = $noun;
+        AUCTION_HOUSE = $auctionHouse;
 
-		/// @dev Set the scope of the Fuse.
-		art = $art;
-	}
+        /// @dev Set the scope of the Fuse.
+        art = $art;
+    }
 
-	/**
-	 * See {Fuse-enforceFuse}.
-	 */
-	function enforceFuse(
-		bytes calldata $live,
-		PlugTypesLib.Current calldata,
-		bytes32
-	) public view override returns (bytes memory $callback) {
-		(bytes32 selector, bytes32 trait) = decode($live);
+    /**
+     * See {Fuse-enforceFuse}.
+     */
+    function enforceFuse(
+        bytes calldata $live,
+        PlugTypesLib.Current calldata $current,
+        bytes32
+    )
+        public
+        view
+        override
+        returns (bytes memory $through)
+    {
+        (bytes32 selector, bytes32 trait) = decode($live);
 
-		require(nounTrait(selector) == trait, 'NounsTraitFuse:invalid-trait');
+        require(nounTrait(selector) == trait, "NounsTraitFuse:invalid-trait");
 
-		$callback = bytes('');
-	}
+        /// @dev Continue the pass through.
+        $through = $current.data;
+    }
 
-	/**
-	 * @notice Decode the live wire into the selector and trait hashes.
-	 * @param $live The live wire to decode.
-	 * @return $selector The selector of the trait to retrieve.
-	 * @return $trait The trait to retrieve.
-	 */
-	function decode(
-		bytes calldata $live
-	) public view virtual returns (bytes32 $selector, bytes32 $trait) {
-		($selector, $trait) = abi.decode($live, (bytes32, bytes32));
-	}
+    /**
+     * @notice Decode the live wire into the selector and trait hashes.
+     * @param $live The live wire to decode.
+     * @return $selector The selector of the trait to retrieve.
+     * @return $trait The trait to retrieve.
+     */
+    function decode(bytes calldata $live) public view virtual returns (bytes32 $selector, bytes32 $trait) {
+        ($selector, $trait) = abi.decode($live, (bytes32, bytes32));
+    }
 
-	/**
-	 * @notice Encode the selector and trait hashes into a live wire.
-	 * @param $selector The selector of the trait to retrieve.
-	 * @param $trait The trait to retrieve.
-	 * @return $live The live wire to decode.
-	 */
-	function encode(
-		bytes32 $selector,
-		bytes32 $trait
-	) public pure virtual returns (bytes memory) {
-		bool isValid;
-		if ($selector == HEAD_SELECTOR) {
-			isValid = true;
-		} else if ($selector == GLASSES_SELECTOR) {
-			isValid = true;
-		} else if ($selector == BODY_SELECTOR) {
-			isValid = true;
-		} else if ($selector == ACCESSORY_SELECTOR) {
-			isValid = true;
-		} else if ($selector == BACKGROUND_SELECTOR) {
-			isValid = true;
-		} else revert('NounsTraitFuse:invalid-selector');
+    /**
+     * @notice Encode the selector and trait hashes into a live wire.
+     * @param $selector The selector of the trait to retrieve.
+     * @param $trait The trait to retrieve.
+     * @return $live The live wire to decode.
+     */
+    function encode(bytes32 $selector, bytes32 $trait) public pure virtual returns (bytes memory) {
+        bool isValid;
+        if ($selector == HEAD_SELECTOR) {
+            isValid = true;
+        } else if ($selector == GLASSES_SELECTOR) {
+            isValid = true;
+        } else if ($selector == BODY_SELECTOR) {
+            isValid = true;
+        } else if ($selector == ACCESSORY_SELECTOR) {
+            isValid = true;
+        } else if ($selector == BACKGROUND_SELECTOR) {
+            isValid = true;
+        } else {
+            revert("NounsTraitFuse:invalid-selector");
+        }
 
-		return abi.encode($selector, $trait);
-	}
+        return abi.encode($selector, $trait);
+    }
 
-	/**
-	 * @notice Retrieve the trait bytes for a given trait function selector and seed.
-	 * @param $selector The function selector of the trait being checked.
-	 * @return $traitHash The hash of the trait.
-	 */
-	function nounTrait(
-		bytes32 $selector
-	) public view virtual returns (bytes32 $traitHash) {
-		/// @dev Get the current state of the auction.
-		(uint256 nounId, , , , , ) = AUCTION_HOUSE.auction();
+    /**
+     * @notice Retrieve the trait bytes for a given trait function selector and seed.
+     * @param $selector The function selector of the trait being checked.
+     * @return $traitHash The hash of the trait.
+     */
+    function nounTrait(bytes32 $selector) public view virtual returns (bytes32 $traitHash) {
+        /// @dev Get the current state of the auction.
+        (uint256 nounId,,,,,) = AUCTION_HOUSE.auction();
 
-		/// @dev Retrieve the metadata seeds of the current Noun.
-		INoun.Seed memory seeds = NOUN.seeds(nounId);
+        /// @dev Retrieve the metadata seeds of the current Noun.
+        INoun.Seed memory seeds = NOUN.seeds(nounId);
 
-		/// @dev Get the seed for the specified trait from the Seed struct.
-		uint256 traitSeed;
-		if ($selector == HEAD_SELECTOR) {
-			traitSeed = seeds.head;
-		} else if ($selector == GLASSES_SELECTOR) {
-			traitSeed = seeds.glasses;
-		} else if ($selector == BODY_SELECTOR) {
-			traitSeed = seeds.body;
-		} else if ($selector == ACCESSORY_SELECTOR) {
-			traitSeed = seeds.accessory;
-		} else if ($selector == BACKGROUND_SELECTOR) {
-			traitSeed = seeds.background;
-		} else revert('NounsTraitFuse:invalid-selector');
+        /// @dev Get the seed for the specified trait from the Seed struct.
+        uint256 traitSeed;
+        if ($selector == HEAD_SELECTOR) {
+            traitSeed = seeds.head;
+        } else if ($selector == GLASSES_SELECTOR) {
+            traitSeed = seeds.glasses;
+        } else if ($selector == BODY_SELECTOR) {
+            traitSeed = seeds.body;
+        } else if ($selector == ACCESSORY_SELECTOR) {
+            traitSeed = seeds.accessory;
+        } else if ($selector == BACKGROUND_SELECTOR) {
+            traitSeed = seeds.background;
+        } else {
+            revert("NounsTraitFuse:invalid-selector");
+        }
 
-		/// @dev Build the transaction data to call the Noun contract.
-		bytes memory data = abi.encodeWithSelector(
-			bytes4($selector),
-			traitSeed
-		);
+        /// @dev Build the transaction data to call the Noun contract.
+        bytes memory data = abi.encodeWithSelector(bytes4($selector), traitSeed);
 
-		/// @dev Retrieve the trait.
-		(bool success, bytes memory returnData) = art.staticcall(data);
+        /// @dev Retrieve the trait.
+        (bool success, bytes memory returnData) = art.staticcall(data);
 
-		/// @dev Ensure the call succeeded -- out of scope Nouns are not alive.
-		require(success, 'NounsTraitFuse:trait-call-failed');
+        /// @dev Ensure the call succeeded -- out of scope Nouns are not alive.
+        require(success, "NounsTraitFuse:trait-call-failed");
 
-		$traitHash = keccak256(returnData);
-	}
+        $traitHash = keccak256(returnData);
+    }
 
-	/**
-	 * @notice Set the address of the contract that supplies the art to Nouns.
-	 * @dev This is here just in case Nouns updates their metadata infrastructure
-	 *      as it has happened before (v2).
-	 * @param $art The address of the art contract.
-	 */
-	function setArt(address $art) public onlyOwner {
-		art = $art;
-	}
+    /**
+     * @notice Set the address of the contract that supplies the art to Nouns.
+     * @dev This is here just in case Nouns updates their metadata infrastructure
+     *      as it has happened before (v2).
+     * @param $art The address of the art contract.
+     */
+    function setArt(address $art) public onlyOwner {
+        art = $art;
+    }
 }

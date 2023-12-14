@@ -10,25 +10,25 @@ import { TestPlus } from "../tests/TestPlus.sol";
 import { PlugFactorySocket } from "./Plug.Factory.Socket.sol";
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
 
-import {LibClone} from "solady/src/utils/LibClone.sol";
+import { LibClone } from "solady/src/utils/LibClone.sol";
 
-contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus  {
-	PlugVaultSocket internal implementation;
-	PlugFactorySocket internal factory;
+contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus {
+    PlugVaultSocket internal implementation;
+    PlugFactorySocket internal factory;
 
     PlugVaultSocket internal vault;
 
-	function setUp() public virtual {
-		implementation = new PlugVaultSocket();
-		factory = new PlugFactorySocket('PlugMockSocket', '0.0.0');
+    function setUp() public virtual {
+        implementation = new PlugVaultSocket();
+        factory = new PlugFactorySocket("PlugMockSocket", "0.0.0");
 
         (, address vaultAddress) = factory.deploy(address(implementation), address(this), bytes32(0));
         vault = PlugVaultSocket(payable(vaultAddress));
-	}
+    }
 
-	function test_SingletonUse(uint256) public {
+    function test_SingletonUse(uint256) public {
         vm.deal(address(vault), 100 ether);
-        vm.expectRevert('PlugVaultSocket:already-initialized');
+        vm.expectRevert("PlugVaultSocket:already-initialized");
         vault.initialize(address(this));
     }
 

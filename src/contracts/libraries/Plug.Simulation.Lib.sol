@@ -3,8 +3,8 @@
 pragma solidity 0.8.23;
 
 library PlugSimulationLib {
-	struct Result {
-		bool success;
-		bytes callback;
-	}
+    struct Result {
+        bool success;
+        bytes callback;
+    }
 }
