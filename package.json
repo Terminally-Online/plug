@@ -1,6 +1,6 @@
 {
 	"name": "@nftchance/plug-core",
-	"version": "0.2.5",
+	"version": "0.2.6",
 	"license": "MIT",
 	"scripts": {
 		"prebuild": "pnpm lint && rm -rf ./dist",
@@ -84,7 +84,12 @@
 		},
 		"./package.json": "./package.json"
 	},
-	"files": ["/core", "/dist", "/src", "/artifacts"],
+	"files": [
+		"/core",
+		"/dist",
+		"/src",
+		"/artifacts"
+	],
 	"publishConfig": {
 		"access": "public"
 	}
