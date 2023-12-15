@@ -6,7 +6,7 @@
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
 		"build:artifacts": "pnpm tsx lib/functions/artifacts.ts",
-		"build:contracts": "pnpm build:forge && pnpm build:artifacts",
+		"build:contracts": "pnpm plug generate && pnpm build:forge && pnpm build:artifacts",
 		"build:forge": "forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23",
 		"build:format": "pnpm prettier --write .",
 		"build:ts": "pnpm tsup && pnpm build:format",

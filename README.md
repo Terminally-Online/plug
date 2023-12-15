@@ -10,6 +10,7 @@ The core package of Plug powers the building and verification of declarative mes
 In order to run `@nftchance/plug-core` it is necessary to install all of the following dependencies first:
 
 ```ml
+├─ foundry - "Foundry is a blazing fast, portable and modular toolkit for Ethereum application."
 └─ pnpm — "Efficient package manager for Node modules."
 ```
 
@@ -21,19 +22,6 @@ To run an instance of `@nftchance/plug-core` is incredibly straightforward. Open
 pnpm i
 pnpm dev
 ```
-
-## Generating The Framework Types
-
-The foundation of the protocol is automatically generated so that active development can be strictly focused on the actual logic of the framework. With this in place you should never manually edit `Plug.Types.sol` and instead should always open your terminal and run:
-
-```bash
-pnpm plug generate
-```
-
-By running this command, an up to date `Plug.Types.sol` will be generated and you will have everything you need at your disposal.
-
-> [!TIP]
-> You will only need to do this when `@nftchance/plug-types` has been updated, the most up to date version is always included as a commit in the repository.
 
 ## Building The Package For Distribution
 
@@ -47,64 +35,3 @@ pnpm changeset add
 ```
 
 With a changeset created all you have to do is submit your commit/PR to the repository. Everything else will be handled for you.
-
-## Working with [Foundry](https://book.getfoundry.sh/)
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
