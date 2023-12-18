@@ -13,8 +13,8 @@
 
     - Protocol:
 
-      - [ ] Add a passthrough lane to the fuses so that data can be passed through them.
-            NOTE: This will be a sidecar to the active data of the fuse so that it can maintain its conditions while maybe manipulating the pass through.
+      - [o] Deprecate all permission delegation functionality.
+      - [ ] Implement a mechanism that allows us to mine the addresses for contracts that are deployed.
 
     - Canvas:
 
@@ -36,14 +36,11 @@
       - [ ] Store the configuration of a Pin in the database.
       - [ ] Store the linkage in the database.
       - [ ] Make the grid mostly transparent with a mouse effect that only shows the grid around where the mouse is.
-
       - [ ] Given the capabilities of this app it is now probably worth looking into determining if we can pass in the
             inputs of previous pins inside the protocol.
             NOTE: Right now we are facing stack too deep issues, but we can remove a good amount of that if we require
             the use of a linearized loop instead of using the nested for loop architecture that is in place right now.
-
       - Drag controls:
-
         - [ ] Right now when dropping a plug with multiple pins it is no longer on the grid.
               NOTE: I am not actually going to worry about this because each pin is going to be moved indivdually.
         - [ ] Camera Controls
@@ -119,11 +116,13 @@ BUGS:
     - [ ] Right now in search, if you hot reload the page or tab out, the api query results are re-added to the list.
           NOTE: I messed with lots of things and could not get this to stop happening. Would like to avoid the use of a watching useEffect that clears the list because I do not think it is needed.
 
-RELEASING:
+DONE:
 
-    - [o] ALPHA:
-      - Core protocol:
-
+    - [x] ALPHA:
+      - [x] Protocol:
+        - [x] Add a passthrough lane to the fuses so that data can be passed through them.
+              NOTE: This will be a sidecar to the active data of the fuse so that it can maintain its conditions while maybe manipulating the pass through.
+        - [x] Implement a test for this.
         - [x] Fuse development.
           - [x] Add noun trait bid.
           - [x] Expose the contracts as exports from @nftchance/plug-core
@@ -138,8 +137,7 @@ RELEASING:
               NOTE: While the architecture of the protocol in general is quite similar to what lead to the vulernability being possible, I do not think it is possible because we have force-resolved the sender at all times and never assume the response from a Fuse or execution can be trusted.
               NOTE: Actually, I think we may also be vulnerable because you would just replace `multicall` with `plug`
 
-      - Core app / api:
-
+      - [x] API:
         - [x] There is an issue with EventEmitter where procedures are refusing to communicate with one another. In both routers, when making a subscription through an event emitter the vent never fires. The weird thing is that when I am not using an emitter, everything works fine with just an observable but the second I try and make an onUpdate it doesnt ever fire the event.
               NOTE: I have tried so many things and I am tired of wasting time on this. Everything else is setup fine and subscriptions that are not going through emitters work fine so just cannot justify wasting any more time on this at this point. If people complain because I got users then this will be taken care of immediately!
         - [x] Update `ws.prod.ts` to actually be ready for production.
@@ -152,26 +150,18 @@ RELEASING:
               NOTE: Update events should only notify of ones own account.
         - [x] Searching does not cause the results to refresh from the database even though the search params changed.
 
-        - Canvas:
-
-          - [x] onCreate
-          - [x] refactor canvas.onCreate -> canvas.onAdd
-          - [x] onUpdate
-
-        - Components:
-
+      - [x] Canvas:
+        - [x] onCreate
+        - [x] refactor canvas.onCreate -> canvas.onAdd
+        - [x] onUpdate
+        - [x] Components:
           - [x] onAdd
           - [x] onMove
-
-        - Pins and Plugs in the Canvas:
-
-          - [x] Replace the placeholder component with a plug.
-          - [x] The positioning of new components from addComponent is a little wonky.
-                NOTE: Spent a little time trying to fix it, got it good enough for now. Will want to figure out what is going on here and fix it though.
-            - [x] Make sure a connector between each pin is on the grid.
-
-        - Base:
-
+        - [x] Replace the placeholder component with a plug.
+        - [x] The positioning of new components from addComponent is a little wonky.
+              NOTE: Spent a little time trying to fix it, got it good enough for now. Will want to figure out what is going on here and fix it though.
+          - [x] Make sure a connector between each pin is on the grid.
+        - [x] Control:
           - [x] Add zoom buttons so that you don't have to scroll.
             - [x] Fix the zoom having adverse effects on react-dnd.
               - [x] If we cannot fix this, just disable zooming until we move to a proprietary dragging implementation. Not ideal but not sure what other option there event is.
@@ -253,7 +243,3 @@ RELEASING:
           - [x] Package up the trpc connector into the sdk to offer a more explicit integration path.
                 NOTE: This is where the `process.env.API_URL` and managed functions would be exposed.
           - [x] Make sure that we can encode and decode each enforcer.
-
-DONE:
-
-    - [ ]
