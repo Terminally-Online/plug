@@ -131,13 +131,10 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         address plugsSigner = mock.getLivePlugsSigner(livePlugs);
         assertEq(plugsSigner, signer);
 
-        /// @dev Initialize the executor.
-        address executor = _randomNonZeroAddress();
-        hoax(executor);
-
         /// @dev Execute the plug.
         vm.expectEmit(address(mock));
         emit PlugMockSocket.EchoInvoked(address(mock), signer, "Hello World");
+        hoax(_randomNonZeroAddress());
         mock.plug(livePlugs);
     }
 
