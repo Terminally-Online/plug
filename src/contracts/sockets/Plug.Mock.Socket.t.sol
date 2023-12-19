@@ -59,9 +59,11 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         address pinSigner = mock.getLivePinSigner(livePin);
         assertEq(pinSigner, signer);
 
+        /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction = abi.encodeWithSelector(mock.mutedEcho.selector);
         PlugTypesLib.Current memory current =
             PlugTypesLib.Current({ ground: address(mock), voltage: 0, data: encodedTransaction });
+
         PlugTypesLib.LivePin[] memory livePins = new PlugTypesLib.LivePin[](1);
         livePins[0] = livePin;
         PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({ pins: livePins, current: current, forced: true });
@@ -77,41 +79,93 @@ contract PlugMockSocketTest is PRBTest, StdCheats, TestPlus {
         assertEq(plugsSigner, signer);
     }
 
-    function test_PlugEmptyEcho() public {
+    function test_PlugEmptyEcho_SignerExecutor() public {
+        /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction = abi.encodeWithSelector(mock.emptyEcho.selector);
         PlugTypesLib.Current memory current =
             PlugTypesLib.Current({ ground: address(mock), voltage: 0, data: encodedTransaction });
+
+        /// @dev There are no conditions in this plug meaning a user is executing their own intent.
         PlugTypesLib.Plug memory Plug =
             PlugTypesLib.Plug({ pins: new PlugTypesLib.LivePin[](0), current: current, forced: true });
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
         plugsArray[0] = Plug;
+
+        /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs =
             PlugTypesLib.Plugs({ breaker: PlugTypesLib.Breaker({ nonce: 1, queue: 0 }), plugs: plugsArray });
+
+        /// @dev Sign the execution.
         digest = mock.getPlugsDigest(plugs);
         (v, r, s) = vm.sign(signerPrivateKey, digest);
         bytes memory plugsSignature = abi.encodePacked(r, s, v);
         PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
         address plugsSigner = mock.getLivePlugsSigner(livePlugs);
         assertEq(plugsSigner, signer);
+
+        /// @dev Execute the plug.
+        mock.plug(livePlugs);
+    }
+
+    function test_PlugEmptyEcho_ExternalExecutor() public {
+        /// @dev Encode the transaction that is going to be called.
+        bytes memory encodedTransaction = abi.encodeWithSelector(mock.emptyEcho.selector);
+        PlugTypesLib.Current memory current =
+            PlugTypesLib.Current({ ground: address(mock), voltage: 0, data: encodedTransaction });
+
+        /// @dev There are no conditions in this plug meaning an executor can do anything.
+        PlugTypesLib.Plug memory Plug =
+            PlugTypesLib.Plug({ pins: new PlugTypesLib.LivePin[](0), current: current, forced: true });
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = Plug;
+
+        /// @dev Make sure this transaction cannot be replayed.
+        PlugTypesLib.Plugs memory plugs =
+            PlugTypesLib.Plugs({ breaker: PlugTypesLib.Breaker({ nonce: 1, queue: 0 }), plugs: plugsArray });
+
+        /// @dev Sign the execution.
+        digest = mock.getPlugsDigest(plugs);
+        (v, r, s) = vm.sign(signerPrivateKey, digest);
+        bytes memory plugsSignature = abi.encodePacked(r, s, v);
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
+        address plugsSigner = mock.getLivePlugsSigner(livePlugs);
+        assertEq(plugsSigner, signer);
+
+        /// @dev Initialize the executor.
+        address executor = _randomNonZeroAddress();
+        hoax(executor);
+
+        /// @dev Execute the plug.
+        vm.expectEmit(address(mock));
+        emit PlugMockSocket.EchoInvoked(address(mock), signer, "Hello World");
         mock.plug(livePlugs);
     }
 
     function testFail_PlugMutedEcho() public {
+        /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction = abi.encodeWithSelector(mock.mutedEcho.selector);
         PlugTypesLib.Current memory current =
-            PlugTypesLib.Current({ ground: address(mock), voltage: 21_000, data: encodedTransaction });
+            PlugTypesLib.Current({ ground: address(mock), voltage: 0, data: encodedTransaction });
+
+        /// @dev There are no conditions in this plug meaning a user is executing their own intent.
         PlugTypesLib.Plug memory Plug =
             PlugTypesLib.Plug({ pins: new PlugTypesLib.LivePin[](0), current: current, forced: true });
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
         plugsArray[0] = Plug;
+
+        /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs =
             PlugTypesLib.Plugs({ breaker: PlugTypesLib.Breaker({ nonce: 1, queue: 0 }), plugs: plugsArray });
+
+        /// @dev Sign the execution.
         digest = mock.getPlugsDigest(plugs);
         (v, r, s) = vm.sign(signerPrivateKey, digest);
         bytes memory plugsSignature = abi.encodePacked(r, s, v);
         PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
         address plugsSigner = mock.getLivePlugsSigner(livePlugs);
         assertEq(plugsSigner, signer);
+
+        /// @dev Execute the plug.
         mock.plug(livePlugs);
     }
 }

@@ -10,7 +10,8 @@ import { BytesLib } from "../../libraries/BytesLib.sol";
  * @title Plug Clamp Fuse
  * @dev A fuse that clamps the current value between two bounds.
  * @author nftchance (chance@utc24.io)
- **/
+ *
+ */
 contract PlugClampFuse is PlugFuseInterface {
     using BytesLib for bytes;
 

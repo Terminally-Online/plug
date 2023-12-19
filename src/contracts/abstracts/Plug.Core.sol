@@ -84,7 +84,9 @@ abstract contract PlugCore is PlugTypes {
 
         /// @dev Call the Fuse to determine if it is valid.
         (success, $through) = address($fuse.neutral).call(
-            abi.encodeWithSelector(PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $current, $pinHash)
+            abi.encodeWithSelector(
+                PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $current, $pinHash
+            )
         );
 
         /// @dev If the Fuse failed and is not optional, bubble up the revert.
@@ -93,29 +95,18 @@ abstract contract PlugCore is PlugTypes {
 
     /**
      * @notice Execution a built transaction.
-     * @param $to The address of the contract to execute.
-     * @param $data The data to execute on the contract.
-     * @param $voltage The value to send with the transaction.
-     * @param $sender The address of the sender.
+     * @param $current The current state of the transaction.
      * @return $result The return data of the transaction.
      */
-    function _execute(
-        address $to,
-        bytes memory $data,
-        uint256 $voltage,
-        address $sender
-    )
-        internal
-        returns (bytes memory $result)
-    {
+    function _execute(PlugTypesLib.Current memory $current, address $sender) internal returns (bytes memory $result) {
         /// @dev Build the final call data.
-        bytes memory full = abi.encodePacked($data, $sender);
+        bytes memory full = abi.encodePacked($current.data, $sender);
 
         /// @dev Warm up the slot for the return data.
         bool success;
 
         /// @dev Make the external call with a standard call.
-        (success, $result) = address($to).call{ gas: gasleft(), value: $voltage }(full);
+        (success, $result) = address($current.ground).call{ gas: gasleft(), value: $current.voltage }(full);
 
         /// @dev If the call failed, bubble up the revert reason if possible.
         if (!success) $result.bubbleRevert();
@@ -133,10 +124,10 @@ abstract contract PlugCore is PlugTypes {
 
         /// @dev Load the stack.
         uint256 i;
-        uint256 j;
-        uint256 k;
-        address canGrant;
-        address intendedSender;
+        uint256 ii;
+        uint256 iii;
+        address grantor;
+        address granted;
         address pinSigner;
         bytes32 pinHash;
 
@@ -144,7 +135,6 @@ abstract contract PlugCore is PlugTypes {
         PlugTypesLib.Plug memory plug;
         PlugTypesLib.LivePin memory signedPin;
         PlugTypesLib.Pin memory pin;
-        PlugTypesLib.Current memory current;
 
         /// @dev Iterate over the plugs.
         for (i; i < $plugs.length; i++) {
@@ -154,27 +144,24 @@ abstract contract PlugCore is PlugTypes {
             /// @dev Reset the hot reference to the pinHash.
             pinHash = 0x0;
 
-            /// @dev Load the transaction from the plug.
-            current = plug.current;
-
             /// @dev If there are no pins, this plug comes from the signer
             if (plug.pins.length == 0) {
-                canGrant = intendedSender = $sender;
+                grantor = granted = $sender;
             } else {
                 /// @dev Iterate over the authority pins.
-                for (j = 0; j < plug.pins.length; j++) {
+                for (ii = 0; ii < plug.pins.length; ii++) {
                     /// @dev Load the pin from the plug.
-                    signedPin = plug.pins[j];
+                    signedPin = plug.pins[ii];
 
                     /// @dev Determine the signer of the pin.
                     pinSigner = getLivePinSigner(signedPin);
 
                     /// @dev Implied sending account is the signer of the first pin.
-                    if (j == 0) canGrant = intendedSender = pinSigner;
+                    if (ii == 0) grantor = granted = pinSigner;
 
                     /// @dev Ensure the pin signer has authority to grant
                     ///      the claimed pin.
-                    require(pinSigner == canGrant, "PlugCore:invalid-pin-signer");
+                    require(pinSigner == grantor, "PlugCore:invalid-pin-signer");
 
                     /// @dev Warm up the pin reference.
                     pin = signedPin.pin;
@@ -188,17 +175,17 @@ abstract contract PlugCore is PlugTypes {
                     /// @dev Loop through all the execution fuses declared in the pin
                     ///      and ensure they are in a state of acceptable execution
                     ///      while building the pass through data based on the nodes.
-                    for (k = 0; k < pin.fuses.length; k++) {
-                        current.data = _enforceFuse(pin.fuses[k], current, pinHash);
+                    for (iii = 0; iii < pin.fuses.length; iii++) {
+                        plug.current.data = _enforceFuse(pin.fuses[iii], plug.current, pinHash);
                     }
                 }
             }
 
             /// @dev Verify the delegate at the end of the pin chain is the signer.
-            require(canGrant == $sender, "PlugCore:invalid-signer");
+            require(grantor == $sender, "PlugCore:invalid-signer");
 
             /// @dev Execute the transaction.
-            $results[i] = _execute(current.ground, current.data, current.voltage, intendedSender);
+            $results[i] = _execute(plug.current, granted);
         }
     }
 }

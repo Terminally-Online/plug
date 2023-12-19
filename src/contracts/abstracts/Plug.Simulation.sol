@@ -46,11 +46,8 @@ abstract contract PlugSimulation is PlugCore {
                 bytes32 pinHash = getLivePinHash(plug.pins[j]);
 
                 for (uint8 l; l < pin.fuses.length; l++) {
-                    (plug.current.data, $results[results.length - plugsLength--]) = simulate(
-                        pinHash,
-                        plug,
-                        pin.fuses[l]
-                    );
+                    (plug.current.data, $results[results.length - plugsLength--]) =
+                        simulate(pinHash, plug, pin.fuses[l]);
                 }
             }
         }
@@ -78,7 +75,9 @@ abstract contract PlugSimulation is PlugCore {
         bool success;
 
         (success, $through) = address($fuse.neutral).staticcall(
-            abi.encodeWithSelector(PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $plug.current, $pinHash)
+            abi.encodeWithSelector(
+                PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $plug.current, $pinHash
+            )
         );
 
         $result = PlugSimulationLib.Result({ success: success, callback: $through });
