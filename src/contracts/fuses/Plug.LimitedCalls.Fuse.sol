@@ -32,7 +32,7 @@ contract PlugLimitedCallsFuse is PlugFuseInterface {
     {
         /// @dev Confirm the allowed limit has not yet been reached by the sender
         ///      of the declared pin.
-        require(decode($live) >= callCounts[msg.sender][$pinHash]++, "LimitedCallsEnforcer:limit-exceeded");
+        require(decode($live) > callCounts[msg.sender][$pinHash]++, "LimitedCallsEnforcer:limit-exceeded");
 
         /// @dev Continue the pass through.
         $through = $current.data;
