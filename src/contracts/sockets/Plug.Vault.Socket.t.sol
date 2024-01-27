@@ -22,7 +22,8 @@ contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus {
         implementation = new PlugVaultSocket();
         factory = new PlugFactorySocket("PlugMockSocket", "0.0.0");
 
-        (, address vaultAddress) = factory.deploy(address(implementation), address(this), bytes32(0));
+        (, address vaultAddress) =
+            factory.deploy(address(implementation), address(this), bytes32(0));
         vault = PlugVaultSocket(payable(vaultAddress));
     }
 

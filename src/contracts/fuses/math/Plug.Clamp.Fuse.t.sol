@@ -21,7 +21,11 @@ contract PlugClampFuseTest is PRBTest, StdCheats, TestPlus {
         bytes memory live = fuse.encode(10, 50);
         bytes memory pass = fuse.enforceFuse(
             live,
-            PlugTypesLib.Current({ ground: address(0), voltage: 0, data: abi.encodePacked(uint256(51)) }),
+            PlugTypesLib.Current({
+                ground: address(0),
+                voltage: 0,
+                data: abi.encodePacked(uint256(51))
+            }),
             bytes32(0)
         );
         assertEq(abi.decode(pass, (uint256)), 50);

@@ -92,7 +92,12 @@ contract PlugWindowFuse is PlugFuseInterface {
     function decode(uint256 $schedule)
         public
         pure
-        returns (uint32 $startTime, uint32 $repeatsEvery, uint32 $duration, uint8 $daysOfWeek)
+        returns (
+            uint32 $startTime,
+            uint32 $repeatsEvery,
+            uint32 $duration,
+            uint8 $daysOfWeek
+        )
     {
         /// @dev Unpack the schedule details.
         $daysOfWeek = uint8($schedule);
@@ -130,7 +135,8 @@ contract PlugWindowFuse is PlugFuseInterface {
         }
 
         /// @dev Pack the schedule details.
-        $schedule = (uint256($startTime) << START_TIME_SHIFT) | (uint256($repeatsEvery) << REPEATS_EVERY_SHIFT)
+        $schedule = (uint256($startTime) << START_TIME_SHIFT)
+            | (uint256($repeatsEvery) << REPEATS_EVERY_SHIFT)
             | (uint256($duration) << DURATION_SHIFT) | uint256($daysOfWeek);
     }
 
@@ -142,7 +148,12 @@ contract PlugWindowFuse is PlugFuseInterface {
      */
     function isWithinWindow(uint256 $schedule) public view returns (bool) {
         /// @dev Get the schedule details.
-        (uint32 startTime, uint32 repeatsEvery, uint32 duration, uint8 daysOfWeek) = decode($schedule);
+        (
+            uint32 startTime,
+            uint32 repeatsEvery,
+            uint32 duration,
+            uint8 daysOfWeek
+        ) = decode($schedule);
 
         /// @dev Ensure the current time is within the window.
         return _isWithinWindow(startTime, repeatsEvery, duration, daysOfWeek);
@@ -165,7 +176,8 @@ contract PlugWindowFuse is PlugFuseInterface {
         returns (bool)
     {
         /// @dev Ensure the current time is within the window.
-        return _isWithinWindow($startTime, $repeatsEvery, $duration, $daysOfWeek);
+        return
+            _isWithinWindow($startTime, $repeatsEvery, $duration, $daysOfWeek);
     }
 
     /**
@@ -189,7 +201,12 @@ contract PlugWindowFuse is PlugFuseInterface {
         $windows = new WindowFuseLib.Window[]($n);
 
         /// @dev Get the schedule details.
-        (uint32 startTime, uint32 repeatsEvery, uint32 duration, uint8 daysOfWeek) = decode($schedule);
+        (
+            uint32 startTime,
+            uint32 repeatsEvery,
+            uint32 duration,
+            uint8 daysOfWeek
+        ) = decode($schedule);
 
         /// @dev Calculate the cursor used to get the next batch of results
         ///      after the return of the requested batch.
@@ -197,7 +214,8 @@ contract PlugWindowFuse is PlugFuseInterface {
 
         for (startTime; startTime < $cursor;) {
             /// @dev Add the next window to the list of windows.
-            $windows[(startTime / repeatsEvery) % $n] = _toWindow(startTime, duration, daysOfWeek);
+            $windows[(startTime / repeatsEvery) % $n] =
+                _toWindow(startTime, duration, daysOfWeek);
 
             /// @dev Time travel into the future.
             unchecked {
@@ -213,9 +231,14 @@ contract PlugWindowFuse is PlugFuseInterface {
      *      it can be settled.
      * @param $schedule The schedule to check.
      */
-    function toWindow(uint256 $schedule) external pure returns (WindowFuseLib.Window memory $window) {
+    function toWindow(uint256 $schedule)
+        external
+        pure
+        returns (WindowFuseLib.Window memory $window)
+    {
         /// @dev Get the schedule details.
-        (uint32 startTime, uint32 repeatsEvery,, uint8 daysOfWeek) = decode($schedule);
+        (uint32 startTime, uint32 repeatsEvery,, uint8 daysOfWeek) =
+            decode($schedule);
 
         /// @dev Ensure the current time is within the window.
         return _toWindow(startTime, repeatsEvery, daysOfWeek);
@@ -245,7 +268,14 @@ contract PlugWindowFuse is PlugFuseInterface {
      * @param $daysOfWeek The days of the week to check.
      * @param $timestamp The timestamp to check.
      */
-    function _isOnDayOfWeek(uint8 $daysOfWeek, uint32 $timestamp) internal pure returns (bool) {
+    function _isOnDayOfWeek(
+        uint8 $daysOfWeek,
+        uint32 $timestamp
+    )
+        internal
+        pure
+        returns (bool)
+    {
         /// @dev Get the day of the week.
         uint8 dayOfWeek = uint8((($timestamp / SECONDS_PER_DAY) + 4) % 7);
 
@@ -304,7 +334,8 @@ contract PlugWindowFuse is PlugFuseInterface {
             /// @dev Calculate the start of this period by determining if we have
             ///      gone past the declared start time otherwise it started
             ///      at the top of the day.
-            $window.periods[daysInWindow].startTime = $startTime > topDayTime ? $startTime : topDayTime;
+            $window.periods[daysInWindow].startTime =
+                $startTime > topDayTime ? $startTime : topDayTime;
 
             /// @dev Calculate the last second of the day.
             uint32 bottomDayTime = topDayTime + SECONDS_PER_DAY - 1;
@@ -312,7 +343,8 @@ contract PlugWindowFuse is PlugFuseInterface {
             /// @dev Calculate the end of this period by determining if we have
             ///      gone past the declared end time otherwise it ended
             ///      at the bottom of the day.
-            $window.periods[daysInWindow].endTime = windowEndTime < bottomDayTime ? windowEndTime : bottomDayTime;
+            $window.periods[daysInWindow].endTime =
+                windowEndTime < bottomDayTime ? windowEndTime : bottomDayTime;
         }
     }
 
@@ -354,9 +386,11 @@ contract PlugWindowFuse is PlugFuseInterface {
         if ($repeatsEvery == 0) return currentTime < $startTime + $duration;
 
         /// @dev Get the time since the start of the current window.
-        uint32 currentWindowOpen = $startTime + (timeElapsed / $repeatsEvery) * $repeatsEvery;
+        uint32 currentWindowOpen =
+            $startTime + (timeElapsed / $repeatsEvery) * $repeatsEvery;
 
         /// @dev Ensure the current time is within the current window.
-        return currentTime >= currentWindowOpen && currentTime < currentWindowOpen + $duration;
+        return currentTime >= currentWindowOpen
+            && currentTime < currentWindowOpen + $duration;
     }
 }

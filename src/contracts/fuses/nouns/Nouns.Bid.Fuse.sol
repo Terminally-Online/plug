@@ -4,7 +4,8 @@ pragma solidity 0.8.23;
 
 import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
-import { INounsAuctionHouse } from "../../interfaces/nouns/INounsAuctionHouse.sol";
+import { INounsAuctionHouse } from
+    "../../interfaces/nouns/INounsAuctionHouse.sol";
 import { NounsBidLib } from "../../libraries/nouns/Nouns.Bid.Lib.sol";
 
 contract NounsBidFuse is PlugFuseInterface {
@@ -31,7 +32,8 @@ contract NounsBidFuse is PlugFuseInterface {
         (bool $settleUnsettled, address $bidder, uint256 $bid) = decode($live);
 
         /// @dev Get the current state of the auction.
-        (,,, uint256 $endTime, address $winner, bool $settled) = AUCTION_HOUSE.auction();
+        (,,, uint256 $endTime, address $winner, bool $settled) =
+            AUCTION_HOUSE.auction();
 
         /// @dev Prevent the user from bidding on an auction that they
         ///      have already won / are winning.
@@ -53,12 +55,25 @@ contract NounsBidFuse is PlugFuseInterface {
         $through = $current.data;
     }
 
-    function decode(bytes calldata $live) public pure returns (bool $settleUnsettled, address $bidder, uint256 $bid) {
+    function decode(bytes calldata $live)
+        public
+        pure
+        returns (bool $settleUnsettled, address $bidder, uint256 $bid)
+    {
         /// @dev Decode the live data.
-        ($settleUnsettled, $bidder, $bid) = abi.decode($live, (bool, address, uint256));
+        ($settleUnsettled, $bidder, $bid) =
+            abi.decode($live, (bool, address, uint256));
     }
 
-    function encode(bool $settleUnsettled, address $bidder, uint256 $bid) public pure returns (bytes memory $live) {
+    function encode(
+        bool $settleUnsettled,
+        address $bidder,
+        uint256 $bid
+    )
+        public
+        pure
+        returns (bytes memory $live)
+    {
         /// @dev Encode the live data.
         $live = abi.encode($settleUnsettled, $bidder, $bid);
     }

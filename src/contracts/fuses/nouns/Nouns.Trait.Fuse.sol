@@ -23,7 +23,14 @@ interface INounsAuctionHouse {
     function auction()
         external
         view
-        returns (uint256 nounId, uint256 amount, uint256 startTime, uint256 endTime, address bidder, bool settled);
+        returns (
+            uint256 nounId,
+            uint256 amount,
+            uint256 startTime,
+            uint256 endTime,
+            address bidder,
+            bool settled
+        );
 }
 
 /**
@@ -39,11 +46,16 @@ interface INounsAuctionHouse {
  */
 contract NounsTraitFuse is PlugFuseInterface, Ownable {
     /// @dev Function hashes of the trait getters.
-    bytes32 public constant BACKGROUND_SELECTOR = keccak256(abi.encodePacked("background(uint256 index)"));
-    bytes32 public constant HEAD_SELECTOR = keccak256(abi.encodePacked("head(uint256 index)"));
-    bytes32 public constant GLASSES_SELECTOR = keccak256(abi.encodePacked("glasses(uint256 index)"));
-    bytes32 public constant BODY_SELECTOR = keccak256(abi.encodePacked("body(uint256 index)"));
-    bytes32 public constant ACCESSORY_SELECTOR = keccak256(abi.encodePacked("accessory(uint256 index)"));
+    bytes32 public constant BACKGROUND_SELECTOR =
+        keccak256(abi.encodePacked("background(uint256 index)"));
+    bytes32 public constant HEAD_SELECTOR =
+        keccak256(abi.encodePacked("head(uint256 index)"));
+    bytes32 public constant GLASSES_SELECTOR =
+        keccak256(abi.encodePacked("glasses(uint256 index)"));
+    bytes32 public constant BODY_SELECTOR =
+        keccak256(abi.encodePacked("body(uint256 index)"));
+    bytes32 public constant ACCESSORY_SELECTOR =
+        keccak256(abi.encodePacked("accessory(uint256 index)"));
 
     /// @dev Metadata storage contract for Nouns.
     /// @notice We use a raw address instead of interface here because we are dynamically building
@@ -90,7 +102,12 @@ contract NounsTraitFuse is PlugFuseInterface, Ownable {
      * @return $selector The selector of the trait to retrieve.
      * @return $trait The trait to retrieve.
      */
-    function decode(bytes calldata $live) public view virtual returns (bytes32 $selector, bytes32 $trait) {
+    function decode(bytes calldata $live)
+        public
+        view
+        virtual
+        returns (bytes32 $selector, bytes32 $trait)
+    {
         ($selector, $trait) = abi.decode($live, (bytes32, bytes32));
     }
 
@@ -100,7 +117,15 @@ contract NounsTraitFuse is PlugFuseInterface, Ownable {
      * @param $trait The trait to retrieve.
      * @return $live The live wire to decode.
      */
-    function encode(bytes32 $selector, bytes32 $trait) public pure virtual returns (bytes memory) {
+    function encode(
+        bytes32 $selector,
+        bytes32 $trait
+    )
+        public
+        pure
+        virtual
+        returns (bytes memory)
+    {
         bool isValid;
         if ($selector == HEAD_SELECTOR) {
             isValid = true;
@@ -124,7 +149,12 @@ contract NounsTraitFuse is PlugFuseInterface, Ownable {
      * @param $selector The function selector of the trait being checked.
      * @return $traitHash The hash of the trait.
      */
-    function nounTrait(bytes32 $selector) public view virtual returns (bytes32 $traitHash) {
+    function nounTrait(bytes32 $selector)
+        public
+        view
+        virtual
+        returns (bytes32 $traitHash)
+    {
         /// @dev Get the current state of the auction.
         (uint256 nounId,,,,,) = AUCTION_HOUSE.auction();
 

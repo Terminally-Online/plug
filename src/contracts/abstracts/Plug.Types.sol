@@ -193,8 +193,9 @@ abstract contract PlugTypes {
      *      { name: 'verifyingContract', type: 'address' }
      * }>>
      */
-    bytes32 constant EIP712_DOMAIN_TYPEHASH =
-        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+    bytes32 constant EIP712_DOMAIN_TYPEHASH = keccak256(
+        "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+    );
 
     /**
      * @notice Type hash representing the Fuse data type providing EIP-712
@@ -205,7 +206,8 @@ abstract contract PlugTypes {
      *      { name: 'forced', type: 'bool' }
      * }>>
      */
-    bytes32 constant FUSE_TYPEHASH = keccak256("Fuse(address neutral,bytes live,bool forced)");
+    bytes32 constant FUSE_TYPEHASH =
+        keccak256("Fuse(address neutral,bytes live,bool forced)");
 
     /**
      * @notice Type hash representing the Pin data type providing EIP-712
@@ -231,7 +233,8 @@ abstract contract PlugTypes {
      *      { name: 'data', type: 'bytes' }
      * }>>
      */
-    bytes32 constant CURRENT_TYPEHASH = keccak256("Current(address ground,uint256 voltage,bytes data)");
+    bytes32 constant CURRENT_TYPEHASH =
+        keccak256("Current(address ground,uint256 voltage,bytes data)");
 
     /**
      * @notice Type hash representing the LivePin data type providing EIP-712
@@ -266,7 +269,8 @@ abstract contract PlugTypes {
      *      { name: 'queue', type: 'uint256' }
      * }>>
      */
-    bytes32 constant BREAKER_TYPEHASH = keccak256("Breaker(uint256 nonce,uint256 queue)");
+    bytes32 constant BREAKER_TYPEHASH =
+        keccak256("Breaker(uint256 nonce,uint256 queue)");
 
     /**
      * @notice Type hash representing the Plugs data type providing EIP-712
@@ -299,7 +303,13 @@ abstract contract PlugTypes {
      * @dev The chainId is pulled from the block and the verifying contract is set to the
      *      address of the contract.
      */
-    function _initializeSocket(string memory $name, string memory $version) internal virtual {
+    function _initializeSocket(
+        string memory $name,
+        string memory $version
+    )
+        internal
+        virtual
+    {
         /// @dev Sets the domain hash for the contract.
         domainHash = getEIP712DomainHash(
             PlugTypesLib.EIP712Domain({
@@ -317,7 +327,12 @@ abstract contract PlugTypes {
      * @param $input The EIP712Domain data to encode.
      * @return $hash The packet hash of the encoded EIP712Domain data.
      */
-    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input) public pure virtual returns (bytes32 $hash) {
+    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         $hash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
@@ -335,8 +350,20 @@ abstract contract PlugTypes {
      * @param $input The Fuse data to encode.
      * @return $hash The packet hash of the encoded Fuse data.
      */
-    function getFuseHash(PlugTypesLib.Fuse memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(FUSE_TYPEHASH, $input.neutral, keccak256($input.live), $input.forced));
+    function getFuseHash(PlugTypesLib.Fuse memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash = keccak256(
+            abi.encode(
+                FUSE_TYPEHASH,
+                $input.neutral,
+                keccak256($input.live),
+                $input.forced
+            )
+        );
     }
 
     /**
@@ -345,10 +372,20 @@ abstract contract PlugTypes {
      * @param $input The Pin data to encode.
      * @return $hash The packet hash of the encoded Pin data.
      */
-    function getPinHash(PlugTypesLib.Pin memory $input) public pure virtual returns (bytes32 $hash) {
+    function getPinHash(PlugTypesLib.Pin memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         $hash = keccak256(
             abi.encode(
-                PIN_TYPEHASH, $input.neutral, $input.live, getFuseArrayHash($input.fuses), $input.salt, $input.forced
+                PIN_TYPEHASH,
+                $input.neutral,
+                $input.live,
+                getFuseArrayHash($input.fuses),
+                $input.salt,
+                $input.forced
             )
         );
     }
@@ -359,7 +396,12 @@ abstract contract PlugTypes {
      * @param $input The Fuse[] data to encode.
      * @return $hash The packet hash of the encoded Fuse[] data.
      */
-    function getFuseArrayHash(PlugTypesLib.Fuse[] memory $input) public pure virtual returns (bytes32 $hash) {
+    function getFuseArrayHash(PlugTypesLib.Fuse[] memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         /// @dev Load the stack.
         bytes memory encoded;
         uint256 i;
@@ -384,8 +426,20 @@ abstract contract PlugTypes {
      * @param $input The Current data to encode.
      * @return $hash The packet hash of the encoded Current data.
      */
-    function getCurrentHash(PlugTypesLib.Current memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(CURRENT_TYPEHASH, $input.ground, $input.voltage, keccak256($input.data)));
+    function getCurrentHash(PlugTypesLib.Current memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash = keccak256(
+            abi.encode(
+                CURRENT_TYPEHASH,
+                $input.ground,
+                $input.voltage,
+                keccak256($input.data)
+            )
+        );
     }
 
     /**
@@ -394,8 +448,19 @@ abstract contract PlugTypes {
      * @param $input The LivePin data to encode.
      * @return $hash The packet hash of the encoded LivePin data.
      */
-    function getLivePinHash(PlugTypesLib.LivePin memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(LIVE_PIN_TYPEHASH, getPinHash($input.pin), keccak256($input.signature)));
+    function getLivePinHash(PlugTypesLib.LivePin memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash = keccak256(
+            abi.encode(
+                LIVE_PIN_TYPEHASH,
+                getPinHash($input.pin),
+                keccak256($input.signature)
+            )
+        );
     }
 
     /**
@@ -404,9 +469,19 @@ abstract contract PlugTypes {
      * @param $input The Plug data to encode.
      * @return $hash The packet hash of the encoded Plug data.
      */
-    function getPlugHash(PlugTypesLib.Plug memory $input) public pure virtual returns (bytes32 $hash) {
+    function getPlugHash(PlugTypesLib.Plug memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         $hash = keccak256(
-            abi.encode(PLUG_TYPEHASH, getCurrentHash($input.current), getLivePinArrayHash($input.pins), $input.forced)
+            abi.encode(
+                PLUG_TYPEHASH,
+                getCurrentHash($input.current),
+                getLivePinArrayHash($input.pins),
+                $input.forced
+            )
         );
     }
 
@@ -416,7 +491,12 @@ abstract contract PlugTypes {
      * @param $input The LivePin[] data to encode.
      * @return $hash The packet hash of the encoded LivePin[] data.
      */
-    function getLivePinArrayHash(PlugTypesLib.LivePin[] memory $input) public pure virtual returns (bytes32 $hash) {
+    function getLivePinArrayHash(PlugTypesLib.LivePin[] memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         /// @dev Load the stack.
         bytes memory encoded;
         uint256 i;
@@ -441,8 +521,14 @@ abstract contract PlugTypes {
      * @param $input The Breaker data to encode.
      * @return $hash The packet hash of the encoded Breaker data.
      */
-    function getBreakerHash(PlugTypesLib.Breaker memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(BREAKER_TYPEHASH, $input.nonce, $input.queue));
+    function getBreakerHash(PlugTypesLib.Breaker memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash =
+            keccak256(abi.encode(BREAKER_TYPEHASH, $input.nonce, $input.queue));
     }
 
     /**
@@ -451,8 +537,19 @@ abstract contract PlugTypes {
      * @param $input The Plugs data to encode.
      * @return $hash The packet hash of the encoded Plugs data.
      */
-    function getPlugsHash(PlugTypesLib.Plugs memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(PLUGS_TYPEHASH, getPlugArrayHash($input.plugs), getBreakerHash($input.breaker)));
+    function getPlugsHash(PlugTypesLib.Plugs memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash = keccak256(
+            abi.encode(
+                PLUGS_TYPEHASH,
+                getPlugArrayHash($input.plugs),
+                getBreakerHash($input.breaker)
+            )
+        );
     }
 
     /**
@@ -461,7 +558,12 @@ abstract contract PlugTypes {
      * @param $input The Plug[] data to encode.
      * @return $hash The packet hash of the encoded Plug[] data.
      */
-    function getPlugArrayHash(PlugTypesLib.Plug[] memory $input) public pure virtual returns (bytes32 $hash) {
+    function getPlugArrayHash(PlugTypesLib.Plug[] memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
         /// @dev Load the stack.
         bytes memory encoded;
         uint256 i;
@@ -486,8 +588,19 @@ abstract contract PlugTypes {
      * @param $input The LivePlugs data to encode.
      * @return $hash The packet hash of the encoded LivePlugs data.
      */
-    function getLivePlugsHash(PlugTypesLib.LivePlugs memory $input) public pure virtual returns (bytes32 $hash) {
-        $hash = keccak256(abi.encode(LIVE_PLUGS_TYPEHASH, getPlugsHash($input.plugs), keccak256($input.signature)));
+    function getLivePlugsHash(PlugTypesLib.LivePlugs memory $input)
+        public
+        pure
+        virtual
+        returns (bytes32 $hash)
+    {
+        $hash = keccak256(
+            abi.encode(
+                LIVE_PLUGS_TYPEHASH,
+                getPlugsHash($input.plugs),
+                keccak256($input.signature)
+            )
+        );
     }
 
     /**
@@ -496,8 +609,15 @@ abstract contract PlugTypes {
      * @param $input The Pin data to encode.
      * @return $digest The digest hash of the encoded Pin data.
      */
-    function getPinDigest(PlugTypesLib.Pin memory $input) public view virtual returns (bytes32 $digest) {
-        $digest = keccak256(abi.encodePacked("\x19\x01", domainHash, getPinHash($input)));
+    function getPinDigest(PlugTypesLib.Pin memory $input)
+        public
+        view
+        virtual
+        returns (bytes32 $digest)
+    {
+        $digest = keccak256(
+            abi.encodePacked("\x19\x01", domainHash, getPinHash($input))
+        );
     }
 
     /**
@@ -506,8 +626,15 @@ abstract contract PlugTypes {
      * @param $input The Plugs data to encode.
      * @return $digest The digest hash of the encoded Plugs data.
      */
-    function getPlugsDigest(PlugTypesLib.Plugs memory $input) public view virtual returns (bytes32 $digest) {
-        $digest = keccak256(abi.encodePacked("\x19\x01", domainHash, getPlugsHash($input)));
+    function getPlugsDigest(PlugTypesLib.Plugs memory $input)
+        public
+        view
+        virtual
+        returns (bytes32 $digest)
+    {
+        $digest = keccak256(
+            abi.encodePacked("\x19\x01", domainHash, getPlugsHash($input))
+        );
     }
 
     /**
@@ -515,7 +642,12 @@ abstract contract PlugTypes {
      * @param $input The LivePin data to encode.
      * @return $signer The signer of the LivePin data.
      */
-    function getLivePinSigner(PlugTypesLib.LivePin memory $input) public view virtual returns (address $signer) {
+    function getLivePinSigner(PlugTypesLib.LivePin memory $input)
+        public
+        view
+        virtual
+        returns (address $signer)
+    {
         $signer = getPinDigest($input.pin).recover($input.signature);
     }
 
@@ -524,7 +656,12 @@ abstract contract PlugTypes {
      * @param $input The LivePlugs data to encode.
      * @return $signer The signer of the LivePlugs data.
      */
-    function getLivePlugsSigner(PlugTypesLib.LivePlugs memory $input) public view virtual returns (address $signer) {
+    function getLivePlugsSigner(PlugTypesLib.LivePlugs memory $input)
+        public
+        view
+        virtual
+        returns (address $signer)
+    {
         $signer = getPlugsDigest($input.plugs).recover($input.signature);
     }
 }

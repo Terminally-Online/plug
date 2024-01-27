@@ -59,10 +59,18 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
      * @param $signedPin The signed pin to revoke.
      * @param $domainHash The domain hash of the pin.
      */
-    function revoke(PlugTypesLib.LivePin calldata $signedPin, bytes32 $domainHash) public {
+    function revoke(
+        PlugTypesLib.LivePin calldata $signedPin,
+        bytes32 $domainHash
+    )
+        public
+    {
         /// @dev Only allow signers of pins to revoke a signature.
         ///      Of course, revocation itself could be delegated.
-        require(getSigner($signedPin, $domainHash) == _msgSender(), "RevocationEnforcer:invalid-revoker");
+        require(
+            getSigner($signedPin, $domainHash) == _msgSender(),
+            "RevocationEnforcer:invalid-revoker"
+        );
 
         /// @dev Determine the hash of the pin.
         bytes32 pinHash = getLivePinHash($signedPin);
@@ -91,7 +99,8 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
         returns (address $signer)
     {
         /// @dev Determine the digest of the pin and recover the signer.
-        $signer = getDigest($signedPin.pin, $domainHash).recover($signedPin.signature);
+        $signer =
+            getDigest($signedPin.pin, $domainHash).recover($signedPin.signature);
     }
 
     /**
@@ -100,8 +109,17 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
      * @param $domainHash The domain hash of the pin.
      * @return $digest The digest of the pin.
      */
-    function getDigest(PlugTypesLib.Pin memory $pin, bytes32 $domainHash) public pure returns (bytes32 $digest) {
+    function getDigest(
+        PlugTypesLib.Pin memory $pin,
+        bytes32 $domainHash
+    )
+        public
+        pure
+        returns (bytes32 $digest)
+    {
         /// @dev Encode the pin and domain hash and hash them.
-        $digest = keccak256(abi.encodePacked("\x19\x01", $domainHash, getPinHash($pin)));
+        $digest = keccak256(
+            abi.encodePacked("\x19\x01", $domainHash, getPinHash($pin))
+        );
     }
 }

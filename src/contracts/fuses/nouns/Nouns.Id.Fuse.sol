@@ -10,7 +10,14 @@ interface INounsAuctionHouse {
     function auction()
         external
         view
-        returns (uint256 nounId, uint256 amount, uint256 startTime, uint256 endTime, address bidder, bool settled);
+        returns (
+            uint256 nounId,
+            uint256 amount,
+            uint256 startTime,
+            uint256 endTime,
+            address bidder,
+            bool settled
+        );
 }
 
 /**
@@ -56,7 +63,12 @@ contract NounsIdFuse is PlugFuseInterface {
      * @param $live The live wire to decode.
      * @return The tokenId being requested.
      */
-    function decode(bytes calldata $live) public view virtual returns (uint256) {
+    function decode(bytes calldata $live)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
         return $live.toUint256(0);
     }
 
@@ -65,7 +77,12 @@ contract NounsIdFuse is PlugFuseInterface {
      * @param $value The tokenId to encode.
      * @return The live wire.
      */
-    function encode(uint256 $value) public pure virtual returns (bytes memory) {
+    function encode(uint256 $value)
+        public
+        pure
+        virtual
+        returns (bytes memory)
+    {
         return abi.encode($value);
     }
 }

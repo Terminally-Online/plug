@@ -66,9 +66,17 @@ abstract contract PlugCore is PlugTypes {
      * @param $intendedSender The address of the intended sender.
      * @param $protection The replay protection struct.
      */
-    function _enforceBreaker(address $intendedSender, PlugTypesLib.Breaker memory $protection) internal {
+    function _enforceBreaker(
+        address $intendedSender,
+        PlugTypesLib.Breaker memory $protection
+    )
+        internal
+    {
         /// @dev Ensure the nonce is in order.
-        require($protection.nonce == ++nonce[$intendedSender][$protection.queue], "PlugCore:nonce2-out-of-order");
+        require(
+            $protection.nonce == ++nonce[$intendedSender][$protection.queue],
+            "PlugCore:nonce2-out-of-order"
+        );
     }
 
     function _enforceFuse(
@@ -85,7 +93,10 @@ abstract contract PlugCore is PlugTypes {
         /// @dev Call the Fuse to determine if it is valid.
         (success, $through) = address($fuse.neutral).call(
             abi.encodeWithSelector(
-                PlugFuseInterface($fuse.neutral).enforceFuse.selector, $fuse.live, $current, $pinHash
+                PlugFuseInterface($fuse.neutral).enforceFuse.selector,
+                $fuse.live,
+                $current,
+                $pinHash
             )
         );
 
@@ -98,7 +109,13 @@ abstract contract PlugCore is PlugTypes {
      * @param $current The current state of the transaction.
      * @return $result The return data of the transaction.
      */
-    function _execute(PlugTypesLib.Current memory $current, address $sender) internal returns (bytes memory $result) {
+    function _execute(
+        PlugTypesLib.Current memory $current,
+        address $sender
+    )
+        internal
+        returns (bytes memory $result)
+    {
         /// @dev Build the final call data.
         bytes memory full = abi.encodePacked($current.data, $sender);
 
@@ -106,7 +123,10 @@ abstract contract PlugCore is PlugTypes {
         bool success;
 
         /// @dev Make the external call with a standard call.
-        (success, $result) = address($current.ground).call{ gas: gasleft(), value: $current.voltage }(full);
+        (success, $result) = address($current.ground).call{
+            gas: gasleft(),
+            value: $current.voltage
+        }(full);
 
         /// @dev If the call failed, bubble up the revert reason if possible.
         if (!success) $result.bubbleRevert();
@@ -118,7 +138,13 @@ abstract contract PlugCore is PlugTypes {
      * @param $sender The address of the sender.
      * @return $results The return data of the plugs.
      */
-    function _plug(PlugTypesLib.Plug[] calldata $plugs, address $sender) internal returns (bytes[] memory $results) {
+    function _plug(
+        PlugTypesLib.Plug[] calldata $plugs,
+        address $sender
+    )
+        internal
+        returns (bytes[] memory $results)
+    {
         /// @dev Warm up the results array.
         $results = new bytes[]($plugs.length);
 
@@ -167,7 +193,10 @@ abstract contract PlugCore is PlugTypes {
                     pin = signedPin.pin;
 
                     /// @dev Ensure the pin is valid.
-                    require(pin.live == pinHash, "PlugCore:invalid-authority-pin-link");
+                    require(
+                        pin.live == pinHash,
+                        "PlugCore:invalid-authority-pin-link"
+                    );
 
                     /// @dev Retrieve the packet hash for the pin.
                     pinHash = getLivePinHash(signedPin);
@@ -176,7 +205,8 @@ abstract contract PlugCore is PlugTypes {
                     ///      and ensure they are in a state of acceptable execution
                     ///      while building the pass through data based on the nodes.
                     for (iii = 0; iii < pin.fuses.length; iii++) {
-                        plug.current.data = _enforceFuse(pin.fuses[iii], plug.current, pinHash);
+                        plug.current.data =
+                            _enforceFuse(pin.fuses[iii], plug.current, pinHash);
                     }
                 }
             }

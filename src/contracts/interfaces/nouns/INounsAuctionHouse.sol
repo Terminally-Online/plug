@@ -4,21 +4,38 @@
 pragma solidity 0.8.23;
 
 interface INounsAuctionHouse {
-    event AuctionBid(uint256 indexed nounId, address sender, uint256 value, bool extended);
-    event AuctionCreated(uint256 indexed nounId, uint256 startTime, uint256 endTime);
+    event AuctionBid(
+        uint256 indexed nounId, address sender, uint256 value, bool extended
+    );
+    event AuctionCreated(
+        uint256 indexed nounId, uint256 startTime, uint256 endTime
+    );
     event AuctionExtended(uint256 indexed nounId, uint256 endTime);
-    event AuctionMinBidIncrementPercentageUpdated(uint256 minBidIncrementPercentage);
+    event AuctionMinBidIncrementPercentageUpdated(
+        uint256 minBidIncrementPercentage
+    );
     event AuctionReservePriceUpdated(uint256 reservePrice);
-    event AuctionSettled(uint256 indexed nounId, address winner, uint256 amount);
+    event AuctionSettled(
+        uint256 indexed nounId, address winner, uint256 amount
+    );
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner, address indexed newOwner
+    );
     event Paused(address account);
     event Unpaused(address account);
 
     function auction()
         external
         view
-        returns (uint256 nounId, uint256 amount, uint256 startTime, uint256 endTime, address bidder, bool settled);
+        returns (
+            uint256 nounId,
+            uint256 amount,
+            uint256 startTime,
+            uint256 endTime,
+            address bidder,
+            bool settled
+        );
 
     function createBid(uint256 nounId) external payable;
 
@@ -48,7 +65,8 @@ interface INounsAuctionHouse {
 
     function reservePrice() external view returns (uint256);
 
-    function setMinBidIncrementPercentage(uint8 _minBidIncrementPercentage) external;
+    function setMinBidIncrementPercentage(uint8 _minBidIncrementPercentage)
+        external;
 
     function setReservePrice(uint256 _reservePrice) external;
 

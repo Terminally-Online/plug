@@ -50,7 +50,9 @@ contract PlugFactorySocket is PlugSocket {
         LibClone.checkStartsWith($salt, $admin);
 
         /// @dev Deploy the new vault using a Beacon Proxy pattern.
-        ($alreadyDeployed, $vault) = LibClone.createDeterministicERC1967(msg.value, $implementation, $salt);
+        ($alreadyDeployed, $vault) = LibClone.createDeterministicERC1967(
+            msg.value, $implementation, $salt
+        );
 
         /// @dev If the vault was not already deployed, initialize it.
         if (!$alreadyDeployed) {
@@ -60,7 +62,8 @@ contract PlugFactorySocket is PlugSocket {
                 mstore(0x14, $admin)
                 /// @dev Store the call data for the `initialize(address)` function.
                 mstore(0x00, 0xc4d66de8000000000000000000000000)
-                if iszero(call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00)) {
+                if iszero(call(gas(), $vault, 0, 0x10, 0x24, codesize(), 0x00))
+                {
                     returndatacopy(mload(0x40), 0x00, returndatasize())
                     revert(mload(0x40), returndatasize())
                 }
@@ -68,7 +71,9 @@ contract PlugFactorySocket is PlugSocket {
 
             /// @dev Emit an event for the creation of the Vault to make tracking
             ///		 things easier offchain.
-            emit PlugFactorySocketLib.SocketDeployed($implementation, $admin, $salt);
+            emit PlugFactorySocketLib.SocketDeployed(
+                $implementation, $admin, $salt
+            );
         }
     }
 
@@ -77,8 +82,17 @@ contract PlugFactorySocket is PlugSocket {
      * @param $salt The salt of the vault.
      * @return $vault The predicted address of the vault.
      */
-    function getAddress(address $implementation, bytes32 $salt) public view returns (address $vault) {
-        $vault = LibClone.predictDeterministicAddressERC1967($implementation, $salt, address(this));
+    function getAddress(
+        address $implementation,
+        bytes32 $salt
+    )
+        public
+        view
+        returns (address $vault)
+    {
+        $vault = LibClone.predictDeterministicAddressERC1967(
+            $implementation, $salt, address(this)
+        );
     }
 
     /**
@@ -86,7 +100,12 @@ contract PlugFactorySocket is PlugSocket {
      * @dev This is used to mine vanity addresses.
      * @return $initCodeHash The init code hash of the vaults.
      */
-    function initCodeHash(address $implementation) public view virtual returns (bytes32 $initCodeHash) {
+    function initCodeHash(address $implementation)
+        public
+        view
+        virtual
+        returns (bytes32 $initCodeHash)
+    {
         $initCodeHash = LibClone.initCodeHashERC1967($implementation);
     }
 }

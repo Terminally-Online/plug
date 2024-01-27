@@ -41,7 +41,11 @@ abstract contract ThresholdFuse is PlugFuseInterface {
     /**
      * @dev Decode the terms to get the logic operator and threshold.
      */
-    function decode(bytes calldata $data) public pure returns (uint128 $operator, uint128 $threshold) {
+    function decode(bytes calldata $data)
+        public
+        pure
+        returns (uint128 $operator, uint128 $threshold)
+    {
         /// @dev Retrieve the logic operator set in the terms.
         $operator = $data.toUint128(0);
         /// @dev Move 16 bytes to the right to get the threshold.
@@ -51,7 +55,14 @@ abstract contract ThresholdFuse is PlugFuseInterface {
     /**
      * @dev Encode the logic operator and threshold.
      */
-    function encode(uint128 $operator, uint128 $threshold) public pure returns (bytes memory $data) {
+    function encode(
+        uint128 $operator,
+        uint128 $threshold
+    )
+        public
+        pure
+        returns (bytes memory $data)
+    {
         /// @dev Encode the logic operator and threshold.
         $data = abi.encodePacked($operator, $threshold);
     }

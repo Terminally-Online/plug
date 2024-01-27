@@ -29,7 +29,8 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
     INounsToken public immutable NOUN;
 
     /// @dev The hippest way to reference ETH with a token address.
-    address private constant DOLPHIN_ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    address private constant DOLPHIN_ETH =
+        0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /// @dev On bid execution, 0.0002% of the bid is sent to the protocol.
     /// @notice In effect, that means it costs < $5 to prevent thousands
@@ -42,7 +43,13 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
     /// @dev Account for the last bid made on each Noun.
     mapping(uint256 => address) public bids;
 
-    constructor(address $auctionHouse, address $nouns, address $owner) NounsBidFuse($auctionHouse) {
+    constructor(
+        address $auctionHouse,
+        address $nouns,
+        address $owner
+    )
+        NounsBidFuse($auctionHouse)
+    {
         /// @dev Initialize the Auction House and Nouns interfaces.
         NOUN = INounsToken($nouns);
 
@@ -95,7 +102,8 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
      */
     function use(uint256 $value) internal {
         /// @dev Get the current state of the auction.
-        (uint256 $nounId,,, uint256 $endTime,, bool $settled) = AUCTION_HOUSE.auction();
+        (uint256 $nounId,,, uint256 $endTime,, bool $settled) =
+            AUCTION_HOUSE.auction();
 
         /// @dev If the auction has concluded and a new auction has not
         ///      been scheduled, then settle the active auction and create one.

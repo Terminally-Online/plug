@@ -43,7 +43,11 @@ contract PlugAllowedMethodsFuse is PlugFuseInterface {
     /**
      * @dev Decode the terms to get a specific signature.
      */
-    function decode(bytes calldata $data) public pure returns (bytes4[] memory) {
+    function decode(bytes calldata $data)
+        public
+        pure
+        returns (bytes4[] memory)
+    {
         /// @dev Load the stack.
         uint256 i;
         uint256 length = $data.length;
@@ -69,7 +73,11 @@ contract PlugAllowedMethodsFuse is PlugFuseInterface {
     /**
      * @dev Encode all of the signatures that are allowed.
      */
-    function encode(bytes4[] memory $signatures) public pure returns (bytes memory $signature) {
+    function encode(bytes4[] memory $signatures)
+        public
+        pure
+        returns (bytes memory $signature)
+    {
         /// @dev Load the stack.
         uint256 i;
         uint256 length = $signatures.length;

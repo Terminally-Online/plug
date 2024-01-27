@@ -19,7 +19,11 @@ contract PlugSocket is PlugSocketInterface, PlugSimulation {
     /**
      * See {IPlug-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable returns (bytes[] memory $results) {
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+        external
+        payable
+        returns (bytes[] memory $results)
+    {
         /// @dev Determine who signed the intent.
         address intentSigner = getLivePlugsSigner($livePlugs);
 
@@ -39,7 +43,11 @@ contract PlugSocket is PlugSocketInterface, PlugSimulation {
     /**
      * See {IPlug-plugContract}.
      */
-    function plugContract(PlugTypesLib.Plug[] calldata $plugs) external payable returns (bytes[] memory $result) {
+    function plugContract(PlugTypesLib.Plug[] calldata $plugs)
+        external
+        payable
+        returns (bytes[] memory $result)
+    {
         $result = _plug($plugs, msg.sender);
     }
 

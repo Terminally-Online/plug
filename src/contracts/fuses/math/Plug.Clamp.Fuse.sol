@@ -45,14 +45,25 @@ contract PlugClampFuse is PlugFuseInterface {
     /**
      * @dev Decode the clamp data into the two bounds.
      */
-    function decode(bytes calldata $data) public pure returns (uint256 $min, uint256 $max) {
+    function decode(bytes calldata $data)
+        public
+        pure
+        returns (uint256 $min, uint256 $max)
+    {
         ($min, $max) = abi.decode($data, (uint256, uint256));
     }
 
     /**
      * @dev Encode the clamp bounds.
      */
-    function encode(uint256 $min, uint256 $max) public pure returns (bytes memory $data) {
+    function encode(
+        uint256 $min,
+        uint256 $max
+    )
+        public
+        pure
+        returns (bytes memory $data)
+    {
         $data = abi.encode($min, $max);
     }
 }
