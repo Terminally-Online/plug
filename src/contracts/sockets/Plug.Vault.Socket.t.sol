@@ -2,25 +2,22 @@
 
 pragma solidity 0.8.23;
 
-import { PRBTest } from "@prb/test/PRBTest.sol";
-import { console2 } from "forge-std/console2.sol";
-import { StdCheats } from "forge-std/StdCheats.sol";
-import { TestPlus } from "../tests/TestPlus.sol";
+import { Test } from "../utils/Test.sol";
 
-import { PlugFactorySocket } from "./Plug.Factory.Socket.sol";
+import { PlugFactory } from "../utils/Plug.Factory.sol";
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
 
 import { LibClone } from "solady/src/utils/LibClone.sol";
 
-contract PlugFactorySocketTest is PRBTest, StdCheats, TestPlus {
+contract PlugFactorySocketTest is Test {
     PlugVaultSocket internal implementation;
-    PlugFactorySocket internal factory;
+    PlugFactory internal factory;
 
     PlugVaultSocket internal vault;
 
     function setUp() public virtual {
         implementation = new PlugVaultSocket();
-        factory = new PlugFactorySocket("PlugMockSocket", "0.0.0");
+        factory = new PlugFactory();
 
         (, address vaultAddress) =
             factory.deploy(address(implementation), address(this), bytes32(0));

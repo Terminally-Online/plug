@@ -16,7 +16,7 @@ import { LibClone } from "solady/src/utils/LibClone.sol";
  * @author @nftchance (chance@utc24.io)
  * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)
  */
-contract PlugFactorySocket {
+contract PlugFactory {
     /**
      * @notice Deploy a new Plug contract and initialize it.
      * @param $admin The admin of the vault.

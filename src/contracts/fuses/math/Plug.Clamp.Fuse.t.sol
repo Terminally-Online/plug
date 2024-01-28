@@ -2,15 +2,12 @@
 
 pragma solidity 0.8.23;
 
-import { PRBTest } from "@prb/test/PRBTest.sol";
-import { console2 } from "forge-std/console2.sol";
-import { StdCheats } from "forge-std/StdCheats.sol";
-import { TestPlus } from "../../tests/TestPlus.sol";
+import { Test } from "../../utils/Test.sol";
 import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
 
 import { PlugClampFuse } from "./Plug.Clamp.Fuse.sol";
 
-contract PlugClampFuseTest is PRBTest, StdCheats, TestPlus {
+contract PlugClampFuseTest is Test {
     PlugClampFuse internal fuse;
 
     function setUp() public {

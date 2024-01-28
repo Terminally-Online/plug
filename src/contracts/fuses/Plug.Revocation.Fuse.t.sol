@@ -2,15 +2,15 @@
 
 pragma solidity 0.8.23;
 
-import { Test } from "../tests/Test.sol";
+import { Test } from "../utils/Test.sol";
 
-import { PlugMockSocket } from "../sockets/Plug.Mock.Socket.sol";
+import { PlugMockEcho } from "../mocks/Plug.Mock.Echo.sol";
 import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugCore } from "../abstracts/Plug.Core.sol";
 import { PlugRevocationFuse } from "./Plug.Revocation.Fuse.sol";
 
 contract PlugRevocationFuseTest is Test {
-    PlugMockSocket internal mock;
+    PlugMockEcho internal mock;
     PlugRevocationFuse internal fuse;
 
     address internal signer;
@@ -22,7 +22,7 @@ contract PlugRevocationFuseTest is Test {
     bytes32 internal digest;
 
     function setUp() public {
-        mock = new PlugMockSocket("PlugMockSocket", "0.0.0");
+        mock = new PlugMockEcho("PlugMockSocket", "0.0.0");
         fuse = new PlugRevocationFuse();
 
         signerPrivateKey = 0xabc123;

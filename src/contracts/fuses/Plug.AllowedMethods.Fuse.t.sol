@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.23;
 
-import { Test } from "../tests/Test.sol";
+import { Test } from "../utils/Test.sol";
 
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugAllowedMethodsFuse } from "./Plug.AllowedMethods.Fuse.sol";

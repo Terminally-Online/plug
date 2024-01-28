@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.23;
 
-import { Test } from "../tests/Test.sol";
+import { Test } from "../utils/Test.sol";
 
 import { PlugMockEcho } from "./Plug.Mock.Echo.sol";
 import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
