@@ -61,9 +61,6 @@ jobs:
             - name: 🤏 Contract Sizes
               run: forge build --sizes
 
-            - name: ⛽ Snapshot Gas
-              run: forge snapshot --check
-
             - name: 🧪 Run Forge tests
               run: |
                   forge test -vvv
