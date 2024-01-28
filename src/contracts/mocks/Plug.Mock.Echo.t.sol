@@ -4,12 +4,12 @@ pragma solidity 0.8.23;
 
 import { Test } from "../tests/Test.sol";
 
-import { PlugMockSocket } from "./Plug.Mock.Socket.sol";
+import { PlugMockEcho } from "./Plug.Mock.Echo.sol";
 import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugCore } from "../abstracts/Plug.Core.sol";
 
 contract PlugMockSocketTest is Test {
-    PlugMockSocket internal mock;
+    PlugMockEcho internal mock;
 
     address internal signer;
     uint256 internal signerPrivateKey;
@@ -20,7 +20,7 @@ contract PlugMockSocketTest is Test {
     bytes32 internal digest;
 
     function setUp() public {
-        mock = new PlugMockSocket("PlugMockSocket", "0.0.0");
+        mock = new PlugMockEcho("PlugMockEcho", "0.0.0");
 
         signerPrivateKey = 0xabc123;
         signer = vm.addr(signerPrivateKey);
@@ -29,13 +29,13 @@ contract PlugMockSocketTest is Test {
     function test_Echo() public {
         string memory expected = "Hello World";
         vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(address(this), address(this), expected);
+        emit PlugMockEcho.EchoInvoked(address(this), address(this), expected);
         mock.echo(expected);
     }
 
     function test_EmptyEcho() public {
         vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(
+        emit PlugMockEcho.EchoInvoked(
             address(this), address(this), "Hello World"
         );
         mock.emptyEcho();
@@ -171,7 +171,7 @@ contract PlugMockSocketTest is Test {
 
         /// @dev Execute the plug.
         vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(address(mock), signer, "Hello World");
+        emit PlugMockEcho.EchoInvoked(address(mock), signer, "Hello World");
         hoax(_randomNonZeroAddress());
         mock.plug(livePlugs);
     }
