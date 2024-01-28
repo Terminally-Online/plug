@@ -87,13 +87,13 @@ abstract contract PlugCore is PlugTypes {
         internal
         returns (bytes memory $through)
     {
-        /// @dev Warm up the success variable.
+        /// @dev Warm up the slot for the return data.
         bool success;
 
         /// @dev Call the Fuse to determine if it is valid.
-        (success, $through) = address($fuse.neutral).call(
+        (success, $through) = $fuse.neutral.call(
             abi.encodeWithSelector(
-                PlugFuseInterface($fuse.neutral).enforceFuse.selector,
+                PlugFuseInterface.enforceFuse.selector,
                 $fuse.live,
                 $current,
                 $pinHash
@@ -102,6 +102,9 @@ abstract contract PlugCore is PlugTypes {
 
         /// @dev If the Fuse failed and is not optional, bubble up the revert.
         if (!success && $fuse.forced) $through.bubbleRevert();
+
+        /// @dev Decode the return data to remove the wrapped bytes in memory.
+        $through = abi.decode($through, (bytes));
     }
 
     /**

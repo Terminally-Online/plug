@@ -4,12 +4,14 @@ pragma solidity 0.8.23;
 
 import { Test } from "../tests/Test.sol";
 
-import { PlugMockSocket } from "./Plug.Mock.Socket.sol";
+import { PlugMockSocket } from "../sockets/Plug.Mock.Socket.sol";
 import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugCore } from "../abstracts/Plug.Core.sol";
+import { PlugRevocationFuse } from "./Plug.Revocation.Fuse.sol";
 
-contract PlugMockSocketTest is Test {
+contract PlugRevocationFuseTest is Test {
     PlugMockSocket internal mock;
+    PlugRevocationFuse internal fuse;
 
     address internal signer;
     uint256 internal signerPrivateKey;
@@ -21,34 +23,16 @@ contract PlugMockSocketTest is Test {
 
     function setUp() public {
         mock = new PlugMockSocket("PlugMockSocket", "0.0.0");
+        fuse = new PlugRevocationFuse();
 
         signerPrivateKey = 0xabc123;
         signer = vm.addr(signerPrivateKey);
     }
 
-    function test_Echo() public {
-        string memory expected = "Hello World";
-        vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(address(this), address(this), expected);
-        mock.echo(expected);
-    }
-
-    function test_EmptyEcho() public {
-        vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(
-            address(this), address(this), "Hello World"
-        );
-        mock.emptyEcho();
-    }
-
-    function test_MutedEcho(uint256 $echo) public view {
-        mock.mutedEcho($echo);
-    }
-
-    function test_GetLivePlugsSigner() public {
+    function test_enforceFuse() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
-            abi.encodeWithSelector(mock.mutedEcho.selector);
+            abi.encodeWithSelector(mock.emptyEcho.selector);
         PlugTypesLib.Current memory current = PlugTypesLib.Current({
             ground: address(mock),
             voltage: 0,
@@ -57,7 +41,16 @@ contract PlugMockSocketTest is Test {
 
         /// @dev Instantiate the pin and sign it.
         PlugTypesLib.LivePin[] memory livePins = new PlugTypesLib.LivePin[](1);
-        PlugTypesLib.Fuse[] memory fuses = new PlugTypesLib.Fuse[](0);
+
+        /// @dev Instantiate the revocation fuse and include it in the pin.
+        PlugTypesLib.Fuse[] memory fuses = new PlugTypesLib.Fuse[](1);
+        PlugTypesLib.Fuse memory revocationFuse = PlugTypesLib.Fuse({
+            neutral: address(fuse),
+            live: bytes("0"),
+            forced: true
+        });
+        fuses[0] = revocationFuse;
+
         PlugTypesLib.Pin memory pin = PlugTypesLib.Pin({
             neutral: signer,
             live: bytes32(0),
@@ -72,11 +65,12 @@ contract PlugMockSocketTest is Test {
         /// @dev Append the pin to the live pins array.
         PlugTypesLib.LivePin memory livePin =
             PlugTypesLib.LivePin({ pin: pin, signature: pinSignature });
+        bytes32 pinHash = mock.getLivePinHash(livePin);
+        assertNotEq(pinHash, bytes32(0));
         address pinSigner = mock.getLivePinSigner(livePin);
         assertEq(pinSigner, signer);
         livePins[0] = livePin;
 
-        /// @dev Bundle the plug and sign it.
         PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({
             pins: livePins,
             current: current,
@@ -84,37 +78,6 @@ contract PlugMockSocketTest is Test {
         });
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
         plugsArray[0] = Plug;
-        PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
-            breaker: PlugTypesLib.Breaker({ nonce: 1, queue: 0 }),
-            plugs: plugsArray
-        });
-        digest = mock.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = mock.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
-    }
-
-    function test_PlugEmptyEcho_SignerExecutor() public {
-        /// @dev Encode the transaction that is going to be called.
-        bytes memory encodedTransaction =
-            abi.encodeWithSelector(mock.emptyEcho.selector);
-        PlugTypesLib.Current memory current = PlugTypesLib.Current({
-            ground: address(mock),
-            voltage: 0,
-            data: encodedTransaction
-        });
-
-        /// @dev There are no conditions in this plug meaning a user is executing their own intent.
-        PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({
-            pins: new PlugTypesLib.LivePin[](0),
-            current: current,
-            forced: true
-        });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = Plug;
 
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
@@ -135,7 +98,7 @@ contract PlugMockSocketTest is Test {
         mock.plug(livePlugs);
     }
 
-    function test_PlugEmptyEcho_ExternalExecutor() public {
+    function testRevert_enforceFuse_revoked() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -145,9 +108,61 @@ contract PlugMockSocketTest is Test {
             data: encodedTransaction
         });
 
-        /// @dev There are no conditions in this plug meaning an executor can do anything.
+        /// @dev Instantiate the pin and sign it.
+        PlugTypesLib.LivePin[] memory livePins = new PlugTypesLib.LivePin[](1);
+
+        /// @dev Instantiate the revocation fuse and include it in the pin.
+        PlugTypesLib.Fuse[] memory fuses = new PlugTypesLib.Fuse[](1);
+        PlugTypesLib.Fuse memory revocationFuse = PlugTypesLib.Fuse({
+            neutral: address(fuse),
+            live: bytes("0"),
+            forced: true
+        });
+        fuses[0] = revocationFuse;
+
+        PlugTypesLib.Pin memory pin = PlugTypesLib.Pin({
+            neutral: signer,
+            live: bytes32(0),
+            fuses: fuses,
+            salt: bytes32(0),
+            forced: true
+        });
+        digest = mock.getPinDigest(pin);
+        (v, r, s) = vm.sign(signerPrivateKey, digest);
+        bytes memory pinSignature = abi.encodePacked(r, s, v);
+
+        /// @dev Append the pin to the live pins array.
+        PlugTypesLib.LivePin memory livePin =
+            PlugTypesLib.LivePin({ pin: pin, signature: pinSignature });
+        bytes32 pinHash = mock.getLivePinHash(livePin);
+        assertNotEq(pinHash, bytes32(0));
+        address pinSigner = mock.getLivePinSigner(livePin);
+        assertEq(pinSigner, signer);
+        livePins[0] = livePin;
+
+        bytes32 domainHash = mock.domainHash();
+        address fuseSigner = fuse.getSigner(livePin, domainHash);
+
+        /// @dev Make sure random users can't revoke.
+        vm.expectRevert(bytes("PlugRevocationFuse:invalid-revoker"));
+        fuse.revoke(livePin, domainHash);
+
+        /// @dev Revoke the pin.
+        assertEq(fuseSigner, signer);
+        vm.prank(signer);
+        fuse.revoke(livePin, domainHash);
+
+        /// @dev Make sure the pin is revoked.
+        bool revoked = fuse.isRevoked(pinHash);
+        assertTrue(revoked);
+
+        /// @dev Make sure you can't double revoke.
+        vm.prank(signer);
+        vm.expectRevert(bytes("PlugRevocationFuse:already-revoked"));
+        fuse.revoke(livePin, domainHash);
+
         PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({
-            pins: new PlugTypesLib.LivePin[](0),
+            pins: livePins,
             current: current,
             forced: true
         });
@@ -170,47 +185,7 @@ contract PlugMockSocketTest is Test {
         assertEq(plugsSigner, signer);
 
         /// @dev Execute the plug.
-        vm.expectEmit(address(mock));
-        emit PlugMockSocket.EchoInvoked(address(mock), signer, "Hello World");
-        hoax(_randomNonZeroAddress());
-        mock.plug(livePlugs);
-    }
-
-    function testFail_PlugMutedEcho() public {
-        /// @dev Encode the transaction that is going to be called.
-        bytes memory encodedTransaction =
-            abi.encodeWithSelector(mock.mutedEcho.selector);
-        PlugTypesLib.Current memory current = PlugTypesLib.Current({
-            ground: address(mock),
-            voltage: 0,
-            data: encodedTransaction
-        });
-
-        /// @dev There are no conditions in this plug meaning a user is executing their own intent.
-        PlugTypesLib.Plug memory Plug = PlugTypesLib.Plug({
-            pins: new PlugTypesLib.LivePin[](0),
-            current: current,
-            forced: true
-        });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = Plug;
-
-        /// @dev Make sure this transaction cannot be replayed.
-        PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
-            breaker: PlugTypesLib.Breaker({ nonce: 1, queue: 0 }),
-            plugs: plugsArray
-        });
-
-        /// @dev Sign the execution.
-        digest = mock.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = mock.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
-
-        /// @dev Execute the plug.
+        vm.expectRevert(bytes("PlugRevocationFuse:revoked"));
         mock.plug(livePlugs);
     }
 }

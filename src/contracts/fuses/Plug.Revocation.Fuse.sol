@@ -27,7 +27,7 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
     using ECDSA for bytes32;
 
     /// @dev Mapping of revoked pins.
-    mapping(bytes32 => bool) isRevoked;
+    mapping(bytes32 => bool) public isRevoked;
 
     constructor() {
         _initializeSocket("RevocationEnforcer", "0.0.1");
@@ -47,7 +47,7 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
         returns (bytes memory $through)
     {
         /// @dev Ensure the pin has not been revoked.
-        require(!isRevoked[$pinHash], "RevocationEnforcer:revoked");
+        require(!isRevoked[$pinHash], "PlugRevocationFuse:revoked");
 
         /// @dev Continue the pass through.
         $through = $current.data;
@@ -69,14 +69,14 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
         ///      Of course, revocation itself could be delegated.
         require(
             getSigner($signedPin, $domainHash) == _msgSender(),
-            "RevocationEnforcer:invalid-revoker"
+            "PlugRevocationFuse:invalid-revoker"
         );
 
         /// @dev Determine the hash of the pin.
         bytes32 pinHash = getLivePinHash($signedPin);
 
         /// @dev Ensure the pin has not already been revoked.
-        require(!isRevoked[pinHash], "RevocationEnforcer:already-revoked");
+        require(!isRevoked[pinHash], "PlugRevocationFuse:already-revoked");
 
         /// @dev Mark the pin as revoked.
         isRevoked[pinHash] = true;
