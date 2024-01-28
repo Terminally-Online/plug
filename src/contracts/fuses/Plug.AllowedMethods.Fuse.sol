@@ -37,7 +37,7 @@ contract PlugAllowedMethodsFuse is PlugFuseInterface {
             }
         }
 
-        revert("AllowedMethodsEnforcer:method-not-allowed");
+        revert("PlugAllowedMethodsFuse:method-not-allowed");
     }
 
     /**

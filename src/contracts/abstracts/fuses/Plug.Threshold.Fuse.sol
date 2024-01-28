@@ -27,11 +27,13 @@ abstract contract ThresholdFuse is PlugFuseInterface {
 
         /// @dev Make sure the block number is before the threshold.
         if ($operator == 0) {
-            if ($threshold <= _threshold()) revert("ThresholdFuse:expired-pin");
+            if ($threshold < _threshold()) {
+                revert(string(abi.encodePacked(_name(), ":expired-pin")));
+            }
         }
         /// @dev Make sure the block number is after the threshold.
-        else if ($threshold >= _threshold()) {
-            revert("ThresholdFuse:early-pin");
+        else if ($threshold > _threshold()) {
+            revert(string(abi.encodePacked(_name(), ":early-pin")));
         }
 
         /// @dev Continue the pass through.
@@ -71,4 +73,9 @@ abstract contract ThresholdFuse is PlugFuseInterface {
      * @dev Unit denomination of the threshold.
      */
     function _threshold() internal view virtual returns (uint256);
+
+    /**
+     * @dev Abstract function to surface the name of the threshold consumer.
+     */
+    function _name() internal view virtual returns (string memory);
 }
