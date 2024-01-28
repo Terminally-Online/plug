@@ -7,7 +7,7 @@ import { Test } from "../utils/Test.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugBlockNumberFuse } from "./Plug.BlockNumber.Fuse.sol";
 
-contract PlugLimitedCallsFuseTest is Test {
+contract PlugBlockNumberFuseTest is Test {
     PlugBlockNumberFuse internal fuse;
 
     PlugTypesLib.Current current =

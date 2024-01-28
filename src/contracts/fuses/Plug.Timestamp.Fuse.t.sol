@@ -7,8 +7,6 @@ import { Test } from "../utils/Test.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugTimestampFuse } from "./Plug.Timestamp.Fuse.sol";
 
-import { LibClone } from "solady/src/utils/LibClone.sol";
-
 contract PlugTimestampFuseTest is Test {
     PlugTimestampFuse internal fuse;
 

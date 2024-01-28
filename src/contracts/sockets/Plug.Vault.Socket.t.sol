@@ -7,9 +7,7 @@ import { Test } from "../utils/Test.sol";
 import { PlugFactory } from "../utils/Plug.Factory.sol";
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
 
-import { LibClone } from "solady/src/utils/LibClone.sol";
-
-contract PlugFactorySocketTest is Test {
+contract PlugFactoryTest is Test {
     PlugVaultSocket internal implementation;
     PlugFactory internal factory;
 
