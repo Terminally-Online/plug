@@ -247,7 +247,7 @@ abstract contract PlugCore is PlugTypes {
             _enforceCurrent(plug.current);
 
             /// @dev Verify the delegate at the end of the pin chain is the signer.
-            require(grantor == $sender, "PlugCore:invalid-signer");
+            require(grantor == $sender, "PlugCore:invalid-sender");
 
             /// @dev Execute the transaction.
             $results[i] = _execute(plug.current, granted);
