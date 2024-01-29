@@ -30,14 +30,11 @@ contract PlugSocket is PlugSocketInterface, PlugSimulation {
         /// @dev Prevent random people from plugging.
         _enforceSigner(intentSigner);
 
-        /// @dev Load the plugs as a hot reference.
-        PlugTypesLib.Plugs calldata plugs = $livePlugs.plugs;
-
         /// @dev Prevent replay attacks by enforcing replay protection.
-        _enforceBreaker(intentSigner, plugs.breaker);
+        _enforceBreaker(intentSigner, $livePlugs.plugs.breaker);
 
         /// @dev Invoke the plugs.
-        $results = _plug(plugs.plugs, intentSigner);
+        $results = _plug($livePlugs.plugs.plugs, intentSigner);
     }
 
     /**
@@ -48,6 +45,9 @@ contract PlugSocket is PlugSocketInterface, PlugSimulation {
         payable
         returns (bytes[] memory $result)
     {
+        /// @dev Prevent random contracts from plugging.
+        _enforceSigner(msg.sender);
+
         $result = _plug($plugs, msg.sender);
     }
 

@@ -2,11 +2,7 @@
 
 pragma solidity 0.8.23;
 
-import { PlugSocket } from "../abstracts/Plug.Socket.sol";
-
-// TODO: Implement storage of the signer and sender so that contracts can choose
-//       to associate the execution of a contract to the intended party rather
-//       than always having to reference things to the royalty address.
+import { PlugInitializable } from "../abstracts/Plug.Initializable.sol";
 
 /**
  * @title Plug Router Socket
@@ -16,25 +12,26 @@ import { PlugSocket } from "../abstracts/Plug.Socket.sol";
  *         execute transactions which means they can use your approvals.
  * @author @nftchance (chance@utc24.io)
  */
-contract PlugRouterSocket is PlugSocket {
-    /// @dev Whether or not the contract has been initialized.
-    bool private initialized;
-
+contract PlugRouterSocket is PlugInitializable {
     /**
      * @notice Initializes a new Plug Vault contract.
      */
     constructor() {
-        /// @dev Initialize the Plug Socket.
-        _initializeSocket("PlugVaultSocket", "0.0.0");
+        /// @dev Initialize the contract when deployed through a factory.
+        initialize(msg.sender);
     }
 
     /**
-     * @notice Modifier to ensure that the contract has not been initialized.
+     * @notice Name used for the domain separator.
      */
-    modifier initializer() {
-        require(!initialized, "PlugVaultSocket:already-initialized");
+    function name() public pure override returns (string memory) {
+        return "PlugRouterSocket";
+    }
 
-        initialized = true;
-        _;
+    /**
+     * @notice Version used for the domain separator.
+     */
+    function version() public pure override returns (string memory) {
+        return "0.0.0";
     }
 }

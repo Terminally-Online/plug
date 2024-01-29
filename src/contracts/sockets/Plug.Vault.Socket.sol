@@ -2,9 +2,8 @@
 
 pragma solidity 0.8.23;
 
-import { PlugSocket } from "../abstracts/Plug.Socket.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
-import { Receiver } from "solady/src/accounts/Receiver.sol";
+import { PlugInitializable } from "../abstracts/Plug.Initializable.sol";
+
 import { LibBitmap } from "solady/src/utils/LibBitmap.sol";
 
 /**
@@ -13,43 +12,11 @@ import { LibBitmap } from "solady/src/utils/LibBitmap.sol";
  *         declared set of signers.
  * @author @nftchance (chance@utc24.io)
  */
-contract PlugVaultSocket is PlugSocket, Ownable, Receiver {
+contract PlugVaultSocket is PlugInitializable {
     using LibBitmap for LibBitmap.Bitmap;
-
-    /// @dev Whether or not the contract has been initialized.
-    bool private initialized;
 
     /// @dev The signers of the contract.
     LibBitmap.Bitmap internal signers;
-
-    /**
-     * @notice Initializes a new Plug Vault contract.
-     */
-    constructor() {
-        initialize(msg.sender);
-    }
-
-    /**
-     * @notice Modifier to ensure that the contract has not been initialized.
-     */
-    modifier initializer() {
-        require(!initialized, "PlugVaultSocket:already-initialized");
-
-        initialized = true;
-        _;
-    }
-
-    /**
-     * @notice Initialize a new Plug Vault.
-     * @param $owner The owner of the vault.
-     */
-    function initialize(address $owner) public payable virtual initializer {
-        /// @dev Initialize the owner.
-        _initializeOwner($owner);
-
-        /// @dev Initialize the Plug Socket.
-        _initializeSocket("PlugVaultSocket", "0.0.0");
-    }
 
     /**
      * @notice Toggle a signer on or off.
@@ -66,6 +33,20 @@ contract PlugVaultSocket is PlugSocket, Ownable, Receiver {
      */
     function isSigner(address $signer) public view returns (bool $isSigner) {
         $isSigner = $signer == owner() || signers.get(uint160($signer));
+    }
+
+    /**
+     * @notice Name used for the domain separator.
+     */
+    function name() public pure override returns (string memory) {
+        return "PlugVaultSocket";
+    }
+
+    /**
+     * @notice Version used for the domain separator.
+     */
+    function version() public pure override returns (string memory) {
+        return "0.0.0";
     }
 
     /**

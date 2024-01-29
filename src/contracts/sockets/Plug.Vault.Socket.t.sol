@@ -6,8 +6,9 @@ import { Test } from "../utils/Test.sol";
 
 import { PlugFactory } from "../utils/Plug.Factory.sol";
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
+import { Initializable } from "solady/src/utils/Initializable.sol";
 
-contract PlugFactoryTest is Test {
+contract PlugVaultSocketTest is Test {
     PlugVaultSocket internal implementation;
     PlugFactory internal factory;
 
@@ -24,7 +25,7 @@ contract PlugFactoryTest is Test {
 
     function test_SingletonUse(uint256) public {
         vm.deal(address(vault), 100 ether);
-        vm.expectRevert("PlugVaultSocket:already-initialized");
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
         vault.initialize(address(this));
     }
 

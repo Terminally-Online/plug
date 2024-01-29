@@ -18,6 +18,14 @@ import { PlugErrors } from "../libraries/Plug.Errors.sol";
 abstract contract PlugCore is PlugTypes {
     using PlugErrors for bytes;
 
+    /// @notice Enables consumption of the address that gave permission
+    ///         to execute this transaction.
+    address public grantor;
+
+    /// @notice Enables consumption of the address that was given permission
+    ///         to execute this transaction.
+    address public granted;
+
     /// @notice Multi-dimensional account pin nonce management.
     mapping(address => mapping(uint256 => uint256)) public nonce;
 
@@ -155,8 +163,6 @@ abstract contract PlugCore is PlugTypes {
         uint256 i;
         uint256 ii;
         uint256 iii;
-        address grantor;
-        address granted;
         address pinSigner;
         bytes32 pinHash;
 
@@ -219,6 +225,11 @@ abstract contract PlugCore is PlugTypes {
 
             /// @dev Execute the transaction.
             $results[i] = _execute(plug.current, granted);
+
+            /// @dev Clear the grantor slot back to address(0).
+            delete grantor;
+            /// @dev Clear the granted slot back to address(0).
+            delete granted;
         }
     }
 }

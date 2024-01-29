@@ -59,9 +59,7 @@ contract PlugFactory {
 
             /// @dev Emit an event for the creation of the Vault to make tracking
             ///		 things easier offchain.
-            emit PlugFactoryLib.SocketDeployed(
-                $implementation, $admin, $salt
-            );
+            emit PlugFactoryLib.SocketDeployed($implementation, $admin, $salt);
         }
     }
 
