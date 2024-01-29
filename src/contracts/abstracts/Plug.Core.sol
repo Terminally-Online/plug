@@ -70,6 +70,19 @@ abstract contract PlugCore is PlugTypes {
     }
 
     /**
+     * @notice Possibly restrict the capability of the defined
+     *         execution path dependent on larger external factors
+     *         such as only allowing a transaction to be executed
+     *         on the socket itself.
+     * @param $current The current state of the transaction.
+     */
+    function _enforceCurrent(PlugTypesLib.Current memory $current)
+        internal
+        view
+        virtual
+    { }
+
+    /**
      * @notice Update the nonce for a given account and queue.
      * @param $intendedSender The address of the intended sender.
      * @param $protection The replay protection struct.
@@ -87,6 +100,14 @@ abstract contract PlugCore is PlugTypes {
         );
     }
 
+    /**
+     * @notice Enforce the fuse of the current plug to confirm the specified
+     *         conditions have been met.
+     * @param $fuse The fuse to enforce.
+     * @param $current The state of the transaction to execute.
+     * @param $pinHash The hash of the pin.
+     * @return $through The return data of the fuse.
+     */
     function _enforceFuse(
         PlugTypesLib.Fuse memory $fuse,
         PlugTypesLib.Current memory $current,
@@ -219,6 +240,11 @@ abstract contract PlugCore is PlugTypes {
                     }
                 }
             }
+
+            /// @dev Confirm the current is within specification.
+            /// @dev This is not done sooner because a fuse may manipulate the
+            ///      the declaration of the current.
+            _enforceCurrent(plug.current);
 
             /// @dev Verify the delegate at the end of the pin chain is the signer.
             require(grantor == $sender, "PlugCore:invalid-signer");

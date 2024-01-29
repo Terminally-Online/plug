@@ -2,31 +2,23 @@
 
 pragma solidity 0.8.23;
 
-import { INounsSeeder, INounsToken } from "../interfaces/nouns/INounsToken.sol";
+import { PlugLocalSocket } from "../../abstracts/sockets/Plug.Local.Socket.sol";
+import { PlugNounsBidFuse } from "../../abstracts/fuses/Plug.NounsBid.Fuse.sol";
 
-import { Ownable } from "solady/src/auth/Ownable.sol";
-
-import { PlugSocket } from "../abstracts/Plug.Socket.sol";
-import { NounsBidLib } from "../libraries/nouns/Nouns.Bid.Lib.sol";
-import { NounsBidFuse } from "../fuses/nouns/Nouns.Bid.Fuse.sol";
-
-import { BytesLib } from "../libraries/BytesLib.sol";
+import { PlugNounsLib } from "../../libraries/Plug.Nouns.Lib.sol";
+import { BytesLib } from "../../libraries/BytesLib.sol";
 
 /**
  * @title Plug Nouns Bid Socket
  * @notice This contract is responsible for coordinating the placing of bids in the
- *         Nouns Auction house and the following management of wins and losses without
- *         holding funds or collecting a TVL. ETH is automatically distributed when used,
- *         and Nouns are automatically distributed by the following bidder (in protocol)
- *         although the automated distribution can be front-run manually.
+ *         Nouns Auction house and the following management of wins and losses.
+ *         Nouns are automatically distributed by the following bidder (in protocol)
+ *         although the automated distribution can be front-run manually and any
+ *         ETH is automatically accounted for to the proper place.
  * @author @nftchance (chance@utc24.io)
- * @author @masonchain
  */
-contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
+contract PlugNounsBidSocket is PlugLocalSocket, PlugNounsBidFuse {
     using BytesLib for bytes;
-
-    /// @dev Accessible interface to the active Nouns Auction House.
-    INounsToken public immutable NOUN;
 
     /// @dev The hippest way to reference ETH with a token address.
     address private constant DOLPHIN_ETH =
@@ -43,24 +35,12 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
     /// @dev Account for the last bid made on each Noun.
     mapping(uint256 => address) public bids;
 
-    constructor(
-        address $auctionHouse,
-        address $nouns,
-        address $owner
-    )
-        NounsBidFuse($auctionHouse)
-    {
-        /// @dev Initialize the Auction House and Nouns interfaces.
-        NOUN = INounsToken($nouns);
+    /**
+     * @notice Initializes a new Plug Nouns Bid Socket contract.
+     */
+    constructor() PlugLocalSocket() { }
 
-        /// @dev Initialize the owner.
-        _initializeOwner($owner);
-
-        /// @dev Initialize the Plug Socket.
-        _initializeSocket("NounsBidSocket", "0.0.1");
-    }
-
-    receive() external payable virtual {
+    receive() external payable virtual override {
         _receive();
     }
 
@@ -69,7 +49,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
      */
     function _receive() internal {
         /// @dev Prevent receiving funds from anyone other than the Auction House.
-        if (msg.sender == address(AUCTION_HOUSE)) {
+        if (msg.sender == address(PlugNounsLib.AUCTION_HOUSE)) {
             /// @dev Determine who the last bidder was.
             address bidder = bids[currentNoun];
 
@@ -93,7 +73,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
         /// @dev Account for the money deposited by the sender.
         balances[$onBehalf] += msg.value;
 
-        emit NounsBidLib.Given($onBehalf, msg.value);
+        emit PlugNounsLib.Given($onBehalf, msg.value);
     }
 
     /**
@@ -103,21 +83,21 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
     function use(uint256 $value) internal {
         /// @dev Get the current state of the auction.
         (uint256 $nounId,,, uint256 $endTime,, bool $settled) =
-            AUCTION_HOUSE.auction();
+            PlugNounsLib.AUCTION_HOUSE.auction();
 
         /// @dev If the auction has concluded and a new auction has not
         ///      been scheduled, then settle the active auction and create one.
         if ($endTime <= block.timestamp && !$settled) {
-            AUCTION_HOUSE.settleCurrentAndCreateNewAuction();
+            PlugNounsLib.AUCTION_HOUSE.settleCurrentAndCreateNewAuction();
 
             /// @dev Get the current state of the active auction.
-            ($nounId,,,,,) = AUCTION_HOUSE.auction();
+            ($nounId,,,,,) = PlugNounsLib.AUCTION_HOUSE.auction();
         }
 
         /// @dev If a Noun was won, but has not yet been transferred to
         ///      to the winner, then transfer it to the winner.
         if ($nounId > currentNoun && bids[currentNoun] != address(0)) {
-            take(address(NOUN), currentNoun);
+            take(address(PlugNounsLib.TOKEN), currentNoun);
         }
 
         /// @dev Update the balance of the sender.
@@ -130,7 +110,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
         balances[owner()] += $value - bidValue;
 
         /// @dev Bid on the auction.
-        AUCTION_HOUSE.createBid{ value: bidValue }($nounId);
+        PlugNounsLib.AUCTION_HOUSE.createBid{ value: bidValue }($nounId);
 
         /// @dev Track the current noun.
         currentNoun = $nounId;
@@ -138,7 +118,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
         /// @dev Set the bidder as the current winner of the auction.
         bids[$nounId] = _msgSender();
 
-        emit NounsBidLib.Used(msg.sender, _msgSender(), $value, $nounId);
+        emit PlugNounsLib.Used(msg.sender, _msgSender(), $value, $nounId);
     }
 
     /**
@@ -151,7 +131,7 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
         if ($asset == DOLPHIN_ETH) {
             /// @dev Make sure the sender has sufficient balance to cover the call.
             if (balances[_msgSender()] < $value) {
-                revert NounsBidLib.InsufficientBalance();
+                revert PlugNounsLib.InsufficientBalance();
             }
 
             balances[_msgSender()] -= $value;
@@ -159,15 +139,15 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
             /// @dev Transfer the ETH to the sender.
             (bool success,) = _msgSender().call{ value: $value }("");
 
-            if (!success) revert NounsBidLib.InsufficientOwnership();
+            if (!success) revert PlugNounsLib.InsufficientOwnership();
 
-            emit NounsBidLib.Taken(msg.sender, _msgSender(), $asset, $value);
+            emit PlugNounsLib.Taken(msg.sender, _msgSender(), $asset, $value);
         }
         /// @dev If the asset is Nouns, then transfer the Nouns to the sender.
-        else if ($asset == address(NOUN)) {
+        else if ($asset == address(PlugNounsLib.TOKEN)) {
             /// @dev Confirm that the auction has been settled to this contract.
-            if (NOUN.ownerOf($value) != address(this)) {
-                revert NounsBidLib.InsufficientOwnership();
+            if (PlugNounsLib.TOKEN.ownerOf($value) != address(this)) {
+                revert PlugNounsLib.InsufficientOwnership();
             }
 
             address winner = bids[$value];
@@ -175,13 +155,17 @@ contract PlugNounsBidSocket is PlugSocket, NounsBidFuse, Ownable {
             /// @dev Remove the winning bid from circulation.
             delete bids[$value];
 
-            NOUN.transferFrom(address(this), winner, $value);
+            PlugNounsLib.TOKEN.transferFrom(address(this), winner, $value);
 
-            emit NounsBidLib.Taken(_msgSender(), winner, $asset, $value);
+            emit PlugNounsLib.Taken(_msgSender(), winner, $asset, $value);
         }
         /// @dev If the asset is not ETH or Nouns, then revert.
         else {
-            revert NounsBidLib.InsufficientReason();
+            revert PlugNounsLib.InsufficientReason();
         }
+    }
+
+    function name() public pure override returns (string memory) {
+        return "PlugNounsBidSocket";
     }
 }

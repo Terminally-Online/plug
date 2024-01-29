@@ -19,6 +19,11 @@ contract PlugVaultSocket is PlugInitializable {
     LibBitmap.Bitmap internal signers;
 
     /**
+     * @notice Initializes a new Plug Vault Socket contract.
+     */
+    constructor() PlugInitializable() { }
+
+    /**
      * @notice Toggle a signer on or off.
      * @param $signer The address of the signer.
      */
@@ -40,13 +45,6 @@ contract PlugVaultSocket is PlugInitializable {
      */
     function name() public pure override returns (string memory) {
         return "PlugVaultSocket";
-    }
-
-    /**
-     * @notice Version used for the domain separator.
-     */
-    function version() public pure override returns (string memory) {
-        return "0.0.0";
     }
 
     /**

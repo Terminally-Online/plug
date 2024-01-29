@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.23;
 
-interface INounsToken {
+interface NounsTokenInterface {
     event Approval(
         address indexed owner, address indexed approved, uint256 indexed tokenId
     );

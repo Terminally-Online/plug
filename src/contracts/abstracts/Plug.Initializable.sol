@@ -14,7 +14,12 @@ import { LibBitmap } from "solady/src/utils/LibBitmap.sol";
  * @notice Initialize a socket with an owner and domain.
  * @author @nftchance (chance@utc24.io)
  */
-abstract contract PlugInitializable is PlugSocket, Ownable, Receiver, Initializable {
+abstract contract PlugInitializable is
+    PlugSocket,
+    Ownable,
+    Receiver,
+    Initializable
+{
     /**
      * @notice Initializes a new Plug Vault contract.
      */
@@ -44,5 +49,7 @@ abstract contract PlugInitializable is PlugSocket, Ownable, Receiver, Initializa
      * @notice Version used for the domain separator.
      * @dev Must be implemented by the child contract.
      */
-    function version() public pure virtual returns (string memory);
+    function version() public pure virtual returns (string memory) {
+        return "0.0.0";
+    }
 }

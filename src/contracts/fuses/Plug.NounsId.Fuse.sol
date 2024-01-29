@@ -2,23 +2,10 @@
 
 pragma solidity 0.8.23;
 
-import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
-import { BytesLib } from "../../libraries/BytesLib.sol";
-
-interface INounsAuctionHouse {
-    function auction()
-        external
-        view
-        returns (
-            uint256 nounId,
-            uint256 amount,
-            uint256 startTime,
-            uint256 endTime,
-            address bidder,
-            bool settled
-        );
-}
+import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
+import { BytesLib } from "../libraries/BytesLib.sol";
 
 /**
  * @title Nouns Id Fuse
@@ -26,15 +13,8 @@ interface INounsAuctionHouse {
  *		   that you you would like to bid on, on a regular basis.
  * @author @nftchance <chance@utc24.io>
  */
-contract NounsIdFuse is PlugFuseInterface {
+contract PlugNounsIdFuse is PlugFuseInterface {
     using BytesLib for bytes;
-
-    /// @dev The auction facilitator for Nouns.
-    INounsAuctionHouse AUCTION_HOUSE;
-
-    constructor(INounsAuctionHouse $auctionHouse) {
-        AUCTION_HOUSE = $auctionHouse;
-    }
 
     /**
      * See {Fuse-enforceFuse}.
@@ -50,7 +30,7 @@ contract NounsIdFuse is PlugFuseInterface {
         returns (bytes memory $through)
     {
         /// @dev Get the current state of the auction.
-        (uint256 nounId,,,,,) = AUCTION_HOUSE.auction();
+        (uint256 nounId,,,,,) = PlugNounsLib.AUCTION_HOUSE.auction();
 
         require(nounId == decode($live), "NounsTokenId:invalid-noun-id");
 

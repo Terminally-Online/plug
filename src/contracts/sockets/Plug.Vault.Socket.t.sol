@@ -10,9 +10,8 @@ import { Initializable } from "solady/src/utils/Initializable.sol";
 
 contract PlugVaultSocketTest is Test {
     PlugVaultSocket internal implementation;
-    PlugFactory internal factory;
-
     PlugVaultSocket internal vault;
+    PlugFactory internal factory;
 
     function setUp() public virtual {
         implementation = new PlugVaultSocket();

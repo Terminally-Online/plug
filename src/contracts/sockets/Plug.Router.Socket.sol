@@ -14,24 +14,14 @@ import { PlugInitializable } from "../abstracts/Plug.Initializable.sol";
  */
 contract PlugRouterSocket is PlugInitializable {
     /**
-     * @notice Initializes a new Plug Vault contract.
+     * @notice Initializes a new Plug Router Socket contract.
      */
-    constructor() {
-        /// @dev Initialize the contract when deployed through a factory.
-        initialize(msg.sender);
-    }
+    constructor() PlugInitializable() { }
 
     /**
      * @notice Name used for the domain separator.
      */
     function name() public pure override returns (string memory) {
         return "PlugRouterSocket";
-    }
-
-    /**
-     * @notice Version used for the domain separator.
-     */
-    function version() public pure override returns (string memory) {
-        return "0.0.0";
     }
 }

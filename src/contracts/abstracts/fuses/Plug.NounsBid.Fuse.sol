@@ -4,20 +4,11 @@ pragma solidity 0.8.23;
 
 import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
-import { INounsAuctionHouse } from
-    "../../interfaces/nouns/INounsAuctionHouse.sol";
-import { NounsBidLib } from "../../libraries/nouns/Nouns.Bid.Lib.sol";
+import { PlugNounsLib } from "../../libraries/Plug.Nouns.Lib.sol";
 
-contract NounsBidFuse is PlugFuseInterface {
-    INounsAuctionHouse public immutable AUCTION_HOUSE;
-
+abstract contract PlugNounsBidFuse is PlugFuseInterface {
     /// @dev Keep track of the balances of each user.
     mapping(address => uint256) public balances;
-
-    constructor(address $auctionHouse) {
-        /// @dev Initialize the Auction House and Nouns interfaces.
-        AUCTION_HOUSE = INounsAuctionHouse($auctionHouse);
-    }
 
     function enforceFuse(
         bytes calldata $live,
@@ -33,20 +24,20 @@ contract NounsBidFuse is PlugFuseInterface {
 
         /// @dev Get the current state of the auction.
         (,,, uint256 $endTime, address $winner, bool $settled) =
-            AUCTION_HOUSE.auction();
+            PlugNounsLib.AUCTION_HOUSE.auction();
 
         /// @dev Prevent the user from bidding on an auction that they
         ///      have already won / are winning.
-        if ($winner == $bidder) revert NounsBidLib.InsufficientReason();
+        if ($winner == $bidder) revert PlugNounsLib.InsufficientReason();
 
         /// @dev Prevent the user from bidding on an auction that has
         ///      not yet been settled.
         if (!$settled && $endTime <= block.timestamp && !$settleUnsettled) {
-            revert NounsBidLib.InsufficientSettlement();
+            revert PlugNounsLib.InsufficientSettlement();
         }
 
         /// @dev Make sure the user has enough money to bid.
-        if (balances[$bidder] < $bid) revert NounsBidLib.InsufficientBalance();
+        if (balances[$bidder] < $bid) revert PlugNounsLib.InsufficientBalance();
 
         /// @dev Make sure the bid - fees is large enough to cover
         ///		 the minimum bid.

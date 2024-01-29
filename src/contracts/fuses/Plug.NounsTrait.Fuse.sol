@@ -4,34 +4,9 @@ pragma solidity 0.8.23;
 
 import { Ownable } from "solady/src/auth/Ownable.sol";
 
-import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
-
-interface INoun {
-    struct Seed {
-        uint48 background;
-        uint48 body;
-        uint48 accessory;
-        uint48 head;
-        uint48 glasses;
-    }
-
-    function seeds(uint256) external view returns (Seed memory);
-}
-
-interface INounsAuctionHouse {
-    function auction()
-        external
-        view
-        returns (
-            uint256 nounId,
-            uint256 amount,
-            uint256 startTime,
-            uint256 endTime,
-            address bidder,
-            bool settled
-        );
-}
+import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
 
 /**
  * @title Nouns Trait Fuse
@@ -44,7 +19,7 @@ interface INounsAuctionHouse {
  * @author @nftchance <chance@utc24.io>
  * @author @masonchain
  */
-contract NounsTraitFuse is PlugFuseInterface, Ownable {
+contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
     /// @dev Function hashes of the trait getters.
     bytes32 public constant BACKGROUND_SELECTOR =
         keccak256(abi.encodePacked("background(uint256 index)"));
@@ -61,15 +36,11 @@ contract NounsTraitFuse is PlugFuseInterface, Ownable {
     /// @notice We use a raw address instead of interface here because we are dynamically building
     ///         the function to be called by decoding the selector from the live wire.
     address art;
-    /// @dev The ellusive Noun token.
-    INoun NOUN;
-    /// @dev The auction facilitator for Nouns.
-    INounsAuctionHouse AUCTION_HOUSE;
 
-    constructor(INoun $noun, INounsAuctionHouse $auctionHouse, address $art) {
+    constructor(address $art) {
         /// @dev Prepare the inferaces.
-        NOUN = $noun;
-        AUCTION_HOUSE = $auctionHouse;
+        // NOUN = $noun;
+        // AUCTION_HOUSE = $auctionHouse;
 
         /// @dev Set the scope of the Fuse.
         art = $art;
@@ -156,23 +127,29 @@ contract NounsTraitFuse is PlugFuseInterface, Ownable {
         returns (bytes32 $traitHash)
     {
         /// @dev Get the current state of the auction.
-        (uint256 nounId,,,,,) = AUCTION_HOUSE.auction();
+        (uint256 nounId,,,,,) = PlugNounsLib.AUCTION_HOUSE.auction();
 
         /// @dev Retrieve the metadata seeds of the current Noun.
-        INoun.Seed memory seeds = NOUN.seeds(nounId);
+        (
+            uint48 background,
+            uint48 body,
+            uint48 accessory,
+            uint48 head,
+            uint48 glasses
+        ) = PlugNounsLib.TOKEN.seeds(nounId);
 
         /// @dev Get the seed for the specified trait from the Seed struct.
         uint256 traitSeed;
         if ($selector == HEAD_SELECTOR) {
-            traitSeed = seeds.head;
+            traitSeed = head;
         } else if ($selector == GLASSES_SELECTOR) {
-            traitSeed = seeds.glasses;
+            traitSeed = glasses;
         } else if ($selector == BODY_SELECTOR) {
-            traitSeed = seeds.body;
+            traitSeed = body;
         } else if ($selector == ACCESSORY_SELECTOR) {
-            traitSeed = seeds.accessory;
+            traitSeed = accessory;
         } else if ($selector == BACKGROUND_SELECTOR) {
-            traitSeed = seeds.background;
+            traitSeed = background;
         } else {
             revert("NounsTraitFuse:invalid-selector");
         }

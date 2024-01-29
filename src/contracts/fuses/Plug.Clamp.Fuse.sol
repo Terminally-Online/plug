@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.23;
 
-import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
-import { BytesLib } from "../../libraries/BytesLib.sol";
+import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { BytesLib } from "../libraries/BytesLib.sol";
 
 /**
  * @title Plug Clamp Fuse
