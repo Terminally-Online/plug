@@ -17,15 +17,16 @@ library PlugNounsLib {
     error InsufficientReason();
     error InsufficientSettlement();
     error InsufficientOwnership();
+    error InvalidSender();
 
-    event Given(address indexed sender, uint256 value);
-    event Used(
+    event Give(address indexed sender, address indexed asset, uint256 value);
+    event Bid(
         address indexed sender,
         address indexed onBehalf,
         uint256 value,
         uint256 nounId
     );
-    event Taken(
+    event Take(
         address indexed sender,
         address indexed onBehalf,
         address indexed asset,
