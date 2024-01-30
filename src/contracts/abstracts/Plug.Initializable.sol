@@ -21,10 +21,15 @@ abstract contract PlugInitializable is
     Initializable
 {
     /**
-     * @notice Initializes a new Plug Vault contract.
+     * @notice Automatically initialize the contract that is used for the
+     *         the implementation to prevent nefarious interaction with
+     *         this contract.
+     * @dev We initialize to address(1) instead of address(0) because
+     *      it is more difficult to check if a contract has been
+     *      initialized if we use address(0).
      */
     constructor() {
-        initialize(msg.sender);
+        initialize(address(1));
     }
 
     /**
@@ -51,5 +56,19 @@ abstract contract PlugInitializable is
      */
     function version() public pure virtual returns (string memory) {
         return "0.0.0";
+    }
+
+    /**
+     * @notice Prevent the owner from being double initialized.
+     * @return $guard True if the owner has been initialized.
+     */
+    function _guardInitializeOwner()
+        internal
+        pure
+        virtual
+        override
+        returns (bool $guard)
+    {
+        $guard = true;
     }
 }

@@ -20,10 +20,7 @@ abstract contract PlugLocalSocket is PlugInitializable, PlugReceiver {
     /**
      * @notice Initializes a new Plug Vault contract.
      */
-    constructor() {
-        /// @dev Initialize the contract when deployed through a factory.
-        initialize(msg.sender);
-    }
+    constructor() PlugInitializable() { }
 
     /**
      * See {PlugReceiver-isTrustedForwarder}.
