@@ -26,6 +26,30 @@ abstract contract PlugLocalSocket is PlugInitializable, PlugReceiver {
     }
 
     /**
+     * See {PlugReceiver-isTrustedForwarder}.
+     *
+     * @notice This method should not be relied upon if the contract has
+     *         the capability to make external calls, or call itself through
+     *         a means that is not the mechanisms provided by Local Socket.
+     * @notice It is of critical importance that a trusted forwarder is not simultaneously
+     *         a LocalSocket and Multicallable (or another variant) as one could
+     *         create malicious calldata that allows them to impersonate an account
+     *         they should not have permission to. If the only means of self-calling
+     *         is through a Plug Local Socket that is okay because the decoded
+     *         sender is always appended to the end of the calldata.
+     */
+    function isTrustedForwarder(address $sender)
+        public
+        view
+        virtual
+        override
+        returns (bool $trusted)
+    {
+        $trusted =
+            msg.sender == address(this) || super.isTrustedForwarder($sender);
+    }
+
+    /**
      * @notice Ensure that the only valid ground for the current
      *         is the current contract.
      * @param $current The current to enforce.

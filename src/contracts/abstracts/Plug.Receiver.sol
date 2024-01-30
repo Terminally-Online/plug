@@ -12,15 +12,6 @@ import { LibBitmap } from "solady/src/utils/LibBitmap.sol";
  * @notice A BitMap is used to cast the address to a uint160. It is honestly rather
  *         unlikely though that we will ever have multiple addresses that are
  *         in the same slot. Still, it is a possibility and thus gas would be saved.
- * @notice This method should not be relied upon if the contract has
- *         the capability to make external calls, or call itself through
- *         a means that is not a Local Socket.
- * @notice It is of critical importance that a trusted forwarder is not simultaneously
- *         a LocalSocket and Multicallable (or another variant) as one could
- *         create malicious calldata that allows them to impersonate an account
- *         they should not have permission to. If the only means of self-calling
- *         is through a Plug Local Socket that is okay because the decoded
- *         sender is always appended to the end of the calldata.
  * @author @nftchance (chance@utc24.io)
  */
 abstract contract PlugReceiver {
@@ -49,7 +40,6 @@ abstract contract PlugReceiver {
      * @notice Determine and return whether or not an address is a trusted forwarder
      *         that will enable the ability to safely recover the signer (or intended
      *         sender) from the end of the calldata.
-     * @dev By default, the Plug Router and this contract itself are trusted forwarders.
      * @param $forwarder The address of the forwarder.
      * @return $trusted true if the address is a trusted forwarder, false otherwise.
      */
@@ -59,7 +49,7 @@ abstract contract PlugReceiver {
         virtual
         returns (bool $trusted)
     {
-        $trusted = msg.sender == PLUG_ROUTER || msg.sender == address(this)
+        $trusted = msg.sender == PLUG_ROUTER
             || trustedForwarders.get(uint160($forwarder));
     }
 
