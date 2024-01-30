@@ -22,7 +22,7 @@ contract PlugRevocationFuseTest is Test {
     bytes32 internal digest;
 
     function setUp() public {
-        mock = new PlugMockEcho("PlugMockSocket", "0.0.0");
+        mock = new PlugMockEcho();
         fuse = new PlugRevocationFuse();
 
         signerPrivateKey = 0xabc123;

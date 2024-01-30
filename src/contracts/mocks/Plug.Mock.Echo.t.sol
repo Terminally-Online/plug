@@ -20,7 +20,7 @@ contract PlugMockSocketTest is Test {
     bytes32 internal digest;
 
     function setUp() public {
-        mock = new PlugMockEcho("PlugMockEcho", "0.0.0");
+        mock = new PlugMockEcho();
 
         signerPrivateKey = 0xabc123;
         signer = vm.addr(signerPrivateKey);

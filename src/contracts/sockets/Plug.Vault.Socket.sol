@@ -26,9 +26,14 @@ contract PlugVaultSocket is PlugInitializable {
     /**
      * @notice Toggle a signer on or off.
      * @param $signer The address of the signer.
+     * @return $isSigner true if the address is a signer, false otherwise.
      */
-    function toggleSigner(address $signer) public onlyOwner {
-        signers.toggle(uint160($signer));
+    function toggleSigner(address $signer)
+        public
+        onlyOwner
+        returns (bool $isSigner)
+    {
+        $isSigner = signers.toggle(uint160($signer));
     }
 
     /**

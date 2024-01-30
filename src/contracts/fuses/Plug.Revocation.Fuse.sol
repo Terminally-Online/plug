@@ -5,7 +5,7 @@ pragma solidity 0.8.23;
 /// @dev Plug abstracts.
 import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugSocket } from "../abstracts/Plug.Socket.sol";
+import { PlugLocalSocket } from "../abstracts/sockets/Plug.Local.Socket.sol";
 
 /// @dev Hash declarations and decoders for the Plug framework.
 import { ECDSA } from "solady/src/utils/ECDSA.sol";
@@ -19,19 +19,15 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *         as the timestamp of generation (in milliseconds) to ensure that
  *         the signer can still reuse the same pin with a new salt.
  * @author @nftchance
- * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
- * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
+contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
     /// @notice Use the ECDSA library for signature verification.
     using ECDSA for bytes32;
 
     /// @dev Mapping of revoked pins.
     mapping(bytes32 => bool) public isRevoked;
 
-    constructor() {
-        _initializeSocket("RevocationEnforcer", "0.0.1");
-    }
+    constructor() PlugLocalSocket() { }
 
     /**
      * See {FuseEnforcer-enforceFuse}.
@@ -121,5 +117,12 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugSocket {
         $digest = keccak256(
             abi.encodePacked("\x19\x01", $domainHash, getPinHash($pin))
         );
+    }
+
+    /**
+     * See {PlugInitializable-name}.
+     */
+    function name() public pure override returns (string memory) {
+        return "PlugRevocationFuse";
     }
 }

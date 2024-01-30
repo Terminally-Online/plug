@@ -2,17 +2,21 @@
 
 pragma solidity 0.8.23;
 
-import { PlugTypesLib } from "../Plug.Types.sol";
 import { PlugInitializable } from "../Plug.Initializable.sol";
+import { PlugReceiver } from "../Plug.Receiver.sol";
+
+import { PlugTypesLib } from "../Plug.Types.sol";
 
 /**
  * @title Plug Router Socket
  * @notice This contract represents a general purpose relay socket that can be
  *         used to route transactions to other contracts.
- * @notice Consumers of this abstract must implemented `.name` and `.version`.
+ * @notice Consumers of this abstract MUST implement `.name()` and MAY choose
+ *         to implement `.version()` in the case it diverges from the core
+ *         or is not a native primitive of Plug.
  * @author @nftchance (chance@utc24.io)
  */
-abstract contract PlugLocalSocket is PlugInitializable {
+abstract contract PlugLocalSocket is PlugInitializable, PlugReceiver {
     /**
      * @notice Initializes a new Plug Vault contract.
      */

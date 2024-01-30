@@ -47,7 +47,7 @@ abstract contract PlugInitializable is
 
     /**
      * @notice Version used for the domain separator.
-     * @dev Must be implemented by the child contract.
+     * @dev May be implemented by the child contract.
      */
     function version() public pure virtual returns (string memory) {
         return "0.0.0";
