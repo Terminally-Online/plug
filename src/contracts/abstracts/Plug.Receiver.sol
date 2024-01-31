@@ -73,7 +73,7 @@ abstract contract PlugReceiver {
                     /// @dev Prevent address(0) from being a valid sender by resetting it to
                     ///      the caller if it is the case.
                     /// @dev Given the proper setup this should never really be possible,
-                    ///      if only properly functioning trusted forwarders are enabled,                                      ///      but it is better to be safe than sorry because significant damage
+                    ///      if only properly functioning trusted forwarders are enabled,                            ///      but it is better to be safe than sorry because significant damage
                     ///      could be done if the address(0) is a valid sender to effectively
                     ///      every smart contract that exists.
                     if iszero($sender) { $sender := caller() }
