@@ -28,7 +28,9 @@
 		"noUnusedParameters": true,
 
 		"resolveJsonModule": true,
-		"strictNullChecks": true
+		"strictNullChecks": true,
+
+		"lib": ["es2021"]
 	},
 	"include": ["src/**/*", "lib/**/*"],
 	"files": ["src/index.ts"],

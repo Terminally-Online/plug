@@ -5,8 +5,9 @@
 	"scripts": {
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
-		"build:artifacts": "pnpm tsx lib/functions/artifacts.ts",
+		"build:artifacts": "pnpm run build:forge && pnpm tsx lib/functions/artifacts.ts",
 		"build:contracts": "pnpm plug generate && pnpm build:forge && pnpm build:artifacts",
+		"build:etcher": "pnpm run build:artifacts && pnpm tsx lib/functions/etcher.ts",
 		"build:forge": "forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23",
 		"build:format": "pnpm prettier --write .",
 		"build:ts": "pnpm tsup && pnpm build:format",
@@ -84,12 +85,7 @@
 		},
 		"./package.json": "./package.json"
 	},
-	"files": [
-		"/core",
-		"/dist",
-		"/src",
-		"/artifacts"
-	],
+	"files": ["/core", "/dist", "/src", "/artifacts"],
 	"publishConfig": {
 		"access": "public"
 	}
