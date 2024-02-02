@@ -17,9 +17,11 @@ All pieces of Plug can be deployed to their respective canonical address on EVM 
 
 ## Mining an Efficient Address
 
-Even with standard verification practices there is nothing that stops developers from adding malicious code and verifying the code on Etherscan to prevent the false-security that the contract is the same across all places. With this approach, all users and developers can rest assured, trust, and verify themselves that the deployed source is accurate. This means that instead of submitting a PR that introduces new overhead or relying on the Plug team to deploy each instance, you can just deploy the instance yourself. Further, this means that integration across any chain can be high-speed as incongruencies between address interaction does not exist. A `Fuse` deployed on one chain should be found at the same address on all others.
+Even with standard verification practices there is nothing that stops developers from adding malicious code and verifying the code on Etherscan to provide a false-security that the contract is the same across all places.
 
-Additionally, if you choose to deploy own instance with the method provided below you do not even need to open a PR. Our system will automatically detect when new deployments take place.
+With this approach, all users and developers can rest assured, trust, and verify themselves that the deployed source is accurate simply by confirming the address. This means that instead of submitting a PR that introduces new overhead or relying on the Plug team to deploy each instance, you can just deploy the instance yourself. Further, this means that integration across any chain can be high-speed as incongruencies between address interaction does not exist. A `Fuse` deployed on one chain should be found at the same address on all others.
+
+Additionally, if you choose to deploy your own instance with the method provided below you do not even need to open a PR. Our system will automatically detect when new deployments take place.
 
 Finally, a major reason to follow this method of deployment is that with the use of CREATE2 one can mine efficient addresses that save users real money. In one-off instances the savings is quite small (~<100 gas) however when you accumulate thousands of calls and transactions this savings become significant rather quickly.
 
@@ -70,7 +72,7 @@ Note, the address of the CREATE2 factory and all supporting pieces are constant 
 
 To mine an address for a contract can be confusing at first, but it's really rather simple:
 
-1. **Acquire GPU computation. Whether local or in the cloud does not matter.**
+1. **Acquire GPU access. Whether local or in the cloud does not matter.**
 
 2. **Access your terminal or SSH in and install `Rust` as well as [create2crunch](https://github.com/0age/create2crunch).**
 
