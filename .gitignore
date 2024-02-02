@@ -182,14 +182,13 @@ coverage.json
 typechain
 typechain-types
 
-# Hardhat files
+# Smart contract files
 cache
 artifacts
-
-# Forge Files
 --branch-coverage
 report
 lcov.info
+create2crunch
 
 ./core
 ./contracts

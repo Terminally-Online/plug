@@ -1,7 +1,7 @@
 import { default as fs } from 'fs-extra'
 import { exec } from 'child_process'
 
-import { contracts } from '../constants'
+import { contracts, contractsPath } from '../constants'
 
 // TODO: Get the initial salts and addresses for the deployed contracts.
 
@@ -18,8 +18,8 @@ const suffix = '.initcode.json'
 
 const directories = fs.readdirSync(artifacts)
 
-const etcher = "src/contracts/utils/Plug.Etcher.sol"
-const etcherTemplate = "src/contracts/utils/Plug.Etcher.Template.sol"
+const etcher = `${contractsPath}/utils/Plug.Etcher.sol`
+const etcherTemplate = `${contractsPath}/utils/Plug.Etcher.Template.sol`
 
 const imports: string[] = []
 const variables: string[] = []
