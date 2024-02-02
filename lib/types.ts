@@ -23,3 +23,7 @@ export type TypedDataToKeysWithLivePair<T extends TypedData> =
 export type TypedDataToLivePlug<K, U> = Record<'signature', `0x${string}`> & {
 	[TK in K as Lowercase<string & TK>]: U
 }
+
+
+// * Shape declaration used for artifact and mining definition.
+export type Contract = { name: string, relativePath: string, salt: string, address: string }

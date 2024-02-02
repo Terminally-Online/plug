@@ -1,6 +1,8 @@
 import { default as fs } from 'fs-extra'
 import { exec } from 'child_process'
 
+import { contracts } from '../constants'
+
 // TODO: Get the initial salts and addresses for the deployed contracts.
 
 const artifacts = './artifacts'
@@ -12,21 +14,7 @@ const suffix = '.initcode.json'
 //
 // To get the salt and address you will need to do a little mining with your preferred
 // method. The salt is the salt used to deploy the contract and the address is the address
-// of the deployed contract. 
-type Contract = { name: string, relativePath: string, salt: string, address: string }
-const contracts: Array<Contract> = [
-    {
-        name: 'Plug.Router.Socket.sol',
-        relativePath: '../sockets/',
-        salt: '0x0',
-        address: 'address(0)'
-    }, {
-        name: 'Plug.Vault.Socket.sol',
-        relativePath: '../sockets/',
-        salt: '0x0',
-        address: 'address(0)'
-    }
-]
+// of the deployed contract.
 
 const directories = fs.readdirSync(artifacts)
 
@@ -77,7 +65,7 @@ directories
                 function ${functionName}() internal returns (${name} $${functionName}) {
                     if (_extcodesize(${variableName}_ADDRESS) == 0) {
                         address reality = _safeCreate2(${variableName}_SALT, ${variableName}_INITCODE);
-                        require(reality ==  ${variableName}_ADDRESS, "Etcher: Reality check failed");               
+                        require(reality ==  ${variableName}_ADDRESS, "Etcher: Reality check failed");
                     }
                     $${functionName} = ${name}(payable(${variableName}_ADDRESS));
                 }

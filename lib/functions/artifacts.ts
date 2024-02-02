@@ -1,7 +1,12 @@
 import { default as fs, writeFileSync } from 'fs-extra'
 import { keccak256 } from 'viem'
+import { execSync } from 'child_process'
 
 const directory = './artifacts'
+fs.removeSync(directory)
+
+execSync("forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23")
+
 const files = fs.readdirSync(directory)
 
 files
@@ -25,7 +30,7 @@ files
 
 				const init = JSON.stringify({
 					initcode,
-					initcodeHash: `0x${initcodeHash}`
+					initcodeHash: `${initcodeHash}`
 				})
 
 				writeFileSync(`${subDirectory}/${fileName}.initcode.json`, init)
