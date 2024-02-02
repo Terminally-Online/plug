@@ -1,4 +1,4 @@
-// ../../node_modules/.pnpm/@vue+shared@3.3.8/node_modules/@vue/shared/dist/shared.esm-bundler.js
+// ../../node_modules/.pnpm/@vue+shared@3.3.11/node_modules/@vue/shared/dist/shared.esm-bundler.js
 function makeMap(str, expectsLowerCase) {
   const map2 = /* @__PURE__ */ Object.create(null);
   const list = str.split(",");
@@ -12,8 +12,8 @@ var EMPTY_ARR = true ? Object.freeze([]) : [];
 var NOOP = () => {
 };
 var NO = () => false;
-var onRE = /^on[^a-z]/;
-var isOn = (key) => onRE.test(key);
+var isOn = (key) => key.charCodeAt(0) === 111 && key.charCodeAt(1) === 110 && // uppercase letter
+(key.charCodeAt(2) > 122 || key.charCodeAt(2) < 97);
 var isModelListener = (key) => key.startsWith("onUpdate:");
 var extend = Object.assign;
 var remove = (arr, el) => {
@@ -240,22 +240,31 @@ var replacer = (_key, val) => {
     return replacer(_key, val.value);
   } else if (isMap(val)) {
     return {
-      [`Map(${val.size})`]: [...val.entries()].reduce((entries, [key, val2]) => {
-        entries[`${key} =>`] = val2;
-        return entries;
-      }, {})
+      [`Map(${val.size})`]: [...val.entries()].reduce(
+        (entries, [key, val2], i) => {
+          entries[stringifySymbol(key, i) + " =>"] = val2;
+          return entries;
+        },
+        {}
+      )
     };
   } else if (isSet(val)) {
     return {
-      [`Set(${val.size})`]: [...val.values()]
+      [`Set(${val.size})`]: [...val.values()].map((v) => stringifySymbol(v))
     };
+  } else if (isSymbol(val)) {
+    return stringifySymbol(val);
   } else if (isObject(val) && !isArray(val) && !isPlainObject(val)) {
     return String(val);
   }
   return val;
 };
+var stringifySymbol = (v, i = "") => {
+  var _a;
+  return isSymbol(v) ? `Symbol(${(_a = v.description) != null ? _a : i})` : v;
+};
 
-// ../../node_modules/.pnpm/@vue+reactivity@3.3.8/node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js
+// ../../node_modules/.pnpm/@vue+reactivity@3.3.11/node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js
 function warn(msg, ...args) {
   console.warn(`[Vue warn] ${msg}`, ...args);
 }
@@ -669,8 +678,13 @@ var BaseReactiveHandler = class {
       return isReadonly2;
     } else if (key === "__v_isShallow") {
       return shallow;
-    } else if (key === "__v_raw" && receiver === (isReadonly2 ? shallow ? shallowReadonlyMap : readonlyMap : shallow ? shallowReactiveMap : reactiveMap).get(target)) {
-      return target;
+    } else if (key === "__v_raw") {
+      if (receiver === (isReadonly2 ? shallow ? shallowReadonlyMap : readonlyMap : shallow ? shallowReactiveMap : reactiveMap).get(target) || // receiver is not the reactive proxy, but has the same prototype
+      // this means the reciever is a user proxy of the reactive proxy
+      Object.getPrototypeOf(target) === Object.getPrototypeOf(receiver)) {
+        return target;
+      }
+      return;
     }
     const targetIsArray = isArray(target);
     if (!isReadonly2) {
@@ -932,7 +946,7 @@ function createReadonlyMethod(type) {
         toRaw(this)
       );
     }
-    return type === "delete" ? false : this;
+    return type === "delete" ? false : type === "clear" ? void 0 : this;
   };
 }
 function createInstrumentations() {
@@ -1397,7 +1411,7 @@ function computed(getterOrOptions, debugOptions, isSSR = false) {
 }
 var tick = Promise.resolve();
 
-// ../../node_modules/.pnpm/@vue+runtime-core@3.3.8/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
+// ../../node_modules/.pnpm/@vue+runtime-core@3.3.11/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
 var stack = [];
 function pushWarningContext(vnode) {
   stack.push(vnode);
@@ -1687,13 +1701,16 @@ function queuePostFlushCb(cb) {
   }
   queueFlush();
 }
-function flushPreFlushCbs(seen, i = isFlushing ? flushIndex + 1 : 0) {
+function flushPreFlushCbs(instance, seen, i = isFlushing ? flushIndex + 1 : 0) {
   if (true) {
     seen = seen || /* @__PURE__ */ new Map();
   }
   for (; i < queue.length; i++) {
     const cb = queue[i];
     if (cb && cb.pre) {
+      if (instance && cb.id !== instance.uid) {
+        continue;
+      }
       if (checkRecursiveUpdates(seen, cb)) {
         continue;
       }
@@ -2212,9 +2229,19 @@ function renderComponentRoot(instance) {
   try {
     if (vnode.shapeFlag & 4) {
       const proxyToUse = withProxy || proxy;
+      const thisProxy = setupState.__isScriptSetup ? new Proxy(proxyToUse, {
+        get(target, key, receiver) {
+          warn2(
+            `Property '${String(
+              key
+            )}' was accessed via 'this'. Avoid using 'this' in templates.`
+          );
+          return Reflect.get(target, key, receiver);
+        }
+      }) : proxyToUse;
       result = normalizeVNode(
         render2.call(
-          proxyToUse,
+          thisProxy,
           proxyToUse,
           renderCache,
           props,
@@ -2823,7 +2850,12 @@ function createSuspenseBoundary(vnode, parentSuspense, parentComponent, containe
         if (delayEnter) {
           activeBranch.transition.afterLeave = () => {
             if (pendingId === suspense.pendingId) {
-              move(pendingBranch, container2, anchor2, 0);
+              move(
+                pendingBranch,
+                container2,
+                next(activeBranch),
+                0
+              );
               queuePostFlushCb(effects);
             }
           };
@@ -3173,6 +3205,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
   let onCleanup = (fn) => {
     cleanup = effect2.onStop = () => {
       callWithErrorHandling(fn, instance, 4);
+      cleanup = effect2.onStop = void 0;
     };
   };
   let ssrCleanup;
@@ -3664,7 +3697,11 @@ function emptyPlaceholder(vnode) {
   }
 }
 function getKeepAliveChild(vnode) {
-  return isKeepAlive(vnode) ? vnode.children ? vnode.children[0] : void 0 : vnode;
+  return isKeepAlive(vnode) ? (
+    // #7121 ensure get the child component subtree in case
+    // it's been replaced during HMR
+    vnode.component ? vnode.component.subTree : vnode.children ? vnode.children[0] : void 0
+  ) : vnode;
 }
 function setTransitionHooks(vnode, hooks) {
   if (vnode.shapeFlag & 6 && vnode.component) {
@@ -5661,6 +5698,9 @@ function assertType(value, type) {
   };
 }
 function getInvalidTypeMessage(name, value, expectedTypes) {
+  if (expectedTypes.length === 0) {
+    return `Prop type [] for prop "${name}" won't match anything. Did you mean to use type Array instead?`;
+  }
   let message = `Invalid prop: type check failed for prop "${name}". Expected ${expectedTypes.map(capitalize).join(" | ")}`;
   const expectedType = expectedTypes[0];
   const receivedType = toRawType(value);
@@ -5928,6 +5968,20 @@ function createHydrationFunctions(rendererInternals) {
     const { type, ref: ref2, shapeFlag, patchFlag } = vnode;
     let domType = node.nodeType;
     vnode.el = node;
+    if (true) {
+      if (!("__vnode" in node)) {
+        Object.defineProperty(node, "__vnode", {
+          value: vnode,
+          enumerable: false
+        });
+      }
+      if (!("__vueParentComponent" in node)) {
+        Object.defineProperty(node, "__vueParentComponent", {
+          value: parentComponent,
+          enumerable: false
+        });
+      }
+    }
     if (patchFlag === -2) {
       optimized = false;
       vnode.dynamicChildren = null;
@@ -6089,15 +6143,16 @@ function createHydrationFunctions(rendererInternals) {
   const hydrateElement = (el, vnode, parentComponent, parentSuspense, slotScopeIds, optimized) => {
     optimized = optimized || !!vnode.dynamicChildren;
     const { type, props, patchFlag, shapeFlag, dirs, transition } = vnode;
-    const forcePatchValue = type === "input" && dirs || type === "option";
+    const forcePatch = type === "input" || type === "option";
     if (true) {
       if (dirs) {
         invokeDirectiveHook(vnode, null, parentComponent, "created");
       }
       if (props) {
-        if (forcePatchValue || !optimized || patchFlag & (16 | 32)) {
+        if (forcePatch || !optimized || patchFlag & (16 | 32)) {
           for (const key in props) {
-            if (forcePatchValue && key.endsWith("value") || isOn(key) && !isReservedProp(key)) {
+            if (forcePatch && (key.endsWith("value") || key === "indeterminate") || isOn(key) && !isReservedProp(key) || // force hydrate v-bind with .prop modifiers
+            key[0] === ".") {
               patchProp2(
                 el,
                 key,
@@ -7257,7 +7312,7 @@ function baseCreateRenderer(options, createHydrationFns) {
     updateProps(instance, nextVNode.props, prevProps, optimized);
     updateSlots(instance, nextVNode.children, optimized);
     pauseTracking();
-    flushPreFlushCbs();
+    flushPreFlushCbs(instance);
     resetTracking();
   };
   const patchChildren = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized = false) => {
@@ -7886,6 +7941,7 @@ var resolveTarget = (props, select) => {
   }
 };
 var TeleportImpl = {
+  name: "Teleport",
   __isTeleport: true,
   process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals) {
     const {
@@ -8306,7 +8362,7 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
   if (shapeFlag & 4 && isProxy(type)) {
     type = toRaw(type);
     warn2(
-      `Vue received a Component which was made a reactive object. This can lead to unnecessary performance overhead, and should be avoided by marking the component with \`markRaw\` or using \`shallowRef\` instead of \`ref\`.`,
+      `Vue received a Component that was made a reactive object. This can lead to unnecessary performance overhead and should be avoided by marking the component with \`markRaw\` or using \`shallowRef\` instead of \`ref\`.`,
       `
 Component that was made reactive: `,
       type
@@ -8957,9 +9013,9 @@ function initCustomFormatter() {
     return;
   }
   const vueStyle = { style: "color:#3ba776" };
-  const numberStyle = { style: "color:#0b1bc9" };
-  const stringStyle = { style: "color:#b62e24" };
-  const keywordStyle = { style: "color:#9d288c" };
+  const numberStyle = { style: "color:#1677ff" };
+  const stringStyle = { style: "color:#f5222d" };
+  const keywordStyle = { style: "color:#eb2f96" };
   const formatter = {
     header(obj) {
       if (!isObject(obj)) {
@@ -9151,7 +9207,7 @@ function isMemoSame(cached, memo) {
   }
   return true;
 }
-var version = "3.3.8";
+var version = "3.3.11";
 var _ssrUtils = {
   createComponentInstance,
   setupComponent,
@@ -9164,7 +9220,7 @@ var ssrUtils = _ssrUtils;
 var resolveFilter = null;
 var compatUtils = null;
 
-// ../../node_modules/.pnpm/@vue+runtime-dom@3.3.8/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js
+// ../../node_modules/.pnpm/@vue+runtime-dom@3.3.11/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js
 var svgNS = "http://www.w3.org/2000/svg";
 var doc = typeof document !== "undefined" ? document : null;
 var templateContainer = doc && doc.createElement("template");
@@ -9771,7 +9827,8 @@ function patchStopImmediatePropagation(e, value) {
     return value;
   }
 }
-var nativeOnRE = /^on[a-z]/;
+var isNativeOn = (key) => key.charCodeAt(0) === 111 && key.charCodeAt(1) === 110 && // lowercase letter
+key.charCodeAt(2) > 96 && key.charCodeAt(2) < 123;
 var patchProp = (el, key, prevValue, nextValue, isSVG = false, prevChildren, parentComponent, parentSuspense, unmountChildren) => {
   if (key === "class") {
     patchClass(el, nextValue, isSVG);
@@ -9805,7 +9862,7 @@ function shouldSetAsProp(el, key, value, isSVG) {
     if (key === "innerHTML" || key === "textContent") {
       return true;
     }
-    if (key in el && nativeOnRE.test(key) && isFunction(value)) {
+    if (key in el && isNativeOn(key) && isFunction(value)) {
       return true;
     }
     return false;
@@ -9822,7 +9879,13 @@ function shouldSetAsProp(el, key, value, isSVG) {
   if (key === "type" && el.tagName === "TEXTAREA") {
     return false;
   }
-  if (nativeOnRE.test(key) && isString(value)) {
+  if (key === "width" || key === "height") {
+    const tag = el.tagName;
+    if (tag === "IMG" || tag === "VIDEO" || tag === "CANVAS" || tag === "SOURCE") {
+      return false;
+    }
+  }
+  if (isNativeOn(key) && isString(value)) {
     return false;
   }
   return key in el;
@@ -10293,21 +10356,20 @@ var vModelText = {
     el[assignKey] = getModelAssigner(vnode);
     if (el.composing)
       return;
+    const elValue = number || el.type === "number" ? looseToNumber(el.value) : el.value;
+    const newValue = value == null ? "" : value;
+    if (elValue === newValue) {
+      return;
+    }
     if (document.activeElement === el && el.type !== "range") {
       if (lazy) {
         return;
       }
-      if (trim && el.value.trim() === value) {
-        return;
-      }
-      if ((number || el.type === "number") && looseToNumber(el.value) === value) {
+      if (trim && el.value.trim() === newValue) {
         return;
       }
     }
-    const newValue = value == null ? "" : value;
-    if (el.value !== newValue) {
-      el.value = newValue;
-    }
+    el.value = newValue;
   }
 };
 var vModelCheckbox = {
@@ -10526,14 +10588,14 @@ var modifierGuards = {
   exact: (e, modifiers) => systemModifiers.some((m) => e[`${m}Key`] && !modifiers.includes(m))
 };
 var withModifiers = (fn, modifiers) => {
-  return (event, ...args) => {
+  return fn._withMods || (fn._withMods = (event, ...args) => {
     for (let i = 0; i < modifiers.length; i++) {
       const guard = modifierGuards[modifiers[i]];
       if (guard && guard(event, modifiers))
         return;
     }
     return fn(event, ...args);
-  };
+  });
 };
 var keyNames = {
   esc: "escape",
@@ -10545,7 +10607,7 @@ var keyNames = {
   delete: "backspace"
 };
 var withKeys = (fn, modifiers) => {
-  return (event) => {
+  return fn._withKeys || (fn._withKeys = (event) => {
     if (!("key" in event)) {
       return;
     }
@@ -10553,7 +10615,7 @@ var withKeys = (fn, modifiers) => {
     if (modifiers.some((k) => k === eventKey || keyNames[k] === eventKey)) {
       return fn(event);
     }
-  };
+  });
 };
 var rendererOptions = extend({ patchProp }, nodeOps);
 var renderer;
@@ -10673,7 +10735,7 @@ var initDirectivesForSSR = () => {
   }
 };
 
-// ../../node_modules/.pnpm/vue@3.3.8_typescript@5.2.2/node_modules/vue/dist/vue.runtime.esm-bundler.js
+// ../../node_modules/.pnpm/vue@3.3.11_typescript@5.3.3/node_modules/vue/dist/vue.runtime.esm-bundler.js
 function initDev() {
   {
     initCustomFormatter();
@@ -10855,4 +10917,4 @@ export {
 @vue/runtime-dom/dist/runtime-dom.esm-bundler.js:
   (*! #__NO_SIDE_EFFECTS__ *)
 */
-//# sourceMappingURL=chunk-AXCDXKS2.js.map
+//# sourceMappingURL=chunk-2JSUWFEM.js.map

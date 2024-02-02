@@ -172,6 +172,10 @@ export default defineConfig({
         collapsed: true,
         items: [
           {
+            text: "Base",
+            link: "/instances/base"
+          },
+          {
             text: "Enforcers",
             link: "/instances/enforcers",
             items: [
