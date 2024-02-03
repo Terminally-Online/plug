@@ -8,6 +8,7 @@ import { PlugMockEcho } from "./Plug.Mock.Echo.sol";
 import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugRouterSocket } from "../sockets/Plug.Router.Socket.sol";
 import { PlugFactory } from "../utils/Plug.Factory.sol";
+import { PlugEtcher } from "../utils/Plug.Etcher.sol";
 
 import "forge-std/console.sol";
 
@@ -25,17 +26,13 @@ contract PlugMockSocketTest is Test {
     bytes32 internal s;
     bytes32 internal digest;
 
-    function setUp() public {
-        implementation = new PlugRouterSocket();
-        factory = new PlugFactory();
+    function setUp() public virtual {
         mock = new PlugMockEcho();
 
         signerPrivateKey = 0xabc123;
         signer = vm.addr(signerPrivateKey);
 
-        (, address routerAddress) =
-            factory.deploy(address(implementation), address(this), bytes32(0));
-        router = PlugRouterSocket(payable(routerAddress));
+        router = PlugEtcher.routerSocket();
     }
 
     function test_Echo() public {
@@ -182,15 +179,12 @@ contract PlugMockSocketTest is Test {
         assertEq(plugsSigner, signer);
 
         /// @dev Execute the plug.
-        // vm.expectEmit(address(mock));
-        // emit PlugMockEcho.EchoInvoked(address(router), signer, "Hello World");
-
+        vm.expectEmit(address(mock));
+        emit PlugMockEcho.EchoInvoked(address(router), signer, "Hello World");
         console.logAddress(signer);
 
-        // vm.recordLogs();
         hoax(_randomNonZeroAddress());
         router.plug(livePlugs);
-        // Vm.Log[] memory events = vm.getRecordedLogs();
     }
 
     function testFail_PlugMutedEcho() public {

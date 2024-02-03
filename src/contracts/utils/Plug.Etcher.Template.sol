@@ -17,7 +17,7 @@ pragma solidity 0.8.23;
  *         doing anything more than a simple in-and-out contract.
  * @author vectorized (twitter:@optimizoor)
  */
-contract PlugEtcherTemplate {
+library PlugEtcherTemplate {
     /// @auto INSERT SEGMENTS
 
     /**
