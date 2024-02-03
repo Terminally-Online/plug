@@ -26,7 +26,7 @@ export type TypedDataToLivePlug<K, U> = Record<'signature', `0x${string}`> & {
 
 export type Contract = {
     name: string, 
-    relativePath: string, 
+    relativePath?: string, 
 }
 
 export type MinedContract = Contract & {

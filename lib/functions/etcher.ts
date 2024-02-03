@@ -1,7 +1,7 @@
 import { default as fs } from 'fs-extra'
 import { exec } from 'child_process'
 
-import { contracts, contractsPath } from '../constants'
+import { etchContracts, contractsPath } from '../constants'
 
 // TODO: Get the initial salts and addresses for the deployed contracts.
 
@@ -25,8 +25,10 @@ const imports: string[] = []
 const variables: string[] = []
 const functions: string[] = []
 
+const addresses = JSON.parse(fs.readFileSync('lib/addresses.json').toString())
+
 directories
-    .filter(directory => contracts.some(contract => directory.includes(contract.name)))
+    .filter(directory => etchContracts.some(contract => directory.includes(contract.name)))
     .forEach(directory => {
         const fileNames = fs.readdirSync(`${artifacts}/${directory}`)
         const files = fileNames.filter(fileName => fileName.endsWith(suffix))
@@ -51,11 +53,11 @@ directories
                 .replace('Plug', '')
                 .replace(/^./, x => x.toLowerCase())
 
-            imports.push(`import { ${name} } from "${contracts.find(contract => directory.includes(contract.name))?.relativePath}${directory}";`)
+            imports.push(`import { ${name} } from "${etchContracts.find(contract => directory.includes(contract.name))?.relativePath}${directory}";`)
 
             variables.push(`bytes internal constant ${variableName}_INITCODE = hex"${json.initcode}";`)
-            variables.push(`bytes32 internal constant ${variableName}_SALT = ${contracts.find(contract => directory.includes(contract.name))?.salt};`)
-            variables.push(`address internal constant ${variableName}_ADDRESS = ${contracts.find(contract => directory.includes(contract.name))?.address};`)
+            variables.push(`bytes32 internal constant ${variableName}_SALT = ${addresses[name][0]};`)
+            variables.push(`address internal constant ${variableName}_ADDRESS = ${addresses[name][1]};`)
 
             functions.push(`
                 /**
