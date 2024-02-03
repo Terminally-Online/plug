@@ -120,7 +120,7 @@ const mine = async (contract: string): Promise<void> => {
             let results = efficientAddresses
                 .split("\n")
                 .map((address: string) => address.split(" => "))
-                .sort((a: Array<string>, b: Array<string>) => parseInt(b[2]) - parseInt(a[2]));
+                .sort((a: Array<string>, b: Array<string>) => parseInt(a[1]) - parseInt(b[1]));
 
             efficientAddressesObject[contract] = {
                 initCodeHash: initCodeHash,

@@ -55,9 +55,11 @@ directories
 
             imports.push(`import { ${name} } from "${etchContracts.find(contract => directory.includes(contract.name))?.relativePath}${directory}";`)
 
+            const mined = addresses[directory]['results'][0]
+
             variables.push(`bytes internal constant ${variableName}_INITCODE = hex"${json.initcode}";`)
-            variables.push(`bytes32 internal constant ${variableName}_SALT = ${addresses[name][0]};`)
-            variables.push(`address internal constant ${variableName}_ADDRESS = ${addresses[name][1]};`)
+            variables.push(`bytes32 internal constant ${variableName}_SALT = ${mined[0]};`)
+            variables.push(`address internal constant ${variableName}_ADDRESS = ${mined[1]};`)
 
             functions.push(`
                 /**
