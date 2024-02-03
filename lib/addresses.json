@@ -231,5 +231,15 @@
         "0"
       ]
     ]
+  },
+  "Plug.NounsBid.Current.sol": {
+    "initCodeHash": "0xa8a0fa7de0054423370c2f2913d39acebd698c4e56e3c9df82efd6e56a4ce339",
+    "results": [
+      [
+        "0x00000000000000000000000000000000000000001c833bf3bc8dfe3fe21c1a60",
+        "0xF50A0F4b2eEB37e9004B0e6894F10000F9fc1D7d",
+        "0"
+      ]
+    ]
   }
 }

@@ -34,4 +34,5 @@ export const mineContracts: Array<string> = [
     'Plug.Revocation.Fuse.sol',
     'Plug.Timestamp.Fuse.sol',
     'Plug.Window.Fuse.sol',
+    'Plug.NounsBid.Current.sol'
 ] as const

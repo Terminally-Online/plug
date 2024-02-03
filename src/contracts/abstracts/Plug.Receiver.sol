@@ -15,7 +15,8 @@ abstract contract PlugReceiver {
     using LibBitmap for LibBitmap.Bitmap;
 
     /// @dev The address of the Plug Router.
-    address internal constant PLUG_ROUTER = address(0);
+    address internal constant ROUTER_SOCKET_ADDRESS =
+        0x00004a1b524F1fbF349174df19Ab8A991aC76aD9;
 
     /// @dev The bitmap that stores the trusted forwarders.
     LibBitmap.Bitmap internal trustedForwarders;
@@ -46,7 +47,7 @@ abstract contract PlugReceiver {
         virtual
         returns (bool $trusted)
     {
-        $trusted = msg.sender == PLUG_ROUTER
+        $trusted = msg.sender == ROUTER_SOCKET_ADDRESS
             || trustedForwarders.get(uint160($forwarder));
     }
 

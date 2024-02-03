@@ -74,6 +74,15 @@ directories
                     $${functionName} = ${name}(payable(${variableName}_ADDRESS));
                 }
             `)
+
+            // Update the address in Plug.Receiver.sol
+            if(directory == 'Plug.Router.Socket.sol') { 
+                const line = 'address internal constant ROUTER_SOCKET_ADDRESS'
+                const receiver = fs.readFileSync(`${contractsPath}/abstracts/Plug.Receiver.sol`).toString()
+                const newReceiver = receiver.replace(/address internal constant ROUTER_SOCKET_ADDRESS = 0x[0-9a-fA-F]{40};/, `${line} = ${mined[1]};`)
+
+                fs.writeFileSync(`${contractsPath}/abstracts/Plug.Receiver.sol`, newReceiver)
+            }
         })
     })
 
