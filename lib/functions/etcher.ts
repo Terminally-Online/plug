@@ -3,18 +3,8 @@ import { exec } from 'child_process'
 
 import { etchContracts, contractsPath } from '../constants'
 
-// TODO: Get the initial salts and addresses for the deployed contracts.
-
 const artifacts = './artifacts'
 const suffix = '.initcode.json'
-// `relativePath` is the path relative to the Etcher contract that is
-// is being generated. Automatic import path solving is not implemented as it
-// was just consuming more time and may introduce issues that can simply be
-// avoided by providing the relative path.
-//
-// To get the salt and address you will need to do a little mining with your preferred
-// method. The salt is the salt used to deploy the contract and the address is the address
-// of the deployed contract.
 
 const directories = fs.readdirSync(artifacts)
 

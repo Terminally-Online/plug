@@ -6,7 +6,6 @@ import { mineContracts } from '../constants';
 
 const efficientAddressesPath = "create2crunch/efficient_addresses.txt"
 
-// Default values
 let crunchSeconds = 15;
 let crunchLeading = 5;
 let crunchTotal = 7;
