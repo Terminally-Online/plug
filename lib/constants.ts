@@ -1,19 +1,15 @@
-import { Contract, MinedContract } from "./types";
+import { Contract } from "./types";
 
 export const contractsPath = 'src/contracts'
 
-export const routerContract: MinedContract = {
+export const routerContract: Contract = {
     name: 'Plug.Router.Socket.sol',
     relativePath: '../sockets/',
-    salt: '0x0',
-    address: 'address(0)'
 } as const
 
-export const vaultContract: MinedContract= {
+export const vaultContract: Contract = {
     name: 'Plug.Vault.Socket.sol',
     relativePath: '../sockets/',
-    salt: '0x0',
-    address: 'address(0)'
 } as const
 
 export const receiverContract: Contract = { 
@@ -21,7 +17,21 @@ export const receiverContract: Contract = {
     relativePath: '../sockets'
 }
 
-export const contracts: Array<MinedContract> = [
-    routerContract, 
-    vaultContract
+export const etchContracts: Array<Contract> = [
+    routerContract
+] as const
+
+export const mineContracts: Array<string> = [
+    'Plug.Factory.sol',
+    'Plug.Router.Socket.sol',
+    'Plug.AllowedMethods.Fuse.sol',
+    'Plug.BlockNumber.Fuse.sol',
+    'Plug.Clamp.Fuse.sol',
+    'Plug.ERC20Allowance.Fuse.sol',
+    'Plug.LimitedCalls.Fuse.sol',
+    'Plug.NounsId.Fuse.sol',
+    'Plug.NounsTrait.Fuse.sol',
+    'Plug.Revocation.Fuse.sol',
+    'Plug.Timestamp.Fuse.sol',
+    'Plug.Window.Fuse.sol',
 ] as const

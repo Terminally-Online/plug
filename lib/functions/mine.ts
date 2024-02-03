@@ -31,6 +31,9 @@ args.forEach(arg => {
         case '--total':
             crunchTotal = parseInt(value, 10);
             break;
+        case '--addresses':
+            crunchAddresses = parseInt(value, 10);
+            break;
         case '--factory':
             factoryAddress = value;
             break;
@@ -52,7 +55,6 @@ args.forEach(arg => {
     }
 });
 
-// open and parse the json file
 const addressesJson = fs.readFileSync("lib/addresses.json");
 const addresses = JSON.parse(addressesJson.toString());
 
