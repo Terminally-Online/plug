@@ -68,8 +68,8 @@ devDependencies:
     specifier: ^4.1.1
     version: 4.1.1(typescript@5.3.3)
   solidity-coverage:
-    specifier: ^0.8.5
-    version: 0.8.5(hardhat@2.19.5)
+    specifier: ^0.8.6
+    version: 0.8.6(hardhat@2.19.5)
   tsconfig-paths:
     specifier: ^4.2.0
     version: 4.2.0
@@ -1845,6 +1845,10 @@ packages:
       antlr4ts: 0.5.0-alpha.4
     dev: true
 
+  /@solidity-parser/parser@0.18.0:
+    resolution: {integrity: sha512-yfORGUIPgLck41qyN7nbwJRAx17/jAIXCTanHOJZhB6PJ1iAk/84b/xlsVKFSyNyLXIj0dhppoE0+CRws7wlzA==}
+    dev: true
+
   /@szmarczak/http-timer@5.0.1:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
@@ -1929,7 +1933,7 @@ packages:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.11.10
+      '@types/node': 20.11.16
     dev: true
 
   /@types/http-cache-semantics@4.0.4:
@@ -4777,7 +4781,7 @@ packages:
     resolution: {integrity: sha512-4GUt3kSEYmk4ITxzB/b9vaIDfUVWN/Ml1Fwl11IlnIG2iaJ9O6WXZ9SrYM9NLI8OCBieN2Y8SWC2oJV0RQ7qYg==}
     hasBin: true
     dependencies:
-      abbrev: 1.0.9
+      abbrev: 1.1.1
     dev: true
 
   /normalize-package-data@2.5.0:
@@ -5423,7 +5427,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /ripemd160@2.0.2:
@@ -5748,14 +5752,14 @@ packages:
       - typescript
     dev: true
 
-  /solidity-coverage@0.8.5(hardhat@2.19.5):
-    resolution: {integrity: sha512-6C6N6OV2O8FQA0FWA95FdzVH+L16HU94iFgg5wAFZ29UpLFkgNI/DRR2HotG1bC0F4gAc/OMs2BJI44Q/DYlKQ==}
+  /solidity-coverage@0.8.6(hardhat@2.19.5):
+    resolution: {integrity: sha512-vV03mA/0nNMskOdVwNarUcqk0N/aYdelxAbf6RZ5l84FcYHbqDTr2JXyeYMp4bT48qHtAQjnKrygW1FrECyWNw==}
     hasBin: true
     peerDependencies:
       hardhat: ^2.11.0
     dependencies:
       '@ethersproject/abi': 5.7.0
-      '@solidity-parser/parser': 0.16.2
+      '@solidity-parser/parser': 0.18.0
       chalk: 2.4.2
       death: 1.1.0
       detect-port: 1.5.1
