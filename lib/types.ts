@@ -1,35 +1,41 @@
 import { TypedData } from 'abitype'
 
+export type Domain = {
+	name: string
+	version: string
+	chainId: number
+}
+
 // ! Turn a dictionary of EIP-712 types into a union of the keys
 //   that have a signed pair.
 export type TypedDataToKeysWithLivePair<T extends TypedData> =
-    // * Remove all the 'never' types from the union.
-    string &
-    Exclude<
-        {
-            // * For each key in the typed data, if the capitalized version of the
-            //   key prefixed with 'Live' is a key in the typed data, then return
-            //   the key, otherwise return never.
-            [K in keyof T]: `Live${Capitalize<string & K>}` extends keyof T
-            ? K
-            : never
-            // * Then, get the union of all the keys.
-        }[keyof T],
-        never
-    >
+	// * Remove all the 'never' types from the union.
+	string &
+		Exclude<
+			{
+				// * For each key in the typed data, if the capitalized version of the
+				//   key prefixed with 'Live' is a key in the typed data, then return
+				//   the key, otherwise return never.
+				[K in keyof T]: `Live${Capitalize<string & K>}` extends keyof T
+					? K
+					: never
+				// * Then, get the union of all the keys.
+			}[keyof T],
+			never
+		>
 
 // * Turn an intent object into the expected onchain shape of the
 //   LivePlug pair output.
 export type TypedDataToLivePlug<K, U> = Record<'signature', `0x${string}`> & {
-    [TK in K as Lowercase<string & TK>]: U
+	[TK in K as Lowercase<string & TK>]: U
 }
 
 export type Contract = {
-    name: string, 
-    relativePath?: string, 
+	name: string
+	relativePath?: string
 }
 
 export type MinedContract = Contract & {
-    salt: string, 
-    address: string
+	salt: string
+	address: string
 }

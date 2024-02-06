@@ -36,14 +36,15 @@ export default async function () {
 		]
 	} as const
 
-	const contract = getContract({ address: '0x0', abi: [] })
+	const verifyingContract = getContract({ address: '0x0', abi: [] })
 	const owner = createWalletClient({
 		chain: mainnet,
 		transport: http()
 	})
 
 	// * Create the util with the debug types.
-	const util = new PlugSDK(name, version, 1, DEBUG_TYPES, contract)
+	const domain = { name, version, chainId: 1 }
+	const util = new PlugSDK(domain, verifyingContract, DEBUG_TYPES)
 
 	// * Should be able to build Person to get the typehash even
 	//   though we are cannot sign it.

@@ -9,7 +9,7 @@ import {
 
 import { Plug } from '@/src/core/plug'
 
-import { TypedDataToKeysWithLivePair } from '../../lib/types'
+import { Domain, TypedDataToKeysWithLivePair } from '../../lib/types'
 
 export class PlugSDK<
 	C extends WalletClient,
@@ -22,25 +22,23 @@ export class PlugSDK<
 	} | null = null
 
 	constructor(
-		name: string,
-		version: string,
-		chainId: number,
-		types: T,
-		public readonly contract: GetContractReturnType | `0x${string}`
+		domain: Domain,
+		public readonly contract: GetContractReturnType | `0x${string}`,
+		types: T
 	) {
-		contract = typeof contract === 'string' ? contract : contract.address
-
 		this.info = {
+			// Initialize the domain that is used in the domain hash onchain.
 			domain: {
-				chainId,
-				verifyingContract: contract,
-				name,
-				version
+				...domain,
+				verifyingContract:
+					typeof contract === 'string' ? contract : contract.address
 			},
+			// Declare the types that are used in the typed data.
 			types
 		}
 	}
 
+	// Build a Plug intent without signing it.
 	build<TK extends GetTypedDataPrimaryType<T>>(
 		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
 		intent: TypedDataToPrimitiveTypes<T>[TK],
@@ -58,6 +56,7 @@ export class PlugSDK<
 		)
 	}
 
+	// Sign a Plug intent.
 	async sign<TK extends K & GetTypedDataPrimaryType<T>>(
 		client: C,
 		// * Without the explicit declaration here, one can include fields that do
