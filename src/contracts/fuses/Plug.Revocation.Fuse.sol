@@ -18,64 +18,93 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *         exact same pin therefore it is recommended to set salt as
  *         as the timestamp of generation (in milliseconds) to ensure that
  *         the signer can still reuse the same pin with a new salt.
- * @author @nftchance
+ * @author @nftchance (chance@utc24.io)
  */
 contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
     /// @notice Use the ECDSA library for signature verification.
     using ECDSA for bytes32;
 
-    /// @dev Mapping of revoked pins.
-    mapping(bytes32 => bool) public isRevoked;
+    /// @dev Keep track of which bundles of Plugs have been revoked.
+    mapping(address => mapping(bytes32 => bool)) public isRevoked;
 
+    /// @dev Initialize the local socket.
     constructor() PlugLocalSocket() { }
 
     /**
      * See {FuseEnforcer-enforceFuse}.
+     *
+     * @dev While an individual can delegate permission to a different user,
+     *      the controller is is the one who can revoke the bundle of Plugs.
+     *      A user cannot "maliciously" revoke a bundle of Plugs with control
+     *      outside of the definition of the sender themselves.
      */
     function enforceFuse(
-        bytes calldata,
+        bytes calldata $live,
         PlugTypesLib.Current calldata $current,
-        bytes32 $pinHash
+        bytes32 $plugsHash
     )
         public
         view
+        virtual
         override
         returns (bytes memory $through)
     {
-        /// @dev Ensure the pin has not been revoked.
-        require(!isRevoked[$pinHash], "PlugRevocationFuse:revoked");
+        /// @dev Decode the (declared) controller of the bundle of Plugs.
+        address sender = decode($live);
+
+        /// @dev Ensure the plug has not been revoked.
+        require(
+            isRevoked[sender][$plugsHash] == false, "PlugRevocationFuse:revoked"
+        );
 
         /// @dev Continue the pass through.
         $through = $current.data;
     }
 
     /**
-     * @notice Enables a Delegator to revoke the pins of a previously
-     *         signed signature.
-     * @param $signedPin The signed pin to revoke.
+     * @notice Enables a controller to revoke the pins of a
+     *         previously signed signature.
+     * @dev There is no verification of a signature here because a controller
+     *      can only revoke permission to hashes that they control themselves
+     *      so the revocation operates with the assumption that only the
+     * @param $livePlugs The signed pin to revoke.
      * @param $domainHash The domain hash of the pin.
      */
     function revoke(
-        PlugTypesLib.LivePin calldata $signedPin,
-        bytes32 $domainHash
+        PlugTypesLib.LivePlugs memory $livePlugs,
+        bytes32 $domainHash,
+        bool $revoked
     )
         public
+        virtual
     {
-        /// @dev Only allow signers of pins to revoke a signature.
-        ///      Of course, revocation itself could be delegated.
+        /// @dev Retrieve the sender.
+        address sender = _msgSender();
+
+        /// @dev Determine the hash of the pin.
+        bytes32 plugsHash = getPlugsHash($livePlugs.plugs);
+
+        /// @dev Determine the digest of the pin and recover the signer.
+        // address signer = keccak256(
+        //     abi.encodePacked("\x19\x01", $domainHash, plugsHash)
+        // ).recover($livePlugs.signature);
+
+        /// @dev Only allow the signer of a Plugs bundle to revoke a
+        ///      signature. Revocation itself could be plugged.
         require(
-            getSigner($signedPin, $domainHash) == _msgSender(),
+            getSigner($livePlugs, $domainHash) == _msgSender(),
             "PlugRevocationFuse:invalid-revoker"
         );
 
-        /// @dev Determine the hash of the pin.
-        bytes32 pinHash = getLivePinHash($signedPin);
+        /// @dev Ensure the bundle of Plugs does not already have the same
+        ///      revocation state that is being set.
+        require(
+            isRevoked[sender][plugsHash] != $revoked,
+            "PlugRevocationFuse:same-state"
+        );
 
-        /// @dev Ensure the pin has not already been revoked.
-        require(!isRevoked[pinHash], "PlugRevocationFuse:already-revoked");
-
-        /// @dev Mark the pin as revoked.
-        isRevoked[pinHash] = true;
+        /// @dev Mark the bundle of Plugs as revoked.
+        isRevoked[sender][plugsHash] = $revoked;
     }
 
     /**
@@ -87,7 +116,7 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
      * @return $signer The address of the signer.
      */
     function getSigner(
-        PlugTypesLib.LivePin memory $signedPin,
+        PlugTypesLib.LivePlugs memory $signedPin,
         bytes32 $domainHash
     )
         public
@@ -95,8 +124,9 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
         returns (address $signer)
     {
         /// @dev Determine the digest of the pin and recover the signer.
-        $signer =
-            getDigest($signedPin.pin, $domainHash).recover($signedPin.signature);
+        $signer = getDigest($signedPin.plugs, $domainHash).recover(
+            $signedPin.signature
+        );
     }
 
     /**
@@ -106,7 +136,7 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
      * @return $digest The digest of the pin.
      */
     function getDigest(
-        PlugTypesLib.Pin memory $pin,
+        PlugTypesLib.Plugs memory $pin,
         bytes32 $domainHash
     )
         public
@@ -115,14 +145,32 @@ contract PlugRevocationFuse is PlugFuseInterface, PlugLocalSocket {
     {
         /// @dev Encode the pin and domain hash and hash them.
         $digest = keccak256(
-            abi.encodePacked("\x19\x01", $domainHash, getPinHash($pin))
+            abi.encodePacked("\x19\x01", $domainHash, getPlugsHash($pin))
         );
+    }
+
+    /**
+     * @dev Decode the clamp data into the two bounds.
+     */
+    function decode(bytes calldata $data)
+        public
+        pure
+        returns (address $sender)
+    {
+        $sender = abi.decode($data, (address));
+    }
+
+    /**
+     * @dev Encode the clamp bounds.
+     */
+    function encode(address $sender) public pure returns (bytes memory $data) {
+        $data = abi.encode($sender);
     }
 
     /**
      * See {PlugInitializable-name}.
      */
-    function name() public pure override returns (string memory) {
+    function name() public pure virtual override returns (string memory) {
         return "PlugRevocationFuse";
     }
 }

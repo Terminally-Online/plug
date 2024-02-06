@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.23;
 
@@ -9,60 +9,24 @@ import { PlugErrors } from "../libraries/Plug.Errors.sol";
 /**
  * @title Plug Core
  * @notice The core contract for the Plug framework that enables
- *         counterfactual revokable pin of extremely
- *         granular pin and execution paths.
- * @author @nftchance
- * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
- * @author @KamesGeraghty (https://github.com/kamescg)
+ *         counterfactual intent execution with granular conditional
+ *         verification and execution.
+ * @author @nftchance (chance@utc24.io)
  */
 abstract contract PlugCore is PlugTypes {
     using PlugErrors for bytes;
 
-    /// @notice Enables consumption of the address that gave permission
-    ///         to execute this transaction.
-    address public grantor;
-
-    /// @notice Enables consumption of the address that was given permission
-    ///         to execute this transaction.
-    address public granted;
-
-    /// @notice Multi-dimensional account pin nonce management.
-    mapping(address => mapping(uint256 => uint256)) public nonce;
-
     /**
-     * @notice Possibly restrict the capability of the defined
-     *         execution path dependent on larger external factors
-     *         such as only allowing a transaction to be executed
-     *         on the socket itself.
-     * @param $current The current state of the transaction.
+     * @notice Confirm that signer of the intent has permission to declare
+     *         the execution of an intent.
+     * @dev If you would like to limit the available signers override this
+     *      function in your contract with the additional logic.
      */
-    function _enforceCurrent(PlugTypesLib.Current memory $current)
-        internal
-        view
-        virtual
-    { }
+    function _enforceSigner(address $signer) internal view virtual { }
 
     /**
-     * @notice Update the nonce for a given account and queue.
-     * @param $intendedSender The address of the intended sender.
-     * @param $protection The replay protection struct.
-     */
-    function _enforceBreaker(
-        address $intendedSender,
-        PlugTypesLib.Breaker memory $protection
-    )
-        internal
-    {
-        /// @dev Ensure the nonce is in order.
-        require(
-            $protection.nonce == ++nonce[$intendedSender][$protection.queue],
-            "PlugCore:nonce2-out-of-order"
-        );
-    }
-
-    /**
-     * @notice Enforce the fuse of the current plug to confirm the specified
-     *         conditions have been met.
+     * @notice Enforce the fuse of the current plug to confirm
+     *         the specified conditions have been met.
      * @param $fuse The fuse to enforce.
      * @param $current The state of the transaction to execute.
      * @param $pinHash The hash of the pin.
@@ -90,11 +54,24 @@ abstract contract PlugCore is PlugTypes {
         );
 
         /// @dev If the Fuse failed and is not optional, bubble up the revert.
-        if (!success && $fuse.forced) $through.bubbleRevert();
+        if (!success) $through.bubbleRevert();
 
         /// @dev Decode the return data to remove the wrapped bytes in memory.
         $through = abi.decode($through, (bytes));
     }
+
+    /**
+     * @notice Possibly restrict the capability of the defined
+     *         execution path dependent on larger external factors
+     *         such as only allowing a transaction to be executed
+     *         on the socket itself.
+     * @param $current The current state of the transaction.
+     */
+    function _enforceCurrent(PlugTypesLib.Current memory $current)
+        internal
+        view
+        virtual
+    { }
 
     /**
      * @notice Execution a built transaction.
@@ -126,79 +103,44 @@ abstract contract PlugCore is PlugTypes {
 
     /**
      * @notice Execute an array of plugs
-     * @param $plugs The plugs of plugs to execute.
+     * @param $plugs The plugs to execute.
      * @param $sender The address of the sender.
      * @return $results The return data of the plugs.
      */
     function _plug(
-        PlugTypesLib.Plug[] calldata $plugs,
+        PlugTypesLib.Plugs calldata $plugs,
         address $sender
     )
         internal
         returns (bytes[] memory $results)
     {
-        /// @dev Warm up the results array.
-        $results = new bytes[]($plugs.length);
+        /// @dev Prevent random people from plugging.
+        _enforceSigner($sender);
+
+        /// @dev Load the plugs from the live plugs.
+        PlugTypesLib.Plug[] memory plugs = $plugs.plugs;
 
         /// @dev Load the stack.
+        PlugTypesLib.Plug memory plug;
         uint256 i;
         uint256 ii;
-        uint256 iii;
-        address pinSigner;
-        bytes32 pinHash;
+        uint256 length = plugs.length;
+        $results = new bytes[](length);
 
-        /// @dev Load the structs into a hot reference.
-        PlugTypesLib.Plug memory plug;
-        PlugTypesLib.LivePin memory signedPin;
-        PlugTypesLib.Pin memory pin;
+        /// @dev Unique hash of the Plug bundle being executed.
+        bytes32 plugsHash = getPlugsHash($plugs);
 
         /// @dev Iterate over the plugs.
-        for (i; i < $plugs.length; i++) {
+        for (i; i < length; i++) {
             /// @dev Load the plug from the plugs.
-            plug = $plugs[i];
+            plug = plugs[i];
 
-            /// @dev Reset the hot reference to the pinHash.
-            pinHash = 0x0;
-
-            /// @dev If there are no pins, this plug comes from the signer
-            if (plug.pins.length == 0) {
-                grantor = granted = $sender;
-            } else {
-                /// @dev Iterate over the authority pins.
-                for (ii = 0; ii < plug.pins.length; ii++) {
-                    /// @dev Load the pin from the plug.
-                    signedPin = plug.pins[ii];
-
-                    /// @dev Determine the signer of the pin.
-                    pinSigner = getLivePinSigner(signedPin);
-
-                    /// @dev Implied sending account is the signer of the first pin.
-                    if (ii == 0) grantor = granted = pinSigner;
-
-                    /// @dev Ensure the pin signer has authority to grant
-                    ///      the claimed pin.
-                    require(pinSigner == grantor, "PlugCore:invalid-pin-signer");
-
-                    /// @dev Warm up the pin reference.
-                    pin = signedPin.pin;
-
-                    /// @dev Ensure the pin is valid.
-                    require(
-                        pin.live == pinHash,
-                        "PlugCore:invalid-authority-pin-link"
-                    );
-
-                    /// @dev Retrieve the packet hash for the pin.
-                    pinHash = getLivePinHash(signedPin);
-
-                    /// @dev Loop through all the execution fuses declared in the pin
-                    ///      and ensure they are in a state of acceptable execution
-                    ///      while building the pass through data based on the nodes.
-                    for (iii = 0; iii < pin.fuses.length; iii++) {
-                        plug.current.data =
-                            _enforceFuse(pin.fuses[iii], plug.current, pinHash);
-                    }
-                }
+            /// @dev Iterate through all the execution fuses declared in the pin
+            ///      and ensure they are in a state of acceptable execution
+            ///      while building the pass through data based on the nodes.
+            for (ii = 0; ii < plug.fuses.length; ii++) {
+                plug.current.data =
+                    _enforceFuse(plug.fuses[ii], plug.current, plugsHash);
             }
 
             /// @dev Confirm the current is within specification.
@@ -206,16 +148,8 @@ abstract contract PlugCore is PlugTypes {
             ///      the declaration of the current.
             _enforceCurrent(plug.current);
 
-            /// @dev Verify the delegate at the end of the pin chain is the signer.
-            require(grantor == $sender, "PlugCore:invalid-sender");
-
             /// @dev Execute the transaction.
-            $results[i] = _execute(plug.current, granted);
-
-            /// @dev Clear the grantor slot back to address(0).
-            delete grantor;
-            /// @dev Clear the granted slot back to address(0).
-            delete granted;
+            $results[i] = _execute(plug.current, $sender);
         }
     }
 }

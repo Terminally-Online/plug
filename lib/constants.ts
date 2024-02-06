@@ -27,7 +27,6 @@ export const mineContracts: Array<string> = [
     'Plug.AllowedMethods.Fuse.sol',
     'Plug.BlockNumber.Fuse.sol',
     'Plug.Clamp.Fuse.sol',
-    'Plug.ERC20Allowance.Fuse.sol',
     'Plug.LimitedCalls.Fuse.sol',
     'Plug.NounsId.Fuse.sol',
     'Plug.NounsTrait.Fuse.sol',

@@ -16,7 +16,7 @@ abstract contract PlugReceiver {
 
     /// @dev The address of the Plug Router.
     address internal constant ROUTER_SOCKET_ADDRESS =
-        0x00004a1b524F1fbF349174df19Ab8A991aC76aD9;
+        0x00b09C89Ace100AB7A4Dc47ebfBd1E7997920062;
 
     /// @dev The bitmap that stores the trusted forwarders.
     LibBitmap.Bitmap internal trustedForwarders;

@@ -22,8 +22,8 @@ interface PlugSocketInterface {
      * @param $plugs The plugs of plugs to execute.
      * @return $results The return data of each plug executed.
      */
-    function plugContract(PlugTypesLib.Plug[] calldata $plugs)
-        external
-        payable
-        returns (bytes[] memory $results);
+    // function plugContract(PlugTypesLib.Plug[] calldata $plugs)
+    //     external
+    //     payable
+    //     returns (bytes[] memory $results);
 }
