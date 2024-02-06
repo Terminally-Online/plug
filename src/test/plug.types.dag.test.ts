@@ -45,12 +45,14 @@ export default async function () {
 		wallet: '0x0'
 	})
 
-	// * Can sign mail.
-	const mail = await util.sign(owner, 'Mail', {
+	const plug = util.build('Mail', {
 		from: { name: 'Bob', wallet: '0x0' },
 		to: { name: 'Alice', wallet: '0x0' },
 		contents: 'Hello, world!'
 	})
+
+	// * Can sign mail.
+	const mail = await util.sign(owner, plug)
 
 	// ! The object that is submit onchain.
 	// * Can get the signature and the object that was signed.

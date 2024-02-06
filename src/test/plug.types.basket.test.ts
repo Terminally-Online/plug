@@ -6,35 +6,33 @@ import { mainnet } from 'viem/chains'
 
 const RUN = false
 
+const DEBUG_TYPES = {
+	Mail: [
+		{ name: 'from', type: 'Person' },
+		{ name: 'to', type: 'Person' },
+		{ name: 'contents', type: 'string' }
+	],
+	Person: [
+		{ name: 'name', type: 'string' },
+		{ name: 'wallet', type: 'address' }
+	],
+	Email: [
+		{ name: 'from', type: 'Person' },
+		{ name: 'to', type: 'Person[]' },
+		{ name: 'mail', type: 'LiveMail[]' }
+	],
+	LiveMail: [
+		{ name: 'mail', type: 'Mail' },
+		{ name: 'signature', type: 'bytes' }
+	],
+	LiveEmail: [
+		{ name: 'email', type: 'Email' },
+		{ name: 'signature', type: 'bytes' }
+	]
+} as const
+
 export default async function () {
 	if (!RUN) throw new Error('This test is not meant to be run.')
-
-	const [name, version] = ['PlugMock', '0.0.0']
-
-	const DEBUG_TYPES = {
-		Mail: [
-			{ name: 'from', type: 'Person' },
-			{ name: 'to', type: 'Person' },
-			{ name: 'contents', type: 'string' }
-		],
-		Person: [
-			{ name: 'name', type: 'string' },
-			{ name: 'wallet', type: 'address' }
-		],
-		Email: [
-			{ name: 'from', type: 'Person' },
-			{ name: 'to', type: 'Person[]' },
-			{ name: 'mail', type: 'LiveMail[]' }
-		],
-		LiveMail: [
-			{ name: 'mail', type: 'Mail' },
-			{ name: 'signature', type: 'bytes' }
-		],
-		LiveEmail: [
-			{ name: 'email', type: 'Email' },
-			{ name: 'signature', type: 'bytes' }
-		]
-	} as const
 
 	const verifyingContract = getContract({ address: '0x0', abi: [] })
 	const owner = createWalletClient({
@@ -43,7 +41,11 @@ export default async function () {
 	})
 
 	// * Create the util with the debug types.
-	const domain = { name, version, chainId: 1 }
+	const domain = {
+		name: 'PlugMock',
+		version: '0.0.0',
+		chainId: 1
+	}
 	const util = new PlugSDK(domain, verifyingContract, DEBUG_TYPES)
 
 	// * Should be able to build Person to get the typehash even
@@ -60,32 +62,41 @@ export default async function () {
 	})
 
 	// * Can sign mail.
-	const mail = await util.sign(owner, 'Mail', {
-		from: { name: 'Bob', wallet: '0x0' },
-		to: { name: 'Alice', wallet: '0x0' },
-		contents: 'Hello, world!'
-	})
+	const mail = await util.sign(
+		owner,
+		util.build('Mail', {
+			from: { name: 'Bob', wallet: '0x0' },
+			to: { name: 'Alice', wallet: '0x0' },
+			contents: 'Hello, world!'
+		})
+	)
 
 	// * Cannot create an intent with fields that do not belong.
-	await util.sign(owner, 'Mail', {
-		from: { name: 'Bob', wallet: '0x0' },
-		to: { name: 'Alice', wallet: '0x0' },
-		contents: 'Hello, world!',
-		// @ts-expect-error - Doesnt exist on Mail.
-		mail: []
-	})
+	await util.sign(
+		owner,
+		util.build('Mail', {
+			from: { name: 'Bob', wallet: '0x0' },
+			to: { name: 'Alice', wallet: '0x0' },
+			contents: 'Hello, world!',
+			// @ts-expect-error - Doesnt exist on Mail.
+			mail: []
+		})
+	)
 
 	if (!mail.intent) throw new Error('Mail intent not initialized.')
 
 	// * Can create another type that references the mail type.
-	const email = await util.sign(owner, 'Email', {
-		from: { name: 'Bob', wallet: '0x0' },
-		to: [
-			{ name: 'Alice', wallet: '0x0' },
-			{ name: 'Charlie', wallet: '0x0' }
-		],
-		mail: [mail.intent]
-	})
+	const email = await util.sign(
+		owner,
+		util.build('Email', {
+			from: { name: 'Bob', wallet: '0x0' },
+			to: [
+				{ name: 'Alice', wallet: '0x0' },
+				{ name: 'Charlie', wallet: '0x0' }
+			],
+			mail: [mail.intent]
+		})
+	)
 
 	if (!mail.intent) throw new Error('Mail intent not initialized.')
 
