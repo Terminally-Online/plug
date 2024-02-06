@@ -38,12 +38,16 @@ export default defineConfig({
         text: "Introduction",
         items: [
           {
+            text: "Getting Started",
+            link: "/",
+          },
+          {
             text: "Why Plug",
             link: "/introduction/why-plug",
           },
           {
-            text: "If This, Then That",
-            link: "/introduction/if-this-then-that",
+            text: "Transaction Types",
+            link: "/core/transactions",
           },
           {
             text: "FAQ",
@@ -52,54 +56,8 @@ export default defineConfig({
         ],
       },
       {
-        text: "Plugs",
+        text: "Core Mechanisms",
         collapsed: false,
-        items: [
-          {
-            text: "Introduction",
-            link: "/plugs/introduction",
-            items: [
-              {
-                text: "Imperative Transactions",
-                link: "/plugs/imperative-transactions",
-              },
-              {
-                text: "Declarative Messages",
-                link: "/plugs/declarative-messages",
-              },
-            ],
-          },
-          {
-            text: "Execution Paths",
-            link: "/plugs/execution-paths",
-            items: [
-              {
-                text: "Single Lane",
-                link: "/plugs/execution-paths/single-lane",
-              },
-              {
-                text: "Multi-Dimensional",
-                link: "/plugs/execution-paths/multi-dimensional",
-              },
-              {
-                text: "Native Transactions",
-                link: "/plugs/execution-paths/native-transactions",
-              },
-              {
-                text: "Meta-Transactions",
-                link: "/plugs/execution-paths/meta-transactions",
-              },
-              {
-                text: "Channels",
-                link: "/plugs/execution-paths/channels",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        text: "Types and Decoders",
-        collapsed: true,
         items: [
           {
             text: "EIP-712",
@@ -135,33 +93,33 @@ export default defineConfig({
             link: "/decoders/signer-getters",
             items: getItems("./generated/signer-getters"),
           },
-        ],
-      },
-      {
-        text: "Core Abstracts",
-        collapsed: true,
-        items: [
           {
-            text: "FuseEnforcer",
+            text: "Abstracts",
             link: "/core/fuse",
             items: [
               {
-                text: "enforceFuse",
-                link: "/core/fuse/enforce-fuse",
-              },
-            ],
-          },
-          {
-            text: "Plug",
-            link: "/core/framework",
-            items: [
-              {
-                text: "contractInvoke",
-                link: "/core/framework/contract-invoke",
+                text: "Fuses",
+                link: "/core/fuse",
+                items: [
+                  {
+                    text: "enforceFuse",
+                    link: "/core/fuse/enforce-fuse",
+                  },
+                ],
               },
               {
-                text: "invoke",
-                link: "/core/framework/invoke",
+                text: "Sockets",
+                link: "/core/sockets",
+                items: [
+                  {
+                    text: "plug",
+                    link: "/core/sockets/plug",
+                  },
+                  {
+                    text: "plugContract",
+                    link: "/core/sockets/plug-contract",
+                  },
+                ],
               },
             ],
           },

@@ -35,7 +35,7 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getFuseArrayHash]
 function getFuseArrayHash(
-	Fuse[] memory $input
+	TypesLib.Fuse[] memory $input
 )  public pure virtual returns (bytes32 $hash) {
 	/// @dev Load the stack.
 	bytes memory encoded;
@@ -43,13 +43,11 @@ function getFuseArrayHash(
 	uint256 length = $input.length;
 
 	/// @dev Encode each item in the array.
-	for (i; i < length;) {
+	for (i; i < length; i++) {
 		encoded = bytes.concat(
 			encoded,
 			getFuseHash($input[i])
 		);
-
-		unchecked { i++; }
 	}
 	
 	/// @dev Hash the encoded array.

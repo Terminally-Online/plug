@@ -17,8 +17,7 @@ Getting started with Plug is quite simple however it is understandable that you 
 
 - [Why would I want my protocol to support declarative transactions?](#why-would-i-want-declarative-transactions)
 - [Can I use Plug with smart contracts that are already deployed?](#can-i-use-plug-with-protocols-already-deployed)
-- [If I want basic support do I need to implement custom types?](#if-i-want-basic-support-do-i-need-custom-types)
-- [Do I need to deploy my own set of Enforcers?](#do-i-need-to-deploy-my-own-set-of-enforcers)
+- [If I want basic support what do I need?](#if-i-want-basic-support-what-do-i-need)
 - [Is there a fee?](#is-there-a-fee)
 - [Do I have to use a specific API or Relay?](#do-i-have-to-use-a-specific-api-or-relay)
 - [Doesn't this just make my protocol more complex?](#doesn-t-this-just-make-my-protocol-more-complex)
@@ -37,29 +36,19 @@ Native EVM transactions serve as a constant limiter of the throughput for your p
 
 ## Can I use Plug with protocols already deployed?
 
-While the architecture is designed to support this functionality, a first-party implementation has not yet been made public. Plug attempts to make integration as seamless as possible by avoiding the inclusion of opinion and a `Relay-like` implementation is in the works, however, it is not yet ready for public use.
+Yes! Plug will work with any contract whether it was deployed years in the past, in the present or even years in the future.
 
-## If I want basic support do I need custom types?
+## If I want basic support what do I need?
 
-By default the Plug framework has been packaged with a pre-built set of types and smart contracts that are needed to consume the framework. If you are looking to build a protocol that is not supported by the pre-built types, you will need to implement your own custom types by utilizing [`@nftchance/plug-types`](https://www.npmjs.com/package/@nftchance/plug-types?activeTab=readme). Otherwise, you can use the pre-built types and not worry about the declaration or consuming implementation of types.
-
-## Do I need to deploy my own set of Fuses?
-
-_Generally, no._ The base set of [Fuses](/core/fuse) have been designed to be consumed by deployed instances of the `Plug` framework. If you are using a third-party implementation of the core framework or an `Enforcer` you will need to read the logic and determine if it is suitable for your use case as there is no expected or enforced standard.
+To submit an intent all you need to do is prepare the declaration and submit it to the pool of executors. You can choose to execute things through a vault for value-based actions or a generalized and permisionless router.
 
 ## Is there a fee?
 
-Within the base framework there is no fee declared as you have full access to the benefits of declarative transactions. While there is no fee baked in it is very simple to implement a fee structure designed to fit and benefit the rest of your protocol.
-
-::: tip
-
-If you are not sure how to implement a fee structure, please [reach out for help](https://twitter.com/nftchance). I would love to help you get started and moving in the right direction!
-
-:::
+The fee of your intent declaration is mostly up to the user. The execution of intents is incentivized with this fee giving Executors a reason to execute your transaction as close to the time that all the conditions have been met.
 
 ## Do I have to use a specific API or Relay?
 
-No, in fact using your own is highly recommended! While there is a first-party API available to you that streamlines the collection, management and distribution of the incoming plugs related to your protocol, it is not required. You can use any API or Relay that you would like to consume the plugs and distribute them to the appropriate network.
+No, in fact using your own is highly recommended! While there is a first-party API available to you that streamlines the collection, management and distribution of the incoming plugs related to your protocol, it is not required. You can use any API or Relay that you would like to consume the plugs and distribute them to the appropriate network of Executors.
 
 ## Doesn't this just make my protocol more complex?
 
@@ -67,17 +56,17 @@ Quite the opposite! By implementing Plug you are able to remove the complexity o
 
 ## Does my protocol still support native transactions?
 
-Yes! Plug is designed to be a drop-in solution that allows you to support both native and declarative transactions. This allows you to support the best of both worlds and provide your users with the best experience possible.
+Yes! Plug is designed to be a drop-in solution that allows you to support both imperative and declarative transactions. This allows you to support the best of both worlds and provide your users with the best experience possible.
 
 ## Bro... These docs are huge! Can I get a TL;DR?
 
 Sure! Here is a quick summary of the most important parts of the Plug framework:
 
-- **Declarative Transactions** - Plug allows you to break free of the limitations of the EVM and provide your users with a much more performant experience.
+- **Declarative Transactions** - Plug allows you to break free of the limitations of the EVM and provide your users with a much more performant and secure experience.
 
-- **Pin-Stack** - Plug allows you to build a pin-stack that is as simple or complex as you need it to be. This allows you to build a pin that is as simple as a single signature or as complex as a multi-signature with a time-lock.
+- **Plugs** - Plug allows you to build a bundle of Plugs that is as simple or complex as you need it to be. This allows you to build a Plug that is as simple as a single signature or as complex as a multi-signature with a time-lock. The possibilities are endless.
 
-- **Enforcers** - Plug allows you to build a pin-stack that is as simple or complex as you need it to be. This allows you to build a pin that is as simple as a single signature or as complex as a multi-signature with a time-lock.
+- **Fuses** - Fuses provide the enforcement of a users conditional declaration. From execution time, to allowed methods, to active state of the protocol being interacted with. Simply, Fuses check that something is in the state desired and reverts the transaction otherwise.
 
 That's it! If you are looking for more information, please check out the rest of the documentation.
 

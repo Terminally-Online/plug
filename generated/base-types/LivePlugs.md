@@ -70,12 +70,12 @@ bytes32 constant LIVE_PLUGS_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant LIVE_PLUGS_TYPEHASH = keccak256(
-    'LivePlugs(Plugs plugs,bytes signature)Breaker(uint256 nonce,uint256 queue)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)LivePin(Pin pin,bytes signature)Pin(address neutral,bytes32 live,Fuse[] fuses,bytes32 salt)Plug(Current current,LivePin[] pins)Plugs(Plug[] plugs,Breaker breaker)'
+    'LivePlugs(Plugs plugs,bytes signature)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)Plug(Current current,Fuse[] fuses)Plugs(Plug[] plugs,bytes32 salt)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant LIVE_PLUGS_TYPEHASH = 0x8c8671bad2ca19191956e2b24c8c5eff63111123c4c7e330c2e579e7699f6be0
+bytes32 constant LIVE_PLUGS_TYPEHASH = 0xf0af6e0fa55fac5058a9b38e77b2b8cdac02663cc287bd87ab13731a58bbbc41
 ```
 
 :::

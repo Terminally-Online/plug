@@ -16,7 +16,7 @@ Get the signer of a [LivePlugs](/generated/base-types/LivePlugs) data type.
 
 ``` solidity [Types.sol:getLivePlugsSigner]
 function getLivePlugsSigner(
-	LivePlugs memory $input
+	TypesLib.LivePlugs memory $input
 ) public view virtual returns (address $signer) {
 	$signer = getPlugsDigest($input.plugs).recover(
 		$input.signature

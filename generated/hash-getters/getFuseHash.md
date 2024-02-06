@@ -35,12 +35,12 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getFuseHash]
 function getFuseHash(
-	Fuse memory $input
+	TypesLib.Fuse memory $input
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		FUSE_TYPEHASH,
 		$input.neutral,
-		keccak256($input.live)
+	keccak256($input.live)
 	));
 }
 ``` 

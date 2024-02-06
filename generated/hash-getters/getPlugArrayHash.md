@@ -35,7 +35,7 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getPlugArrayHash]
 function getPlugArrayHash(
-	Plug[] memory $input
+	TypesLib.Plug[] memory $input
 )  public pure virtual returns (bytes32 $hash) {
 	/// @dev Load the stack.
 	bytes memory encoded;
@@ -43,13 +43,11 @@ function getPlugArrayHash(
 	uint256 length = $input.length;
 
 	/// @dev Encode each item in the array.
-	for (i; i < length;) {
+	for (i; i < length; i++) {
 		encoded = bytes.concat(
 			encoded,
 			getPlugHash($input[i])
 		);
-
-		unchecked { i++; }
 	}
 	
 	/// @dev Hash the encoded array.

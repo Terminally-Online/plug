@@ -19,7 +19,7 @@ A [Plugs](/generated/base-types/Plugs) data type provides EIP-712 compatability 
 
 ::: info
                 
-Inside the declaration of a `Plugs` data type there are nested [Plug](/generated/base-types/Plug) and [Breaker](/generated/base-types/Breaker) data types that need to be built independently.
+Inside the declaration of a `Plugs` data type there are nested [Plug](/generated/base-types/Plug) data types that need to be built independently.
                     
 :::
 
@@ -32,14 +32,14 @@ To interact with the data type onchain will you need both the `Typescript` and `
 ``` typescript [Typescript/Javascript]
 {
     plugs: Array<Plug>,
-	breaker: Breaker 
+	salt: '0x${string}' 
 }
 ```
 
 ```typescript [EIP-712]
 {
     { name: 'plugs', type: 'Plug[]' },
-	{ name: 'breaker', type: 'Breaker' } 
+	{ name: 'salt', type: 'bytes32' } 
 }
 ```
 
@@ -53,7 +53,7 @@ The `Typescript` representation is used to build and work with the object in you
 
 ## Onchain Implementation
 
-With `plugs` and `breaker` as the fields of the `Plugs` data type we can generate the type hash as follows:
+With `plugs` and `salt` as the fields of the `Plugs` data type we can generate the type hash as follows:
 
 ::: code-group
 
@@ -62,7 +62,7 @@ bytes32 constant PLUGS_TYPEHASH = keccak256(
     abi.encodePacked(
         "Plugs(",
 		"Plug[] plugs",
-		"Breaker breaker",
+		"bytes32 salt",
         ")"
     )
 );
@@ -70,12 +70,12 @@ bytes32 constant PLUGS_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant PLUGS_TYPEHASH = keccak256(
-    'Plugs(Plug[] plugs,Breaker breaker)Breaker(uint256 nonce,uint256 queue)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)LivePin(Pin pin,bytes signature)Pin(address neutral,bytes32 live,Fuse[] fuses,bytes32 salt)Plug(Current current,LivePin[] pins)'
+    'Plugs(Plug[] plugs,bytes32 salt)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)Plug(Current current,Fuse[] fuses)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant PLUGS_TYPEHASH = 0x0ca686c3f37fb1536e62d17eb27e8d838569464dfbf3b6dcedafa5adc9ddc9cb
+bytes32 constant PLUGS_TYPEHASH = 0x7ac33e93ac89f672d59c7e85084e43e143781186d7b1c32be86b1b91e68914ab
 ```
 
 :::

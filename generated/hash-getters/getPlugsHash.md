@@ -35,12 +35,12 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getPlugsHash]
 function getPlugsHash(
-	Plugs memory $input
+	TypesLib.Plugs memory $input
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		PLUGS_TYPEHASH,
 		getPlugArrayHash($input.plugs),
-		getBreakerHash($input.breaker)
+	$input.salt
 	));
 }
 ``` 

@@ -16,7 +16,7 @@ Encode [Plugs](/generated/base-types/Plugs) data into a digest hash that has bee
 
 ``` solidity [Types.sol:getPlugsDigest]
 function getPlugsDigest(
-	Plugs memory $input
+	TypesLib.Plugs memory $input
 ) public view virtual returns (bytes32 $digest) {
 	$digest = keccak256(
 		abi.encodePacked(

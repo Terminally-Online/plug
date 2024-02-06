@@ -19,7 +19,7 @@ A [Plug](/generated/base-types/Plug) data type provides EIP-712 compatability fo
 
 ::: info
                 
-Inside the declaration of a `Plug` data type there are nested [Current](/generated/base-types/Current) and [LivePin](/generated/base-types/LivePin) data types that need to be built independently.
+Inside the declaration of a `Plug` data type there are nested [Current](/generated/base-types/Current) and [Fuse](/generated/base-types/Fuse) data types that need to be built independently.
                     
 :::
 
@@ -32,14 +32,14 @@ To interact with the data type onchain will you need both the `Typescript` and `
 ``` typescript [Typescript/Javascript]
 {
     current: Current,
-	pins: Array<LivePin> 
+	fuses: Array<Fuse> 
 }
 ```
 
 ```typescript [EIP-712]
 {
     { name: 'current', type: 'Current' },
-	{ name: 'pins', type: 'LivePin[]' } 
+	{ name: 'fuses', type: 'Fuse[]' } 
 }
 ```
 
@@ -53,7 +53,7 @@ The `Typescript` representation is used to build and work with the object in you
 
 ## Onchain Implementation
 
-With `current` and `pins` as the fields of the `Plug` data type we can generate the type hash as follows:
+With `current` and `fuses` as the fields of the `Plug` data type we can generate the type hash as follows:
 
 ::: code-group
 
@@ -62,7 +62,7 @@ bytes32 constant PLUG_TYPEHASH = keccak256(
     abi.encodePacked(
         "Plug(",
 		"Current current",
-		"LivePin[] pins",
+		"Fuse[] fuses",
         ")"
     )
 );
@@ -70,12 +70,12 @@ bytes32 constant PLUG_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant PLUG_TYPEHASH = keccak256(
-    'Plug(Current current,LivePin[] pins)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)LivePin(Pin pin,bytes signature)Pin(address neutral,bytes32 live,Fuse[] fuses,bytes32 salt)'
+    'Plug(Current current,Fuse[] fuses)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant PLUG_TYPEHASH = 0x6faebc8a3a65dc257405b682e47b1876fedc7f804f47f7b6029c55053f6b3925
+bytes32 constant PLUG_TYPEHASH = 0xebb64d1314913b50aafb6069ab67ff91138a06d8ac9634ac869baceca0ede694
 ```
 
 :::

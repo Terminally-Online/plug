@@ -35,13 +35,13 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getCurrentHash]
 function getCurrentHash(
-	Current memory $input
+	TypesLib.Current memory $input
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		CURRENT_TYPEHASH,
 		$input.ground,
-		$input.voltage,
-		keccak256($input.data)
+	$input.voltage,
+	keccak256($input.data)
 	));
 }
 ``` 

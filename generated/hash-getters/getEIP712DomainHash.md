@@ -35,14 +35,14 @@ This is helpful in times when you need to build a message hash without tracking 
 
 ``` solidity [Types.sol:getEIP712DomainHash]
 function getEIP712DomainHash(
-	EIP712Domain memory $input
+	TypesLib.EIP712Domain memory $input
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		EIP712_DOMAIN_TYPEHASH,
 		keccak256(bytes($input.name)),
-		keccak256(bytes($input.version)),
-		$input.chainId,
-		$input.verifyingContract
+	keccak256(bytes($input.version)),
+	$input.chainId,
+	$input.verifyingContract
 	));
 }
 ``` 
