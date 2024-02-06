@@ -43,7 +43,7 @@ export class PlugSDK<
 		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
 		intent: TypedDataToPrimitiveTypes<T>[TK],
 		domain?: TypedDataDomain
-	) {
+	): Plug<C, T, TK> {
 		domain = domain || this.info?.domain
 
 		if (!this.info) throw new Error('Contract info not initialized')
@@ -68,13 +68,13 @@ export class PlugSDK<
 			: never,
 		intent: TypedDataToPrimitiveTypes<T>[TK],
 		domain?: TypedDataDomain
-	) {
+	): Promise<Plug<C, T, TK>> {
 		// * Build the intent and initialize it.
-		return (await this.build(
+		return await this.build(
 			intentType,
 			intent as TypedDataToPrimitiveTypes<T>[TK] &
 				TypedDataToPrimitiveTypes<T>[K],
 			domain
-		).init({ client })) as Plug<C, T, TK>
+		).init({ client })
 	}
 }
