@@ -27,35 +27,23 @@ contract PlugSocket is PlugSocketInterface, PlugSimulation {
         /// @dev Determine who signed the intent.
         address intentSigner = getLivePlugsSigner($livePlugs);
 
-        /// @dev Prevent random people from plugging.
-        _enforceSigner(intentSigner);
-
-        /// @dev Prevent replay attacks by enforcing replay protection.
-        _enforceBreaker(intentSigner, $livePlugs.plugs.breaker);
-
         /// @dev Invoke the plugs.
-        $results = _plug($livePlugs.plugs.plugs, intentSigner);
+        $results = _plug($livePlugs.plugs, intentSigner);
     }
 
     /**
      * See {IPlug-plugContract}.
+     *
+     * TODO: Finish the implementation of this make sure it is secure as this
+     *       allows existing contracts to declare the execution of an intent
+     *       beyond just EOAs and that is a growing usecase now that we not
+     *       only have Gnosis Safes, but also EIP-4337.
      */
-    function plugContract(PlugTypesLib.Plug[] calldata $plugs)
+    function plugContract(PlugTypesLib.Plugs calldata $plugs)
         external
         payable
         returns (bytes[] memory $result)
     {
-        /// @dev Prevent random contracts from plugging.
-        _enforceSigner(msg.sender);
-
         $result = _plug($plugs, msg.sender);
     }
-
-    /**
-     * @notice Confirm that signer of the intent has permission to declare
-     *         the execution of an intent.
-     * @dev If you would like to limit the available signers override this
-     *      function in your contract with the additional logic.
-     */
-    function _enforceSigner(address $signer) internal view virtual { }
 }

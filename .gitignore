@@ -185,10 +185,10 @@ typechain-types
 # Smart contract files
 cache
 artifacts
+create2crunch
 --branch-coverage
 report
 lcov.info
-create2crunch
 
 ./core
 ./contracts

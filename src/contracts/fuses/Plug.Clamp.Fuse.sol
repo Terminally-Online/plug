@@ -19,7 +19,7 @@ contract PlugClampFuse is PlugFuseInterface {
      * See {FuseEnforcer-enforceFuse}.
      */
     function enforceFuse(
-        bytes calldata live,
+        bytes calldata $live,
         PlugTypesLib.Current calldata $current,
         bytes32
     )
@@ -29,7 +29,7 @@ contract PlugClampFuse is PlugFuseInterface {
         returns (bytes memory $through)
     {
         /// @dev Determine the bounds of the clamp.
-        (uint256 $min, uint256 $max) = decode(live);
+        (uint256 $min, uint256 $max) = decode($live);
 
         /// @dev Make sure the current value is within the bounds.
         uint256 value = $current.data.toUint256(0);
