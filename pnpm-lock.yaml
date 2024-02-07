@@ -12,8 +12,8 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0(typescript@5.3.3)
   solady:
-    specifier: ^0.0.166
-    version: 0.0.166
+    specifier: ^0.0.168
+    version: 0.0.168
   viem:
     specifier: ^2.7.6
     version: 2.7.6(typescript@5.3.3)
@@ -5376,7 +5376,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /ripemd160@2.0.2:
@@ -5647,12 +5647,12 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /solady@0.0.166:
-    resolution: {integrity: sha512-M6/n9VlfGPzxHNvFFI4ZDsLrJR95VPEkm7+27BPBTVvqO4p2aNIaMR+GbR1h/sh36YcUChHJlO0ubxKGVvWdig==}
-    dev: false
-
   /solady@0.0.167:
     resolution: {integrity: sha512-YbHlYIYeC8YnWqr15YwDffgroqmVqD9RZ7/08cBD+r8EDH2NDkRcU4Y1CzQNT0fZQ25HjcclTG78MS3mHikkWA==}
+    dev: false
+
+  /solady@0.0.168:
+    resolution: {integrity: sha512-7tgy21selT6Tg+8aAxkLUyjjCx9iQ3m3KE+5D4x/tIXr4wAfoVe6EK0lmmZjyIv8MRqQSx/vB6NfIC1LME3oZA==}
     dev: false
 
   /solc@0.7.3(debug@4.3.4):
