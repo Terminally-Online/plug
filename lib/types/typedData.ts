@@ -1,14 +1,10 @@
-import { TypedData } from 'abitype'
-
-export type Domain = {
-	name: string
-	version: string
-	chainId: number
-}
+import type {
+	TypedData
+} from 'abitype'
 
 // ! Turn a dictionary of EIP-712 types into a union of the keys
 //   that have a signed pair.
-export type TypedDataToKeysWithLivePair<T extends TypedData> =
+export type GetTypedDataLivePairs<T extends TypedData> =
 	// * Remove all the 'never' types from the union.
 	string &
 		Exclude<
@@ -26,16 +22,6 @@ export type TypedDataToKeysWithLivePair<T extends TypedData> =
 
 // * Turn an intent object into the expected onchain shape of the
 //   LivePlug pair output.
-export type TypedDataToLivePlug<K, U> = Record<'signature', `0x${string}`> & {
+export type GetTypedDataLivePlugs<K, U> = Record<'signature', `0x${string}`> & {
 	[TK in K as Lowercase<string & TK>]: U
-}
-
-export type Contract = {
-	name: string
-	relativePath?: string
-}
-
-export type MinedContract = Contract & {
-	salt: string
-	address: string
 }

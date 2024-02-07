@@ -1,66 +1,61 @@
-import { TypedData, TypedDataDomain, TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedDataToPrimitiveTypes } from 'abitype'
 
-import {
-	GetContractReturnType,
-	GetTypedDataDomain,
-	GetTypedDataPrimaryType,
-	WalletClient
-} from 'viem'
+import { GetContractReturnType, TypedDataDefinition, WalletClient } from 'viem'
 
 import { Plug } from '@/src/core/plug'
 
-import { Domain, TypedDataToKeysWithLivePair } from '../../lib/types'
+export const PLUGS_TYPES = {
+	Current: [
+		{ name: 'ground', type: 'address' },
+		{ name: 'voltage', type: 'uint256' },
+		{ name: 'data', type: 'bytes' }
+	],
+	Fuse: [
+		{ name: 'neutral', type: 'address' },
+		{ name: 'live', type: 'bytes' }
+	],
+	Plug: [
+		{ name: 'current', type: 'Current' },
+		{ name: 'fuses', type: 'Fuse[]' }
+	],
+	Plugs: [
+		{ name: 'plugs', type: 'Plug[]' },
+		{ name: 'salt', type: 'bytes32' }
+	]
+} as const
 
 export class PlugSDK<
-	C extends WalletClient,
-	T extends TypedData,
-	K extends TypedDataToKeysWithLivePair<T>
+	TClient extends WalletClient = WalletClient,
+	TDomain extends
+		TypedDataDefinition['domain'] = TypedDataDefinition['domain'],
+	TMessage extends TypedDataToPrimitiveTypes<
+		typeof PLUGS_TYPES
+	>['Plugs'] = TypedDataToPrimitiveTypes<typeof PLUGS_TYPES>['Plugs']
 > {
-	public readonly info: {
-		domain: GetTypedDataDomain['domain']
-		types: T
-	} | null = null
+	public plugs: Plug[] = []
 
-	constructor(
-		domain: Domain,
-		public readonly contract: GetContractReturnType | `0x${string}`,
-		types: T
-	) {
-		this.info = {
-			// Initialize the domain that is used in the domain hash onchain.
-			domain: {
+	build(
+		domain: TDomain,
+		contract: GetContractReturnType | `0x${string}`,
+		message: TMessage
+	): Plug<TClient> {
+		const plug = new Plug<TClient>(
+			{
 				...domain,
 				verifyingContract:
 					typeof contract === 'string' ? contract : contract.address
 			},
-			// Declare the types that are used in the typed data.
-			types
-		}
-	}
-
-	// Build a Plug intent without signing it.
-	build<TK extends GetTypedDataPrimaryType<T>>(
-		intentType: TK extends string ? GetTypedDataPrimaryType<T, TK> : never,
-		intent: TypedDataToPrimitiveTypes<T>[TK],
-		domain?: TypedDataDomain
-	): Plug<C, T, TK> {
-		domain = domain || this.info?.domain
-
-		if (!this.info) throw new Error('Contract info not initialized')
-
-		return new Plug<C, T, TK>(
-			domain,
-			this.info.types,
-			intentType,
-			intent as TypedDataToPrimitiveTypes<T>[TK]
+			message
 		)
+
+		this.plugs.push(plug)
+
+		return plug
 	}
 
-	// Initialize and sign a pre-built Plug intent.
-	async sign<TK extends K & GetTypedDataPrimaryType<T>>(
-		client: C,
-		plug: Plug<C, T, TK>
-	): Promise<Plug<C, T, TK>> {
-		return await plug.init({ client })
+	latest() { 
+		if(this.plugs.length == 0) return undefined
+
+		return this.plugs[this.plugs.length - 1]
 	}
 }

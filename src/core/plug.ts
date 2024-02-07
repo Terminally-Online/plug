@@ -1,53 +1,73 @@
-import { TypedData, TypedDataDomain, TypedDataToPrimitiveTypes } from 'abitype'
+import { GetTypedDataLivePlugs } from '@/lib/types/typedData'
 
 import {
-	GetTypedDataDomain,
-	GetTypedDataPrimaryType,
 	hashTypedData,
 	recoverTypedDataAddress,
+	TypedDataDefinition,
 	WalletClient
 } from 'viem'
+import { API } from './api'
 
-import { TypedDataToLivePlug } from '@/lib/types'
+export const PLUGS_TYPES = {
+	Current: [
+		{ name: 'ground', type: 'address' },
+		{ name: 'voltage', type: 'uint256' },
+		{ name: 'data', type: 'bytes' }
+	],
+	Fuse: [
+		{ name: 'neutral', type: 'address' },
+		{ name: 'live', type: 'bytes' }
+	],
+	Plug: [
+		{ name: 'current', type: 'Current' },
+		{ name: 'fuses', type: 'Fuse[]' }
+	],
+	Plugs: [
+		{ name: 'plugs', type: 'Plug[]' },
+		{ name: 'salt', type: 'bytes32' }
+	]
+} as const
 
 export class Plug<
-	C extends WalletClient,
-	T extends TypedData,
-	K extends GetTypedDataPrimaryType<T> = GetTypedDataPrimaryType<T>,
-	U extends TypedDataToPrimitiveTypes<T>[K] = TypedDataToPrimitiveTypes<T>[K],
-	S extends TypedDataToLivePlug<K, U> = TypedDataToLivePlug<K, U>
+	TClient extends WalletClient = WalletClient,
+	TDomain extends
+		TypedDataDefinition['domain'] = TypedDataDefinition['domain'],
+	TMessage extends TypedDataDefinition<
+		typeof PLUGS_TYPES,
+		'Plugs'
+	>['message'] = TypedDataDefinition<typeof PLUGS_TYPES, 'Plugs'>['message'],
+	TIntent extends GetTypedDataLivePlugs<'Plugs', TMessage> | undefined =
+		| GetTypedDataLivePlugs<'Plugs', TMessage>
+		| undefined
 > {
-	private client?: WalletClient
-	public intent: S | undefined
+	public readonly types: typeof PLUGS_TYPES
+	public readonly primaryType: keyof typeof PLUGS_TYPES
+	public client?: TClient
+	public intent?: TIntent
+	public apiClient: API
 
 	constructor(
-		public readonly domain: GetTypedDataDomain['domain'],
-		public readonly types: T,
-		public readonly primaryType: K extends string
-			? GetTypedDataPrimaryType<T, K>
-			: never,
-		public readonly message: U
-	) {}
+		public readonly domain: NonNullable<TDomain>,
+		public readonly message: NonNullable<TMessage>,
+		private readonly api = 'https://api.onplug.io/pool',
+		private readonly apiKey = 'AAAAAAAAAAAAAAAAAAAA'
+	) {
+		this.types = PLUGS_TYPES
+		this.primaryType = 'Plugs'
+		this.apiClient = new API(this.api, this.apiKey)
+	}
 
 	lowercasePrimaryType() {
 		return this.primaryType.toLowerCase()
 	}
 
-	// * Sign and initialize an intent in-framework.
-	// ! This is only used when you have access to a `client` that can sign
-	//   the messages such as a frontend. For an API, you would not
-	//   consume this method in the Plug consumer or anywhere else.
-	async init<
-		P extends {
-			client: C
-		}
-	>({ client }: P) {
-		if (this.intent) return this
+	async sign(client: TClient) {
+		if (this.intent) return this.intent
 
 		this.client = client
 
-		if (!this.client.account)
-			throw new Error('Client account not initialized')
+		if (!this.client?.account)
+			throw new Error('Client has no initialized account.')
 
 		const signature = await this.client.signTypedData({
 			account: this.client.account.address,
@@ -60,22 +80,16 @@ export class Plug<
 		this.intent = {
 			[this.lowercasePrimaryType()]: this.message,
 			signature
-		} as S
+		} as NonNullable<typeof this.intent>
 
-		return this
+		return this.intent
 	}
 
-	// * Recover the address from the message and signature of the intent.
-	async address<
-		P extends Partial<{
-			domain: TypedDataDomain
-			signature: `0x${string}`
-		}>
-	>({ domain, signature }: P = {} as P) {
-		domain = domain ?? this.domain
-		signature = signature ?? this.intent?.signature
-
-		if (!signature) throw new Error('Signature not initialized')
+	async address(
+		domain = this.domain,
+		signature: `0x${string}` | undefined = this.intent?.signature
+	) {
+		if (!signature) throw new Error('Intent has no initialized signature')
 
 		return await recoverTypedDataAddress({
 			domain,
@@ -86,33 +100,29 @@ export class Plug<
 		})
 	}
 
-	// * Confirm the address of the message of intent.
-	async verify<
-		P extends Partial<{
-			domain: TypedDataDomain
-			signature: `0x${string}`
-		}> & {
-			address: `0x${string}`
-		}
-	>({ domain, address, signature }: P) {
-		return (await this.address({ domain, signature })) === address
+	async verify(signature: `0x${string}`, address: `0x${string}`) {
+		return (await this.address(this.domain, signature)) === address
 	}
 
-	// * Hash the message of intent.
-	hash<
-		P extends Partial<{
-			domain: TypedDataDomain
-			message: U
-		}>
-	>({ domain, message }: P = {} as P) {
-		domain = domain ?? this.domain
-		message = message ?? this.message
-
+	hash() {
 		return hashTypedData({
-			domain,
+			domain: this.domain,
 			types: this.types,
 			primaryType: this.primaryType,
-			message
+			message: this.message
 		})
+	}
+
+	async submit() {
+		if (!this.client?.account)
+			throw new Error('Client has no initialized account.')
+		if (!this.intent) throw new Error('Plug has no initialized intent.')
+
+		const body = {
+			account: this.client.account.address,
+			intent: this.intent
+		}
+
+		return await this.apiClient.post(body);
 	}
 }

@@ -1,4 +1,4 @@
-import { Contract } from "./types";
+import { Contract } from "@/lib/types";
 
 export const contractsPath = 'src/contracts'
 
