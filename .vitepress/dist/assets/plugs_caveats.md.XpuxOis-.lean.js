@@ -1,1 +1,0 @@
-import{_ as e,o as t,c as a}from"./chunks/framework.OBNbGUgv.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"plugs/caveats.md","filePath":"plugs/caveats.md","lastUpdated":1699842670000}'),s={name:"plugs/caveats.md"};function c(r,o,n,p,d,l){return t(),a("div")}const m=e(s,[["render",c]]);export{i as __pageData,m as default};
