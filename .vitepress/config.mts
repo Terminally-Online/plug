@@ -47,7 +47,7 @@ export default defineConfig({
           },
           {
             text: "Transaction Types",
-            link: "/core/transactions",
+            link: "/introduction/transactions",
           },
           {
             text: "FAQ",
@@ -95,7 +95,7 @@ export default defineConfig({
           },
           {
             text: "Abstracts",
-            link: "/core/fuse",
+            link: "/core/abstracts",
             items: [
               {
                 text: "Fuses",

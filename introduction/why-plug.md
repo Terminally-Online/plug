@@ -53,7 +53,7 @@ Inspired by all the tried solutions before, `Plug` packages as many benefits as 
 
 ## Traditional Blockchain Transactions: A Refresher
 
-In the orthodox blockchain transaction model, a user's `Account` is used to sign a `Transaction`. This `Transaction` specifies several parameters like [the contract address, the method to call, and the amount of gas to allocate.](/core/transactions#imperative-transactions)
+In the orthodox blockchain transaction model, a user's `Account` is used to sign a `Transaction`. This `Transaction` specifies several parameters like [the contract address, the method to call, and the amount of gas to allocate.](/introduction/transactions#imperative-transactions)
 
 The `Transaction` is then broadcast to the network, where it waits in a mempool until miners include it in a new block.
 
@@ -67,7 +67,7 @@ Plug introduces a paradigm shift. Instead of being a passive participant in the 
 
 If a transaction doesn't meet the predetermined conditions, it simply won't execute. This eliminates the risks associated with upfront costs, as you only pay for transactions that provide value. Additionally, it allows for more strategic planning around gas usage and unexpected outcomes, thereby optimizing the value to cost ratio.
 
-This means that instead of crafting a transaction solely based on the contract to call and the gas to provide, an individual has the ability to explicitly declare the [conditions that must be met to allow execution](/core/transactions#declarative-transactions).
+This means that instead of crafting a transaction solely based on the contract to call and the gas to provide, an individual has the ability to explicitly declare the [conditions that must be met to allow execution](/introduction/transactions#declarative-transactions).
 
 The concept of "If This, Then That" is straightforward but holds immense potential. It's the core logic that allows you to build complex conditional statements, which is especially powerful in smart contracts and blockchain technologies.
 
@@ -96,7 +96,7 @@ To sum it up in the simplest way, `Plug` is like [Zapier](https://zapier.com), b
 
 Plug was developed with one thing in mind: **time to launch.** Too much time is wasted in the crypto development industry on reinventing the wheel and solving complex problems that have not only been solved, but had their answers shared far and wide.
 
-To accomplish this, `Plug` is designed to streamline the process of integrating [Declarative Transactions](/core/transactions#declarative-transactions) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Plug` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
+To accomplish this, `Plug` is designed to streamline the process of integrating [Declarative Transactions](/introduction/transactions#declarative-transactions) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Plug` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
 
 By default, `Plug` ships with the base types that are needed to power declarative transactions however if you are seeking to build a more complex protocol, you can easily extend the types to meet your needs.
 

@@ -1,6 +1,6 @@
 # Base Types
 
-`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Core Plug](/core/framework) and [Fuses](/core/fuse). Alone these types are not very useful, but together they form the foundation of the `Plug` framework.
+`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Plugs](/generated/base-types/Plugs) and [Fuses](/generated/base-types/Fuse). Alone these types are not very useful, but together they form the foundation of the [Plug](/) framework.
 
 ## Type Hashes
 
@@ -79,29 +79,14 @@ As covered in the [EIP-712](/decoders/eip-712) section, typed signatures include
 
 By default, most libraries include the `EIP712Domain` type in the signature. This is because the `EIP712Domain` type is used to define every signature and things would not be secure without it. While the types of every protocol vary, they all share the same `EIP712Domain` type.
 
-## Pin Types
-
-Now stepping into the pieces introduced by the `Plug` framework, the `Pin Types` are used to define the [Pin](/generated/base-types/Pin) that is being given.
-
-When creating new pins you will utilize:
-
-- [Fuse](/generated/base-types/Fuse)
-- [Pin](/generated/base-types/Pin)
-
-When distributing, verifying or executing pins you will utilize:
-
-- [LivePin](/generated/base-types/LivePin)
-
-No matter the complexity of the pin, the `Pin Types` are always the same. This is because the `Pin Types` are used to define the `Pin` that is being given, not the logic of the `Pin`.
-
 ## Plug Types
 
-The `Plug Types` are used to define the [Plug](/plugs/introduction) that is executed.
+The `Plug Types` are used to define the [Plug](/generated/base-types/Plug) that is executed.
 
 When creating new plugs you will utilize:
 
-- [Replay Protection](/generated/base-types/Breaker)
 - [Current](/generated/base-types/Current)
+- [Fuse](/generated/base-types/Fuse)
 - [Plug](/generated/base-types/Plug)
 
 When distributing new plugs you will utilize:
