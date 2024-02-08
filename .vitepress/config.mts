@@ -105,6 +105,14 @@ export default defineConfig({
                     text: "enforceFuse",
                     link: "/core/fuse/enforce-fuse",
                   },
+                  {
+                    text: "encode",
+                    link: "/core/fuse/encode",
+                  },
+                  {
+                    text: "decode",
+                    link: "/core/fuse/decode",
+                  },
                 ],
               },
               {
@@ -127,7 +135,7 @@ export default defineConfig({
       },
       {
         text: "Deployable Instances",
-        collapsed: true,
+        collapsed: false,
         items: [
           {
             text: "Addresses",
@@ -170,6 +178,10 @@ export default defineConfig({
           {
             text: "Routers",
             link: "/instances/routers"
+          },
+          {
+            text: "Vaults",
+            link: "/instances/vaults"
           },
         ],
       },
