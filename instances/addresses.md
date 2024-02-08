@@ -2,7 +2,7 @@
 head:
   - - meta
     - property: og:title
-      content: Base Mechanism
+      content: Addresses
   - - meta
     - name: description
       content: Deploy a piece of the Plug Framework on any chain with the help of CREATE2.
@@ -11,9 +11,17 @@ head:
       content: Deploy a piece of the Plug Framework on any chain with the help of CREATE2.
 ---
 
-# Deployment
+# Addresses
 
 All pieces of Plug can be deployed to their respective canonical address on EVM chains using 0age's keyless CREATE2 factory (`0x0000000000FFe8B47B3e2130213B802212439497`). By doing this, the addresses referenced are constant, docs are easier to follow, and users can verify that the contract being interacted with is truly the contract that has been designed.
+
+## Contracts
+
+::: info
+
+The addresses of deployed instances will be updated shortly.
+
+:::
 
 ## Mining an Efficient Address
 

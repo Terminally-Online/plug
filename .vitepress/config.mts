@@ -57,7 +57,7 @@ export default defineConfig({
       },
       {
         text: "Core Mechanisms",
-        collapsed: false,
+        collapsed: true,
         items: [
           {
             text: "EIP-712",
@@ -130,32 +130,32 @@ export default defineConfig({
         collapsed: true,
         items: [
           {
-            text: "Base",
-            link: "/instances/base"
+            text: "Addresses",
+            link: "/instances/addresses"
           },
           {
-            text: "Enforcers",
+            text: "Fuses",
             link: "/instances/enforcers",
             items: [
               {
                 text: "Allowed Methods",
-                link: "/instances/enforcers/allowed-methods",
+                link: "/instances/fuses/allowed-methods",
               },
               {
                 text: "Block Number",
-                link: "/instances/enforcers/block-number",
+                link: "/instances/fuses/block-number",
               },
               {
                 text: "Timestamp",
-                link: "/instances/enforcers/timestamp",
+                link: "/instances/fuses/timestamp",
               },
               {
                 text: "Schedule Windows",
-                link: "/instances/enforcers/schedule-windows",
+                link: "/instances/fuses/schedule-windows",
               },
               {
                 text: "Limited Calls",
-                link: "/instances/enforcers/limited-calls",
+                link: "/instances/fuses/limited-calls",
               },
               {
                 text: "ERC20Allowance",
@@ -163,9 +163,13 @@ export default defineConfig({
               },
               {
                 text: "Revocation",
-                link: "/instances/enforcers/revocation",
+                link: "/instances/fuses/revocation",
               },
             ],
+          },
+          {
+            text: "Routers",
+            link: "/instances/routers"
           },
         ],
       },
