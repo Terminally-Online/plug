@@ -146,10 +146,6 @@ export default defineConfig({
             link: "/instances/enforcers",
             items: [
               {
-                text: "Allowed Methods",
-                link: "/instances/fuses/allowed-methods",
-              },
-              {
                 text: "Block Number",
                 link: "/instances/fuses/block-number",
               },
@@ -164,10 +160,6 @@ export default defineConfig({
               {
                 text: "Limited Calls",
                 link: "/instances/fuses/limited-calls",
-              },
-              {
-                text: "ERC20Allowance",
-                link: "/instances/enforcers/erc20-allowance",
               },
               {
                 text: "Revocation",
