@@ -48,7 +48,7 @@
 		"@nftchance/plug-types": "^0.9.2",
 		"abitype": "^1.0.0",
 		"solady": "^0.0.168",
-		"viem": "^2.7.6"
+		"viem": "^2.7.10"
 	},
 	"repository": {
 		"type": "git",
