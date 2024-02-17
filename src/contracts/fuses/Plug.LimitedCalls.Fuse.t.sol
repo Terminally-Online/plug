@@ -13,8 +13,8 @@ contract PlugLimitedCallsFuseTest is Test {
     PlugLimitedCallsFuse internal fuse;
 
     PlugTypesLib.Current current =
-        PlugTypesLib.Current({ ground: address(fuse), voltage: 0, data: "0x" });
-    bytes32 pinHash = bytes32("0");
+        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    bytes32 plugsHash = bytes32(0);
 
     function setUp() public virtual {
         fuse = new PlugLimitedCallsFuse();
@@ -22,18 +22,24 @@ contract PlugLimitedCallsFuseTest is Test {
 
     function test_enforceFuse() public {
         uint256 calls = 1;
-        bytes memory terms = fuse.encode(calls);
+        bytes memory terms = fuse.encode(1);
         uint256 decodedCalls = fuse.decode(terms);
         assertEq(decodedCalls, calls);
-        fuse.enforceFuse(terms, current, pinHash);
-        vm.expectRevert(bytes("PlugLimitedCallsFuse:limit-exceeded"));
-        fuse.enforceFuse(terms, current, pinHash);
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 
-    function test_enforceFuseWithZeroCalls() public {
+    function testRevert_enforceFuse_Exceeded() public {
+        uint256 calls = 1;
+        bytes memory terms = fuse.encode(calls);
+        fuse.enforceFuse(terms, current, plugsHash);
+        vm.expectRevert(bytes("PlugLimitedCallsFuse:limit-exceeded"));
+        fuse.enforceFuse(terms, current, plugsHash);
+    }
+
+    function testRevert_enforceFuse_ZeroCalls() public {
         uint256 calls = 0;
         bytes memory terms = fuse.encode(calls);
         vm.expectRevert(bytes("PlugLimitedCallsFuse:limit-exceeded"));
-        fuse.enforceFuse(terms, current, pinHash);
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 }

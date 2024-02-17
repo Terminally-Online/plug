@@ -35,9 +35,9 @@ contract PlugClampFuse is PlugFuseInterface {
         uint256 value = $current.data.toUint256(0);
 
         /// @dev If it is above the max, return the max.
-        if (value > $max) return abi.encodePacked($max);
+        if (value > $max) return abi.encode($max);
         /// @dev If it is below the min, return the min.
-        if (value < $min) return abi.encodePacked($min);
+        if (value < $min) return abi.encode($min);
         /// @dev Otherwise, return the current value.
         return $current.data;
     }

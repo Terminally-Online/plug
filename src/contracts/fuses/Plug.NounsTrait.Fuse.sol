@@ -22,15 +22,15 @@ import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
 contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
     /// @dev Function hashes of the trait getters.
     bytes32 public constant BACKGROUND_SELECTOR =
-        keccak256(abi.encodePacked("background(uint256 index)"));
+        keccak256(abi.encode("background(uint256 index)"));
     bytes32 public constant HEAD_SELECTOR =
-        keccak256(abi.encodePacked("head(uint256 index)"));
+        keccak256(abi.encode("head(uint256 index)"));
     bytes32 public constant GLASSES_SELECTOR =
-        keccak256(abi.encodePacked("glasses(uint256 index)"));
+        keccak256(abi.encode("glasses(uint256 index)"));
     bytes32 public constant BODY_SELECTOR =
-        keccak256(abi.encodePacked("body(uint256 index)"));
+        keccak256(abi.encode("body(uint256 index)"));
     bytes32 public constant ACCESSORY_SELECTOR =
-        keccak256(abi.encodePacked("accessory(uint256 index)"));
+        keccak256(abi.encode("accessory(uint256 index)"));
 
     /// @dev Metadata storage contract for Nouns.
     /// @notice We use a raw address instead of interface here because we are dynamically building

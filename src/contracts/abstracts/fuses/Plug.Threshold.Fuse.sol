@@ -28,12 +28,12 @@ abstract contract ThresholdFuse is PlugFuseInterface {
         /// @dev Make sure the block number is before the threshold.
         if ($operator == 0) {
             if ($threshold < _threshold()) {
-                revert(string(abi.encodePacked(_name(), ":expired-pin")));
+                revert(string(abi.encodePacked(_name(), ":expired")));
             }
         }
         /// @dev Make sure the block number is after the threshold.
         else if ($threshold > _threshold()) {
-            revert(string(abi.encodePacked(_name(), ":early-pin")));
+            revert(string(abi.encodePacked(_name(), ":early")));
         }
 
         /// @dev Continue the pass through.

@@ -3,7 +3,7 @@
 pragma solidity 0.8.23;
 
 import { PlugSocket } from "../abstracts/Plug.Socket.sol";
-import { PlugFactoryLib } from "../libraries/Plug.Factory.Lib.sol";
+import { PlugLib } from "../libraries/Plug.Lib.sol";
 import { LibClone } from "solady/src/utils/LibClone.sol";
 
 /**
@@ -59,7 +59,7 @@ contract PlugFactory {
 
             /// @dev Emit an event for the creation of the Vault to make tracking
             ///		 things easier offchain.
-            emit PlugFactoryLib.SocketDeployed($implementation, $admin, $salt);
+            emit PlugLib.SocketDeployed($implementation, $admin, $salt);
         }
     }
 

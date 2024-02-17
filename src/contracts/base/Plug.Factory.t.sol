@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.23;
 
-import { Test } from "./Test.sol";
+import { Test } from "../utils/Test.sol";
 
 import { PlugFactory } from "./Plug.Factory.sol";
 import { PlugVaultSocket } from "../sockets/Plug.Vault.Socket.sol";
@@ -42,7 +42,8 @@ contract PlugFactoryTest is Test {
         }
 
         assertEq(address(vault).balance, initialValue);
-        assertEq(PlugVaultSocket(payable(vault)).isSigner(owner), true);
+        (, bool isSigner) = PlugVaultSocket(payable(vault)).getAccess(owner);
+        assertEq(isSigner, true);
     }
 
     function test_RepeatedDeployDeterministic() public {

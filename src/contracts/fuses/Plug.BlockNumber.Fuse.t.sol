@@ -11,8 +11,8 @@ contract PlugBlockNumberFuseTest is Test {
     PlugBlockNumberFuse internal fuse;
 
     PlugTypesLib.Current current =
-        PlugTypesLib.Current({ ground: address(fuse), voltage: 0, data: "0x" });
-    bytes32 pinHash = bytes32("0");
+        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    bytes32 plugsHash = bytes32(0);
 
     uint128 beforeOperator;
     uint128 beforeBlock;
@@ -35,12 +35,14 @@ contract PlugBlockNumberFuseTest is Test {
         (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
         assertEq(decodedOperator, beforeOperator);
         assertEq(decodedTimestamp, beforeBlock);
-        fuse.enforceFuse(terms, current, pinHash);
+        fuse.enforceFuse(terms, current, plugsHash);
+    }
 
-        bytes memory revertingTerms =
+    function test_enforceFuse_BeforeBlock_Expired() public {
+        bytes memory terms =
             fuse.encode(beforeOperator, uint128(block.number - 1));
-        vm.expectRevert(bytes("PlugBlockNumberFuse:expired-pin"));
-        fuse.enforceFuse(revertingTerms, current, pinHash);
+        vm.expectRevert(bytes("PlugBlockNumberFuse:expired"));
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 
     function test_enforceFuse_AfterBlock() public {
@@ -48,10 +50,13 @@ contract PlugBlockNumberFuseTest is Test {
         (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
         assertEq(decodedOperator, afterOperator);
         assertEq(decodedTimestamp, afterBlock);
-        fuse.enforceFuse(terms, current, pinHash);
-        bytes memory revertingTerms =
+        fuse.enforceFuse(terms, current, plugsHash);
+    }
+
+    function testRevert_enforceFuse_AfterBlock_Early() public {
+        bytes memory terms =
             fuse.encode(afterOperator, uint128(block.number + 1));
-        vm.expectRevert(bytes("PlugBlockNumberFuse:early-pin"));
-        fuse.enforceFuse(revertingTerms, current, pinHash);
+        vm.expectRevert(bytes("PlugBlockNumberFuse:early"));
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 }

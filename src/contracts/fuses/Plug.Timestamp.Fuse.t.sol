@@ -9,10 +9,9 @@ import { PlugTimestampFuse } from "./Plug.Timestamp.Fuse.sol";
 
 contract PlugTimestampFuseTest is Test {
     PlugTimestampFuse internal fuse;
-
-    PlugTypesLib.Current current =
-        PlugTypesLib.Current({ ground: address(fuse), voltage: 0, data: "0x" });
-    bytes32 pinHash = bytes32("0");
+    PlugTypesLib.Current internal current =
+        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    bytes32 plugsHash = bytes32("0");
 
     uint128 beforeOperator;
     uint128 beforeTimestamp;
@@ -35,12 +34,14 @@ contract PlugTimestampFuseTest is Test {
         (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
         assertEq(decodedOperator, beforeOperator);
         assertEq(decodedTimestamp, beforeTimestamp);
-        fuse.enforceFuse(terms, current, pinHash);
+        fuse.enforceFuse(terms, current, plugsHash);
+    }
 
-        bytes memory revertingTerms =
+    function testRevert_enforceFuse_BeforeTimestamp_Expired() public {
+        bytes memory terms =
             fuse.encode(beforeOperator, uint128(beforeTimestamp - 150));
-        vm.expectRevert(bytes("PlugTimestampFuse:expired-pin"));
-        fuse.enforceFuse(revertingTerms, current, pinHash);
+        vm.expectRevert(bytes("PlugTimestampFuse:expired"));
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 
     function test_enforceFuse_AfterTimestamp() public {
@@ -48,10 +49,13 @@ contract PlugTimestampFuseTest is Test {
         (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
         assertEq(decodedOperator, afterOperator);
         assertEq(decodedTimestamp, afterTimestamp);
-        fuse.enforceFuse(terms, current, pinHash);
-        bytes memory revertingTerms =
+        fuse.enforceFuse(terms, current, plugsHash);
+    }
+
+    function testRevert_enforceFuse_AfterTimestamp_Early() public {
+        bytes memory terms =
             fuse.encode(afterOperator, uint128(afterTimestamp + 400));
-        vm.expectRevert(bytes("PlugTimestampFuse:early-pin"));
-        fuse.enforceFuse(revertingTerms, current, pinHash);
+        vm.expectRevert(bytes("PlugTimestampFuse:early"));
+        fuse.enforceFuse(terms, current, plugsHash);
     }
 }

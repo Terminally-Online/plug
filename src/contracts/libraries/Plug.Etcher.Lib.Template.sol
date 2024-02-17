@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.23;
 
+import { PlugLib } from "../libraries/Plug.Lib.sol";
 /// @auto INSERT IMPORTS
 
 /**

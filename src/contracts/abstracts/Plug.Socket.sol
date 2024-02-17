@@ -3,7 +3,8 @@
 pragma solidity 0.8.23;
 
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
-import { PlugSimulation } from "./Plug.Simulation.sol";
+import { PlugCore } from "./Plug.Core.sol";
+import { ReentrancyGuard } from "solady/src/utils/ReentrancyGuard.sol";
 import { PlugTypesLib } from "./Plug.Types.sol";
 
 /**
@@ -12,38 +13,58 @@ import { PlugTypesLib } from "./Plug.Types.sol";
  *         counterfactual revokable pin of extremely
  *         granular pin and execution paths.
  * @author @nftchance (chance@utc24.io)
- * @author @danfinlay (https://github.com/delegatable/delegatable-sol)
- * @author @KamesGeraghty (https://github.com/kamescg)
  */
-contract PlugSocket is PlugSocketInterface, PlugSimulation {
+abstract contract PlugSocket is
+    PlugSocketInterface,
+    PlugCore,
+    ReentrancyGuard
+{
     /**
-     * See {IPlug-plug}.
+     * See {PlugSocketInterface-signer}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+    function signer(PlugTypesLib.LivePlugs calldata $livePlugs)
         external
-        payable
-        returns (bytes[] memory $results)
+        view
+        returns (address $signer)
     {
-        /// @dev Determine who signed the intent.
-        address intentSigner = getLivePlugsSigner($livePlugs);
-
-        /// @dev Invoke the plugs.
-        $results = _plug($livePlugs.plugs, intentSigner);
+        /// @dev Determine the address that signed the Plug bundle.
+        $signer = getLivePlugsSigner($livePlugs);
     }
 
     /**
-     * See {IPlug-plugContract}.
+     * See {PlugSocketInterface-plug}.
      *
-     * TODO: Finish the implementation of this make sure it is secure as this
-     *       allows existing contracts to declare the execution of an intent
-     *       beyond just EOAs and that is a growing usecase now that we not
-     *       only have Gnosis Safes, but also EIP-4337.
+     * @dev Process the Plug bundle with an external Executor.
      */
-    function plugContract(PlugTypesLib.Plugs calldata $plugs)
+    function plug(
+        PlugTypesLib.Plugs calldata $plugs,
+        address $signer,
+        uint256 $gas
+    )
         external
         payable
-        returns (bytes[] memory $result)
+        virtual
+        enforceRouter
+        enforceSigner($signer)
+        nonReentrant
+        returns (bytes[] memory $results)
     {
-        $result = _plug($plugs, msg.sender);
+        $results = _plug($plugs, $plugs.executor, $gas);
+    }
+
+    /**
+     * See {PlugSocketInterface-plug}.
+     *
+     * @dev Process the Plug bundle without an external Executor.
+     */
+    function plug(PlugTypesLib.Plugs calldata $plugs)
+        external
+        payable
+        virtual
+        enforceSigner(msg.sender)
+        nonReentrant
+        returns (bytes[] memory $results)
+    {
+        $results = _plug($plugs, address(0), 0);
     }
 }

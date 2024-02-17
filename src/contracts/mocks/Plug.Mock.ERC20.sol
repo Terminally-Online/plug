@@ -5,7 +5,7 @@ pragma solidity 0.8.23;
 import { ERC20 } from "solady/src/tokens/ERC20.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";
 
-contract MockERC20 is ERC20, Ownable {
+contract PlugMockERC20 is ERC20, Ownable {
     constructor() ERC20() { }
 
     function initialize(address $owner) public {
