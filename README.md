@@ -25,9 +25,6 @@ pnpm dev
 
 ## Building The Package For Distribution
 
-> [!WARNING]
-> Please do not use the contracts in production yet. They are extremely dangerous and will result in unexpected things happening. Do not do it under any circumstances. If you are reading this and get frustrated by this, please DM me and I will point out a few exploits that you may be able to help patch.
-
 For version management assistance, `@nftchance/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run:
 
 ```bash
