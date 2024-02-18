@@ -19,7 +19,7 @@ primitives
 
 With just these key pieces you gain access to the conditional, scheduled and generally automated capabilites that have been out of reach for users since the beginning of blockchain development efforts.
 
-If you would like deeper insight you can explore [the official documentation gateway of Plug](https://docs.onplug.io).
+Neither the `README` of this repository or the submodules are intended for user-focused documentation and instead are a resource for developers. If you would like deeper insight you can explore [the official documentation gateway of Plug](https://docs.onplug.io).
 
 ## Developer Summary
 
