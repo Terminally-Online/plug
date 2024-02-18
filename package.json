@@ -7,14 +7,6 @@
 		"submodules:update": "git submodule foreach git pull"
 	},
 	"author": "nftchance",
-	"workspaces": [
-		"packages/app/",
-		"packages/core/",
-		"packages/docs/",
-		"packages/types/",
-		"packages/server/",
-		"packages/client/"
-	],
 	"dependencies": {
 		"fs-extra": "^11.1.1",
 		"tsx": "^4.6.2"

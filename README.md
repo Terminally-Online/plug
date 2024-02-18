@@ -1,61 +1,39 @@
 # 🔌 Plug
 
-`@nftchance/plug` powers "**if this, then that**" statements for EVM blockchain transactions. Without having to change the core logic of your protocol you can turbocharge your protocol with declarative transaction execution in just a few seconds.
+`@nftchance/plug` unlocks the capability to declare "**if this, then that**" statements for all EVM blockchain protocols and transactions by bundling the power of intents on top of transaction execution. Without having to change the core logic of the protocols being consumed you can turbocharge your transaction in just a few seconds.
 
-> [!TIP]
-> While Plug is a protocol, it has been designed to first solve for the problems experienced by end-users. Not developers. You can find in-depth documentation [here](https://onplug.io). If you are a developer, builder, creator or investor and want to talk or have questions, please [send a DM on Twitter](https://twitter.com/nftchance).
+Historicaly, when submitting a blockchain transaction you had to hope it resulted in the outcomes you want. By using [Plug](https://onplug.io) that is no longer the case. Now, you can define a set of rules that may include one or many conditions you require to be met for your transaction to be executed. If the conditions haven't been met it simply cannot be executed. **This means that suddenly the blockchain opens up to a new world of scheduled and automated interaction that is just as safe and secure as the traditional experience.**
 
-The key functionality is powered by the following packages (each have their own function):
+Notably, this functionality is powered simply by signing a message that a relay will execute some time in the future. To declare a new intent with Plug you do not have to pay anything. Yet, you still have full control to declare the gas costs you are willing to pay when your transaction conditions have been met and it's executed. You do not need to run a bot or do anything special for this to work, [Plug](https://onplug.io) handles everything for you right out of the box.
+
+## How it Works
+
+[Plug](https://onplug.io) is powered by a few very simple but powerful concepts:
+
+```ml
+primitives
+├─ fuses — "Conditions you require to bet met before a transaction can execute."
+├─ plugs - "A bundle of Fuses accompanied by a transaction declaration."
+└─ types — "The consumer of Plugs that routes and validates the state of your declaration."
+```
+
+With just these key pieces you gain access to the conditional, scheduled and generally automated capabilites that have been out of reach for users since the beginning of blockchain development efforts.
+
+If you would like deeper insight you can explore [the official documentation gateway of Plug](https://docs.onplug.io).
+
+## Developer Summary
+
+Plug is designed for end-users first, but you as a developer also have the capability to build onchain connectors and application integrations yourself. The key functionality is powered by the following packages (each have their own function):
 
 ```ml
 packages
 ├─ app — "Browser based node-editor application to interact with the Plug protocol."
-├─ client — "Raw playground to build, sign and save Plug objects."
 ├─ core — "Plug framework smart contracts and management utilities."
 ├─ docs — "In-depth documentation for both end-users and developers."
 ├─ landing — "Marketing landing page for the Plug ecosystem."
 ├─ server — "API backend that powers the server, client interface and sdk when needed."
 └─ types — "Automatically generate the types and decoders of your intent framework."
 ```
-
-## Licensing
-
-Plug is setup with a very clear line of licensing.
-
-All of the code inside `packages/app` falls under a [BUSL-1.1 license](./packages/app/LICENSE) that requires a license key for business usage and sets forth subsequent requirements of operations. At this time, a license cannot be purchased however this capability will become available to you some time mid-2024. For personal use, you are allowed to run your own local instance without acquiring a license key. Please refer to [the license](./packages/app/LICENSE) for complete detail and coverage of what is and is not allowed.
-
-Code beyond the scope of `packages/app` falls under a [MIT license]() and is free for personal and business use in accordance with the rest of the guidelines established herein.
-
-### A Short Explanation
-
-The license that is applied to open source, and work surrounding EVM blockchains in general is critical to viability of adoption and verifiability. I do not want to release code that has disincentivized the use or consumption of. At the same time, it is of paramount importance that the leading development of Plug has the resources and access to persist in delivering the user experience and interface of the quality that you, the user, deserve.
-
-To make this happen, I have taken a slightly abnormal approach by applying two different licenses throughout the entire codebase of Plug. This results in the ability of having granular control over the pieces of the codebase that assist in the value creation of the platform without putting me or any user in line of newfound and unjustified risk that arises from closed source development.
-
-To do this, licensing is simplified into one simple concept:
-
--   Does an individual user benefit from having code control over this piece?
-    -   If yes, a MIT license is applied,
-    -   otherwise a BUSL-1.1 license is applied to the respective code and surrounding area.
-
-This results in a paradigm where automatically, pieces critical to the onchain protocol are made open source and designed to defend against users that do not contribute value back to the larger pie. AGPL-3.0 is not a copyright license, but copyleft. The entire Plug codebase has been designed to provide the option of running your own local instance. I am less worried about general individual use, and more concerned with ensuring that no one unjustly takes this code, claims it as their own and pushes it into a closed source environment. An onchain protocol has no moat beyond the cultural gravity surrounding it. Both figuratively and literally, you are the moat of the Plug protocol.
-
-As for [the browser based node-editor application](./packages/app/), a strict business license has been applied to all pieces driving this specific piece of functionality that are not already covered by a lower-level AGPL-3.0 through environmental inclusion. This has been done for several reasons, but namely that while there is no reason a business should ever be running their own version of the app, it is important for you, the user, to be have full access to read the code that is deployed. The application of [BUSL-1.1](./packages/app/LICENSE) is an effort to maximize transparency without sacrificing the future abilities of the supporting team.
-
-Specifically, the license of each package is as follows:
-
-```ml
-packages
-├─ app — "BUSL-1.1"
-├─ client — "MIT"
-├─ core — "MIT"
-├─ docs — "MIT"
-├─ landing — "BUSL-1.1 -- Soon to be deprecated with rollover to MIT."
-├─ server — "MIT"
-└─ types — "MIT"
-```
-
-Once again, individual and use without distribution is fully permitted. Additionally, users have full capability to direct the data generated from the application to an individually run backend (that is AGPL-3.0) meaning you can effectively gain all the benefits of protocol and app without concern. With all this said, if you are still not satisifed you can reference [./packages/client](./packages/client) to see a raw implementation of a protocol and api consumer that you can fork and change without limit beyond the license applied.
 
 ## Using a Package
 

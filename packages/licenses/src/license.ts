@@ -7,7 +7,7 @@ import {
 } from "fs-extra";
 
 const main = async () => {
-    const templatesDir = join(__dirname, "templates");
+    const templatesDir = join(__dirname, "..", "templates");
     const templates = readdirSync(templatesDir);
     const templateNames = templates.map((template) => {
         const split = template.split(".");
@@ -15,7 +15,7 @@ const main = async () => {
         return split.join(".");
     });
 
-    const packagesDir = join(__dirname, "..", "..", "packages");
+    const packagesDir = join(__dirname, "..", "..", "..", "packages");
     const packages = readdirSync(packagesDir);
     const packageNames = packages.filter(
         (packageName) => !templateNames.includes(packageName)
@@ -31,7 +31,7 @@ const main = async () => {
         if (!hasPackageJson) return;
 
         let { license } = readJSONSync(packageJson);
-        const lowerLicense = license?.toLowerCase() ?? "mit";
+        const lowerLicense = license ? license.toLowerCase() : "mit";
         const { name, version, ...rest } = readJSONSync(packageJson);
 
         if (templateNames.includes(lowerLicense)) {
@@ -51,7 +51,7 @@ const main = async () => {
 
             writeFileSync(
                 join(packageDir, "LICENSE"),
-                readFileSync(join(templatesDir, `${license}.txt`))
+                readFileSync(join(templatesDir, `${lowerLicense}.txt`))
                     .toString()
                     .replace(
                         /<PACKAGE_NAME>/g,
@@ -59,7 +59,9 @@ const main = async () => {
                     )
             );
 
-            console.log(`✔︎ Applied ${license} to /packages/${packageName}/`);
+            console.log(
+                `✔︎ Applied ${lowerLicense} to /packages/${packageName}/`
+            );
         } else {
             console.error(
                 `⨯ Unknown license: ${lowerLicense}. Available options include:\n   - ${templateNames.join(
