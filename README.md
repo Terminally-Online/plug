@@ -30,7 +30,6 @@ packages
 ├─ app — "Browser based node-editor application to interact with the Plug protocol."
 ├─ core — "Plug framework smart contracts and management utilities."
 ├─ docs — "In-depth documentation for both end-users and developers."
-├─ landing — "Marketing landing page for the Plug ecosystem."
 ├─ server — "API backend that powers the server, client interface and sdk when needed."
 └─ types — "Automatically generate the types and decoders of your intent framework."
 ```
