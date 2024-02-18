@@ -13,6 +13,3 @@
 [submodule "packages/server"]
 	path = packages/server
 	url = https://github.com/nftchance/plug-server
-[submodule "packages/landing"]
-	path = packages/landing
-	url = https://github.com/nftchance/emporium-landing
