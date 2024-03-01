@@ -17,7 +17,7 @@ With a schedule users unlock the ability to declare complex schedules for their 
 
 ## Logic
 
-Any intent using the [Schedule Window Fuse](/instances/fuse/schedule-windows) has the ability to declare:
+Any intent using the [Schedule Window Fuse](/instances/fuses/schedule-windows) has the ability to declare:
 
 - Start Time: The starting time of the relative period.
 - Repeats Every: How often the window of availability is repeated.
