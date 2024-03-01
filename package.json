@@ -9,6 +9,8 @@
     },
     "dependencies": {
         "@nftchance/plug-types": "^0.9.0",
+        "fs-extra": "^11.2.0",
+        "pathe": "^1.1.2",
         "vitepress": "^1.0.0-rc.24",
         "vue": "^3.3.7"
     },
