@@ -8,7 +8,7 @@
 
 ## Onchain Implementation
 
-Every [Fuse](/core/fuses) varies in the rules that it applies which means the internal logic is always different. Although that is the case, the top level interface of enforcement enabled through `enforceFuse` is always the same so that the [Socket](/core/sockets/) can call it without explicit shape knowledge.
+Every [Fuse](/core/fuses) varies in the rules that it applies which means the internal logic is always different. Although that is the case, the top level interface of enforcement enabled through `enforceFuse` is always the same so that the [Socket](/core/sockets) can call it without explicit shape knowledge.
 
 ```solidity
 function enforceFuse(

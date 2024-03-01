@@ -13,7 +13,7 @@ head:
 
 # Limited Calls Fuse
 
-In Plug, all intents operate as constant processes unless specified otherwise. The use of a `nonce` is optional to prevent the need of signing `N` orders when intents are to be executed many times. This simple [Fuse](core/fuses) enables the ability to have non-ordered global execution while maintaining the linear state of a single intent.
+In Plug, all intents operate as constant processes unless specified otherwise. The use of a `nonce` is optional to prevent the need of signing `N` orders when intents are to be executed many times. This simple [Fuse](/core/fuses) enables the ability to have non-ordered global execution while maintaining the linear state of a single intent.
 
 ## Logic
 
