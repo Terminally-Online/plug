@@ -12,11 +12,11 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0(typescript@5.3.3)(zod@3.22.4)
   solady:
-    specifier: ^0.0.168
-    version: 0.0.168
+    specifier: ^0.0.173
+    version: 0.0.173
   viem:
-    specifier: ^2.7.10
-    version: 2.7.10(typescript@5.3.3)
+    specifier: ^2.7.16
+    version: 2.7.16(typescript@5.3.3)
 
 devDependencies:
   '@changesets/cli':
@@ -5305,6 +5305,10 @@ packages:
     resolution: {integrity: sha512-7tgy21selT6Tg+8aAxkLUyjjCx9iQ3m3KE+5D4x/tIXr4wAfoVe6EK0lmmZjyIv8MRqQSx/vB6NfIC1LME3oZA==}
     dev: false
 
+  /solady@0.0.173:
+    resolution: {integrity: sha512-6DAm9wdjN5NRQMkdy93Sh2Se7KQDX2fI9Ioj4hw0LHxAZn4vYg1sRSvodCn41RrDa1BVZWwLz0AGAG4mhzPJIQ==}
+    dev: false
+
   /solc@0.7.3(debug@4.3.4):
     resolution: {integrity: sha512-GAsWNAjGzIDg7VxzP6mPjdurby3IkGCjQcM8GFYZT6RyaoUZKmMU6Y7YwG+tFGhv7dwZ8rmR4iwFDrrD99JwqA==}
     engines: {node: '>=8.0.0'}
@@ -5950,8 +5954,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /viem@2.7.10(typescript@5.3.3):
-    resolution: {integrity: sha512-mpm/A3Rbq6hhRovOw6btkrLeDe0DlEGLoCmO2LCbH/MuTQgLNd0cWJSIov9TL/8/Pz+qC2e+bh9zohQnKA+6PQ==}
+  /viem@2.7.16(typescript@5.3.3):
+    resolution: {integrity: sha512-yOPa9yaoJUm44m0Qe3ugHnkHol3QQlFxN3jT+bq+lQip7X7cWdPfmguyfLWX2viCXcmYZUDiQdeFbkPW9lw11Q==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
