@@ -110,16 +110,16 @@ export default defineConfig({
             collapsed: true,
             items: [
               {
-                text: "enforceFuse",
-                link: "/core/fuse/enforce-fuse",
-              },
-              {
                 text: "encode",
                 link: "/core/fuse/encode",
               },
               {
                 text: "decode",
                 link: "/core/fuse/decode",
+              },
+              {
+                text: "enforceFuse",
+                link: "/core/fuse/enforce-fuse",
               },
               {
                 text: "Instances",
@@ -196,21 +196,20 @@ export default defineConfig({
             ],
           },
           {
-            text: "Executors",
-            link: "/core/executors",
+            text: "Solvers",
+            link: "/core/solvers",
             collapsed: true,
             items: [
               {
                 text: "execute",
-                link: "/core/executors/execute",
+                link: "/core/solvers/solve",
               },
               {
                 text: "Instances",
-                link: "/instances/fuses",
                 items: [
                   {
                     text: "Canonical",
-                    link: "/instances/executors/canonical"
+                    link: "/instances/solvers/canonical"
                   },
                 ]
               }

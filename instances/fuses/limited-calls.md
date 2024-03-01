@@ -13,12 +13,14 @@ head:
 
 # Limited Calls Fuse
 
-In Plug, all intents operate as constant processes unless specified otherwise. Effectively, this means that the use of a `nonce` is optional to prevent the need of signing `N` orders when intents are to be executed many times. Additionally this enables the ability to have non-ordered global execution while maintaining the linear state of a single intent.
+In Plug, all intents operate as constant processes unless specified otherwise. The use of a `nonce` is optional to prevent the need of signing `N` orders when intents are to be executed many times. This simple [Fuse](core/fuses) enables the ability to have non-ordered global execution while maintaining the linear state of a single intent.
 
 ## Logic
 
-Any intent using the [Limited Calls Fuse](/instances/fuses/limited-calls) has the ability to declare:
+Any intent using the `Limited Calls Fuse` has the ability to declare:
 
 - Call Count: How many times this specific intent can be called.
 
-The limit imposed by this Fuse can be completely bypassed by not including it. The limit can be set to 1 or even 100. Effectively, Plug is designed around consumption of resources (and permission) rather than forced non-incremental nonces. In reality, not all intents should expire unless directly terminated.
+The limit imposed by this Fuse can be completely bypassed by not including it. The limit can be set to 1 or even 100.
+
+[Plug](/) is designed around consumption of resources (and permission) rather than forced non-incremental nonces. In reality, not all intents should expire unless directly terminated.
