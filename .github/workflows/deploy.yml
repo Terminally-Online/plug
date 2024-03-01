@@ -51,7 +51,7 @@ jobs:
 
       - name: 🫸  Build with VitePress
         run: |
-          pnpm docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
+          pnpm build
           touch .vitepress/dist/.nojekyll
 
       - name: ⛅ Upload artifact

@@ -143,15 +143,11 @@ export default defineConfig({
           },
           {
             text: "Fuses",
-            link: "/instances/enforcers",
+            link: "/instances/fuses",
             items: [
               {
-                text: "Block Number",
-                link: "/instances/fuses/block-number",
-              },
-              {
-                text: "Timestamp",
-                link: "/instances/fuses/timestamp",
+                text: "Threshold",
+                link: "/instances/fuses/threshold",
               },
               {
                 text: "Schedule Windows",
