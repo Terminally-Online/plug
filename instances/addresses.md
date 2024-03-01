@@ -23,6 +23,8 @@ The addresses of deployed instances will be updated shortly.
 
 :::
 
+Do note here, not all contracts immediately exist on every chain. However, due to the use of Create2 all addresses are persistent across chains. If a contract has not yet been deployed, the address will remain the same.
+
 ## Mining an Efficient Address
 
 Even with standard verification practices there is nothing that stops developers from adding malicious code and verifying the code on Etherscan to provide a false-security that the contract is the same across all places.
