@@ -25,18 +25,18 @@ Importantly, this is enabled by precisely the same pin-stack as every other exec
 
 As revocation is built on the same pin-stack as every other execution condition, it is extremely simple to implement. In fact, it is so simple that it is only a two-step process:
 
-1. Scope a [Revocation Enforcer](/core/fuse) at the time of **giving** the pins.
-2. Call the `revoke` function on the [Enforcer](/core/fuse) **originally declared** in the pins.
+1. Scope a [Revocation Enforcer](/core/fuses) at the time of **giving** the pins.
+2. Call the `revoke` function on the [Enforcer](/core/fuses) **originally declared** in the pins.
 
 ::: info
 
-If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/fuse) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/fuse) is what powers the "_if this_" part of the "_if this, then that_" logic of a pin.
+If you have been reading the documentation from top to bottom, you may not have gotten to the [Enforcers](/core/fuses) section yet. If this is the case, you may want to read that section before continuing. For now, the simple explanation is that an [Enforcer](/core/fuses) is what powers the "_if this_" part of the "_if this, then that_" logic of a pin.
 
 :::
 
 ### Giving Revocable Pins
 
-The first step is to scope a [Revocation Enforcer](/core/fuse) at the time of declaring the pin. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Pin` struct.
+The first step is to scope a [Revocation Enforcer](/core/fuses) at the time of declaring the pin. This is done by adding the `RevocationEnforcer` to the `enforcers` array of the `Pin` struct.
 
 ```typescript
 const pins = {

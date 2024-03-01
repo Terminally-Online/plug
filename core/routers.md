@@ -25,7 +25,7 @@ An important benefit of a `Router` model is that it means there is no need for p
 
 Instead, a user of Plug simply signs a message for their Vault and execution is automatically routed through it. There's no interaction proxy relationship with the action. All actions are properly attributed without abstraction. Plug is designed to make the primitives and more general protocols of the industry more powerful therefore there is no integration expectation or overhead.
 
-If a protocol wants to be supported, they can be without making a single change in their implementation. For even the deepest level of integration the only thing required is the development of a [Fuse](/instances/fuses) which is not an obligation or expectation the protocol itself carries.
+If a protocol wants to be supported, they can be without making a single change in their implementation. For even the deepest level of integration the only thing required is the development of a [Fuse](/core/fuses) which is not an obligation or expectation the protocol itself carries.
 
 ::: tip
 
