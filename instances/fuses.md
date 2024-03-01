@@ -30,7 +30,11 @@ The system has been architected in this way to provide the best experience for b
 On the surface, this can sound a bit too abstract to understand. In practice, it is really quite simple. Imagine you want to enforce a single `uint256` that is within a range. To build the data needed for `enforceFuse` we will perform an offchain `staticcall` to `encode` with the value like:
 
 ```solidity
-function encode(uint256 $value) external pure returns (bytes calldata $terms) {
+function encode(uint256 $value)
+  external
+  pure
+  returns (bytes calldata $terms)
+{
   $terms = abi.encode($value);
 }
 ```
@@ -44,7 +48,11 @@ Now, working in the other direction, the process is much the same for decoding. 
 For clarity, if with a `decode` function such as:
 
 ```solidity
-function decode(bytes calldata $terms) external pure returns (uint256 $value) {
+function decode(bytes calldata $terms)
+  external
+  pure
+  returns (uint256 $value)
+{
   $value = abi.decode($terms, (uint256));
 }
 ```
@@ -67,6 +75,7 @@ function enforceFuse(
   /// @dev Decode the terms to get the logic operator and threshold.
   (uint256 $threshold) = decode($live);
 
+  /// @dev Confirm the intent has not expired.
   require($threshold < block.number, "PlugBlockNumberFuse:expired");
 
   /// @dev Continue the pass through.

@@ -87,7 +87,11 @@ To mine an address for a contract can be confusing at first, but it's really rat
 2. **Access your terminal or SSH in and install `Rust` as well as [create2crunch](https://github.com/0age/create2crunch).**
 
 ```bash
-sudo apt install build-essential -y; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; source "$HOME/.cargo/env"; git clone https://github.com/0age/create2crunch && cd create2crunch; sed -i 's/0x4/0x40/g' src/lib.rs
+sudo apt install build-essential -y; \
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs
+  | sh -s -- -y; source "$HOME/.cargo/env"; \
+git clone https://github.com/0age/create2crunch; \
+cd create2crunch; sed -i 's/0x4/0x40/g' src/lib.rs
 ```
 
 This command contains the reference usage of linux systems. In the case that you are doing so locally it is rather likely that you will need to install a few system level dependencies and potentially even update the drives of your graphics card. If you run into issues, just ask ChatGPT.
@@ -108,7 +112,12 @@ For all contracts of Plug these artifacts are automatically generated when build
 4. **Mine the address within your specification.**
 
 ```bash
-export FACTORY="0x0000000000ffe8b47b3e2130213b802212439497"; export CALLER="0x0000000000000000000000000000000000000000"; export INIT_CODE_HASH="<INSERT_YOUR_HASH_HERE>"; export LEADING=5; export TOTAL=7; cargo run --release $FACTORY $CALLER $INIT_CODE_HASH 0 $LEADING $TOTAL
+export FACTORY="0x0000000000ffe8b47b3e2130213b802212439497"; \
+export CALLER="0x0000000000000000000000000000000000000000"; \
+export INIT_CODE_HASH="<INSERT_YOUR_HASH_HERE>"; \
+export LEADING=5; \
+export TOTAL=7; \
+cargo run --release $FACTORY $CALLER $INIT_CODE_HASH 0 $LEADING $TOTAL
 ```
 
 Because you are deploying with the keyless CREATE2 factory you will leave `CALLER` as the zero address. Do not use the address of the account you will use to make the call to the factory. For `LEADING` and `TOTAL` you will set these to the numbers that you choose. The higher the number, the longer it will take to find a match.
@@ -122,12 +131,3 @@ hours = 256 ** LEADING / (ITERATIONS_PER_SECOND * 3600);
 Finally, it is worth noting that hexadecimal characters are not one-to-one with the visual representation. If you set `LEADING` to 5, then it will have 10 leading zeroes.
 
 As the script runs, the outputs will be saved to `efficient_addresses.txt` along with results that closely match your specification being logged to the console. When it reaches a point that you are happy with you can choose the address and salt that is most to your liking.
-
-## Testing
-
-While making any change to the core protocol the initialization code used when deploying will change, thus the address and salt to deploy will also need to be updated. Due to this, in testing there are two approaches:
-
-1. Use the mined address as it is a hardcoded reference in `Plug.Receiver.sol`.
-2. Incorrectly (but within allowance) etch it to a specific address.
-
-Neither solution is perfect and depending on the precise situation your preferred method will vary.
