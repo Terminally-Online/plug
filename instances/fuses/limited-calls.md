@@ -17,7 +17,7 @@ In Plug, all intents operate as constant processes unless specified otherwise. E
 
 ## Logic
 
-Any intent using the [Limited Calls Fuse](/instances/fuse/schedule-windows) has the ability to declare:
+Any intent using the [Limited Calls Fuse](/instances/fuse/limited-calls) has the ability to declare:
 
 - Call Count: How many times this specific intent can be called.
 

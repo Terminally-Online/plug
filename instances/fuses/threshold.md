@@ -5,17 +5,17 @@ head:
       content: Fuse | Threshold
   - - meta
     - name: description
-      content: Append a threshold condition to a Plug intent enforcing the time to be before or after a declared timestamp.
+      content: Append a threshold condition to a Plug intent enforcing the value is within range.
   - - meta
     - property: og:description
-      content: Append a threshold condition to a Plug intent enforcing the time to be before or after a declared timestamp.
+      content: Append a threshold condition to a Plug intent enforcing the value is within range.
 ---
 
 # Threshold Fuse
 
 An execution threshold is a simple check that internally carries validation to ensure that the time based threshold has not been exceeded.
 
-With the [Threshold Fuse](/instances/fuse/timestamp) it becomes remarkably simple to define a condition that requires the current temporal state of the underlying blockchain is larger or less than the one specified by the intent signer.
+With the [Threshold Fuse](/instances/fuse/threshold) it becomes remarkably simple to define a condition that requires the current temporal state of the underlying blockchain is larger or less than the one specified by the intent signer.
 
 ## Logic
 
