@@ -44,10 +44,17 @@ export default defineConfig({
           {
             text: "Why Plug",
             link: "/introduction/why-plug",
-          },
-          {
-            text: "Transaction Types",
-            link: "/introduction/transactions",
+            collapsed: true,
+            items: [
+              {
+                text: "Transaction Types",
+                link: "/introduction/transactions",
+              },
+              {
+                text: "Passive Management",
+                link: "/introduction/passive-management",
+              },
+            ]
           },
           {
             text: "FAQ",
@@ -57,11 +64,11 @@ export default defineConfig({
       },
       {
         text: "Core Mechanisms",
-        collapsed: true,
         items: [
           {
             text: "EIP-712",
             link: "/decoders/eip-712",
+            collapsed: true,
             items: [
               {
                 text: "Live Pairs",
@@ -76,100 +83,156 @@ export default defineConfig({
           {
             text: "Base Types",
             link: "/decoders/base-types",
+            collapsed: true,
             items: getItems("./generated/base-types"),
           },
           {
             text: "Hash Getters",
             link: "/decoders/hash-getters",
+            collapsed: true,
             items: getItems("./generated/hash-getters"),
           },
           {
             text: "Digest Getters",
             link: "/decoders/digest-getters",
+            collapsed: true,
             items: getItems("./generated/digest-getters"),
           },
           {
             text: "Signer Getters",
             link: "/decoders/signer-getters",
+            collapsed: true,
             items: getItems("./generated/signer-getters"),
           },
           {
-            text: "Abstracts",
-            link: "/core/abstracts",
+            text: "Fuses",
+            link: "/core/fuses",
+            collapsed: true,
             items: [
               {
-                text: "Fuses",
-                link: "/core/fuse",
-                items: [
-                  {
-                    text: "enforceFuse",
-                    link: "/core/fuse/enforce-fuse",
-                  },
-                  {
-                    text: "encode",
-                    link: "/core/fuse/encode",
-                  },
-                  {
-                    text: "decode",
-                    link: "/core/fuse/decode",
-                  },
-                ],
+                text: "enforceFuse",
+                link: "/core/fuse/enforce-fuse",
               },
               {
-                text: "Sockets",
-                link: "/core/sockets",
+                text: "encode",
+                link: "/core/fuse/encode",
+              },
+              {
+                text: "decode",
+                link: "/core/fuse/decode",
+              },
+              {
+                text: "Instances",
+                collapsed: true,
                 items: [
                   {
-                    text: "plug",
-                    link: "/core/sockets/plug",
+                    text: "Threshold",
+                    link: "/instances/fuses/threshold",
                   },
                   {
-                    text: "plugContract",
-                    link: "/core/sockets/plug-contract",
+                    text: "Schedule Windows",
+                    link: "/instances/fuses/schedule-windows",
+                  },
+                  {
+                    text: "Limited Calls",
+                    link: "/instances/fuses/limited-calls",
+                  },
+                  {
+                    text: "Revocation",
+                    link: "/instances/fuses/revocation",
                   },
                 ],
               },
             ],
           },
-        ],
-      },
-      {
-        text: "Deployable Instances",
-        collapsed: false,
-        items: [
           {
-            text: "Addresses",
-            link: "/instances/addresses"
-          },
-          {
-            text: "Fuses",
-            link: "/instances/fuses",
+            text: "Sockets",
+            link: "/core/sockets",
+            collapsed: true,
             items: [
               {
-                text: "Threshold",
-                link: "/instances/fuses/threshold",
+                text: "signer",
+                link: "/core/sockets/signer",
               },
               {
-                text: "Schedule Windows",
-                link: "/instances/fuses/schedule-windows",
+                text: "plug",
+                link: "/core/sockets/plug",
               },
               {
-                text: "Limited Calls",
-                link: "/instances/fuses/limited-calls",
-              },
-              {
-                text: "Revocation",
-                link: "/instances/fuses/revocation",
-              },
+                text: "Instances",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Vaults",
+                    link: "/instances/vaults"
+                  },
+                ]
+              }
             ],
           },
           {
             text: "Routers",
-            link: "/instances/routers"
+            link: "/core/routers",
+            collapsed: true,
+            items: [
+              {
+                text: "plug",
+                link: "/core/routers/plug",
+              },
+              {
+                text: "batch",
+                link: "/core/routers/batch",
+              },
+              {
+                text: "Instances",
+                link: "/instances/routers",
+                items: [
+                  {
+                    text: "Canonical",
+                    link: "/instances/routers/canonical"
+                  },
+                ]
+              }
+            ],
           },
           {
-            text: "Vaults",
-            link: "/instances/vaults"
+            text: "Executors",
+            link: "/core/executors",
+            collapsed: true,
+            items: [
+              {
+                text: "execute",
+                link: "/core/executors/execute",
+              },
+              {
+                text: "Instances",
+                link: "/instances/fuses",
+                items: [
+                  {
+                    text: "Canonical",
+                    link: "/instances/executors/canonical"
+                  },
+                ]
+              }
+            ],
+          },
+          {
+            text: "Deployable Instances",
+            collapsed: true,
+            items: [
+              {
+                text: "Deterministic",
+                link: "/instances/deployable/deterministic"
+              },
+              {
+                text: "JIT Deployment",
+                link: "/instances/deployable/just-in-time-deployment"
+              },
+              {
+                text: "Contract Addresses",
+                link: "/instances/deployable/addresses"
+              },
+            ],
           },
         ],
       },
@@ -177,6 +240,7 @@ export default defineConfig({
 
     socialLinks: [
       { icon: "github", link: "https://github.com/nftchance/plug" },
+      { icon: "twitter", link: "https://twitter.com/onplug_io" },
     ],
 
     editLink: {

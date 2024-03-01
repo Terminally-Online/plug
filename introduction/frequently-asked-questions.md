@@ -13,9 +13,9 @@ head:
 
 # Frequently Asked Questions
 
-Getting started with Plug is quite simple however it is understandable that you may have some questions. This page will attempt to answer some of the most common questions that you may have.
+Getting started with [Plug](/) is quite simple. However, it is understandable that you may have some questions. This page will answer some of the most common questions that you may have.
 
-- [Why would I want my protocol to support declarative transactions?](#why-would-i-want-declarative-transactions)
+- [Why would I want intents?](#why-would-i-want-intents)
 - [Can I use Plug with smart contracts that are already deployed?](#can-i-use-plug-with-protocols-already-deployed)
 - [If I want basic support what do I need?](#if-i-want-basic-support-what-do-i-need)
 - [Is there a fee?](#is-there-a-fee)
@@ -30,7 +30,7 @@ If you are using the documentation and feel that a question or answer belongs he
 
 :::
 
-## Why would I want declarative transactions?
+## Why would I want intents?
 
 Native EVM transactions serve as a constant limiter of the throughput for your protocol. Bound to the execution path of the blockchain it is deployed on your users are forced to not only accept, but wait for the less than ideal performance of the EVM. Declarative transactions allow you to break free of this limitation and provide your users with a much more performant experience to prevent significant fund loss and waste.
 
@@ -40,7 +40,7 @@ Yes! Plug will work with any contract whether it was deployed years in the past,
 
 ## If I want basic support what do I need?
 
-To submit an intent all you need to do is prepare the declaration and submit it to the pool of executors. You can choose to execute things through a vault for value-based actions or a generalized and permisionless router.
+To submit an intent all you need to do is prepare the declaration and submit it to the pool of Executors. You can choose to execute things through a vault for value-based actions or a generalized and permisionless router.
 
 ## Is there a fee?
 
