@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.23;
 
@@ -10,7 +10,6 @@ import { BytesLib } from "../libraries/BytesLib.sol";
  * @title Plug Clamp Fuse
  * @dev A fuse that clamps the current value between two bounds.
  * @author nftchance (chance@utc24.io)
- *
  */
 contract PlugClampFuse is PlugFuseInterface {
     using BytesLib for bytes;
