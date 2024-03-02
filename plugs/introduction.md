@@ -13,15 +13,15 @@ head:
 
 # Introduction to Plugs
 
-In the world of blockchain and smart contracts, `Plugs` serve as a powerful mechanism to express user or system actions to be executed onchain. Unlike your typical blockchain `Transaction` that is [imperative](/introduction/transactions#imperative-transactions), `Plugs` operate as [declarative messages](/introduction/transactions#declarative-transactions) that carry a more complex set of instructions and conditions.
+In the world of blockchain and smart contracts, `Plugs` serve as a powerful mechanism to express user or system actions to be executed onchain. Unlike your typical blockchain `Transaction` that is [imperative](/introduction/why/transactions#imperative-transactions), `Plugs` operate as [declarative messages](/introduction/why/transactions#declarative-transactions) that carry a more complex set of instructions and conditions.
 
 To explain it in the simplest way possible, `Plugs` are like a set of instructions that tell the blockchain what to do and all the conditions that must be met to be valid. They can be used to automate a wide range of actions, from simple swaps to complex multi-step operations.
 
-**A [traditional transaction](/introduction/transactions#imperative-transactions) says:**
+**A [traditional transaction](/introduction/why/transactions#imperative-transactions) says:**
 
 - Swap token `A` for token `B`.
 
-**Plugs is a [declarative message](/introduction/transactions#declarative-transactions) that says:**
+**Plugs is a [declarative message](/introduction/why/transactions#declarative-transactions) that says:**
 
 - If the diversity of my 401k is imbalanced, then swap token `A` for token `B`, up to the amount required to rebalance my portfolio, without exceeding my daily spending limit.
 

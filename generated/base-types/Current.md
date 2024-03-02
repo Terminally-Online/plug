@@ -25,16 +25,16 @@ To interact with the data type onchain will you need both the `Typescript` and `
 
 ``` typescript [Typescript/Javascript]
 {
-    ground: '0x${string}',
-	voltage: bigint,
+    target: '0x${string}',
+	value: bigint,
 	data: '0x${string}' 
 }
 ```
 
 ```typescript [EIP-712]
 {
-    { name: 'ground', type: 'address' },
-	{ name: 'voltage', type: 'uint256' },
+    { name: 'target', type: 'address' },
+	{ name: 'value', type: 'uint256' },
 	{ name: 'data', type: 'bytes' } 
 }
 ```
@@ -49,7 +49,7 @@ The `Typescript` representation is used to build and work with the object in you
 
 ## Onchain Implementation
 
-With `ground`, `voltage` and `data` as the fields of the `Current` data type we can generate the type hash as follows:
+With `target`, `value` and `data` as the fields of the `Current` data type we can generate the type hash as follows:
 
 ::: code-group
 
@@ -57,8 +57,8 @@ With `ground`, `voltage` and `data` as the fields of the `Current` data type we 
 bytes32 constant CURRENT_TYPEHASH = keccak256(
     abi.encodePacked(
         "Current(",
-		"address ground",
-		"uint256 voltage",
+		"address target",
+		"uint256 value",
 		"bytes data",
         ")"
     )
@@ -67,12 +67,12 @@ bytes32 constant CURRENT_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant CURRENT_TYPEHASH = keccak256(
-    'Current(address ground,uint256 voltage,bytes data)'
+    'Current(address target,uint256 value,bytes data)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant CURRENT_TYPEHASH = 0xba015bd32610c44647c4bcbb8c645ee60d5957ae5e7aa37e56c897d9295af65a
+bytes32 constant CURRENT_TYPEHASH = 0x4e1a9992657cd2dadc8cf749c3a5665c35d836a6aa5e695a1b318d00ea261fa4
 ```
 
 :::

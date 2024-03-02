@@ -25,15 +25,15 @@ To interact with the data type onchain will you need both the `Typescript` and `
 
 ``` typescript [Typescript/Javascript]
 {
-    neutral: '0x${string}',
-	live: '0x${string}' 
+    target: '0x${string}',
+	data: '0x${string}' 
 }
 ```
 
 ```typescript [EIP-712]
 {
-    { name: 'neutral', type: 'address' },
-	{ name: 'live', type: 'bytes' } 
+    { name: 'target', type: 'address' },
+	{ name: 'data', type: 'bytes' } 
 }
 ```
 
@@ -47,7 +47,7 @@ The `Typescript` representation is used to build and work with the object in you
 
 ## Onchain Implementation
 
-With `neutral` and `live` as the fields of the `Fuse` data type we can generate the type hash as follows:
+With `target` and `data` as the fields of the `Fuse` data type we can generate the type hash as follows:
 
 ::: code-group
 
@@ -55,8 +55,8 @@ With `neutral` and `live` as the fields of the `Fuse` data type we can generate 
 bytes32 constant FUSE_TYPEHASH = keccak256(
     abi.encodePacked(
         "Fuse(",
-		"address neutral",
-		"bytes live",
+		"address target",
+		"bytes data",
         ")"
     )
 );
@@ -64,12 +64,12 @@ bytes32 constant FUSE_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant FUSE_TYPEHASH = keccak256(
-    'Fuse(address neutral,bytes live)'
+    'Fuse(address target,bytes data)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant FUSE_TYPEHASH = 0x86dfe4f6559e569c29a2c4007b8d0df7d2a58f1f05891f9a9655ceb9105cfae6
+bytes32 constant FUSE_TYPEHASH = 0x6a2e1450f9194ecc5758aac2b0935794f6d5706adcdd5968d7006542aacaa463
 ```
 
 :::

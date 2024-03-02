@@ -39,8 +39,13 @@ function getPlugsHash(
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		PLUGS_TYPEHASH,
-		getPlugArrayHash($input.plugs),
-	$input.salt
+		$input.socket,
+	getPlugArrayHash($input.plugs),
+	$input.salt,
+	$input.fee,
+	$input.maxFeePerGas,
+	$input.maxPriorityFeePerGas,
+	$input.executor
 	));
 }
 ``` 

@@ -39,8 +39,8 @@ function getCurrentHash(
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		CURRENT_TYPEHASH,
-		$input.ground,
-	$input.voltage,
+		$input.target,
+	$input.value,
 	keccak256($input.data)
 	));
 }

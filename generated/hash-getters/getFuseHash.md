@@ -39,8 +39,8 @@ function getFuseHash(
 ) public pure virtual returns (bytes32 $hash) {
 	$hash = keccak256(abi.encode(
 		FUSE_TYPEHASH,
-		$input.neutral,
-	keccak256($input.live)
+		$input.target,
+	keccak256($input.data)
 	));
 }
 ``` 

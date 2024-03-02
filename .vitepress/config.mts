@@ -43,16 +43,19 @@ export default defineConfig({
           },
           {
             text: "Why Plug",
-            link: "/introduction/why-plug",
-            collapsed: true,
+            collapsed: false,
             items: [
               {
+                text: "The Problem and Solution",
+                link: "/introduction/why-plug",
+              },
+              {
                 text: "Transaction Types",
-                link: "/introduction/transactions",
+                link: "/introduction/why/transactions",
               },
               {
                 text: "Passive Management",
-                link: "/introduction/passive-management",
+                link: "/introduction/why/passive-management",
               },
             ]
           },
@@ -201,7 +204,11 @@ export default defineConfig({
             collapsed: true,
             items: [
               {
-                text: "execute",
+                text: "simulate",
+                link: "/core/solvers/simulate",
+              },
+              {
+                text: "solve",
                 link: "/core/solvers/solve",
               },
               {

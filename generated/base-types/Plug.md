@@ -70,12 +70,12 @@ bytes32 constant PLUG_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant PLUG_TYPEHASH = keccak256(
-    'Plug(Current current,Fuse[] fuses)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)'
+    'Plug(Current current,Fuse[] fuses)Current(address target,uint256 value,bytes data)Fuse(address target,bytes data)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant PLUG_TYPEHASH = 0xebb64d1314913b50aafb6069ab67ff91138a06d8ac9634ac869baceca0ede694
+bytes32 constant PLUG_TYPEHASH = 0x92e7d74a30e1e523d60bcb5fbb30caa2f5fa9f5fbc4a5499c4e9b8b44b7640fd
 ```
 
 :::

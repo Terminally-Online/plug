@@ -13,119 +13,72 @@ head:
 
 # Why Plug
 
-The crypto industry has been plagued by the inefficient and unfortunate realities of native EVM transactions for just under a decade. In just the last few months there has been a significant rise in alternative transaction settle mechanisms primarily focused around [smart accounts](https://eips.ethereum.org/EIPS/eip-4337) and alternate mempools. Yet, while there is more noise in the market, all existing solutions lack in either **composability**, **extinsibility**, or **modernity**.
+In the evolving landscape of blockchain technology, the limitations of native EVM transactions have become increasingly apparent. Despite the advent of smart accounts and alternative mempools, the quest for a solution that seamlessly combines composability, extensibility, and modernity has remained largely unfulfilled. This gap in the ecosystem not only results in millions of dollars lost to failed transactions and inefficiencies annually but also stifles the potential for innovation and growth.
 
-Data trends reveal that wasted gas on failed transactions and inefficiencies is equivalent to millions of dollars lost every year and value lost to inefficient settlement is even larger. Plug aims to address these crucial pain points by reimagining how EVM transactions can be more logical, efficient, and user-centric.
+## The Persistent Challenges
 
-## The Problems
+A decade into the blockchain revolution, users and developers alike continue to grapple with several fundamental issues:
 
-Even after a decade there is still no battle-tested plug-and-play option. Instead, developers and blockchain users have been left to deal with:
+- `Authorization Complexity`: The current model treats authorization on a contract-by-contract basis, leading to a fragmented security landscape. This inconsistency complicates managing permissions across different contracts, hindering seamless interaction within the ecosystem.
 
-### Authorization
+- `Sequential Transaction Processing`: The traditional EVM model processes transactions one after another, limiting throughput and exacerbating bottlenecks, especially during peak times. This linear approach fails to leverage the potential for parallel processing, crucial for scaling blockchain applications.
 
-Traditionally, pins are handled on a contract-by-contract basis. This leads to a fragmented and inconsistent security model where each smart contract has its unique authorization mechanism, making it cumbersome to manage conditions across multiple contracts.
+- `Preemptive Costs`: The requirement to pay transaction fees upfront, without assurance of success, places a significant burden on users. This gamble on transaction outcomes introduces unnecessary risk and inefficiency into the system.
 
-### Ordering
+- `Scalability Hurdles`: Current methods for managing conditions are cumbersome and not conducive to scalability. As protocols evolve and expand, the lack of a streamlined approach to condition management becomes a critical bottleneck.
 
-In the classical EVM approach, transactions are processed sequentially. This design imposes severe limitations on transaction throughput and creates bottlenecks, particularly during network congestion.
+- `Vulnerability to State Changes`: Once submitted, transactions are at the mercy of fluctuating network conditions and potential vulnerabilities within smart contracts. This lack of protection exposes users to risks like front-running and transaction manipulation.
 
-### Anticipatory Costs
+## Introducing Plug: A Paradigm Shift
 
-Users are required to pay transaction costs upfront. This system is inefficient because costs are incurred before knowing whether a transaction will yield any value, effectively making every transaction a ~gamble.
-
-### Scalability
-
-Managing conditions often involves declaring them for each reference or interaction, leading to a bloated and inefficient system. This makes it challenging to scale the protocol or system as new features and interactions are added.
-
-### Unbounded Transactions
-
-Once a transaction is submitted, there is no built-in mechanism to protect against changes in contract state or network conditions that might affect the transaction before it gets confirmed. This leaves users vulnerable to smart contract vulnerabilities, front-running, and other forms of transaction manipulation.
-
-These issues aren't just theoretical. They manifest as real bottlenecks that hamper adoption and user experience. The need for a solution has never been more pressing.
-
-As the developer of protocols aimed at typical consumers the requirements to interact with the blockchain have been a constant hurdle. If users cannot access what you've made; you are missing out on the vast majority of users regardless the potential.
-
-I wanted the ability to lower the barrier of entry without negatively impacting all the existing blockchains benefits such as _censorship resistance_ and _settlement reliability_, but all existing options required a significant level of integration, customized architecture and one-off solutions that couldn't be reused project to project.
-
-With a maximum of 5 minutes and I wanted to be up and running with a new idea. So, I created **Plug**: an extensible framework that provides plug-and-play utilities for every protocol whether deployed in the past, present or future.
-
-Inspired by all the tried solutions before, `Plug` packages as many benefits as possible together while leaving compromises, choices and opinion up to the consuming users.
-
-## Traditional Blockchain Transactions: A Refresher
-
-In the orthodox blockchain transaction model, a user's `Account` is used to sign a `Transaction`. This `Transaction` specifies several parameters like [the contract address, the method to call, and the amount of gas to allocate.](/introduction/transactions#imperative-transactions)
-
-The `Transaction` is then broadcast to the network, where it waits in a mempool until miners include it in a new block.
-
-Critically, `Transactions` not do settle based upon the ordering of the value created by the execution (_even though they theoretically could in a vacuum_), but by the magnitude of value paid to miners by the sender of the transaction.
-
-The user has minimal control over this process beyond setting the gas price. Once the `Transaction` is broadcast, it is subject to the whims of network congestion, miner priorities, and other unpredictable factors. This results in significant amounts of wasted gas (_gas bad_) as well as a swarm of general market inefficencies.
+Recognizing these challenges, Plug was conceived as a revolutionary framework designed to redefine EVM transactions. By prioritizing composability, extensibility, and modernity, Plug addresses the inefficiencies plaguing the blockchain space, offering a more logical, efficient, and user-centric approach to transaction management.
 
 ## The Declarative Difference
 
-Plug introduces a paradigm shift. Instead of being a passive participant in the transaction process, the user gains the power to set conditions for transaction execution. This transforms the transaction model from being immediate and rigid to being flexible and condition-based.
+At its core, Plug introduces a shift from passive to active participation in the transaction creation process. Users gain the ability to set precise conditions for transaction execution, transforming the model from rigid and immediate to flexible and strategic.
 
-If a transaction doesn't meet the predetermined conditions, it simply won't execute. This eliminates the risks associated with upfront costs, as you only pay for transactions that provide value. Additionally, it allows for more strategic planning around gas usage and unexpected outcomes, thereby optimizing the value to cost ratio.
+This not only mitigates the risks associated with upfront costs but also optimizes gas usage and enhances strategic planning capabilities resulting in the best execution outcomes possible.
 
-This means that instead of crafting a transaction solely based on the contract to call and the gas to provide, an individual has the ability to explicitly declare the [conditions that must be met to allow execution](/introduction/transactions#declarative-transactions).
+## Harnessing "If This, Then That" Logic with Plug
 
-The concept of "If This, Then That" is straightforward but holds immense potential. It's the core logic that allows you to build complex conditional statements, which is especially powerful in smart contracts and blockchain technologies.
+At the heart of Plug's innovation is the application of "If This, Then That" (IFTTT) logic, a powerful and intuitive concept that revolutionizes how transactions are executed on the blockchain. This logic allows users to create conditional statements that dictate the execution of transactions, ensuring actions are only taken when specific criteria are met. Here's a closer look at how IFTTT principles empower Plug users:
 
-## An Onchain Protocol that brings IFTTT Statements
+### Understanding IFTTT in Plug
 
-At its essence, "If This, Then That" is a conditional statement that enables automation. You set a trigger (`This`), and if that trigger occurs, a particular action (`That`) follows.
+IFTTT logic in Plug enables users to define triggers ("If This") and actions ("Then That") within the blockchain environment. This approach transforms passive transaction execution into an active, conditional process, where transactions are executed based on real-time data and predefined conditions.
 
-- If the trigger is met, then the action happens.
-- If condition `A` is true, then perform action `B`.
+- `Triggers` ("If This"): These are the conditions or events that must occur for a transaction to be initiated. Triggers can be based on a wide range of criteria, such as time-based conditions, market fluctuations, contract states, or external data inputs. For example, a trigger could be set for when a specific cryptocurrency reaches a certain price point.
 
-This logic isn't just a fancy way of saying something. It's a powerful concept used [extensively in programming, data science](https://en.wikipedia.org/wiki/Object-capability_model), and now increasingly in blockchain technology.
+- `Actions` ("Then That"): These are the transactions or operations that are executed when the trigger conditions are met. Actions can range from simple token transfers to more complex contract interactions, such as executing trades, minting tokens, or triggering smart contract functions.
 
-You might be thinking, "Hey, this sounds a lot like [Zapier](https://zapier.com/), [Apple Shortcuts](https://apps.apple.com/us/app/shortcuts/id915249334) and all those [IFTTT (If This, Then That) services](https://ifttt.com/) I use to automate my life!" Well, you're right; the underlying logic is quite similar. Services like Zapier or IFTTT let you create "Zaps" or "Applets" that link different apps and services together based on triggers and actions.
+### The Power of Onchain IFTTT
 
-## How does `Plug` use IFTTT?
+By integrating IFTTT logic, Plug offers several transformative benefits to blockchain operations:
 
-In `Plug`, you're doing something similar but in a much more powerful and secure environment—the blockchain. Here, the "_If This, Then That_" logic enables you to create complex conditions and actions related to smart contracts. Instead of linking social media accounts or automating email notifications, you're setting rules for how digital assets and data can be accessed, moved, or transformed.
+- `Automated Efficiency`: Users can automate complex strategies and operations, reducing the need for constant monitoring and manual execution. This not only saves time but also ensures that opportunities are never missed due to delays or human error.
 
-Imagine automating an entire financial system, a voting mechanism, or an ownership registry with the same ease you set a reminder to water your plants. That's the potential power of employing IFTTT logic in the blockchain via `Plug`.
+- `Strategic Execution`: IFTTT logic allows for strategic planning and execution of transactions. Users can set conditions to optimize for cost (e.g., gas fees), timing, and market position, ensuring that actions are taken under the most favorable circumstances.
 
-By understanding the simple yet powerful logic of "If This, Then That," you're not just becoming proficient in using `Plug`; you're understanding a foundational principle of modern technology.
+- `Enhanced Security`: Conditional execution means transactions are only processed when all criteria are securely met, reducing the risk of unfavorable or unintended outcomes. This adds an extra layer of security and control over blockchain interactions.
 
-To sum it up in the simplest way, `Plug` is like [Zapier](https://zapier.com), but for EVM smart contracts.
+- `User Empowerment`: Plug democratizes access to advanced blockchain functionalities, enabling users without extensive technical expertise to create and manage complex transaction conditions. This opens up new possibilities for innovation and participation in the blockchain space.
+
+The applications of IFTTT logic in Plug are vast and varied, ranging from financial transactions, such as automated trading and dynamic pricing models, to operational tasks, like conditional access control and automated governance decisions.
+
+Essentially, Plug's use of IFTTT logic makes the blockchain more adaptable, responsive, and aligned with users' specific needs and strategies.
 
 ## Developer Experience
 
-Plug was developed with one thing in mind: **time to launch.** Too much time is wasted in the crypto development industry on reinventing the wheel and solving complex problems that have not only been solved, but had their answers shared far and wide.
+Plug was developed with one thing in mind: **cost to launch.** Too much time is wasted in the crypto development industry by reinventing the wheel and solving complex problems that have not only been solved, but had their answers shared far and wide.
 
-To accomplish this, `Plug` is designed to streamline the process of integrating [Declarative Transactions](/introduction/transactions#declarative-transactions) into your protocol with a `types first` approach. Unlike what you may expect, type generation and declaration for `Plug` starts with `Solidity` in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct).
+To accomplish this, Plug is around the core concepts of:
 
-By default, `Plug` ships with the base types that are needed to power declarative transactions however if you are seeking to build a more complex protocol, you can easily extend the types to meet your needs.
+- `Types First`: Contrary to what you may expect, type generation and declaration for `Plug` starts with Solidity in the shape of [EIP-712 Type Declarations](https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct). The simulation and execution layer of Plug can be updated and iterated upon without impacting the underlying primitives being consumed by end-users.
 
-With your EIP-712 types defined, `Plug` will not only unlock the ability to generate the corresponding `TypeScript` logic, but the `Solidity` smart contract as well. This means that as soon as you declare the types used onchain you can immediately start using them in your application and broader protocol stack.
+- `Global Interoprability`: Plug is designed to support all smart contracts regardless of when they were deployed. Without a need for native integration, Plug lives on top of all the existing protocols that exist within the ecosystem allowing core primitives to completely remove the need for conditional validation at every layer enabling genuine [seperation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns).
 
-## Composability
+- `Composability`: With the typical approach, general primitives and protocols required the ability to directly integrate with other pieces of the ecosystem. Importantly, they had to know what they wanted to interface with before even launching. Instead of having to be omniscent, developers have the ability to build transactions that seamlessly interact with multiple protocols at once.
 
-One of Plug's main advantages is its focus on composability. In traditional blockchain platforms, the components often exist as siloed entities with limited interoperability. Plug shatters these silos by ensuring that its elements can work synergistically.
+- `Not Opinionated`: Unlike other solutions that offer deem a one-size-fits-all model with an immense amount of opinion baked in, Plug is modular and unopinionated. This design enables you to tailor the framework to meet the unique demands of your specific project without having to deal with the compromises of the standard proposed.
 
-The inherent composability allows developers to build complex decentralized applications that are more than just the sum of their parts. The use of conditional transactions particularly enriches smart contract interactions, making it possible to create intricate, multi-step decentralized workflows that were previously challenging or expensive to implement.
-
-## Extensibility
-
-Plug's architecture is designed for extensibility. Unlike other solutions that offer a one-size-fits-all model, Plug is modular. This design enables you to tailor the framework to meet the unique demands of your specific project.
-
-The protocol's extensible nature means it can evolve. As blockchain technology continues to advance, new modules can be added to Plug without requiring a complete overhaul of the existing infrastructure.
-
-## Modernity
-
-In a field where staying up-to-date is not just an advantage but a necessity, Plug excels by incorporating the latest advancements in blockchain technology and tooling. Plug offers a cutting-edge alternative to traditional transaction models by enabling conditional transactions built on top of `abitype`, `viem`, and `foundry`.
-
-There is no dealing with legacy code or outdated technology. Plug is built for the future while enriching as much of the past as possible.
-
-## Minimal Integration Architecture
-
-Plug delivers an unparalleled experience when it comes to implementing support for plugs in your protocol for one simple reason:
-
-1. **Integration has been designed to happen at the lowest level possible.**
-
-Contrary to the typical past approach that led smart contract developers to implement signatures as part of their key mechanism, transaction verification and execution is pushed to the very edge of the protocol. This means, that instead of keeping an entirely separate piece of logic and conditions held in your mind during development of the core mechanisms, you achieve genuine [seperation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns) and can focus on the core of your protocol.
-
-Instead of integrating an extensive set of functionality in the underlying pieces of your protocol, simply inherit the Plug framework and you're done. **It's really that simple.** Today, everyone is relying on very similar logic while all simultaneously having to implement it themselves. This is a huge waste of time and resources and Plug solves this.
+At all steps, Plug is designed to introduce as little new burden and required labor for developers as possible while allowing the focus to remain on the core primitive being built.

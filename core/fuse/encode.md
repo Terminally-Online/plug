@@ -8,7 +8,7 @@ Encode the `terms` of execution declared for a single [Fuse](/core/fuses).
 
 ## Returns
 
-- `$data`: The encoded bytes data applied as rules to the [Fuse](/core/fuses) during submission.
+- `$terms`: The encoded bytes data applied as rules to the [Fuse](/core/fuses) during submission.
 
 ## Onchain Implementation
 

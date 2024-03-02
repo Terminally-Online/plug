@@ -31,15 +31,25 @@ To interact with the data type onchain will you need both the `Typescript` and `
 
 ``` typescript [Typescript/Javascript]
 {
-    plugs: Array<Plug>,
-	salt: '0x${string}' 
+    socket: '0x${string}',
+	plugs: Array<Plug>,
+	salt: '0x${string}',
+	fee: bigint,
+	maxFeePerGas: bigint,
+	maxPriorityFeePerGas: bigint,
+	executor: '0x${string}' 
 }
 ```
 
 ```typescript [EIP-712]
 {
-    { name: 'plugs', type: 'Plug[]' },
-	{ name: 'salt', type: 'bytes32' } 
+    { name: 'socket', type: 'address' },
+	{ name: 'plugs', type: 'Plug[]' },
+	{ name: 'salt', type: 'bytes32' },
+	{ name: 'fee', type: 'uint256' },
+	{ name: 'maxFeePerGas', type: 'uint256' },
+	{ name: 'maxPriorityFeePerGas', type: 'uint256' },
+	{ name: 'executor', type: 'address' } 
 }
 ```
 
@@ -53,7 +63,7 @@ The `Typescript` representation is used to build and work with the object in you
 
 ## Onchain Implementation
 
-With `plugs` and `salt` as the fields of the `Plugs` data type we can generate the type hash as follows:
+With `socket`, `plugs`, `salt`, `fee`, `maxFeePerGas`, `maxPriorityFeePerGas` and `executor` as the fields of the `Plugs` data type we can generate the type hash as follows:
 
 ::: code-group
 
@@ -61,8 +71,13 @@ With `plugs` and `salt` as the fields of the `Plugs` data type we can generate t
 bytes32 constant PLUGS_TYPEHASH = keccak256(
     abi.encodePacked(
         "Plugs(",
+		"address socket",
 		"Plug[] plugs",
 		"bytes32 salt",
+		"uint256 fee",
+		"uint256 maxFeePerGas",
+		"uint256 maxPriorityFeePerGas",
+		"address executor",
         ")"
     )
 );
@@ -70,12 +85,12 @@ bytes32 constant PLUGS_TYPEHASH = keccak256(
 
 ```solidity [Inline.sol]
 bytes32 constant PLUGS_TYPEHASH = keccak256(
-    'Plugs(Plug[] plugs,bytes32 salt)Current(address ground,uint256 voltage,bytes data)Fuse(address neutral,bytes live)Plug(Current current,Fuse[] fuses)'
+    'Plugs(address socket,Plug[] plugs,bytes32 salt,uint256 fee,uint256 maxFeePerGas,uint256 maxPriorityFeePerGas,address executor)Current(address target,uint256 value,bytes data)Fuse(address target,bytes data)Plug(Current current,Fuse[] fuses)'
 );
 ```
 
 ```solidity [Hash.sol]
-bytes32 constant PLUGS_TYPEHASH = 0x7ac33e93ac89f672d59c7e85084e43e143781186d7b1c32be86b1b91e68914ab
+bytes32 constant PLUGS_TYPEHASH = 0x29165ce48e11ce9215ea4a169bde0ffb8ecb167f7930f39b1c19168a6a526dd6
 ```
 
 :::

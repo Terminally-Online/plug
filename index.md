@@ -39,13 +39,13 @@ bun i @nftchance/plug-core
 
 :::
 
-## Signing an Intent
+### Signing an Intent
 
 With your target contract prepared, it is now time to configure the conditions under which the transaction can be executed and distribute the fuses. Let's go ahead and declare the fuse tree for our intent and allow execution to safely be by an account in the Executor pool:
 
 ::: code-group
 
-```typescript [./example.ts]
+```typescript [./signer.ts]
 // * Create a new instance of the Plug framework.
 const framework = new Plug(name, version, chainId, constants.types, contract);
 
@@ -67,7 +67,7 @@ const plugs = await framework.sign(owner, "Plugs", {
     fee: 0,
     maxFeePerGas: 0,
     maxPriorityFeePerGas: 0,
-    executor: Plug.Executor
+    solver: Plug.Solver
   }],
   salt: Math.floor(Date.now() / 1000);
 });
@@ -79,23 +79,27 @@ After signing, all there is left to do is submit the signed bundle to the Execut
 
 When you're ready, all you have to do is run a single line of code like:
 
-```typescript [./example.ts]
+```typescript [./signer.ts]
 plugs.submit();
 ```
 
-## Streaming Intents
+### Streaming Intents
 
-On the other side of things, Executors have the ability to listen for newly created intents that can be executed. With the same framework used to sign intents, you can open a WebSocket of distribution with:
+On the other side of things, [Solvers](/core/solvers) have the ability to listen for newly created intents that can be submit onchain. Using the same framework used to sign intents, a [Solver](/core/solvers) can open a connection to the distribution WebSocket with:
 
-```typescript
-// * Create a new instance of the Plug framework.
+```typescript [./solver.ts]
 const framework = new Plug(name, version, chainId, constants.types, contract);
 
 framework.stream();
 ```
 
-With this, you will receive all newly signed intents. If however, you would like to only receive orders that your Executor contract has permission to execute you can do so easily by opening your stream with:
+With this, you will receive all newly signed intents.
 
-```typescript [./example.ts]
-framework.stream({ executors: [EXECUTOR_ADDRESS] });
+If you would like to only receive orders that your [Solver](/core/solvers) has permission to manage and run you can do so easily by opening your stream with:
+
+```typescript [./solver.ts]
+const client = WebSocketProvider(RPC_URL, process.env.PRIVATE_KEY);
+const signature = await framework.sign("Solver", client);
+
+framework.stream({ solvers: [SOLVER_SIGNATURE] });
 ```
