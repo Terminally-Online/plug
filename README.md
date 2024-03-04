@@ -9,7 +9,7 @@ The core package of Plug powers the building and verification of declarative mes
 
 ## Dependencies
 
-In order to run `@nftchance/plug-core` it is necessary to install all of the following dependencies first:
+In order to run `@nftchance/plug-docs` it is necessary to install all of the following dependencies first:
 
 ```ml
 ├─ vitepress - "Markdown managed documentation."
