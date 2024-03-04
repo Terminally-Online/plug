@@ -64,4 +64,4 @@ However, when permissions are valid the [Router](/core/routers) executes the tra
 
 Importantly, not all transactions to a [Socket](/core/sockets) have to be executed by a [Solver](/core/solvers). In several cases, there is still the desire for permissioned signers of a [Socket](/core/sockets) to immediately execute a transaction themselves.
 
-When doing this, the transaction does not have to be submit to the [Router](/core/routers) and can be a direct interaction with the [Socket](/core/sockets) itself. When doing this, there is no compensation for a [Solver](/core/solver) required and the signer takes on all the costs of executing directly.
+When doing this, the transaction does not have to be submit to the [Router](/core/routers) and can be a direct interaction with the [Socket](/core/sockets) itself. When doing this, there is no compensation for a [Solver](/core/solvers) required and the signer takes on all the costs of executing directly.

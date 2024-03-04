@@ -1,6 +1,6 @@
 # Sockets
 
-Bringing the key execution capabilities of [Plug](/) are `Sockets`. A `Socket` is a smart contract where [Plugs](generated/base-types/Plugs) are routed to and executed from.
+Bringing the key execution capabilities of [Plug](/) are `Sockets`. A `Socket` is a smart contract where [Plugs](/generated/base-types/Plugs) are routed to and executed from.
 
 Operationally, `Sockets` mirror the functionality of the concept commonly thought of as blockchain accounts with a few small caveats:
 
