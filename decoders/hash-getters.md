@@ -1,8 +1,6 @@
 # Hash Getters
 
-The term [Hash Getters](/decoders/hash-getters) might sound a bit arcane, but it's a concept vital to the `Plug` framework.
-
-This page aims to demystify hashGetters, delve into the importance of EIP-712 type hashes, and provide you with the knowledge required to understand the Hash Getters feature in Plug.
+The term [Hash Getters](/decoders/hash-getters) might sound a bit arcane, but it's a concept vital to the `Plug` framework. This page aims to demystify `hashGetters`, delve into the importance of EIP-712 type hashes, and provide you with the knowledge required to understand the Hash Getters feature in Plug.
 
 ## What Are Hashes?
 
