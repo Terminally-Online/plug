@@ -8,7 +8,7 @@ This is where `Signer Getters` play an indispensable role. Embedded within smart
 
 Signature validation is a multi-faceted process, with `Signer Getters` representing the final, crucial step. By recovering the signer's address directly on the blockchain, these functions ensure a high level of security and trust. This onchain validation process is not just about confirming the authenticity of a signature; it's about establishing a verifiable link between a transaction and its originator, thereby preventing unauthorized or fraudulent activities.
 
-Consider the following Solidity code snippet, which exemplifies the implementation of a Signer Getter within a smart contract:
+Consider the following snippet, which exemplifies the implementation of a `Signer Getter` within a smart contract:
 
 ```solidity
 function getLivePlugsSigner(
@@ -34,7 +34,7 @@ In modern EVM development practices there is often the need to verify a signatur
 
 - `Signature Recovery`: The `.recover` method utilizes EVM's native cryptographic functions to extract the signer's public key from the signature and the digest, subsequently deriving the signer's address. This process not only validates the signature against the transaction data but also securely associates the transaction with its rightful initiator.
 
-Signer Getters are more than just a technical necessity; they are a foundational element of blockchain security and trust. By enabling onchain recovery and validation of signers' addresses, these functions:
+`Signer Getters` are more than just a technical necessity; they are a foundational element of blockchain security and trust. By enabling onchain recovery and validation of signers' addresses, these functions:
 
 - `Enhance Security`: Ensure that each transaction is explicitly linked to an identifiable and authorized entity.
 - `Build Trust`: Provide a transparent mechanism for verifying the authenticity of transactions, fostering trust among participants in the blockchain ecosystem.
