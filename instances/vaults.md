@@ -21,16 +21,8 @@ Additionally, [Plug](/) holds the ability to wrap an existing smart contract acc
 
 Notably, a user of Plug can even bypass the need of deploying a Vault with the one significant caveat that no transactions with associated value can be run. To run a transaction that transfers an asset or pays the native asset such as ETH, a Vault must be created first.
 
-## Counterfactual Deployment
-
-One of the key points of Vaults in Plug are that they do not need to be created before they are ready to be used. Until there is value sitting in them, they simply aren't created.
-
-When it comes time to deposit, the creation is automatically made in the same transaction as depositing. No multi-step processes that introduce cost before it is justified.
-
 ## Upgradeable Beacons
 
 An important piece of Vaults deployed by Plug is that they are upgradeable to the newest version, but only at the request of the user. This means, that the Plug team can continue building without negatively impacting Vaults that are already deployed. You do not need to create and migrate to a new Vault every time there is an update to the capabilities of the system. Instead, users have the ability to opt in and choose to upgrade to the newest version.
 
 At no time, can Plug or any of our team members unilaterally upgrade the state of your Vault. Upgrades always happen with the direct permission and expression of the user(s) that own and control the Vault.
-
-## Onchain Implementation

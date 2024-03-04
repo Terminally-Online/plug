@@ -25,8 +25,8 @@ function getItems(directory: string) {
 }
 
 export default defineConfig({
-  title: "Plug Documentation",
-  description: "Documentation for the Plug protocol.",
+  title: "Plug",
+  description: "Documentation for the Plug protocol and application.",
   appearance: "dark",
   themeConfig: {
     logo: { light: "/logo-dark.svg", dark: "/logo-white.svg" },
@@ -124,8 +124,55 @@ export default defineConfig({
                 text: "enforceFuse",
                 link: "/core/fuse/enforce-fuse",
               },
+            ],
+          },
+          {
+            text: "Sockets",
+            link: "/core/sockets",
+            collapsed: true,
+            items: [
               {
-                text: "Instances",
+                text: "signer",
+                link: "/core/sockets/signer",
+              },
+              {
+                text: "plug",
+                link: "/core/sockets/plug",
+              },
+            ],
+          },
+          {
+            text: "Routers",
+            link: "/core/routers",
+            collapsed: true,
+            items: [
+              {
+                text: "plug",
+                link: "/core/routers/plug",
+              },
+            ],
+          },
+          {
+            text: "Solvers",
+            link: "/core/solvers",
+            collapsed: true,
+            items: [
+              {
+                text: "solve",
+                link: "/core/solvers/solve",
+              },
+            ],
+          },
+          {
+            text: "Deployable Instances",
+            collapsed: true,
+            items: [
+              {
+                text: "Deterministic",
+                link: "/instances/deployable/deterministic"
+              },
+              {
+                text: "Fuses",
                 collapsed: true,
                 items: [
                   {
@@ -146,23 +193,8 @@ export default defineConfig({
                   },
                 ],
               },
-            ],
-          },
-          {
-            text: "Sockets",
-            link: "/core/sockets",
-            collapsed: true,
-            items: [
               {
-                text: "signer",
-                link: "/core/sockets/signer",
-              },
-              {
-                text: "plug",
-                link: "/core/sockets/plug",
-              },
-              {
-                text: "Instances",
+                text: "Sockets",
                 collapsed: true,
                 items: [
                   {
@@ -170,73 +202,6 @@ export default defineConfig({
                     link: "/instances/vaults"
                   },
                 ]
-              }
-            ],
-          },
-          {
-            text: "Routers",
-            link: "/core/routers",
-            collapsed: true,
-            items: [
-              {
-                text: "plug",
-                link: "/core/routers/plug",
-              },
-              {
-                text: "batch",
-                link: "/core/routers/batch",
-              },
-              {
-                text: "Instances",
-                link: "/instances/routers",
-                items: [
-                  {
-                    text: "Canonical",
-                    link: "/instances/routers/canonical"
-                  },
-                ]
-              }
-            ],
-          },
-          {
-            text: "Solvers",
-            link: "/core/solvers",
-            collapsed: true,
-            items: [
-              {
-                text: "simulate",
-                link: "/core/solvers/simulate",
-              },
-              {
-                text: "solve",
-                link: "/core/solvers/solve",
-              },
-              {
-                text: "Instances",
-                items: [
-                  {
-                    text: "Canonical",
-                    link: "/instances/solvers/canonical"
-                  },
-                ]
-              }
-            ],
-          },
-          {
-            text: "Deployable Instances",
-            collapsed: true,
-            items: [
-              {
-                text: "Deterministic",
-                link: "/instances/deployable/deterministic"
-              },
-              {
-                text: "JIT Deployment",
-                link: "/instances/deployable/just-in-time-deployment"
-              },
-              {
-                text: "Contract Addresses",
-                link: "/instances/deployable/addresses"
               },
             ],
           },
@@ -263,6 +228,7 @@ export default defineConfig({
   // * Load the font files.
   transformHead({ assets }) {
     const myFontFile = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
+
     if (myFontFile) {
       return [
         [

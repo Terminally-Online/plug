@@ -43,6 +43,8 @@ This not only mitigates the risks associated with upfront costs but also optimiz
 
 At the heart of Plug's innovation is the application of "If This, Then That" (IFTTT) logic, a powerful and intuitive concept that revolutionizes how transactions are executed on the blockchain. This logic allows users to create conditional statements that dictate the execution of transactions, ensuring actions are only taken when specific criteria are met. Here's a closer look at how IFTTT principles empower Plug users:
 
+![A visualized intent workflow.](/public/intent-workflow.png)
+
 ### Understanding IFTTT in Plug
 
 IFTTT logic in Plug enables users to define triggers ("If This") and actions ("Then That") within the blockchain environment. This approach transforms passive transaction execution into an active, conditional process, where transactions are executed based on real-time data and predefined conditions.

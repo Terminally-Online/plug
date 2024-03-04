@@ -19,17 +19,10 @@ With the removed need of self-settlement users no longer need to be glued to the
 
 Powering this, are `Solvers`. A `Solver` will hold signed intents, constantly simulate the transaction, and when all conditions are passing, submit the transaction without any continued involvement from the user that signed the intent.
 
-## Onchain Implementation
+## The Abstraction
 
 For `Solvers` there are two key processes:
 
-- `Simulation`: Run a `staticcall` to determine if the intent can be executed offchain.
-- `Execution`: Submit the transaction onchain.
+- [solve](/core/solvers/solve): Simulate and/or execute the intent.
 
-Today, [Plug](/) is built with `Exclusive Solvers` in mind. When signing an intent, if a `Solver` is needed or wanted, their address is included inside of the intent that has been signed. If someone other than the allowed `Solver` tries to submit the intent onchain themselves it will revert and have no effect on the blockchains state.
-
-::: tip
-
-An auction market will be in place following several more iterations. At this time, [Plug](/) is focused on nailing down the rest of the system before offering open access to `Solvers`.
-
-:::
+Today, [Plug](/) is built with `Exclusive Solvers` in mind. When signing an intent, if a `Solver` is needed or wanted, their address is included inside of the intent. If someone other than the allowed `Solver` tries to submit the intent onchain it will revert and have no effect on the state of the blockchain.
