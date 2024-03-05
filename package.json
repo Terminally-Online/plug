@@ -49,9 +49,9 @@
 	},
 	"dependencies": {
 		"@nftchance/plug-types": "^0.9.3",
-		"abitype": "^1.0.0",
-		"solady": "^0.0.173",
-		"viem": "^2.7.16",
+		"abitype": "^1.0.1",
+		"solady": "^0.0.175",
+		"viem": "^2.7.19",
 		"wagmi": "^2.5.7"
 	},
 	"repository": {
