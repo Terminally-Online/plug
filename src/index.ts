@@ -1,7 +1,9 @@
-export { Plug } from '@/src/core/plug'
-export { PlugSDK } from '@/src/core/sdk'
+export { Plug, PlugAPI, PlugSDK } from '@/src/core'
 
 export type {
+	contracts,
+	Domain,
+	Contract,
 	GetTypedDataLivePairs,
 	GetTypedDataLivePlugs
-} from '@/src/lib/types/typedData'
+} from '@/src/lib'

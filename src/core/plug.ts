@@ -1,51 +1,25 @@
-import { GetTypedDataLivePlugs } from '@/src/lib/types/typedData'
+import { hashTypedData, recoverTypedDataAddress, WalletClient } from 'viem'
 
+import { PLUGS_TYPES } from '@nftchance/plug-types'
+
+import { PlugAPI } from '@/src/core/api'
 import {
-	hashTypedData,
-	recoverTypedDataAddress,
-	TypedDataDefinition,
-	WalletClient
-} from 'viem'
-
-import { API } from './api'
-
-export const PLUGS_TYPES = {
-	Current: [
-		{ name: 'ground', type: 'address' },
-		{ name: 'voltage', type: 'uint256' },
-		{ name: 'data', type: 'bytes' }
-	],
-	Fuse: [
-		{ name: 'neutral', type: 'address' },
-		{ name: 'live', type: 'bytes' }
-	],
-	Plug: [
-		{ name: 'current', type: 'Current' },
-		{ name: 'fuses', type: 'Fuse[]' }
-	],
-	Plugs: [
-		{ name: 'plugs', type: 'Plug[]' },
-		{ name: 'salt', type: 'bytes32' }
-	]
-} as const
+	Domain,
+	PlugTypedIntent,
+	PlugTypedMessage
+} from '@/src/lib/types/typedData'
 
 export class Plug<
 	TClient extends WalletClient = WalletClient,
-	TDomain extends
-		TypedDataDefinition['domain'] = TypedDataDefinition['domain'],
-	TMessage extends TypedDataDefinition<
-		typeof PLUGS_TYPES,
-		'Plugs'
-	>['message'] = TypedDataDefinition<typeof PLUGS_TYPES, 'Plugs'>['message'],
-	TIntent extends GetTypedDataLivePlugs<'Plugs', TMessage> | undefined =
-		| GetTypedDataLivePlugs<'Plugs', TMessage>
-		| undefined
+	TDomain extends Domain = Domain,
+	TMessage extends PlugTypedMessage = PlugTypedMessage,
+	TIntent extends PlugTypedIntent<TMessage> = PlugTypedIntent<TMessage>
 > {
 	public readonly types: typeof PLUGS_TYPES
 	public readonly primaryType: keyof typeof PLUGS_TYPES
 	public client?: TClient
 	public intent?: TIntent
-	public apiClient: API
+	public apiClient: PlugAPI
 
 	constructor(
 		public readonly domain: NonNullable<TDomain>,
@@ -55,7 +29,7 @@ export class Plug<
 	) {
 		this.types = PLUGS_TYPES
 		this.primaryType = 'Plugs'
-		this.apiClient = new API(this.api, this.apiKey)
+		this.apiClient = new PlugAPI(this.api, this.apiKey)
 	}
 
 	lowercasePrimaryType() {

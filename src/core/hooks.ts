@@ -890,6 +890,1066 @@ export const plugTimestampFuseAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugVaultSocket
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugVaultSocketAbi = [
+	{ type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+	{ type: 'fallback', stateMutability: 'payable' },
+	{ type: 'receive', stateMutability: 'payable' },
+	{
+		type: 'function',
+		inputs: [{ name: '', internalType: 'uint160', type: 'uint160' }],
+		name: 'access',
+		outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'cancelOwnershipHandover',
+		outputs: [],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{ name: 'pendingOwner', internalType: 'address', type: 'address' }
+		],
+		name: 'completeOwnershipHandover',
+		outputs: [],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'domain',
+		outputs: [
+			{
+				name: '$domain',
+				internalType: 'struct PlugTypesLib.EIP712Domain',
+				type: 'tuple',
+				components: [
+					{ name: 'name', internalType: 'string', type: 'string' },
+					{ name: 'version', internalType: 'string', type: 'string' },
+					{
+						name: 'chainId',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'verifyingContract',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			}
+		],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'domainHash',
+		outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{ name: '$address', internalType: 'address', type: 'address' }
+		],
+		name: 'getAccess',
+		outputs: [
+			{ name: '$isRouter', internalType: 'bool', type: 'bool' },
+			{ name: '$isSigner', internalType: 'bool', type: 'bool' }
+		],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{ name: '$isRouter', internalType: 'bool', type: 'bool' },
+			{ name: '$isSigner', internalType: 'bool', type: 'bool' }
+		],
+		name: 'getAccess',
+		outputs: [{ name: '$access', internalType: 'uint8', type: 'uint8' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Current',
+				type: 'tuple',
+				components: [
+					{
+						name: 'target',
+						internalType: 'address',
+						type: 'address'
+					},
+					{ name: 'value', internalType: 'uint256', type: 'uint256' },
+					{ name: 'data', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'getCurrentHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.EIP712Domain',
+				type: 'tuple',
+				components: [
+					{ name: 'name', internalType: 'string', type: 'string' },
+					{ name: 'version', internalType: 'string', type: 'string' },
+					{
+						name: 'chainId',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'verifyingContract',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			}
+		],
+		name: 'getEIP712DomainHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Fuse[]',
+				type: 'tuple[]',
+				components: [
+					{
+						name: 'target',
+						internalType: 'address',
+						type: 'address'
+					},
+					{ name: 'data', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'getFuseArrayHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Fuse',
+				type: 'tuple',
+				components: [
+					{
+						name: 'target',
+						internalType: 'address',
+						type: 'address'
+					},
+					{ name: 'data', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'getFuseHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.LivePlugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plugs',
+						type: 'tuple',
+						components: [
+							{
+								name: 'socket',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'plugs',
+								internalType: 'struct PlugTypesLib.Plug[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'current',
+										internalType:
+											'struct PlugTypesLib.Current',
+										type: 'tuple',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'value',
+												internalType: 'uint256',
+												type: 'uint256'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									},
+									{
+										name: 'fuses',
+										internalType:
+											'struct PlugTypesLib.Fuse[]',
+										type: 'tuple[]',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									}
+								]
+							},
+							{
+								name: 'salt',
+								internalType: 'bytes32',
+								type: 'bytes32'
+							},
+							{
+								name: 'fee',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxPriorityFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'executor',
+								internalType: 'address',
+								type: 'address'
+							}
+						]
+					},
+					{ name: 'signature', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'getLivePlugsHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.LivePlugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plugs',
+						type: 'tuple',
+						components: [
+							{
+								name: 'socket',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'plugs',
+								internalType: 'struct PlugTypesLib.Plug[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'current',
+										internalType:
+											'struct PlugTypesLib.Current',
+										type: 'tuple',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'value',
+												internalType: 'uint256',
+												type: 'uint256'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									},
+									{
+										name: 'fuses',
+										internalType:
+											'struct PlugTypesLib.Fuse[]',
+										type: 'tuple[]',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									}
+								]
+							},
+							{
+								name: 'salt',
+								internalType: 'bytes32',
+								type: 'bytes32'
+							},
+							{
+								name: 'fee',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxPriorityFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'executor',
+								internalType: 'address',
+								type: 'address'
+							}
+						]
+					},
+					{ name: 'signature', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'getLivePlugsSigner',
+		outputs: [
+			{ name: '$signer', internalType: 'address', type: 'address' }
+		],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Plug[]',
+				type: 'tuple[]',
+				components: [
+					{
+						name: 'current',
+						internalType: 'struct PlugTypesLib.Current',
+						type: 'tuple',
+						components: [
+							{
+								name: 'target',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'value',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'data',
+								internalType: 'bytes',
+								type: 'bytes'
+							}
+						]
+					},
+					{
+						name: 'fuses',
+						internalType: 'struct PlugTypesLib.Fuse[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'target',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'data',
+								internalType: 'bytes',
+								type: 'bytes'
+							}
+						]
+					}
+				]
+			}
+		],
+		name: 'getPlugArrayHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Plug',
+				type: 'tuple',
+				components: [
+					{
+						name: 'current',
+						internalType: 'struct PlugTypesLib.Current',
+						type: 'tuple',
+						components: [
+							{
+								name: 'target',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'value',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'data',
+								internalType: 'bytes',
+								type: 'bytes'
+							}
+						]
+					},
+					{
+						name: 'fuses',
+						internalType: 'struct PlugTypesLib.Fuse[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'target',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'data',
+								internalType: 'bytes',
+								type: 'bytes'
+							}
+						]
+					}
+				]
+			}
+		],
+		name: 'getPlugHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Plugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'socket',
+						internalType: 'address',
+						type: 'address'
+					},
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plug[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'current',
+								internalType: 'struct PlugTypesLib.Current',
+								type: 'tuple',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'value',
+										internalType: 'uint256',
+										type: 'uint256'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							},
+							{
+								name: 'fuses',
+								internalType: 'struct PlugTypesLib.Fuse[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							}
+						]
+					},
+					{ name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+					{ name: 'fee', internalType: 'uint256', type: 'uint256' },
+					{
+						name: 'maxFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'maxPriorityFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'executor',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			}
+		],
+		name: 'getPlugsDigest',
+		outputs: [
+			{ name: '$digest', internalType: 'bytes32', type: 'bytes32' }
+		],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$input',
+				internalType: 'struct PlugTypesLib.Plugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'socket',
+						internalType: 'address',
+						type: 'address'
+					},
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plug[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'current',
+								internalType: 'struct PlugTypesLib.Current',
+								type: 'tuple',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'value',
+										internalType: 'uint256',
+										type: 'uint256'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							},
+							{
+								name: 'fuses',
+								internalType: 'struct PlugTypesLib.Fuse[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							}
+						]
+					},
+					{ name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+					{ name: 'fee', internalType: 'uint256', type: 'uint256' },
+					{
+						name: 'maxFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'maxPriorityFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'executor',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			}
+		],
+		name: 'getPlugsHash',
+		outputs: [{ name: '$hash', internalType: 'bytes32', type: 'bytes32' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [{ name: '$owner', internalType: 'address', type: 'address' }],
+		name: 'initialize',
+		outputs: [],
+		stateMutability: 'nonpayable'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'name',
+		outputs: [{ name: '$name', internalType: 'string', type: 'string' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'owner',
+		outputs: [{ name: 'result', internalType: 'address', type: 'address' }],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{ name: 'pendingOwner', internalType: 'address', type: 'address' }
+		],
+		name: 'ownershipHandoverExpiresAt',
+		outputs: [{ name: 'result', internalType: 'uint256', type: 'uint256' }],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$plugs',
+				internalType: 'struct PlugTypesLib.Plugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'socket',
+						internalType: 'address',
+						type: 'address'
+					},
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plug[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'current',
+								internalType: 'struct PlugTypesLib.Current',
+								type: 'tuple',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'value',
+										internalType: 'uint256',
+										type: 'uint256'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							},
+							{
+								name: 'fuses',
+								internalType: 'struct PlugTypesLib.Fuse[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							}
+						]
+					},
+					{ name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+					{ name: 'fee', internalType: 'uint256', type: 'uint256' },
+					{
+						name: 'maxFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'maxPriorityFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'executor',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			}
+		],
+		name: 'plug',
+		outputs: [
+			{ name: '$results', internalType: 'bytes[]', type: 'bytes[]' }
+		],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$plugs',
+				internalType: 'struct PlugTypesLib.Plugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'socket',
+						internalType: 'address',
+						type: 'address'
+					},
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plug[]',
+						type: 'tuple[]',
+						components: [
+							{
+								name: 'current',
+								internalType: 'struct PlugTypesLib.Current',
+								type: 'tuple',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'value',
+										internalType: 'uint256',
+										type: 'uint256'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							},
+							{
+								name: 'fuses',
+								internalType: 'struct PlugTypesLib.Fuse[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'target',
+										internalType: 'address',
+										type: 'address'
+									},
+									{
+										name: 'data',
+										internalType: 'bytes',
+										type: 'bytes'
+									}
+								]
+							}
+						]
+					},
+					{ name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+					{ name: 'fee', internalType: 'uint256', type: 'uint256' },
+					{
+						name: 'maxFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'maxPriorityFeePerGas',
+						internalType: 'uint256',
+						type: 'uint256'
+					},
+					{
+						name: 'executor',
+						internalType: 'address',
+						type: 'address'
+					}
+				]
+			},
+			{ name: '$signer', internalType: 'address', type: 'address' },
+			{ name: '$gas', internalType: 'uint256', type: 'uint256' }
+		],
+		name: 'plug',
+		outputs: [
+			{ name: '$results', internalType: 'bytes[]', type: 'bytes[]' }
+		],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'renounceOwnership',
+		outputs: [],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'requestOwnershipHandover',
+		outputs: [],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{ name: '$address', internalType: 'address', type: 'address' },
+			{ name: '$allowance', internalType: 'uint8', type: 'uint8' }
+		],
+		name: 'setAccess',
+		outputs: [],
+		stateMutability: 'nonpayable'
+	},
+	{
+		type: 'function',
+		inputs: [
+			{
+				name: '$livePlugs',
+				internalType: 'struct PlugTypesLib.LivePlugs',
+				type: 'tuple',
+				components: [
+					{
+						name: 'plugs',
+						internalType: 'struct PlugTypesLib.Plugs',
+						type: 'tuple',
+						components: [
+							{
+								name: 'socket',
+								internalType: 'address',
+								type: 'address'
+							},
+							{
+								name: 'plugs',
+								internalType: 'struct PlugTypesLib.Plug[]',
+								type: 'tuple[]',
+								components: [
+									{
+										name: 'current',
+										internalType:
+											'struct PlugTypesLib.Current',
+										type: 'tuple',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'value',
+												internalType: 'uint256',
+												type: 'uint256'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									},
+									{
+										name: 'fuses',
+										internalType:
+											'struct PlugTypesLib.Fuse[]',
+										type: 'tuple[]',
+										components: [
+											{
+												name: 'target',
+												internalType: 'address',
+												type: 'address'
+											},
+											{
+												name: 'data',
+												internalType: 'bytes',
+												type: 'bytes'
+											}
+										]
+									}
+								]
+							},
+							{
+								name: 'salt',
+								internalType: 'bytes32',
+								type: 'bytes32'
+							},
+							{
+								name: 'fee',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'maxPriorityFeePerGas',
+								internalType: 'uint256',
+								type: 'uint256'
+							},
+							{
+								name: 'executor',
+								internalType: 'address',
+								type: 'address'
+							}
+						]
+					},
+					{ name: 'signature', internalType: 'bytes', type: 'bytes' }
+				]
+			}
+		],
+		name: 'signer',
+		outputs: [
+			{ name: '$signer', internalType: 'address', type: 'address' }
+		],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'symbol',
+		outputs: [{ name: '$symbol', internalType: 'string', type: 'string' }],
+		stateMutability: 'view'
+	},
+	{
+		type: 'function',
+		inputs: [{ name: '$owner', internalType: 'address', type: 'address' }],
+		name: 'transferOwnership',
+		outputs: [],
+		stateMutability: 'payable'
+	},
+	{
+		type: 'function',
+		inputs: [],
+		name: 'version',
+		outputs: [{ name: '$version', internalType: 'string', type: 'string' }],
+		stateMutability: 'pure'
+	},
+	{
+		type: 'event',
+		anonymous: false,
+		inputs: [
+			{
+				name: 'pendingOwner',
+				internalType: 'address',
+				type: 'address',
+				indexed: true
+			}
+		],
+		name: 'OwnershipHandoverCanceled'
+	},
+	{
+		type: 'event',
+		anonymous: false,
+		inputs: [
+			{
+				name: 'pendingOwner',
+				internalType: 'address',
+				type: 'address',
+				indexed: true
+			}
+		],
+		name: 'OwnershipHandoverRequested'
+	},
+	{
+		type: 'event',
+		anonymous: false,
+		inputs: [
+			{
+				name: 'oldOwner',
+				internalType: 'address',
+				type: 'address',
+				indexed: true
+			},
+			{
+				name: 'newOwner',
+				internalType: 'address',
+				type: 'address',
+				indexed: true
+			}
+		],
+		name: 'OwnershipTransferred'
+	},
+	{ type: 'error', inputs: [], name: 'AlreadyInitialized' },
+	{ type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
+	{ type: 'error', inputs: [], name: 'NoHandoverRequest' },
+	{ type: 'error', inputs: [], name: 'Reentrancy' },
+	{ type: 'error', inputs: [], name: 'Unauthorized' }
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugWindowFuse
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1751,6 +2811,371 @@ export const useReadPlugTimestampFuseEnforceFuse =
 	/*#__PURE__*/ createUseReadContract({
 		abi: plugTimestampFuseAbi,
 		functionName: 'enforceFuse'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__
+ */
+export const useReadPlugVaultSocket = /*#__PURE__*/ createUseReadContract({
+	abi: plugVaultSocketAbi
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"access"`
+ */
+export const useReadPlugVaultSocketAccess = /*#__PURE__*/ createUseReadContract(
+	{ abi: plugVaultSocketAbi, functionName: 'access' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"domain"`
+ */
+export const useReadPlugVaultSocketDomain = /*#__PURE__*/ createUseReadContract(
+	{ abi: plugVaultSocketAbi, functionName: 'domain' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"domainHash"`
+ */
+export const useReadPlugVaultSocketDomainHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'domainHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getAccess"`
+ */
+export const useReadPlugVaultSocketGetAccess =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getAccess'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getCurrentHash"`
+ */
+export const useReadPlugVaultSocketGetCurrentHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getCurrentHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getEIP712DomainHash"`
+ */
+export const useReadPlugVaultSocketGetEip712DomainHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getEIP712DomainHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getFuseArrayHash"`
+ */
+export const useReadPlugVaultSocketGetFuseArrayHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getFuseArrayHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getFuseHash"`
+ */
+export const useReadPlugVaultSocketGetFuseHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getFuseHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getLivePlugsHash"`
+ */
+export const useReadPlugVaultSocketGetLivePlugsHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getLivePlugsHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getLivePlugsSigner"`
+ */
+export const useReadPlugVaultSocketGetLivePlugsSigner =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getLivePlugsSigner'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getPlugArrayHash"`
+ */
+export const useReadPlugVaultSocketGetPlugArrayHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getPlugArrayHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getPlugHash"`
+ */
+export const useReadPlugVaultSocketGetPlugHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getPlugHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getPlugsDigest"`
+ */
+export const useReadPlugVaultSocketGetPlugsDigest =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getPlugsDigest'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"getPlugsHash"`
+ */
+export const useReadPlugVaultSocketGetPlugsHash =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'getPlugsHash'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadPlugVaultSocketName = /*#__PURE__*/ createUseReadContract({
+	abi: plugVaultSocketAbi,
+	functionName: 'name'
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadPlugVaultSocketOwner = /*#__PURE__*/ createUseReadContract({
+	abi: plugVaultSocketAbi,
+	functionName: 'owner'
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"ownershipHandoverExpiresAt"`
+ */
+export const useReadPlugVaultSocketOwnershipHandoverExpiresAt =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'ownershipHandoverExpiresAt'
+	})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"signer"`
+ */
+export const useReadPlugVaultSocketSigner = /*#__PURE__*/ createUseReadContract(
+	{ abi: plugVaultSocketAbi, functionName: 'signer' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"symbol"`
+ */
+export const useReadPlugVaultSocketSymbol = /*#__PURE__*/ createUseReadContract(
+	{ abi: plugVaultSocketAbi, functionName: 'symbol' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"version"`
+ */
+export const useReadPlugVaultSocketVersion =
+	/*#__PURE__*/ createUseReadContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'version'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__
+ */
+export const useWritePlugVaultSocket = /*#__PURE__*/ createUseWriteContract({
+	abi: plugVaultSocketAbi
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useWritePlugVaultSocketCancelOwnershipHandover =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'cancelOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useWritePlugVaultSocketCompleteOwnershipHandover =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'completeOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useWritePlugVaultSocketInitialize =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'initialize'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"plug"`
+ */
+export const useWritePlugVaultSocketPlug = /*#__PURE__*/ createUseWriteContract(
+	{ abi: plugVaultSocketAbi, functionName: 'plug' }
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWritePlugVaultSocketRenounceOwnership =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'renounceOwnership'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useWritePlugVaultSocketRequestOwnershipHandover =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'requestOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"setAccess"`
+ */
+export const useWritePlugVaultSocketSetAccess =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'setAccess'
+	})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWritePlugVaultSocketTransferOwnership =
+	/*#__PURE__*/ createUseWriteContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'transferOwnership'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__
+ */
+export const useSimulatePlugVaultSocket =
+	/*#__PURE__*/ createUseSimulateContract({ abi: plugVaultSocketAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
+ */
+export const useSimulatePlugVaultSocketCancelOwnershipHandover =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'cancelOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"completeOwnershipHandover"`
+ */
+export const useSimulatePlugVaultSocketCompleteOwnershipHandover =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'completeOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"initialize"`
+ */
+export const useSimulatePlugVaultSocketInitialize =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'initialize'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"plug"`
+ */
+export const useSimulatePlugVaultSocketPlug =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'plug'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulatePlugVaultSocketRenounceOwnership =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'renounceOwnership'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"requestOwnershipHandover"`
+ */
+export const useSimulatePlugVaultSocketRequestOwnershipHandover =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'requestOwnershipHandover'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"setAccess"`
+ */
+export const useSimulatePlugVaultSocketSetAccess =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'setAccess'
+	})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulatePlugVaultSocketTransferOwnership =
+	/*#__PURE__*/ createUseSimulateContract({
+		abi: plugVaultSocketAbi,
+		functionName: 'transferOwnership'
+	})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__
+ */
+export const useWatchPlugVaultSocketEvent =
+	/*#__PURE__*/ createUseWatchContractEvent({ abi: plugVaultSocketAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `eventName` set to `"OwnershipHandoverCanceled"`
+ */
+export const useWatchPlugVaultSocketOwnershipHandoverCanceledEvent =
+	/*#__PURE__*/ createUseWatchContractEvent({
+		abi: plugVaultSocketAbi,
+		eventName: 'OwnershipHandoverCanceled'
+	})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `eventName` set to `"OwnershipHandoverRequested"`
+ */
+export const useWatchPlugVaultSocketOwnershipHandoverRequestedEvent =
+	/*#__PURE__*/ createUseWatchContractEvent({
+		abi: plugVaultSocketAbi,
+		eventName: 'OwnershipHandoverRequested'
+	})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchPlugVaultSocketOwnershipTransferredEvent =
+	/*#__PURE__*/ createUseWatchContractEvent({
+		abi: plugVaultSocketAbi,
+		eventName: 'OwnershipTransferred'
 	})
 
 /**

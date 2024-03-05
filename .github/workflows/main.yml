@@ -1,9 +1,11 @@
-name: '🤖 CI'
+name: '📦 Build'
 
 on:
     push:
         branches:
             - '**'
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
     FOUNDRY_PROFILE: ci
@@ -12,7 +14,7 @@ jobs:
     build:
         strategy:
             fail-fast: true
-        name: 📦 Build
+        name: 👁️ Build and Keep Artifacts
         runs-on: ubuntu-latest
         steps:
             - name: 🛒 Checkout
@@ -52,22 +54,23 @@ jobs:
                   pnpm install --frozen-lockfile
                   forge install
 
-            - name: 🙏 Run Forge Build
-              run: |
-                  forge --version
-                  forge build --sizes
-              id: build
-
-            - name: 🤏 Contract Sizes
-              run: forge build --sizes
-
-            - name: 🧪 Run Forge tests
-              run: |
-                  forge test -vvv
-              id: test
+            - name: 📦 Build package
+              run: pnpm build
 
             - name: 🧹 Lint
               run: pnpm lint
 
-            - name: 📦 Build package
-              run: pnpm build
+            - name: 🧪 Run Forge Gas Snapshot
+              run: |
+                  forge snapshot
+
+            - name: 📝 Configure Git Commit
+              run: |
+                  git config user.name "nftchance"
+                  git config user.email "chance@utc24.io"
+
+            - name: 📝 Commit Changes
+              run: |
+                  git add .
+                  git diff --staged --quiet || git commit -m "chore: update build artifacts"
+                  git push

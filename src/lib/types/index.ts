@@ -1,9 +1,6 @@
-export type { 
-	Domain,
-	Contract,
-} from './mining'
+export type { Domain, Contract } from '@/src/lib/types/mining'
 
 export type {
 	GetTypedDataLivePairs,
 	GetTypedDataLivePlugs
-} from './typedData'
+} from '@/src/lib/types/typedData'

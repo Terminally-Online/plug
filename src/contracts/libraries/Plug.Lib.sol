@@ -4,7 +4,7 @@ pragma solidity 0.8.23;
 
 library PlugLib {
     address internal constant PLUG_ADDRESS =
-        0x00d53D85529E89Cf07fbc55279558E3166e57821;
+        0x00f140e87692075C2D200bf313839Db0d669a5Da;
 
     event SocketDeployed(
         address indexed implementation, address indexed vault, bytes32 salt

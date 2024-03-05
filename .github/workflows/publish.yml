@@ -4,7 +4,9 @@ on:
         branches:
             - 'main'
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     publish:
@@ -47,7 +49,7 @@ jobs:
               id: changesets
               uses: changesets/action@v1
               with:
-                  publish: pnpm ci:publish
+                  publish: pnpm changeset publish
                   commit: 'feat: version release'
                   title: 'feat: version release'
               env:

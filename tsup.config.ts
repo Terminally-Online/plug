@@ -1,17 +1,10 @@
-import { defineConfig } from 'tsup'
-
 import { dependencies } from './package.json'
 import { getConfig } from './src/lib/functions/tsup'
+import { defineConfig } from 'tsup'
 
 export default defineConfig(
 	getConfig({
-		entry: [
-			'src/index.ts',
-			'src/core/plug.ts',
-			'src/core/sdk.ts',
-			'src/lib/types/index.ts',
-			'src/lib/constants.ts'
-		],
+		entry: ['src/index.ts', 'src/core/index.ts', 'src/lib/index.ts'],
 		external: [...Object.keys(dependencies)]
 	})
 )

@@ -57,7 +57,7 @@ export const window: Contract = {
     relativePath: '../fuses/'
 } as const
 
-export const vaultContract: Contract = {
+export const vault: Contract = {
 	name: 'Plug.Vault.Socket.sol',
 	relativePath: '../sockets/'
 } as const
@@ -74,4 +74,5 @@ export const etchContracts: Array<Contract> = [
     revocation,
     timestamp,
     window,
+    vault
 ] as const

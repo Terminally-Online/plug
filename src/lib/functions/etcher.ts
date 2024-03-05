@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { execSync } from 'child_process'
 import { default as fs } from 'fs-extra'
 
 import { contractsPath, etchContracts } from '../constants'
@@ -141,4 +141,5 @@ fs.writeFileSync(`${contractsPath}/scripts/Plug.s.sol`, fs.readFileSync(`${contr
     .replace('/// @auto INSERT SEGMENTS', deployments.join('\n\n'))
 )
 
-exec('forge fmt')
+execSync('forge fmt')
+execSync('npx wagmi generate')

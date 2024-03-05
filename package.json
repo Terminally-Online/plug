@@ -6,9 +6,9 @@
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
 		"build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
-		"build:contracts": "pnpm plug generate && pnpm build:forge && pnpm build:artifacts",
+		"build:contracts": "pnpm plug generate && pnpm build:artifacts",
 		"build:etcher": "pnpm run build:artifacts && pnpm tsx src/lib/functions/etcher.ts",
-		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23",
+		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.23",
 		"build:format": "pnpm prettier --write .",
 		"build:mine": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts",
 		"build:mine:quick": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts --quick --leading=1 --total=2 --force",
@@ -16,10 +16,7 @@
 		"lint": "tsc",
 		"dev": "npm-run-all -p dev:*",
 		"dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv --via-ir && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
-		"dev:package": "pnpm tsup --watch",
-		"ci:release": "pnpm publish -r",
-		"ci:version": "changeset version",
-		"ci:publish": "changeset publish"
+		"dev:package": "pnpm tsup --watch"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.1",
@@ -48,7 +45,7 @@
 		"typescript": "~5.3.3"
 	},
 	"dependencies": {
-		"@nftchance/plug-types": "^0.9.3",
+		"@nftchance/plug-types": "^0.9.4",
 		"abitype": "^1.0.1",
 		"solady": "^0.0.175",
 		"viem": "^2.7.19",
@@ -78,21 +75,13 @@
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
-		"./core/plug": {
-			"types": "./dist/core/plug.d.ts",
-			"default": "./dist/core/plug.js"
+		"./core": {
+			"types": "./dist/core/index.d.ts",
+			"default": "./dist/core/index.js"
 		},
-		"./core/sdk": {
-			"types": "./dist/core/sdk.d.ts",
-			"default": "./dist/core/sdk.js"
-		},
-		"./lib/types": {
-			"types": "./dist/lib/types/index.d.ts",
-			"default": "./dist/lib/types/index.js"
-		},
-		"./lib/constants": {
-			"types": "./dist/lib/constants.d.ts",
-			"default": "./dist/lib/constants.js"
+		"./lib": {
+			"types": "./dist/lib/index.d.ts",
+			"default": "./dist/lib/index.js"
 		},
 		"./artifacts": {
 			"types": "./artifacts/artifacts.d.ts"

@@ -1,4 +1,4 @@
-export class API {
+export class PlugAPI {
 	constructor(
 		public readonly api = 'https://api.onplug.io/pool',
 		public readonly apiKey = 'AAAAAAAAAAAAAAAAAAAA'

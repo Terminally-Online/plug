@@ -1,6 +1,8 @@
+import { PLUGS_TYPES } from '@nftchance/plug-types'
 import type {
-	TypedData
+	TypedData, TypedDataToPrimitiveTypes
 } from 'abitype'
+import { TypedDataDefinition } from 'viem'
 
 // ! Turn a dictionary of EIP-712 types into a union of the keys
 //   that have a signed pair.
@@ -25,3 +27,17 @@ export type GetTypedDataLivePairs<T extends TypedData> =
 export type GetTypedDataLivePlugs<K, U> = Record<'signature', `0x${string}`> & {
 	[TK in K as Lowercase<string & TK>]: U
 }
+
+export type Domain = TypedDataDefinition['domain']
+export type PlugPrimitiveTypes = TypedDataToPrimitiveTypes<
+	typeof PLUGS_TYPES
+>['Plugs']
+
+export type PlugTypedMessage = TypedDataDefinition<
+	typeof PLUGS_TYPES,
+	'Plugs'
+>['message']
+
+export type PlugTypedIntent<TMessage> =
+	| GetTypedDataLivePlugs<'Plugs', TMessage>
+	| undefined
