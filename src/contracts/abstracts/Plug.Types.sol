@@ -16,7 +16,7 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *      As an extensible base, all projects build on top of Pins
  *      and Plugs.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-02-13)
+ * @author @nftchance/plug-types (2024-03-05)
  */
 library PlugTypesLib {
     /**
@@ -130,7 +130,7 @@ library PlugTypesLib {
  * @dev Contracts that inherit this one must implement the name() and version()
  *      functions to provide the domain separator for EIP-712 signatures.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-02-13)
+ * @author @nftchance/plug-types (2024-03-05)
  */
 abstract contract PlugTypes {
     /// @notice Use the ECDSA library for signature verification.
@@ -222,9 +222,9 @@ abstract contract PlugTypes {
      *	    to the address of the contract.
      */
     function _initializePlug() internal virtual {
-        /// @dev Ensure the domain hash has not been initialized. Effectively
-        ///      protecting the entire Plug contract stack from re-initialization.
-        require(domainHash == 0x0, "PlugTypes:already-initialized");
+        if (domainHash != 0x0) {
+            revert("PlugTypes:already-initialized");
+        }
 
         /// @dev Sets the domain hash for the contract.
         domainHash = getEIP712DomainHash(

@@ -1,4 +1,4 @@
-import { GetTypedDataLivePlugs } from '@/lib/types/typedData'
+import { GetTypedDataLivePlugs } from '@/src/lib/types/typedData'
 
 import {
 	hashTypedData,
@@ -6,6 +6,7 @@ import {
 	TypedDataDefinition,
 	WalletClient
 } from 'viem'
+
 import { API } from './api'
 
 export const PLUGS_TYPES = {
@@ -123,6 +124,6 @@ export class Plug<
 			intent: this.intent
 		}
 
-		return await this.apiClient.post(body);
+		return await this.apiClient.post(body)
 	}
 }

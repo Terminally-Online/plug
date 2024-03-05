@@ -1,101 +1,113 @@
 {
-  "name": "@nftchance/plug-core",
-  "version": "0.2.6",
-  "license": "MIT",
-  "scripts": {
-    "prebuild": "pnpm lint && rm -rf ./dist",
-    "build": "pnpm build:ts && pnpm build:contracts",
-    "build:artifacts": "pnpm tsx lib/functions/artifacts.ts",
-    "build:contracts": "pnpm plug generate && pnpm build:forge && pnpm build:artifacts",
-    "build:etcher": "pnpm run build:artifacts && pnpm tsx lib/functions/etcher.ts",
-    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23",
-    "build:format": "pnpm prettier --write .",
-    "build:mine": "pnpm run build:artifacts && pnpm tsx lib/functions/mine.ts",
-    "build:mine:quick": "pnpm run build:artifacts && pnpm tsx lib/functions/mine.ts --quick --leading=2 --total=3 --force",
-    "build:ts": "pnpm tsup && pnpm build:format",
-    "lint": "tsc",
-    "dev": "npm-run-all -p dev:*",
-    "dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv --via-ir && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
-    "dev:package": "pnpm tsup --watch",
-    "ci:release": "pnpm publish -r",
-    "ci:version": "changeset version",
-    "ci:publish": "changeset publish"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@prb/test": "^0.6.4",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/chai": "^4.3.12",
-    "@types/chai-as-promised": "^7.1.8",
-    "@types/fs-extra": "^11.0.4",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.24",
-    "chai": "^5.1.0",
-    "dedent": "^1.5.1",
-    "ds-test": "github:dapphub/ds-test",
-    "execa": "^8.0.1",
-    "forge-std": "github:foundry-rs/forge-std#v1",
-    "fs-extra": "^11.2.0",
-    "nodemon": "^3.1.0",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.2.5",
-    "solhint": "^4.1.1",
-    "solidity-coverage": "^0.8.10",
-    "tsconfig-paths": "^4.2.0",
-    "tsup": "^8.0.2",
-    "tsx": "^4.7.1",
-    "typescript": "~5.3.3"
-  },
-  "dependencies": {
-    "@nftchance/plug-types": "^0.9.2",
-    "abitype": "^1.0.0",
-    "solady": "^0.0.173",
-    "viem": "^2.7.16"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nftchance/plug-core.git"
-  },
-  "keywords": [
-    "eip712",
-    "typehash",
-    "signatures",
-    "eth",
-    "ethereum",
-    "solidity",
-    "crypto",
-    "intent",
-    "plugs",
-    "plug"
-  ],
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./core/plug": {
-      "types": "./dist/core/plug.d.ts",
-      "default": "./dist/core/plug.js"
-    },
-    "./core/sdk": {
-      "types": "./dist/core/sdk.d.ts",
-      "default": "./dist/core/sdk.js"
-    },
-    "./artifacts": {
-      "types": "./artifacts/artifacts.d.ts"
-    },
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "/core",
-    "/dist",
-    "/src",
-    "/artifacts"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "@nftchance/plug-core",
+	"version": "0.2.6",
+	"license": "MIT",
+	"scripts": {
+		"prebuild": "pnpm lint && rm -rf ./dist",
+		"build": "pnpm build:ts && pnpm build:contracts",
+		"build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
+		"build:contracts": "pnpm plug generate && pnpm build:forge && pnpm build:artifacts",
+		"build:etcher": "pnpm run build:artifacts && pnpm tsx src/lib/functions/etcher.ts",
+		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=200 --use=0.8.23",
+		"build:format": "pnpm prettier --write .",
+		"build:mine": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts",
+		"build:mine:quick": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts --quick --leading=1 --total=2 --force",
+		"build:ts": "pnpm tsup && pnpm build:format",
+		"lint": "tsc",
+		"dev": "npm-run-all -p dev:*",
+		"dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv --via-ir && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
+		"dev:package": "pnpm tsup --watch",
+		"ci:release": "pnpm publish -r",
+		"ci:version": "changeset version",
+		"ci:publish": "changeset publish"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.1",
+		"@prb/test": "^0.6.4",
+		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
+		"@types/chai": "^4.3.12",
+		"@types/chai-as-promised": "^7.1.8",
+		"@types/fs-extra": "^11.0.4",
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^20.11.24",
+		"@wagmi/cli": "^2.1.2",
+		"chai": "^5.1.0",
+		"dedent": "^1.5.1",
+		"ds-test": "github:dapphub/ds-test",
+		"execa": "^8.0.1",
+		"forge-std": "github:foundry-rs/forge-std#v1",
+		"fs-extra": "^11.2.0",
+		"nodemon": "^3.1.0",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^3.2.5",
+		"solhint": "^4.1.1",
+		"solidity-coverage": "^0.8.10",
+		"tsconfig-paths": "^4.2.0",
+		"tsup": "^8.0.2",
+		"tsx": "^4.7.1",
+		"typescript": "~5.3.3"
+	},
+	"dependencies": {
+		"@nftchance/plug-types": "^0.9.3",
+		"abitype": "^1.0.0",
+		"solady": "^0.0.173",
+		"viem": "^2.7.16",
+		"wagmi": "^2.5.7"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nftchance/plug-core.git"
+	},
+	"keywords": [
+		"eip712",
+		"typehash",
+		"signatures",
+		"eth",
+		"ethereum",
+		"solidity",
+		"crypto",
+		"intent",
+		"plugs",
+		"plug"
+	],
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./core/plug": {
+			"types": "./dist/core/plug.d.ts",
+			"default": "./dist/core/plug.js"
+		},
+		"./core/sdk": {
+			"types": "./dist/core/sdk.d.ts",
+			"default": "./dist/core/sdk.js"
+		},
+		"./lib/types": {
+			"types": "./dist/lib/types/index.d.ts",
+			"default": "./dist/lib/types/index.js"
+		},
+		"./lib/constants": {
+			"types": "./dist/lib/constants.d.ts",
+			"default": "./dist/lib/constants.js"
+		},
+		"./artifacts": {
+			"types": "./artifacts/artifacts.d.ts"
+		},
+		"./package.json": "./package.json",
+		"./addresses.json": "./src/lib/addresses.json"
+	},
+	"files": [
+		"/core",
+		"/lib",
+		"/dist",
+		"/src",
+		"/artifacts"
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

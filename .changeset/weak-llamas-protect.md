@@ -1,5 +1,5 @@
 ---
-"@nftchance/plug-core": patch
+'@nftchance/plug-core': patch
 ---
 
 feat: add BaseFee fuse for gas fee control

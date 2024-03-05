@@ -194,3 +194,5 @@ lcov.info
 ./contracts
 /core/plug/**
 /core/sdk/**
+/lib/types/**
+/lib/constants/**

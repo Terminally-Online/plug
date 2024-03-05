@@ -61,7 +61,7 @@ abstract contract PlugEnforce {
         virtual
         returns (bool $allowed)
     {
-        $allowed = $router == PlugLib.ROUTER_ADDRESS;
+        $allowed = $router == PlugLib.PLUG_ADDRESS;
     }
 
     /**

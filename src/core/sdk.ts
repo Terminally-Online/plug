@@ -53,8 +53,8 @@ export class PlugSDK<
 		return plug
 	}
 
-	latest() { 
-		if(this.plugs.length == 0) return undefined
+	latest() {
+		if (this.plugs.length == 0) return undefined
 
 		return this.plugs[this.plugs.length - 1]
 	}

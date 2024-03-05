@@ -2,7 +2,8 @@ import { default as fs } from 'fs-extra'
 import { exec, execSync } from "child_process";
 import dedent from 'dedent';
 
-import { mineContracts } from '../constants';
+import { etchContracts } from '../constants';
+import { Contract } from '../types';
 
 const efficientAddressesPath = "create2crunch/efficient_addresses.txt"
 
@@ -54,7 +55,7 @@ args.forEach(arg => {
     }
 });
 
-const addressesJson = fs.readFileSync("lib/addresses.json");
+const addressesJson = fs.readFileSync("src/lib/addresses.json");
 const addresses = JSON.parse(addressesJson.toString());
 
 execSync(`rm -rf create2crunch`);
@@ -66,30 +67,30 @@ execSync(`git clone https://github.com/0age/create2crunch && cd create2crunch; s
 
 const efficientAddressesObject: Record<string, {
     initCodeHash: string,
-    results: Array<Array<string>>
+    deployment: Record<'salt' | 'address' | 'rarity', string>,
 }> = {}
 
 const timeStarted = new Date().toISOString();
 
-const mine = async (contract: string): Promise<void> => {
+const mine = async (contract: Contract): Promise<void> => {
     return new Promise((resolve, reject) => {
-        if (!force && addresses[contract]) {
-            console.log(`⏹︎ Skipping ${contract} as it already exists in the addresses.json file.`);
+        if (!force && addresses[contract.name]) {
+            console.log(`⏹︎ Skipping ${contract.name} as it already exists in the addresses.json file.`);
             console.log(`    ⏹︎ Use --force to overwrite.`);
             return resolve();
         }
 
         console.log(dedent`
             ⏹︎ Generating efficient address:
-                Contract Name: ${contract}
+                Contract Name: ${contract.name}
                 Seconds: ${crunchSeconds}
                 Leading: ${crunchLeading}
                 Total: ${crunchTotal}
                 Quick: ${quick}
         `);
 
-        const artifactPath = `artifacts/${contract}/`
-        const contractName = contract.replaceAll(".sol", "").replaceAll(".", "");
+        const artifactPath = `artifacts/${contract.name}/`
+        const contractName = contract.name.replaceAll(".sol", "").replaceAll(".", "");
         const initCodePath = `${artifactPath}${contractName}.initcode.json`
         const initCodeJson = JSON.parse(fs.readFileSync(initCodePath).toString());
         const initCodeHash = initCodeJson["initcodeHash"];
@@ -121,9 +122,11 @@ const mine = async (contract: string): Promise<void> => {
                 .map((address: string) => address.split(" => "))
                 .sort((a: Array<string>, b: Array<string>) => parseInt(a[1]) - parseInt(b[1]));
 
-            efficientAddressesObject[contract] = {
+            const [salt, address, rarity] = results[0];
+
+            efficientAddressesObject[contract.name] = {
                 initCodeHash: initCodeHash,
-                results: results
+                deployment: { salt, address, rarity }
             }
             fs.writeFileSync(efficientAddressesPath, "");
 
@@ -144,8 +147,8 @@ const mine = async (contract: string): Promise<void> => {
 async function processContracts() {
     let found = false;
 
-    for (const contract of mineContracts) {
-        if (match != "" && !contract.includes(match)) {
+    for (const contract of etchContracts) {
+        if (match != "" && !contract.name.includes(match)) {
             continue;
         }
 
@@ -165,8 +168,8 @@ processContracts().then(() => {
 
     console.log(`✔︎ All contract addresses mined in ${duration} seconds.`);
 
-    if (!fs.existsSync("lib/addresses.json")) {
-        fs.writeFileSync("lib/addresses.json", "{}");
+    if (!fs.existsSync("src/lib/addresses.json")) {
+        fs.writeFileSync("src/lib/addresses.json", "{}");
     }
 
     // Loop through each key of the efficientAddressesObject and add the results to the 
@@ -174,7 +177,6 @@ processContracts().then(() => {
     for (const key in efficientAddressesObject) {
         const efficientAddresses = {
             ...efficientAddressesObject[key],
-            results: efficientAddressesObject[key].results.filter((address: Array<string>) => address[0] != "")
         }
         const existingAddresses = addresses[key];
 
@@ -185,7 +187,7 @@ processContracts().then(() => {
         addresses[key] = efficientAddresses;
     }
 
-    fs.writeFileSync("lib/addresses.json", JSON.stringify(addresses, null, 2));
+    fs.writeFileSync("src/lib/addresses.json", JSON.stringify(addresses, null, 2));
 
     process.exit(0);
 }).catch((error) => {

@@ -115,6 +115,7 @@ async function generateExports(entry: string[], noExport?: string[]) {
 		types: './artifacts/artifacts.d.ts'
 	}
 	exports['./package.json'] = './package.json'
+	exports['./addresses.json'] = './src/lib/addresses.json'
 
 	const packageJson = await fs.readJSON('package.json')
 	packageJson.exports = exports

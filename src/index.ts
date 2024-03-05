@@ -4,4 +4,4 @@ export { PlugSDK } from '@/src/core/sdk'
 export type {
 	GetTypedDataLivePairs,
 	GetTypedDataLivePlugs
-} from '@/lib/types/typedData'
+} from '@/src/lib/types/typedData'

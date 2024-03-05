@@ -1,5 +1,5 @@
 ---
-"@nftchance/plug-core": minor
+'@nftchance/plug-core': minor
 ---
 
 feat: flatten architecture

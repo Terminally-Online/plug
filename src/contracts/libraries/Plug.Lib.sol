@@ -3,8 +3,8 @@
 pragma solidity 0.8.23;
 
 library PlugLib {
-    address internal constant ROUTER_ADDRESS =
-        0x00b09C89Ace100AB7A4Dc47ebfBd1E7997920062;
+    address internal constant PLUG_ADDRESS =
+        0x00d53D85529E89Cf07fbc55279558E3166e57821;
 
     event SocketDeployed(
         address indexed implementation, address indexed vault, bytes32 salt

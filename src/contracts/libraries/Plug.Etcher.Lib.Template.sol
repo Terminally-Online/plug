@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.23;
 
+import { ImmutableCreate2Factory } from
+    "../interfaces/Deployment.Create2Factory.Interface.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
 /// @auto INSERT IMPORTS
 
@@ -18,7 +20,11 @@ import { PlugLib } from "../libraries/Plug.Lib.sol";
  *         doing anything more than a simple in-and-out contract.
  * @author vectorized (twitter:@optimizoor)
  */
-library PlugEtcherTemplate {
+library PlugEtcherLibTemplate {
+    /// @notice The immutable Create2 factory used for deployment.
+    ImmutableCreate2Factory internal constant FACTORY =
+        ImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
+
     /// @auto INSERT SEGMENTS
 
     /**
