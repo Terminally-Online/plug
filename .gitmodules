@@ -10,6 +10,3 @@
 [submodule "packages/docs"]
 	path = packages/docs
 	url = https://github.com/nftchance/plug-docs
-[submodule "packages/server"]
-	path = packages/server
-	url = https://github.com/nftchance/plug-server
