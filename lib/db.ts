@@ -34,7 +34,7 @@ function startDatabase(
 	)
 }
 
-const containerName = process.env.CONTAINER_NAME ?? "emporium"
+const containerName = process.env.CONTAINER_NAME ?? "postgres"
 const databaseName = process.env.DATABASE_NAME ?? "postgres"
 const databasePort = process.env.DATABASE_PORT ?? "5434"
 const databasePassword = process.env.DATABASE_PASSWORD ?? "postgres"

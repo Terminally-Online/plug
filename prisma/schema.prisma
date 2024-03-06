@@ -8,18 +8,20 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// Authentication models. 
+
 model Account {
     id                String  @id @default(cuid())
     userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String?
+    access_token      String?
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String?
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -54,6 +56,8 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+// Board models.
+
 model Component {
     id String @id @default(uuid())
 
@@ -85,4 +89,79 @@ model Canvas {
     updatedAt DateTime @updatedAt
 
     components Component[]
+}
+
+// Protocol models.
+
+model Address {
+    id String @id
+
+    livePlugs LivePlugs[]
+}
+
+model Domain {
+    verifyingContract String
+    name              String
+    version           String
+    chainId           Int
+
+    @@id([verifyingContract, name, version, chainId])
+}
+
+model Current {
+    name String
+    type String
+    data String
+
+    plugs Plug[]
+
+    @@id([name, type, data])
+}
+
+model Fuse {
+    target String
+    data   String
+
+    plug   Plug?   @relation(fields: [plugId], references: [id])
+    plugId String?
+
+    @@id([target, data])
+}
+
+model Plug {
+    id      String  @id @default(uuid())
+    current Current @relation(fields: [currentName, currentType, currentData], references: [name, type, data])
+    fuses   Fuse[]
+
+    currentName String
+    currentType String
+    currentData String
+
+    Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
+    plugsId String?
+}
+
+model Plugs {
+    id String @id @default(uuid())
+
+    socket               String
+    plugs                Plug[]
+    salt                 String
+    fee                  Int
+    maxFeePerGas         Int
+    maxPriorityFeePerGas Int
+    executor             String
+
+    LivePlugs LivePlugs[]
+}
+
+model LivePlugs {
+    plugs     Plugs  @relation(fields: [plugsId], references: [id])
+    plugsId   String
+    signature String
+
+    address   Address @relation(fields: [addressId], references: [id])
+    addressId String
+
+    @@id([plugsId, addressId])
 }

@@ -1,5 +1,4 @@
 import type { FC, PropsWithChildren } from "react"
-import { memo } from "react"
 
 import { WagmiConfig } from "wagmi"
 
@@ -20,6 +19,7 @@ const metadata = {
 	url: "https://onplug.io",
 	icons: ["https://onplug.io/favicon.ico"]
 }
+
 const config = defaultWagmiConfig({ chains, projectId, metadata })
 
 createWeb3Modal({ wagmiConfig: config, projectId, chains })
@@ -28,4 +28,4 @@ export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
 	return <WagmiConfig config={config}>{children}</WagmiConfig>
 }
 
-export default memo(WalletProvider)
+export default WalletProvider

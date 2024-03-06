@@ -1,3 +1,5 @@
+"use client"
+
 import type { FC, PropsWithChildren } from "react"
 
 import { getCsrfToken, signIn } from "next-auth/react"
@@ -128,13 +130,10 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 									alt={name}
 									className="h-5 w-5 rounded-full"
 								/>
+							) : address ? (
+								<></>
 							) : (
-								<BlockiesSvg
-									address={address}
-									size={8}
-									scale={2}
-									className="rounded-full"
-								/>
+								<></>
 							)}
 							<span className="tabular-nums opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100">
 								{name
@@ -150,7 +149,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 
 			<AnimatePresence>
 				{error && isError && (
-					<motion.p 
+					<motion.p
 						className="mt-2 flex w-full justify-center px-12 text-center text-red-500"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}

@@ -22,7 +22,7 @@ export const getServerSideProps = (async context => {
 	if (!session) {
 		return {
 			redirect: {
-				destination: `/connect`,
+				destination: `/?connect=true`,
 				permanent: false
 			}
 		}
