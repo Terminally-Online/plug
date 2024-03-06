@@ -52,12 +52,6 @@ export function MarqueeItem({
 		rectRef.current = itemRef.current.getBoundingClientRect()
 	}, [itemRef, rectRef, width, height])
 
-	// const [_, loopStart] = useRafLoop(loop, false)
-
-	// useEffect(() => {
-	// 	loopStart()
-	// }, [loopStart])
-	//
 	return (
 		<motion.div
 			className="user-select-none whitespace-nowrap pr-[0.25rem] text-lg leading-[-0.05rem] text-black/60 dark:text-white/60"
