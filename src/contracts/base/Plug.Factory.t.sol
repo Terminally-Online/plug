@@ -88,6 +88,18 @@ contract PlugFactoryTest is Test {
         assertEq(expectedInstance, instance);
     }
 
+    function test_RepeatedDeployDeterministic_NoSalt() public {
+        address owner = _randomNonZeroAddress();
+
+        (bool firstAlreadyDeployed, address firstVault) =
+            factory.deploy{ value: 456 }(address(implementation), owner);
+        assertEq(firstAlreadyDeployed, false);
+        (bool secondAlreadyDeployed, address secondVault) =
+            factory.deploy{ value: 456 }(address(implementation), owner);
+        assertEq(secondAlreadyDeployed, false);
+        assertNotEq(firstVault, secondVault);
+    }
+
     function test_InitCodeHash() public view {
         factory.initCodeHash(address(implementation));
     }
