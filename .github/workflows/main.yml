@@ -73,4 +73,4 @@ jobs:
               run: |
                   git add .
                   git diff --staged --quiet || git commit -m "chore: update build artifacts"
-                  git push
+                  git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/nftchance/plug-core.git
