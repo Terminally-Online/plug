@@ -99,8 +99,8 @@ dependencies:
     specifier: ^0.294.0
     version: 0.294.0(react@18.2.0)
   markdown-to-jsx:
-    specifier: ^7.3.2
-    version: 7.3.2(react@18.2.0)
+    specifier: ^7.4.1
+    version: 7.4.1(react@18.2.0)
   next:
     specifier: 14.0.4
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -5610,8 +5610,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
-  /markdown-to-jsx@7.3.2(react@18.2.0):
-    resolution: {integrity: sha512-B+28F5ucp83aQm+OxNrPkS8z0tMKaeHiy0lHJs3LqCyDQFtWuenaIrkaVTgAm1pf1AU85LXltva86hlaT17i8Q==}
+  /markdown-to-jsx@7.4.1(react@18.2.0):
+    resolution: {integrity: sha512-GbrbkTnHp9u6+HqbPRFJbObi369AgJNXi/sGqq5HRsoZW063xR1XDCaConqq+whfEIAlzB1YPnOgsPc7B7bc/A==}
     engines: {node: '>= 10'}
     peerDependencies:
       react: '>= 0.14.0'

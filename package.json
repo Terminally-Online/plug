@@ -51,7 +51,7 @@
 		"framer-motion": "^10.16.16",
 		"immutability-helper": "^3.1.1",
 		"lucide-react": "^0.294.0",
-		"markdown-to-jsx": "^7.3.2",
+		"markdown-to-jsx": "^7.4.1",
 		"next": "14.0.4",
 		"next-auth": "^4.24.5",
 		"normalize-wheel": "^1.0.1",
