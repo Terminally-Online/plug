@@ -312,6 +312,35 @@ export const contracts = [
                         "name": "$admin",
                         "type": "address",
                         "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$alreadyDeployed",
+                        "type": "bool",
+                        "internalType": "bool"
+                    },
+                    {
+                        "name": "$vault",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "deploy",
+                "inputs": [
+                    {
+                        "name": "$implementation",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$admin",
+                        "type": "address",
+                        "internalType": "address"
                     },
                     {
                         "name": "$salt",
@@ -372,6 +401,25 @@ export const contracts = [
                         "name": "$initCodeHash",
                         "type": "bytes32",
                         "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "nonce",
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "stateMutability": "view"
