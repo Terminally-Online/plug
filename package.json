@@ -62,7 +62,7 @@
 		"react-use": "^17.4.0",
 		"siwe": "^2.1.4",
 		"superjson": "^2.2.1",
-		"tailwind-merge": "^2.1.0",
+		"tailwind-merge": "^2.2.1",
 		"tailwindcss-animate": "^1.0.7",
 		"tsconfig-paths-webpack-plugin": "^4.1.0",
 		"tsx": "^4.6.2",
