@@ -45,7 +45,7 @@
 		"class-variance-authority": "^0.7.0",
 		"classnames": "^2.3.2",
 		"clsx": "^2.0.0",
-		"cmdk": "^0.2.0",
+		"cmdk": "^1.0.0",
 		"cross-env": "^7.0.3",
 		"dedent": "^1.5.1",
 		"framer-motion": "^10.16.16",
