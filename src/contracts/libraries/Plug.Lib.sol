@@ -6,6 +6,9 @@ library PlugLib {
     address internal constant PLUG_ADDRESS =
         0x00f140e87692075C2D200bf313839Db0d669a5Da;
 
+    address internal constant PLUG_TRADABLE_ADDRESS =
+        0x00f140e87692075C2D200bf313839Db0d669a5Da;
+
     event SocketDeployed(
         address indexed implementation, address indexed vault, bytes32 salt
     );
