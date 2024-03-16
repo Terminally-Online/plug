@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
-
-import {PlugLib} from '../libraries/Plug.Lib.sol';
+pragma solidity 0.8.24;
 
 import {ERC721} from 'solady/src/tokens/ERC721.sol';
 import {Ownable} from 'solady/src/auth/Ownable.sol';
 
 import {LibString} from 'solady/src/utils/LibString.sol';
+
+import {PlugTradingInterface} from '../interfaces/Plug.Trading.Interface.sol';
 
 /**
  * @title Plug Tradable
@@ -16,38 +16,20 @@ import {LibString} from 'solady/src/utils/LibString.sol';
  *         contract is responsible for managing the ownership of the vault through
  *         a mirror-like function which means when the owner of this token changes,
  *         the owner of the vault does as well.
- * @dev The usage of this model increase the underlying gas costs of execution by a
- *      small margin though the vault-internal implementation already circuits out of
- *      `if` loops that are to be checking this resulting in this only ever being
- *      when an owner actually calls the state of something or someone with a bad
- *      bundler packet attempts running execution through a vault that is not their own.
  * @author nftchance (chance@onplug.io)
  */
-contract PlugTradable is ERC721, Ownable {
+abstract contract PlugTradable is ERC721, Ownable {
 	using LibString for uint256;
 
 	/// @dev The base endpoint for the metadata.
 	string private baseURI;
 
-	/// @dev The address of the Plug router that is allowed to
-	///      call the mint function.
-	address private plug;
-
-	/// @dev Make sure only the router can call this function.
-	modifier onlyPlug() {
-		require(msg.sender == plug, 'PlugTradable:forbidden-sender');
-		_;
-	}
-
-	constructor(address $owner, string memory $baseURI, address $plug) {
+	constructor(address $owner, string memory $baseURI) {
 		/// @dev Initialize the metadata controller.
 		_initializeOwner($owner);
 
 		/// @dev Set the base URI for the token.
 		baseURI = $baseURI;
-
-		/// @dev Set the address of the Plug router.
-		plug = $plug;
 	}
 
 	/**
@@ -59,30 +41,30 @@ contract PlugTradable is ERC721, Ownable {
 	}
 
 	/**
-	 * @notice Set the address of the Plug router.
-	 * @param $plug The address of the Plug router.
-	 */
-	function setPlug(address $plug) external onlyOwner {
-		plug = $plug;
-	}
-
-	/**
 	 * @notice Mint a new vault token to the owner of the vault.
 	 * @param $admin The owner of the vault.
-	 * @param $version The version of the vault.
 	 * @param $vault The address of the vault.
 	 */
 	function mint(
 		address $admin,
-		uint96 $version,
 		address $vault
-	) public virtual onlyPlug returns (uint256 $tokenId) {
-		/// @dev Prefix the token id of the vault with the version number followed
-		///      by the vault address that is being deployed.
-		$tokenId = uint256(uint160($vault)) | ($version << 160);
-
+	) public virtual {
 		/// @dev Mint the token to the new owner of the vault.
-		_mint($admin, $tokenId);
+		_mint($admin, uint256(uint160($vault)));
+	}
+
+	function _afterTokenTransfer(
+		address from,
+		address to,
+		uint256 tokenId
+	) internal override {
+		super._afterTokenTransfer(from, to, tokenId);
+
+        /// @dev Call into the vault that is representing this asset and update
+        ///      the owner in storage. We do not rely on a runtime read for ownership
+        ///      references because that would end up costing more than just storing
+        ///      the data over there as well.
+		PlugTradingInterface(address(uint160(tokenId))).transferOwnership(to);
 	}
 
 	/**

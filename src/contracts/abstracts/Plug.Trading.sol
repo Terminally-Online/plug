@@ -1,42 +1,62 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity 0.8.24;
 
-import {PlugLib} from '../libraries/Plug.Lib.sol';
-import {ERC721Interface} from '../interfaces/ERC.721.Interface.sol';
+import {PlugTradingInterface} from '../interfaces/Plug.Trading.Interface.sol';
 
-abstract contract PlugTrading {
-	address public tokenOwner;
+/**
+ * @title Plug Trading
+ * @notice Enables the ability to represent Vault ownership through the current
+ *         state of an ERC721 that is managed inside the factory that deployed
+ *         the Vault. This way, Vaults can be traded on any major marketplace
+ *         enabling the ability to spread workflows and earnings of
+ *         aforementioned workflows such as points and yield.
+ * @author nftchance (chance@onplug.io)
+ */
+abstract contract PlugTrading is PlugTradingInterface {
+    /// @dev The address that houses the ownership information.
+	address public ownership;
+
+    /// @dev Track the active owner of the Vault.
+	address private _owner;
+
+    /**
+     * @notice Modifier enforcing the caller to be the ownership proxy.
+     */
+	modifier onlyTradable() {
+		require(msg.sender == ownership, 'PlugTrading:forbidden-caller');
+		_;
+	}
 
 	/**
-	 * @notice Make a single call to the ownership reference to save on gas
-	 *         and then clear the owner when the function is done being consumed.
+	 * @notice Only the owner of the token can call functions that have
+     *         this modifier applied onto it.
 	 */
-	modifier withOwner() {
-		/// @dev If the tokenOwner has already been set there is no need to call
-		///      the ownership proxy again.
-		if (tokenOwner == address(0))
-			/// @dev Retrieve the owner of the token from the ownership proxy.
-			tokenOwner = owner();
+	modifier onlyOwner() {
+		require(msg.sender == owner(), 'PlugTrading:forbidden-caller');
 		_;
-		/// @dev Reset the owner to the zero address to prevent any potential
-		///      misuse of the owner reference while reclaiming gas spent.
-		delete tokenOwner;
 	}
 
     /**
-     * @notice Only the owner of the token can call functions that have this
-     *         modifier applied onto it.
+     * @notice Set the address of the ownership proxy which is a ERC721
+     *         compliant contract that lives inside of the factory.
      */
-	modifier onlyOwner() {
-		require(msg.sender == tokenOwner, 'PlugVaultSocket:forbidden-caller');
-		_;
+	function _initializeOwnership(address $ownership) internal {
+		ownership = $ownership;
 	}
 
-	function owner() public view returns (address $owner) {
-		$owner =
-			ERC721Interface(PlugLib.PLUG_TRADABLE_ADDRESS).ownerOf(
-				uint256(uint160(address(this)))
-			);
+    /**
+     * @notice Transfer the ownership of a Vault to a new address when the
+     *         NFT is transferred.
+     */
+	function transferOwnership(address $newOwner) public virtual onlyTradable {
+		_owner = $newOwner;
+	}
+
+    /**
+     * @notice Get the owner of the Vault.
+     */
+	function owner() public view virtual returns (address) {
+		return _owner;
 	}
 }

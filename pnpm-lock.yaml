@@ -6,11 +6,11 @@ settings:
 
 dependencies:
     '@nftchance/plug-types':
-        specifier: ^0.9.4
-        version: 0.9.4(esbuild@0.20.1)(typescript@5.4.2)
+        specifier: ^0.9.5
+        version: 0.9.5(esbuild@0.20.1)(typescript@5.4.2)
     abitype:
         specifier: ^1.0.1
-        version: 1.0.1(typescript@5.4.2)(zod@3.22.4)
+        version: 1.0.1(typescript@5.4.2)
     solady:
         specifier: ^0.0.175
         version: 0.0.175
@@ -63,7 +63,7 @@ devDependencies:
         version: 8.0.1
     forge-std:
         specifier: github:foundry-rs/forge-std#v1
-        version: github.com/foundry-rs/forge-std/ae570fec082bfe1c1f45b0acca4a2b4f84d345ce
+        version: github.com/foundry-rs/forge-std/b6a506db2262cad5ff982a87789ee6d1558ec861
     fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -3837,15 +3837,15 @@ packages:
             tslib: 2.6.2
         dev: false
 
-    /@nftchance/plug-types@0.9.4(esbuild@0.20.1)(typescript@5.4.2):
+    /@nftchance/plug-types@0.9.5(esbuild@0.20.1)(typescript@5.4.2):
         resolution:
             {
-                integrity: sha512-2yALT7Q6I3VYe9zAOauQt4IlBVX2bZgof1Qdaph56Ox8oMaUpylvK46dP9Ius7dfP2KG/fgzwiGTKExEdi6RNQ==
+                integrity: sha512-37fn3nqtC9jPdct5BmnDd3/yf4ZFKnf8Z8S8KE3qD0jkOpV+izXrSG6pxdBr5jU0vtybrU4PACp59N3ImR5eCA==
             }
         hasBin: true
         dependencies:
             '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.2.5)
-            abitype: 1.0.1(typescript@5.4.2)(zod@3.22.4)
+            abitype: 1.0.2(typescript@5.4.2)(zod@3.22.4)
             bundle-require: 4.0.2(esbuild@0.20.1)
             commander: 12.0.0
             dedent: 1.5.1
@@ -3856,7 +3856,7 @@ packages:
             pathe: 1.1.2
             picocolors: 1.0.0
             prettier: 3.2.5
-            solady: 0.0.175
+            solady: 0.0.177
             zod: 3.22.4
         transitivePeerDependencies:
             - '@vue/compiler-sfc'
@@ -6471,10 +6471,27 @@ packages:
             typescript: 5.4.2
             zod: 3.22.4
 
-    /abitype@1.0.1(typescript@5.4.2)(zod@3.22.4):
+    /abitype@1.0.1(typescript@5.4.2):
         resolution:
             {
                 integrity: sha512-HyHCfBwNYvHPGWsdv5PiKj8b1LnZUCuALyUWg5iP/wbK8FpdmTI4Qk9CYzjNgmsWwRw5j/DCruOltrnUGQdBeQ==
+            }
+        peerDependencies:
+            typescript: '>=5.0.4'
+            zod: ^3 >=3.22.0
+        peerDependenciesMeta:
+            typescript:
+                optional: true
+            zod:
+                optional: true
+        dependencies:
+            typescript: 5.4.2
+        dev: false
+
+    /abitype@1.0.2(typescript@5.4.2)(zod@3.22.4):
+        resolution:
+            {
+                integrity: sha512-aFt4k2H+eiAKy/zxtnORa9iIb10BMBeWL18l8v4+QuwYEBXPxxjSB1bFZCzQmKPoj8m7j68K705l3uY+E2gAjg==
             }
         peerDependencies:
             typescript: '>=5.0.4'
@@ -14849,6 +14866,13 @@ packages:
             }
         dev: false
 
+    /solady@0.0.177:
+        resolution:
+            {
+                integrity: sha512-ac9eCKPmJMZEcqTXmqtUfy3hQdPh2w+YYupsSncaO2A1mxqH3jvpskJz9TpYEH/o0wDupf6f9NBkjCLGJFyplg==
+            }
+        dev: false
+
     /solc@0.7.3(debug@4.3.4):
         resolution:
             {
@@ -16902,10 +16926,10 @@ packages:
         version: 1.0.0
         dev: true
 
-    github.com/foundry-rs/forge-std/ae570fec082bfe1c1f45b0acca4a2b4f84d345ce:
+    github.com/foundry-rs/forge-std/b6a506db2262cad5ff982a87789ee6d1558ec861:
         resolution:
             {
-                tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/ae570fec082bfe1c1f45b0acca4a2b4f84d345ce
+                tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/b6a506db2262cad5ff982a87789ee6d1558ec861
             }
         name: forge-std
         version: 1.7.6

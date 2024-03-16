@@ -12,13 +12,14 @@
     auto_detect_solc = false
     block_timestamp = 1_680_220_800
     bytecode_hash = "none"
-    evm_version = "paris"
+    evm_version = "cancun"
     fuzz = { runs = 1_000 }
     gas_reports = ["*"]
     optimizer = true
     optimizer_runs = 10_000
     script = "src/contracts/script"
-    solc = "0.8.23"
+    solc = "0.8.24"
+    ignored_error_codes = [2394]
 
 [profile.ci]
     fuzz = { runs = 10_000 }

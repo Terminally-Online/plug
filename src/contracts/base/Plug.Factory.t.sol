@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity 0.8.24;
 
 import { Test } from "../utils/Test.sol";
 
@@ -13,9 +13,14 @@ contract PlugFactoryTest is Test {
     PlugVaultSocket internal implementation;
     PlugFactory internal factory;
 
+    address factoryOwner;
+    string baseURI = "https://onplug.io/metadata/";
+
     function setUp() public virtual {
+        factoryOwner = _randomNonZeroAddress();
+
         implementation = new PlugVaultSocket();
-        factory = new PlugFactory();
+        factory = new PlugFactory(factoryOwner, baseURI);
     }
 
     function test_DeployDeterministic(uint256) public {

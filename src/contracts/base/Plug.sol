@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity 0.8.24;
 
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";

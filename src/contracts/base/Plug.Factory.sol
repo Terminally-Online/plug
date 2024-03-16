@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity 0.8.24;
 
+import {PlugTradable} from '../abstracts/Plug.Tradable.sol';
 import {PlugSocket} from '../abstracts/Plug.Socket.sol';
 import {PlugLib} from '../libraries/Plug.Lib.sol';
 import {LibClone} from 'solady/src/utils/LibClone.sol';
@@ -16,9 +17,14 @@ import {LibClone} from 'solady/src/utils/LibClone.sol';
  * @author @nftchance (chance@utc24.io)
  * @author @vectorized (https://github.com/Vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)
  */
-contract PlugFactory {
+contract PlugFactory is PlugTradable {
 	/// @dev The nonce of factory deployments for each user.
 	mapping(address => uint256) public nonce;
+
+	constructor(
+		address $owner,
+		string memory $baseURI
+	) PlugTradable($owner, $baseURI) {}
 
 	/**
 	 * @notice Deploy a new Plug contract and initialize it.
@@ -47,7 +53,7 @@ contract PlugFactory {
 			/// @solidity memory-safe-assembly
 			assembly {
 				/// @dev Store the `$admin` argument.
-				mstore(0x14, $admin)
+				mstore(0x14, address())
 				/// @dev Store the call data for the `initialize(address)` function.
 				mstore(0x00, 0xc4d66de8000000000000000000000000)
 				if iszero(
@@ -58,9 +64,12 @@ contract PlugFactory {
 				}
 			}
 
-			/// @dev Emit an event for the creation of the Vault to make tracking
-			///		 things easier offchain.
+			/// @dev Emit an event for the creation of the Vault to make
+			///      tracking things easier offchain.
 			emit PlugLib.SocketDeployed($implementation, $admin, $salt);
+
+			/// @dev Mint the transferable ownership token to the admin.
+			mint($admin, $vault);
 		}
 	}
 
@@ -75,9 +84,7 @@ contract PlugFactory {
 		address $implementation,
 		address $admin
 	) public payable virtual returns (bool $alreadyDeployed, address $vault) {
-		bytes32 $salt = bytes32(
-			abi.encodePacked(nonce[msg.sender]++, $admin)
-		);
+		bytes32 $salt = bytes32(abi.encodePacked(nonce[msg.sender]++, $admin));
 
 		/// @dev Deploy the new vault using a Beacon Proxy pattern.
 		($alreadyDeployed, $vault) = deploy($implementation, $admin, $salt);

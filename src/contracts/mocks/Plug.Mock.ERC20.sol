@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.23;
+pragma solidity 0.8.24;
 
 import { ERC20 } from "solady/src/tokens/ERC20.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";

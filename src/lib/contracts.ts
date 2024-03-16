@@ -300,6 +300,79 @@ export const contracts = [
         "name": "PlugFactory",
         "abi": [
             {
+                "type": "constructor",
+                "inputs": [
+                    {
+                        "name": "$owner",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$baseURI",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "approve",
+                "inputs": [
+                    {
+                        "name": "account",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "balanceOf",
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "cancelOwnershipHandover",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "completeOwnershipHandover",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
                 "type": "function",
                 "name": "deploy",
                 "inputs": [
@@ -388,6 +461,25 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "getApproved",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
                 "name": "initCodeHash",
                 "inputs": [
                     {
@@ -407,6 +499,61 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "isApprovedForAll",
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "operator",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "mint",
+                "inputs": [
+                    {
+                        "name": "$admin",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$vault",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "name",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "$name",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
                 "name": "nonce",
                 "inputs": [
                     {
@@ -423,6 +570,335 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "ownerOf",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "ownershipHandoverExpiresAt",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "renounceOwnership",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "requestOwnershipHandover",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "safeTransferFrom",
+                "inputs": [
+                    {
+                        "name": "from",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "to",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "safeTransferFrom",
+                "inputs": [
+                    {
+                        "name": "from",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "to",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "setApprovalForAll",
+                "inputs": [
+                    {
+                        "name": "operator",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "isApproved",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "setBaseURI",
+                "inputs": [
+                    {
+                        "name": "$baseURI",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "supportsInterface",
+                "inputs": [
+                    {
+                        "name": "interfaceId",
+                        "type": "bytes4",
+                        "internalType": "bytes4"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "symbol",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "$symbol",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "tokenURI",
+                "inputs": [
+                    {
+                        "name": "$tokenId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$uri",
+                        "type": "string",
+                        "internalType": "string"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "transferFrom",
+                "inputs": [
+                    {
+                        "name": "from",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "to",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "transferOwnership",
+                "inputs": [
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "event",
+                "name": "Approval",
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "account",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "indexed": true,
+                        "internalType": "uint256"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "ApprovalForAll",
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "operator",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "isApproved",
+                        "type": "bool",
+                        "indexed": false,
+                        "internalType": "bool"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "OwnershipHandoverCanceled",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "OwnershipHandoverRequested",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "OwnershipTransferred",
+                "inputs": [
+                    {
+                        "name": "oldOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
             },
             {
                 "type": "event",
@@ -448,6 +924,91 @@ export const contracts = [
                     }
                 ],
                 "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "Transfer",
+                "inputs": [
+                    {
+                        "name": "from",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "to",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "id",
+                        "type": "uint256",
+                        "indexed": true,
+                        "internalType": "uint256"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "error",
+                "name": "AccountBalanceOverflow",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "AlreadyInitialized",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "BalanceQueryForZeroAddress",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NewOwnerIsZeroAddress",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NoHandoverRequest",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NotOwnerNorApproved",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TokenAlreadyExists",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TokenDoesNotExist",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TransferFromIncorrectOwner",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TransferToNonERC721ReceiverImplementer",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TransferToZeroAddress",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "Unauthorized",
+                "inputs": []
             }
         ]
     },
@@ -1234,6 +1795,11 @@ export const contracts = [
                         "name": "",
                         "type": "uint160",
                         "internalType": "uint160"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint160",
+                        "internalType": "uint160"
                     }
                 ],
                 "outputs": [
@@ -1244,26 +1810,6 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "cancelOwnershipHandover",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "completeOwnershipHandover",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "payable"
             },
             {
                 "type": "function",
@@ -2037,7 +2583,7 @@ export const contracts = [
                 "name": "initialize",
                 "inputs": [
                     {
-                        "name": "$owner",
+                        "name": "$ownership",
                         "type": "address",
                         "internalType": "address"
                     }
@@ -2064,7 +2610,7 @@ export const contracts = [
                 "inputs": [],
                 "outputs": [
                     {
-                        "name": "result",
+                        "name": "",
                         "type": "address",
                         "internalType": "address"
                     }
@@ -2073,19 +2619,13 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "ownershipHandoverExpiresAt",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
+                "name": "ownership",
+                "inputs": [],
                 "outputs": [
                     {
-                        "name": "result",
-                        "type": "uint256",
-                        "internalType": "uint256"
+                        "name": "",
+                        "type": "address",
+                        "internalType": "address"
                     }
                 ],
                 "stateMutability": "view"
@@ -2296,20 +2836,6 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "renounceOwnership",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "requestOwnershipHandover",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
                 "name": "setAccess",
                 "inputs": [
                     {
@@ -2453,13 +2979,13 @@ export const contracts = [
                 "name": "transferOwnership",
                 "inputs": [
                     {
-                        "name": "$owner",
+                        "name": "$newOwner",
                         "type": "address",
                         "internalType": "address"
                     }
                 ],
                 "outputs": [],
-                "stateMutability": "payable"
+                "stateMutability": "nonpayable"
             },
             {
                 "type": "function",
@@ -2475,73 +3001,8 @@ export const contracts = [
                 "stateMutability": "pure"
             },
             {
-                "type": "event",
-                "name": "OwnershipHandoverCanceled",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "event",
-                "name": "OwnershipHandoverRequested",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "event",
-                "name": "OwnershipTransferred",
-                "inputs": [
-                    {
-                        "name": "oldOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "newOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "error",
-                "name": "AlreadyInitialized",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "NewOwnerIsZeroAddress",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "NoHandoverRequest",
-                "inputs": []
-            },
-            {
                 "type": "error",
                 "name": "Reentrancy",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "Unauthorized",
                 "inputs": []
             }
         ]
