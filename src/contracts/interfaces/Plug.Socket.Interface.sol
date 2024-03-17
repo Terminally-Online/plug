@@ -6,6 +6,17 @@ pragma solidity 0.8.24;
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 
 interface PlugSocketInterface {
+    /**
+     * @notice Initialize the Socket with the ownership proxy of the Socket.
+     * @param $ownership The address of the owner of the Socket.
+     */
+    function initialize(address $ownership) external;
+
+    /**
+     * @notice Get the address of the signer of the bundle of plugs.
+     * @param $livePlugs The bundle of plugs to execute.
+     * @return $signer The address of the signer of the bundle.
+     */
     function signer(PlugTypesLib.LivePlugs calldata $livePlugs)
         external
         view
@@ -14,14 +25,12 @@ interface PlugSocketInterface {
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.
      * @notice This version of the function will always be called by the Router.
-     * @param $plugs The Plug bundle to execute.
-     * @param $signer The address of the bundle signer.
+     * @param $livePlugs The Plug bundle to execute.
      * @param $gas The gas to execute the plugs.
      * @return $results The return data of each plug executed.
      */
     function plug(
-        PlugTypesLib.Plugs calldata $plugs,
-        address $signer,
+        PlugTypesLib.LivePlugs calldata $livePlugs,
         uint256 $gas
     )
         external
@@ -38,15 +47,4 @@ interface PlugSocketInterface {
         external
         payable
         returns (bytes[] memory $results);
-
-    /**
-     * @notice Allows a smart contract to submit a plugs of plugs for processing,
-     *         allowing itself to be the delegate.
-     * @param $plugs The plugs of plugs to execute.
-     * @return $results The return data of each plug executed.
-     */
-    // function plugContract(PlugTypesLib.Plug[] calldata $plugs)
-    //     external
-    //     payable
-    //     returns (bytes[] memory $results);
 }

@@ -18,11 +18,13 @@ abstract contract PlugCore is PlugExecute, PlugTypes {
      * @return $results The return data of the plugs.
      */
     function _plug(
+        address $signer,
         PlugTypesLib.Plugs calldata $plugs,
         address $executor,
         uint256 $gas
     )
         internal
+        enforceSigner($signer)
         returns (bytes[] memory $results)
     {
         /// @dev Hash the object to use in the Fuses.

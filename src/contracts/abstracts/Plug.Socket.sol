@@ -23,8 +23,9 @@ abstract contract PlugSocket is
      * See {PlugSocketInterface-signer}.
      */
     function signer(PlugTypesLib.LivePlugs calldata $livePlugs)
-        external
+        public
         view
+        virtual
         returns (address $signer)
     {
         /// @dev Determine the address that signed the Plug bundle.
@@ -37,19 +38,22 @@ abstract contract PlugSocket is
      * @dev Process the Plug bundle with an external Executor.
      */
     function plug(
-        PlugTypesLib.Plugs calldata $plugs,
-        address $signer,
+        PlugTypesLib.LivePlugs calldata $livePlugs,
         uint256 $gas
     )
         external
         payable
         virtual
         enforceRouter
-        enforceSigner($signer)
         nonReentrant
         returns (bytes[] memory $results)
     {
-        $results = _plug($plugs, $plugs.executor, $gas);
+        $results = _plug(
+            signer($livePlugs),
+            $livePlugs.plugs,
+            $livePlugs.plugs.executor,
+            $gas
+        );
     }
 
     /**
@@ -61,10 +65,9 @@ abstract contract PlugSocket is
         external
         payable
         virtual
-        enforceSigner(msg.sender)
         nonReentrant
         returns (bytes[] memory $results)
     {
-        $results = _plug($plugs, address(0), 0);
+        $results = _plug(msg.sender, $plugs, address(0), 0);
     }
 }

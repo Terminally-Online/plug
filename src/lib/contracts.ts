@@ -382,9 +382,99 @@ export const contracts = [
                         "internalType": "address"
                     },
                     {
-                        "name": "$admin",
-                        "type": "address",
-                        "internalType": "address"
+                        "name": "$livePlugs",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.LivePlugs",
+                        "components": [
+                            {
+                                "name": "plugs",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Plugs",
+                                "components": [
+                                    {
+                                        "name": "socket",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    },
+                                    {
+                                        "name": "plugs",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Plug[]",
+                                        "components": [
+                                            {
+                                                "name": "current",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Current",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "value",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "fuses",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Fuse[]",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
+                                    },
+                                    {
+                                        "name": "fee",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxPriorityFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "executor",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "signature",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "outputs": [
@@ -394,7 +484,7 @@ export const contracts = [
                         "internalType": "bool"
                     },
                     {
-                        "name": "$vault",
+                        "name": "$socket",
                         "type": "address",
                         "internalType": "address"
                     }
@@ -428,7 +518,7 @@ export const contracts = [
                         "internalType": "bool"
                     },
                     {
-                        "name": "$vault",
+                        "name": "$socket",
                         "type": "address",
                         "internalType": "address"
                     }
@@ -558,8 +648,8 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "",
-                        "type": "address",
-                        "internalType": "address"
+                        "type": "uint160",
+                        "internalType": "uint160"
                     }
                 ],
                 "outputs": [
@@ -2635,87 +2725,104 @@ export const contracts = [
                 "name": "plug",
                 "inputs": [
                     {
-                        "name": "$plugs",
+                        "name": "$livePlugs",
                         "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Plugs",
+                        "internalType": "struct PlugTypesLib.LivePlugs",
                         "components": [
                             {
-                                "name": "socket",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
                                 "name": "plugs",
-                                "type": "tuple[]",
-                                "internalType": "struct PlugTypesLib.Plug[]",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Plugs",
                                 "components": [
                                     {
-                                        "name": "current",
-                                        "type": "tuple",
-                                        "internalType": "struct PlugTypesLib.Current",
+                                        "name": "socket",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    },
+                                    {
+                                        "name": "plugs",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
+                                                "name": "current",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Current",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "value",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
                                             },
                                             {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
+                                                "name": "fuses",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Fuse[]",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
                                     {
-                                        "name": "fuses",
-                                        "type": "tuple[]",
-                                        "internalType": "struct PlugTypesLib.Fuse[]",
-                                        "components": [
-                                            {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            }
-                                        ]
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
+                                    },
+                                    {
+                                        "name": "fee",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxPriorityFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "executor",
+                                        "type": "address",
+                                        "internalType": "address"
                                     }
                                 ]
                             },
                             {
-                                "name": "salt",
-                                "type": "bytes32",
-                                "internalType": "bytes32"
-                            },
-                            {
-                                "name": "fee",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "maxFeePerGas",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "maxPriorityFeePerGas",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "executor",
-                                "type": "address",
-                                "internalType": "address"
+                                "name": "signature",
+                                "type": "bytes",
+                                "internalType": "bytes"
                             }
                         ]
+                    },
+                    {
+                        "name": "$gas",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
@@ -2813,16 +2920,6 @@ export const contracts = [
                                 "internalType": "address"
                             }
                         ]
-                    },
-                    {
-                        "name": "$signer",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$gas",
-                        "type": "uint256",
-                        "internalType": "uint256"
                     }
                 ],
                 "outputs": [
@@ -2833,6 +2930,19 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "proxiableUUID",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "view"
             },
             {
                 "type": "function",
@@ -2989,6 +3099,24 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "upgradeToAndCall",
+                "inputs": [
+                    {
+                        "name": "newImplementation",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
                 "name": "version",
                 "inputs": [],
                 "outputs": [
@@ -3001,8 +3129,31 @@ export const contracts = [
                 "stateMutability": "pure"
             },
             {
+                "type": "event",
+                "name": "Upgraded",
+                "inputs": [
+                    {
+                        "name": "implementation",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
                 "type": "error",
                 "name": "Reentrancy",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "UnauthorizedCallContext",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "UpgradeFailed",
                 "inputs": []
             }
         ]

@@ -3,6 +3,7 @@
 pragma solidity 0.8.24;
 
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
+import { PlugFactory } from "../base/Plug.Factory.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 
@@ -16,6 +17,10 @@ import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
  * @author @nftchance (chance@utc24.io)
  */
 contract Plug is PlugInterface {
+    PlugFactory factory;
+
+    address implementation;
+
     /**
      * See {PlugInterface-plug}.
      */
@@ -26,11 +31,7 @@ contract Plug is PlugInterface {
         returns (bytes[] memory $results)
     {
         /// @dev Snapshot how much gas the transaction has.
-        uint256 gas = gasleft();
-
-        /// @dev Load the Plug Socket.
-        PlugSocketInterface socket =
-            PlugSocketInterface($livePlugs.plugs.socket);
+        uint256 gas = (gasleft() * 63) / 64;
 
         /// @dev Confirm the executor is allowed to execute the transaction.
         ///      This is done here instead of a modifier so that the gas
@@ -41,12 +42,13 @@ contract Plug is PlugInterface {
             "Plug:invalid-executor"
         );
 
-        /// @dev Recover the address that signed the bundle of Plugs.
-        address signer = socket.signer($livePlugs);
+        /// @dev Load the Socket interface.
+        PlugSocketInterface socket =
+            _loadSocket($livePlugs.plugs.socket, $livePlugs);
 
         /// @dev Pass down the now-verified signature components and execute
         ///      the bundle from within the Socket that was declared.
-        $results = socket.plug($livePlugs.plugs, signer, gas);
+        $results = socket.plug($livePlugs, gas);
     }
 
     /**
@@ -81,5 +83,39 @@ contract Plug is PlugInterface {
      */
     function symbol() public pure returns (string memory $version) {
         $version = "PLUG";
+    }
+
+    /**
+     * @notice Initialize the Plug with the factory and the implementation if
+     *         it has not been initialized yet, otherwise just use the address
+     *         included in the Plug bundle.
+     * @param $socketAddress The address of the Socket to use.
+     * @param $livePlugs The bundle of plugs to execute.
+     * @return $socket The Socket to use.
+     */
+    function _loadSocket(
+        address $socketAddress,
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
+        internal
+        virtual
+        returns (PlugSocketInterface $socket)
+    {
+        /// @dev Pull the address of the Socket from the bundle.
+        address socketAddress = $livePlugs.plugs.socket;
+
+        /// @dev If the Socket has not yet been deployed, deploy it.
+        if ($socketAddress.code.length == 0) {
+            /// @dev Call the factory that will handle the intent based deployment.
+            (, $socketAddress) = factory.deploy(implementation, $livePlugs);
+
+            /// @dev Confirm the Socket was deployed to the right address.
+            require(
+                $socketAddress == socketAddress, "Plug:invalid-socket-address"
+            );
+        }
+
+        /// @dev Load the Socket and return it.
+        $socket = PlugSocketInterface(socketAddress);
     }
 }
