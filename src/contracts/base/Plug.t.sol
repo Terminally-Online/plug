@@ -80,6 +80,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
@@ -123,6 +124,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
@@ -166,6 +168,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
@@ -213,6 +216,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
@@ -261,6 +265,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,
@@ -315,6 +320,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,
@@ -363,6 +369,7 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,

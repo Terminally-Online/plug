@@ -3,6 +3,7 @@
 pragma solidity 0.8.24;
 
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
+import { Ownable } from "solady/src/auth/Ownable.sol";
 import { PlugFactory } from "../base/Plug.Factory.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
@@ -16,9 +17,13 @@ import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
  *      can be safely approved to interact with the assets of another account.
  * @author @nftchance (chance@utc24.io)
  */
-contract Plug is PlugInterface {
+contract Plug is PlugInterface, Ownable {
+    /// @dev The factory that enables automatic Socket deployment.
     PlugFactory factory;
 
+    /// @dev The current version of Sockets that are automatically deployed
+    ///      when a new Socket is created when deploying at the time of intent
+    ///      fulfillment taking place.
     address implementation;
 
     /**
@@ -42,13 +47,10 @@ contract Plug is PlugInterface {
             "Plug:invalid-executor"
         );
 
-        /// @dev Load the Socket interface.
-        PlugSocketInterface socket =
-            _loadSocket($livePlugs.plugs.socket, $livePlugs);
-
         /// @dev Pass down the now-verified signature components and execute
         ///      the bundle from within the Socket that was declared.
-        $results = socket.plug($livePlugs, gas);
+        $results =
+            _socket($livePlugs.plugs.socket, $livePlugs).plug($livePlugs, gas);
     }
 
     /**
@@ -93,7 +95,7 @@ contract Plug is PlugInterface {
      * @param $livePlugs The bundle of plugs to execute.
      * @return $socket The Socket to use.
      */
-    function _loadSocket(
+    function _socket(
         address $socketAddress,
         PlugTypesLib.LivePlugs calldata $livePlugs
     )

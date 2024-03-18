@@ -6,7 +6,7 @@
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
 		"build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
-		"build:contracts": "pnpm plug generate && pnpm build:artifacts",
+		"build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts",
 		"build:etcher": "pnpm run build:artifacts && pnpm tsx src/lib/functions/etcher.ts",
 		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.24",
 		"build:format": "pnpm prettier --write .",
@@ -45,7 +45,7 @@
 		"typescript": "~5.4.2"
 	},
 	"dependencies": {
-		"@nftchance/plug-types": "^0.9.5",
+		"@nftchance/plug-types": "^0.9.7",
 		"abitype": "^1.0.1",
 		"solady": "^0.0.175",
 		"viem": "^2.7.19",

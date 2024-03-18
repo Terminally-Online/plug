@@ -397,6 +397,11 @@ export const contracts = [
                                         "internalType": "address"
                                     },
                                     {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
                                         "name": "plugs",
                                         "type": "tuple[]",
                                         "internalType": "struct PlugTypesLib.Plug[]",
@@ -1903,54 +1908,6 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "domain",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "$domain",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.EIP712Domain",
-                        "components": [
-                            {
-                                "name": "name",
-                                "type": "string",
-                                "internalType": "string"
-                            },
-                            {
-                                "name": "version",
-                                "type": "string",
-                                "internalType": "string"
-                            },
-                            {
-                                "name": "chainId",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "verifyingContract",
-                                "type": "address",
-                                "internalType": "address"
-                            }
-                        ]
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "domainHash",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
                 "name": "getAccess",
                 "inputs": [
                     {
@@ -1999,6 +1956,44 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "getChainId",
+                "inputs": [
+                    {
+                        "name": "$chainId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$chainIds",
+                        "type": "uint32[]",
+                        "internalType": "uint32[]"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "getChainId",
+                "inputs": [
+                    {
+                        "name": "$chainIds",
+                        "type": "uint32[]",
+                        "internalType": "uint32[]"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$chainId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
                 "name": "getCurrentHash",
                 "inputs": [
                     {
@@ -2032,6 +2027,25 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "getDomainHash",
+                "inputs": [
+                    {
+                        "name": "$chainId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$domainHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "view"
             },
             {
                 "type": "function",
@@ -2156,6 +2170,11 @@ export const contracts = [
                                         "internalType": "address"
                                     },
                                     {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
                                         "name": "plugs",
                                         "type": "tuple[]",
                                         "internalType": "struct PlugTypesLib.Plug[]",
@@ -2263,6 +2282,11 @@ export const contracts = [
                                         "name": "socket",
                                         "type": "address",
                                         "internalType": "address"
+                                    },
+                                    {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "plugs",
@@ -2489,6 +2513,11 @@ export const contracts = [
                                 "internalType": "address"
                             },
                             {
+                                "name": "chainId",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
                                 "name": "plugs",
                                 "type": "tuple[]",
                                 "internalType": "struct PlugTypesLib.Plug[]",
@@ -2584,6 +2613,11 @@ export const contracts = [
                                 "name": "socket",
                                 "type": "address",
                                 "internalType": "address"
+                            },
+                            {
+                                "name": "chainId",
+                                "type": "uint256",
+                                "internalType": "uint256"
                             },
                             {
                                 "name": "plugs",
@@ -2740,6 +2774,11 @@ export const contracts = [
                                         "internalType": "address"
                                     },
                                     {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
                                         "name": "plugs",
                                         "type": "tuple[]",
                                         "internalType": "struct PlugTypesLib.Plug[]",
@@ -2847,6 +2886,11 @@ export const contracts = [
                                 "name": "socket",
                                 "type": "address",
                                 "internalType": "address"
+                            },
+                            {
+                                "name": "chainId",
+                                "type": "uint256",
+                                "internalType": "uint256"
                             },
                             {
                                 "name": "plugs",
@@ -2980,6 +3024,11 @@ export const contracts = [
                                         "name": "socket",
                                         "type": "address",
                                         "internalType": "address"
+                                    },
+                                    {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "plugs",
@@ -3494,6 +3543,26 @@ export const contracts = [
         "abi": [
             {
                 "type": "function",
+                "name": "cancelOwnershipHandover",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "completeOwnershipHandover",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
                 "name": "name",
                 "inputs": [],
                 "outputs": [
@@ -3507,112 +3576,35 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "plug",
+                "name": "owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "result",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "ownershipHandoverExpiresAt",
                 "inputs": [
                     {
-                        "name": "$livePlugs",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.LivePlugs",
-                        "components": [
-                            {
-                                "name": "plugs",
-                                "type": "tuple",
-                                "internalType": "struct PlugTypesLib.Plugs",
-                                "components": [
-                                    {
-                                        "name": "socket",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "plugs",
-                                        "type": "tuple[]",
-                                        "internalType": "struct PlugTypesLib.Plug[]",
-                                        "components": [
-                                            {
-                                                "name": "current",
-                                                "type": "tuple",
-                                                "internalType": "struct PlugTypesLib.Current",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "value",
-                                                        "type": "uint256",
-                                                        "internalType": "uint256"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "name": "fuses",
-                                                "type": "tuple[]",
-                                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes32",
-                                        "internalType": "bytes32"
-                                    },
-                                    {
-                                        "name": "fee",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "maxFeePerGas",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "maxPriorityFeePerGas",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "executor",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "signature",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "internalType": "address"
                     }
                 ],
                 "outputs": [
                     {
-                        "name": "$results",
-                        "type": "bytes[]",
-                        "internalType": "bytes[]"
+                        "name": "result",
+                        "type": "uint256",
+                        "internalType": "uint256"
                     }
                 ],
-                "stateMutability": "payable"
+                "stateMutability": "view"
             },
             {
                 "type": "function",
@@ -3632,6 +3624,11 @@ export const contracts = [
                                         "name": "socket",
                                         "type": "address",
                                         "internalType": "address"
+                                    },
+                                    {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "plugs",
@@ -3725,6 +3722,134 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "plug",
+                "inputs": [
+                    {
+                        "name": "$livePlugs",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.LivePlugs",
+                        "components": [
+                            {
+                                "name": "plugs",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Plugs",
+                                "components": [
+                                    {
+                                        "name": "socket",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    },
+                                    {
+                                        "name": "chainId",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "plugs",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Plug[]",
+                                        "components": [
+                                            {
+                                                "name": "current",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Current",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "value",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "fuses",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Fuse[]",
+                                                "components": [
+                                                    {
+                                                        "name": "target",
+                                                        "type": "address",
+                                                        "internalType": "address"
+                                                    },
+                                                    {
+                                                        "name": "data",
+                                                        "type": "bytes",
+                                                        "internalType": "bytes"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
+                                    },
+                                    {
+                                        "name": "fee",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "maxPriorityFeePerGas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "executor",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "signature",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$results",
+                        "type": "bytes[]",
+                        "internalType": "bytes[]"
+                    }
+                ],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "renounceOwnership",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "requestOwnershipHandover",
+                "inputs": [],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
                 "name": "symbol",
                 "inputs": [],
                 "outputs": [
@@ -3735,6 +3860,84 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "transferOwnership",
+                "inputs": [
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "event",
+                "name": "OwnershipHandoverCanceled",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "OwnershipHandoverRequested",
+                "inputs": [
+                    {
+                        "name": "pendingOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "OwnershipTransferred",
+                "inputs": [
+                    {
+                        "name": "oldOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "error",
+                "name": "AlreadyInitialized",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NewOwnerIsZeroAddress",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "NoHandoverRequest",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "Unauthorized",
+                "inputs": []
             }
         ]
     }

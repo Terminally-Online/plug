@@ -24,32 +24,28 @@ abstract contract PlugTrading is PlugTradingInterface {
      * @notice Modifier enforcing the caller to be the ownership proxy.
      */
     modifier onlyTradable() {
+        /// @dev Ensure the `caller` is the ownership proxy.
         require(msg.sender == ownership, "PlugTrading:forbidden-caller");
         _;
     }
 
     /**
-     * @notice Only the owner of the token can call functions that have
-     *         this modifier applied onto it.
+     * @notice Modifier enforcing that  only the owner of the token can call
+     *         functions that have this modifier applied.
      */
     modifier onlyOwner() {
+        /// @dev Ensure the `caller` is the owner of the Socket.
         require(msg.sender == owner(), "PlugTrading:forbidden-caller");
         _;
     }
 
     /**
-     * @notice Set the address of the ownership proxy which is a ERC721
-     *         compliant contract that lives inside of the factory.
-     */
-    function _initializeOwnership(address $ownership) internal {
-        ownership = $ownership;
-    }
-
-    /**
      * @notice Transfer the ownership of a Vault to a new address when the
      *         NFT is transferred.
+     * @param $newOwner The address of the new owner.
      */
     function transferOwnership(address $newOwner) public virtual onlyTradable {
+        /// @dev Set the state of the new owner when the token was transferred.
         _owner = $newOwner;
     }
 
@@ -59,4 +55,38 @@ abstract contract PlugTrading is PlugTradingInterface {
     function owner() public view virtual returns (address) {
         return _owner;
     }
+
+    /**
+     * @notice Set the address of the ownership proxy which is a ERC721
+     *         compliant contract that lives inside of the factory.
+     */
+    function _initializeOwnership(address $ownership) internal {
+        /// @dev Check if the inheriting contract requires single-use
+        ///      ownership initialization.
+        if (_guardInitializeOwnership()) {
+            /// @dev Confirm the ownership has not been set yet.
+            require(ownership == address(0), "PlugTrading:already-initialized");
+        }
+
+        /// @dev Set the state of the ownership proxy.
+        ownership = $ownership;
+    }
+
+    /**
+     * @notice Guard the initial ownership of the Vault to ensure that the
+     *         ownership is set to the correct address and cannot be changed
+     *         one it has been defined. This makes the state immutable in
+     *         practice even though the variable itself is not semantically
+     *         immutable outside the scope of logic enforcement.
+     * @dev By default this function has an empty implementation so that not
+     *      all inheriting contracts are required to define this function. If
+     *      you would like to enforce single-use ownership initialization, you
+     *      can override this function and return `true` to enforce the guard.
+     */
+    function _guardInitializeOwnership()
+        internal
+        pure
+        virtual
+        returns (bool $guard)
+    { }
 }

@@ -9,7 +9,7 @@ import { UUPSUpgradeable } from "solady/src/utils/UUPSUpgradeable.sol";
 
 /**
  * @title Plug Vault Socket
- * @author @nftchance (chance@utc24.io)
+ * @author @nftchance (chance@onplug.io)
  */
 contract PlugVaultSocket is
     PlugSocket,
@@ -45,8 +45,6 @@ contract PlugVaultSocket is
         /// @dev Associate the ownership proxy as the factory that deployed
         ///      the contract at the same time as deployment.
         _initializeOwnership($ownership);
-        /// @dev Initialize the Plug Socket.
-        _initializePlug();
     }
 
     /**
@@ -63,6 +61,20 @@ contract PlugVaultSocket is
         onlyOwner
     {
         _setAccess($address, $allowance);
+    }
+
+    /**
+     * See { PlugSocket-name }
+     */
+    function name() public pure override returns (string memory $name) {
+        $name = "PlugVaultSocket";
+    }
+
+    /**
+     * See { PlugSocket-version }
+     */
+    function version() public pure override returns (string memory $version) {
+        $version = "0.0.1";
     }
 
     /**
@@ -171,10 +183,7 @@ contract PlugVaultSocket is
     }
 
     /**
-     * @notice Enforce the caller of the individual upgrading the vault
-     *         to the (ideally) to latest version or simply a newer version.
-     * @dev Even though there are other signers to the Vault only the deepest
-     *      branch of ownership can actually update the version of the Vault.
+     * See { UUPSUpgradeable._authorizeUpgrade }
      */
     function _authorizeUpgrade(address) internal virtual override {
         /// @dev Enforce the caller to be the owner of the token held.
@@ -182,16 +191,15 @@ contract PlugVaultSocket is
     }
 
     /**
-     * See { PlugSocket-name }
+     * See { PlugTrading._guardInitializeOwnership }
      */
-    function name() public pure override returns (string memory $name) {
-        $name = "PlugVaultSocket";
-    }
-
-    /**
-     * See { PlugSocket-version }
-     */
-    function version() public pure override returns (string memory $version) {
-        $version = "0.0.1";
+    function _guardInitializeOwnership()
+        internal
+        pure
+        virtual
+        override
+        returns (bool $guard)
+    {
+        $guard = true;
     }
 }

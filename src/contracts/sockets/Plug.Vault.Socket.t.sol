@@ -11,8 +11,6 @@ import { PlugEtcherLib } from "../libraries/Plug.Etcher.Lib.sol";
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
 import { PlugMockEcho } from "../mocks/Plug.Mock.Echo.sol";
 
-// import {ERC721Interface} from '../interfaces/ERC.721.Interface.sol';
-
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
 
 import { Initializable } from "solady/src/utils/Initializable.sol";
@@ -56,7 +54,7 @@ contract PlugVaultSocketTest is Test {
 
     function test_SingletonUse(uint256) public {
         vm.deal(address(vault), 100 ether);
-        vm.expectRevert(bytes("PlugTypes:already-initialized"));
+        vm.expectRevert(bytes("PlugTrading:already-initialized"));
         vault.initialize(address(this));
     }
 
@@ -66,6 +64,40 @@ contract PlugVaultSocketTest is Test {
 
     function test_symbol() public {
         assertEq(vault.symbol(), "PVS");
+    }
+
+    function test_getChainId() public {
+        uint32[] memory chainIds = new uint32[](3);
+        chainIds[0] = 1;
+        chainIds[1] = 10;
+        chainIds[2] = 8340;
+        uint256 chainId = vault.getChainId(chainIds);
+        uint32[] memory recoveredChainIds = vault.getChainId(chainId);
+        assertEq(recoveredChainIds[0], 1);
+        assertEq(recoveredChainIds[1], 10);
+        assertEq(recoveredChainIds[2], 8340);
+        uint256 recoveredChainId = vault.getChainId(recoveredChainIds);
+        assertEq(recoveredChainId, chainId);
+        /// @dev Make sure an empty array still works.
+        vault.getChainId(0);
+    }
+
+    function testRevert_getChainId() public {
+        uint32[] memory chainIds = new uint32[](12);
+        chainIds[0] = 1;
+        chainIds[1] = 10;
+        chainIds[2] = 8340;
+        chainIds[3] = 1;
+        chainIds[4] = 10;
+        chainIds[5] = 8340;
+        chainIds[6] = 1;
+        chainIds[7] = 10;
+        chainIds[8] = 8340;
+        chainIds[9] = 1;
+        chainIds[10] = 10;
+        chainIds[11] = 8340;
+        vm.expectRevert(bytes("PlugTypes:invalid-chainIds"));
+        vault.getChainId(chainIds);
     }
 
     function test_owner_Implementation() public {
@@ -179,6 +211,7 @@ contract PlugVaultSocketTest is Test {
 
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(this),
+            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
