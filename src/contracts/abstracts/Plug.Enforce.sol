@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
-import { PlugTypesLib } from "./Plug.Types.sol";
+import { PlugTypesLib, PlugTypes } from "./Plug.Types.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
 import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
 
@@ -10,11 +10,10 @@ import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
  * @title Plug Enforce
  * @notice The enforcement mechanisms of Plug to ensure that transactions
  *         are only executed as defined.
- * @dev Inheriting contracts must implement:
- *          - _enforceSigner
+ * @dev Inheriting contracts must implement the logic fo `enforceSignature`.
  * @author @nftchance (chance@utc24.io)
  */
-abstract contract PlugEnforce {
+abstract contract PlugEnforce is PlugTypes {
     using PlugLib for bytes;
 
     /**
@@ -31,10 +30,11 @@ abstract contract PlugEnforce {
      * @notice Modifier to enforce the signer of the transaction.
      * @dev Apply to this to functions that are designed to execute a bundle
      *      of Plugs regardless of whether through a Router or or direct access.
-     * @param $signer The signer of the transaction.
+     * @param $input The LivePlugs the definition of execution as well as the
+     *               signature used to verify the execution permission.
      */
-    modifier enforceSigner(address $signer) {
-        require(_enforceSigner($signer), "Plug:invalid-signer");
+    modifier enforceSignature(PlugTypesLib.LivePlugs calldata $input) {
+        require(_enforceSignature($input), "Plug:invalid-signature");
         _;
     }
 
@@ -67,13 +67,12 @@ abstract contract PlugEnforce {
     /**
      * @notice Confirm that signer has permission to declare execution of a
      *         Plug bundle on the parent-socket that inherits this contract.
-     * @dev This function MUST be overridden in the contract that inherits
-     *      as it has no native implementation. By default there are no
-     *      implicit assumptions made here so that the inheriting contracts
-     *      have full control over who the allowed signers are.
-     * @param $signer The signer of the bundle.
+     * @dev Inheriting contracts must implement the logic of this function to make
+     *      sure that only signatures intended for this scope are allowed.
+     * @param $input The LivePlugs object that contains the Plugs object as well as
+     *               the signature defining the permission to execute the bundle.
      */
-    function _enforceSigner(address $signer)
+    function _enforceSignature(PlugTypesLib.LivePlugs calldata $input)
         internal
         view
         virtual

@@ -15,8 +15,11 @@ const imports: string[] = []
 const variables: string[] = []
 const functions: string[] = []
 const deployments: string[] = []
+const segments: string[] = []
 
 const addresses = JSON.parse(fs.readFileSync('src/lib/addresses.json').toString())
+
+const libs = ['Plug.sol', 'Plug.Treasury.sol']
 
 directories
     .filter(directory =>
@@ -77,22 +80,14 @@ directories
                     }
                 `)
 
-                if (directory == 'Plug.sol') {
-                    const line = 'address internal constant PLUG_ADDRESS'
-                    const receiver = fs
-                        .readFileSync(
-                            `${contractsPath}/libraries/Plug.Lib.Template.sol`
-                        )
-                        .toString()
-                    const newReceiver = receiver.replace(
-                        "/// @notice INSERT SEGMENTS",
-                        `${line} = ${mined.address};`
-                    )
+                // ! Update Plug.Lib.sol with the statically referenced addresses.
+                if (libs.includes(directory)) {
+                    const variableName = directory
+                        .replace('.sol', '_ADDRESS')
+                        .replaceAll('.', '_')
+                        .toUpperCase()
 
-                    fs.writeFileSync(
-                        `${contractsPath}/libraries/Plug.Lib.sol`,
-                        newReceiver
-                    )
+                    segments.push(`address internal constant ${variableName} = ${mined.address};`)
                 }
             }
 
@@ -139,6 +134,19 @@ fs.writeFileSync(etcher, template)
 fs.writeFileSync(`${contractsPath}/scripts/Plug.s.sol`, fs.readFileSync(`${contractsPath}/scripts/Plug.s.Template.sol`)
     .toString()
     .replace('/// @auto INSERT SEGMENTS', deployments.join('\n\n'))
+)
+
+fs.writeFileSync(
+    `${contractsPath}/libraries/Plug.Lib.sol`,
+    fs
+        .readFileSync(
+            `${contractsPath}/libraries/Plug.Lib.Template.sol`
+        )
+        .toString().replace(
+            "/// @notice INSERT SEGMENTS",
+            segments.join('\n\n')
+        )
+
 )
 
 execSync('forge fmt')

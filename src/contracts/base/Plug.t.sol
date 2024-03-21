@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { Test } from "../utils/Test.sol";
+import { TestPlug } from "../utils/TestPlug.sol";
 
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugFactory } from "../base/Plug.Factory.sol";
@@ -14,6 +15,8 @@ import { PlugEtcherLib } from "../libraries/Plug.Etcher.Lib.sol";
 import { Initializable } from "solady/src/utils/Initializable.sol";
 
 contract PlugTest is Test {
+    event EchoInvoked(address $sender, string $message);
+
     PlugFactory internal factory;
     Plug internal plug;
     PlugVaultSocket internal vaultImplementation;
@@ -26,11 +29,6 @@ contract PlugTest is Test {
     address internal signer;
     uint256 internal signerPrivateKey;
 
-    uint8 internal v;
-    bytes32 internal r;
-    bytes32 internal s;
-    bytes32 internal digest;
-
     function setUp() public virtual {
         factoryOwner = _randomNonZeroAddress();
 
@@ -42,8 +40,11 @@ contract PlugTest is Test {
         factory = new PlugFactory(factoryOwner, baseURI);
         mock = new PlugMockEcho();
 
+        vm.prank(factoryOwner);
+        factory.setImplementation(0, address(vaultImplementation));
         (, address vaultAddress) =
-            factory.deploy(address(vaultImplementation), signer, bytes32(0));
+            factory.deploy(bytes32(abi.encodePacked(signer, uint96(0))));
+
         vault = PlugVaultSocket(payable(vaultAddress));
     }
 
@@ -60,7 +61,7 @@ contract PlugTest is Test {
         assertEq(plug.symbol(), "PLUG");
     }
 
-    function test_PlugEmptyEcho_SignerExecutor() public {
+    function test_PlugEmptyEcho_SignerSolver() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -80,31 +81,28 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: address(0)
+            solver: bytes("")
         });
 
-        /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug.
         vm.expectEmit(address(mock));
-        emit PlugMockEcho.EchoInvoked(address(vault), "Hello World");
+        emit EchoInvoked(address(vault), "Hello World");
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_SignerExecutor_InvalidRouter() public {
+    function testRevert_PlugEmptyEcho_SignerSolver_InvalidRouter() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -124,23 +122,21 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: address(0)
+            solver: bytes("")
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug on an invalid router.
         plug = new Plug();
@@ -148,7 +144,7 @@ contract PlugTest is Test {
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_SignerExecutor_InvalidSigner() public {
+    function testRevert_PlugEmptyEcho_SignerSolver_InvalidSignature() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -168,32 +164,27 @@ contract PlugTest is Test {
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: address(0)
+            solver: bytes("")
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        signerPrivateKey = 0xdef456;
-        signer = vm.addr(signerPrivateKey);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature =
+            sign(vault.getPlugsHash(plugs), address(vault), 0xabc1234, false);
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug with an invalid signer.
-        vm.expectRevert(bytes("Plug:invalid-signer"));
+        vm.expectRevert(bytes("Plug:invalid-signature"));
         plug.plug(livePlugs);
     }
 
-    function test_PlugEmptyEcho_ExternalExecutor_NotCompensated() public {
+    function test_PlugEmptyEcho_ExternalSolver_NotCompensated() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -210,38 +201,42 @@ contract PlugTest is Test {
             fuses: new PlugTypesLib.Fuse[](0)
         });
 
-        address executor = _randomNonZeroAddress();
-        vm.deal(executor, 100 ether);
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
+        vm.deal(address(vault), 100 ether);
+
+        uint256 preBalance = address(solver).balance;
 
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 0,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: executor
+            solver: abi.encode(uint96(0), uint96(0), solver)
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug.
         vm.expectEmit(address(mock));
-        emit PlugMockEcho.EchoInvoked(address(vault), "Hello World");
-        vm.prank(executor);
+        emit EchoInvoked(address(vault), "Hello World");
+        vm.prank(solver);
         plug.plug(livePlugs);
+
+        uint256 postBalance = address(solver).balance;
+        assertEq(preBalance, postBalance);
     }
 
-    function test_PlugEmptyEcho_ExternalExecutor_Compensated() public {
+    function test_PlugEmptyEcho_ExternalSolver_Compensated() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -258,43 +253,42 @@ contract PlugTest is Test {
             fuses: new PlugTypesLib.Fuse[](0)
         });
 
-        address executor = _randomNonZeroAddress();
-        vm.deal(executor, 100 ether);
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
         vm.deal(address(vault), 100 ether);
 
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: executor
+            solver: abi.encode(uint96(0.2 ether), uint96(1), solver)
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug.
         vm.expectEmit(address(mock));
-        emit PlugMockEcho.EchoInvoked(address(vault), "Hello World");
-        vm.prank(executor);
+        emit EchoInvoked(address(vault), "Hello World");
         /// @dev Make sure the compensation successfully changes hands.
         uint256 preBalance = address(vault).balance;
+        vm.prank(solver);
         plug.plug(livePlugs);
         uint256 postBalance = address(vault).balance;
-        assertEq(preBalance - 1 ether, postBalance);
+        /// @dev Check if it's greater than to account for the solver fee.
+        assertTrue(preBalance - 1 ether > postBalance);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalExecutor_CompensationFailure()
+    function testRevert_PlugEmptyEcho_ExternalSolver_CompensationFailure()
         public
     {
         /// @dev Encode the transaction that is going to be called.
@@ -313,38 +307,36 @@ contract PlugTest is Test {
             fuses: new PlugTypesLib.Fuse[](0)
         });
 
-        address executor = _randomNonZeroAddress();
-        vm.deal(executor, 100 ether);
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
         vm.deal(address(vault), 0);
 
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: executor
+            solver: abi.encode(uint96(0.2 ether), uint96(24), solver)
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug.
-        vm.prank(executor);
+        vm.prank(solver);
         vm.expectRevert("Plug:compensation-failed");
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalExecutor_Invalid() public {
+    function testRevert_PlugEmptyEcho_ExternalSolver_Invalid() public {
         /// @dev Encode the transaction that is going to be called.
         bytes memory encodedTransaction =
             abi.encodeWithSelector(mock.emptyEcho.selector);
@@ -362,33 +354,31 @@ contract PlugTest is Test {
             fuses: new PlugTypesLib.Fuse[](0)
         });
 
-        address executor = _randomNonZeroAddress();
-        vm.deal(executor, 100 ether);
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
         vm.deal(address(vault), 100 ether);
 
         /// @dev Make sure this transaction cannot be replayed.
         PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
             socket: address(vault),
-            chainId: block.chainid,
             plugs: plugsArray,
             salt: bytes32(0),
             fee: 1 ether,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: executor
+            solver: abi.encode(uint96(0), uint96(0), address(solver))
         });
 
         /// @dev Sign the execution.
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
+        bytes memory plugsSignature = sign(
+            vault.getPlugsHash(plugs), address(vault), signerPrivateKey, false
+        );
+
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+            plugs: plugs,
+            signature: pack(plugsSignature, 1, 1, 1)
+        });
 
         /// @dev Execute the plug.
-        vm.expectRevert(bytes("Plug:invalid-executor"));
+        vm.expectRevert(bytes("Plug:invalid-solver"));
         plug.plug(livePlugs);
     }
 }

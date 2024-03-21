@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { ERC1155 } from "solady/src/tokens/ERC1155.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";

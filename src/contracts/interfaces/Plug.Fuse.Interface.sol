@@ -1,6 +1,6 @@
-//SPDX-License-Identifier: BUSL-1.1
+//SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 /// @dev Shape declarations in the Plug framework.
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";

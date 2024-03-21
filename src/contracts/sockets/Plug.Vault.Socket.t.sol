@@ -1,25 +1,18 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { Test } from "../utils/Test.sol";
 
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugFactory } from "../base/Plug.Factory.sol";
 import { Plug } from "../base/Plug.sol";
-import { PlugEtcherLib } from "../libraries/Plug.Etcher.Lib.sol";
+import { PlugFactory } from "../base/Plug.Factory.sol";
+
 import { PlugVaultSocket } from "./Plug.Vault.Socket.sol";
 import { PlugMockEcho } from "../mocks/Plug.Mock.Echo.sol";
-
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
 
-import { Initializable } from "solady/src/utils/Initializable.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
-
 contract PlugVaultSocketTest is Test {
-    address factoryOwner;
-    string baseURI = "https://onplug.io/metadata/";
-
     PlugVaultSocket internal implementation;
     PlugVaultSocket internal vault;
     PlugFactory internal factory;
@@ -28,34 +21,40 @@ contract PlugVaultSocketTest is Test {
     address internal signer;
     uint256 internal signerPrivateKey;
 
-    uint8 internal v;
-    bytes32 internal r;
-    bytes32 internal s;
-    bytes32 internal digest;
+    address factoryOwner;
 
     function setUp() public virtual {
-        factoryOwner = _randomNonZeroAddress();
-
         signerPrivateKey = 0xabc123;
         signer = vm.addr(signerPrivateKey);
 
         implementation = new PlugVaultSocket();
-        factory = new PlugFactory(factoryOwner, baseURI);
 
-        (, address vaultAddress) =
-            factory.deploy(address(implementation), address(this), bytes32(0));
+        factoryOwner = _randomNonZeroAddress();
+        factory = new PlugFactory(factoryOwner, "https://onplug.io/metadata/");
+        vm.prank(factoryOwner);
+        factory.setImplementation(0, address(implementation));
+        bytes32 salt = bytes32(abi.encodePacked(address(this), uint96(0)));
+        (, address vaultAddress) = factory.deploy(salt);
         vault = PlugVaultSocket(payable(vaultAddress));
     }
 
-    function etchRouterSocket() internal returns (Plug) {
-        vm.etch(PlugEtcherLib.PLUG_ADDRESS, address(new Plug()).code);
-        return Plug(payable(PlugEtcherLib.PLUG_ADDRESS));
-    }
-
-    function test_SingletonUse(uint256) public {
+    function testRevert_Initialize_Again() public {
         vm.deal(address(vault), 100 ether);
         vm.expectRevert(bytes("PlugTrading:already-initialized"));
         vault.initialize(address(this));
+    }
+
+    function testRevert_UninitializedVersion() public {
+        bytes32 salt =
+            bytes32(abi.encodePacked(address(this), uint80(0), uint16(1)));
+        vm.expectRevert(bytes("PlugFactory:invalid-implementation"));
+        factory.deploy(salt);
+    }
+
+    function testRevert_ReinitializeOwner() public {
+        vm.expectRevert(bytes("PlugFactory:version-already-initialized"));
+        vm.prank(factoryOwner);
+        factory.setImplementation(0, address(implementation));
     }
 
     function test_name() public {
@@ -66,44 +65,6 @@ contract PlugVaultSocketTest is Test {
         assertEq(vault.symbol(), "PVS");
     }
 
-    function test_getChainId() public {
-        uint32[] memory chainIds = new uint32[](3);
-        chainIds[0] = 1;
-        chainIds[1] = 10;
-        chainIds[2] = 8340;
-        uint256 chainId = vault.getChainId(chainIds);
-        uint32[] memory recoveredChainIds = vault.getChainId(chainId);
-        assertEq(recoveredChainIds[0], 1);
-        assertEq(recoveredChainIds[1], 10);
-        assertEq(recoveredChainIds[2], 8340);
-        uint256 recoveredChainId = vault.getChainId(recoveredChainIds);
-        assertEq(recoveredChainId, chainId);
-        /// @dev Make sure an empty array still works.
-        vault.getChainId(0);
-    }
-
-    function testRevert_getChainId() public {
-        uint32[] memory chainIds = new uint32[](12);
-        chainIds[0] = 1;
-        chainIds[1] = 10;
-        chainIds[2] = 8340;
-        chainIds[3] = 1;
-        chainIds[4] = 10;
-        chainIds[5] = 8340;
-        chainIds[6] = 1;
-        chainIds[7] = 10;
-        chainIds[8] = 8340;
-        chainIds[9] = 1;
-        chainIds[10] = 10;
-        chainIds[11] = 8340;
-        vm.expectRevert(bytes("PlugTypes:invalid-chainIds"));
-        vault.getChainId(chainIds);
-    }
-
-    function test_owner_Implementation() public {
-        assertEq(implementation.owner(), address(0));
-    }
-
     function test_ownership_Implementation() public {
         assertEq(implementation.ownership(), address(1));
     }
@@ -112,72 +73,16 @@ contract PlugVaultSocketTest is Test {
         assertEq(vault.owner(), address(this));
     }
 
-    function test_owner_getAccess() public {
-        (bool isRouter, bool isSigner) = vault.getAccess(address(this));
-        assertTrue(isSigner);
-        assertFalse(isRouter);
-    }
-
-    function test_setAccess_Both() public {
-        bool isRouter = true;
-        bool isSigner = true;
-        signer = _randomNonZeroAddress();
-        uint8 access = vault.getAccess(isRouter, isSigner);
-        vault.setAccess(signer, access);
-        (isSigner, isRouter) = vault.getAccess(signer);
-        assertTrue(isSigner);
-        assertTrue(isRouter);
-    }
-
-    function test_setAccess_IsRouter() public {
-        bool isRouter = true;
-        bool isSigner = false;
-        signer = _randomNonZeroAddress();
-        uint8 access = vault.getAccess(isRouter, isSigner);
-        vault.setAccess(signer, access);
-        (isRouter, isSigner) = vault.getAccess(signer);
-        assertFalse(isSigner);
-        assertTrue(isRouter);
-    }
-
-    function test_setAccess_IsSigner() public {
-        bool isRouter = false;
-        bool isSigner = true;
-        signer = _randomNonZeroAddress();
-        uint8 access = vault.getAccess(isRouter, isSigner);
-        vault.setAccess(signer, access);
-        (isRouter, isSigner) = vault.getAccess(signer);
-        assertFalse(isRouter);
-        assertTrue(isSigner);
-    }
-
-    function testRevert_setAccess_Unauthorized() public {
-        bool isRouter = false;
-        bool isSigner = true;
-        signer = _randomNonZeroAddress();
-        uint8 access = vault.getAccess(isRouter, isSigner);
-        vm.prank(_randomNonZeroAddress());
-        vm.expectRevert(bytes("PlugTrading:forbidden-caller"));
-        vault.setAccess(signer, access);
+    function testRevert_owner_Implementation() public {
+        vm.expectRevert();
+        implementation.owner();
     }
 
     function test_transferOwnership_Token() public {
-        bool isRouter = true;
-        bool isSigner = true;
-        signer = _randomNonZeroAddress();
-        uint8 access = vault.getAccess(isRouter, isSigner);
-        vault.setAccess(signer, access);
-        (isRouter, isSigner) = vault.getAccess(signer);
-        assertTrue(isRouter);
-        assertTrue(isSigner);
-
         address newOwner = _randomNonZeroAddress();
         ERC721(vault.ownership()).transferFrom(
             address(this), newOwner, uint256(uint160(address(vault)))
         );
-        (isRouter, isSigner) = vault.getAccess(signer);
-        assertFalse(isRouter);
-        assertFalse(isSigner);
     }
 
     function testRevert_transferOwnership_Direct() public {
@@ -186,48 +91,9 @@ contract PlugVaultSocketTest is Test {
         vault.transferOwnership(newOwner);
     }
 
-    function testRevert_testOwnership_Unauthorized() public {
+    function testRevert_transferOwnership_Unauthorized() public {
         vm.prank(_randomNonZeroAddress());
         vm.expectRevert(bytes("PlugTrading:forbidden-caller"));
         vault.transferOwnership(_randomNonZeroAddress());
-    }
-
-    function test_GetLivePlugsSigner() public {
-        /// @dev Encode the transaction that is going to be called.
-        bytes memory encodedTransaction =
-            abi.encodeWithSelector(mock.mutedEcho.selector);
-        PlugTypesLib.Current memory current = PlugTypesLib.Current({
-            target: address(mock),
-            value: 0,
-            data: encodedTransaction
-        });
-
-        /// @dev Bundle the Plug and sign it.
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = PlugTypesLib.Plug({
-            current: current,
-            fuses: new PlugTypesLib.Fuse[](0)
-        });
-
-        PlugTypesLib.Plugs memory plugs = PlugTypesLib.Plugs({
-            socket: address(this),
-            chainId: block.chainid,
-            plugs: plugsArray,
-            salt: bytes32(0),
-            fee: 0,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            executor: address(0)
-        });
-
-        digest = vault.getPlugsDigest(plugs);
-        (v, r, s) = vm.sign(signerPrivateKey, digest);
-        bytes memory plugsSignature = abi.encodePacked(r, s, v);
-
-        PlugTypesLib.LivePlugs memory livePlugs =
-            PlugTypesLib.LivePlugs({ plugs: plugs, signature: plugsSignature });
-
-        address plugsSigner = vault.getLivePlugsSigner(livePlugs);
-        assertEq(plugsSigner, signer);
     }
 }

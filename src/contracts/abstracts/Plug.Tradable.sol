@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";
@@ -38,16 +38,6 @@ abstract contract PlugTradable is ERC721, Ownable {
      */
     function setBaseURI(string memory $baseURI) external onlyOwner {
         baseURI = $baseURI;
-    }
-
-    /**
-     * @notice Mint a new vault token to the owner of the vault.
-     * @param $admin The owner of the vault.
-     * @param $vault The address of the vault.
-     */
-    function mint(address $admin, address $vault) public virtual {
-        /// @dev Mint the token to the new owner of the vault.
-        _mint($admin, uint256(uint160($vault)));
     }
 
     function _afterTokenTransfer(

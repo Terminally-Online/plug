@@ -7,9 +7,9 @@
         "ds-test/=node_modules/ds-test/src/",
         "forge-std/=node_modules/forge-std/src/",
         "@nftchance/plug-core/=node_modules/@nftchance/plug-core/src/",
-        "solady/=node_modules/solady/"
+        "solady/=node_modules/solady/",
+        "sequence/=node_modules/@0xsequence/wallet-contracts/contracts/"
     ]
-    auto_detect_solc = false
     block_timestamp = 1_680_220_800
     bytecode_hash = "none"
     evm_version = "cancun"
@@ -18,8 +18,7 @@
     optimizer = true
     optimizer_runs = 10_000
     script = "src/contracts/script"
-    solc = "0.8.24"
-    ignored_error_codes = [2394]
+    solc = "0.8.18"
 
 [profile.ci]
     fuzz = { runs = 10_000 }

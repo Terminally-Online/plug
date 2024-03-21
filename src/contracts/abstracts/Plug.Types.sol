@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { ECDSA } from "solady/src/utils/ECDSA.sol";
 
@@ -16,7 +15,7 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *      As an extensible base, all projects build on top of Pins
  *      and Plugs.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-03-18)
+ * @author @nftchance/plug-types (2024-03-21)
  */
 library PlugTypesLib {
     /**
@@ -24,7 +23,7 @@ library PlugTypesLib {
      *         decode EIP712Domain data from a hash.
      *
      * @dev EIP712Domain extends EIP712<{
-     * 		{ name: 'name', type: 'string' }
+     *      { name: 'name', type: 'string' }
      * 		{ name: 'version', type: 'string' }
      * 		{ name: 'chainId', type: 'uint256' }
      * 		{ name: 'verifyingContract', type: 'address' }
@@ -42,7 +41,7 @@ library PlugTypesLib {
      *         decode Current data from a hash.
      *
      * @dev Current extends EIP712<{
-     * 		{ name: 'target', type: 'address' }
+     *      { name: 'target', type: 'address' }
      * 		{ name: 'value', type: 'uint256' }
      * 		{ name: 'data', type: 'bytes' }
      * }>
@@ -58,7 +57,7 @@ library PlugTypesLib {
      *         decode Fuse data from a hash.
      *
      * @dev Fuse extends EIP712<{
-     * 		{ name: 'target', type: 'address' }
+     *      { name: 'target', type: 'address' }
      * 		{ name: 'data', type: 'bytes' }
      * }>
      */
@@ -72,7 +71,7 @@ library PlugTypesLib {
      *         decode Plug data from a hash.
      *
      * @dev Plug extends EIP712<{
-     * 		{ name: 'current', type: 'Current' }
+     *      { name: 'current', type: 'Current' }
      * 		{ name: 'fuses', type: 'Fuse[]' }
      * }>
      */
@@ -86,25 +85,19 @@ library PlugTypesLib {
      *         decode Plugs data from a hash.
      *
      * @dev Plugs extends EIP712<{
-     * 		{ name: 'socket', type: 'address' }
-     * 		{ name: 'chainId', type: 'uint256' }
+     *      { name: 'socket', type: 'address' }
      * 		{ name: 'plugs', type: 'Plug[]' }
      * 		{ name: 'salt', type: 'bytes32' }
      * 		{ name: 'fee', type: 'uint256' }
-     * 		{ name: 'maxFeePerGas', type: 'uint256' }
-     * 		{ name: 'maxPriorityFeePerGas', type: 'uint256' }
-     * 		{ name: 'executor', type: 'address' }
+     * 		{ name: 'solver', type: 'bytes' }
      * }>
      */
     struct Plugs {
         address socket;
-        uint256 chainId;
         Plug[] plugs;
         bytes32 salt;
         uint256 fee;
-        uint256 maxFeePerGas;
-        uint256 maxPriorityFeePerGas;
-        address executor;
+        bytes solver;
     }
 
     /**
@@ -112,7 +105,7 @@ library PlugTypesLib {
      *         decode LivePlugs data from a hash.
      *
      * @dev LivePlugs extends EIP712<{
-     * 		{ name: 'plugs', type: 'Plugs' }
+     *      { name: 'plugs', type: 'Plugs' }
      * 		{ name: 'signature', type: 'bytes' }
      * }>
      */
@@ -132,11 +125,12 @@ library PlugTypesLib {
  * @dev Contracts that inherit this one must implement the name() and version()
  *      functions to provide the domain separator for EIP-712 signatures.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-03-18)
+ * @author @nftchance/plug-types (2024-03-21)
  */
 abstract contract PlugTypes {
     /// @notice Use the ECDSA library for signature verification.
     using ECDSA for bytes32;
+
     /**
      * @notice Type hash representing the EIP712Domain data type providing EIP-712
      *         compatability for encoding and decoding.
@@ -147,7 +141,6 @@ abstract contract PlugTypes {
      *      { name: 'verifyingContract', type: 'address' }
      * }>>
      */
-
     bytes32 constant EIP712_DOMAIN_TYPEHASH =
         0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
@@ -190,17 +183,14 @@ abstract contract PlugTypes {
      *         compatability for encoding and decoding.
      * @dev PLUGS_TYPEHASH extends TypeHash<EIP712<{
      *      { name: 'socket', type: 'address' }
-     *      { name: 'chainId', type: 'uint256' }
      *      { name: 'plugs', type: 'Plug[]' }
      *      { name: 'salt', type: 'bytes32' }
      *      { name: 'fee', type: 'uint256' }
-     *      { name: 'maxFeePerGas', type: 'uint256' }
-     *      { name: 'maxPriorityFeePerGas', type: 'uint256' }
-     *      { name: 'executor', type: 'address' }
+     *      { name: 'solver', type: 'bytes' }
      * }>>
      */
     bytes32 constant PLUGS_TYPEHASH =
-        0x625e32145b4a3fd66e2d2af04401d8a7d3968ab6a771ea04664bc9bdcae6d62d;
+        0xaf14e4c1bb28a29db968085ec12ac09da776141d37392d0c88184a4f3872c45c;
 
     /**
      * @notice Type hash representing the LivePlugs data type providing EIP-712
@@ -211,14 +201,14 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant LIVE_PLUGS_TYPEHASH =
-        0xcd7acbd8814a0956d65476cbbd1453d8142509c3b0bc4042b38988da795438e5;
-
+        0xe8b38e73c38238f5d551461957d55a6fe8f9956b61952de931fefb9f6126661e;
     /**
      * @notice Name used for the domain separator.
      * @dev This is implemented this way so that it is easy
      *      to retrieve the value and sign the built message.
      * @return $name The name of the contract.
      */
+
     function name() public pure virtual returns (string memory $name);
 
     /**
@@ -270,126 +260,6 @@ abstract contract PlugTypes {
 
             $symbol := result
         }
-    }
-
-    /**
-     * @notice Calculate the packed representation of a set of chain ids.
-     * @dev This function is only intended to be used offchain and for building
-     *      purposes as it is not gas efficient to use onchain.
-     * @param $chainIds The unpacked chain ids to unpack.
-     * @return $chainId The packed chain id.
-     */
-    function getChainId(uint32[] calldata $chainIds)
-        public
-        pure
-        virtual
-        returns (uint256 $chainId)
-    {
-        /// @dev Ensure that the amount of ids provided is within the capable
-        ///      range of packing as 32 * (8 + N) will exceed a single uint256.
-        require($chainIds.length <= 8, "PlugTypes:invalid-chainIds");
-
-        /// @dev Loop through all of the chain ids provided and pack them into
-        ///      a single uint256 representation.
-        for (uint256 i; i < $chainIds.length; i++) {
-            /// @dev Update the empty slots with an OR operator to pack the
-            ///      chain id into the uint256 representation.
-            $chainId |= uint256($chainIds[i]) << (i * 32);
-        }
-    }
-
-    /**
-     * @notice Calculate the unpacked representation of a packed chain id.
-     * @dev This function is only intended to be used offchain and for building
-     *      purposes as it is not gas efficient to use onchain.
-     * @param $chainId The packed chain id to unpack.
-     * @return $chainIds The unpacked chain ids.
-     */
-    function getChainId(uint256 $chainId)
-        public
-        pure
-        virtual
-        returns (uint32[] memory $chainIds)
-    {
-        /// @dev Prepare a reference for the count of chain ids.
-        uint256 count;
-
-        /// @dev Loop through all of the chain ids provided and count the number
-        ///      of chain ids that are packed into the uint256 representation.
-        for (uint256 i = 0; i < 8; i++) {
-            /// @dev When the chain id is greater than 0 we can increment the
-            ///      count of chain ids that are packed into the uint256.
-            if ($chainId >> (i * 32) > 0) {
-                count++;
-            }
-        }
-
-        /// @dev Initialize the memory array with the maximum length of 8.
-        ///      There may be less so we will resize the array to the correct
-        ///      size after the loop that unpacks the ids.
-        $chainIds = new uint32[](count);
-
-        /// @dev Loop through each of the 8 slots and unpack the chain id
-        ///      into the array of chain ids.
-        for (count; count > 0; count--) {
-            /// @dev Unpack the chain id into the array of chain ids.
-            $chainIds[count - 1] = uint32($chainId >> ((count - 1) * 32));
-        }
-    }
-
-    /**
-     * @notice Get the domain hash of the contract that suppots the definition of
-     *         a signature that is intended to be used across several different chains
-     *         at once while living at the same address across several different chains.
-     * @param $chainId The chain id of the chain that the signature is intended to be used on.
-     * @return $domainHash The domain hash of the contract supporting multiple chains.
-     */
-    function getDomainHash(uint256 $chainId)
-        public
-        view
-        virtual
-        returns (bytes32 $domainHash)
-    {
-        /// @dev The chainId is a uint256 with 8 uint32s packed into it so that signatures
-        ///      can be safely signed across several different chains at once. For this to
-        ///      be secure we need to loop through each packed value and confirm that it is
-        ///      intended to be used on this chain.
-        /// @dev The searching of this is O(N) where N is the number of chains packed into
-        ///      the chainId. This is a very small number and is not a security concern.
-        ///      Additionally, the order of chainIds should always be sorted based on the cost
-        ///      of gas on that respective chain so that the most expensive chain is first
-        ///      (most right) with the cheapest always being the last (most left).
-        for (uint32 chainId = uint32($chainId); chainId > 0; chainId >>= 32) {
-            /// @dev If the chainId finds a match to the one of the chain it is being executed on
-            ///      then we can break the loop as we are done searching and can proceed with
-            ///      with the provided chain id. We do not need to store the chainId of which
-            ///      chain we are on as we've already confirmed the signature is intended
-            ///      for the chain this function is being executed on.
-            if (chainId == block.chainid) {
-                break;
-            }
-
-            /// @dev If we have reached a slot where there are no more chainIds to check and
-            ///      we have not found a match then we can revert the transaction as the chainId
-            ///      is not valid for the provided signature.
-            if (chainId == 0) {
-                revert("PlugTypes:invalid-chainId");
-            }
-        }
-
-        /// @dev Calculate the domain hash of a contract that lives on multiple chains at
-        ///      once enabling the declarative reuse of signatures on multiple chains with
-        ///      a single signature without unintended replay attacks. Notably, when a signature
-        ///      is revoked it will need to be revoked on all chains that it is valid on
-        ///      otherwise the use of the signature on an unrevoked chain will still be valid.
-        $domainHash = getEIP712DomainHash(
-            PlugTypesLib.EIP712Domain({
-                name: name(),
-                version: version(),
-                chainId: $chainId,
-                verifyingContract: address(this)
-            })
-        );
     }
 
     /**
@@ -517,13 +387,10 @@ abstract contract PlugTypes {
             abi.encode(
                 PLUGS_TYPEHASH,
                 $input.socket,
-                $input.chainId,
                 getPlugArrayHash($input.plugs),
                 $input.salt,
                 $input.fee,
-                $input.maxFeePerGas,
-                $input.maxPriorityFeePerGas,
-                $input.executor
+                keccak256($input.solver)
             )
         );
     }
@@ -573,38 +440,5 @@ abstract contract PlugTypes {
                 keccak256($input.signature)
             )
         );
-    }
-
-    /**
-     * @notice Encode Plugs data into a digest hash that has been
-     *         localized to the domain of the contract.
-     * @param $input The Plugs data to encode.
-     * @return $digest The digest hash of the encoded Plugs data.
-     */
-    function getPlugsDigest(PlugTypesLib.Plugs memory $input)
-        public
-        view
-        virtual
-        returns (bytes32 $digest)
-    {
-        $digest = keccak256(
-            bytes.concat(
-                "\x19\x01", getDomainHash($input.chainId), getPlugsHash($input)
-            )
-        );
-    }
-
-    /**
-     * @notice Get the signer of a LivePlugs data type.
-     * @param $input The LivePlugs data to encode.
-     * @return $signer The signer of the LivePlugs data.
-     */
-    function getLivePlugsSigner(PlugTypesLib.LivePlugs memory $input)
-        public
-        view
-        virtual
-        returns (address $signer)
-    {
-        $signer = getPlugsDigest($input.plugs).recover($input.signature);
     }
 }

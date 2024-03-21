@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { Test } from "../utils/Test.sol";
 
@@ -20,35 +20,27 @@ contract PlugFactoryTest is Test {
         factoryOwner = _randomNonZeroAddress();
 
         implementation = new PlugVaultSocket();
+
         factory = new PlugFactory(factoryOwner, baseURI);
+        vm.prank(factoryOwner);
+        factory.setImplementation(0, address(implementation));
     }
 
     function test_DeployDeterministic(uint256) public {
         vm.deal(address(this), 100 ether);
         address owner = _randomNonZeroAddress();
         uint256 initialValue = _random() % 100 ether;
-        bytes32 salt = _random() % 8 == 0
-            ? bytes32(_random())
-            : bytes32(uint256(uint96(_random())));
 
-        bool alreadyDeployed;
-        address vault;
+        bytes32 salt =
+            bytes32(abi.encodePacked(owner, uint80(_random()), uint16(0)));
 
-        if (uint256(salt) >> 96 != uint160(owner) && uint256(salt) >> 96 != 0) {
-            vm.expectRevert(LibClone.SaltDoesNotStartWith.selector);
-            (alreadyDeployed, vault) = factory.deploy{ value: initialValue }(
-                address(implementation), owner, salt
-            );
-            return;
-        } else {
-            (alreadyDeployed, vault) = factory.deploy{ value: initialValue }(
-                address(implementation), owner, salt
-            );
-        }
+        // TODO: Check for the token event emission.
+
+        (, address vault) = factory.deploy{ value: initialValue }(salt);
+
+        // TODO: Check for repeated deployment calls to make sure that we don't double deploy.
 
         assertEq(address(vault).balance, initialValue);
-        (, bool isSigner) = PlugVaultSocket(payable(vault)).getAccess(owner);
-        assertEq(isSigner, true);
     }
 
     function test_InitCodeHash() public view {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";

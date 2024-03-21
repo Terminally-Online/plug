@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { ERC20WETHInterface } from "../interfaces/ERC.20.WETH.Interface.sol";
 import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";

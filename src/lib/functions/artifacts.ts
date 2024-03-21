@@ -1,13 +1,9 @@
 import { default as fs, writeFileSync } from 'fs-extra'
 import { keccak256 } from 'viem'
-import { execSync } from 'child_process'
 
 import { etchContracts } from '../constants'
 
 const directory = './artifacts'
-fs.removeSync(directory)
-
-execSync("forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.24")
 
 const files = fs.readdirSync(directory)
 

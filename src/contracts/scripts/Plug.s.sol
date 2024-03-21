@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { Script } from "forge-std/Script.sol";
 import { Plug } from "../base/Plug.sol";
@@ -55,6 +55,11 @@ contract PlugDeployment is Script {
         PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_TIMESTAMP_FUSE_SALT,
             PlugEtcherLib.PLUG_TIMESTAMP_FUSE_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_TREASURY_SALT,
+            PlugEtcherLib.PLUG_TREASURY_INITCODE
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(

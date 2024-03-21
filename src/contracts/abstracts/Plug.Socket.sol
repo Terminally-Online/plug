@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 import { PlugCore } from "./Plug.Core.sol";
@@ -20,46 +20,26 @@ abstract contract PlugSocket is
     ReentrancyGuard
 {
     /**
-     * See {PlugSocketInterface-signer}.
-     */
-    function signer(PlugTypesLib.LivePlugs calldata $livePlugs)
-        public
-        view
-        virtual
-        returns (address $signer)
-    {
-        /// @dev Determine the address that signed the Plug bundle.
-        $signer = getLivePlugsSigner($livePlugs);
-    }
-
-    /**
      * See {PlugSocketInterface-plug}.
-     *
-     * @dev Process the Plug bundle with an external Executor.
      */
     function plug(
         PlugTypesLib.LivePlugs calldata $livePlugs,
+        address $solver,
         uint256 $gas
     )
         external
         payable
         virtual
         enforceRouter
+        enforceSignature($livePlugs)
         nonReentrant
         returns (bytes[] memory $results)
     {
-        $results = _plug(
-            signer($livePlugs),
-            $livePlugs.plugs,
-            $livePlugs.plugs.executor,
-            $gas
-        );
+        $results = _plug($livePlugs.plugs, $solver, $gas);
     }
 
     /**
      * See {PlugSocketInterface-plug}.
-     *
-     * @dev Process the Plug bundle without an external Executor.
      */
     function plug(PlugTypesLib.Plugs calldata $plugs)
         external
@@ -68,6 +48,8 @@ abstract contract PlugSocket is
         nonReentrant
         returns (bytes[] memory $results)
     {
-        $results = _plug(msg.sender, $plugs, address(0), 0);
+        // TODO: Make sure only intended signers have permission to submit here.
+
+        $results = _plug($plugs, address(0), 0);
     }
 }

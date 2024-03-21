@@ -5,10 +5,10 @@
 	"scripts": {
 		"prebuild": "pnpm lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
-		"build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
-		"build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts",
-		"build:etcher": "pnpm run build:artifacts && pnpm tsx src/lib/functions/etcher.ts",
-		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.24",
+		"build:artifacts": "forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.18 && pnpm tsx src/lib/functions/artifacts.ts",
+		"build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts && npx wagmi generate",
+		"build:etcher": "pnpm tsx src/lib/functions/etcher.ts",
+		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --via-ir --optimize --optimizer-runs=10000 --use=0.8.18",
 		"build:format": "pnpm prettier --write .",
 		"build:mine": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts",
 		"build:mine:quick": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts --quick --leading=1 --total=2 --force",
@@ -26,7 +26,7 @@
 		"@types/chai-as-promised": "^7.1.8",
 		"@types/fs-extra": "^11.0.4",
 		"@types/mocha": "^10.0.6",
-		"@types/node": "^20.11.28",
+		"@types/node": "^20.11.29",
 		"@wagmi/cli": "^2.1.2",
 		"chai": "^5.1.0",
 		"dedent": "^1.5.1",
@@ -45,10 +45,11 @@
 		"typescript": "~5.4.2"
 	},
 	"dependencies": {
-		"@nftchance/plug-types": "^0.9.7",
+		"@0xsequence/wallet-contracts": "^2.0.0",
+		"@nftchance/plug-types": "^0.9.11",
 		"abitype": "^1.0.2",
 		"solady": "^0.0.179",
-		"viem": "^2.8.11",
+		"viem": "^2.8.12",
 		"wagmi": "^2.5.11"
 	},
 	"repository": {

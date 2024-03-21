@@ -1,29 +1,30 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.24;
+pragma solidity 0.8.18;
 
 import { PlugTradingInterface } from "../interfaces/Plug.Trading.Interface.sol";
+import { ModuleAuthUpgradable } from
+    "sequence/modules/commons/ModuleAuthUpgradable.sol";
+import { PlugLib } from "../libraries/Plug.Lib.sol";
+import { ERC721Interface } from "../interfaces/ERC.721.Interface.sol";
 
 /**
  * @title Plug Trading
- * @notice Enables the ability to represent Vault ownership through the current
+ * @notice Enables the ability to represent Socket ownership through the current
  *         state of an ERC721 that is managed inside the factory that deployed
  *         the Vault. This way, Vaults can be traded on any major marketplace
  *         enabling the ability to spread workflows and earnings of
  *         aforementioned workflows such as points and yield.
  * @author nftchance (chance@onplug.io)
  */
-abstract contract PlugTrading is PlugTradingInterface {
+abstract contract PlugTrading is PlugTradingInterface, ModuleAuthUpgradable {
     /// @dev The address that houses the ownership information.
     address public ownership;
-
-    /// @dev Track the active owner of the Vault.
-    address private _owner;
 
     /**
      * @notice Modifier enforcing the caller to be the ownership proxy.
      */
-    modifier onlyTradable() {
+    modifier onlyOwnership() {
         /// @dev Ensure the `caller` is the ownership proxy.
         require(msg.sender == ownership, "PlugTrading:forbidden-caller");
         _;
@@ -40,20 +41,50 @@ abstract contract PlugTrading is PlugTradingInterface {
     }
 
     /**
-     * @notice Transfer the ownership of a Vault to a new address when the
-     *         NFT is transferred.
+     * @notice Transfer the ownership of a Socket to a new address when the
+     *         NFT is transferred. With this process, due to the signature logic
+     *         that is used to verify a signature we must also update the image
+     *         hash that contains the encoded definition of the criteria.
      * @param $newOwner The address of the new owner.
      */
-    function transferOwnership(address $newOwner) public virtual onlyTradable {
-        /// @dev Set the state of the new owner when the token was transferred.
-        _owner = $newOwner;
+    function transferOwnership(address $newOwner)
+        public
+        virtual
+        onlyOwnership
+    {
+        /// @dev Calculate the image hash based on the new owner. For now, the
+        ///      assumption is the definition of a single Socket owner.
+        bytes32 expectedImageHash = keccak256(
+            abi.encodePacked(
+                keccak256(
+                    abi.encodePacked(
+                        abi.decode(
+                            abi.encodePacked(uint96(1), $newOwner), (bytes32)
+                        ),
+                        uint256(1)
+                    )
+                ),
+                uint256(1)
+            )
+        );
+
+        /// @dev Update the image hash that is used to verify signatures
+        ///      within the execution of a Socket interaction.
+        _updateImageHash(expectedImageHash);
+
+        /// @dev Emit the event to signify transfer change as well as a change in
+        ///      the image hash so that it can be utilized elsewhere.
+        emit PlugLib.SocketOwnershipTransferred(
+            owner(), $newOwner, expectedImageHash
+        );
     }
 
     /**
      * @notice Get the owner of the Vault.
      */
-    function owner() public view virtual returns (address) {
-        return _owner;
+    function owner() public view virtual returns (address $owner) {
+        $owner =
+            ERC721Interface(ownership).ownerOf(uint256(uint160(address(this))));
     }
 
     /**
