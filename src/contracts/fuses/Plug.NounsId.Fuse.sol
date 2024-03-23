@@ -5,20 +5,19 @@ pragma solidity 0.8.18;
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
-import { BytesLib } from "../libraries/BytesLib.sol";
+import { PlugNounsLib } from "../libraries/fuses/Plug.Nouns.Lib.sol";
 
 /**
- * @title Nouns Id Fuse
+ * @title Plug Nouns Id Fuse
  * @notice This Fuse enables the ability to declare a specific Noun tokenId
  *		   that you you would like to bid on, on a regular basis.
- * @author @nftchance <chance@onplug.io>
+ * @notice Use cases for bidding on Nouns:
+ *     - Schedule bids for specific Nouns.
+ * @author nftchance (chance@onplug.io)
  */
 contract PlugNounsIdFuse is PlugFuseInterface {
-    using BytesLib for bytes;
-
     /**
-     * See {Fuse-enforceFuse}.
+     * See {PlugFuseInterface-enforceFuse}.
      */
     function enforceFuse(
         bytes calldata $live,
@@ -44,28 +43,28 @@ contract PlugNounsIdFuse is PlugFuseInterface {
     /**
      * @notice Decode the live wire into the tokenId.
      * @param $live The live wire to decode.
-     * @return The tokenId being requested.
+     * @return $tokenId The id of the token being requested.
      */
     function decode(bytes calldata $live)
         public
         view
         virtual
-        returns (uint256)
+        returns (uint256 $tokenId)
     {
-        return $live.toUint256(0);
+        return abi.decode($live, (uint256));
     }
 
     /**
      * @notice Encode the tokenId into the live wire.
      * @param $value The tokenId to encode.
-     * @return The live wire.
+     * @return $data The encoded token id of the noun being bid on.
      */
     function encode(uint256 $value)
         public
         pure
         virtual
-        returns (bytes memory)
+        returns (bytes memory $data)
     {
-        return abi.encode($value);
+        $data = abi.encode($value);
     }
 }

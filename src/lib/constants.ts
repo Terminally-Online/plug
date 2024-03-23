@@ -37,11 +37,6 @@ export const blockNumber: Contract = {
 	relativePath: '../fuses/'
 } as const
 
-export const clamp: Contract = {
-	name: 'Plug.Clamp.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-
 export const limitedCalls: Contract = {
 	name: 'Plug.LimitedCalls.Fuse.sol',
 	relativePath: '../fuses/'
@@ -87,7 +82,6 @@ export const etchContracts: Array<Contract> = [
     balanceSemiFungible,
 	baseFee,
 	blockNumber,
-	clamp,
 	limitedCalls,
 	nounsId,
 	nounsTrait,

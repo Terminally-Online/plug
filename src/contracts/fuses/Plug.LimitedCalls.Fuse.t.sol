@@ -4,6 +4,7 @@ pragma solidity 0.8.18;
 
 import {
     Test,
+    PlugLib,
     PlugTypesLib,
     LibClone
 } from "../abstracts/test/Plug.Test.sol";
@@ -35,14 +36,22 @@ contract PlugLimitedCallsFuseTest is Test {
         uint256 calls = 1;
         bytes memory terms = fuse.encode(calls);
         fuse.enforceFuse(terms, current, plugsHash);
-        vm.expectRevert(bytes("PlugLimitedCallsFuse:limit-exceeded"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdExceeded.selector, calls, 2
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 
     function testRevert_enforceFuse_ZeroCalls() public {
         uint256 calls = 0;
         bytes memory terms = fuse.encode(calls);
-        vm.expectRevert(bytes("PlugLimitedCallsFuse:limit-exceeded"));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdExceeded.selector, calls, 1
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 }

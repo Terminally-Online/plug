@@ -2,25 +2,21 @@
 
 pragma solidity 0.8.18;
 
-import { Ownable } from "solady/src/auth/Ownable.sol";
-
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
+import { PlugNounsLib } from "../libraries/fuses/Plug.Nouns.Lib.sol";
 
 /**
- * @title Nouns Trait Fuse
- * @notice This Fuse enables the ability to declare a specific trait that you
- *         you would like to bid on, on a regular basis. To be very explicit with
- *         this model, a hash of the returned trait metadata is used to verify
- *         to minimize the amount of data that needs to be relayed.
- * @dev The verification of this takes place through onchain means
- *      therefore it can be rather expensive.
- * @author @nftchance <chance@onplug.io>
+ * @title Plug Nouns Trait Fuse
+ * @notice This Fuse enables the ability to declare a specific Noun tokenId
+ *		   that you you would like to bid on, on a regular basis.
+ * @notice Use cases for bidding on Nouns:
+ *     - Schedule bids for specific Nouns traits.
+ * @author nftchance (chance@onplug.io)
  * @author @masonchain
  */
-contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
+contract PlugNounsTraitFuse is PlugFuseInterface {
     /// @dev Function hashes of the trait getters.
     bytes32 public constant BACKGROUND_SELECTOR =
         keccak256(abi.encode("background(uint256 index)"));
@@ -34,21 +30,13 @@ contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
         keccak256(abi.encode("accessory(uint256 index)"));
 
     /// @dev Metadata storage contract for Nouns.
-    /// @notice We use a raw address instead of interface here because we are dynamically building
-    ///         the function to be called by decoding the selector from the live wire.
+    /// @notice We use a raw address instead of interface here because we are
+    ///         dynamically building the function to be called by decoding the
+    ///         selector from the data provided.
     address art;
 
-    constructor(address $art) {
-        /// @dev Prepare the inferaces.
-        // NOUN = $noun;
-        // AUCTION_HOUSE = $auctionHouse;
-
-        /// @dev Set the scope of the Fuse.
-        art = $art;
-    }
-
     /**
-     * See {Fuse-enforceFuse}.
+     * See {PlugFuseInterface-enforceFuse}.
      */
     function enforceFuse(
         bytes calldata $live,
@@ -101,18 +89,13 @@ contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
         virtual
         returns (bytes memory)
     {
-        bool isValid;
-        if ($selector == HEAD_SELECTOR) {
-            isValid = true;
-        } else if ($selector == GLASSES_SELECTOR) {
-            isValid = true;
-        } else if ($selector == BODY_SELECTOR) {
-            isValid = true;
-        } else if ($selector == ACCESSORY_SELECTOR) {
-            isValid = true;
-        } else if ($selector == BACKGROUND_SELECTOR) {
-            isValid = true;
-        } else {
+        if (
+            $selector == HEAD_SELECTOR
+                || $selector == GLASSES_SELECTOR
+                || $selector == BODY_SELECTOR
+                || $selector == ACCESSORY_SELECTOR
+                || $selector == BACKGROUND_SELECTOR
+        ) { } else {
             revert("NounsTraitFuse:invalid-selector");
         }
 
@@ -169,15 +152,5 @@ contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
         require(success, "NounsTraitFuse:trait-call-failed");
 
         $traitHash = keccak256(returnData);
-    }
-
-    /**
-     * @notice Set the address of the contract that supplies the art to Nouns.
-     * @dev This is here just in case Nouns updates their metadata infrastructure
-     *      as it has happened before (v2).
-     * @param $art The address of the art contract.
-     */
-    function setArt(address $art) public onlyOwner {
-        art = $art;
     }
 }

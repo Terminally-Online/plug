@@ -6,8 +6,10 @@ import { PlugTradingInterface } from
     "../interfaces/Plug.Trading.Interface.sol";
 import { ModuleAuthUpgradable } from
     "sequence/modules/commons/ModuleAuthUpgradable.sol";
+
 import { PlugLib } from "../libraries/Plug.Lib.sol";
-import { ERC721Interface } from "../interfaces/ERC.721.Interface.sol";
+
+import { ERC721 } from "solady/src/tokens/ERC721.sol";
 
 /**
  * @title Plug Trading
@@ -95,7 +97,7 @@ abstract contract PlugTrading is
      * @notice Get the owner of the Vault.
      */
     function owner() public view virtual returns (address $owner) {
-        $owner = ERC721Interface(ownership).ownerOf(tokenId());
+        $owner = ERC721(ownership).ownerOf(tokenId());
     }
 
     /**

@@ -6,14 +6,15 @@ import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
-import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
+import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
+
 import { ERC20 } from "solady/src/tokens/ERC20.sol";
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
 
 /**
  * @title Plug Balance Fuse
- * @notice A fuse that provides enforcement for thresholds for Native, ERC20, and
- *         ERC721 tokens, but not ERC1155s.
+ * @notice A Fuse that provides enforcement of balance thresholds for Native, ERC20,
+ *         and ERC721 tokens, but not ERC1155s.
  * @notice Use cases for enforcing balance thresholds:
  *     - Limit the balance of a given asset that an account should hold.
  *     - Limit the amount of tokens that a given recipient should be sent.

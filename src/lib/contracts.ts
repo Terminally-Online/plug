@@ -584,105 +584,6 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugClampFuse",
-        "abi": [
-            {
-                "type": "function",
-                "name": "decode",
-                "inputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$min",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "$max",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "encode",
-                "inputs": [
-                    {
-                        "name": "$min",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "$max",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "enforceFuse",
-                "inputs": [
-                    {
-                        "name": "$live",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "pure"
-            }
-        ]
-    },
-    {
         "name": "PlugFactory",
         "abi": [
             {
@@ -1459,6 +1360,22 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "nonpayable"
+            },
+            {
+                "type": "error",
+                "name": "ThresholdExceeded",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
             }
         ]
     },
@@ -1477,7 +1394,7 @@ export const contracts = [
                 ],
                 "outputs": [
                     {
-                        "name": "",
+                        "name": "$tokenId",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -1496,7 +1413,7 @@ export const contracts = [
                 ],
                 "outputs": [
                     {
-                        "name": "",
+                        "name": "$data",
                         "type": "bytes",
                         "internalType": "bytes"
                     }
@@ -1554,17 +1471,6 @@ export const contracts = [
     {
         "name": "PlugNounsTraitFuse",
         "abi": [
-            {
-                "type": "constructor",
-                "inputs": [
-                    {
-                        "name": "$art",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "stateMutability": "nonpayable"
-            },
             {
                 "type": "function",
                 "name": "ACCESSORY_SELECTOR",
@@ -1629,26 +1535,6 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "cancelOwnershipHandover",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "completeOwnershipHandover",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "payable"
             },
             {
                 "type": "function",
@@ -1762,143 +1648,6 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "owner",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "ownershipHandoverExpiresAt",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "result",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "renounceOwnership",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "requestOwnershipHandover",
-                "inputs": [],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "setArt",
-                "inputs": [
-                    {
-                        "name": "$art",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "nonpayable"
-            },
-            {
-                "type": "function",
-                "name": "transferOwnership",
-                "inputs": [
-                    {
-                        "name": "newOwner",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "event",
-                "name": "OwnershipHandoverCanceled",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "event",
-                "name": "OwnershipHandoverRequested",
-                "inputs": [
-                    {
-                        "name": "pendingOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "event",
-                "name": "OwnershipTransferred",
-                "inputs": [
-                    {
-                        "name": "oldOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "newOwner",
-                        "type": "address",
-                        "indexed": true,
-                        "internalType": "address"
-                    }
-                ],
-                "anonymous": false
-            },
-            {
-                "type": "error",
-                "name": "AlreadyInitialized",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "NewOwnerIsZeroAddress",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "NoHandoverRequest",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "Unauthorized",
-                "inputs": []
             }
         ]
     },

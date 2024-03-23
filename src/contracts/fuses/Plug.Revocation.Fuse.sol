@@ -2,28 +2,26 @@
 
 pragma solidity 0.8.18;
 
-/// @dev Plug abstracts.
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 
-/// @dev Hash declarations and decoders for the Plug framework.
-import { ECDSA } from "solady/src/utils/ECDSA.sol";
-
 /**
- * @title Revocation Enforcer
- * @notice This Fuse Enforcer operates as an independent instance of the
- *         Plug enabling the revocation of previously signed pins.
- *         After revocation, it is not possible for the signer to reuse the
- *         exact same pin therefore it is recommended to set salt as
- *         as the timestamp of generation (in milliseconds) to ensure that
- *         the signer can still reuse the same pin with a new salt.
+ * @title Plug Revocation Fuse
+ * @notice This Fuse operates enables the ability to revoke execution rights
+ *         of any previously signed bundle of Plugs.
+ * @notice Use cases for bidding on Nouns:
+ *     - Enable safe intent reuse by enabling the ability to declare a bundle
+ *       of Plugs that can be revoked at any time.
+ *     - Operate with programmable revocation fulfilled by conditions outside
+ *       of manual and/or human desire.
+ * @dev After revocation, it is not possible for the signer to reuse the
+ *      exact same pin therefore it is recommended to set salt as
+ *      as the timestamp of generation (in milliseconds) to ensure that
+ *      the signer can still reuse the same pin with a new salt.
  * @author @nftchance (chance@onplug.io)
  */
 contract PlugRevocationFuse is PlugFuseInterface {
-    /// @notice Use the ECDSA library for signature verification.
-    using ECDSA for bytes32;
-
     /// @dev Keep track of which bundles of Plugs have been revoked.
     mapping(address => mapping(bytes32 => bool)) public isRevoked;
 

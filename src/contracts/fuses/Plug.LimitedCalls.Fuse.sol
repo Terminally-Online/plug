@@ -4,23 +4,26 @@ pragma solidity 0.8.18;
 
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { BytesLib } from "../libraries/BytesLib.sol";
+import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
 /**
- * @title LimitedCallsEnforcer
- * @notice This Fuse Enforcer powers the ability to limit the number of times
- *         a delegate can call a function with the same pin hash.
+ * @title Plug Limited Calls Fuse
+ * @notice This Fuse enables the ability to limit the number of times an
+ *         intent can be used onchain.
+ * @notice Use cases for limiting calls:
+ *     - Allow an intent declaration to be reused multiple times such as DCA
+ *       models or expiring subscription definitions.
+ *     - Remove the need for single nonce-use with a multi-or-infinite nonce pattern.
+ *     - Lack of use results in infinite signatures that are dependent on conditions
+ *       outside of a nonce architecture.
+ * @author nftchance (chance@onplug.io)
  */
 contract PlugLimitedCallsFuse is PlugFuseInterface {
-    /// @dev Use the BytesLib library for bytes manipulation.
-    using BytesLib for bytes;
-
     /// @dev Keep track of how many times a pin has been used.
     mapping(address => mapping(bytes32 => uint256)) callCounts;
 
     /**
-     * See {FuseEnforcer-enforceFuse}.
+     * See {PlugFuseInterface-enforceFuse}.
      */
     function enforceFuse(
         bytes calldata $live,
@@ -31,30 +34,32 @@ contract PlugLimitedCallsFuse is PlugFuseInterface {
         override
         returns (bytes memory $through)
     {
-        /// @dev Confirm the allowed limit has not yet been reached by
-        ///      the sender of the declared Plug bundle.
-        require(
-            decode($live) > callCounts[msg.sender][$plugsHash]++,
-            "PlugLimitedCallsFuse:limit-exceeded"
-        );
+        /// @dev Snapshot the current state of the call allowance and consumption.
+        uint256 allowedCalls = decode($live);
+        uint256 calls = ++callCounts[msg.sender][$plugsHash];
+
+        /// @dev Confirm the declared limit has not been exceeded.
+        if (allowedCalls < calls) {
+            revert PlugLib.ThresholdExceeded(allowedCalls, calls);
+        }
 
         /// @dev Continue the pass through.
         $through = $current.data;
     }
 
     /**
-     * @dev Decode the callCount defined by the terms at a given bytes index.
+     * See {PlugFuseInterface-decode}.
      */
     function decode(bytes calldata $terms)
         public
         pure
         returns (uint256 $callCount)
     {
-        $callCount = $terms.toUint256(0);
+        $callCount = abi.decode($terms, (uint256));
     }
 
     /**
-     * @dev  Encode the limit into the terms of the Fuse.
+     * See {PlugFuseInterface-encode}.
      */
     function encode(uint256 $callCount)
         public

@@ -3,9 +3,9 @@
 pragma solidity 0.8.18;
 
 import { NounsTokenInterface } from
-    "../interfaces/Nouns.Token.Interface.sol";
+    "../../interfaces/fuses/Nouns.Token.Interface.sol";
 import { NounsAuctionHouseInterface } from
-    "../interfaces/Nouns.AuctionHouse.Interface.sol";
+    "../../interfaces/fuses/Nouns.AuctionHouse.Interface.sol";
 
 library PlugNounsLib {
     NounsTokenInterface internal constant TOKEN = NounsTokenInterface(

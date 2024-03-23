@@ -148,7 +148,7 @@ directories
 let template = fs.readFileSync(etcherTemplate).toString()
 
 template = template.replaceAll('Template', '')
-template = template.replace('/// @auto INSERT IMPORTS', imports.join('\n'))
+template = template.replace('/// @notice INSERT IMPORTS', imports.join('\n'))
 template = template.replace(
 	'/// @auto INSERT SEGMENTS',
 	variables.join('\n\n') + '\n\n' + functions.join('\n\n')

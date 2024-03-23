@@ -5,7 +5,6 @@ pragma solidity 0.8.18;
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { BytesLib } from "../libraries/BytesLib.sol";
 
 library WindowFuseLib {
     error WindowLackingDuration();
@@ -30,26 +29,22 @@ library WindowFuseLib {
 
 /**
  * @title Window Caveat
- * @notice This contract is responsible for providing a function to check
+ * @notice This Fuse is responsible for providing a function to check
  *         whether or not the current time is within a given window of time
  *         that repeats every X seconds and lasts for Y seconds as well as
  *         helper functions needed to determine the next N window openings.
- * @author @nftchance <chance@onplug.io>
- *
- * @dev When working with this Caveat, you will generate timestamps with:
- *    Javascript / Typescript:
- *         ◉ `const dateInSecs = Math.floor(new Date().getTime() / 1000);`
- *    Rust:
- *         ◉ `let date_in_secs = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();`
- *    Python:
- *         ◉ `import time`
- *         ◉ `date_in_secs = int(time.time())`
- *    Solidity:
- *         ◉ `uint256 dateInSecs = block.timestamp;`
+ * @dev When working with this Fuse, you will generate timestamps with:
+ *    - Javascript / Typescript:
+ *      - `const dateInSecs = Math.floor(new Date().getTime() / 1000);`
+ *    - Rust:
+ *      - `let date_in_secs = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();`
+ *    - Python:
+ *      - `date_in_secs = int(time.time())`
+ *    - Solidity:
+ *      - `uint256 dateInSecs = block.timestamp;`
+ * @author @nftchance (chance@onplug.io)
  */
 contract PlugWindowFuse is PlugFuseInterface {
-    using BytesLib for bytes;
-
     /// @dev The number of seconds in a day.
     uint32 private constant SECONDS_PER_DAY = 1 days;
 
@@ -72,7 +67,7 @@ contract PlugWindowFuse is PlugFuseInterface {
         override
         returns (bytes memory $through)
     {
-        uint256 schedule = $live.toUint256(0);
+        uint256 schedule = abi.decode($live, (uint256));
 
         if (!isWithinWindow(schedule)) {
             revert WindowFuseLib.WindowCaveatViolation();

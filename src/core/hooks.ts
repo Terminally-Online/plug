@@ -431,53 +431,6 @@ export const plugBlockNumberFuseAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PlugClampFuse
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const plugClampFuseAbi = [
-  {
-    type: 'function',
-    inputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
-    name: 'decode',
-    outputs: [
-      { name: '$min', internalType: 'uint256', type: 'uint256' },
-      { name: '$max', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$min', internalType: 'uint256', type: 'uint256' },
-      { name: '$max', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'encode',
-    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$live', internalType: 'bytes', type: 'bytes' },
-      {
-        name: '$current',
-        internalType: 'struct PlugTypesLib.Current',
-        type: 'tuple',
-        components: [
-          { name: 'target', internalType: 'address', type: 'address' },
-          { name: 'value', internalType: 'uint256', type: 'uint256' },
-          { name: 'data', internalType: 'bytes', type: 'bytes' },
-        ],
-      },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-    ],
-    name: 'enforceFuse',
-    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'pure',
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugFactory
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -881,6 +834,14 @@ export const plugLimitedCallsFuseAbi = [
     outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
     stateMutability: 'nonpayable',
   },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdExceeded',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -892,14 +853,14 @@ export const plugNounsIdFuseAbi = [
     type: 'function',
     inputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     name: 'decode',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    outputs: [{ name: '$tokenId', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [{ name: '$value', internalType: 'uint256', type: 'uint256' }],
     name: 'encode',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
     stateMutability: 'pure',
   },
   {
@@ -929,11 +890,6 @@ export const plugNounsIdFuseAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const plugNounsTraitFuseAbi = [
-  {
-    type: 'constructor',
-    inputs: [{ name: '$art', internalType: 'address', type: 'address' }],
-    stateMutability: 'nonpayable',
-  },
   {
     type: 'function',
     inputs: [],
@@ -968,22 +924,6 @@ export const plugNounsTraitFuseAbi = [
     name: 'HEAD_SELECTOR',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'cancelOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'pendingOwner', internalType: 'address', type: 'address' },
-    ],
-    name: 'completeOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
   },
   {
     type: 'function',
@@ -1032,99 +972,6 @@ export const plugNounsTraitFuseAbi = [
     outputs: [{ name: '$traitHash', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: 'result', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'pendingOwner', internalType: 'address', type: 'address' },
-    ],
-    name: 'ownershipHandoverExpiresAt',
-    outputs: [{ name: 'result', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'requestOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '$art', internalType: 'address', type: 'address' }],
-    name: 'setArt',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'pendingOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipHandoverCanceled',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'pendingOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipHandoverRequested',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferred',
-  },
-  { type: 'error', inputs: [], name: 'AlreadyInitialized' },
-  { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
-  { type: 'error', inputs: [], name: 'NoHandoverRequest' },
-  { type: 'error', inputs: [], name: 'Unauthorized' },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2382,38 +2229,6 @@ export const useReadPlugBlockNumberFuseEnforceFuse =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugClampFuseAbi}__
- */
-export const useReadPlugClampFuse = /*#__PURE__*/ createUseReadContract({
-  abi: plugClampFuseAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugClampFuseAbi}__ and `functionName` set to `"decode"`
- */
-export const useReadPlugClampFuseDecode = /*#__PURE__*/ createUseReadContract({
-  abi: plugClampFuseAbi,
-  functionName: 'decode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugClampFuseAbi}__ and `functionName` set to `"encode"`
- */
-export const useReadPlugClampFuseEncode = /*#__PURE__*/ createUseReadContract({
-  abi: plugClampFuseAbi,
-  functionName: 'encode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugClampFuseAbi}__ and `functionName` set to `"enforceFuse"`
- */
-export const useReadPlugClampFuseEnforceFuse =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugClampFuseAbi,
-    functionName: 'enforceFuse',
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFactoryAbi}__
  */
 export const useReadPlugFactory = /*#__PURE__*/ createUseReadContract({
@@ -3006,178 +2821,6 @@ export const useReadPlugNounsTraitFuseNounTrait =
   /*#__PURE__*/ createUseReadContract({
     abi: plugNounsTraitFuseAbi,
     functionName: 'nounTrait',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"owner"`
- */
-export const useReadPlugNounsTraitFuseOwner =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'owner',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"ownershipHandoverExpiresAt"`
- */
-export const useReadPlugNounsTraitFuseOwnershipHandoverExpiresAt =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'ownershipHandoverExpiresAt',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__
- */
-export const useWritePlugNounsTraitFuse = /*#__PURE__*/ createUseWriteContract({
-  abi: plugNounsTraitFuseAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
- */
-export const useWritePlugNounsTraitFuseCancelOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'cancelOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"completeOwnershipHandover"`
- */
-export const useWritePlugNounsTraitFuseCompleteOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'completeOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useWritePlugNounsTraitFuseRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"requestOwnershipHandover"`
- */
-export const useWritePlugNounsTraitFuseRequestOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'requestOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"setArt"`
- */
-export const useWritePlugNounsTraitFuseSetArt =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'setArt',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useWritePlugNounsTraitFuseTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__
- */
-export const useSimulatePlugNounsTraitFuse =
-  /*#__PURE__*/ createUseSimulateContract({ abi: plugNounsTraitFuseAbi })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
- */
-export const useSimulatePlugNounsTraitFuseCancelOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'cancelOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"completeOwnershipHandover"`
- */
-export const useSimulatePlugNounsTraitFuseCompleteOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'completeOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useSimulatePlugNounsTraitFuseRenounceOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"requestOwnershipHandover"`
- */
-export const useSimulatePlugNounsTraitFuseRequestOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'requestOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"setArt"`
- */
-export const useSimulatePlugNounsTraitFuseSetArt =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'setArt',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useSimulatePlugNounsTraitFuseTransferOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugNounsTraitFuseAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__
- */
-export const useWatchPlugNounsTraitFuseEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: plugNounsTraitFuseAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `eventName` set to `"OwnershipHandoverCanceled"`
- */
-export const useWatchPlugNounsTraitFuseOwnershipHandoverCanceledEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugNounsTraitFuseAbi,
-    eventName: 'OwnershipHandoverCanceled',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `eventName` set to `"OwnershipHandoverRequested"`
- */
-export const useWatchPlugNounsTraitFuseOwnershipHandoverRequestedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugNounsTraitFuseAbi,
-    eventName: 'OwnershipHandoverRequested',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugNounsTraitFuseAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchPlugNounsTraitFuseOwnershipTransferredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugNounsTraitFuseAbi,
-    eventName: 'OwnershipTransferred',
   })
 
 /**
