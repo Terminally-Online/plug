@@ -2,13 +2,10 @@
 
 pragma solidity 0.8.18;
 
+import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { PlugAddressesLib } from "./Plug.Addresses.Lib.sol";
+
 library PlugLib {
-    address internal constant PLUG_TREASURY_ADDRESS =
-        0x00EC991a53dEa376Fe0A7798aAc3F8E5cF5C9123;
-
-    address internal constant PLUG_ADDRESS =
-        0xDb3Bf1e7Fcc3476D9D00150FaA0039A7B795283F;
-
     event SocketDeployed(
         address indexed implementation, address indexed vault, bytes32 salt
     );
@@ -19,8 +16,31 @@ library PlugLib {
         bytes32 imageHash
     );
 
+    error NotImplemented();
+
+    error ImplementationAlreadyInitialized(uint16 $version);
+    error ImplementationInvalid(uint16 $version);
+
+    error TradingAlreadyInitialized();
+
+    error SocketAddressInvalid(address $intended, address $socket);
+    error SocketAddressEmpty(address $socket);
+
+    error CallerInvalid(address $expected, address $reality);
+
+    error RouterInvalid(address $reality);
+    error SignatureInvalid();
+    error CurrentInvalid();
+    error SolverInvalid(address $expected, address $reality);
+
+    error CompensationFailed(address $recipient, uint256 $value);
+
+    error ThresholdExceeded(uint256 $expected, uint256 $reality);
+    error ThresholdInsufficient(uint256 $expected, uint256 $reality);
+
     /**
-     * @notice Bubble up the revert reason revert data.
+     * @notice Bubble up the revert reason revert data from an internal call
+     *         that would typically revert without surfacing the reason.
      * @param $revertData The revert data to extract the reason from.
      */
     function bubbleRevert(bytes memory $revertData) internal pure {
@@ -65,6 +85,19 @@ library PlugLib {
         uint256 len = $revertData.length;
         assembly {
             revert(add($revertData, 32), len)
+        }
+    }
+
+    /**
+     * @notice Helper function to bubble up a revert reason if a condition is not met.
+     * @param $reason The revert reason to surface.
+     */
+    function bubbleRevert(bool $success, bytes memory $reason) internal pure {
+        /// @dev Confirm the call was successful.
+        if (!$success) {
+            /// @dev Go ahead and surface the revert reason as a failure would have
+            ///      returned an error rather than the expected typed message.
+            bubbleRevert($reason);
         }
     }
 }

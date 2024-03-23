@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.18;
 
-import { Test } from "../utils/Test.sol";
-
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { Test, PlugLib, PlugTypesLib } from "../abstracts/test/Plug.Test.sol";
 import { PlugBlockNumberFuse } from "./Plug.BlockNumber.Fuse.sol";
 
 contract PlugBlockNumberFuseTest is Test {
@@ -14,20 +12,18 @@ contract PlugBlockNumberFuseTest is Test {
         PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
     bytes32 plugsHash = bytes32(0);
 
-    uint128 beforeOperator;
-    uint128 beforeBlock;
-    uint128 afterOperator;
-    uint128 afterBlock;
+    uint8 beforeOperator;
+    uint8 afterOperator = 1;
+    uint256 beforeBlock;
+    uint256 afterBlock;
 
     function setUp() public virtual {
         fuse = new PlugBlockNumberFuse();
 
         skip(12 * 80);
 
-        beforeOperator = 0;
-        beforeBlock = uint128(block.number + 1);
-        afterOperator = 1;
-        afterBlock = uint128(block.number - 1);
+        beforeBlock = block.number + 1;
+        afterBlock = block.number - 1;
     }
 
     function test_enforceFuse_BeforeBlock() public {
@@ -39,9 +35,13 @@ contract PlugBlockNumberFuseTest is Test {
     }
 
     function test_enforceFuse_BeforeBlock_Expired() public {
-        bytes memory terms =
-            fuse.encode(beforeOperator, uint128(block.number - 1));
-        vm.expectRevert(bytes("PlugBlockNumberFuse:expired"));
+        uint256 expected = block.number - 1;
+        bytes memory terms = fuse.encode(beforeOperator, expected);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdExceeded.selector, expected, block.number
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 
@@ -54,9 +54,13 @@ contract PlugBlockNumberFuseTest is Test {
     }
 
     function testRevert_enforceFuse_AfterBlock_Early() public {
-        bytes memory terms =
-            fuse.encode(afterOperator, uint128(block.number + 1));
-        vm.expectRevert(bytes("PlugBlockNumberFuse:early"));
+        uint256 expected = block.number + 1;
+        bytes memory terms = fuse.encode(afterOperator, expected);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdInsufficient.selector, expected, block.number
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 }

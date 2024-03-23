@@ -17,49 +17,49 @@ export const treasury: Contract = {
 	relativePath: '../base/'
 } as const
 
-export const baseFee: Contract = { 
-    name: 'Plug.BaseFee.Fuse.sol',
-    relativePath: '../fuses/'
+export const baseFee: Contract = {
+	name: 'Plug.BaseFee.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
-export const blockNumber: Contract = { 
-    name: 'Plug.BlockNumber.Fuse.sol',
-    relativePath: '../fuses/'
+export const blockNumber: Contract = {
+	name: 'Plug.BlockNumber.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const clamp: Contract = {
-    name: 'Plug.Clamp.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.Clamp.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const limitedCalls: Contract = {
-    name: 'Plug.LimitedCalls.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.LimitedCalls.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const nounsId: Contract = {
-    name: 'Plug.NounsId.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.NounsId.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const nounsTrait: Contract = {
-    name: 'Plug.NounsTrait.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.NounsTrait.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const revocation: Contract = {
-    name: 'Plug.Revocation.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.Revocation.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const timestamp: Contract = {
-    name: 'Plug.Timestamp.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.Timestamp.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const window: Contract = {
-    name: 'Plug.Window.Fuse.sol',
-    relativePath: '../fuses/'
+	name: 'Plug.Window.Fuse.sol',
+	relativePath: '../fuses/'
 } as const
 
 export const vault: Contract = {
@@ -67,18 +67,20 @@ export const vault: Contract = {
 	relativePath: '../sockets/'
 } as const
 
+export const constantContracts: Array<Contract> = [factory, treasury]
+
 export const etchContracts: Array<Contract> = [
 	router,
 	factory,
-    treasury,
-    baseFee,
-    blockNumber,
-    clamp,
-    limitedCalls,
-    nounsId,
-    nounsTrait,
-    revocation,
-    timestamp,
-    window,
-    vault
+	treasury,
+	baseFee,
+	blockNumber,
+	clamp,
+	limitedCalls,
+	nounsId,
+	nounsTrait,
+	revocation,
+	timestamp,
+	window,
+	vault
 ] as const

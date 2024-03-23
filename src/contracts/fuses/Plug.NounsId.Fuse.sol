@@ -11,7 +11,7 @@ import { BytesLib } from "../libraries/BytesLib.sol";
  * @title Nouns Id Fuse
  * @notice This Fuse enables the ability to declare a specific Noun tokenId
  *		   that you you would like to bid on, on a regular basis.
- * @author @nftchance <chance@utc24.io>
+ * @author @nftchance <chance@onplug.io>
  */
 contract PlugNounsIdFuse is PlugFuseInterface {
     using BytesLib for bytes;

@@ -9,8 +9,10 @@ interface PlugSocketInterface {
     /**
      * @notice Initialize the Socket with the ownership proxy of the Socket.
      * @param $ownership The address of the owner of the Socket.
+     * @param $router The address of the Router that has permission to orchestate
+     *                the execution of intents.
      */
-    function initialize(address $ownership) external;
+    function initialize(address $ownership, address $router) external;
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.

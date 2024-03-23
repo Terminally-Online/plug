@@ -2,8 +2,7 @@
 
 pragma solidity 0.8.18;
 
-import { Test } from "../utils/Test.sol";
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { Test, PlugTypesLib } from "../abstracts/test/Plug.Test.sol";
 
 import { PlugClampFuse } from "./Plug.Clamp.Fuse.sol";
 

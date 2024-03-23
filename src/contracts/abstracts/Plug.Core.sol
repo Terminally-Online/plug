@@ -3,12 +3,14 @@
 pragma solidity 0.8.18;
 
 import { PlugExecute } from "./Plug.Execute.sol";
-import { PlugTypes, PlugTypesLib } from "./Plug.Types.sol";
-import { PlugLib } from "../libraries/Plug.Lib.sol";
+import { PlugTypes } from "./Plug.Types.sol";
+import {
+    PlugLib, PlugTypesLib, PlugAddressesLib
+} from "../libraries/Plug.Lib.sol";
 
 /**
  * @title PlugCore
- * @author @nftchance (chance@utc24.io)
+ * @author @nftchance (chance@onplug.io)
  */
 abstract contract PlugCore is PlugExecute {
     /**
@@ -20,7 +22,9 @@ abstract contract PlugCore is PlugExecute {
         /// @dev Transfer the money the Solver is owed and confirm it
         ///      the transfer is successful.
         (bool success,) = $recipient.call{ value: $value }("");
-        require(success, "Plug:compensation-failed");
+        if (success == false) {
+            revert PlugLib.CompensationFailed($recipient, $value);
+        }
     }
 
     /**
@@ -70,7 +74,7 @@ abstract contract PlugCore is PlugExecute {
 
         /// @dev Pay the platform fee if it there is an associated fee.
         if ($plugs.fee != 0) {
-            _compensate(PlugLib.PLUG_TREASURY_ADDRESS, $plugs.fee);
+            _compensate(PlugAddressesLib.PLUG_TREASURY_ADDRESS, $plugs.fee);
         }
 
         /// @dev Pay the Solver for the gas used if it was not open-access.
@@ -82,7 +86,9 @@ abstract contract PlugCore is PlugExecute {
             /// @dev Confirm the Solver is allowed to execute the transaction.
             ///      This is done here instead of a modifier so that the gas
             ///      snapshot accounts for the additional gas cost of the require.
-            require(solver == $solver, "Plug:invalid-solver");
+            if (solver != $solver) {
+                revert PlugLib.SolverInvalid(solver, $solver);
+            }
 
             /// @dev Calculate the gas price based on the current block.
             uint256 value = maxPriorityFeePerGas + block.basefee;

@@ -33,7 +33,7 @@ library WindowFuseLib {
  *         whether or not the current time is within a given window of time
  *         that repeats every X seconds and lasts for Y seconds as well as
  *         helper functions needed to determine the next N window openings.
- * @author @nftchance <chance@utc24.io>
+ * @author @nftchance <chance@onplug.io>
  *
  * @dev When working with this Caveat, you will generate timestamps with:
  *    Javascript / Typescript:

@@ -16,7 +16,7 @@ import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
  *         to minimize the amount of data that needs to be relayed.
  * @dev The verification of this takes place through onchain means
  *      therefore it can be rather expensive.
- * @author @nftchance <chance@utc24.io>
+ * @author @nftchance <chance@onplug.io>
  * @author @masonchain
  */
 contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {

@@ -21,12 +21,17 @@ abstract contract PlugTrading is PlugTradingInterface, ModuleAuthUpgradable {
     /// @dev The address that houses the ownership information.
     address public ownership;
 
+    /// @dev The address that has permission to route generalized bundles.
+    address public router;
+
     /**
      * @notice Modifier enforcing the caller to be the ownership proxy.
      */
     modifier onlyOwnership() {
         /// @dev Ensure the `caller` is the ownership proxy.
-        require(msg.sender == ownership, "PlugTrading:forbidden-caller");
+        if (msg.sender != ownership) {
+            revert PlugLib.CallerInvalid(ownership, msg.sender);
+        }
         _;
     }
 
@@ -36,7 +41,9 @@ abstract contract PlugTrading is PlugTradingInterface, ModuleAuthUpgradable {
      */
     modifier onlyOwner() {
         /// @dev Ensure the `caller` is the owner of the Socket.
-        require(msg.sender == owner(), "PlugTrading:forbidden-caller");
+        if (msg.sender != owner()) {
+            revert PlugLib.CallerInvalid(owner(), msg.sender);
+        }
         _;
     }
 
@@ -83,24 +90,39 @@ abstract contract PlugTrading is PlugTradingInterface, ModuleAuthUpgradable {
      * @notice Get the owner of the Vault.
      */
     function owner() public view virtual returns (address $owner) {
-        $owner =
-            ERC721Interface(ownership).ownerOf(uint256(uint160(address(this))));
+        $owner = ERC721Interface(ownership).ownerOf(tokenId());
+    }
+
+    /**
+     * @notice Get the token ID of the Vault.
+     */
+    function tokenId() public view virtual returns (uint256 $tokenId) {
+        $tokenId = uint256(uint160(address(this)));
     }
 
     /**
      * @notice Set the address of the ownership proxy which is a ERC721
      *         compliant contract that lives inside of the factory.
      */
-    function _initializeOwnership(address $ownership) internal {
+    function _initializeOwnership(
+        address $ownership,
+        address $router
+    )
+        internal
+    {
         /// @dev Check if the inheriting contract requires single-use
         ///      ownership initialization.
         if (_guardInitializeOwnership()) {
-            /// @dev Confirm the ownership has not been set yet.
-            require(ownership == address(0), "PlugTrading:already-initialized");
+            if (ownership != address(0)) {
+                revert PlugLib.TradingAlreadyInitialized();
+            }
         }
 
         /// @dev Set the state of the ownership proxy.
         ownership = $ownership;
+
+        /// @dev Set the state of the higher level router.
+        router = $router;
     }
 
     /**

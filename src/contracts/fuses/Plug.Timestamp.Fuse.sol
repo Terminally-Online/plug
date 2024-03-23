@@ -9,9 +9,4 @@ contract PlugTimestampFuse is ThresholdFuse {
     function _threshold() internal view override returns (uint256) {
         return block.timestamp;
     }
-
-    /// @dev Returns the name of the fuse.
-    function _name() internal pure virtual override returns (string memory) {
-        return "PlugTimestampFuse";
-    }
 }

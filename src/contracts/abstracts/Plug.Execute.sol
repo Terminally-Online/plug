@@ -7,10 +7,9 @@ import { PlugTypes, PlugTypesLib } from "./Plug.Types.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
 
 abstract contract PlugExecute is PlugEnforce {
-    using PlugLib for bytes;
-
     /**
-     * @notice Execution a built transaction.
+     * @notice Execution a pre-defined transaction stemming from a signed
+     *         bundle of Plugs for this domain.
      * @param $current The current state of the transaction.
      * @return $success If the transaction was successful.
      * @return $result The return data of the transaction.
@@ -26,6 +25,6 @@ abstract contract PlugExecute is PlugEnforce {
         }($current.data);
 
         /// @dev If the call failed, bubble up the revert reason if possible.
-        if (!$success) $result.bubbleRevert();
+        PlugLib.bubbleRevert($success, $result);
     }
 }

@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.18;
 
-import { Test } from "../utils/Test.sol";
-
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { Test, PlugLib, PlugTypesLib } from "../abstracts/test/Plug.Test.sol";
 import { PlugTimestampFuse } from "./Plug.Timestamp.Fuse.sol";
 
 contract PlugTimestampFuseTest is Test {
@@ -13,20 +11,19 @@ contract PlugTimestampFuseTest is Test {
         PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
     bytes32 plugsHash = bytes32("0");
 
-    uint128 beforeOperator;
-    uint128 beforeTimestamp;
-    uint128 afterOperator;
-    uint128 afterTimestamp;
+    uint8 beforeOperator;
+    uint8 afterOperator = 1;
+
+    uint256 beforeTimestamp;
+    uint256 afterTimestamp;
 
     function setUp() public virtual {
         fuse = new PlugTimestampFuse();
 
         skip(200);
 
-        beforeOperator = 0;
-        beforeTimestamp = uint128(block.timestamp + 100);
-        afterOperator = 1;
-        afterTimestamp = uint128(block.timestamp - 100);
+        beforeTimestamp = block.timestamp + 100;
+        afterTimestamp = block.timestamp - 100;
     }
 
     function test_enforceFuse_BeforeTimestamp() public {
@@ -38,9 +35,13 @@ contract PlugTimestampFuseTest is Test {
     }
 
     function testRevert_enforceFuse_BeforeTimestamp_Expired() public {
-        bytes memory terms =
-            fuse.encode(beforeOperator, uint128(beforeTimestamp - 150));
-        vm.expectRevert(bytes("PlugTimestampFuse:expired"));
+        uint256 expected = beforeTimestamp - 150;
+        bytes memory terms = fuse.encode(beforeOperator, expected);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdExceeded.selector, expected, block.timestamp
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 
@@ -53,9 +54,15 @@ contract PlugTimestampFuseTest is Test {
     }
 
     function testRevert_enforceFuse_AfterTimestamp_Early() public {
-        bytes memory terms =
-            fuse.encode(afterOperator, uint128(afterTimestamp + 400));
-        vm.expectRevert(bytes("PlugTimestampFuse:early"));
+        uint256 expected = afterTimestamp + 400;
+        bytes memory terms = fuse.encode(afterOperator, expected);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                PlugLib.ThresholdInsufficient.selector,
+                expected,
+                block.timestamp
+            )
+        );
         fuse.enforceFuse(terms, current, plugsHash);
     }
 }

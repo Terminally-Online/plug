@@ -4,14 +4,12 @@ pragma solidity 0.8.18;
 
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";
-
+import { PlugTrading } from "./Plug.Trading.sol";
 import { LibString } from "solady/src/utils/LibString.sol";
-
-import { PlugTradingInterface } from "../interfaces/Plug.Trading.Interface.sol";
 
 /**
  * @title Plug Tradable
- * @notice This enables the single-housing of Plug Vaults that have been deployed
+ * @notice This enables the single-housing of Plug Sockets that have been deployed
  *         irrespective of the version they are actively using. Notably, this
  *         contract is responsible for managing the ownership of the vault through
  *         a mirror-like function which means when the owner of this token changes,
@@ -19,12 +17,20 @@ import { PlugTradingInterface } from "../interfaces/Plug.Trading.Interface.sol";
  * @author nftchance (chance@onplug.io)
  */
 abstract contract PlugTradable is ERC721, Ownable {
-    using LibString for uint256;
-
     /// @dev The base endpoint for the metadata.
     string private baseURI;
 
-    constructor(address $owner, string memory $baseURI) {
+    /**
+     * @notice Construct a new Plug Tradable.
+     * @param $owner The address of the owner.
+     * @param $baseURI The base URI of the factory.
+     */
+    function _initializeTradable(
+        address $owner,
+        string memory $baseURI
+    )
+        internal
+    {
         /// @dev Initialize the metadata controller.
         _initializeOwner($owner);
 
@@ -38,6 +44,36 @@ abstract contract PlugTradable is ERC721, Ownable {
      */
     function setBaseURI(string memory $baseURI) external onlyOwner {
         baseURI = $baseURI;
+    }
+
+    /**
+     * @notice Metadata response for the name of the collection.
+     * @return $name The name of the collection.
+     */
+    function name() public pure override returns (string memory $name) {
+        $name = "Plug Sockets";
+    }
+
+    /**
+     * @notice Metadata response for the symbol of the collection.
+     * @return $symbol The symbol of the collection.
+     */
+    function symbol() public pure override returns (string memory $symbol) {
+        $symbol = "PLGSOK";
+    }
+
+    /**
+     * @notice Returns the compiled URI for a given token ID.
+     * @param $tokenId The token ID to query the URI for.
+     * @return $uri The URI for the given token ID.
+     */
+    function tokenURI(uint256 $tokenId)
+        public
+        view
+        override
+        returns (string memory $uri)
+    {
+        $uri = string(abi.encodePacked(baseURI, LibString.toString($tokenId)));
     }
 
     function _afterTokenTransfer(
@@ -54,36 +90,18 @@ abstract contract PlugTradable is ERC721, Ownable {
         ///      the owner in storage. We do not rely on a runtime read for ownership
         ///      references because that would end up costing more than just storing
         ///      the data over there as well.
-        PlugTradingInterface(address(uint160(tokenId))).transferOwnership(to);
+        PlugTrading(address(uint160(tokenId))).transferOwnership(to);
     }
 
     /**
-     * @notice Metadata response for the name of the collection.
-     * @return $name The name of the collection.
+     * See {Ownable-_guardInitializeOwner}.
      */
-    function name() public pure override returns (string memory $name) {
-        $name = "Plug Vaults";
-    }
-
-    /**
-     * @notice Metadata response for the symbol of the collection.
-     * @return $symbol The symbol of the collection.
-     */
-    function symbol() public pure override returns (string memory $symbol) {
-        $symbol = "PLUG";
-    }
-
-    /**
-     * @notice Returns the compiled URI for a given token ID.
-     * @param $tokenId The token ID to query the URI for.
-     * @return $uri The URI for the given token ID.
-     */
-    function tokenURI(uint256 $tokenId)
-        public
-        view
+    function _guardInitializeOwner()
+        internal
+        pure
         override
-        returns (string memory $uri)
+        returns (bool $guard)
     {
-        $uri = string(abi.encodePacked(baseURI, $tokenId.toString()));
+        $guard = true;
     }
 }

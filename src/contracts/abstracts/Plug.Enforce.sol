@@ -10,19 +10,21 @@ import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
  * @title Plug Enforce
  * @notice The enforcement mechanisms of Plug to ensure that transactions
  *         are only executed as defined.
- * @dev Inheriting contracts must implement the logic fo `enforceSignature`.
- * @author @nftchance (chance@utc24.io)
+ * @dev Inheriting contracts must implement the logic for:
+ *      - `_enforceSignature`
+ *      - `_enforceRouter`.
+ * @author @nftchance (chance@onplug.io)
  */
 abstract contract PlugEnforce is PlugTypes {
-    using PlugLib for bytes;
-
     /**
      * @notice Modifier to enforce the router of the transaction.
      * @dev Apply to this to functions that are designed to be access by Routers.
      * @dev Implicitly the address is assumed to be the current sender.
      */
     modifier enforceRouter() {
-        require(_enforceRouter(msg.sender), "Plug:invalid-router");
+        if (_enforceRouter(msg.sender) == false) {
+            revert PlugLib.RouterInvalid(msg.sender);
+        }
         _;
     }
 
@@ -34,7 +36,10 @@ abstract contract PlugEnforce is PlugTypes {
      *               signature used to verify the execution permission.
      */
     modifier enforceSignature(PlugTypesLib.LivePlugs calldata $input) {
-        require(_enforceSignature($input), "Plug:invalid-signature");
+        // require(_enforceSignature($input), "Plug:invalid-signature");
+        if (_enforceSignature($input) == false) {
+            revert PlugLib.SignatureInvalid();
+        }
         _;
     }
 
@@ -45,7 +50,9 @@ abstract contract PlugEnforce is PlugTypes {
      * @param $current The state of the transaction to execute.
      */
     modifier enforceCurrent(PlugTypesLib.Current memory $current) {
-        require(_enforceCurrent($current), "Plug:invalid-current");
+        if (_enforceCurrent($current) == false) {
+            revert PlugLib.CurrentInvalid();
+        }
         _;
     }
 
@@ -59,10 +66,7 @@ abstract contract PlugEnforce is PlugTypes {
         internal
         view
         virtual
-        returns (bool $allowed)
-    {
-        $allowed = $router == PlugLib.PLUG_ADDRESS;
-    }
+        returns (bool $allowed);
 
     /**
      * @notice Confirm that signer has permission to declare execution of a
@@ -106,7 +110,7 @@ abstract contract PlugEnforce is PlugTypes {
         );
 
         /// @dev If the Fuse failed and is not optional, bubble up the revert.
-        if (!$success) $through.bubbleRevert();
+        PlugLib.bubbleRevert($success, $through);
 
         /// @dev Decode the return data to remove the wrapped bytes in memory.
         $through = abi.decode($through, (bytes));

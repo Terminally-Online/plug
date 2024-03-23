@@ -17,7 +17,7 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *         exact same pin therefore it is recommended to set salt as
  *         as the timestamp of generation (in milliseconds) to ensure that
  *         the signer can still reuse the same pin with a new salt.
- * @author @nftchance (chance@utc24.io)
+ * @author @nftchance (chance@onplug.io)
  */
 contract PlugRevocationFuse is PlugFuseInterface {
     /// @notice Use the ECDSA library for signature verification.

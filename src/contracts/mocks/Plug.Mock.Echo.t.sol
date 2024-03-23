@@ -2,21 +2,13 @@
 
 pragma solidity 0.8.18;
 
-import { Test } from "../utils/Test.sol";
-
-import { PlugTypes, PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { PlugFactory } from "../base/Plug.Factory.sol";
-import { PlugMockEcho } from "./Plug.Mock.Echo.sol";
-
-import "forge-std/console.sol";
+import { Test, PlugMockEcho } from "../abstracts/test/Plug.Test.sol";
 
 contract PlugMockSocketTest is Test {
-    PlugMockEcho internal mock;
-
     event EchoInvoked(address $sender, string $message);
 
     function setUp() public virtual {
-        mock = new PlugMockEcho();
+        setUpPlug();
     }
 
     function test_Echo() public {

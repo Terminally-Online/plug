@@ -2,12 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { Test } from "../utils/Test.sol";
-
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { Test, PlugTypesLib, LibClone } from "../abstracts/test/Plug.Test.sol";
 import { PlugLimitedCallsFuse } from "./Plug.LimitedCalls.Fuse.sol";
-
-import { LibClone } from "solady/src/utils/LibClone.sol";
 
 contract PlugLimitedCallsFuseTest is Test {
     PlugLimitedCallsFuse internal fuse;

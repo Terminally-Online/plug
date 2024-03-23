@@ -25,23 +25,25 @@ contract PlugVaultSocket is
     *         a Socket factory.
     */
     constructor() {
-        initialize(address(1));
+        initialize(address(1), address(1));
     }
 
     /**
-     * @notice Initializes a new Plug Vault Socket contract.
+     * @notice Initializes a new Plug Vault Socket.
+     * @param $ownership The address of the ownership proxy.
+     * @param $router The address of the router.
      */
-    function initialize(address $ownership) public {
+    function initialize(address $ownership, address $router) public {
         /// @dev Associate the ownership proxy as the factory that deployed
         ///      the contract at the same time as deployment.
-        _initializeOwnership($ownership);
+        _initializeOwnership($ownership, $router);
     }
 
     /**
      * See { PlugSocket-name }
      */
     function name() public pure override returns (string memory $name) {
-        $name = "PlugVaultSocket";
+        $name = "Plug Vault Socket";
     }
 
     /**
@@ -49,6 +51,22 @@ contract PlugVaultSocket is
      */
     function version() public pure override returns (string memory $version) {
         $version = "0.0.1";
+    }
+
+    /**
+     * @notice Confirm that the only specified routers can execute the transaction.
+     * @dev If you would like to limit the available routers override this
+     *      function in your contract with the additional logic.
+     * @param $router The router of the transaction.
+     */
+    function _enforceRouter(address $router)
+        internal
+        view
+        virtual
+        override
+        returns (bool $allowed)
+    {
+        $allowed = $router == router;
     }
 
     /**
