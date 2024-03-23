@@ -5,7 +5,9 @@ pragma solidity 0.8.18;
 import { PlugExecute } from "./Plug.Execute.sol";
 import { PlugTypes } from "./Plug.Types.sol";
 import {
-    PlugLib, PlugTypesLib, PlugAddressesLib
+    PlugLib,
+    PlugTypesLib,
+    PlugAddressesLib
 } from "../libraries/Plug.Lib.sol";
 
 /**
@@ -18,7 +20,12 @@ abstract contract PlugCore is PlugExecute {
      * @param $recipient The address of the recipient.
      * @param $value The amount of value to send.
      */
-    function _compensate(address $recipient, uint256 $value) internal {
+    function _compensate(
+        address $recipient,
+        uint256 $value
+    )
+        internal
+    {
         /// @dev Transfer the money the Solver is owed and confirm it
         ///      the transfer is successful.
         (bool success,) = $recipient.call{ value: $value }("");
@@ -64,8 +71,9 @@ abstract contract PlugCore is PlugExecute {
             ///      and ensure they are in a state of acceptable execution
             ///      while building the pass through data based on the nodes.
             for (ii = 0; ii < plugs[i].fuses.length; ii++) {
-                (, current.data) =
-                    _enforceFuse(plugs[i].fuses[ii], current, plugsHash);
+                (, current.data) = _enforceFuse(
+                    plugs[i].fuses[ii], current, plugsHash
+                );
             }
 
             /// @dev Execute the transaction.
@@ -74,14 +82,19 @@ abstract contract PlugCore is PlugExecute {
 
         /// @dev Pay the platform fee if it there is an associated fee.
         if ($plugs.fee != 0) {
-            _compensate(PlugAddressesLib.PLUG_TREASURY_ADDRESS, $plugs.fee);
+            _compensate(
+                PlugAddressesLib.PLUG_TREASURY_ADDRESS, $plugs.fee
+            );
         }
 
         /// @dev Pay the Solver for the gas used if it was not open-access.
         if ($plugs.solver.length != 0) {
             /// @dev Unpack the solver data from the encoded slot.
-            (uint96 maxPriorityFeePerGas, uint96 maxFeePerGas, address solver) =
-                abi.decode($plugs.solver, (uint96, uint96, address));
+            (
+                uint96 maxPriorityFeePerGas,
+                uint96 maxFeePerGas,
+                address solver
+            ) = abi.decode($plugs.solver, (uint96, uint96, address));
 
             /// @dev Confirm the Solver is allowed to execute the transaction.
             ///      This is done here instead of a modifier so that the gas

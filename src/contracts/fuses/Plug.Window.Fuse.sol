@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { BytesLib } from "../libraries/BytesLib.sol";
 
@@ -124,10 +125,14 @@ contract PlugWindowFuse is PlugFuseInterface {
         returns (uint256 $schedule)
     {
         /// @dev Ensure the duration is greater than 0.
-        if ($duration == 0) revert WindowFuseLib.WindowLackingDuration();
+        if ($duration == 0) {
+            revert WindowFuseLib.WindowLackingDuration();
+        }
 
         /// @dev Must support at least one day.
-        if ($daysOfWeek == 0) revert WindowFuseLib.WindowLackingDays();
+        if ($daysOfWeek == 0) {
+            revert WindowFuseLib.WindowLackingDays();
+        }
 
         /// @dev Prevent weird overlapping windows.
         if ($duration > $repeatsEvery) {
@@ -137,7 +142,8 @@ contract PlugWindowFuse is PlugFuseInterface {
         /// @dev Pack the schedule details.
         $schedule = (uint256($startTime) << START_TIME_SHIFT)
             | (uint256($repeatsEvery) << REPEATS_EVERY_SHIFT)
-            | (uint256($duration) << DURATION_SHIFT) | uint256($daysOfWeek);
+            | (uint256($duration) << DURATION_SHIFT)
+            | uint256($daysOfWeek);
     }
 
     /**
@@ -146,7 +152,11 @@ contract PlugWindowFuse is PlugFuseInterface {
      * @param $schedule The schedule to check.
      * @return $isWithinWindow Whether or not the current time is within the
      */
-    function isWithinWindow(uint256 $schedule) public view returns (bool) {
+    function isWithinWindow(uint256 $schedule)
+        public
+        view
+        returns (bool)
+    {
         /// @dev Get the schedule details.
         (
             uint32 startTime,
@@ -156,7 +166,9 @@ contract PlugWindowFuse is PlugFuseInterface {
         ) = decode($schedule);
 
         /// @dev Ensure the current time is within the window.
-        return _isWithinWindow(startTime, repeatsEvery, duration, daysOfWeek);
+        return _isWithinWindow(
+            startTime, repeatsEvery, duration, daysOfWeek
+        );
     }
 
     /**
@@ -176,8 +188,9 @@ contract PlugWindowFuse is PlugFuseInterface {
         returns (bool)
     {
         /// @dev Ensure the current time is within the window.
-        return
-            _isWithinWindow($startTime, $repeatsEvery, $duration, $daysOfWeek);
+        return _isWithinWindow(
+            $startTime, $repeatsEvery, $duration, $daysOfWeek
+        );
     }
 
     /**
@@ -195,7 +208,10 @@ contract PlugWindowFuse is PlugFuseInterface {
     )
         external
         view
-        returns (WindowFuseLib.Window[] memory $windows, uint32 $cursor)
+        returns (
+            WindowFuseLib.Window[] memory $windows,
+            uint32 $cursor
+        )
     {
         /// @dev Load the stack.
         $windows = new WindowFuseLib.Window[]($n);
@@ -277,7 +293,8 @@ contract PlugWindowFuse is PlugFuseInterface {
         returns (bool)
     {
         /// @dev Get the day of the week.
-        uint8 dayOfWeek = uint8((($timestamp / SECONDS_PER_DAY) + 4) % 7);
+        uint8 dayOfWeek =
+            uint8((($timestamp / SECONDS_PER_DAY) + 4) % 7);
 
         /// @dev Check if the day of the week is supported.
         return ($daysOfWeek >> dayOfWeek) & 1 == 1;
@@ -314,7 +331,8 @@ contract PlugWindowFuse is PlugFuseInterface {
         /// @dev Loop through every day in the window backwards.
         for (daysInWindow; daysInWindow >= 0; daysInWindow--) {
             /// @dev Get the time `daysInWindow` days after the start time.
-            uint32 dayTime = $startTime + daysInWindow * SECONDS_PER_DAY;
+            uint32 dayTime =
+                $startTime + daysInWindow * SECONDS_PER_DAY;
 
             /// @dev Day time will be the 24 hour increment of the start time,
             ///      however the day calculations roll by the start of the day.
@@ -323,7 +341,8 @@ contract PlugWindowFuse is PlugFuseInterface {
 
             /// @dev Some Windows may be longer than 1 day so we must check if
             ///      the period is active today.
-            bool isOnDayOfWeek = _isOnDayOfWeek($daysOfWeek, topDayTime);
+            bool isOnDayOfWeek =
+                _isOnDayOfWeek($daysOfWeek, topDayTime);
 
             /// @dev If it is not active there is no active period.
             /// @dev Do realize if the start time is not on a day of the week
@@ -343,8 +362,8 @@ contract PlugWindowFuse is PlugFuseInterface {
             /// @dev Calculate the end of this period by determining if we have
             ///      gone past the declared end time otherwise it ended
             ///      at the bottom of the day.
-            $window.periods[daysInWindow].endTime =
-                windowEndTime < bottomDayTime ? windowEndTime : bottomDayTime;
+            $window.periods[daysInWindow].endTime = windowEndTime
+                < bottomDayTime ? windowEndTime : bottomDayTime;
         }
     }
 
@@ -383,7 +402,9 @@ contract PlugWindowFuse is PlugFuseInterface {
 
         /// @notice $repeatsEvery may be zero for a one-time window
         ///         that does not repeat so we must check for this.
-        if ($repeatsEvery == 0) return currentTime < $startTime + $duration;
+        if ($repeatsEvery == 0) {
+            return currentTime < $startTime + $duration;
+        }
 
         /// @dev Get the time since the start of the current window.
         uint32 currentWindowOpen =

@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from "../../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../../abstracts/Plug.Types.sol";
 import { PlugNounsLib } from "../../libraries/Plug.Nouns.Lib.sol";
 
@@ -20,7 +21,8 @@ abstract contract PlugNounsBidFuse is PlugFuseInterface {
         override
         returns (bytes memory $through)
     {
-        (bool $settleUnsettled, address $bidder, uint256 $bid) = decode($live);
+        (bool $settleUnsettled, address $bidder, uint256 $bid) =
+            decode($live);
 
         /// @dev Get the current state of the auction.
         (,,, uint256 $endTime, address $winner, bool $settled) =
@@ -28,16 +30,23 @@ abstract contract PlugNounsBidFuse is PlugFuseInterface {
 
         /// @dev Prevent the user from bidding on an auction that they
         ///      have already won / are winning.
-        if ($winner == $bidder) revert PlugNounsLib.InsufficientReason();
+        if ($winner == $bidder) {
+            revert PlugNounsLib.InsufficientReason();
+        }
 
         /// @dev Prevent the user from bidding on an auction that has
         ///      not yet been settled.
-        if (!$settled && $endTime <= block.timestamp && !$settleUnsettled) {
+        if (
+            !$settled && $endTime <= block.timestamp
+                && !$settleUnsettled
+        ) {
             revert PlugNounsLib.InsufficientSettlement();
         }
 
         /// @dev Make sure the user has enough money to bid.
-        if (balances[$bidder] < $bid) revert PlugNounsLib.InsufficientBalance();
+        if (balances[$bidder] < $bid) {
+            revert PlugNounsLib.InsufficientBalance();
+        }
 
         /// @dev Make sure the bid - fees is large enough to cover
         ///		 the minimum bid.

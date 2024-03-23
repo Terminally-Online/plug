@@ -16,12 +16,16 @@ abstract contract PlugThresholdFuseEnforce {
         /// @dev Make sure the base denominator is below (or before) the threshold.
         if ($operator == 0) {
             if ($threshold < $denominator) {
-                revert PlugLib.ThresholdExceeded($threshold, $denominator);
+                revert PlugLib.ThresholdExceeded(
+                    $threshold, $denominator
+                );
             }
         }
         /// @dev Make sure the base denominator is above (or after) after the threshold.
         else if ($threshold > $denominator) {
-            revert PlugLib.ThresholdInsufficient($threshold, $denominator);
+            revert PlugLib.ThresholdInsufficient(
+                $threshold, $denominator
+            );
         }
     }
 }

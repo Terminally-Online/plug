@@ -2,13 +2,15 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
+import { PlugFactoryInterface } from
+    "../interfaces/Plug.Factory.Interface.sol";
 import { PlugTradable } from "../abstracts/Plug.Tradable.sol";
 
 import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
 import { LibClone } from "solady/src/utils/LibClone.sol";
 
-import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
+import { PlugSocketInterface } from
+    "../interfaces/Plug.Socket.Interface.sol";
 
 /**
  * @title Plug Factory
@@ -98,9 +100,8 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
         }
 
         /// @dev Deploy the new vault using a Beacon Proxy pattern.
-        ($alreadyDeployed, $socket) = LibClone.createDeterministicERC1967(
-            msg.value, implementation, $salt
-        );
+        ($alreadyDeployed, $socket) = LibClone
+            .createDeterministicERC1967(msg.value, implementation, $salt);
 
         /// @dev If the vault was not already deployed, initialize it.
         if (!$alreadyDeployed) {
@@ -115,7 +116,9 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
 
             /// @dev Initialize the Socket with the ownership proxy pointing
             ///      this factory that is deploying the Socket.
-            PlugSocketInterface($socket).initialize(address(this), $router);
+            PlugSocketInterface($socket).initialize(
+                address(this), $router
+            );
 
             /// @dev Mint the transferable ownership token to the signer that
             ///      created the intent which is implicitly the Socket admin

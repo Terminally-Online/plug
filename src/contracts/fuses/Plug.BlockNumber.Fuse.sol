@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { ThresholdFuse } from "../abstracts/fuses/Plug.Threshold.Fuse.sol";
+import { ThresholdFuse } from
+    "../abstracts/fuses/Plug.Threshold.Fuse.sol";
 
 contract PlugBlockNumberFuse is ThresholdFuse {
     /// @dev Returns the current block number.

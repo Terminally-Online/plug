@@ -1,5 +1,327 @@
 export const contracts = [
     {
+        "name": "PlugBalanceFuse",
+        "abi": [
+            {
+                "type": "function",
+                "name": "decode",
+                "inputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$type",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "encode",
+                "inputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$type",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "enforceFuse",
+                "inputs": [
+                    {
+                        "name": "$live",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$current",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Current",
+                        "components": [
+                            {
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$through",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "ThresholdExceeded",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "ThresholdInsufficient",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "PlugBalanceSemiFungibleFuse",
+        "abi": [
+            {
+                "type": "function",
+                "name": "decode",
+                "inputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$tokenId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "encode",
+                "inputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$tokenId",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "enforceFuse",
+                "inputs": [
+                    {
+                        "name": "$live",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$current",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Current",
+                        "components": [
+                            {
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$through",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "ThresholdExceeded",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "ThresholdInsufficient",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "name": "PlugBaseFeeFuse",
         "abi": [
             {

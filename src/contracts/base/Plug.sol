@@ -5,11 +5,15 @@ pragma solidity 0.8.18;
 import { PlugInterface } from "../interfaces/Plug.Interface.sol";
 
 import {
-    PlugLib, PlugTypesLib, PlugAddressesLib
+    PlugLib,
+    PlugTypesLib,
+    PlugAddressesLib
 } from "../libraries/Plug.Lib.sol";
 
-import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
-import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
+import { PlugFactoryInterface } from
+    "../interfaces/Plug.Factory.Interface.sol";
+import { PlugSocketInterface } from
+    "../interfaces/Plug.Socket.Interface.sol";
 
 /**
  * @title Plug
@@ -37,7 +41,9 @@ contract Plug is PlugInterface {
     {
         /// @dev Pass down the signature components and execute
         ///      the bundle from within the Socket that was declared.
-        $results = _socket($livePlugs).plug($livePlugs, msg.sender, gasleft());
+        $results = _socket($livePlugs).plug(
+            $livePlugs, msg.sender, gasleft()
+        );
     }
 
     /**

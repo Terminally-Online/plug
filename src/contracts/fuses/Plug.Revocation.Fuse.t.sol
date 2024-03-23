@@ -7,8 +7,11 @@ import { PlugRevocationFuse } from "./Plug.Revocation.Fuse.sol";
 
 contract PlugRevocationFuseTest is Test {
     PlugRevocationFuse internal fuse;
-    PlugTypesLib.Current internal current =
-        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    PlugTypesLib.Current internal current = PlugTypesLib.Current({
+        target: address(fuse),
+        value: 0,
+        data: "0x"
+    });
     bytes32 plugsHash = bytes32("0");
 
     function setUp() public {

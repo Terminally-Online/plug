@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
 import { BytesLib } from "../libraries/BytesLib.sol";
@@ -32,7 +33,9 @@ contract PlugNounsIdFuse is PlugFuseInterface {
         /// @dev Get the current state of the auction.
         (uint256 nounId,,,,,) = PlugNounsLib.AUCTION_HOUSE.auction();
 
-        require(nounId == decode($live), "NounsTokenId:invalid-noun-id");
+        require(
+            nounId == decode($live), "NounsTokenId:invalid-noun-id"
+        );
 
         /// @dev Continue the pass through.
         $through = $current.data;

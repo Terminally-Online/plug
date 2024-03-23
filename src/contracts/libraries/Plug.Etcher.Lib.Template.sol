@@ -23,7 +23,9 @@ import { PlugLib } from "../libraries/Plug.Lib.sol";
 library PlugEtcherLibTemplate {
     /// @notice The immutable Create2 factory used for deployment.
     ImmutableCreate2Factory internal constant FACTORY =
-        ImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
+    ImmutableCreate2Factory(
+        0x0000000000FFe8B47B3e2130213B802212439497
+    );
 
     /// @auto INSERT SEGMENTS
 
@@ -59,7 +61,8 @@ library PlugEtcherLibTemplate {
                         mload(add(add(ic2fBytecode, 0x20), i))
                     )
                 }
-                let vmAddress := 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D
+                let vmAddress :=
+                    0x7109709ECfa91a80626fF3989D68f67F5b1DD12D
                 if iszero(
                     call(
                         gas(),
@@ -88,8 +91,11 @@ library PlugEtcherLibTemplate {
                     mload(add(add($initializationCode, 0x20), i))
                 )
             }
-            if iszero(call(gas(), c2f, 0, add(m, 0x1c), add(n, 0x64), m, 0x20))
-            {
+            if iszero(
+                call(
+                    gas(), c2f, 0, add(m, 0x1c), add(n, 0x64), m, 0x20
+                )
+            ) {
                 returndatacopy(m, m, returndatasize())
                 revert(m, returndatasize())
             }

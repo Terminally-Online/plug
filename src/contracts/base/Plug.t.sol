@@ -35,7 +35,8 @@ contract PlugTest is Test {
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -47,7 +48,8 @@ contract PlugTest is Test {
             fee: 0,
             solver: bytes("")
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -67,13 +69,16 @@ contract PlugTest is Test {
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_SignerSolver_InvalidRouter() public {
+    function testRevert_PlugEmptyEcho_SignerSolver_InvalidRouter()
+        public
+    {
         PlugTypesLib.Current memory current = PlugTypesLib.Current({
             target: address(mock),
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -85,7 +90,8 @@ contract PlugTest is Test {
             fee: 0,
             solver: bytes("")
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -109,13 +115,16 @@ contract PlugTest is Test {
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_SignerSolver_InvalidSignature() public {
+    function testRevert_PlugEmptyEcho_SignerSolver_InvalidSignature()
+        public
+    {
         PlugTypesLib.Current memory current = PlugTypesLib.Current({
             target: address(mock),
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -127,10 +136,16 @@ contract PlugTest is Test {
             fee: 0,
             solver: bytes("")
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
-                sign(vault.getPlugsHash(plugs), address(vault), 0xabc1234, false),
+                sign(
+                    vault.getPlugsHash(plugs),
+                    address(vault),
+                    0xabc1234,
+                    false
+                ),
                 1,
                 1,
                 1
@@ -141,7 +156,9 @@ contract PlugTest is Test {
         plug.plug(livePlugs);
     }
 
-    function test_PlugEmptyEcho_ExternalSolver_NotCompensated() public {
+    function test_PlugEmptyEcho_ExternalSolver_NotCompensated()
+        public
+    {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
         vm.deal(address(vault), 100 ether);
@@ -152,7 +169,8 @@ contract PlugTest is Test {
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -164,7 +182,8 @@ contract PlugTest is Test {
             fee: 0,
             solver: abi.encode(uint96(0), uint96(0), solver)
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -197,7 +216,8 @@ contract PlugTest is Test {
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -209,7 +229,8 @@ contract PlugTest is Test {
             fee: 1 ether,
             solver: abi.encode(uint96(0.2 ether), uint96(1), solver)
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -232,7 +253,8 @@ contract PlugTest is Test {
         assertTrue(preBalance - 1 ether > address(vault).balance);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalSolver_CompensationFailure()
+    function testRevert_PlugEmptyEcho_ExternalSolver_CompensationFailure(
+    )
         public
     {
         address solver = _randomNonZeroAddress();
@@ -244,7 +266,8 @@ contract PlugTest is Test {
             value: 0,
             data: abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector)
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -256,7 +279,8 @@ contract PlugTest is Test {
             fee: 1 ether,
             solver: abi.encode(uint96(0.2 ether), uint96(24), solver)
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -282,7 +306,9 @@ contract PlugTest is Test {
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalSolver_Invalid() public {
+    function testRevert_PlugEmptyEcho_ExternalSolver_Invalid()
+        public
+    {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
         vm.deal(address(vault), 100 ether);
@@ -294,7 +320,8 @@ contract PlugTest is Test {
             value: 0,
             data: encodedTransaction
         });
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        PlugTypesLib.Plug[] memory plugsArray =
+            new PlugTypesLib.Plug[](1);
         plugsArray[0] = PlugTypesLib.Plug({
             current: current,
             fuses: new PlugTypesLib.Fuse[](0)
@@ -306,7 +333,8 @@ contract PlugTest is Test {
             fee: 1 ether,
             solver: abi.encode(uint96(0), uint96(0), address(solver))
         });
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
+        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib
+            .LivePlugs({
             plugs: plugs,
             signature: pack(
                 sign(
@@ -323,7 +351,9 @@ contract PlugTest is Test {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                PlugLib.SolverInvalid.selector, address(solver), address(this)
+                PlugLib.SolverInvalid.selector,
+                address(solver),
+                address(this)
             )
         );
         plug.plug(livePlugs);

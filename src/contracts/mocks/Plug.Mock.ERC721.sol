@@ -3,20 +3,12 @@
 pragma solidity 0.8.18;
 
 import { ERC721 } from "solady/src/tokens/ERC721.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
-
 import { LibString } from "solady/src/utils/LibString.sol";
 
-contract PlugMockERC721 is ERC721, Ownable {
+contract PlugMockERC721 is ERC721 {
     using LibString for uint256;
 
-    constructor() { }
-
-    function initialize(address $owner) public {
-        _initializeOwner($owner);
-    }
-
-    function mint(address $to, uint256 $tokenId) public onlyOwner {
+    function mint(address $to, uint256 $tokenId) public {
         _mint($to, $tokenId);
     }
 
@@ -34,7 +26,8 @@ contract PlugMockERC721 is ERC721, Ownable {
         override
         returns (string memory)
     {
-        return
-            string(abi.encodePacked("https://mock.com/", $tokenId.toString()));
+        return string(
+            abi.encodePacked("https://mock.com/", $tokenId.toString())
+        );
     }
 }

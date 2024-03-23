@@ -4,7 +4,10 @@ pragma solidity 0.8.18;
 
 interface NounsAuctionHouseInterface {
     event AuctionBid(
-        uint256 indexed nounId, address sender, uint256 value, bool extended
+        uint256 indexed nounId,
+        address sender,
+        uint256 value,
+        bool extended
     );
     event AuctionCreated(
         uint256 indexed nounId, uint256 startTime, uint256 endTime
@@ -50,7 +53,10 @@ interface NounsAuctionHouseInterface {
     )
         external;
 
-    function minBidIncrementPercentage() external view returns (uint8);
+    function minBidIncrementPercentage()
+        external
+        view
+        returns (uint8);
 
     function nouns() external view returns (address);
 
@@ -64,7 +70,9 @@ interface NounsAuctionHouseInterface {
 
     function reservePrice() external view returns (uint256);
 
-    function setMinBidIncrementPercentage(uint8 _minBidIncrementPercentage)
+    function setMinBidIncrementPercentage(
+        uint8 _minBidIncrementPercentage
+    )
         external;
 
     function setReservePrice(uint256 _reservePrice) external;

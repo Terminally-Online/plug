@@ -4,7 +4,8 @@ pragma solidity 0.8.18;
 
 import { PlugTypesLib, PlugTypes } from "./Plug.Types.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
-import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../interfaces/Plug.Fuse.Interface.sol";
 
 /**
  * @title Plug Enforce

@@ -42,14 +42,24 @@ contract PlugVaultSocket is
     /**
      * See { PlugSocket-name }
      */
-    function name() public pure override returns (string memory $name) {
+    function name()
+        public
+        pure
+        override
+        returns (string memory $name)
+    {
         $name = "Plug Vault Socket";
     }
 
     /**
      * See { PlugSocket-version }
      */
-    function version() public pure override returns (string memory $version) {
+    function version()
+        public
+        pure
+        override
+        returns (string memory $version)
+    {
         $version = "0.0.1";
     }
 
@@ -90,18 +100,26 @@ contract PlugVaultSocket is
         /// @dev Utilize a standard signature recovery method that is only designed
         ///      to support one domain and intent at a time.
         if (signatureType & 0x03 == signatureType) {
-            ($allowed,) = _signatureValidation(plugsHash, $input.signature);
+            ($allowed,) =
+                _signatureValidation(plugsHash, $input.signature);
         }
         /// @dev Utilize a merkle proof signature recovery method that holds several
         ///      domains and intents at a time inside a single signature.
         else if (signatureType & 0x04 == signatureType) {
             /// @dev Recover the merkle proof data from the packed signature.
-            (bytes32 root, bytes32[] memory proof, bytes memory signature) =
-                abi.decode($input.signature[1:], (bytes32, bytes32[], bytes));
+            (
+                bytes32 root,
+                bytes32[] memory proof,
+                bytes memory signature
+            ) = abi.decode(
+                $input.signature[1:], (bytes32, bytes32[], bytes)
+            );
 
             /// @dev Ensure the merkle tree contains the data of the signed bundle.
             require(
-                MerkleProofLib.verify(proof, root, getPlugsHash($input.plugs)),
+                MerkleProofLib.verify(
+                    proof, root, getPlugsHash($input.plugs)
+                ),
                 "PlugTypes:invalid-proof"
             );
 
@@ -110,7 +128,8 @@ contract PlugVaultSocket is
             uint256 offset = proof.length * 32 + 161;
 
             ($allowed,) = _signatureValidation(
-                plugsHash, $input.signature[offset:offset + signature.length]
+                plugsHash,
+                $input.signature[offset:offset + signature.length]
             );
         }
     }
@@ -118,7 +137,12 @@ contract PlugVaultSocket is
     /**
      * See { UUPSUpgradeable._authorizeUpgrade }
      */
-    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
+    function _authorizeUpgrade(address)
+        internal
+        virtual
+        override
+        onlyOwner
+    { }
 
     /**
      * See { PlugTrading._guardInitializeOwnership }

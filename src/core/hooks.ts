@@ -167,6 +167,144 @@ export const plugAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugBalanceFuse
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugBalanceFuseAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    name: 'decode',
+    outputs: [
+      { name: '$holder', internalType: 'address', type: 'address' },
+      { name: '$asset', internalType: 'address', type: 'address' },
+      { name: '$type', internalType: 'uint8', type: 'uint8' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$holder', internalType: 'address', type: 'address' },
+      { name: '$asset', internalType: 'address', type: 'address' },
+      { name: '$type', internalType: 'uint8', type: 'uint8' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'encode',
+    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$live', internalType: 'bytes', type: 'bytes' },
+      {
+        name: '$current',
+        internalType: 'struct PlugTypesLib.Current',
+        type: 'tuple',
+        components: [
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'value', internalType: 'uint256', type: 'uint256' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'enforceFuse',
+    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdExceeded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdInsufficient',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugBalanceSemiFungibleFuse
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugBalanceSemiFungibleFuseAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    name: 'decode',
+    outputs: [
+      { name: '$holder', internalType: 'address', type: 'address' },
+      { name: '$asset', internalType: 'address', type: 'address' },
+      { name: '$tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$holder', internalType: 'address', type: 'address' },
+      { name: '$asset', internalType: 'address', type: 'address' },
+      { name: '$tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'encode',
+    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$live', internalType: 'bytes', type: 'bytes' },
+      {
+        name: '$current',
+        internalType: 'struct PlugTypesLib.Current',
+        type: 'tuple',
+        components: [
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'value', internalType: 'uint256', type: 'uint256' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'enforceFuse',
+    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdExceeded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdInsufficient',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugBaseFeeFuse
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2115,6 +2253,69 @@ export const useSimulatePlugPlug = /*#__PURE__*/ createUseSimulateContract({
   abi: plugAbi,
   functionName: 'plug',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceFuseAbi}__
+ */
+export const useReadPlugBalanceFuse = /*#__PURE__*/ createUseReadContract({
+  abi: plugBalanceFuseAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceFuseAbi}__ and `functionName` set to `"decode"`
+ */
+export const useReadPlugBalanceFuseDecode = /*#__PURE__*/ createUseReadContract(
+  { abi: plugBalanceFuseAbi, functionName: 'decode' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceFuseAbi}__ and `functionName` set to `"encode"`
+ */
+export const useReadPlugBalanceFuseEncode = /*#__PURE__*/ createUseReadContract(
+  { abi: plugBalanceFuseAbi, functionName: 'encode' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceFuseAbi}__ and `functionName` set to `"enforceFuse"`
+ */
+export const useReadPlugBalanceFuseEnforceFuse =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugBalanceFuseAbi,
+    functionName: 'enforceFuse',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceSemiFungibleFuseAbi}__
+ */
+export const useReadPlugBalanceSemiFungibleFuse =
+  /*#__PURE__*/ createUseReadContract({ abi: plugBalanceSemiFungibleFuseAbi })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceSemiFungibleFuseAbi}__ and `functionName` set to `"decode"`
+ */
+export const useReadPlugBalanceSemiFungibleFuseDecode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugBalanceSemiFungibleFuseAbi,
+    functionName: 'decode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceSemiFungibleFuseAbi}__ and `functionName` set to `"encode"`
+ */
+export const useReadPlugBalanceSemiFungibleFuseEncode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugBalanceSemiFungibleFuseAbi,
+    functionName: 'encode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBalanceSemiFungibleFuseAbi}__ and `functionName` set to `"enforceFuse"`
+ */
+export const useReadPlugBalanceSemiFungibleFuseEnforceFuse =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugBalanceSemiFungibleFuseAbi,
+    functionName: 'enforceFuse',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugBaseFeeFuseAbi}__

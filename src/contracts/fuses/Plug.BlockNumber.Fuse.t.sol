@@ -2,14 +2,21 @@
 
 pragma solidity 0.8.18;
 
-import { Test, PlugLib, PlugTypesLib } from "../abstracts/test/Plug.Test.sol";
+import {
+    Test,
+    PlugLib,
+    PlugTypesLib
+} from "../abstracts/test/Plug.Test.sol";
 import { PlugBlockNumberFuse } from "./Plug.BlockNumber.Fuse.sol";
 
 contract PlugBlockNumberFuseTest is Test {
     PlugBlockNumberFuse internal fuse;
 
-    PlugTypesLib.Current current =
-        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    PlugTypesLib.Current current = PlugTypesLib.Current({
+        target: address(fuse),
+        value: 0,
+        data: "0x"
+    });
     bytes32 plugsHash = bytes32(0);
 
     uint8 beforeOperator;
@@ -28,7 +35,8 @@ contract PlugBlockNumberFuseTest is Test {
 
     function test_enforceFuse_BeforeBlock() public {
         bytes memory terms = fuse.encode(beforeOperator, beforeBlock);
-        (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
+        (uint256 decodedOperator, uint256 decodedTimestamp) =
+            fuse.decode(terms);
         assertEq(decodedOperator, beforeOperator);
         assertEq(decodedTimestamp, beforeBlock);
         fuse.enforceFuse(terms, current, plugsHash);
@@ -39,7 +47,9 @@ contract PlugBlockNumberFuseTest is Test {
         bytes memory terms = fuse.encode(beforeOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(
-                PlugLib.ThresholdExceeded.selector, expected, block.number
+                PlugLib.ThresholdExceeded.selector,
+                expected,
+                block.number
             )
         );
         fuse.enforceFuse(terms, current, plugsHash);
@@ -47,7 +57,8 @@ contract PlugBlockNumberFuseTest is Test {
 
     function test_enforceFuse_AfterBlock() public {
         bytes memory terms = fuse.encode(afterOperator, afterBlock);
-        (uint256 decodedOperator, uint256 decodedTimestamp) = fuse.decode(terms);
+        (uint256 decodedOperator, uint256 decodedTimestamp) =
+            fuse.decode(terms);
         assertEq(decodedOperator, afterOperator);
         assertEq(decodedTimestamp, afterBlock);
         fuse.enforceFuse(terms, current, plugsHash);
@@ -58,7 +69,9 @@ contract PlugBlockNumberFuseTest is Test {
         bytes memory terms = fuse.encode(afterOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(
-                PlugLib.ThresholdInsufficient.selector, expected, block.number
+                PlugLib.ThresholdInsufficient.selector,
+                expected,
+                block.number
             )
         );
         fuse.enforceFuse(terms, current, plugsHash);

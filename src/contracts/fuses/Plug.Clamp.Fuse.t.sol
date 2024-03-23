@@ -22,7 +22,8 @@ contract PlugClampFuseTest is Test {
 
     function test_EnforceFuse() public {
         bytes memory terms = fuse.encode(10, 50);
-        bytes memory pass = fuse.enforceFuse(terms, current, plugsHash);
+        bytes memory pass =
+            fuse.enforceFuse(terms, current, plugsHash);
         assertEq(abi.decode(pass, (uint256)), 50);
     }
 }

@@ -17,6 +17,16 @@ export const treasury: Contract = {
 	relativePath: '../base/'
 } as const
 
+export const balance: Contract = {
+	name: 'Plug.Balance.Fuse.sol',
+	relativePath: '../fuses/'
+} as const
+
+export const balanceSemiFungible: Contract = {
+	name: 'Plug.Balance.SemiFungible.Fuse.sol',
+	relativePath: '../fuses/'
+} as const
+    
 export const baseFee: Contract = {
 	name: 'Plug.BaseFee.Fuse.sol',
 	relativePath: '../fuses/'
@@ -73,6 +83,8 @@ export const etchContracts: Array<Contract> = [
 	router,
 	factory,
 	treasury,
+    balance,
+    balanceSemiFungible,
 	baseFee,
 	blockNumber,
 	clamp,

@@ -22,7 +22,8 @@ contract PlugFactoryTest is Test {
     function test_DeployDeterministic(uint256) public {
         vm.deal(address(this), 1000 ether);
         uint256 initialValue = _random() % 100 ether;
-        bytes32 salt = bytes32(abi.encodePacked(address(1), uint96(0)));
+        bytes32 salt =
+            bytes32(abi.encodePacked(address(1), uint96(0)));
         address implementation = factory.implementations(0);
         uint256 tokenId =
             uint256(uint160(factory.getAddress(implementation, salt)));

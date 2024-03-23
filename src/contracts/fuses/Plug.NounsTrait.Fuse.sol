@@ -4,7 +4,8 @@ pragma solidity 0.8.18;
 
 import { Ownable } from "solady/src/auth/Ownable.sol";
 
-import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
 import { PlugNounsLib } from "../libraries/Plug.Nouns.Lib.sol";
 
@@ -61,7 +62,10 @@ contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
     {
         (bytes32 selector, bytes32 trait) = decode($live);
 
-        require(nounTrait(selector) == trait, "NounsTraitFuse:invalid-trait");
+        require(
+            nounTrait(selector) == trait,
+            "NounsTraitFuse:invalid-trait"
+        );
 
         /// @dev Continue the pass through.
         $through = $current.data;
@@ -155,7 +159,8 @@ contract PlugNounsTraitFuse is PlugFuseInterface, Ownable {
         }
 
         /// @dev Build the transaction data to call the Noun contract.
-        bytes memory data = abi.encodeWithSelector(bytes4($selector), traitSeed);
+        bytes memory data =
+            abi.encodeWithSelector(bytes4($selector), traitSeed);
 
         /// @dev Retrieve the trait.
         (bool success, bytes memory returnData) = art.staticcall(data);

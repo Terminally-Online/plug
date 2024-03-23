@@ -14,6 +14,16 @@ contract PlugDeployment is Script {
         vm.startBroadcast();
 
         PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_BALANCE_FUSE_SALT,
+            PlugEtcherLib.PLUG_BALANCE_FUSE_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_BALANCE_SEMI_FUNGIBLE_FUSE_SALT,
+            PlugEtcherLib.PLUG_BALANCE_SEMI_FUNGIBLE_FUSE_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_BASE_FEE_FUSE_SALT,
             PlugEtcherLib.PLUG_BASE_FEE_FUSE_INITCODE
         );
@@ -29,7 +39,8 @@ contract PlugDeployment is Script {
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
+            PlugEtcherLib.PLUG_FACTORY_SALT,
+            PlugEtcherLib.PLUG_FACTORY_INITCODE
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(

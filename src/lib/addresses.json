@@ -24,18 +24,18 @@
     }
   },
   "Plug.BaseFee.Fuse.sol": {
-    "initCodeHash": "0xca936db562410b4db87398c411e50dc2ea849618ad7c8bc97c1ec03ff5a04d7e",
+    "initCodeHash": "0x91014ee67ebd13511e20ea8d1594613bc87cb29f8589ff6c4bd15a17964ae288",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000bc365f019af2ff3ff511967b",
-      "address": "0x004d477070CbBAe59E4Dfe6Fea0b638Eb3CE2EA0",
+      "salt": "0x0000000000000000000000000000000000000000dad5fac28ee9ff3fe5f06f59",
+      "address": "0x0009a15284FAc7Ae2D0679a4CC470c347e858Aa0",
       "rarity": "0"
     }
   },
   "Plug.BlockNumber.Fuse.sol": {
-    "initCodeHash": "0xa782a4ad2f21466a199212122cb6a93eab60de5e4bde6325ce47bcd4754fcb4d",
+    "initCodeHash": "0x696239e7b3bab67eebbb014020e63515dbb91b85ffee5693b2fa55c3aa89dc48",
     "deployment": {
-      "salt": "0x00000000000000000000000000000000000000002a00b93c70ebff3fa6836d0a",
-      "address": "0x002Df910daB0fD34D139Ce78A27f277D8F083780",
+      "salt": "0x00000000000000000000000000000000000000001c10fac9b4feff3f84458740",
+      "address": "0x00824Cbfd2d2Af7615143EbAF36BFcFab36748ce",
       "rarity": "0"
     }
   },
@@ -80,10 +80,10 @@
     }
   },
   "Plug.Timestamp.Fuse.sol": {
-    "initCodeHash": "0x6e983eda4e0e3a8bf9de6b524d3c9a2137d728e526c66cf20f904f607641cdca",
+    "initCodeHash": "0x91609463f23878748fd860d609720efd9f0ca60102553604e91e2663965305ca",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000e0c8280b63edff3fa272c3f3",
-      "address": "0x6b73a62478d857003a6809c6061a00550fa296C9",
+      "salt": "0x0000000000000000000000000000000000000000ccecc0bfa8beff3f03c14a10",
+      "address": "0x00DA2837aCDB3d5247e2aD66Dd33F6646447c1FA",
       "rarity": "0"
     }
   },
@@ -100,6 +100,22 @@
     "deployment": {
       "salt": "0x0000000000000000000000000000000000000000117682bf07deff3f0b3db653",
       "address": "0x00A8957A6C78AE7a37133211D1ECB92c7d6d5485",
+      "rarity": "0"
+    }
+  },
+  "Plug.Balance.Fuse.sol": {
+    "initCodeHash": "0xcca5a275730ebe02c9d3e84493a7fc4f5d46a1929c8d183ce64a68311aec210a",
+    "deployment": {
+      "salt": "0x000000000000000000000000000000000000000055e5e65229f1ff3f41c40097",
+      "address": "0x00BFD617597B2A1d43779D7a686BD3D17C84a4e2",
+      "rarity": "0"
+    }
+  },
+  "Plug.Balance.SemiFungible.Fuse.sol": {
+    "initCodeHash": "0xada0facb07a73620e6602669682931fa0cf9d03c1e6182e3216b0fc911aff42f",
+    "deployment": {
+      "salt": "0x000000000000000000000000000000000000000020a793c098dcff3fd6b530a7",
+      "address": "0x00eC25AA057cBEBeeF9C8D0613d104b18228fbD5",
       "rarity": "0"
     }
   }

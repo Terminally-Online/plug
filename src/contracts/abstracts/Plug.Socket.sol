@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
+import { PlugSocketInterface } from
+    "../interfaces/Plug.Socket.Interface.sol";
 import { PlugCore } from "./Plug.Core.sol";
 import { ReentrancyGuard } from "solady/src/utils/ReentrancyGuard.sol";
 import { PlugTypesLib } from "./Plug.Types.sol";

@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugFuseInterface } from
+    "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
 import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
@@ -10,7 +11,10 @@ import { ERC1155 } from "solady/src/tokens/ERC1155.sol";
 
 /**
  * @title Plug Balance Semi Fungible Fuse
- * @dev A fuse that provides enforcement for semi-fungible balance thresholds.
+ * @notice A fuse that provides enforcement for semi-fungible (ERC1155s) balance thresholds.
+ * @notice Use cases for enforcing balance thresholds:
+ *     - Inherits all the use cases of the fungible and non-fungible balance threshold fuse.
+ *     - Tier based access and services resolved through the token id balance held.
  * @author nftchance (chance@onplug.io)
  */
 contract PlugBalanceSemiFungibleFuse is
@@ -61,8 +65,8 @@ contract PlugBalanceSemiFungibleFuse is
             uint256 $threshold
         )
     {
-        ($holder, $asset, $tokenId, $operator, $threshold) =
-            abi.decode($data, (address, address, uint256, uint8, uint256));
+        ($holder, $asset, $tokenId, $operator, $threshold) = abi
+            .decode($data, (address, address, uint256, uint8, uint256));
     }
 
     /**
@@ -79,6 +83,8 @@ contract PlugBalanceSemiFungibleFuse is
         pure
         returns (bytes memory $data)
     {
-        $data = abi.encode($holder, $asset, $tokenId, $operator, $threshold);
+        $data = abi.encode(
+            $holder, $asset, $tokenId, $operator, $threshold
+        );
     }
 }

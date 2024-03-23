@@ -2,14 +2,21 @@
 
 pragma solidity 0.8.18;
 
-import { Test, PlugTypesLib, LibClone } from "../abstracts/test/Plug.Test.sol";
+import {
+    Test,
+    PlugTypesLib,
+    LibClone
+} from "../abstracts/test/Plug.Test.sol";
 import { PlugLimitedCallsFuse } from "./Plug.LimitedCalls.Fuse.sol";
 
 contract PlugLimitedCallsFuseTest is Test {
     PlugLimitedCallsFuse internal fuse;
 
-    PlugTypesLib.Current current =
-        PlugTypesLib.Current({ target: address(fuse), value: 0, data: "0x" });
+    PlugTypesLib.Current current = PlugTypesLib.Current({
+        target: address(fuse),
+        value: 0,
+        data: "0x"
+    });
     bytes32 plugsHash = bytes32(0);
 
     function setUp() public virtual {

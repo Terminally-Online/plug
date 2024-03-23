@@ -4,7 +4,12 @@ pragma solidity 0.8.18;
 
 interface ERC20WETHInterface {
     function name() external view returns (string memory);
-    function approve(address guy, uint256 wad) external returns (bool);
+    function approve(
+        address guy,
+        uint256 wad
+    )
+        external
+        returns (bool);
     function totalSupply() external view returns (uint256);
     function transferFrom(
         address src,
@@ -17,17 +22,32 @@ interface ERC20WETHInterface {
     function decimals() external view returns (uint8);
     function balanceOf(address) external view returns (uint256);
     function symbol() external view returns (string memory);
-    function transfer(address dst, uint256 wad) external returns (bool);
+    function transfer(
+        address dst,
+        uint256 wad
+    )
+        external
+        returns (bool);
     function deposit() external payable;
-    function allowance(address, address) external view returns (uint256);
+    function allowance(
+        address,
+        address
+    )
+        external
+        view
+        returns (uint256);
     fallback() external payable;
 
     /// @dev This function does not actually exist in the interface, but it
     ///      is throwing an annoying error on this interface.
     receive() external payable;
 
-    event Approval(address indexed src, address indexed guy, uint256 wad);
-    event Transfer(address indexed src, address indexed dst, uint256 wad);
+    event Approval(
+        address indexed src, address indexed guy, uint256 wad
+    );
+    event Transfer(
+        address indexed src, address indexed dst, uint256 wad
+    );
     event Deposit(address indexed dst, uint256 wad);
     event Withdrawal(address indexed src, uint256 wad);
 }

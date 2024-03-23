@@ -7,7 +7,9 @@ import { PlugAddressesLib } from "./Plug.Addresses.Lib.sol";
 
 library PlugLib {
     event SocketDeployed(
-        address indexed implementation, address indexed vault, bytes32 salt
+        address indexed implementation,
+        address indexed vault,
+        bytes32 salt
     );
 
     event SocketOwnershipTransferred(
@@ -46,7 +48,9 @@ library PlugLib {
     function bubbleRevert(bytes memory $revertData) internal pure {
         /// @dev If we won't be able to recover the message, go ahead
         ///      and revert with the default.
-        if ($revertData.length < 4) revert("PlugCore:revert");
+        if ($revertData.length < 4) {
+            revert("PlugCore:revert");
+        }
 
         bytes4 errorSelector;
         assembly {
@@ -65,7 +69,8 @@ library PlugLib {
                 // [0xa..0xf] is not correctly converted to ['a'..'f']
                 // but since panic code doesn't have those cases, we will ignore them for now!
                 let e1 := add(and(errorCode, 0xf), 0x30)
-                let e2 := shl(8, add(shr(4, and(errorCode, 0xf0)), 0x30))
+                let e2 :=
+                    shl(8, add(shr(4, and(errorCode, 0xf0)), 0x30))
                 reasonWord :=
                     or(
                         and(
@@ -92,7 +97,13 @@ library PlugLib {
      * @notice Helper function to bubble up a revert reason if a condition is not met.
      * @param $reason The revert reason to surface.
      */
-    function bubbleRevert(bool $success, bytes memory $reason) internal pure {
+    function bubbleRevert(
+        bool $success,
+        bytes memory $reason
+    )
+        internal
+        pure
+    {
         /// @dev Confirm the call was successful.
         if (!$success) {
             /// @dev Go ahead and surface the revert reason as a failure would have

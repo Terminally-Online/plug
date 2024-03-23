@@ -12,7 +12,11 @@ interface PlugSocketInterface {
      * @param $router The address of the Router that has permission to orchestate
      *                the execution of intents.
      */
-    function initialize(address $ownership, address $router) external;
+    function initialize(
+        address $ownership,
+        address $router
+    )
+        external;
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.

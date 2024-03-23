@@ -71,7 +71,12 @@ library BytesLib {
             mstore(
                 0x40,
                 and(
-                    add(add(end, iszero(add(length, mload(_preBytes)))), 31),
+                    add(
+                        add(
+                            end, iszero(add(length, mload(_preBytes)))
+                        ),
+                        31
+                    ),
                     not(31) // Round down to the nearest 32 bytes.
                 )
             )
@@ -99,7 +104,10 @@ library BytesLib {
             // two to get the length. If the slot is odd, bitwise and the slot
             // with -1 and divide by two.
             let slength :=
-                div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
+                div(
+                    and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)),
+                    2
+                )
             let mlength := mload(_postBytes)
             let newlength := add(slength, mlength)
             // slength can contain both the length and contents of the array
@@ -229,7 +237,9 @@ library BytesLib {
         returns (bytes memory)
     {
         require(_length + 31 >= _length, "slice_overflow");
-        require(_bytes.length >= _start + _length, "slice_outOfBounds");
+        require(
+            _bytes.length >= _start + _length, "slice_outOfBounds"
+        );
 
         bytes memory tempBytes;
 
@@ -255,7 +265,10 @@ library BytesLib {
                 // the following copy loop was copying the origin's length
                 // and then ending prematurely not copying everything it should.
                 let mc :=
-                    add(add(tempBytes, lengthmod), mul(0x20, iszero(lengthmod)))
+                    add(
+                        add(tempBytes, lengthmod),
+                        mul(0x20, iszero(lengthmod))
+                    )
                 let end := add(mc, _length)
 
                 for {
@@ -264,7 +277,8 @@ library BytesLib {
                     let cc :=
                         add(
                             add(
-                                add(_bytes, lengthmod), mul(0x20, iszero(lengthmod))
+                                add(_bytes, lengthmod),
+                                mul(0x20, iszero(lengthmod))
                             ),
                             _start
                         )
@@ -523,7 +537,10 @@ library BytesLib {
             let fslot := sload(_preBytes.slot)
             // Decode the length of the stored array like in concatStorage().
             let slength :=
-                div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
+                div(
+                    and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)),
+                    2
+                )
             let mlength := mload(_postBytes)
 
             // if lengths don't match the arrays are not equal
@@ -538,7 +555,9 @@ library BytesLib {
                         // blank the last byte which is the length
                         fslot := mul(div(fslot, 0x100), 0x100)
 
-                        if iszero(eq(fslot, mload(add(_postBytes, 0x20)))) {
+                        if iszero(
+                            eq(fslot, mload(add(_postBytes, 0x20)))
+                        ) {
                             // unsuccess:
                             success := 0
                         }

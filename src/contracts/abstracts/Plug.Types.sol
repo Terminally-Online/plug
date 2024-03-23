@@ -209,7 +209,11 @@ abstract contract PlugTypes {
      * @return $name The name of the contract.
      */
 
-    function name() public pure virtual returns (string memory $name);
+    function name()
+        public
+        pure
+        virtual
+        returns (string memory $name);
 
     /**
      * @notice Version used for the domain separator.
@@ -217,7 +221,11 @@ abstract contract PlugTypes {
      *      to retrieve the value and sign the built message.
      * @return $version The version of the contract.
      */
-    function version() public pure virtual returns (string memory $version);
+    function version()
+        public
+        pure
+        virtual
+        returns (string memory $version);
 
     /**
      * @notice The symbol of the Socket only used for metadata purposes.
@@ -230,7 +238,12 @@ abstract contract PlugTypes {
      *      to generate the symbol.
      * @return $symbol The symbol of the Socket.
      */
-    function symbol() public view virtual returns (string memory $symbol) {
+    function symbol()
+        public
+        view
+        virtual
+        returns (string memory $symbol)
+    {
         string memory $name = name();
 
         assembly {
@@ -268,7 +281,9 @@ abstract contract PlugTypes {
      * @param $input The EIP712Domain data to encode.
      * @return $hash The packet hash of the encoded EIP712Domain data.
      */
-    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input)
+    function getEIP712DomainHash(
+        PlugTypesLib.EIP712Domain memory $input
+    )
         public
         pure
         virtual
@@ -320,7 +335,9 @@ abstract contract PlugTypes {
         returns (bytes32 $hash)
     {
         $hash = keccak256(
-            abi.encode(FUSE_TYPEHASH, $input.target, keccak256($input.data))
+            abi.encode(
+                FUSE_TYPEHASH, $input.target, keccak256($input.data)
+            )
         );
     }
 
