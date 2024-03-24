@@ -43,7 +43,7 @@ export const nounsTrait = protocolFuse('Plug.Nouns.Trait.Fuse.sol')
 export const vault = socket('Plug.Vault.Socket.sol')
 
 export const constantContracts = [factory, treasury]
-export const etchContracts = [
+export const etchContracts: Array<Contract> = [
     // ! Bases
     router,
     factory,
