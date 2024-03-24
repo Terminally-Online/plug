@@ -91,7 +91,13 @@
 		"./package.json": "./package.json",
 		"./addresses.json": "./src/lib/addresses.json"
 	},
-	"files": ["/core", "/lib", "/dist", "/src", "/artifacts"],
+	"files": [
+		"/core",
+		"/lib",
+		"/dist",
+		"/src",
+		"/artifacts"
+	],
 	"publishConfig": {
 		"access": "public"
 	}
