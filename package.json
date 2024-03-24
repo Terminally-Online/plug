@@ -23,12 +23,12 @@
 		"@changesets/cli": "^2.27.1",
 		"@prb/test": "^0.6.4",
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
-		"@types/chai": "^4.3.12",
+		"@types/chai": "^4.3.14",
 		"@types/chai-as-promised": "^7.1.8",
 		"@types/fs-extra": "^11.0.4",
 		"@types/mocha": "^10.0.6",
-		"@types/node": "^20.11.29",
-		"@wagmi/cli": "^2.1.2",
+		"@types/node": "^20.11.30",
+		"@wagmi/cli": "^2.1.4",
 		"chai": "^5.1.0",
 		"dedent": "^1.5.1",
 		"ds-test": "github:dapphub/ds-test",
@@ -43,7 +43,7 @@
 		"tsconfig-paths": "^4.2.0",
 		"tsup": "^8.0.2",
 		"tsx": "^4.7.1",
-		"typescript": "~5.4.2"
+		"typescript": "~5.4.3"
 	},
 	"dependencies": {
 		"@0xsequence/wallet-contracts": "^2.0.0",
