@@ -15,7 +15,7 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *      As an extensible base, all projects build on top of Pins
  *      and Plugs.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-03-23)
+ * @author @nftchance/plug-types (2024-03-24)
  */
 library PlugTypesLib {
     /**
@@ -125,7 +125,7 @@ library PlugTypesLib {
  * @dev Contracts that inherit this one must implement the name() and version()
  *      functions to provide the domain separator for EIP-712 signatures.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-03-23)
+ * @author @nftchance/plug-types (2024-03-24)
  */
 abstract contract PlugTypes {
     /// @notice Use the ECDSA library for signature verification.

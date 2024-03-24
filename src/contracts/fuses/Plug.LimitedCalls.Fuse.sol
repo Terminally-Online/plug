@@ -31,6 +31,7 @@ contract PlugLimitedCallsFuse is PlugFuseInterface {
         bytes32 $plugsHash
     )
         public
+        virtual
         override
         returns (bytes memory $through)
     {
