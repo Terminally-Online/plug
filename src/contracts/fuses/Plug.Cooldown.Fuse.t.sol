@@ -25,10 +25,14 @@ contract PlugCooldownFuseTest is Test {
         fuse = new PlugCooldownFuse();
     }
 
-    function test_enforceFuse_FirstInteraction() public {
+    function test_enforceFuse_Encoding() public {
         bytes memory terms = fuse.encode(cooldown);
         uint256 decodedCooldoown = fuse.decode(terms);
         assertEq(decodedCooldoown, cooldown);
+    }
+
+    function test_enforceFuse_FirstInteraction() public {
+        bytes memory terms = fuse.encode(cooldown);
         fuse.enforceFuse(terms, current, plugsHash);
     }
 
