@@ -44,6 +44,11 @@ contract PlugDeployment is Script {
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_NOUNS_BID_FUSE_SALT,
+            PlugEtcherLib.PLUG_NOUNS_BID_FUSE_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_NOUNS_ID_FUSE_SALT,
             PlugEtcherLib.PLUG_NOUNS_ID_FUSE_INITCODE
         );

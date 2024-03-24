@@ -2,91 +2,65 @@ import { Contract } from '@/src/lib/types'
 
 export const contractsPath = 'src/contracts'
 
-export const router: Contract = {
-	name: 'Plug.sol',
-	relativePath: '../base/'
-} as const
+const base = (name: string): Contract => ({
+    name,
+    relativePath: '../base/'
+})
 
-export const factory: Contract = {
-	name: 'Plug.Factory.sol',
-	relativePath: '../base/'
-} as const
+const fuse = (name: string): Contract => ({
+    name,
+    relativePath: '../fuses/'
+})
 
-export const treasury: Contract = {
-	name: 'Plug.Treasury.sol',
-	relativePath: '../base/'
-} as const
+const protocolFuse = (name: string): Contract => ({
+    name,
+    relativePath: '../fuses/protocols/'
+})
 
-export const balance: Contract = {
-	name: 'Plug.Balance.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
+const socket = (name: string): Contract => ({
+    name,
+    relativePath: '../sockets/'
+})
 
-export const balanceSemiFungible: Contract = {
-	name: 'Plug.Balance.SemiFungible.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-    
-export const baseFee: Contract = {
-	name: 'Plug.BaseFee.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
+export const router = base('Plug.sol')
+export const factory = base('Plug.Factory.sol')
+export const treasury = base('Plug.Treasury.sol')
 
-export const blockNumber: Contract = {
-	name: 'Plug.BlockNumber.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
+export const balance = fuse('Plug.Balance.Fuse.sol')
+export const balanceSemiFungible = fuse('Plug.Balance.SemiFungible.Fuse.sol')
+export const baseFee = fuse('Plug.BaseFee.Fuse.sol')
+export const blockNumber = fuse('Plug.BlockNumber.Fuse.sol')
+export const limitedCalls = fuse('Plug.LimitedCalls.Fuse.sol')
+export const revocation = fuse('Plug.Revocation.Fuse.sol')
+export const timestamp = fuse('Plug.Timestamp.Fuse.sol')
+export const window = fuse('Plug.Window.Fuse.sol')
 
-export const limitedCalls: Contract = {
-	name: 'Plug.LimitedCalls.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
+export const fraxlend = protocolFuse('Plug.Fraxlend.APY.Fuse.sol')
+export const nounsBid = protocolFuse('Plug.Nouns.Bid.Fuse.sol')
+export const nounsId = protocolFuse('Plug.Nouns.Id.Fuse.sol')
+export const nounsTrait = protocolFuse('Plug.Nouns.Trait.Fuse.sol')
 
-export const nounsId: Contract = {
-	name: 'Plug.NounsId.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
+export const vault = socket('Plug.Vault.Socket.sol')
 
-export const nounsTrait: Contract = {
-	name: 'Plug.NounsTrait.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-
-export const revocation: Contract = {
-	name: 'Plug.Revocation.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-
-export const timestamp: Contract = {
-	name: 'Plug.Timestamp.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-
-export const window: Contract = {
-	name: 'Plug.Window.Fuse.sol',
-	relativePath: '../fuses/'
-} as const
-
-export const vault: Contract = {
-	name: 'Plug.Vault.Socket.sol',
-	relativePath: '../sockets/'
-} as const
-
-export const constantContracts: Array<Contract> = [factory, treasury]
-
-export const etchContracts: Array<Contract> = [
-	router,
-	factory,
-	treasury,
+export const constantContracts = [factory, treasury]
+export const etchContracts = [
+    // ! Bases
+    router,
+    factory,
+    treasury,
+    // ! Sockets
+    vault,
+    // ! Fuses
     balance,
     balanceSemiFungible,
-	baseFee,
-	blockNumber,
-	limitedCalls,
-	nounsId,
-	nounsTrait,
-	revocation,
-	timestamp,
-	window,
-	vault
+    baseFee,
+    blockNumber,
+    limitedCalls,
+    revocation,
+    timestamp,
+    window,
+    // ! Protocols
+    nounsBid,
+    nounsId,
+    nounsTrait,
 ] as const

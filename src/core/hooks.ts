@@ -845,6 +845,55 @@ export const plugLimitedCallsFuseAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugNounsBidFuse
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugNounsBidFuseAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
+    name: 'decode',
+    outputs: [
+      { name: '$bidder', internalType: 'address', type: 'address' },
+      { name: '$bid', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$bidder', internalType: 'address', type: 'address' },
+      { name: '$bid', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'encode',
+    outputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$live', internalType: 'bytes', type: 'bytes' },
+      {
+        name: '$current',
+        internalType: 'struct PlugTypesLib.Current',
+        type: 'tuple',
+        components: [
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'value', internalType: 'uint256', type: 'uint256' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'enforceFuse',
+    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  { type: 'error', inputs: [], name: 'InsufficientBalance' },
+  { type: 'error', inputs: [], name: 'InsufficientReason' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugNounsIdFuse
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2702,6 +2751,40 @@ export const useSimulatePlugLimitedCallsFuse =
 export const useSimulatePlugLimitedCallsFuseEnforceFuse =
   /*#__PURE__*/ createUseSimulateContract({
     abi: plugLimitedCallsFuseAbi,
+    functionName: 'enforceFuse',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsBidFuseAbi}__
+ */
+export const useReadPlugNounsBidFuse = /*#__PURE__*/ createUseReadContract({
+  abi: plugNounsBidFuseAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsBidFuseAbi}__ and `functionName` set to `"decode"`
+ */
+export const useReadPlugNounsBidFuseDecode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugNounsBidFuseAbi,
+    functionName: 'decode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsBidFuseAbi}__ and `functionName` set to `"encode"`
+ */
+export const useReadPlugNounsBidFuseEncode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugNounsBidFuseAbi,
+    functionName: 'encode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsBidFuseAbi}__ and `functionName` set to `"enforceFuse"`
+ */
+export const useReadPlugNounsBidFuseEnforceFuse =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugNounsBidFuseAbi,
     functionName: 'enforceFuse',
   })
 
