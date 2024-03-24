@@ -65,11 +65,13 @@ jobs:
                   forge snapshot
 
             - name: 📝 Configure Git Commit
+              if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
               run: |
                   git config user.name "nftchance"
                   git config user.email "chance@utc24.io"
 
             - name: 📝 Commit Changes
+              if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
               run: |
                   git add .
                   git diff --staged --quiet || git commit -m "chore: update build artifacts"
