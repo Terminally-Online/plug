@@ -1,0 +1,77 @@
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String      @id @default(cuid())
+    name          String?
+    email         String?     @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    canvases      Canvas[]
+    selecting     Component[]
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model Component {
+    id String @id @default(uuid())
+
+    top    Float
+    left   Float
+    width  Float
+    height Float
+
+    selecting   User?   @relation(fields: [selectingId], references: [id])
+    selectingId String?
+
+    content   Json
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    Canvas   Canvas? @relation(fields: [canvasId], references: [id])
+    canvasId String?
+}
+
+model Canvas {
+    id        String   @id @default(uuid())
+    name      String   @default("Untitled Canvas")
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    public    Boolean  @default(false)
+    color     String   @default("#ff4700")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    components Component[]
+}

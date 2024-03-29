@@ -2,9 +2,10 @@
 
 import type { FC, PropsWithChildren } from "react"
 
+import Image from "next/image"
+
 import { getCsrfToken, signIn } from "next-auth/react"
 
-import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence } from "framer-motion"
 import { motion } from "framer-motion"
 import {
@@ -15,9 +16,9 @@ import {
 import { SiweMessage } from "siwe"
 import {
 	useAccount,
+	useChainId,
 	useEnsAvatar,
 	useEnsName,
-	useNetwork,
 	useSignMessage
 } from "wagmi"
 
@@ -34,9 +35,10 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 }) => {
 	const { open } = useWeb3Modal()
 	const { address, isConnected } = useAccount()
-	const { chain } = useNetwork()
+	const chainId = useChainId()
 	const { data: name } = useEnsName({ address })
-	const { data: avatar } = useEnsAvatar({ name })
+	// TODO: Fix the name retrieval.
+	const { data: avatar } = useEnsAvatar({ name: 'nftchance.eth' })
 
 	const { error, signMessageAsync, isLoading, isError } = useSignMessage()
 
@@ -55,7 +57,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 				}.`,
 				uri: window.location.origin,
 				version: "1",
-				chainId: chain?.id,
+				chainId: chainId,
 				nonce: await getCsrfToken()
 			})
 			const signature = await signMessageAsync({
@@ -125,7 +127,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
 							rel="noopener noreferrer"
 						>
 							{name && avatar ? (
-								<img
+								<Image
 									src={avatar}
 									alt={name}
 									className="h-5 w-5 rounded-full"

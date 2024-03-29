@@ -45,7 +45,7 @@ export const Search: FC<SearchProps> = ({ search, results = 0 }) => {
 	return (
 		<div
 			className={cn(
-				"transition-bg group sticky top-12 z-[999] flex w-full flex-row items-center border-b-[1px] border-stone-950 bg-stone-900 px-4 duration-200 ease-in-out hover:bg-stone-950",
+				"transition-bg group sticky top-12 z-[99] flex w-full flex-row items-center border-b-[1px] border-r-[1px] border-stone-950 bg-stone-900 px-4 duration-200 ease-in-out hover:bg-stone-950",
 				search && search.length > 0 ? "bg-stone-950" : ""
 			)}
 		>
@@ -57,9 +57,7 @@ export const Search: FC<SearchProps> = ({ search, results = 0 }) => {
 
 			<Input
 				placeholder="SEARCH ALL CANVASES"
-				className={cn(
-					"relative w-full bg-transparent py-8 uppercase text-white"
-				)}
+				className="relative w-full bg-transparent py-8 uppercase text-white"
 				value={value ?? search}
 				onChange={e => {
 					debounce(e.target.value)

@@ -1,18 +1,16 @@
 import type { FC, PropsWithChildren } from "react"
 
-import { WagmiConfig } from "wagmi"
+import { WagmiProvider } from "wagmi"
 
-import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react"
+import { createWeb3Modal } from "@web3modal/wagmi/react"
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
 
-import { mainnet } from "wagmi/chains"
+import { base, mainnet, optimism } from "viem/chains"
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID || undefined
+const projectId =
+	process.env.NEXT_PUBLIC_WALLETCONNECT_ID ||
+	"b17c8bdfe7719b0f3551627ff43a0af1"
 
-if (!projectId) {
-	throw new Error("NEXTWALLETCONNECT_ID is not defined")
-}
-
-const chains = [mainnet]
 const metadata = {
 	name: "Plug",
 	description: '"IF This, Then That" for Ethereum.',
@@ -20,12 +18,19 @@ const metadata = {
 	icons: ["https://onplug.io/favicon.ico"]
 }
 
-const config = defaultWagmiConfig({ chains, projectId, metadata })
+const chains = [mainnet, base, optimism] as const
 
-createWeb3Modal({ wagmiConfig: config, projectId, chains })
+const config = defaultWagmiConfig({
+	chains,
+	projectId,
+	metadata,
+	ssr: true
+})
+
+createWeb3Modal({ wagmiConfig: config, projectId })
 
 export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
-	return <WagmiConfig config={config}>{children}</WagmiConfig>
+	return <WagmiProvider config={config}>{children}</WagmiProvider>
 }
 
 export default WalletProvider

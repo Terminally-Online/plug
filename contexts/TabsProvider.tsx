@@ -1,18 +1,20 @@
-"use client"
-
+import type { FC, PropsWithChildren } from "react"
 import {
 	createContext,
-	FC,
-	PropsWithChildren,
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useState
 } from "react"
 
 import { usePathname, useRouter } from "next/navigation"
 
+import { Activity } from "lucide-react"
+
 import { Hud } from "@/components/viewport/hud"
+import { Deploy, Deposit, Tokens, Withdraw } from "@/components/viewport/vault"
+import { Wallet } from "@/components/viewport/vault/actions/manage"
 
 type Tab = {
 	label: string
@@ -23,24 +25,37 @@ type Tab = {
 
 const ephemeralTabs: string[] = ["/canvas/create", "/canvas/templates"]
 
+export const INITIAL_PANE = "tokens"
+
 export const TabsContext = createContext<{
+	pane: string
+	Panel: JSX.Element
 	tabs: Tab[]
 	ephemeralTabs: string[]
+	expanded: boolean
+	handlePane: (pane: string | undefined) => void
 	handleAdd: (tab: Tab) => void
 	handleRemove: (index: number) => void
 	handleMove: (index: number, newIndex: number) => void
+	handleExpanded: () => void
 }>({
+	pane: INITIAL_PANE,
+	Panel: <Tokens />,
 	tabs: [],
 	ephemeralTabs: [],
+	expanded: true,
+	handlePane: () => {},
 	handleAdd: () => {},
 	handleRemove: () => {},
-	handleMove: () => {}
+	handleMove: () => {},
+	handleExpanded: () => {}
 })
 
 export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 	const router = useRouter()
 	const path = usePathname()
 
+	const [expanded, setExpanded] = useState(true)
 	const [tabs, setTabs] = useState<Tab[]>(() => {
 		if (typeof window === "undefined") return []
 
@@ -48,6 +63,35 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 
 		return savedTabs ? JSON.parse(savedTabs) : []
 	})
+	const [pane, setPane] = useState(INITIAL_PANE)
+	const [nextPane, setNextPane] = useState(INITIAL_PANE)
+
+	const Panel = useMemo(() => {
+		switch (pane) {
+			case "tokens":
+				return <Tokens />
+			case "activity":
+				return <Activity />
+			case "withdraw":
+				return <Withdraw />
+			case "wallet":
+				return <Wallet />
+			case "deploy":
+				return <Deploy />
+			default:
+				return <Deposit />
+		}
+	}, [pane])
+
+	const handlePane = useCallback((pane: string | undefined) => {
+		setPane(previousPane => {
+			const newPane = pane || nextPane
+
+			setNextPane(previousPane)
+
+			return newPane
+		})
+	}, [])
 
 	const handleAdd = useCallback(
 		(tab: Tab) => {
@@ -105,6 +149,10 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 		})
 	}, [])
 
+	const handleExpanded = useCallback(() => {
+		setExpanded(expanded => !expanded)
+	}, [expanded])
+
 	useEffect(() => {
 		localStorage.setItem("tabs", JSON.stringify(tabs))
 	}, [tabs])
@@ -127,11 +175,16 @@ export const TabsProvider: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<TabsContext.Provider
 			value={{
+				pane,
+				Panel,
 				tabs,
 				ephemeralTabs,
+				expanded,
+				handlePane,
 				handleAdd,
 				handleRemove,
-				handleMove
+				handleMove,
+				handleExpanded
 			}}
 		>
 			<Hud>{children}</Hud>

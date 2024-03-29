@@ -6,7 +6,7 @@ import { getSession, SessionProvider } from "next-auth/react"
 import { GoogleTagManager } from "@next/third-parties/google"
 
 import WalletConnector from "@/components/auth/connector"
-import WalletProvider from "@/contexts/WalletProvider"
+import { BalancesProvider } from "@/contexts/BalancesProvider"
 import { api } from "@/lib/api"
 import { type NextPageWithLayout } from "@/lib/types"
 
@@ -25,11 +25,11 @@ const PlugApp: AppType<{
 		<>
 			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
 			<SessionProvider session={pageProps.session}>
-				<WalletProvider>
+				<BalancesProvider>
 					<WalletConnector>
 						{getLayout(<Component {...pageProps} />)}
 					</WalletConnector>
-				</WalletProvider>
+				</BalancesProvider>
 			</SessionProvider>
 		</>
 	)

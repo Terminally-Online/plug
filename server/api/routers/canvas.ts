@@ -27,8 +27,8 @@ const whereWithSearch = (
 	const searchArray: (string | undefined)[] = Array.isArray(search)
 		? search
 		: search
-		  ? search.split(" ")
-		  : []
+			? search.split(" ")
+			: []
 
 	const searchSyntax = searchArray.join(" | ")
 
@@ -38,7 +38,7 @@ const whereWithSearch = (
 					[`${fieldName}`]: {
 						search: searchSyntax
 					}
-			  }
+				}
 			: {}
 
 	return {
@@ -89,8 +89,8 @@ export default createTRPCRouter({
 				)
 					? search
 					: search
-					  ? search.split(" ")
-					  : []
+						? search.split(" ")
+						: []
 
 				const syntaxSearch = searchArray.join(" | ")
 
@@ -121,7 +121,7 @@ export default createTRPCRouter({
 					cursor: cursor
 						? {
 								id: cursor
-						  }
+							}
 						: undefined,
 					take: limit
 				})
@@ -298,5 +298,7 @@ export default createTRPCRouter({
 			}
 		})
 	}),
+
+	// ? Extend the component router as base canvas route.
 	component: componentRouter
 })

@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react"
 import { getCsrfToken, signIn, useSession } from "next-auth/react"
 
 import { SiweMessage } from "siwe"
-import { useAccount, useNetwork, useSignMessage } from "wagmi"
+import { useAccount, useChainId, useSignMessage } from "wagmi"
 
 import { useWeb3Modal } from "@web3modal/wagmi/react"
 
@@ -17,7 +17,7 @@ const Siwe: FC<SiweProps> = ({
 	callbackUrl = "/protected",
 	redirect = false
 } = {}) => {
-	const { chain } = useNetwork()
+	const chainId = useChainId()
 	const { data: session } = useSession()
 	const { open } = useWeb3Modal()
 	const { address, isConnected } = useAccount()
@@ -46,7 +46,7 @@ const Siwe: FC<SiweProps> = ({
 						"Sign in to Plug by signing this message to prove your identity.",
 					uri: window.location.origin,
 					version: "1",
-					chainId: chain?.id,
+					chainId: chainId,
 					nonce: await getCsrfToken()
 				})
 				const signature = await signMessageAsync({

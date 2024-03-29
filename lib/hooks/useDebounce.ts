@@ -24,3 +24,5 @@ export const useDebounce = ({
 
 	return { value, debounced, debounce: setValue }
 }
+
+export default useDebounce

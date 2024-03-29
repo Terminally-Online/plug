@@ -1,21 +1,6 @@
-import { ReactElement, ReactNode } from "react"
-
-import { NextPage } from "next"
-
 import { z } from "zod"
 
-import { ItemTypes, pins } from "./constants"
-
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-	getLayout?: (page: ReactElement) => ReactNode
-}
-
-export type DragItem = {
-	id: string
-	type: string
-	left: number
-	top: number
-}
+import { ItemTypes, pins } from "@/lib/constants"
 
 export type ComponentMap = {
 	[key: string]: {
@@ -28,7 +13,13 @@ export type ComponentMap = {
 	}
 }
 
-// infer the type and pass it down to schema
+export type DragItem = {
+	id: string
+	type: string
+	left: number
+	top: number
+}
+
 export type Pins = Array<{
 	label: string
 	pins: Array<{

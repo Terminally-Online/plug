@@ -1,11 +1,13 @@
-import { FC, PropsWithChildren, useEffect, useState } from "react"
+import type { FC, PropsWithChildren } from "react"
+import { useEffect, useState } from "react"
 
 import { usePathname } from "next/navigation"
 import { useRouter } from "next/router"
 
 import { Cross1Icon, HomeIcon } from "@radix-ui/react-icons"
 
-import { useTabs } from "@/contexts/TabsProvider"
+import { Toggler, Vault, Wallet } from "@/components/viewport/vault"
+import { useTabs } from "@/contexts"
 import { cn } from "@/lib/utils"
 
 export const Hud: FC<PropsWithChildren> = ({ children }) => {
@@ -16,19 +18,18 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 
 	const [client, setClient] = useState(false)
 
+	const color = Math.floor(Math.random() * 16777215).toString(16)
+
 	useEffect(() => {
 		setClient(true)
 	}, [])
 
 	useEffect(() => {
-		// * We create a custom tab for the canvas creation route.
 		switch (path) {
 			case "/canvas/create":
 				handleAdd({
 					label: `New Canvas`,
-					color: `#${Math.floor(Math.random() * 16777215).toString(
-						16
-					)}`,
+					color: `#${color}`,
 					href: `/canvas/create`,
 					active: true
 				})
@@ -44,7 +45,7 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 			default:
 				break
 		}
-	}, [path, handleAdd])
+	}, [color, path, handleAdd])
 
 	if (!client) return null
 
@@ -100,11 +101,16 @@ export const Hud: FC<PropsWithChildren> = ({ children }) => {
 							</button>
 						</button>
 					))}
+
+					<Toggler />
+					<Wallet />
 				</div>
 			</div>
 
-			<div className="absolute inset-0 flex h-full min-h-screen flex-col overscroll-none bg-stone-900 pt-12">
-				{children}
+			<div className="inset-0 flex h-full min-h-screen flex-row overscroll-none bg-stone-900 pt-12">
+				<div className="w-full">{children}</div>
+
+				<Vault />
 			</div>
 		</>
 	)

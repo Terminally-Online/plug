@@ -5,6 +5,14 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 const nextConfig = {
 	poweredByHeader: false,
 	trailingSlash: true,
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "assets.smold.app"
+			}
+		]
+	},
 	/** We run eslint as a separate task in CI */
 	eslint: { ignoreDuringBuilds: !!process.env.CI },
 	webpack: config => {

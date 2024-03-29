@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-export default function useMouse() {
+export const useMouse = () => {
 	const [mouse, setMouse] = useState({ x: 0, y: 0 })
 
 	const isMoved = mouse.x !== 0 || mouse.y !== 0
@@ -21,3 +21,5 @@ export default function useMouse() {
 
 	return { mouse, isMoved }
 }
+
+export default useMouse
