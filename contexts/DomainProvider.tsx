@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 import { useChainId } from "wagmi"
 
-import { chains, formatName, mainnets, testnets } from "@/lib/blockchain"
+import { chains, mainnets, testnets } from "@/lib/blockchain"
 
 type Domain = {
 	testnets: boolean

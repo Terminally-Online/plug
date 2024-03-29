@@ -1,7 +1,11 @@
+"use client"
+
 import type { FC, PropsWithChildren } from "react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import Image from "next/image"
+
+import { useChainId, useSwitchChain } from "wagmi"
 
 import {
 	ArrowRightIcon,
@@ -25,6 +29,8 @@ export const Balance: FC<
 	PropsWithChildren & { direction: 1 | -1; action: string }
 > = ({ direction, action }) => {
 	const address = "0x62180042606624f02d8a130da8a3171e9b33894d"
+	const connectedChainId = useChainId()
+	const { switchChain } = useSwitchChain()
 
 	const { accessible, chainId, domain, handleDomain } = useDomain()
 
@@ -50,6 +56,12 @@ export const Balance: FC<
 		query: debouncedSearch.query,
 		asset: search?.asset
 	})
+
+	const needsSwitch = useMemo(() => {
+		// * We only switch when it is a deposit because a withdrawal will be
+		//	 executed through an intent instead of a transaction.
+		return direction === 1 && chainId !== domain.chain.id
+	}, [chainId, domain.chain.id])
 
 	return (
 		<div className="flex h-full flex-col">
@@ -240,10 +252,14 @@ export const Balance: FC<
 				</p>
 
 				<button
-					onClick={() => {}}
+					onClick={() =>
+						needsSwitch
+							? switchChain({ chainId: domain.chain.id })
+							: {}
+					}
 					className="text-md group pointer-events-auto mt-auto h-full h-min w-full items-center justify-center border-b-[1px] border-stone-950 bg-white p-4 text-stone-950 transition-all duration-200 ease-in-out hover:bg-stone-950 hover:text-white active:bg-white active:text-stone-950"
 				>
-					Submit {action}
+					{needsSwitch ? "Switch Chain" : `Submit ${action}`}
 				</button>
 			</div>
 		</div>
