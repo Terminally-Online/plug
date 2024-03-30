@@ -26,7 +26,7 @@
 		"postbuild:mine:quick": "pnpm build:etcher && forge test",
 
 		"build:ts": "pnpm tsup && pnpm build:format",
-		"built:lint": "tsc",
+		"build:lint": "tsc",
 
 		"dev": "npm-run-all -p dev:*",
 		"dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
