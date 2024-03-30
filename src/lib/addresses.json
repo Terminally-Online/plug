@@ -40,10 +40,10 @@
     }
   },
   "Plug.Balance.SemiFungible.Fuse.sol": {
-    "initCodeHash": "0xada0facb07a73620e6602669682931fa0cf9d03c1e6182e3216b0fc911aff42f",
+    "initCodeHash": "0xa094b1d79e6ca2747e1f5bf54ec82a7fa0248c46d7d5bcef4b92a78e445b4d2f",
     "deployment": {
-      "salt": "0x00000000000000000000000000000000000000009c962797dfbeff3fa299a1b4",
-      "address": "0x0022cc4D64d070F751B1477acD5275AdF1849107",
+      "salt": "0x0000000000000000000000000000000000000000408087b4fbf5ff3fd9060e83",
+      "address": "0x0082AAc3e1Fd4e7E013e013064de1485a2404305",
       "rarity": "0"
     }
   },

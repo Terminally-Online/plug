@@ -2,8 +2,10 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface, PlugTypesLib } from
-    "../../interfaces/Plug.Fuse.Interface.sol";
+import {
+    PlugFuseInterface,
+    PlugTypesLib
+} from "../../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "./Plug.Threshold.Fuse.Enforce.sol";
 import { PlugLib } from "../../libraries/Plug.Lib.sol";
