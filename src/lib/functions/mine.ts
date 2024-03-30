@@ -112,9 +112,8 @@ const mine = async (contract: Contract): Promise<void> => {
 			const hasOwnProperty = addresses.hasOwnProperty(contract.name)
 			const property = addresses[contract.name]
 			if (hasOwnProperty && property.initCodeHash == initCodeHash) {
-				console.log(dedent`
-                    ⏹︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.
-                        ⏹︎ Use --force to overwrite.`)
+				console.log(`✨︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.`)
+				console.log(`	- Use --force to overwrite.`)
 				return resolve()
 			}
 		}
@@ -159,6 +158,8 @@ const mine = async (contract: Contract): Promise<void> => {
 
 			// ? Clear the efficient addresses file so that we have a clean slate for the next contract.
 			fs.writeFileSync(efficientAddressesPath, '')
+
+			console.log(`🌱 Mined new contract address for ${contract.name}`)
 
 			resolve()
 		}, crunchSeconds * 1000)

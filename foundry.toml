@@ -12,7 +12,7 @@
     ]
     block_timestamp = 1_680_220_800
     bytecode_hash = "none"
-    evm_version = "cancun"
+    evm_version = "paris"
     fuzz = { runs = 1_000 }
     gas_reports = ["*"]
     optimizer = true

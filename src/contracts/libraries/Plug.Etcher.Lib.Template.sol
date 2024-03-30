@@ -59,11 +59,11 @@ library PlugEtcherLibTemplate {
      * @param $initializationCode The initialization code for the contract.
      * @return $deployment The address of the deployed contract.
      */
-    function _safeCreate2(
+    function safeCreate2(
         bytes32 $salt,
         bytes memory $initializationCode
     )
-        private
+        public
         returns (address $deployment)
     {
         // Canonical address of 0age's immutable create 2 factory.

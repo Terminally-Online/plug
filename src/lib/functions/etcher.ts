@@ -10,11 +10,16 @@ const directories = fs.readdirSync(artifacts)
 const etcher = `${contractsPath}/libraries/Plug.Etcher.Lib.sol`
 const etcherTemplate = `${contractsPath}/libraries/Plug.Etcher.Lib.Template.sol`
 
+const etcherTest = `${contractsPath}/libraries/Plug.Etcher.Lib.t.sol`
+const etcherTestTemplate = `${contractsPath}/libraries/Plug.Etcher.Lib.t.Template.sol`
+
 const imports: string[] = []
 const variables: string[] = []
 const functions: string[] = []
 const deployments: string[] = []
 const segments: string[] = []
+
+const tests: string[] = []
 
 const addresses = JSON.parse(
 	fs.readFileSync('src/lib/addresses.json').toString()
@@ -37,6 +42,7 @@ directories
 			const json = JSON.parse(data.toString())
 
 			const name = file.replace(suffix, '').replaceAll('.', '')
+			console.log(`- Writing etcher for ${name}.`)
 
 			const variableName = directory
 				.replace('.sol', '')
@@ -49,9 +55,11 @@ directories
 				const functionName = name.replace(/^./, x => x.toLowerCase())
 
 				imports.push(
-					`import { ${name} } from "${etchContracts.find(contract =>
-						directory.includes(contract.name)
-					)?.relativePath}${directory}";`
+					`import { ${name} } from "${
+						etchContracts.find(contract =>
+							directory.includes(contract.name)
+						)?.relativePath
+					}${directory}";`
 				)
 
 				const mined = addresses[directory].deployment
@@ -72,13 +80,26 @@ directories
                      * @return $${functionName} The ${name} contract instance.
                      */
                     function ${functionName}() internal returns (${name} $${functionName}) {
-                        if (_extcodesize(${variableName}_ADDRESS) == 0) {
-                            address reality = _safeCreate2(${variableName}_SALT, ${variableName}_INITCODE);
-                            require(reality ==  ${variableName}_ADDRESS, "Etcher: Reality check failed");
+						require(
+							keccak256(abi.encodePacked(type(${name}).creationCode)) == 
+								keccak256(abi.encodePacked(${variableName}_INITCODE)), 
+							"PlugEtcherLib:invalid-initcode"
+						);    
+		
+						if (_extcodesize(${variableName}_ADDRESS) == 0) {
+                            address reality = safeCreate2(${variableName}_SALT, ${variableName}_INITCODE);
+                            require(reality ==  ${variableName}_ADDRESS, "PlugEtcherLib:unexpected-address");
                         }
+
                         $${functionName} = ${name}(payable(${variableName}_ADDRESS));
                     }
                 `)
+
+				tests.push(`
+					function test_${name}Deployment() public {
+						PlugEtcherLib.${functionName}();
+					}
+				`)
 
 				// ! Update Plug.Lib.sol with the statically referenced addresses.
 				if (libs.includes(directory)) {
@@ -142,6 +163,8 @@ directories
 
 				deployments.push(deployment)
 			}
+
+			console.log(`✔︎ Writing etcher for ${name}.`)
 		})
 	})
 
@@ -153,9 +176,17 @@ template = template.replace(
 	'/// @auto INSERT SEGMENTS',
 	variables.join('\n\n') + '\n\n' + functions.join('\n\n')
 )
-
 fs.writeFileSync(etcher, template)
 
+fs.writeFileSync(
+	etcherTest,
+	fs
+		.readFileSync(etcherTestTemplate)
+		.toString()
+		.replace('/// @auto INSERT SEGMENTS', tests.join('\n\n'))
+)
+
+// * Generate the base deployment script that has all the pieces in one.
 fs.writeFileSync(
 	`${contractsPath}/scripts/Plug.s.sol`,
 	fs
@@ -164,6 +195,8 @@ fs.writeFileSync(
 		.replace('/// @auto INSERT SEGMENTS', deployments.join('\n\n'))
 )
 
+// * Generate the static reference to the addresses of the contracts utilized
+//   within the deployed pieces of the protocol.
 fs.writeFileSync(
 	`${contractsPath}/libraries/Plug.Addresses.Lib.sol`,
 	fs

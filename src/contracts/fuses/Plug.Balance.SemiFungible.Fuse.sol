@@ -6,8 +6,8 @@ import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
-
 import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
+
 import { ERC1155 } from "solady/src/tokens/ERC1155.sol";
 
 /**

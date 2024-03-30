@@ -3,18 +3,31 @@
 	"version": "0.2.6",
 	"license": "MIT",
 	"scripts": {
-		"prebuild": "pnpm lint && rm -rf ./dist",
+		"prebuild": "pnpm build:lint && rm -rf ./dist",
 		"build": "pnpm build:ts && pnpm build:contracts",
-		"build:artifacts": "forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18 && pnpm tsx src/lib/functions/artifacts.ts",
-		"build:artifacts:quick": "forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18 && pnpm tsx src/lib/functions/artifacts.ts",
+
+		"prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18",
+		"build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
+
 		"build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts && npx wagmi generate",
-		"build:etcher": "rm -rf src/libraries/Plug.Etcher.Lib.sol && pnpm tsx src/lib/functions/etcher.ts",
+		
+		"prebuild:etcher": "rm -rf src/contracts/libraries/Plug.Etcher.Lib.sol && rm -rf src/contracts/libraries/Plug.Etcher.Lib.t.sol",
+		"build:etcher": "pnpm tsx src/lib/functions/etcher.ts",
+		
 		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18",
 		"build:format": "pnpm prettier --write .",
-		"build:mine": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts",
-		"build:mine:quick": "pnpm run build:artifacts && pnpm tsx src/lib/functions/mine.ts --quick --leading=1 --total=2",
+
+		"prebuild:mine": "pnpm build:etcher",
+		"build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/mine.ts && pnpm build:etcher && forge test",
+		"postbuild:mine": "pnpm build:etcher && forge test",
+
+		"prebuild:mine:quick": "pnpm build:etcher",
+		"build:mine:quick": "pnpm build:contracts && pnpm tsx src/lib/functions/mine.ts --quick --leading=1 --total=2",
+		"postbuild:mine:quick": "pnpm build:etcher && forge test",
+
 		"build:ts": "pnpm tsup && pnpm build:format",
-		"lint": "tsc",
+		"built:lint": "tsc",
+
 		"dev": "npm-run-all -p dev:*",
 		"dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
 		"dev:package": "pnpm tsup --watch"

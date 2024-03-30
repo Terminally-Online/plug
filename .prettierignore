@@ -6,3 +6,5 @@ typechain-types
 
 node_modules
 lib
+
+package.json

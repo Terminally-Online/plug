@@ -8,8 +8,12 @@ import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
 import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
-import { ERC20 } from "solady/src/tokens/ERC20.sol";
-import { ERC721 } from "solady/src/tokens/ERC721.sol";
+interface IToken {
+    function balanceOf(address account)
+        external
+        view
+        returns (uint256);
+}
 
 /**
  * @title Plug Balance Fuse
@@ -58,23 +62,18 @@ contract PlugBalanceFuse is
             uint256 $threshold
         ) = decode($live);
 
-        /// @dev Memory reference for the balance of the holder.
-        uint256 balance = 0;
-
         /// @dev If it is a native asset.
         if ($type == 0) {
-            balance = $holder.balance;
+            _enforceFuse($operator, $threshold, $holder.balance);
         }
         /// @dev Otherwise, get the balance of the ERC20 asset.
-        else if ($type == 1) {
-            balance = ERC20($asset).balanceOf($holder);
+        else {
+            _enforceFuse(
+                $operator,
+                $threshold,
+                IToken($asset).balanceOf($holder)
+            );
         }
-        /// @dev Otherwise, get the balance of the ERC721 asset.
-        else if ($type == 2) {
-            balance = ERC721($asset).balanceOf($holder);
-        }
-
-        _enforceFuse($operator, $threshold, balance);
 
         /// @dev Otherwise, return the current value.
         $through = $current.data;

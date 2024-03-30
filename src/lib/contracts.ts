@@ -584,6 +584,337 @@ export const contracts = [
         ]
     },
     {
+        "name": "PlugCalendarFuse",
+        "abi": [
+            {
+                "type": "function",
+                "name": "decode",
+                "inputs": [
+                    {
+                        "name": "$schedule",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$startTime",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$repeatsEvery",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$duration",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$daysOfWeek",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "encode",
+                "inputs": [
+                    {
+                        "name": "$startTime",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$repeatsEvery",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$duration",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$daysOfWeek",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$schedule",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "enforceFuse",
+                "inputs": [
+                    {
+                        "name": "$live",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$current",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Current",
+                        "components": [
+                            {
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$through",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "isWithinCalendar",
+                "inputs": [
+                    {
+                        "name": "$schedule",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "isWithinCalendar",
+                "inputs": [
+                    {
+                        "name": "$startTime",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$repeatsEvery",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$duration",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$daysOfWeek",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "toCalendar",
+                "inputs": [
+                    {
+                        "name": "$startTime",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$duration",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    },
+                    {
+                        "name": "$daysOfWeek",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$calendar",
+                        "type": "tuple",
+                        "internalType": "struct CalendarFuseLib.Calendar",
+                        "components": [
+                            {
+                                "name": "periods",
+                                "type": "tuple[]",
+                                "internalType": "struct CalendarFuseLib.Period[]",
+                                "components": [
+                                    {
+                                        "name": "startTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    },
+                                    {
+                                        "name": "endTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "toCalendar",
+                "inputs": [
+                    {
+                        "name": "$schedule",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$calendar",
+                        "type": "tuple",
+                        "internalType": "struct CalendarFuseLib.Calendar",
+                        "components": [
+                            {
+                                "name": "periods",
+                                "type": "tuple[]",
+                                "internalType": "struct CalendarFuseLib.Period[]",
+                                "components": [
+                                    {
+                                        "name": "startTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    },
+                                    {
+                                        "name": "endTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "toCalendars",
+                "inputs": [
+                    {
+                        "name": "$schedule",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$n",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$calendars",
+                        "type": "tuple[]",
+                        "internalType": "struct CalendarFuseLib.Calendar[]",
+                        "components": [
+                            {
+                                "name": "periods",
+                                "type": "tuple[]",
+                                "internalType": "struct CalendarFuseLib.Period[]",
+                                "components": [
+                                    {
+                                        "name": "startTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    },
+                                    {
+                                        "name": "endTime",
+                                        "type": "uint32",
+                                        "internalType": "uint32"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "$cursor",
+                        "type": "uint32",
+                        "internalType": "uint32"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "CalendarCaveatViolation",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "CalendarLackingDays",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "CalendarLackingDuration",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "CalendarLackingStartTime",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "CalendarLackingSufficientRepeatsEvery",
+                "inputs": []
+            }
+        ]
+    },
+    {
         "name": "PlugFactory",
         "abi": [
             {
@@ -1271,6 +1602,157 @@ export const contracts = [
                 "type": "error",
                 "name": "Unauthorized",
                 "inputs": []
+            }
+        ]
+    },
+    {
+        "name": "PlugFraxlendAPYFuse",
+        "abi": [
+            {
+                "type": "function",
+                "name": "decode",
+                "inputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$vault",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$vaultOperator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "encode",
+                "inputs": [
+                    {
+                        "name": "$vault",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$vaultOperator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "enforceFuse",
+                "inputs": [
+                    {
+                        "name": "$live",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$current",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Current",
+                        "components": [
+                            {
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$through",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "ThresholdExceeded",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "ThresholdInsufficient",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
             }
         ]
     },
@@ -3470,337 +3952,6 @@ export const contracts = [
                         "internalType": "uint256"
                     }
                 ]
-            }
-        ]
-    },
-    {
-        "name": "PlugWindowFuse",
-        "abi": [
-            {
-                "type": "function",
-                "name": "decode",
-                "inputs": [
-                    {
-                        "name": "$schedule",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$startTime",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$repeatsEvery",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$duration",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$daysOfWeek",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "encode",
-                "inputs": [
-                    {
-                        "name": "$startTime",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$repeatsEvery",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$duration",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$daysOfWeek",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$schedule",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "enforceFuse",
-                "inputs": [
-                    {
-                        "name": "$live",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "isWithinWindow",
-                "inputs": [
-                    {
-                        "name": "$startTime",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$repeatsEvery",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$duration",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$daysOfWeek",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "isWithinWindow",
-                "inputs": [
-                    {
-                        "name": "$schedule",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "toWindow",
-                "inputs": [
-                    {
-                        "name": "$schedule",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$window",
-                        "type": "tuple",
-                        "internalType": "struct WindowFuseLib.Window",
-                        "components": [
-                            {
-                                "name": "periods",
-                                "type": "tuple[]",
-                                "internalType": "struct WindowFuseLib.Period[]",
-                                "components": [
-                                    {
-                                        "name": "startTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    },
-                                    {
-                                        "name": "endTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "toWindow",
-                "inputs": [
-                    {
-                        "name": "$startTime",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$duration",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    },
-                    {
-                        "name": "$daysOfWeek",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$window",
-                        "type": "tuple",
-                        "internalType": "struct WindowFuseLib.Window",
-                        "components": [
-                            {
-                                "name": "periods",
-                                "type": "tuple[]",
-                                "internalType": "struct WindowFuseLib.Period[]",
-                                "components": [
-                                    {
-                                        "name": "startTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    },
-                                    {
-                                        "name": "endTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "toWindows",
-                "inputs": [
-                    {
-                        "name": "$schedule",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "$n",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$windows",
-                        "type": "tuple[]",
-                        "internalType": "struct WindowFuseLib.Window[]",
-                        "components": [
-                            {
-                                "name": "periods",
-                                "type": "tuple[]",
-                                "internalType": "struct WindowFuseLib.Period[]",
-                                "components": [
-                                    {
-                                        "name": "startTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    },
-                                    {
-                                        "name": "endTime",
-                                        "type": "uint32",
-                                        "internalType": "uint32"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "name": "$cursor",
-                        "type": "uint32",
-                        "internalType": "uint32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "error",
-                "name": "WindowCaveatViolation",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "WindowLackingDays",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "WindowLackingDuration",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "WindowLackingStartTime",
-                "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "WindowLackingSufficientRepeatsEvery",
-                "inputs": []
             }
         ]
     },

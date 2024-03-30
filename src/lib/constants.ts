@@ -30,10 +30,10 @@ export const balance = fuse('Plug.Balance.Fuse.sol')
 export const balanceSemiFungible = fuse('Plug.Balance.SemiFungible.Fuse.sol')
 export const baseFee = fuse('Plug.BaseFee.Fuse.sol')
 export const blockNumber = fuse('Plug.BlockNumber.Fuse.sol')
+export const calendar = fuse('Plug.Calendar.Fuse.sol')
 export const limitedCalls = fuse('Plug.LimitedCalls.Fuse.sol')
 export const revocation = fuse('Plug.Revocation.Fuse.sol')
 export const timestamp = fuse('Plug.Timestamp.Fuse.sol')
-export const window = fuse('Plug.Window.Fuse.sol')
 
 export const fraxlend = protocolFuse('Plug.Fraxlend.APY.Fuse.sol')
 export const nounsBid = protocolFuse('Plug.Nouns.Bid.Fuse.sol')
@@ -55,11 +55,12 @@ export const etchContracts: Array<Contract> = [
     balanceSemiFungible,
     baseFee,
     blockNumber,
+    calendar,
     limitedCalls,
     revocation,
     timestamp,
-    window,
     // ! Protocols
+    fraxlend,
     nounsBid,
     nounsId,
     nounsTrait,

@@ -431,6 +431,161 @@ export const plugBlockNumberFuseAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugCalendarFuse
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugCalendarFuseAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
+    name: 'decode',
+    outputs: [
+      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
+      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
+      { name: '$duration', internalType: 'uint32', type: 'uint32' },
+      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
+      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
+      { name: '$duration', internalType: 'uint32', type: 'uint32' },
+      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'encode',
+    outputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$live', internalType: 'bytes', type: 'bytes' },
+      {
+        name: '$current',
+        internalType: 'struct PlugTypesLib.Current',
+        type: 'tuple',
+        components: [
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'value', internalType: 'uint256', type: 'uint256' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'enforceFuse',
+    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
+    name: 'isWithinCalendar',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
+      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
+      { name: '$duration', internalType: 'uint32', type: 'uint32' },
+      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'isWithinCalendar',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
+      { name: '$duration', internalType: 'uint32', type: 'uint32' },
+      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'toCalendar',
+    outputs: [
+      {
+        name: '$calendar',
+        internalType: 'struct CalendarFuseLib.Calendar',
+        type: 'tuple',
+        components: [
+          {
+            name: 'periods',
+            internalType: 'struct CalendarFuseLib.Period[]',
+            type: 'tuple[]',
+            components: [
+              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
+              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
+    name: 'toCalendar',
+    outputs: [
+      {
+        name: '$calendar',
+        internalType: 'struct CalendarFuseLib.Calendar',
+        type: 'tuple',
+        components: [
+          {
+            name: 'periods',
+            internalType: 'struct CalendarFuseLib.Period[]',
+            type: 'tuple[]',
+            components: [
+              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
+              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$schedule', internalType: 'uint256', type: 'uint256' },
+      { name: '$n', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'toCalendars',
+    outputs: [
+      {
+        name: '$calendars',
+        internalType: 'struct CalendarFuseLib.Calendar[]',
+        type: 'tuple[]',
+        components: [
+          {
+            name: 'periods',
+            internalType: 'struct CalendarFuseLib.Period[]',
+            type: 'tuple[]',
+            components: [
+              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
+              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
+            ],
+          },
+        ],
+      },
+      { name: '$cursor', internalType: 'uint32', type: 'uint32' },
+    ],
+    stateMutability: 'view',
+  },
+  { type: 'error', inputs: [], name: 'CalendarCaveatViolation' },
+  { type: 'error', inputs: [], name: 'CalendarLackingDays' },
+  { type: 'error', inputs: [], name: 'CalendarLackingDuration' },
+  { type: 'error', inputs: [], name: 'CalendarLackingStartTime' },
+  { type: 'error', inputs: [], name: 'CalendarLackingSufficientRepeatsEvery' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugFactory
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -793,6 +948,73 @@ export const plugFactoryAbi = [
   { type: 'error', inputs: [], name: 'TransferToNonERC721ReceiverImplementer' },
   { type: 'error', inputs: [], name: 'TransferToZeroAddress' },
   { type: 'error', inputs: [], name: 'Unauthorized' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PlugFraxlendAPYFuse
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const plugFraxlendApyFuseAbi = [
+  {
+    type: 'function',
+    inputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    name: 'decode',
+    outputs: [
+      { name: '$vault', internalType: 'address', type: 'address' },
+      { name: '$vaultOperator', internalType: 'uint8', type: 'uint8' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$vault', internalType: 'address', type: 'address' },
+      { name: '$vaultOperator', internalType: 'uint8', type: 'uint8' },
+      { name: '$operator', internalType: 'uint8', type: 'uint8' },
+      { name: '$threshold', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'encode',
+    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '$live', internalType: 'bytes', type: 'bytes' },
+      {
+        name: '$current',
+        internalType: 'struct PlugTypesLib.Current',
+        type: 'tuple',
+        components: [
+          { name: 'target', internalType: 'address', type: 'address' },
+          { name: 'value', internalType: 'uint256', type: 'uint256' },
+          { name: 'data', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'enforceFuse',
+    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdExceeded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: '$expected', internalType: 'uint256', type: 'uint256' },
+      { name: '$reality', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ThresholdInsufficient',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1941,161 +2163,6 @@ export const plugVaultSocketAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PlugWindowFuse
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const plugWindowFuseAbi = [
-  {
-    type: 'function',
-    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
-    name: 'decode',
-    outputs: [
-      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
-      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
-      { name: '$duration', internalType: 'uint32', type: 'uint32' },
-      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
-    ],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
-      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
-      { name: '$duration', internalType: 'uint32', type: 'uint32' },
-      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'encode',
-    outputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$live', internalType: 'bytes', type: 'bytes' },
-      {
-        name: '$current',
-        internalType: 'struct PlugTypesLib.Current',
-        type: 'tuple',
-        components: [
-          { name: 'target', internalType: 'address', type: 'address' },
-          { name: 'value', internalType: 'uint256', type: 'uint256' },
-          { name: 'data', internalType: 'bytes', type: 'bytes' },
-        ],
-      },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-    ],
-    name: 'enforceFuse',
-    outputs: [{ name: '$through', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
-      { name: '$repeatsEvery', internalType: 'uint32', type: 'uint32' },
-      { name: '$duration', internalType: 'uint32', type: 'uint32' },
-      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'isWithinWindow',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
-    name: 'isWithinWindow',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '$schedule', internalType: 'uint256', type: 'uint256' }],
-    name: 'toWindow',
-    outputs: [
-      {
-        name: '$window',
-        internalType: 'struct WindowFuseLib.Window',
-        type: 'tuple',
-        components: [
-          {
-            name: 'periods',
-            internalType: 'struct WindowFuseLib.Period[]',
-            type: 'tuple[]',
-            components: [
-              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
-              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
-            ],
-          },
-        ],
-      },
-    ],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$startTime', internalType: 'uint32', type: 'uint32' },
-      { name: '$duration', internalType: 'uint32', type: 'uint32' },
-      { name: '$daysOfWeek', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'toWindow',
-    outputs: [
-      {
-        name: '$window',
-        internalType: 'struct WindowFuseLib.Window',
-        type: 'tuple',
-        components: [
-          {
-            name: 'periods',
-            internalType: 'struct WindowFuseLib.Period[]',
-            type: 'tuple[]',
-            components: [
-              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
-              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
-            ],
-          },
-        ],
-      },
-    ],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$schedule', internalType: 'uint256', type: 'uint256' },
-      { name: '$n', internalType: 'uint32', type: 'uint32' },
-    ],
-    name: 'toWindows',
-    outputs: [
-      {
-        name: '$windows',
-        internalType: 'struct WindowFuseLib.Window[]',
-        type: 'tuple[]',
-        components: [
-          {
-            name: 'periods',
-            internalType: 'struct WindowFuseLib.Period[]',
-            type: 'tuple[]',
-            components: [
-              { name: 'startTime', internalType: 'uint32', type: 'uint32' },
-              { name: 'endTime', internalType: 'uint32', type: 'uint32' },
-            ],
-          },
-        ],
-      },
-      { name: '$cursor', internalType: 'uint32', type: 'uint32' },
-    ],
-    stateMutability: 'view',
-  },
-  { type: 'error', inputs: [], name: 'WindowCaveatViolation' },
-  { type: 'error', inputs: [], name: 'WindowLackingDays' },
-  { type: 'error', inputs: [], name: 'WindowLackingDuration' },
-  { type: 'error', inputs: [], name: 'WindowLackingStartTime' },
-  { type: 'error', inputs: [], name: 'WindowLackingSufficientRepeatsEvery' },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2275,6 +2342,67 @@ export const useReadPlugBlockNumberFuseEnforceFuse =
   /*#__PURE__*/ createUseReadContract({
     abi: plugBlockNumberFuseAbi,
     functionName: 'enforceFuse',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__
+ */
+export const useReadPlugCalendarFuse = /*#__PURE__*/ createUseReadContract({
+  abi: plugCalendarFuseAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"decode"`
+ */
+export const useReadPlugCalendarFuseDecode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'decode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"encode"`
+ */
+export const useReadPlugCalendarFuseEncode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'encode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"enforceFuse"`
+ */
+export const useReadPlugCalendarFuseEnforceFuse =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'enforceFuse',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"isWithinCalendar"`
+ */
+export const useReadPlugCalendarFuseIsWithinCalendar =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'isWithinCalendar',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"toCalendar"`
+ */
+export const useReadPlugCalendarFuseToCalendar =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'toCalendar',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugCalendarFuseAbi}__ and `functionName` set to `"toCalendars"`
+ */
+export const useReadPlugCalendarFuseToCalendars =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugCalendarFuseAbi,
+    functionName: 'toCalendars',
   })
 
 /**
@@ -2697,6 +2825,40 @@ export const useWatchPlugFactoryTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: plugFactoryAbi,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFraxlendApyFuseAbi}__
+ */
+export const useReadPlugFraxlendApyFuse = /*#__PURE__*/ createUseReadContract({
+  abi: plugFraxlendApyFuseAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFraxlendApyFuseAbi}__ and `functionName` set to `"decode"`
+ */
+export const useReadPlugFraxlendApyFuseDecode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugFraxlendApyFuseAbi,
+    functionName: 'decode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFraxlendApyFuseAbi}__ and `functionName` set to `"encode"`
+ */
+export const useReadPlugFraxlendApyFuseEncode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugFraxlendApyFuseAbi,
+    functionName: 'encode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFraxlendApyFuseAbi}__ and `functionName` set to `"enforceFuse"`
+ */
+export const useReadPlugFraxlendApyFuseEnforceFuse =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugFraxlendApyFuseAbi,
+    functionName: 'enforceFuse',
   })
 
 /**
@@ -3522,63 +3684,4 @@ export const useWatchPlugVaultSocketUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: plugVaultSocketAbi,
     eventName: 'Upgraded',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__
- */
-export const useReadPlugWindowFuse = /*#__PURE__*/ createUseReadContract({
-  abi: plugWindowFuseAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"decode"`
- */
-export const useReadPlugWindowFuseDecode = /*#__PURE__*/ createUseReadContract({
-  abi: plugWindowFuseAbi,
-  functionName: 'decode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"encode"`
- */
-export const useReadPlugWindowFuseEncode = /*#__PURE__*/ createUseReadContract({
-  abi: plugWindowFuseAbi,
-  functionName: 'encode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"enforceFuse"`
- */
-export const useReadPlugWindowFuseEnforceFuse =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugWindowFuseAbi,
-    functionName: 'enforceFuse',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"isWithinWindow"`
- */
-export const useReadPlugWindowFuseIsWithinWindow =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugWindowFuseAbi,
-    functionName: 'isWithinWindow',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"toWindow"`
- */
-export const useReadPlugWindowFuseToWindow =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugWindowFuseAbi,
-    functionName: 'toWindow',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugWindowFuseAbi}__ and `functionName` set to `"toWindows"`
- */
-export const useReadPlugWindowFuseToWindows =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugWindowFuseAbi,
-    functionName: 'toWindows',
   })

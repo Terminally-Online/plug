@@ -34,8 +34,18 @@ contract PlugDeployment is Script {
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_CALENDAR_FUSE_SALT,
+            PlugEtcherLib.PLUG_CALENDAR_FUSE_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_FACTORY_SALT,
             PlugEtcherLib.PLUG_FACTORY_INITCODE
+        );
+
+        PlugEtcherLib.FACTORY.safeCreate2(
+            PlugEtcherLib.PLUG_FRAXLEND_APY_FUSE_SALT,
+            PlugEtcherLib.PLUG_FRAXLEND_APY_FUSE_INITCODE
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(
@@ -76,11 +86,6 @@ contract PlugDeployment is Script {
         PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_VAULT_SOCKET_SALT,
             PlugEtcherLib.PLUG_VAULT_SOCKET_INITCODE
-        );
-
-        PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_WINDOW_FUSE_SALT,
-            PlugEtcherLib.PLUG_WINDOW_FUSE_INITCODE
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(

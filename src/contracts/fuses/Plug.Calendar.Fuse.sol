@@ -4,35 +4,34 @@ pragma solidity 0.8.18;
 
 import { PlugFuseInterface } from
     "../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
+import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
-library WindowFuseLib {
-    error WindowLackingDuration();
-    error WindowLackingDays();
-    error WindowLackingRepeatsEvery();
-    error WindowLackingSufficientRepeatsEvery();
-    error WindowLackingStartTime();
-    error WindowLackingN();
-    error WindowLackingHorizon();
-
-    error WindowCaveatViolation();
+library CalendarFuseLib {
+    error CalendarLackingDuration();
+    error CalendarLackingDays();
+    error CalendarLackingRepeatsEvery();
+    error CalendarLackingSufficientRepeatsEvery();
+    error CalendarLackingStartTime();
+    error CalendarLackingN();
+    error CalendarLackingHorizon();
+    error CalendarCaveatViolation();
 
     struct Period {
         uint32 startTime;
         uint32 endTime;
     }
 
-    struct Window {
+    struct Calendar {
         Period[] periods;
     }
 }
 
 /**
- * @title Window Caveat
+ * @title Calendar Caveat
  * @notice This Fuse is responsible for providing a function to check
- *         whether or not the current time is within a given window of time
+ *         whether or not the current time is within a given calendar of time
  *         that repeats every X seconds and lasts for Y seconds as well as
- *         helper functions needed to determine the next N window openings.
+ *         helper functions needed to determine the next N calendar openings.
  * @dev When working with this Fuse, you will generate timestamps with:
  *    - Javascript / Typescript:
  *      - `const dateInSecs = Math.floor(new Date().getTime() / 1000);`
@@ -44,7 +43,7 @@ library WindowFuseLib {
  *      - `uint256 dateInSecs = block.timestamp;`
  * @author @nftchance (chance@onplug.io)
  */
-contract PlugWindowFuse is PlugFuseInterface {
+contract PlugCalendarFuse is PlugFuseInterface {
     /// @dev The number of seconds in a day.
     uint32 private constant SECONDS_PER_DAY = 1 days;
 
@@ -69,8 +68,8 @@ contract PlugWindowFuse is PlugFuseInterface {
     {
         uint256 schedule = abi.decode($live, (uint256));
 
-        if (!isWithinWindow(schedule)) {
-            revert WindowFuseLib.WindowCaveatViolation();
+        if (!isWithinCalendar(schedule)) {
+            revert CalendarFuseLib.CalendarCaveatViolation();
         }
 
         /// @dev Continue the pass through.
@@ -81,9 +80,9 @@ contract PlugWindowFuse is PlugFuseInterface {
      * @dev Unpack the schedule details from the schedule.
      * @param $schedule The schedule to unpack.
      * @return $startTime The time the schedule was declared.
-     * @return $repeatsEvery The number of seconds between each window.
-     * @return $duration The number of seconds each window lasts.
-     * @return $daysOfWeek The days of the week the window is active.
+     * @return $repeatsEvery The number of seconds between each calendar.
+     * @return $duration The number of seconds each calendar lasts.
+     * @return $daysOfWeek The days of the week the calendar is active.
      */
     function decode(uint256 $schedule)
         public
@@ -105,8 +104,8 @@ contract PlugWindowFuse is PlugFuseInterface {
     /**
      * @dev Pack the schedule details into a schedule.
      * @param $startTime The time the schedule was declared.
-     * @param $repeatsEvery The number of seconds between each window.
-     * @param $duration The number of seconds each window lasts.
+     * @param $repeatsEvery The number of seconds between each calendar.
+     * @param $duration The number of seconds each calendar lasts.
      * @return $schedule The packed schedule.
      */
     function encode(
@@ -121,17 +120,19 @@ contract PlugWindowFuse is PlugFuseInterface {
     {
         /// @dev Ensure the duration is greater than 0.
         if ($duration == 0) {
-            revert WindowFuseLib.WindowLackingDuration();
+            revert CalendarFuseLib.CalendarLackingDuration();
         }
 
         /// @dev Must support at least one day.
         if ($daysOfWeek == 0) {
-            revert WindowFuseLib.WindowLackingDays();
+            revert CalendarFuseLib.CalendarLackingDays();
         }
 
-        /// @dev Prevent weird overlapping windows.
+        /// @dev Prevent weird overlapping calendars.
         if ($duration > $repeatsEvery) {
-            revert WindowFuseLib.WindowLackingSufficientRepeatsEvery();
+            revert
+                CalendarFuseLib
+                .CalendarLackingSufficientRepeatsEvery();
         }
 
         /// @dev Pack the schedule details.
@@ -143,11 +144,11 @@ contract PlugWindowFuse is PlugFuseInterface {
 
     /**
      * @notice Check whether or not the current time is within the
-     *         the declared window of availability by the schedule.
+     *         the declared calendar of availability by the schedule.
      * @param $schedule The schedule to check.
-     * @return $isWithinWindow Whether or not the current time is within the
+     * @return $isWithinCalendar Whether or not the current time is within the
      */
-    function isWithinWindow(uint256 $schedule)
+    function isWithinCalendar(uint256 $schedule)
         public
         view
         returns (bool)
@@ -160,19 +161,19 @@ contract PlugWindowFuse is PlugFuseInterface {
             uint8 daysOfWeek
         ) = decode($schedule);
 
-        /// @dev Ensure the current time is within the window.
-        return _isWithinWindow(
+        /// @dev Ensure the current time is within the calendar.
+        return _isWithinCalendar(
             startTime, repeatsEvery, duration, daysOfWeek
         );
     }
 
     /**
-     * @dev Overloads the {isWithinWindow} function to allow for a verbose call.
+     * @dev Overloads the {isWithinCalendar} function to allow for a verbose call.
      * @param $startTime The time the schedule was declared.
-     * @param $repeatsEvery The number of seconds between each window.
-     * @param $duration The number of seconds each window lasts.
+     * @param $repeatsEvery The number of seconds between each calendar.
+     * @param $duration The number of seconds each calendar lasts.
      */
-    function isWithinWindow(
+    function isWithinCalendar(
         uint32 $startTime,
         uint32 $repeatsEvery,
         uint32 $duration,
@@ -182,34 +183,34 @@ contract PlugWindowFuse is PlugFuseInterface {
         view
         returns (bool)
     {
-        /// @dev Ensure the current time is within the window.
-        return _isWithinWindow(
+        /// @dev Ensure the current time is within the calendar.
+        return _isWithinCalendar(
             $startTime, $repeatsEvery, $duration, $daysOfWeek
         );
     }
 
     /**
-     * @dev Determine the next N window openings for a given schedule.
+     * @dev Determine the next N calendar openings for a given schedule.
      * @notice If you call this onchain you have sinned and you will not be forgiven.
      *         This is simply a utility function to help you determine and/or
      *         visualize the Openings of your schedule.
      * @param $schedule The schedule to check.
-     * @param $n The number of window openings to return.
-     * @return $windows The next N window openings.
+     * @param $n The number of calendar openings to return.
+     * @return $calendars The next N calendar openings.
      */
-    function toWindows(
+    function toCalendars(
         uint256 $schedule,
         uint32 $n
     )
         external
         view
         returns (
-            WindowFuseLib.Window[] memory $windows,
+            CalendarFuseLib.Calendar[] memory $calendars,
             uint32 $cursor
         )
     {
         /// @dev Load the stack.
-        $windows = new WindowFuseLib.Window[]($n);
+        $calendars = new CalendarFuseLib.Calendar[]($n);
 
         /// @dev Get the schedule details.
         (
@@ -224,9 +225,9 @@ contract PlugWindowFuse is PlugFuseInterface {
         $cursor = uint32(block.timestamp) + $n * repeatsEvery;
 
         for (startTime; startTime < $cursor;) {
-            /// @dev Add the next window to the list of windows.
-            $windows[(startTime / repeatsEvery) % $n] =
-                _toWindow(startTime, duration, daysOfWeek);
+            /// @dev Add the next calendar to the list of calendars.
+            $calendars[(startTime / repeatsEvery) % $n] =
+                _toCalendar(startTime, duration, daysOfWeek);
 
             /// @dev Time travel into the future.
             unchecked {
@@ -236,42 +237,42 @@ contract PlugWindowFuse is PlugFuseInterface {
     }
 
     /**
-     * @dev Determine the active periods for a schedule window given a horizon
+     * @dev Determine the active periods for a schedule calendar given a horizon
      *      to filter to the points at which the `daysOfWeek` condition
-     *      is satisfied as a Window may contain multiple periods in which
+     *      is satisfied as a Calendar may contain multiple periods in which
      *      it can be settled.
      * @param $schedule The schedule to check.
      */
-    function toWindow(uint256 $schedule)
+    function toCalendar(uint256 $schedule)
         external
         pure
-        returns (WindowFuseLib.Window memory $window)
+        returns (CalendarFuseLib.Calendar memory $calendar)
     {
         /// @dev Get the schedule details.
         (uint32 startTime, uint32 repeatsEvery,, uint8 daysOfWeek) =
             decode($schedule);
 
-        /// @dev Ensure the current time is within the window.
-        return _toWindow(startTime, repeatsEvery, daysOfWeek);
+        /// @dev Ensure the current time is within the calendar.
+        return _toCalendar(startTime, repeatsEvery, daysOfWeek);
     }
 
     /**
-     * @dev Overloaded version of {toWindow} to allow for a verbose call.
+     * @dev Overloaded version of {toCalendar} to allow for a verbose call.
      * @param $startTime The time the schedule was declared.
-     * @param $duration The number of seconds each window lasts.
-     * @param $daysOfWeek The days of the week the window is active.
+     * @param $duration The number of seconds each calendar lasts.
+     * @param $daysOfWeek The days of the week the calendar is active.
      */
-    function toWindow(
+    function toCalendar(
         uint32 $startTime,
         uint32 $duration,
         uint8 $daysOfWeek
     )
         external
         pure
-        returns (WindowFuseLib.Window memory $window)
+        returns (CalendarFuseLib.Calendar memory $calendar)
     {
-        /// @dev Ensure the current time is within the window.
-        return _toWindow($startTime, $duration, $daysOfWeek);
+        /// @dev Ensure the current time is within the calendar.
+        return _toCalendar($startTime, $duration, $daysOfWeek);
     }
 
     /**
@@ -296,45 +297,46 @@ contract PlugWindowFuse is PlugFuseInterface {
     }
 
     /**
-     * @dev Determine the active periods for a schedule window given a horizon
+     * @dev Determine the active periods for a schedule calendar given a horizon
      *      to filter to the points at which the `daysOfWeek` condition
-     *      is satisfied as a Window may contain multiple periods in which
+     *      is satisfied as a Calendar may contain multiple periods in which
      *      it can be settled.
      * @param $startTime The time the schedule was declared.
-     * @param $duration The number of seconds each window lasts.
-     * @param $daysOfWeek The days of the week the window is active.
-     * @return $window The active periods for the schedule window.
+     * @param $duration The number of seconds each calendar lasts.
+     * @param $daysOfWeek The days of the week the calendar is active.
+     * @return $calendar The active periods for the schedule calendar.
      */
-    function _toWindow(
+    function _toCalendar(
         uint32 $startTime,
         uint32 $duration,
         uint8 $daysOfWeek
     )
         internal
         pure
-        returns (WindowFuseLib.Window memory $window)
+        returns (CalendarFuseLib.Calendar memory $calendar)
     {
-        /// @dev Calculate when this Window ends.
-        uint32 windowEndTime = $startTime + $duration;
+        /// @dev Calculate when this Calendar ends.
+        uint32 calendarEndTime = $startTime + $duration;
 
         /// @dev Calculate the maximum number of days this intent may extend.
-        uint32 daysInWindow = $duration / SECONDS_PER_DAY;
+        uint32 daysInCalendar = $duration / SECONDS_PER_DAY;
 
         /// @dev Load the stack.
-        $window.periods = new WindowFuseLib.Period[](daysInWindow);
+        $calendar.periods =
+            new CalendarFuseLib.Period[](daysInCalendar);
 
-        /// @dev Loop through every day in the window backwards.
-        for (daysInWindow; daysInWindow >= 0; daysInWindow--) {
-            /// @dev Get the time `daysInWindow` days after the start time.
+        /// @dev Loop through every day in the calendar backwards.
+        for (daysInCalendar; daysInCalendar >= 0; daysInCalendar--) {
+            /// @dev Get the time `daysInCalendar` days after the start time.
             uint32 dayTime =
-                $startTime + daysInWindow * SECONDS_PER_DAY;
+                $startTime + daysInCalendar * SECONDS_PER_DAY;
 
             /// @dev Day time will be the 24 hour increment of the start time,
             ///      however the day calculations roll by the start of the day.
             ///      Thus, we want to place the top of the period with no surplus.
             uint32 topDayTime = dayTime - (dayTime % SECONDS_PER_DAY);
 
-            /// @dev Some Windows may be longer than 1 day so we must check if
+            /// @dev Some Calendars may be longer than 1 day so we must check if
             ///      the period is active today.
             bool isOnDayOfWeek =
                 _isOnDayOfWeek($daysOfWeek, topDayTime);
@@ -348,7 +350,7 @@ contract PlugWindowFuse is PlugFuseInterface {
             /// @dev Calculate the start of this period by determining if we have
             ///      gone past the declared start time otherwise it started
             ///      at the top of the day.
-            $window.periods[daysInWindow].startTime =
+            $calendar.periods[daysInCalendar].startTime =
                 $startTime > topDayTime ? $startTime : topDayTime;
 
             /// @dev Calculate the last second of the day.
@@ -357,19 +359,21 @@ contract PlugWindowFuse is PlugFuseInterface {
             /// @dev Calculate the end of this period by determining if we have
             ///      gone past the declared end time otherwise it ended
             ///      at the bottom of the day.
-            $window.periods[daysInWindow].endTime = windowEndTime
-                < bottomDayTime ? windowEndTime : bottomDayTime;
+            $calendar.periods[daysInCalendar].endTime =
+            calendarEndTime < bottomDayTime
+                ? calendarEndTime
+                : bottomDayTime;
         }
     }
 
     /**
-     * @dev Check whether or not the current time is within a given window of time
+     * @dev Check whether or not the current time is within a given calendar of time
      *      that repeats every X seconds and lasts for Y seconds.
      * @param $startTime The time the schedule was declared.
-     * @param $repeatsEvery The number of seconds between each window.
-     * @param $duration The number of seconds each window lasts.
+     * @param $repeatsEvery The number of seconds between each calendar.
+     * @param $duration The number of seconds each calendar lasts.
      */
-    function _isWithinWindow(
+    function _isWithinCalendar(
         uint32 $startTime,
         uint32 $repeatsEvery,
         uint32 $duration,
@@ -384,29 +388,29 @@ contract PlugWindowFuse is PlugFuseInterface {
 
         /// @dev Ensure the current time is after the start time.
         if (currentTime < $startTime) {
-            revert WindowFuseLib.WindowLackingStartTime();
+            revert CalendarFuseLib.CalendarLackingStartTime();
         }
 
         /// @dev Ensure the current time is on a supported day of the week.
         if (!_isOnDayOfWeek($daysOfWeek, currentTime)) {
-            revert WindowFuseLib.WindowLackingDays();
+            revert CalendarFuseLib.CalendarLackingDays();
         }
 
         /// @dev Get the time since the declaration of the schedule.
         uint32 timeElapsed = currentTime - $startTime;
 
-        /// @notice $repeatsEvery may be zero for a one-time window
+        /// @notice $repeatsEvery may be zero for a one-time calendar
         ///         that does not repeat so we must check for this.
         if ($repeatsEvery == 0) {
             return currentTime < $startTime + $duration;
         }
 
-        /// @dev Get the time since the start of the current window.
-        uint32 currentWindowOpen =
+        /// @dev Get the time since the start of the current calendar.
+        uint32 currentCalendarOpen =
             $startTime + (timeElapsed / $repeatsEvery) * $repeatsEvery;
 
-        /// @dev Ensure the current time is within the current window.
-        return currentTime >= currentWindowOpen
-            && currentTime < currentWindowOpen + $duration;
+        /// @dev Ensure the current time is within the current calendar.
+        return currentTime >= currentCalendarOpen
+            && currentTime < currentCalendarOpen + $duration;
     }
 }
