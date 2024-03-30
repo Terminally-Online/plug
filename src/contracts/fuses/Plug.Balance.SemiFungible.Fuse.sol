@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from
+import { PlugFuseInterface, PlugTypesLib } from
     "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
-import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
-import { ERC1155 } from "solady/src/tokens/ERC1155.sol";
+import { PlugBalanceInterface } from
+    "../interfaces/Plug.Balance.Interface.sol";
 
 /**
  * @title Plug Balance (Semi-Fungible) Fuse
@@ -43,10 +43,12 @@ contract PlugBalanceSemiFungibleFuse is
             uint256 $threshold
         ) = decode($live);
 
-        /// @dev Memory reference for the balance of the holder.
-        uint256 balance = ERC1155($asset).balanceOf($holder, $tokenId);
-
-        _enforceFuse($operator, $threshold, balance);
+        /// @dev Ensure the balance of the 1155 token is within the bounds defined.
+        _enforceFuse(
+            $operator,
+            $threshold,
+            PlugBalanceInterface($asset).balanceOf($holder, $tokenId)
+        );
 
         /// @dev Otherwise, return the current value.
         $through = $current.data;

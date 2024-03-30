@@ -2,18 +2,15 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from
-    "../interfaces/Plug.Fuse.Interface.sol";
+import {
+    PlugFuseInterface,
+    PlugTypesLib
+} from "../interfaces/Plug.Fuse.Interface.sol";
 import { PlugThresholdFuseEnforce } from
     "../abstracts/fuses/Plug.Threshold.Fuse.Enforce.sol";
-import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
-interface IToken {
-    function balanceOf(address account)
-        external
-        view
-        returns (uint256);
-}
+import { PlugBalanceInterface } from
+    "../interfaces/Plug.Balance.Interface.sol";
 
 /**
  * @title Plug Balance Fuse
@@ -62,16 +59,17 @@ contract PlugBalanceFuse is
             uint256 $threshold
         ) = decode($live);
 
-        /// @dev If it is a native asset.
+        /// @dev If it is a native asset, ensure the balance is within bounds defined.
         if ($type == 0) {
             _enforceFuse($operator, $threshold, $holder.balance);
         }
-        /// @dev Otherwise, get the balance of the ERC20 asset.
+        /// @dev Otherwise, ensure the balance of an ERC20 or ERC721 token is within
+        ///      specification of the intent.
         else {
             _enforceFuse(
                 $operator,
                 $threshold,
-                IToken($asset).balanceOf($holder)
+                PlugBalanceInterface($asset).balanceOf($holder)
             );
         }
 

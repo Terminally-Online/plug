@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from
+import { PlugFuseInterface, PlugTypesLib } from
     "../interfaces/Plug.Fuse.Interface.sol";
-import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
+import { PlugLib } from "../libraries/Plug.Lib.sol";
 
 /**
  * @title Plug Cooldown Fuse

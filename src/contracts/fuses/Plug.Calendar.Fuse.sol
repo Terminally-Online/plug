@@ -2,9 +2,8 @@
 
 pragma solidity 0.8.18;
 
-import { PlugFuseInterface } from
+import { PlugFuseInterface, PlugTypesLib } from
     "../interfaces/Plug.Fuse.Interface.sol";
-import { PlugTypesLib } from "../libraries/Plug.Lib.sol";
 
 library CalendarFuseLib {
     error CalendarLackingDuration();
