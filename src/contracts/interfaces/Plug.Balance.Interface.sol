@@ -15,4 +15,12 @@ interface PlugBalanceInterface {
         external
         view
         returns (uint256);
+
+    function allowance(
+        address $holder,
+        address $spender
+    )
+        external
+        view
+        returns (uint256);
 }

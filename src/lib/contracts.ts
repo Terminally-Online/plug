@@ -2540,22 +2540,33 @@ export const contracts = [
                 "name": "execute",
                 "inputs": [
                     {
-                        "name": "$to",
-                        "type": "address",
-                        "internalType": "address"
+                        "name": "$targets",
+                        "type": "address[]",
+                        "internalType": "address[]"
                     },
                     {
-                        "name": "$value",
-                        "type": "uint256",
-                        "internalType": "uint256"
+                        "name": "$values",
+                        "type": "uint256[]",
+                        "internalType": "uint256[]"
                     },
                     {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
+                        "name": "$datas",
+                        "type": "bytes[]",
+                        "internalType": "bytes[]"
                     }
                 ],
-                "outputs": [],
+                "outputs": [
+                    {
+                        "name": "$successes",
+                        "type": "bool[]",
+                        "internalType": "bool[]"
+                    },
+                    {
+                        "name": "$results",
+                        "type": "bytes[]",
+                        "internalType": "bytes[]"
+                    }
+                ],
                 "stateMutability": "nonpayable"
             },
             {
@@ -2605,6 +2616,161 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "plugNative",
+                "inputs": [
+                    {
+                        "name": "$target",
+                        "type": "address",
+                        "internalType": "address payable"
+                    },
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$fee",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "plugNativeToToken",
+                "inputs": [
+                    {
+                        "name": "$tokenIn",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$target",
+                        "type": "address",
+                        "internalType": "address payable"
+                    },
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$fee",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "plugToken",
+                "inputs": [
+                    {
+                        "name": "$tokenOut",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$target",
+                        "type": "address",
+                        "internalType": "address payable"
+                    },
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$sell",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$fee",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "plugTokenToNative",
+                "inputs": [
+                    {
+                        "name": "$tokenOut",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$target",
+                        "type": "address",
+                        "internalType": "address payable"
+                    },
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$sell",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$fee",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "plugTokenToToken",
+                "inputs": [
+                    {
+                        "name": "$tokenOut",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$tokenIn",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$target",
+                        "type": "address",
+                        "internalType": "address payable"
+                    },
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "$sell",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$fee",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
                 "name": "renounceOwnership",
                 "inputs": [],
                 "outputs": [],
@@ -2616,6 +2782,43 @@ export const contracts = [
                 "inputs": [],
                 "outputs": [],
                 "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "setTargetsAllowed",
+                "inputs": [
+                    {
+                        "name": "$targets",
+                        "type": "address[]",
+                        "internalType": "address[]"
+                    },
+                    {
+                        "name": "$allowed",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
+                "name": "targetToAllowed",
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
             },
             {
                 "type": "function",
@@ -2688,6 +2891,26 @@ export const contracts = [
             {
                 "type": "error",
                 "name": "NoHandoverRequest",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "Reentrancy",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TargetInvalid",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TokenAllowanceInvalid",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "TokenBalanceInvalid",
                 "inputs": []
             },
             {

@@ -40,6 +40,11 @@ library PlugLib {
     error ThresholdExceeded(uint256 $expected, uint256 $reality);
     error ThresholdInsufficient(uint256 $expected, uint256 $reality);
 
+    error TargetInvalid();
+
+    error TokenAllowanceInvalid();
+    error TokenBalanceInvalid();
+
     /**
      * @notice Bubble up the revert reason revert data from an internal call
      *         that would typically revert without surfacing the reason.
