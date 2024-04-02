@@ -47,8 +47,8 @@ devDependencies:
         specifier: ^10.0.6
         version: 10.0.6
     '@types/node':
-        specifier: ^20.11.30
-        version: 20.11.30
+        specifier: ^20.12.2
+        version: 20.12.2
     '@wagmi/cli':
         specifier: ^2.1.4
         version: 2.1.4(typescript@5.4.3)
@@ -5794,7 +5794,7 @@ packages:
             }
         dependencies:
             '@types/jsonfile': 6.1.4
-            '@types/node': 20.11.30
+            '@types/node': 20.12.2
         dev: true
 
     /@types/glob@7.2.0:
@@ -5804,7 +5804,7 @@ packages:
             }
         dependencies:
             '@types/minimatch': 5.1.2
-            '@types/node': 20.11.30
+            '@types/node': 20.12.2
         dev: true
 
     /@types/har-format@1.2.15:
@@ -5852,7 +5852,7 @@ packages:
                 integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==
             }
         dependencies:
-            '@types/node': 20.11.30
+            '@types/node': 20.12.2
         dev: true
 
     /@types/lru-cache@5.1.1:
@@ -5904,14 +5904,6 @@ packages:
             }
         dev: false
 
-    /@types/node@20.11.30:
-        resolution:
-            {
-                integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==
-            }
-        dependencies:
-            undici-types: 5.26.5
-
     /@types/node@20.12.2:
         resolution:
             {
@@ -5956,7 +5948,7 @@ packages:
                 integrity: sha512-hHxJU6PAEUn0TP4S/ZOzuTUvJWuZ6eIKeNKb5RBpODvSl6hp1Wrw4s7ATY50rklRCScUDpHzVA/DQdSjJ3UoYQ==
             }
         dependencies:
-            '@types/node': 20.11.30
+            '@types/node': 20.12.2
 
     /@types/semver@7.5.8:
         resolution:
@@ -7350,8 +7342,8 @@ packages:
         engines: { node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7 }
         hasBin: true
         dependencies:
-            caniuse-lite: 1.0.30001600
-            electron-to-chromium: 1.4.722
+            caniuse-lite: 1.0.30001603
+            electron-to-chromium: 1.4.723
             node-releases: 2.0.14
             update-browserslist-db: 1.0.13(browserslist@4.23.0)
         dev: false
@@ -7586,10 +7578,10 @@ packages:
             }
         engines: { node: '>=10' }
 
-    /caniuse-lite@1.0.30001600:
+    /caniuse-lite@1.0.30001603:
         resolution:
             {
-                integrity: sha512-+2S9/2JFhYmYaDpZvo0lKkfvuKIglrx68MwOBqMGHhQsNkLjB5xtc/TGoEPs+MxjSyN/72qer2g97nzR641mOQ==
+                integrity: sha512-iL2iSS0eDILMb9n5yKQoTBim9jMZ0Yrk8g0N9K7UzYyWnfIKzXBZD5ngpM37ZcL/cv0Mli8XtVMRYMQAfFpi5Q==
             }
         dev: false
 
@@ -8732,10 +8724,10 @@ packages:
             }
         dev: false
 
-    /electron-to-chromium@1.4.722:
+    /electron-to-chromium@1.4.723:
         resolution:
             {
-                integrity: sha512-5nLE0TWFFpZ80Crhtp4pIp8LXCztjYX41yUcV6b+bKR2PqzjskTMOOlBi1VjBHlvHwS+4gar7kNKOrsbsewEZQ==
+                integrity: sha512-rxFVtrMGMFROr4qqU6n95rUi9IlfIm+lIAt+hOToy/9r6CDv0XiEcQdC3VP71y1pE5CFTzKV0RvxOGYCPWWHPw==
             }
         dev: false
 
@@ -12209,7 +12201,7 @@ packages:
             }
         engines: { node: '>=18' }
         dependencies:
-            terser: 5.30.0
+            terser: 5.30.1
         dev: false
 
     /metro-resolver@0.80.8:
@@ -15806,10 +15798,10 @@ packages:
         engines: { node: '>=8' }
         dev: true
 
-    /terser@5.30.0:
+    /terser@5.30.1:
         resolution:
             {
-                integrity: sha512-Y/SblUl5kEyEFzhMAQdsxVHh+utAxd4IuRNJzKywY/4uzSogh3G219jqbDDxYu4MXO9CzY3tSEqmZvW6AoEDJw==
+                integrity: sha512-PJhOnRttZqqmIujxOQOMu4QuFGvh43lR7Youln3k6OJvmxwZ5FxK5rbCEh8XABRCpLf7ZnhrZuclCNCASsScnA==
             }
         engines: { node: '>=10' }
         hasBin: true
