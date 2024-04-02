@@ -5,12 +5,12 @@
   "scripts": {
     "prebuild": "pnpm build:lint && rm -rf ./dist",
     "build": "pnpm build:ts && pnpm build:contracts",
-    "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18",
+    "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
     "build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
     "build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts && npx wagmi generate",
     "prebuild:etcher": "rm -rf src/contracts/libraries/Plug.Etcher.Lib.sol && rm -rf src/contracts/libraries/Plug.Etcher.Lib.t.sol",
     "build:etcher": "pnpm tsx src/lib/functions/etcher.ts",
-    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.18",
+    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
     "build:format": "pnpm prettier --write .",
     "prebuild:mine": "pnpm build:etcher",
     "build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/mine.ts && pnpm build:etcher && forge test",
@@ -105,5 +105,10 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@0xsequence/wallet-contracts@2.0.0": "patches/@0xsequence__wallet-contracts@2.0.0.patch"
+    }
   }
 }

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 library PlugAddressesLib {
     address internal constant PLUG_FACTORY_ADDRESS =
-        0x001b3AD372bD026C77e111acd6b3C416Fd53A1A2;
+        0x0052530c90b05c20F2B4AD465bB6BB4Bb3e0DACe;
 
     address internal constant PLUG_TREASURY_ADDRESS =
-        0x005FC5EeB5ce2E40DB526044d3D1e4A678DA59B6;
+        0x7DBbfD603450Ebb2827A4F345f00470011324D6b;
 }

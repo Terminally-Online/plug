@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 import { Test } from "../abstracts/test/Plug.Test.sol";
 import { PlugEtcherLib } from "./Plug.Etcher.Lib.sol";

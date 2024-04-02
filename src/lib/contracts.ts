@@ -1498,6 +1498,31 @@ export const contracts = [
             },
             {
                 "type": "event",
+                "name": "SocketDeployed",
+                "inputs": [
+                    {
+                        "name": "implementation",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "vault",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "salt",
+                        "type": "bytes32",
+                        "indexed": false,
+                        "internalType": "bytes32"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
                 "name": "Transfer",
                 "inputs": [
                     {
@@ -3886,6 +3911,31 @@ export const contracts = [
                 "inputs": [
                     {
                         "name": "newImageHash",
+                        "type": "bytes32",
+                        "indexed": false,
+                        "internalType": "bytes32"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "SocketOwnershipTransferred",
+                "inputs": [
+                    {
+                        "name": "previousOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "newOwner",
+                        "type": "address",
+                        "indexed": true,
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "imageHash",
                         "type": "bytes32",
                         "indexed": false,
                         "internalType": "bytes32"

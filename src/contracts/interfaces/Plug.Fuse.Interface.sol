@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 /// @dev Shape declarations in the Plug framework.
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";

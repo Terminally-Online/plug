@@ -4,10 +4,15 @@ settings:
     autoInstallPeers: true
     excludeLinksFromLockfile: false
 
+patchedDependencies:
+    '@0xsequence/wallet-contracts@2.0.0':
+        hash: jsox3qxmqqptoshab7i5xr3b7m
+        path: patches/@0xsequence__wallet-contracts@2.0.0.patch
+
 dependencies:
     '@0xsequence/wallet-contracts':
         specifier: ^2.0.0
-        version: 2.0.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(typechain@5.2.0)(typescript@5.4.3)
+        version: 2.0.0(patch_hash=jsox3qxmqqptoshab7i5xr3b7m)(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(typechain@5.2.0)(typescript@5.4.3)
     '@nftchance/plug-types':
         specifier: ^0.9.11
         version: 0.9.11(esbuild@0.20.2)(typescript@5.4.3)
@@ -99,7 +104,7 @@ devDependencies:
         version: 5.4.3
 
 packages:
-    /@0xsequence/wallet-contracts@2.0.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(typechain@5.2.0)(typescript@5.4.3):
+    /@0xsequence/wallet-contracts@2.0.0(patch_hash=jsox3qxmqqptoshab7i5xr3b7m)(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(typechain@5.2.0)(typescript@5.4.3):
         resolution:
             {
                 integrity: sha512-PbKedYnBxgS7Qb5ca/xHUt++TmKK3yKIpVR1fX7HtAJiYOMSoZX4pVIFylUr6N7uBNpsPurFWCx7jTK+hBZnNA==
@@ -117,6 +122,7 @@ packages:
             - typescript
             - utf-8-validate
         dev: false
+        patched: true
 
     /@adraffy/ens-normalize@1.10.0:
         resolution:

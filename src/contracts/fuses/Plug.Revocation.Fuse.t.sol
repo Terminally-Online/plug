@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 import { Test, PlugTypesLib } from "../abstracts/test/Plug.Test.sol";
 import { PlugRevocationFuse } from "./Plug.Revocation.Fuse.sol";

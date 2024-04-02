@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.23;
 
 interface ImmutableCreate2Factory {
     function safeCreate2(

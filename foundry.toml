@@ -18,7 +18,7 @@
     optimizer = true
     optimizer_runs = 10_000
     script = "src/contracts/script"
-    solc = "0.8.18"
+    solc = "0.8.23"
 
 [profile.ci]
     fuzz = { runs = 10_000 }

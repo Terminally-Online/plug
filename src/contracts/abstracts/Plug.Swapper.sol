@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 import { ReentrancyGuard } from "solady/src/utils/ReentrancyGuard.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";

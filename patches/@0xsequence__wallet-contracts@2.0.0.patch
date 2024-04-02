@@ -1,0 +1,561 @@
+diff --git a/contracts/Factory.sol b/contracts/Factory.sol
+index 9c3d3aac32c94ad0ec6bbe3afcc5f7569c14da73..f763130d287b63c6ea708835fb0133f0fc7e265a 100644
+--- a/contracts/Factory.sol
++++ b/contracts/Factory.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./Wallet.sol";
+ 
+diff --git a/contracts/Wallet.sol b/contracts/Wallet.sol
+index 1cb346e6559eb54257586d0dc054a16bd3075929..64743ce1303a281598d5cf2a1f9f1a1d1124f6de 100644
+--- a/contracts/Wallet.sol
++++ b/contracts/Wallet.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ /**
+     Minimal upgradeable proxy implementation, delegates all calls to the address
+diff --git a/contracts/interfaces/IERC1271Wallet.sol b/contracts/interfaces/IERC1271Wallet.sol
+index 5572aaea43656bab77a4a11aa9f6cd9e6089b420..850bfb211900a47c83c469f2293147f5a1a721f0 100644
+--- a/contracts/interfaces/IERC1271Wallet.sol
++++ b/contracts/interfaces/IERC1271Wallet.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IERC1271Wallet {
+diff --git a/contracts/interfaces/receivers/IERC1155Receiver.sol b/contracts/interfaces/receivers/IERC1155Receiver.sol
+index b21325be47f60daf0a8e81a64cfad524a55b0910..a94d00d6b1515c49c7dc7e5ed9343c8590438081 100644
+--- a/contracts/interfaces/receivers/IERC1155Receiver.sol
++++ b/contracts/interfaces/receivers/IERC1155Receiver.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IERC1155Receiver {
+diff --git a/contracts/interfaces/receivers/IERC223Receiver.sol b/contracts/interfaces/receivers/IERC223Receiver.sol
+index aa0a8631c51f758a89dbdff4e1f3f008a8b9557f..8adbaf870118143fd2744e95bcda2c18f6f09649 100644
+--- a/contracts/interfaces/receivers/IERC223Receiver.sol
++++ b/contracts/interfaces/receivers/IERC223Receiver.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IERC223Receiver {
+diff --git a/contracts/interfaces/receivers/IERC721Receiver.sol b/contracts/interfaces/receivers/IERC721Receiver.sol
+index 0776b36b053b4996120f4663de11195886a322a6..ff55473985551c8c15905bf1d26bb0c0588f7428 100644
+--- a/contracts/interfaces/receivers/IERC721Receiver.sol
++++ b/contracts/interfaces/receivers/IERC721Receiver.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IERC721Receiver {
+diff --git a/contracts/interfaces/receivers/IERC777Receiver.sol b/contracts/interfaces/receivers/IERC777Receiver.sol
+index 1a1223734173cbb74aa6fd5687cc7657995abe71..c3124d01a2589b6ce7d93b174a7f0144ff42c67d 100644
+--- a/contracts/interfaces/receivers/IERC777Receiver.sol
++++ b/contracts/interfaces/receivers/IERC777Receiver.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ interface IERC777Receiver {
+     function tokensReceived(address, address, address, uint256, bytes calldata, bytes calldata) external;
+diff --git a/contracts/modules/GuestModule.sol b/contracts/modules/GuestModule.sol
+index 54cb770a8886e070d66c4c4fcae24ffa1e35b60e..9ccba966022ee50ced1829c7ce96ac31e3d9b15e 100644
+--- a/contracts/modules/GuestModule.sol
++++ b/contracts/modules/GuestModule.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../utils/LibOptim.sol";
+ 
+diff --git a/contracts/modules/MainModule.sol b/contracts/modules/MainModule.sol
+index 657e115763f3110d15236686d0caf83edac6e106..b259f28ddf6ec8fb138ec09b1e299e1b431db7fa 100644
+--- a/contracts/modules/MainModule.sol
++++ b/contracts/modules/MainModule.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./commons/ModuleAuthFixed.sol";
+ import "./commons/ModuleHooks.sol";
+diff --git a/contracts/modules/MainModuleGasEstimation.sol b/contracts/modules/MainModuleGasEstimation.sol
+index c1c5b528b30d5cc297b791f378e2d0c35d62822d..f9ebbfb14912ad50d760441b1f81d55995ffe585 100644
+--- a/contracts/modules/MainModuleGasEstimation.sol
++++ b/contracts/modules/MainModuleGasEstimation.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./commons/gas-estimation/ModuleIgnoreAuthUpgradable.sol";
+ import "./commons/gas-estimation/ModuleIgnoreNonceCalls.sol";
+diff --git a/contracts/modules/MainModuleUpgradable.sol b/contracts/modules/MainModuleUpgradable.sol
+index 06b23796e0772c053f1489b4c32f7b24b31aca26..4e1c5369a8b24af03da35e88f3e5322d6789da42 100644
+--- a/contracts/modules/MainModuleUpgradable.sol
++++ b/contracts/modules/MainModuleUpgradable.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./commons/ModuleAuthUpgradable.sol";
+ import "./commons/ModuleHooks.sol";
+diff --git a/contracts/modules/commons/Implementation.sol b/contracts/modules/commons/Implementation.sol
+index d2be4e1bc865fdc1d74e362f88a85fded7c12597..2d006b5c0ff1d3a5f2bb6e070004c396c6b31dec 100644
+--- a/contracts/modules/commons/Implementation.sol
++++ b/contracts/modules/commons/Implementation.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ /**
+  * @dev Allows modules to access the implementation slot
+diff --git a/contracts/modules/commons/ModuleAuth.sol b/contracts/modules/commons/ModuleAuth.sol
+index f696777ca416180d5a2fb326e7bb296228931653..af587d1bbee427c2ddb773a969ed843eb1312254 100644
+--- a/contracts/modules/commons/ModuleAuth.sol
++++ b/contracts/modules/commons/ModuleAuth.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../../utils/LibBytes.sol";
+ import "../../interfaces/IERC1271Wallet.sol";
+diff --git a/contracts/modules/commons/ModuleAuthConvenience.sol b/contracts/modules/commons/ModuleAuthConvenience.sol
+index 85e8feed5392f5b5e3833bab93a2356a7ade0a67..d830d6f52e042263d9f9186832fddaeee5710cdd 100644
+--- a/contracts/modules/commons/ModuleAuthConvenience.sol
++++ b/contracts/modules/commons/ModuleAuthConvenience.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleSelfAuth.sol";
+ import "./ModuleAuth.sol";
+diff --git a/contracts/modules/commons/ModuleAuthFixed.sol b/contracts/modules/commons/ModuleAuthFixed.sol
+index 9cbf2ddec48769e1ea23338f616beab0a9b3f21c..36f41f38384fea336fb739653c821d6e61119f39 100644
+--- a/contracts/modules/commons/ModuleAuthFixed.sol
++++ b/contracts/modules/commons/ModuleAuthFixed.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleAuth.sol";
+ import "./ModuleUpdate.sol";
+diff --git a/contracts/modules/commons/ModuleAuthUpgradable.sol b/contracts/modules/commons/ModuleAuthUpgradable.sol
+index 2ec151bd0a16c639301a4115a110abf614b526ad..903115426918dab0739dc309189b5b15eec46c6a 100644
+--- a/contracts/modules/commons/ModuleAuthUpgradable.sol
++++ b/contracts/modules/commons/ModuleAuthUpgradable.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./interfaces/IModuleAuthUpgradable.sol";
+ 
+diff --git a/contracts/modules/commons/ModuleCalls.sol b/contracts/modules/commons/ModuleCalls.sol
+index c90e0c403f498479dc0294c7e4bf26181546dee5..dfa7066ec45d9b25379e96f10a94cbe8742b9b69 100644
+--- a/contracts/modules/commons/ModuleCalls.sol
++++ b/contracts/modules/commons/ModuleCalls.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleSelfAuth.sol";
+ import "./ModuleStorage.sol";
+diff --git a/contracts/modules/commons/ModuleCreator.sol b/contracts/modules/commons/ModuleCreator.sol
+index deec8e26173af7a9e6bc46ed9481ec0b1dc51e6a..a9f8aa86711521bc0b93a90ddcfd7d3fd9f5a877 100644
+--- a/contracts/modules/commons/ModuleCreator.sol
++++ b/contracts/modules/commons/ModuleCreator.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./interfaces/IModuleCreator.sol";
+ 
+diff --git a/contracts/modules/commons/ModuleERC165.sol b/contracts/modules/commons/ModuleERC165.sol
+index 2e10bed9aaa6e5a2049d55476c0b2e91df07ca71..fd021f28b659ffafdac5b3f9ab42c65cf32580d3 100644
+--- a/contracts/modules/commons/ModuleERC165.sol
++++ b/contracts/modules/commons/ModuleERC165.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ abstract contract ModuleERC165 {
+diff --git a/contracts/modules/commons/ModuleERC5719.sol b/contracts/modules/commons/ModuleERC5719.sol
+index 3e4b3ac853f7e49f7c3d29fb6f206f025fbe7ec6..e9465091c9a4fc1726124b0e5a592089bfc608d4 100644
+--- a/contracts/modules/commons/ModuleERC5719.sol
++++ b/contracts/modules/commons/ModuleERC5719.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleIPFS.sol";
+ 
+diff --git a/contracts/modules/commons/ModuleExtraAuth.sol b/contracts/modules/commons/ModuleExtraAuth.sol
+index bae2cb4e8305df3a1243fb2482f08c4481de6f78..3eda7d5d54f0c55130321818b625aaf20863414d 100644
+--- a/contracts/modules/commons/ModuleExtraAuth.sol
++++ b/contracts/modules/commons/ModuleExtraAuth.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleAuth.sol";
+ import "./ModuleStorage.sol";
+diff --git a/contracts/modules/commons/ModuleHooks.sol b/contracts/modules/commons/ModuleHooks.sol
+index 809969773ddc6ae41a55508a2aa2a2b26981aef3..af22561f1b5bebc44ee72d2b8e713a9939510739 100644
+--- a/contracts/modules/commons/ModuleHooks.sol
++++ b/contracts/modules/commons/ModuleHooks.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./interfaces/IModuleHooks.sol";
+ 
+diff --git a/contracts/modules/commons/ModuleIPFS.sol b/contracts/modules/commons/ModuleIPFS.sol
+index f16d9f5d6a1b157254dc8383583b48ce396f68d1..40466566fdd1435a6f679b9b3f89d53c80aedc38 100644
+--- a/contracts/modules/commons/ModuleIPFS.sol
++++ b/contracts/modules/commons/ModuleIPFS.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleSelfAuth.sol";
+ import "./ModuleStorage.sol";
+diff --git a/contracts/modules/commons/ModuleNonce.sol b/contracts/modules/commons/ModuleNonce.sol
+index 561f5c5f719d3f230f3271b5c91eef7646e18efb..15ffcc20cde795eeed271295a1fdfda6193b821b 100644
+--- a/contracts/modules/commons/ModuleNonce.sol
++++ b/contracts/modules/commons/ModuleNonce.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./ModuleStorage.sol";
+ 
+diff --git a/contracts/modules/commons/ModuleOnlyDelegatecall.sol b/contracts/modules/commons/ModuleOnlyDelegatecall.sol
+index cc33f51def05393f26a30982535706f86248a783..9e4dbce009c8b4ec77303ab24bd9b5ad176357cd 100644
+--- a/contracts/modules/commons/ModuleOnlyDelegatecall.sol
++++ b/contracts/modules/commons/ModuleOnlyDelegatecall.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ contract ModuleOnlyDelegatecall {
+diff --git a/contracts/modules/commons/ModuleSelfAuth.sol b/contracts/modules/commons/ModuleSelfAuth.sol
+index 4492d50829b8d65fba320f1dbbb3451a0a283499..c2bb46cba35c76c88987e32d9bad82fe976dce1b 100644
+--- a/contracts/modules/commons/ModuleSelfAuth.sol
++++ b/contracts/modules/commons/ModuleSelfAuth.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ contract ModuleSelfAuth {
+diff --git a/contracts/modules/commons/ModuleStorage.sol b/contracts/modules/commons/ModuleStorage.sol
+index b614220661013398dbd140cd5a0dbad6d60a9342..f66af8543556d9d270cde2cd275955dbf2982319 100644
+--- a/contracts/modules/commons/ModuleStorage.sol
++++ b/contracts/modules/commons/ModuleStorage.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ library ModuleStorage {
+diff --git a/contracts/modules/commons/ModuleUpdate.sol b/contracts/modules/commons/ModuleUpdate.sol
+index 1db0e6b9deaf4a04b5c0eb8185d7b37f52f810d9..89d4a6c77737549c0c8fffe9dba4d3a92b8d31c7 100644
+--- a/contracts/modules/commons/ModuleUpdate.sol
++++ b/contracts/modules/commons/ModuleUpdate.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./interfaces/IModuleUpdate.sol";
+ 
+diff --git a/contracts/modules/commons/gas-estimation/ModuleIgnoreAuthUpgradable.sol b/contracts/modules/commons/gas-estimation/ModuleIgnoreAuthUpgradable.sol
+index 34340c35859d9ceae3b4a9dc0b48751432c4af86..565f25e270a17c1842dcc01d380d1612a66bbbb8 100644
+--- a/contracts/modules/commons/gas-estimation/ModuleIgnoreAuthUpgradable.sol
++++ b/contracts/modules/commons/gas-estimation/ModuleIgnoreAuthUpgradable.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./../ModuleAuthUpgradable.sol";
+ 
+diff --git a/contracts/modules/commons/gas-estimation/ModuleIgnoreNonceCalls.sol b/contracts/modules/commons/gas-estimation/ModuleIgnoreNonceCalls.sol
+index 77e57ef3115f08f188641191bb44856bd59747de..77b30870e16b1ae2f9ca147042c4f4d57a038c85 100644
+--- a/contracts/modules/commons/gas-estimation/ModuleIgnoreNonceCalls.sol
++++ b/contracts/modules/commons/gas-estimation/ModuleIgnoreNonceCalls.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./../ModuleCalls.sol";
+ 
+diff --git a/contracts/modules/commons/interfaces/IModuleAuth.sol b/contracts/modules/commons/interfaces/IModuleAuth.sol
+index 46ae4a76e9cb2f9aa2af0d4e69ec349e7782f19d..d1d3126f9199b4537a32453c0212d541b5d18110 100644
+--- a/contracts/modules/commons/interfaces/IModuleAuth.sol
++++ b/contracts/modules/commons/interfaces/IModuleAuth.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ abstract contract IModuleAuth {
+diff --git a/contracts/modules/commons/interfaces/IModuleAuthUpgradable.sol b/contracts/modules/commons/interfaces/IModuleAuthUpgradable.sol
+index 9ca5e9bcf04e28e4b6a7c762e5db146f2a13e530..e095ff79ab39cd04a479d1dfb38ba8e26358e85f 100644
+--- a/contracts/modules/commons/interfaces/IModuleAuthUpgradable.sol
++++ b/contracts/modules/commons/interfaces/IModuleAuthUpgradable.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IModuleAuthUpgradable {
+diff --git a/contracts/modules/commons/interfaces/IModuleCalls.sol b/contracts/modules/commons/interfaces/IModuleCalls.sol
+index 9030ae7cdabee8f68369ef3ac1cbc24334b4f965..ffd62c9397e33289f485857bf3466a0a37ba1d2a 100644
+--- a/contracts/modules/commons/interfaces/IModuleCalls.sol
++++ b/contracts/modules/commons/interfaces/IModuleCalls.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IModuleCalls {
+diff --git a/contracts/modules/commons/interfaces/IModuleCreator.sol b/contracts/modules/commons/interfaces/IModuleCreator.sol
+index fcf18d219762db750b2bb6e95d069de500b8141b..114a5be10ad169c94cb0e6d1913088f8a610c6e7 100644
+--- a/contracts/modules/commons/interfaces/IModuleCreator.sol
++++ b/contracts/modules/commons/interfaces/IModuleCreator.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IModuleCreator {
+diff --git a/contracts/modules/commons/interfaces/IModuleHooks.sol b/contracts/modules/commons/interfaces/IModuleHooks.sol
+index 009f8d4b6f4b3ffcdd7de28c9212ce2c925c90d0..c13c21d506904a817779bfaf67b66ddfd6620c75 100644
+--- a/contracts/modules/commons/interfaces/IModuleHooks.sol
++++ b/contracts/modules/commons/interfaces/IModuleHooks.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ interface IModuleHooks {
+diff --git a/contracts/modules/commons/interfaces/IModuleUpdate.sol b/contracts/modules/commons/interfaces/IModuleUpdate.sol
+index c0174b35df82d0f31855829d22785d9fc5dcb35d..381daf591aa15adb385664a14559b57151621e93 100644
+--- a/contracts/modules/commons/interfaces/IModuleUpdate.sol
++++ b/contracts/modules/commons/interfaces/IModuleUpdate.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ abstract contract IModuleUpdate {
+diff --git a/contracts/modules/commons/submodules/auth/SequenceBaseSig.sol b/contracts/modules/commons/submodules/auth/SequenceBaseSig.sol
+index fbf5c105213e41e91f78f999cc8e48ed98292a00..97c5186c9068bc633610638d022627d1b6c9befa 100644
+--- a/contracts/modules/commons/submodules/auth/SequenceBaseSig.sol
++++ b/contracts/modules/commons/submodules/auth/SequenceBaseSig.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../../../../utils/SignatureValidator.sol";
+ import "../../../../utils/LibBytesPointer.sol";
+diff --git a/contracts/modules/commons/submodules/auth/SequenceChainedSig.sol b/contracts/modules/commons/submodules/auth/SequenceChainedSig.sol
+index e8ad0913f0d0b924f68bc64c5852ad8d7477767f..4d6140a322f40b9e5cdb280bcbd95625fb59697f 100644
+--- a/contracts/modules/commons/submodules/auth/SequenceChainedSig.sol
++++ b/contracts/modules/commons/submodules/auth/SequenceChainedSig.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./SequenceBaseSig.sol";
+ 
+diff --git a/contracts/modules/commons/submodules/auth/SequenceDynamicSig.sol b/contracts/modules/commons/submodules/auth/SequenceDynamicSig.sol
+index c8b64a9aad7ab9e46a701ef753277791db4934f8..7b417dea9d60775fabbb99e5cbfb687351921837 100644
+--- a/contracts/modules/commons/submodules/auth/SequenceDynamicSig.sol
++++ b/contracts/modules/commons/submodules/auth/SequenceDynamicSig.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./SequenceBaseSig.sol";
+ 
+diff --git a/contracts/modules/commons/submodules/auth/SequenceNoChainIdSig.sol b/contracts/modules/commons/submodules/auth/SequenceNoChainIdSig.sol
+index 4b21bd505a942dd9eb4143d44db20194b70db62f..5c11ca6699992b7ae5d632a8818646a5efd43f5f 100644
+--- a/contracts/modules/commons/submodules/auth/SequenceNoChainIdSig.sol
++++ b/contracts/modules/commons/submodules/auth/SequenceNoChainIdSig.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ library SequenceNoChainIdSig {
+diff --git a/contracts/modules/commons/submodules/nonce/SubModuleNonce.sol b/contracts/modules/commons/submodules/nonce/SubModuleNonce.sol
+index 71eb8ae5e634104247929816f8e6145c8c8c8d48..9f930eb9b21b4562c4585a0ff463f4682bbc0dea 100644
+--- a/contracts/modules/commons/submodules/nonce/SubModuleNonce.sol
++++ b/contracts/modules/commons/submodules/nonce/SubModuleNonce.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ library SubModuleNonce {
+diff --git a/contracts/modules/utils/GasEstimator.sol b/contracts/modules/utils/GasEstimator.sol
+index ab2a96968fcfcdc77c1a655b3da4c29500575e5f..959d1f82ffe1971aa062de41eb31a6c25d194b75 100644
+--- a/contracts/modules/utils/GasEstimator.sol
++++ b/contracts/modules/utils/GasEstimator.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ contract GasEstimator {
+diff --git a/contracts/modules/utils/MultiCallUtils.sol b/contracts/modules/utils/MultiCallUtils.sol
+index 2c4bb7fd2a36c3f6b02cc3056622358c6d22d9c2..a8618812ba44dc7bb726e7b852f2fbb6c72d28d2 100644
+--- a/contracts/modules/utils/MultiCallUtils.sol
++++ b/contracts/modules/utils/MultiCallUtils.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../commons/interfaces/IModuleCalls.sol";
+ 
+diff --git a/contracts/modules/utils/RequireUtils.sol b/contracts/modules/utils/RequireUtils.sol
+index 957e2c9447003f38a2419b2e5bfe9e42da053661..dc8006a320ee0a6636e44e4f76a185949195b720 100644
+--- a/contracts/modules/utils/RequireUtils.sol
++++ b/contracts/modules/utils/RequireUtils.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../commons/ModuleNonce.sol";
+ import "../commons/submodules/nonce/SubModuleNonce.sol";
+diff --git a/contracts/modules/utils/SequenceUtils.sol b/contracts/modules/utils/SequenceUtils.sol
+index 70b7ce192f3093445401a7b4eeae15a967c656ab..e34e7d2e84f1c6faefcb980838ccdad6ca68901f 100644
+--- a/contracts/modules/utils/SequenceUtils.sol
++++ b/contracts/modules/utils/SequenceUtils.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "./MultiCallUtils.sol";
+ import "./RequireUtils.sol";
+diff --git a/contracts/utils/LibAddress.sol b/contracts/utils/LibAddress.sol
+index d75a3e61e54106d264c0abb775cfc54b29789279..51e6db04e1784e98b2dd4c0244d68126de353990 100644
+--- a/contracts/utils/LibAddress.sol
++++ b/contracts/utils/LibAddress.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ library LibAddress {
+diff --git a/contracts/utils/LibBytes.sol b/contracts/utils/LibBytes.sol
+index 3452c8db57d42bdbce9f7e06f70a3c8bc3efecdd..51358db9e2852109b0bb2f302bb15fca8779ace4 100644
+--- a/contracts/utils/LibBytes.sol
++++ b/contracts/utils/LibBytes.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ /**
+diff --git a/contracts/utils/LibBytesPointer.sol b/contracts/utils/LibBytesPointer.sol
+index b731a6cd06fff572392954005a3329c70d46a620..d804359b10e39c766e5ddaf6c55558245208f653 100644
+--- a/contracts/utils/LibBytesPointer.sol
++++ b/contracts/utils/LibBytesPointer.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ 
+ /**
+diff --git a/contracts/utils/LibOptim.sol b/contracts/utils/LibOptim.sol
+index fb5cf0dcd8978bd6bbe2a91e5799616c19dee7d6..6c34fed13b9c92898ec588458964c4d8c34e91c9 100644
+--- a/contracts/utils/LibOptim.sol
++++ b/contracts/utils/LibOptim.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ /**
+  * @title Library for optimized EVM operations
+diff --git a/contracts/utils/LibString.sol b/contracts/utils/LibString.sol
+index 42ea4871d42f4e816c595e518a76e42abc3b7a8b..f5111b5ad2a2da2fb057c10db540155136de7746 100644
+--- a/contracts/utils/LibString.sol
++++ b/contracts/utils/LibString.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ /**
+  * @title Library for string manipulation operations
+diff --git a/contracts/utils/SignatureValidator.sol b/contracts/utils/SignatureValidator.sol
+index 23433a4e14a5b043bf1e636bb82c7c84113f07bc..eb3468217aecb2b0c8e6f4f70b5e71667186a0cb 100644
+--- a/contracts/utils/SignatureValidator.sol
++++ b/contracts/utils/SignatureValidator.sol
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: Apache-2.0
+-pragma solidity 0.8.18;
++pragma solidity 0.8.23;
+ 
+ import "../interfaces/IERC1271Wallet.sol";
+ 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.18;
+pragma solidity 0.8.23;
 
 import { Receiver } from "solady/src/accounts/Receiver.sol";
 import { Ownable } from "solady/src/auth/Ownable.sol";
