@@ -5,10 +5,10 @@ head:
       content: Getting Started
   - - meta
     - name: description
-      content: Build your first protocol with Plug in minutes.
+      content: Unlock the power of automated EVM transactions in a drag-and-drop interface.
   - - meta
     - property: og:description
-      content: Build your first protocol with Plug in minutes.
+      content: Unlock the power of automated EVM transactions in a drag-and-drop interface.
 ---
 
 # Getting Started
