@@ -1,6 +1,6 @@
 import { default as fse } from "fs-extra";
 import { resolve } from "pathe";
-import { defineConfig } from "vitepress";
+import { defineConfig, HeadConfig } from "vitepress";
 
 const rootDir = resolve(process.cwd());
 
@@ -57,7 +57,7 @@ export default defineConfig({
                 text: "Passive Management",
                 link: "/introduction/why/passive-management",
               },
-            ]
+            ],
           },
           {
             text: "FAQ",
@@ -169,7 +169,7 @@ export default defineConfig({
             items: [
               {
                 text: "Deterministic",
-                link: "/instances/deployable/deterministic"
+                link: "/instances/deployable/deterministic",
               },
               {
                 text: "Fuses",
@@ -199,9 +199,9 @@ export default defineConfig({
                 items: [
                   {
                     text: "Vaults",
-                    link: "/instances/vaults"
+                    link: "/instances/vaults",
                   },
-                ]
+                ],
               },
             ],
           },
@@ -225,24 +225,39 @@ export default defineConfig({
 
   lastUpdated: true,
 
-  // * Load the font files.
   transformHead({ assets }) {
-    const myFontFile = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
+    const head: HeadConfig[] = [];
 
-    if (myFontFile) {
-      return [
-        [
-          "link",
-          {
-            rel: "preload",
-            href: myFontFile,
-            as: "font",
-            type: "font/woff2",
-            crossorigin: "",
-          },
-        ],
-      ];
-    }
+    head.push([
+      "meta",
+      {
+        property: "og:image",
+        content: "https://docs.onplug.io/opengraph.png",
+      },
+    ]);
+
+    head.push([
+      "meta",
+      {
+        property: "twitter:image",
+        content: "https://docs.onplug.io/opengraph.png",
+      },
+    ]);
+
+    const font = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
+    if (font)
+      head.push([
+        "link",
+        {
+          rel: "preload",
+          href: font,
+          as: "font",
+          type: "font/woff2",
+          crossorigin: "",
+        },
+      ]);
+
+    return head;
   },
 
   markdown: {
