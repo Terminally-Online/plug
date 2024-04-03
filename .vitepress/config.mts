@@ -236,11 +236,53 @@ export default defineConfig({
       },
     ]);
 
+    // make the image big
+    head.push([
+      "meta",
+      {
+        property: "og:image:width",
+        content: "1920",
+      },
+    ]);
+
+    head.push([
+      "meta",
+      {
+        property: "og:image:height",
+        content: "1080",
+      },
+    ]);
+
     head.push([
       "meta",
       {
         property: "twitter:image",
         content: "https://docs.onplug.io/opengraph.png",
+      },
+    ]);
+
+    // make the image large
+    head.push([
+      "meta",
+      {
+        property: "twitter:image:width",
+        content: "1920",
+      },
+    ]);
+
+    head.push([
+      "meta",
+      {
+        property: "twitter:image:height",
+        content: "1080",
+      },
+    ]);
+
+    head.push([
+      "meta",
+      {
+        property: "twitter:card",
+        content: "summary_large_image",
       },
     ]);
 
