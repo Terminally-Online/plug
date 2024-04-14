@@ -6,15 +6,15 @@ With state and outcome assurance at both ends of transaction execution users can
 
 ---
 
-📚 Previous solutions:
+📚 **Previous solutions:**
 
 -   ❌ Users have to stay glued to their device or risk missing opportunities.
 -   ❌ Code updates and liquidity migration needed for protocols to support intents.
 -   ❌ Running backend architecture required by protocols to enable users.
 -   ❌ Transactions executed that result in something unexpected.
--   ❌ Gas cost consumed before users even know the outcome of their transaction.
+-   ❌ Switch to new wallets and sign one transaction at a time.
 
-🔌 Plug:
+🔌 **Plug:**
 
 -   ✅ Automatically execute transactions when all conditions have been met.
 -   ✅ Instantly supports all contracts deployed past, present and future.
