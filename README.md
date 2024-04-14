@@ -6,16 +6,20 @@ With state and outcome assurance at both ends of transaction execution users can
 
 ---
 
--   ❌ No migration or updates needed for protocols to support intents.
--   ❌ No backend architecture required by protocols to enable users.
--   ❌ No transactions executed that result in something unexpected.
--   ❌ No gas cost until the transaction is actually run.
+Previous solutions:
 
----
+-   ❌ Users have to stay glued to their device or risk missing opportunities.
+-   ❌ Code updates and liquidity migration needed for protocols to support intents.
+-   ❌ Running backend architecture required by protocols to enable users.
+-   ❌ Transactions executed that result in something unexpected.
+-   ❌ Gas cost consumed before users even know the outcome of their transaction.
 
--   ✅ Declare multiple transactions across multiple chains with one signature.
--   ✅ Trustless sale of intent-enabled accounts.
+Plug:
+
 -   ✅ Automatically execute transactions when all conditions have been met.
+-   ✅ Instantly supports all contracts deployed past, present and future.
+-   ✅ Schedule multiple transactions across multiple chains with one offchain signature.
+-   ✅ Trustless sale of intent-enabled accounts.
 -   ✅ Unlock the capability of systems at scale and reactivity with a single click.
 
 ---
