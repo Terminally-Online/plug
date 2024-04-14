@@ -1,8 +1,6 @@
 # 🔌 Plug
 
-`@nftchance/plug` is a generalized intent framework that brings the capability of automated transactions powered by outcome assurance across all Ethereum based chains.
-
-With state and outcome assurance at both ends of transaction execution users can schedule their transactions and step away from their device without worrying about missing an opportunity. Now, the digital portfolios of everyone can be managed through an open network of `Solvers`.
+`@nftchance/plug` is a generalized intent framework that brings the capability of automated transactions powered by outcome assurance across all Ethereum based chains. With state and outcome assurance users can schedule their transactions and desired outcomes, step away from their device, and relax as everything is magically executed according to their specification.
 
 ---
 
