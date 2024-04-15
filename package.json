@@ -53,9 +53,9 @@
     "@0xsequence/wallet-contracts": "^2.0.0",
     "@nftchance/plug-types": "^0.9.13",
     "abitype": "^1.0.2",
-    "solady": "^0.0.181",
-    "viem": "^2.9.6",
-    "wagmi": "^2.5.17"
+    "solady": "^0.0.191",
+    "viem": "^2.9.17",
+    "wagmi": "^2.5.19"
   },
   "repository": {
     "type": "git",
