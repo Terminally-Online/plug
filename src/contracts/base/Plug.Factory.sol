@@ -2,15 +2,13 @@
 
 pragma solidity 0.8.23;
 
-import { PlugFactoryInterface } from
-    "../interfaces/Plug.Factory.Interface.sol";
+import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
 import { PlugTradable } from "../abstracts/Plug.Tradable.sol";
 
 import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
-import { LibClone } from "solady/src/utils/LibClone.sol";
+import { LibClone } from "solady/utils/LibClone.sol";
 
-import { PlugSocketInterface } from
-    "../interfaces/Plug.Socket.Interface.sol";
+import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 
 /**
  * @title Plug Factory
@@ -59,13 +57,7 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
      * @param $version The version of the vault.
      * @param $implementation The implementation of the vault.
      */
-    function setImplementation(
-        uint16 $version,
-        address $implementation
-    )
-        public
-        onlyOwner
-    {
+    function setImplementation(uint16 $version, address $implementation) public onlyOwner {
         /// @dev Ensure the implementation for this version has not already been set.
         if (implementations[$version] != address(0)) {
             revert PlugLib.ImplementationAlreadyInitialized($version);
@@ -100,8 +92,8 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
         }
 
         /// @dev Deploy the new vault using a Beacon Proxy pattern.
-        ($alreadyDeployed, $socket) = LibClone
-            .createDeterministicERC1967(msg.value, implementation, $salt);
+        ($alreadyDeployed, $socket) =
+            LibClone.createDeterministicERC1967(msg.value, implementation, $salt);
 
         /// @dev If the vault was not already deployed, initialize it.
         if (!$alreadyDeployed) {
@@ -116,9 +108,7 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
 
             /// @dev Initialize the Socket with the ownership proxy pointing
             ///      this factory that is deploying the Socket.
-            PlugSocketInterface($socket).initialize(
-                address(this), $router
-            );
+            PlugSocketInterface($socket).initialize(address(this), $router);
 
             /// @dev Mint the transferable ownership token to the signer that
             ///      created the intent which is implicitly the Socket admin
@@ -139,9 +129,7 @@ contract PlugFactory is PlugFactoryInterface, PlugTradable {
         view
         returns (address $vault)
     {
-        $vault = LibClone.predictDeterministicAddressERC1967(
-            $implementation, $salt, address(this)
-        );
+        $vault = LibClone.predictDeterministicAddressERC1967($implementation, $salt, address(this));
     }
 
     /**

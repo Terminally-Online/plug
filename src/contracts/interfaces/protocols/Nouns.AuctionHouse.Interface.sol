@@ -3,27 +3,14 @@
 pragma solidity 0.8.23;
 
 interface NounsAuctionHouseInterface {
-    event AuctionBid(
-        uint256 indexed nounId,
-        address sender,
-        uint256 value,
-        bool extended
-    );
-    event AuctionCreated(
-        uint256 indexed nounId, uint256 startTime, uint256 endTime
-    );
+    event AuctionBid(uint256 indexed nounId, address sender, uint256 value, bool extended);
+    event AuctionCreated(uint256 indexed nounId, uint256 startTime, uint256 endTime);
     event AuctionExtended(uint256 indexed nounId, uint256 endTime);
-    event AuctionMinBidIncrementPercentageUpdated(
-        uint256 minBidIncrementPercentage
-    );
+    event AuctionMinBidIncrementPercentageUpdated(uint256 minBidIncrementPercentage);
     event AuctionReservePriceUpdated(uint256 reservePrice);
-    event AuctionSettled(
-        uint256 indexed nounId, address winner, uint256 amount
-    );
+    event AuctionSettled(uint256 indexed nounId, address winner, uint256 amount);
     event AuctionTimeBufferUpdated(uint256 timeBuffer);
-    event OwnershipTransferred(
-        address indexed previousOwner, address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event Paused(address account);
     event Unpaused(address account);
 
@@ -53,10 +40,7 @@ interface NounsAuctionHouseInterface {
     )
         external;
 
-    function minBidIncrementPercentage()
-        external
-        view
-        returns (uint8);
+    function minBidIncrementPercentage() external view returns (uint8);
 
     function nouns() external view returns (address);
 
@@ -70,10 +54,7 @@ interface NounsAuctionHouseInterface {
 
     function reservePrice() external view returns (uint256);
 
-    function setMinBidIncrementPercentage(
-        uint8 _minBidIncrementPercentage
-    )
-        external;
+    function setMinBidIncrementPercentage(uint8 _minBidIncrementPercentage) external;
 
     function setReservePrice(uint256 _reservePrice) external;
 

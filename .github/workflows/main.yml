@@ -5,7 +5,9 @@ on:
         branches:
             - '**'
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
 
 env:
     FOUNDRY_PROFILE: ci

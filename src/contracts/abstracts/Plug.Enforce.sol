@@ -4,8 +4,7 @@ pragma solidity 0.8.23;
 
 import { PlugTypesLib, PlugTypes } from "./Plug.Types.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
-import { PlugFuseInterface } from
-    "../interfaces/Plug.Fuse.Interface.sol";
+import { PlugConnectorInterface } from "../interfaces/Plug.Connector.Interface.sol";
 
 /**
  * @title Plug Enforce
@@ -45,29 +44,12 @@ abstract contract PlugEnforce is PlugTypes {
     }
 
     /**
-     * @notice Modifier to enforce the current of the transaction.
-     * @dev Apply to this to functions that are designed to execute a bundle
-     *      of Plugs regardless of whether through a Router or or direct access.
-     * @param $current The state of the transaction to execute.
-     */
-    modifier enforceCurrent(PlugTypesLib.Current memory $current) {
-        if (_enforceCurrent($current) == false) {
-            revert PlugLib.CurrentInvalid();
-        }
-        _;
-    }
-
-    /**
      * @notice Confirm that the only specified routers can execute the transaction.
      * @dev If you would like to limit the available routers override this
      *      function in your contract with the additional logic.
      * @param $router The router of the transaction.
      */
-    function _enforceRouter(address $router)
-        internal
-        view
-        virtual
-        returns (bool $allowed);
+    function _enforceRouter(address $router) internal view virtual returns (bool $allowed);
 
     /**
      * @notice Confirm that signer has permission to declare execution of a
@@ -82,57 +64,4 @@ abstract contract PlugEnforce is PlugTypes {
         view
         virtual
         returns (bool $allowed);
-
-    /**
-     * @notice Enforce the fuse of the current plug to confirm
-     *         the specified conditions have been met.
-     * @param $fuse The fuse to enforce.
-     * @param $current The state of the transaction to execute.
-     * @param $pinHash The hash of the pin.
-     * @return $success If the fuse was successful.
-     * @return $through The return data of the fuse.
-     */
-    function _enforceFuse(
-        PlugTypesLib.Fuse memory $fuse,
-        PlugTypesLib.Current memory $current,
-        bytes32 $pinHash
-    )
-        internal
-        returns (bool $success, bytes memory $through)
-    {
-        /// @dev Call the Fuse to determine if it is valid.
-        ($success, $through) = $fuse.target.call(
-            abi.encodeWithSelector(
-                PlugFuseInterface.enforceFuse.selector,
-                $fuse.data,
-                $current,
-                $pinHash
-            )
-        );
-
-        /// @dev If the Fuse failed and is not optional, bubble up the revert.
-        PlugLib.bubbleRevert($success, $through);
-
-        /// @dev Decode the return data to remove the wrapped bytes in memory.
-        $through = abi.decode($through, (bytes));
-    }
-
-    /**
-     * @notice Possibly restrict the capability of the defined
-     *         execution path dependent on larger external factors
-     *         such as only allowing a transaction to be executed
-     *         on the socket itself.
-     * @dev If you would like to limit the Currents that can flow through
-     *      this plug override this function in your contract with the
-     *      additional logic.
-     * @return $allowed If the current is allowed.
-     */
-    function _enforceCurrent(PlugTypesLib.Current memory)
-        internal
-        view
-        virtual
-        returns (bool $allowed)
-    {
-        $allowed = true;
-    }
 }

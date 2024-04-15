@@ -2,14 +2,12 @@
 
 pragma solidity 0.8.23;
 
-import { PlugTradingInterface } from
-    "../interfaces/Plug.Trading.Interface.sol";
-import { ModuleAuthUpgradable } from
-    "sequence/modules/commons/ModuleAuthUpgradable.sol";
+import { PlugTradingInterface } from "../interfaces/Plug.Trading.Interface.sol";
+import { ModuleAuthUpgradable } from "sequence/modules/commons/ModuleAuthUpgradable.sol";
 
 import { PlugLib } from "../libraries/Plug.Lib.sol";
 
-import { ERC721 } from "solady/src/tokens/ERC721.sol";
+import { ERC721 } from "solady/tokens/ERC721.sol";
 
 /**
  * @title Plug Trading
@@ -20,10 +18,7 @@ import { ERC721 } from "solady/src/tokens/ERC721.sol";
  *         aforementioned workflows such as points and yield.
  * @author nftchance (chance@onplug.io)
  */
-abstract contract PlugTrading is
-    PlugTradingInterface,
-    ModuleAuthUpgradable
-{
+abstract contract PlugTrading is PlugTradingInterface, ModuleAuthUpgradable {
     /// @dev The address that houses the ownership information.
     address public ownership;
 
@@ -60,22 +55,14 @@ abstract contract PlugTrading is
      *         hash that contains the encoded definition of the criteria.
      * @param $newOwner The address of the new owner.
      */
-    function transferOwnership(address $newOwner)
-        public
-        virtual
-        onlyOwnership
-    {
+    function transferOwnership(address $newOwner) public virtual onlyOwnership {
         /// @dev Calculate the image hash based on the new owner. For now, the
         ///      assumption is the definition of a single Socket owner.
         bytes32 expectedImageHash = keccak256(
             abi.encodePacked(
                 keccak256(
                     abi.encodePacked(
-                        abi.decode(
-                            abi.encodePacked(uint96(1), $newOwner),
-                            (bytes32)
-                        ),
-                        uint256(1)
+                        abi.decode(abi.encodePacked(uint96(1), $newOwner), (bytes32)), uint256(1)
                     )
                 ),
                 uint256(1)
@@ -88,9 +75,7 @@ abstract contract PlugTrading is
 
         /// @dev Emit the event to signify transfer change as well as a change in
         ///      the image hash so that it can be utilized elsewhere.
-        emit PlugLib.SocketOwnershipTransferred(
-            owner(), $newOwner, expectedImageHash
-        );
+        emit PlugLib.SocketOwnershipTransferred(owner(), $newOwner, expectedImageHash);
     }
 
     /**
@@ -103,12 +88,7 @@ abstract contract PlugTrading is
     /**
      * @notice Get the token ID of the Vault.
      */
-    function tokenId()
-        public
-        view
-        virtual
-        returns (uint256 $tokenId)
-    {
+    function tokenId() public view virtual returns (uint256 $tokenId) {
         $tokenId = uint256(uint160(address(this)));
     }
 
@@ -116,12 +96,7 @@ abstract contract PlugTrading is
      * @notice Set the address of the ownership proxy which is a ERC721
      *         compliant contract that lives inside of the factory.
      */
-    function _initializeOwnership(
-        address $ownership,
-        address $router
-    )
-        internal
-    {
+    function _initializeOwnership(address $ownership, address $router) internal {
         /// @dev Check if the inheriting contract requires single-use
         ///      ownership initialization.
         if (_guardInitializeOwnership()) {
@@ -148,10 +123,5 @@ abstract contract PlugTrading is
      *      you would like to enforce single-use ownership initialization, you
      *      can override this function and return `true` to enforce the guard.
      */
-    function _guardInitializeOwnership()
-        internal
-        pure
-        virtual
-        returns (bool $guard)
-    { }
+    function _guardInitializeOwnership() internal pure virtual returns (bool $guard) { }
 }

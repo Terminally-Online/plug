@@ -18,15 +18,9 @@ contract PlugVaultSocketTest is Test {
         setUpPlug();
     }
 
-    function deployVault()
-        internal
-        override
-        returns (PlugVaultSocket $vault)
-    {
-        (, address vaultAddress) = factory.deploy(
-            bytes32(abi.encodePacked(address(this), uint96(0))),
-            address(plug)
-        );
+    function deployVault() internal override returns (PlugVaultSocket $vault) {
+        (, address vaultAddress) =
+            factory.deploy(bytes32(abi.encodePacked(address(this), uint96(0))), address(plug));
         $vault = PlugVaultSocket(payable(vaultAddress));
     }
 
@@ -46,24 +40,15 @@ contract PlugVaultSocketTest is Test {
 
     function testRevert_ReinitializeImplementation() public {
         vm.expectRevert(
-            abi.encodeWithSelector(
-                PlugLib.ImplementationAlreadyInitialized.selector,
-                uint16(0)
-            )
+            abi.encodeWithSelector(PlugLib.ImplementationAlreadyInitialized.selector, uint16(0))
         );
         vm.prank(factoryOwner);
         factory.setImplementation(0, address(vaultImplementation));
     }
 
     function testRevert_UninitializedImplementation() public {
-        bytes32 salt = bytes32(
-            abi.encodePacked(address(this), uint80(0), uint16(2))
-        );
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                PlugLib.ImplementationInvalid.selector, uint16(2)
-            )
-        );
+        bytes32 salt = bytes32(abi.encodePacked(address(this), uint80(0), uint16(2)));
+        vm.expectRevert(abi.encodeWithSelector(PlugLib.ImplementationInvalid.selector, uint16(2)));
         factory.deploy(salt, address(plug));
     }
 
@@ -82,19 +67,13 @@ contract PlugVaultSocketTest is Test {
 
     function test_transferOwnership_Token() public {
         factory.transferFrom(
-            address(this),
-            _randomNonZeroAddress(),
-            uint256(uint160(address(vault)))
+            address(this), _randomNonZeroAddress(), uint256(uint160(address(vault)))
         );
     }
 
     function testRevert_transferOwnership() public {
         vm.expectRevert(
-            abi.encodeWithSelector(
-                PlugLib.CallerInvalid.selector,
-                address(factory),
-                address(this)
-            )
+            abi.encodeWithSelector(PlugLib.CallerInvalid.selector, address(factory), address(this))
         );
         vault.transferOwnership(_randomNonZeroAddress());
     }

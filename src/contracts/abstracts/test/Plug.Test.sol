@@ -8,14 +8,10 @@ import { StdCheats } from "forge-std/StdCheats.sol";
 import { console2 } from "forge-std/console2.sol";
 
 import { PlugEtcherLib } from "../../libraries/Plug.Etcher.Lib.sol";
-import {
-    PlugLib,
-    PlugTypesLib,
-    PlugAddressesLib
-} from "../../libraries/Plug.Lib.sol";
+import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../../libraries/Plug.Lib.sol";
 
-import { LibClone } from "solady/src/utils/LibClone.sol";
-import { ECDSA } from "solady/src/utils/ECDSA.sol";
+import { LibClone } from "solady/utils/LibClone.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 
 import { Plug } from "../../base/Plug.sol";
 import { PlugFactory } from "../../base/Plug.Factory.sol";
@@ -28,8 +24,7 @@ import { PlugMockERC1155 } from "../../mocks/Plug.Mock.ERC1155.sol";
 import { PlugMockEcho } from "../../mocks/Plug.Mock.Echo.sol";
 
 /// @dev `address(bytes20(uint160(uint256(keccak256("hevm cheat code")))))`.
-address constant _VM_ADDRESS =
-    0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
+address constant _VM_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 
 abstract contract TestPlus {
     event LogString(string name, string value);
@@ -59,9 +54,7 @@ abstract contract TestPlus {
             let r1 := mload(0x20)
 
             let cSize := add(codesize(), iszero(codesize()))
-            if iszero(lt(cSize, 32)) {
-                cSize := sub(cSize, and(mload(0x02), 0x1f))
-            }
+            if iszero(lt(cSize, 32)) { cSize := sub(cSize, and(mload(0x02), 0x1f)) }
             let start := mod(mload(0x10), cSize)
             let size := mul(sub(cSize, start), gt(cSize, start))
             let times := div(0x7ffff, cSize)
@@ -69,8 +62,7 @@ abstract contract TestPlus {
 
             // Occasionally offset the offset by a pseudorandom large amount.
             // Can't be too large, or we will easily get out-of-gas errors.
-            offset :=
-                add(offset, mul(iszero(and(r1, 0xf)), and(r0, 0xfffff)))
+            offset := add(offset, mul(iszero(and(r1, 0xf)), and(r0, 0xfffff)))
 
             // Fill the free memory with garbage.
             // prettier-ignore
@@ -104,8 +96,7 @@ abstract contract TestPlus {
         /// @solidity memory-safe-assembly
         assembly {
             // This is the keccak256 of a very long string I randomly mashed on my keyboard.
-            let sSlot :=
-                0xd715531fe383f818c5f158c342925dcf01b954d24678ada4d07c36af0f20e1ee
+            let sSlot := 0xd715531fe383f818c5f158c342925dcf01b954d24678ada4d07c36af0f20e1ee
             let sValue := sload(sSlot)
 
             mstore(0x20, sValue)
@@ -132,28 +123,16 @@ abstract contract TestPlus {
                 // With a 1/2 chance, set `r` to near a random power of 2.
                 if iszero(and(2, d)) {
                     // Set `t` either `not(0)` or `xor(sValue, r)`.
-                    let t :=
-                        xor(
-                            not(0),
-                            mul(iszero(and(4, d)), not(xor(sValue, r)))
-                        )
+                    let t := xor(not(0), mul(iszero(and(4, d)), not(xor(sValue, r))))
                     // Set `r` to `t` shifted left or right by a random multiple of 8.
                     switch and(8, d)
                     case 0 {
                         if iszero(and(16, d)) { t := 1 }
-                        r :=
-                            add(
-                                shl(shl(3, and(byte(3, r), 0x1f)), t),
-                                sub(and(r, 7), 3)
-                            )
+                        r := add(shl(shl(3, and(byte(3, r), 0x1f)), t), sub(and(r, 7), 3))
                     }
                     default {
                         if iszero(and(16, d)) { t := shl(255, 1) }
-                        r :=
-                            add(
-                                shr(shl(3, and(byte(3, r), 0x1f)), t),
-                                sub(and(r, 7), 3)
-                            )
+                        r := add(shr(shl(3, and(byte(3, r), 0x1f)), t), sub(and(r, 7), 3))
                     }
                     // With a 1/2 chance, negate `r`.
                     if iszero(and(0x20, d)) { r := not(r) }
@@ -167,20 +146,14 @@ abstract contract TestPlus {
     }
 
     /// @dev Returns a random signer and its private key.
-    function _randomSigner()
-        internal
-        returns (address signer, uint256 privateKey)
-    {
-        uint256 privateKeyMax =
-            0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140;
+    function _randomSigner() internal returns (address signer, uint256 privateKey) {
+        uint256 privateKeyMax = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140;
         privateKey = _hem(_random(), 1, privateKeyMax);
         /// @solidity memory-safe-assembly
         assembly {
             mstore(0x00, 0xffa18649) // `addr(uint256)`.
             mstore(0x20, privateKey)
-            if iszero(
-                call(gas(), _VM_ADDRESS, 0, 0x1c, 0x24, 0x00, 0x20)
-            ) { revert(0, 0) }
+            if iszero(call(gas(), _VM_ADDRESS, 0, 0x1c, 0x24, 0x00, 0x20)) { revert(0, 0) }
             signer := mload(0x00)
         }
     }
@@ -191,10 +164,7 @@ abstract contract TestPlus {
     }
 
     /// @dev Returns a random non-zero address.
-    function _randomNonZeroAddress()
-        internal
-        returns (address result)
-    {
+    function _randomNonZeroAddress() internal returns (address result) {
         do {
             result = address(uint160(_random()));
         } while (result == address(0));
@@ -210,9 +180,7 @@ abstract contract TestPlus {
         uint256 twoWords = 0x40;
         /// @solidity memory-safe-assembly
         assembly {
-            mstore(
-                twoWords, and(add(mload(twoWords), 0x1f), not(0x1f))
-            )
+            mstore(twoWords, and(add(mload(twoWords), 0x1f), not(0x1f)))
         }
     }
 
@@ -223,14 +191,7 @@ abstract contract TestPlus {
         /// @solidity memory-safe-assembly
         assembly {
             let m := mload(twoWords)
-            m :=
-                add(
-                    m,
-                    mul(
-                        and(keccak256(0x00, twoWords), 0x1f),
-                        iszero(and(m, 0x1f))
-                    )
-                )
+            m := add(m, mul(and(keccak256(0x00, twoWords), 0x1f), iszero(and(m, 0x1f))))
             mstore(twoWords, m)
         }
     }
@@ -246,9 +207,7 @@ abstract contract TestPlus {
             // insufficient memory is allocated.
             mstore(mload(0x40), not(0))
             // Test at a lower, but reasonable limit for more safety room.
-            if gt(mload(0x40), 0xffffffff) {
-                freeMemoryPointerOverflowed := 1
-            }
+            if gt(mload(0x40), 0xffffffff) { freeMemoryPointerOverflowed := 1 }
             // Check the value of the zero slot.
             zeroSlotIsNotZero := mload(0x60)
         }
@@ -273,20 +232,11 @@ abstract contract TestPlus {
             // insufficient memory is allocated.
             mstore(mload(0x40), not(0))
             let length := mload(s)
-            let lastWord :=
-                mload(add(add(s, 0x20), and(length, not(0x1f))))
+            let lastWord := mload(add(add(s, 0x20), and(length, not(0x1f))))
             let remainder := and(length, 0x1f)
-            if remainder {
-                if shl(mul(8, remainder), lastWord) {
-                    notZeroRightPadded := 1
-                }
-            }
+            if remainder { if shl(mul(8, remainder), lastWord) { notZeroRightPadded := 1 } }
             // Check if the memory allocated is sufficient.
-            if length {
-                if gt(add(add(s, 0x20), length), mload(0x40)) {
-                    insufficientMalloc := 1
-                }
-            }
+            if length { if gt(add(add(s, 0x20), length), mload(0x40)) { insufficientMalloc := 1 } }
         }
         if (notZeroRightPadded) {
             revert("Not zero right padded!");
@@ -337,8 +287,7 @@ abstract contract TestPlus {
                 }
 
                 let w := not(0)
-                if and(iszero(lt(x, sub(0, 4))), gt(size, sub(w, x)))
-                {
+                if and(iszero(lt(x, sub(0, 4))), gt(size, sub(w, x))) {
                     result := sub(max, sub(w, x))
                     break
                 }
@@ -395,22 +344,11 @@ abstract contract TestPlus {
                 let n := mload(ic2fBytecode)
                 mstore(add(m, 0x60), n)
                 for { let i := 0 } lt(i, n) { i := add(0x20, i) } {
-                    mstore(
-                        add(add(m, 0x80), i),
-                        mload(add(add(ic2fBytecode, 0x20), i))
-                    )
+                    mstore(add(add(m, 0x80), i), mload(add(add(ic2fBytecode, 0x20), i)))
                 }
-                if iszero(
-                    call(
-                        gas(),
-                        _VM_ADDRESS,
-                        0,
-                        add(m, 0x1c),
-                        add(n, 0x64),
-                        0x00,
-                        0x00
-                    )
-                ) { revert(0, 0) }
+                if iszero(call(gas(), _VM_ADDRESS, 0, add(m, 0x1c), add(n, 0x64), 0x00, 0x00)) {
+                    revert(0, 0)
+                }
             }
         }
         /// @solidity memory-safe-assembly
@@ -423,22 +361,9 @@ abstract contract TestPlus {
             mstore(add(m, 0x60), n)
             // prettier-ignore
             for { let i := 0 } lt(i, n) { i := add(i, 0x20) } {
-                mstore(
-                    add(add(m, 0x80), i),
-                    mload(add(add(initializationCode, 0x20), i))
-                )
+                mstore(add(add(m, 0x80), i), mload(add(add(initializationCode, 0x20), i)))
             }
-            if iszero(
-                call(
-                    gas(),
-                    c2f,
-                    payableAmount,
-                    add(m, 0x1c),
-                    add(n, 0x64),
-                    m,
-                    0x20
-                )
-            ) {
+            if iszero(call(gas(), c2f, payableAmount, add(m, 0x1c), add(n, 0x64), m, 0x20)) {
                 returndatacopy(m, m, returndatasize())
                 revert(m, returndatasize())
             }
@@ -466,11 +391,7 @@ abstract contract TestPlus {
             // If the caller is the contract itself (i.e. recursive call), burn all the gas.
             if eq(caller(), address()) { invalid() }
             mstore(0x00, 0xf09ff470) // Store the function selector of `test__codesize()`.
-            pop(
-                staticcall(
-                    codesize(), address(), 0x1c, 0x04, 0x00, 0x00
-                )
-            )
+            pop(staticcall(codesize(), address(), 0x1c, 0x04, 0x00, 0x00))
         }
     }
 }
@@ -496,6 +417,15 @@ abstract contract TestPlug is TestPlus {
     address internal signer;
     uint256 internal signerPrivateKey = 0x12345;
 
+    uint8 internal PLUG_CONDITION = 1;
+    uint8 internal PLUG_EXECUTION = 2;
+
+    uint8 internal PLUG_SIGNATURE = 1;
+    uint8 internal PLUG_MERKLE = 2;
+
+    uint256 internal PLUG_NO_VALUE = 0;
+    uint256 internal PLUG_VALUE = 1 ether;
+
     function setUpPlug() internal {
         factoryOwner = _randomNonZeroAddress();
         signer = vm.addr(signerPrivateKey);
@@ -519,46 +449,163 @@ abstract contract TestPlug is TestPlus {
         $plug = Plug(payable(PlugEtcherLib.PLUG_ADDRESS));
     }
 
-    function deployFactory()
-        internal
-        virtual
-        returns (PlugFactory $factory)
-    {
-        vm.etch(
-            PlugEtcherLib.PLUG_FACTORY_ADDRESS,
-            address(new PlugFactory()).code
-        );
-        $factory =
-            PlugFactory(payable(PlugEtcherLib.PLUG_FACTORY_ADDRESS));
-        $factory.initialize(
-            factoryOwner, baseURI, address(vaultImplementation)
-        );
+    function deployFactory() internal virtual returns (PlugFactory $factory) {
+        vm.etch(PlugEtcherLib.PLUG_FACTORY_ADDRESS, address(new PlugFactory()).code);
+        $factory = PlugFactory(payable(PlugEtcherLib.PLUG_FACTORY_ADDRESS));
+        $factory.initialize(factoryOwner, baseURI, address(vaultImplementation));
     }
 
-    function deployTreasury()
-        internal
-        virtual
-        returns (PlugTreasury $treasury)
-    {
-        vm.etch(
-            PlugEtcherLib.PLUG_TREASURY_ADDRESS,
-            address(new PlugTreasury()).code
-        );
-        $treasury =
-            PlugTreasury(payable(PlugEtcherLib.PLUG_TREASURY_ADDRESS));
+    function deployTreasury() internal virtual returns (PlugTreasury $treasury) {
+        vm.etch(PlugEtcherLib.PLUG_TREASURY_ADDRESS, address(new PlugTreasury()).code);
+        $treasury = PlugTreasury(payable(PlugEtcherLib.PLUG_TREASURY_ADDRESS));
         $treasury.initialize(factoryOwner);
     }
 
-    function deployVault()
-        internal
-        virtual
-        returns (PlugVaultSocket $vault)
-    {
-        (, address vaultAddress) = factory.deploy(
-            bytes32(abi.encodePacked(signer, uint96(0))),
-            address(plug)
-        );
+    function deployVault() internal virtual returns (PlugVaultSocket $vault) {
+        (, address vaultAddress) =
+            factory.deploy(bytes32(abi.encodePacked(signer, uint96(0))), address(plug));
         $vault = PlugVaultSocket(payable(vaultAddress));
+    }
+
+    function createPlug(
+        address $target,
+        uint256 $value,
+        bytes memory $data,
+        uint8 $plugType
+    )
+        internal
+        pure
+        returns (PlugTypesLib.Plug memory $plug)
+    {
+        $plug = PlugTypesLib.Plug({
+            target: $target,
+            value: $value,
+            data: abi.encodePacked($plugType, $data)
+        });
+    }
+
+    function createPlug(
+        uint256 $value,
+        uint8 $plugType
+    )
+        internal
+        view
+        returns (PlugTypesLib.Plug memory $plug)
+    {
+        if ($plugType == PLUG_EXECUTION) {
+            /// @dev In testing we are operating with the assumption that an undeclared
+            ///      Plug setup is due to intention of interacting with the mock echo
+            ///      when there is no value.
+            if ($value == PLUG_NO_VALUE) {
+                $plug = createPlug(
+                    address(mock),
+                    $value,
+                    abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector),
+                    $plugType
+                );
+            } else {
+                $plug = createPlug(PlugEtcherLib.PLUG_TREASURY_ADDRESS, $value, "", $plugType);
+            }
+        }
+    }
+
+    function createPlugs(
+        address $socket,
+        PlugTypesLib.Plug[] memory $plugsArray,
+        bytes memory $solver
+    )
+        internal
+        view
+        returns (PlugTypesLib.Plugs memory $plugs)
+    {
+        $plugs = PlugTypesLib.Plugs({
+            socket: address($socket),
+            plugs: $plugsArray,
+            salt: bytes32(block.timestamp),
+            solver: $solver
+        });
+    }
+
+    function createPlugs(
+        PlugTypesLib.Plug[] memory $plugsArray,
+        bytes memory $solver
+    )
+        internal
+        view
+        returns (PlugTypesLib.Plugs memory $plugs)
+    {
+        $plugs = createPlugs(address(vault), $plugsArray, $solver);
+    }
+
+    function createPlugs(
+        PlugTypesLib.Plug[] memory $plugsArray,
+        uint96 $maxPriorityFeePerGas,
+        uint96 $maxFeePerGas,
+        address $solver
+    )
+        internal
+        view
+        returns (PlugTypesLib.Plugs memory $plugs)
+    {
+        $plugs = createPlugs(
+            address(vault), $plugsArray, abi.encode($maxPriorityFeePerGas, $maxFeePerGas, $solver)
+        );
+    }
+
+    function createPlugs(PlugTypesLib.Plug[] memory $plugsArray)
+        internal
+        view
+        returns (PlugTypesLib.Plugs memory $plugs)
+    {
+        $plugs = createPlugs(address(vault), $plugsArray, bytes(""));
+    }
+
+    function createLivePlugs(
+        PlugVaultSocket $socket,
+        PlugTypesLib.Plugs memory $plugs
+    )
+        internal
+        view
+        returns (PlugTypesLib.LivePlugs memory $livePlugs)
+    {
+        bytes32 plugsHash = $socket.getPlugsHash($plugs);
+
+        $livePlugs = PlugTypesLib.LivePlugs({
+            plugs: $plugs,
+            signature: pack(sign(plugsHash, address($socket), signerPrivateKey, false))
+        });
+    }
+
+    function createLivePlugs(PlugTypesLib.Plugs memory $plugs)
+        internal
+        view
+        returns (PlugTypesLib.LivePlugs memory $livePlugs)
+    {
+        $livePlugs = createLivePlugs(vault, $plugs);
+    }
+
+    function createLivePlugs(PlugTypesLib.Plug[] memory $plugsArray)
+        internal
+        view
+        returns (PlugTypesLib.LivePlugs memory $livePlugs)
+    {
+        PlugTypesLib.Plugs memory plugs = createPlugs($plugsArray);
+        $livePlugs = createLivePlugs(vault, plugs);
+    }
+
+    function createLivePlugs(
+        PlugTypesLib.Plug[] memory $plugsArray,
+        uint96 $maxPriorityFeePerGas,
+        uint96 $maxFeePerGas,
+        address $solver
+    )
+        internal
+        view
+        returns (PlugTypesLib.LivePlugs memory $livePlugs)
+    {
+        PlugTypesLib.Plugs memory plugs =
+            createPlugs($plugsArray, $maxPriorityFeePerGas, $maxFeePerGas, $solver);
+        $livePlugs = createLivePlugs(vault, plugs);
     }
 
     function getExpectedImageHash(
@@ -575,10 +622,7 @@ abstract contract TestPlug is TestPlus {
             abi.encodePacked(
                 keccak256(
                     abi.encodePacked(
-                        abi.decode(
-                            abi.encodePacked(uint96(weight), user),
-                            (bytes32)
-                        ),
+                        abi.decode(abi.encodePacked(uint96(weight), user), (bytes32)),
                         uint256(threshold)
                     )
                 ),
@@ -597,22 +641,11 @@ abstract contract TestPlug is TestPlus {
         view
         returns (bytes memory $signature)
     {
-        // Create the subdigest
-        bytes32 subdigest = keccak256(
-            abi.encodePacked(
-                "\x19\x01", block.chainid, $socket, $hash
-            )
-        );
+        bytes32 subdigest = keccak256(abi.encodePacked("\x19\x01", block.chainid, $socket, $hash));
 
-        /// @dev The actual hash that was signed w/ EIP-191 flag
-        subdigest = $isSign
-            ? ECDSA.toEthSignedMessageHash(subdigest)
-            : subdigest;
+        subdigest = $isSign ? ECDSA.toEthSignedMessageHash(subdigest) : subdigest;
 
-        /// @dev Create the signature w/ the subdigest
         (uint8 v, bytes32 r, bytes32 s) = vm.sign($userKey, subdigest);
-
-        /// @dev Pack the signature w/ EIP-712 flag
         $signature = abi.encodePacked(r, s, v, uint8($isSign ? 2 : 1));
     }
 
@@ -630,13 +663,12 @@ abstract contract TestPlug is TestPlus {
         uint8 legacySignatureFlag = uint8(0);
 
         /// @dev Pack the signature w/ flag, weight, threshold, checkpoint
-        $packedSignature = abi.encodePacked(
-            $threshold,
-            $checkpoint,
-            legacySignatureFlag,
-            $weight,
-            $signature
-        );
+        $packedSignature =
+            abi.encodePacked($threshold, $checkpoint, legacySignatureFlag, $weight, $signature);
+    }
+
+    function pack(bytes memory $signature) internal pure returns (bytes memory $packedSignature) {
+        $packedSignature = pack($signature, 1, 1, 1);
     }
 }
 

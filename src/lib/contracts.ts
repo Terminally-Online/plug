@@ -1,167 +1,6 @@
 export const contracts = [
     {
-        "name": "PlugBalanceFuse",
-        "abi": [
-            {
-                "type": "function",
-                "name": "decode",
-                "inputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$holder",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$asset",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$type",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    },
-                    {
-                        "name": "$operator",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    },
-                    {
-                        "name": "$threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "encode",
-                "inputs": [
-                    {
-                        "name": "$holder",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$asset",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "$type",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    },
-                    {
-                        "name": "$operator",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    },
-                    {
-                        "name": "$threshold",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "enforceFuse",
-                "inputs": [
-                    {
-                        "name": "$live",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "error",
-                "name": "ThresholdExceeded",
-                "inputs": [
-                    {
-                        "name": "$expected",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "$reality",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ]
-            },
-            {
-                "type": "error",
-                "name": "ThresholdInsufficient",
-                "inputs": [
-                    {
-                        "name": "$expected",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    },
-                    {
-                        "name": "$reality",
-                        "type": "uint256",
-                        "internalType": "uint256"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "PlugBalanceSemiFungibleFuse",
+        "name": "PlugBalanceSemiFungible",
         "abi": [
             {
                 "type": "function",
@@ -243,34 +82,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -278,13 +95,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -322,7 +133,140 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugBaseFeeFuse",
+        "name": "PlugBalance",
+        "abi": [
+            {
+                "type": "function",
+                "name": "decode",
+                "inputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$type",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "encode",
+                "inputs": [
+                    {
+                        "name": "$holder",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$asset",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$type",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$operator",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "$threshold",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$data",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "enforce",
+                "inputs": [
+                    {
+                        "name": "$terms",
+                        "type": "bytes",
+                        "internalType": "bytes"
+                    },
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "ThresholdExceeded",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            },
+            {
+                "type": "error",
+                "name": "ThresholdInsufficient",
+                "inputs": [
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "PlugBaseFee",
         "abi": [
             {
                 "type": "function",
@@ -374,34 +318,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -409,13 +331,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -453,7 +369,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugBlockNumberFuse",
+        "name": "PlugBlockNumber",
         "abi": [
             {
                 "type": "function",
@@ -505,34 +421,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -540,13 +434,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -584,7 +472,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugCalendarFuse",
+        "name": "PlugCalendar",
         "abi": [
             {
                 "type": "function",
@@ -656,34 +544,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -691,13 +557,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -1631,7 +1491,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugFraxlendAPYFuse",
+        "name": "PlugFraxlendAPY",
         "abi": [
             {
                 "type": "function",
@@ -1703,34 +1563,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -1738,13 +1576,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -1782,7 +1614,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugLimitedCallsFuse",
+        "name": "PlugLimitedCalls",
         "abi": [
             {
                 "type": "function",
@@ -1824,34 +1656,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "$plugsHash",
@@ -1859,13 +1669,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "nonpayable"
             },
             {
@@ -1887,7 +1691,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugNounsBidFuse",
+        "name": "PlugNounsBid",
         "abi": [
             {
                 "type": "function",
@@ -1939,34 +1743,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -1974,13 +1756,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -1996,7 +1772,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugNounsIdFuse",
+        "name": "PlugNounsId",
         "abi": [
             {
                 "type": "function",
@@ -2038,34 +1814,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -2073,19 +1827,13 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             }
         ]
     },
     {
-        "name": "PlugNounsTraitFuse",
+        "name": "PlugNounsTrait",
         "abi": [
             {
                 "type": "function",
@@ -2202,34 +1950,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -2237,13 +1963,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -2268,7 +1988,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugRevocationFuse",
+        "name": "PlugRevocation",
         "abi": [
             {
                 "type": "function",
@@ -2310,34 +2030,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "$plugsHash",
@@ -2345,13 +2043,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -2399,7 +2091,7 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugTimestampFuse",
+        "name": "PlugTimestamp",
         "abi": [
             {
                 "type": "function",
@@ -2451,34 +2143,12 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "enforceFuse",
+                "name": "enforce",
                 "inputs": [
                     {
-                        "name": "$live",
+                        "name": "$terms",
                         "type": "bytes",
                         "internalType": "bytes"
-                    },
-                    {
-                        "name": "$current",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
                     },
                     {
                         "name": "",
@@ -2486,13 +2156,7 @@ export const contracts = [
                         "internalType": "bytes32"
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$through",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "view"
             },
             {
@@ -2920,6 +2584,11 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "PlugFailed",
+                "inputs": []
+            },
+            {
+                "type": "error",
                 "name": "Reentrancy",
                 "inputs": []
             },
@@ -2976,42 +2645,6 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "getCurrentHash",
-                "inputs": [
-                    {
-                        "name": "$input",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Current",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "value",
-                                "type": "uint256",
-                                "internalType": "uint256"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$hash",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
                 "name": "getEIP712DomainHash",
                 "inputs": [
                     {
@@ -3053,68 +2686,6 @@ export const contracts = [
             },
             {
                 "type": "function",
-                "name": "getFuseArrayHash",
-                "inputs": [
-                    {
-                        "name": "$input",
-                        "type": "tuple[]",
-                        "internalType": "struct PlugTypesLib.Fuse[]",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$hash",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "getFuseHash",
-                "inputs": [
-                    {
-                        "name": "$input",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Fuse",
-                        "components": [
-                            {
-                                "name": "target",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "data",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$hash",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
                 "name": "getLivePlugsHash",
                 "inputs": [
                     {
@@ -3138,60 +2709,31 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "current",
-                                                "type": "tuple",
-                                                "internalType": "struct PlugTypesLib.Current",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "value",
-                                                        "type": "uint256",
-                                                        "internalType": "uint256"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "target",
+                                                "type": "address",
+                                                "internalType": "address"
                                             },
                                             {
-                                                "name": "fuses",
-                                                "type": "tuple[]",
-                                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "bytes",
+                                                "internalType": "bytes"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes32",
-                                        "internalType": "bytes32"
-                                    },
-                                    {
-                                        "name": "fee",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "solver",
                                         "type": "bytes",
                                         "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
                                     }
                                 ]
                             },
@@ -3222,43 +2764,19 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug[]",
                         "components": [
                             {
-                                "name": "current",
-                                "type": "tuple",
-                                "internalType": "struct PlugTypesLib.Current",
-                                "components": [
-                                    {
-                                        "name": "target",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "data",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    }
-                                ]
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
                             },
                             {
-                                "name": "fuses",
-                                "type": "tuple[]",
-                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                "components": [
-                                    {
-                                        "name": "target",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "data",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    }
-                                ]
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
                             }
                         ]
                     }
@@ -3282,43 +2800,19 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug",
                         "components": [
                             {
-                                "name": "current",
-                                "type": "tuple",
-                                "internalType": "struct PlugTypesLib.Current",
-                                "components": [
-                                    {
-                                        "name": "target",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "data",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    }
-                                ]
+                                "name": "target",
+                                "type": "address",
+                                "internalType": "address"
                             },
                             {
-                                "name": "fuses",
-                                "type": "tuple[]",
-                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                "components": [
-                                    {
-                                        "name": "target",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "data",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    }
-                                ]
+                                "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "data",
+                                "type": "bytes",
+                                "internalType": "bytes"
                             }
                         ]
                     }
@@ -3352,60 +2846,31 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "current",
-                                        "type": "tuple",
-                                        "internalType": "struct PlugTypesLib.Current",
-                                        "components": [
-                                            {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            }
-                                        ]
+                                        "name": "target",
+                                        "type": "address",
+                                        "internalType": "address"
                                     },
                                     {
-                                        "name": "fuses",
-                                        "type": "tuple[]",
-                                        "internalType": "struct PlugTypesLib.Fuse[]",
-                                        "components": [
-                                            {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            }
-                                        ]
+                                        "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "data",
+                                        "type": "bytes",
+                                        "internalType": "bytes"
                                     }
                                 ]
-                            },
-                            {
-                                "name": "salt",
-                                "type": "bytes32",
-                                "internalType": "bytes32"
-                            },
-                            {
-                                "name": "fee",
-                                "type": "uint256",
-                                "internalType": "uint256"
                             },
                             {
                                 "name": "solver",
                                 "type": "bytes",
                                 "internalType": "bytes"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "bytes32",
+                                "internalType": "bytes32"
                             }
                         ]
                     }
@@ -3562,60 +3027,31 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "current",
-                                                "type": "tuple",
-                                                "internalType": "struct PlugTypesLib.Current",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "value",
-                                                        "type": "uint256",
-                                                        "internalType": "uint256"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "target",
+                                                "type": "address",
+                                                "internalType": "address"
                                             },
                                             {
-                                                "name": "fuses",
-                                                "type": "tuple[]",
-                                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "bytes",
+                                                "internalType": "bytes"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes32",
-                                        "internalType": "bytes32"
-                                    },
-                                    {
-                                        "name": "fee",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "solver",
                                         "type": "bytes",
                                         "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
                                     }
                                 ]
                             },
@@ -3640,8 +3076,20 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "$results",
-                        "type": "bytes[]",
-                        "internalType": "bytes[]"
+                        "type": "tuple[]",
+                        "internalType": "struct PlugTypesLib.Result[]",
+                        "components": [
+                            {
+                                "name": "success",
+                                "type": "bool",
+                                "internalType": "bool"
+                            },
+                            {
+                                "name": "result",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "stateMutability": "payable"
@@ -3666,60 +3114,31 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "current",
-                                        "type": "tuple",
-                                        "internalType": "struct PlugTypesLib.Current",
-                                        "components": [
-                                            {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "value",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            }
-                                        ]
+                                        "name": "target",
+                                        "type": "address",
+                                        "internalType": "address"
                                     },
                                     {
-                                        "name": "fuses",
-                                        "type": "tuple[]",
-                                        "internalType": "struct PlugTypesLib.Fuse[]",
-                                        "components": [
-                                            {
-                                                "name": "target",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            }
-                                        ]
+                                        "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "data",
+                                        "type": "bytes",
+                                        "internalType": "bytes"
                                     }
                                 ]
-                            },
-                            {
-                                "name": "salt",
-                                "type": "bytes32",
-                                "internalType": "bytes32"
-                            },
-                            {
-                                "name": "fee",
-                                "type": "uint256",
-                                "internalType": "uint256"
                             },
                             {
                                 "name": "solver",
                                 "type": "bytes",
                                 "internalType": "bytes"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "bytes32",
+                                "internalType": "bytes32"
                             }
                         ]
                     }
@@ -3727,8 +3146,20 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "$results",
-                        "type": "bytes[]",
-                        "internalType": "bytes[]"
+                        "type": "tuple[]",
+                        "internalType": "struct PlugTypesLib.Result[]",
+                        "components": [
+                            {
+                                "name": "success",
+                                "type": "bool",
+                                "internalType": "bool"
+                            },
+                            {
+                                "name": "result",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "stateMutability": "payable"
@@ -3990,11 +3421,6 @@ export const contracts = [
             },
             {
                 "type": "error",
-                "name": "CurrentInvalid",
-                "inputs": []
-            },
-            {
-                "type": "error",
                 "name": "EmptySignature",
                 "inputs": []
             },
@@ -4128,6 +3554,11 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "PlugFailed",
+                "inputs": []
+            },
+            {
+                "type": "error",
                 "name": "Reentrancy",
                 "inputs": []
             },
@@ -4181,6 +3612,17 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "TypeInvalid",
+                "inputs": [
+                    {
+                        "name": "$reality",
+                        "type": "uint8",
+                        "internalType": "uint8"
+                    }
+                ]
+            },
+            {
+                "type": "error",
                 "name": "UnauthorizedCallContext",
                 "inputs": []
             },
@@ -4209,6 +3651,27 @@ export const contracts = [
                 "type": "error",
                 "name": "UpgradeFailed",
                 "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "ValueInvalid",
+                "inputs": [
+                    {
+                        "name": "$recipient",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "$expected",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "$reality",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
             },
             {
                 "type": "error",
@@ -4269,60 +3732,31 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "current",
-                                                "type": "tuple",
-                                                "internalType": "struct PlugTypesLib.Current",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "value",
-                                                        "type": "uint256",
-                                                        "internalType": "uint256"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "target",
+                                                "type": "address",
+                                                "internalType": "address"
                                             },
                                             {
-                                                "name": "fuses",
-                                                "type": "tuple[]",
-                                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "bytes",
+                                                "internalType": "bytes"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes32",
-                                        "internalType": "bytes32"
-                                    },
-                                    {
-                                        "name": "fee",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "solver",
                                         "type": "bytes",
                                         "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
                                     }
                                 ]
                             },
@@ -4337,8 +3771,20 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "$results",
-                        "type": "bytes[]",
-                        "internalType": "bytes[]"
+                        "type": "tuple[]",
+                        "internalType": "struct PlugTypesLib.Result[]",
+                        "components": [
+                            {
+                                "name": "success",
+                                "type": "bool",
+                                "internalType": "bool"
+                            },
+                            {
+                                "name": "result",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "stateMutability": "payable"
@@ -4368,60 +3814,31 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
-                                                "name": "current",
-                                                "type": "tuple",
-                                                "internalType": "struct PlugTypesLib.Current",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "value",
-                                                        "type": "uint256",
-                                                        "internalType": "uint256"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "target",
+                                                "type": "address",
+                                                "internalType": "address"
                                             },
                                             {
-                                                "name": "fuses",
-                                                "type": "tuple[]",
-                                                "internalType": "struct PlugTypesLib.Fuse[]",
-                                                "components": [
-                                                    {
-                                                        "name": "target",
-                                                        "type": "address",
-                                                        "internalType": "address"
-                                                    },
-                                                    {
-                                                        "name": "data",
-                                                        "type": "bytes",
-                                                        "internalType": "bytes"
-                                                    }
-                                                ]
+                                                "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "bytes",
+                                                "internalType": "bytes"
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes32",
-                                        "internalType": "bytes32"
-                                    },
-                                    {
-                                        "name": "fee",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
                                     },
                                     {
                                         "name": "solver",
                                         "type": "bytes",
                                         "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "salt",
+                                        "type": "bytes32",
+                                        "internalType": "bytes32"
                                     }
                                 ]
                             },
@@ -4436,8 +3853,20 @@ export const contracts = [
                 "outputs": [
                     {
                         "name": "$results",
-                        "type": "bytes[][]",
-                        "internalType": "bytes[][]"
+                        "type": "tuple[][]",
+                        "internalType": "struct PlugTypesLib.Result[][]",
+                        "components": [
+                            {
+                                "name": "success",
+                                "type": "bool",
+                                "internalType": "bool"
+                            },
+                            {
+                                "name": "result",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "stateMutability": "payable"

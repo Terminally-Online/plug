@@ -12,11 +12,7 @@ interface PlugSocketInterface {
      * @param $router The address of the Router that has permission to orchestate
      *                the execution of intents.
      */
-    function initialize(
-        address $ownership,
-        address $router
-    )
-        external;
+    function initialize(address $ownership, address $router) external;
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.
@@ -33,7 +29,7 @@ interface PlugSocketInterface {
     )
         external
         payable
-        returns (bytes[] memory $results);
+        returns (PlugTypesLib.Result[] memory $results);
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.
@@ -44,5 +40,5 @@ interface PlugSocketInterface {
     function plug(PlugTypesLib.Plugs calldata $plugs)
         external
         payable
-        returns (bytes[] memory $results);
+        returns (PlugTypesLib.Result[] memory $results);
 }

@@ -4,21 +4,16 @@ pragma solidity 0.8.23;
 
 import { PlugSocket } from "../abstracts/Plug.Socket.sol";
 import { PlugTrading } from "../abstracts/Plug.Trading.sol";
-import { Receiver } from "solady/src/accounts/Receiver.sol";
-import { UUPSUpgradeable } from "solady/src/utils/UUPSUpgradeable.sol";
+import { Receiver } from "solady/accounts/Receiver.sol";
+import { UUPSUpgradeable } from "solady/utils/UUPSUpgradeable.sol";
 import { PlugTypesLib } from "../abstracts/Plug.Types.sol";
-import { MerkleProofLib } from "solady/src/utils/MerkleProofLib.sol";
+import { MerkleProofLib } from "solady/utils/MerkleProofLib.sol";
 
 /**
  * @title Plug Vault Socket
  * @author @nftchance (chance@onplug.io)
  */
-contract PlugVaultSocket is
-    PlugSocket,
-    PlugTrading,
-    Receiver,
-    UUPSUpgradeable
-{
+contract PlugVaultSocket is PlugSocket, PlugTrading, Receiver, UUPSUpgradeable {
     /*
     * @notice The constructor for the Plug Vault Socket will
     *         initialize to address(1) when not deployed through
@@ -42,24 +37,14 @@ contract PlugVaultSocket is
     /**
      * See { PlugSocket-name }
      */
-    function name()
-        public
-        pure
-        override
-        returns (string memory $name)
-    {
+    function name() public pure override returns (string memory $name) {
         $name = "Plug Vault Socket";
     }
 
     /**
      * See { PlugSocket-version }
      */
-    function version()
-        public
-        pure
-        override
-        returns (string memory $version)
-    {
+    function version() public pure override returns (string memory $version) {
         $version = "0.0.1";
     }
 
@@ -100,26 +85,18 @@ contract PlugVaultSocket is
         /// @dev Utilize a standard signature recovery method that is only designed
         ///      to support one domain and intent at a time.
         if (signatureType & 0x03 == signatureType) {
-            ($allowed,) =
-                _signatureValidation(plugsHash, $input.signature);
+            ($allowed,) = _signatureValidation(plugsHash, $input.signature);
         }
         /// @dev Utilize a merkle proof signature recovery method that holds several
         ///      domains and intents at a time inside a single signature.
         else if (signatureType & 0x04 == signatureType) {
             /// @dev Recover the merkle proof data from the packed signature.
-            (
-                bytes32 root,
-                bytes32[] memory proof,
-                bytes memory signature
-            ) = abi.decode(
-                $input.signature[1:], (bytes32, bytes32[], bytes)
-            );
+            (bytes32 root, bytes32[] memory proof, bytes memory signature) =
+                abi.decode($input.signature[1:], (bytes32, bytes32[], bytes));
 
             /// @dev Ensure the merkle tree contains the data of the signed bundle.
             require(
-                MerkleProofLib.verify(
-                    proof, root, getPlugsHash($input.plugs)
-                ),
+                MerkleProofLib.verify(proof, root, getPlugsHash($input.plugs)),
                 "PlugTypes:invalid-proof"
             );
 
@@ -127,33 +104,20 @@ contract PlugVaultSocket is
             ///      the packed state of the `signature` data provided.
             uint256 offset = proof.length * 32 + 161;
 
-            ($allowed,) = _signatureValidation(
-                plugsHash,
-                $input.signature[offset:offset + signature.length]
-            );
+            ($allowed,) =
+                _signatureValidation(plugsHash, $input.signature[offset:offset + signature.length]);
         }
     }
 
     /**
      * See { UUPSUpgradeable._authorizeUpgrade }
      */
-    function _authorizeUpgrade(address)
-        internal
-        virtual
-        override
-        onlyOwner
-    { }
+    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
 
     /**
      * See { PlugTrading._guardInitializeOwnership }
      */
-    function _guardInitializeOwnership()
-        internal
-        pure
-        virtual
-        override
-        returns (bool $guard)
-    {
+    function _guardInitializeOwnership() internal pure virtual override returns (bool $guard) {
         $guard = true;
     }
 }

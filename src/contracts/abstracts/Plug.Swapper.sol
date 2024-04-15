@@ -2,12 +2,11 @@
 
 pragma solidity 0.8.23;
 
-import { ReentrancyGuard } from "solady/src/utils/ReentrancyGuard.sol";
+import { ReentrancyGuard } from "solady/utils/ReentrancyGuard.sol";
 import { PlugLib } from "../libraries/Plug.Lib.sol";
-import { PlugBalanceInterface } from
-    "../interfaces/Plug.Balance.Interface.sol";
+import { PlugBalanceInterface } from "../interfaces/Plug.Balance.Interface.sol";
 
-import { SafeTransferLib } from "solady/src/utils/SafeTransferLib.sol";
+import { SafeTransferLib } from "solady/utils/SafeTransferLib.sol";
 
 /**
  * @title Plug Swapper
@@ -60,8 +59,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         ///      of the Native currency supplied (without fees) included which
         ///      results in the fee in Native currency remaining in the Swapper
         ///      for future withdrawal.
-        (bool success, bytes memory reason) =
-            $target.call{ value: outNative }($data);
+        (bool success, bytes memory reason) = $target.call{ value: outNative }($data);
         /// @dev If the call was not successful, bubble up the revert.
         PlugLib.bubbleRevert(success, reason);
     }
@@ -90,9 +88,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
     {
         /// @dev Retrieve the tokens being swapped from the transaction caller (a Socket)
         ///      and transfer them to this contract.
-        SafeTransferLib.safeTransferFrom(
-            $tokenOut, msg.sender, address(this), $sell
-        );
+        SafeTransferLib.safeTransferFrom($tokenOut, msg.sender, address(this), $sell);
 
         /// @dev Give the target contract allowance to move the token being swapped up to the
         ///      amount that the `caller` can move after the fee is accounted for.
@@ -101,19 +97,14 @@ abstract contract PlugSwapper is ReentrancyGuard {
         /// @dev Submit the call that is going to consume Token B using the amount of the Native
         ///      currency supplied (without fees) included which results in the fee in Native
         ///      currency remaining in the Swapper for future withdrawal.
-        (bool success, bytes memory reason) =
-            $target.call{ value: msg.value }($data);
+        (bool success, bytes memory reason) = $target.call{ value: msg.value }($data);
         /// @dev If the call was not successful, bubble up the revert. Otherwise,
         ///      continue on with the execution.
         PlugLib.bubbleRevert(success, reason);
 
         /// @dev If the target did not use all of the tokens within allowance, revert
         ///      as there was an issue and/or imbalance somewhere in the execution.
-        if (
-            PlugBalanceInterface($tokenOut).allowance(
-                address(this), $target
-            ) != 0
-        ) {
+        if (PlugBalanceInterface($tokenOut).allowance(address(this), $target) != 0) {
             revert PlugLib.TokenAllowanceInvalid();
         }
     }
@@ -157,8 +148,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         ///      B using the amount of the Native currency supplied (without fees)
         ///      included which results in the fee in Native currency remaining
         ///      in the Swapper for future withdrawal.
-        (bool success, bytes memory reason) =
-            $target.call{ value: outNative }($data);
+        (bool success, bytes memory reason) = $target.call{ value: outNative }($data);
         /// @dev If the call was not successful, bubble up the revert. Otherwise,
         ///      continue on with the execution.
         PlugLib.bubbleRevert(success, reason);
@@ -173,9 +163,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         }
 
         /// @dev Deliver the acquired Token B to the `caller` (the Socket).
-        SafeTransferLib.safeTransfer(
-            $tokenIn, msg.sender, postTokenIn - preTokenIn
-        );
+        SafeTransferLib.safeTransfer($tokenIn, msg.sender, postTokenIn - preTokenIn);
 
         /// @dev Retrieve how many Native tokens this contract now holds
         ///      while having accounted for the fee.
@@ -183,9 +171,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
 
         /// @dev Deliver any surplus of the Native token back to the `caller`.
         if (postNative > preNative) {
-            SafeTransferLib.safeTransferETH(
-                msg.sender, postNative - preNative
-            );
+            SafeTransferLib.safeTransferETH(msg.sender, postNative - preNative);
         }
     }
 
@@ -223,9 +209,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         /// @dev Retrieve the tokens being spent from the transaction caller
         ///      (a Socket) and transfer them to this contract so that they can
         ///      be routed to the target destination.
-        SafeTransferLib.safeTransferFrom(
-            $tokenOut, msg.sender, address(this), $sell
-        );
+        SafeTransferLib.safeTransferFrom($tokenOut, msg.sender, address(this), $sell);
 
         /// @dev Give the target contract allowance to move the token being swapped up to the
         ///      amount that the `caller` can move after the fee is accounted for.
@@ -235,19 +219,14 @@ abstract contract PlugSwapper is ReentrancyGuard {
         ///      B using the amount of the Native currency supplied (without fees)
         ///      included which results in the fee in Native currency remaining
         ///      in the Swapper for future withdrawal.
-        (bool success, bytes memory reason) =
-            $target.call{ value: msg.value }($data);
+        (bool success, bytes memory reason) = $target.call{ value: msg.value }($data);
         /// @dev If the call was not successful, bubble up the revert. Otherwise,
         ///      continue on with the execution.
         PlugLib.bubbleRevert(success, reason);
 
         /// @dev If the target did not use all of the tokens within allowance, revert
         ///      as there was an issue and/or imbalance somewhere in the execution.
-        if (
-            PlugBalanceInterface($tokenOut).allowance(
-                address(this), $target
-            ) != 0
-        ) {
+        if (PlugBalanceInterface($tokenOut).allowance(address(this), $target) != 0) {
             revert PlugLib.TokenAllowanceInvalid();
         }
 
@@ -261,9 +240,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         }
 
         /// @dev Deliver the swapped Token B to the `caller`.
-        SafeTransferLib.safeTransfer(
-            $tokenIn, msg.sender, postTokenIn - preTokenIn
-        );
+        SafeTransferLib.safeTransfer($tokenIn, msg.sender, postTokenIn - preTokenIn);
     }
 
     /**
@@ -294,9 +271,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         /// @dev Retrieve the tokens being spent from the transaction caller
         ///      (a Socket) and transfer them to this contract so that they can
         ///      be routed to the target destination.
-        SafeTransferLib.safeTransferFrom(
-            $tokenOut, msg.sender, address(this), $sell
-        );
+        SafeTransferLib.safeTransferFrom($tokenOut, msg.sender, address(this), $sell);
 
         /// @dev Give the target contract allowance to move the token being swapped up to the
         ///      amount that the `caller` can move after the fee is accounted for.
@@ -305,19 +280,14 @@ abstract contract PlugSwapper is ReentrancyGuard {
         /// @dev Submit the call that is going to return a non-enforced amount of Token
         ///      B using the amount of the Native currency included which results in the fee
         ///      in Native currency remaining in the Swapper for future withdrawal.
-        (bool success, bytes memory reason) =
-            $target.call{ value: msg.value }($data);
+        (bool success, bytes memory reason) = $target.call{ value: msg.value }($data);
         /// @dev If the call was not successful, bubble up the revert. Otherwise,
         ///      continue on with the execution.
         PlugLib.bubbleRevert(success, reason);
 
         /// @dev If the target did not use all of the tokens within allowance, revert
         ///      as there was an issue and/or imbalance somewhere in the execution.
-        if (
-            PlugBalanceInterface($tokenOut).allowance(
-                address(this), $target
-            ) != 0
-        ) {
+        if (PlugBalanceInterface($tokenOut).allowance(address(this), $target) != 0) {
             revert PlugLib.TokenAllowanceInvalid();
         }
 
@@ -336,10 +306,7 @@ abstract contract PlugSwapper is ReentrancyGuard {
         /// @dev Handle the fee if one is present.
         if ($fee > 0) {
             /// @dev Transfer the native tokens earned excluding the fee to the `caller`.
-            SafeTransferLib.safeTransferETH(
-                msg.sender,
-                diffNative - (diffNative * $fee) / 10 ** 18
-            );
+            SafeTransferLib.safeTransferETH(msg.sender, diffNative - (diffNative * $fee) / 10 ** 18);
         }
         /// @dev If there is no fee, return the entire amount to the sender.
         else if (diffNative > 0) {

@@ -13,7 +13,7 @@ interface PlugInterface {
     function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
         external
         payable
-        returns (bytes[] memory $results);
+        returns (PlugTypesLib.Result[] memory $results);
 
     /**
      * @notice A batch implementation of the sister `plug` function that enables
@@ -24,5 +24,5 @@ interface PlugInterface {
     function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
         external
         payable
-        returns (bytes[][] memory $results);
+        returns (PlugTypesLib.Result[][] memory $results);
 }

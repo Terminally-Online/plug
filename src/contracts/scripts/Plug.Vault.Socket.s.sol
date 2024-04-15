@@ -18,8 +18,7 @@ contract PlugVaultSocketDeployment is Script {
         vm.startBroadcast();
 
         PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_VAULT_SOCKET_SALT,
-            PlugEtcherLib.PLUG_VAULT_SOCKET_INITCODE
+            PlugEtcherLib.PLUG_VAULT_SOCKET_SALT, PlugEtcherLib.PLUG_VAULT_SOCKET_INITCODE
         );
 
         vm.stopBroadcast();

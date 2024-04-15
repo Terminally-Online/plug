@@ -181,7 +181,7 @@ const mine = async (contract: Contract): Promise<void> => {
 const processContracts = async () => {
 	let found = false
 
-	const process = async (contracts: Contract[]) => {
+	const process = async (contracts: Readonly<Array<Contract>>) => {
 		for (const contract of contracts) {
 			if (match != '' && !contract.name.includes(match)) {
 				continue

@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.23;
 
-import { PlugSocketInterface } from
-    "../interfaces/Plug.Socket.Interface.sol";
+import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
 import { PlugCore } from "./Plug.Core.sol";
-import { ReentrancyGuard } from "solady/src/utils/ReentrancyGuard.sol";
+import { PlugEnforce } from "./Plug.Enforce.sol";
+import { ReentrancyGuard } from "solady/utils/ReentrancyGuard.sol";
 import { PlugTypesLib } from "./Plug.Types.sol";
 
 /**
@@ -15,11 +15,7 @@ import { PlugTypesLib } from "./Plug.Types.sol";
  *         granular pin and execution paths.
  * @author @nftchance (chance@onplug.io)
  */
-abstract contract PlugSocket is
-    PlugSocketInterface,
-    PlugCore,
-    ReentrancyGuard
-{
+abstract contract PlugSocket is PlugSocketInterface, PlugCore, PlugEnforce, ReentrancyGuard {
     /**
      * See {PlugSocketInterface-plug}.
      */
@@ -34,7 +30,7 @@ abstract contract PlugSocket is
         enforceRouter
         enforceSignature($livePlugs)
         nonReentrant
-        returns (bytes[] memory $results)
+        returns (PlugTypesLib.Result[] memory $results)
     {
         $results = _plug($livePlugs.plugs, $solver, $gas);
     }
@@ -47,7 +43,7 @@ abstract contract PlugSocket is
         payable
         virtual
         nonReentrant
-        returns (bytes[] memory $results)
+        returns (PlugTypesLib.Result[] memory $results)
     {
         // TODO: Make sure only intended signers have permission to submit here.
 

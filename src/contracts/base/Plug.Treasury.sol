@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.23;
 
-import { Receiver } from "solady/src/accounts/Receiver.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
+import { Receiver } from "solady/accounts/Receiver.sol";
+import { Ownable } from "solady/auth/Ownable.sol";
 import { PlugSwapper, PlugLib } from "../abstracts/Plug.Swapper.sol";
 
 /**
@@ -71,20 +71,14 @@ contract PlugTreasury is Receiver, Ownable, PlugSwapper {
         for (uint256 i; i < length; i++) {
             /// @dev Execute the transaction from within the array and save the response
             ///      of success and failure reason into the result.
-            ($successes[i], $results[i]) =
-                $targets[i].call{ value: $values[i] }($datas[i]);
+            ($successes[i], $results[i]) = $targets[i].call{ value: $values[i] }($datas[i]);
         }
     }
 
     /**
      * See {Ownable-_initializeOwner}.
      */
-    function _guardInitializeOwner()
-        internal
-        pure
-        override
-        returns (bool $guard)
-    {
+    function _guardInitializeOwner() internal pure override returns (bool $guard) {
         $guard = true;
     }
 }

@@ -8,12 +8,7 @@ interface PlugFactoryInterface {
      * @param $owner The address of the owner.
      * @param $baseURI The base URI of the factory.
      */
-    function initialize(
-        address $owner,
-        string memory $baseURI,
-        address $implementation
-    )
-        external;
+    function initialize(address $owner, string memory $baseURI, address $implementation) external;
 
     /**
      * @notice Deploy a new Socket and initialize it.
@@ -49,8 +44,5 @@ interface PlugFactoryInterface {
      * @dev This is used to mine vanity addresses.
      * @return $initCodeHash The init code hash of the vaults.
      */
-    function initCodeHash(address $implementation)
-        external
-        view
-        returns (bytes32 $initCodeHash);
+    function initCodeHash(address $implementation) external view returns (bytes32 $initCodeHash);
 }

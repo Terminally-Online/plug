@@ -9,7 +9,7 @@ import {
     PlugFactory,
     PlugVaultSocket
 } from "../abstracts/test/Plug.Test.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
+import { Ownable } from "solady/auth/Ownable.sol";
 
 contract PlugTreasuryTest is Test {
     function setUp() public virtual {

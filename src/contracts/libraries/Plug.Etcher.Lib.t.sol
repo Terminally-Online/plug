@@ -6,56 +6,56 @@ import { Test } from "../abstracts/test/Plug.Test.sol";
 import { PlugEtcherLib } from "./Plug.Etcher.Lib.sol";
 
 contract DeploymentTest is Test {
-    function test_PlugBalanceFuseDeployment() public {
-        PlugEtcherLib.plugBalanceFuse();
+    function test_PlugBalanceSemiFungibleDeployment() public {
+        PlugEtcherLib.plugBalanceSemiFungible();
     }
 
-    function test_PlugBalanceSemiFungibleFuseDeployment() public {
-        PlugEtcherLib.plugBalanceSemiFungibleFuse();
+    function test_PlugBalanceDeployment() public {
+        PlugEtcherLib.plugBalance();
     }
 
-    function test_PlugBaseFeeFuseDeployment() public {
-        PlugEtcherLib.plugBaseFeeFuse();
+    function test_PlugBaseFeeDeployment() public {
+        PlugEtcherLib.plugBaseFee();
     }
 
-    function test_PlugBlockNumberFuseDeployment() public {
-        PlugEtcherLib.plugBlockNumberFuse();
+    function test_PlugBlockNumberDeployment() public {
+        PlugEtcherLib.plugBlockNumber();
     }
 
-    function test_PlugCalendarFuseDeployment() public {
-        PlugEtcherLib.plugCalendarFuse();
+    function test_PlugCalendarDeployment() public {
+        PlugEtcherLib.plugCalendar();
     }
 
     function test_PlugFactoryDeployment() public {
         PlugEtcherLib.plugFactory();
     }
 
-    function test_PlugFraxlendAPYFuseDeployment() public {
-        PlugEtcherLib.plugFraxlendAPYFuse();
+    function test_PlugFraxlendAPYDeployment() public {
+        PlugEtcherLib.plugFraxlendAPY();
     }
 
-    function test_PlugLimitedCallsFuseDeployment() public {
-        PlugEtcherLib.plugLimitedCallsFuse();
+    function test_PlugLimitedCallsDeployment() public {
+        PlugEtcherLib.plugLimitedCalls();
     }
 
-    function test_PlugNounsBidFuseDeployment() public {
-        PlugEtcherLib.plugNounsBidFuse();
+    function test_PlugNounsBidDeployment() public {
+        PlugEtcherLib.plugNounsBid();
     }
 
-    function test_PlugNounsIdFuseDeployment() public {
-        PlugEtcherLib.plugNounsIdFuse();
+    function test_PlugNounsIdDeployment() public {
+        PlugEtcherLib.plugNounsId();
     }
 
-    function test_PlugNounsTraitFuseDeployment() public {
-        PlugEtcherLib.plugNounsTraitFuse();
+    function test_PlugNounsTraitDeployment() public {
+        PlugEtcherLib.plugNounsTrait();
     }
 
-    function test_PlugRevocationFuseDeployment() public {
-        PlugEtcherLib.plugRevocationFuse();
+    function test_PlugRevocationDeployment() public {
+        PlugEtcherLib.plugRevocation();
     }
 
-    function test_PlugTimestampFuseDeployment() public {
-        PlugEtcherLib.plugTimestampFuse();
+    function test_PlugTimestampDeployment() public {
+        PlugEtcherLib.plugTimestamp();
     }
 
     function test_PlugTreasuryDeployment() public {

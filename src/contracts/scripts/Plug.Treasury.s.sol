@@ -18,8 +18,7 @@ contract PlugTreasuryDeployment is Script {
         vm.startBroadcast();
 
         PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_TREASURY_SALT,
-            PlugEtcherLib.PLUG_TREASURY_INITCODE
+            PlugEtcherLib.PLUG_TREASURY_SALT, PlugEtcherLib.PLUG_TREASURY_INITCODE
         );
 
         vm.stopBroadcast();

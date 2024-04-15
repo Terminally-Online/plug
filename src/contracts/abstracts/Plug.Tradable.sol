@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.23;
 
-import { ERC721 } from "solady/src/tokens/ERC721.sol";
-import { Ownable } from "solady/src/auth/Ownable.sol";
+import { ERC721 } from "solady/tokens/ERC721.sol";
+import { Ownable } from "solady/auth/Ownable.sol";
 import { PlugTrading } from "./Plug.Trading.sol";
-import { LibString } from "solady/src/utils/LibString.sol";
+import { LibString } from "solady/utils/LibString.sol";
 
 /**
  * @title Plug Tradable
@@ -25,12 +25,7 @@ abstract contract PlugTradable is ERC721, Ownable {
      * @param $owner The address of the owner.
      * @param $baseURI The base URI of the factory.
      */
-    function _initializeTradable(
-        address $owner,
-        string memory $baseURI
-    )
-        internal
-    {
+    function _initializeTradable(address $owner, string memory $baseURI) internal {
         /// @dev Initialize the metadata controller.
         _initializeOwner($owner);
 
@@ -50,12 +45,7 @@ abstract contract PlugTradable is ERC721, Ownable {
      * @notice Metadata response for the name of the collection.
      * @return $name The name of the collection.
      */
-    function name()
-        public
-        pure
-        override
-        returns (string memory $name)
-    {
+    function name() public pure override returns (string memory $name) {
         $name = "Plug Sockets";
     }
 
@@ -63,12 +53,7 @@ abstract contract PlugTradable is ERC721, Ownable {
      * @notice Metadata response for the symbol of the collection.
      * @return $symbol The symbol of the collection.
      */
-    function symbol()
-        public
-        pure
-        override
-        returns (string memory $symbol)
-    {
+    function symbol() public pure override returns (string memory $symbol) {
         $symbol = "PLGSOK";
     }
 
@@ -77,25 +62,11 @@ abstract contract PlugTradable is ERC721, Ownable {
      * @param $tokenId The token ID to query the URI for.
      * @return $uri The URI for the given token ID.
      */
-    function tokenURI(uint256 $tokenId)
-        public
-        view
-        override
-        returns (string memory $uri)
-    {
-        $uri = string(
-            abi.encodePacked(baseURI, LibString.toString($tokenId))
-        );
+    function tokenURI(uint256 $tokenId) public view override returns (string memory $uri) {
+        $uri = string(abi.encodePacked(baseURI, LibString.toString($tokenId)));
     }
 
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    )
-        internal
-        override
-    {
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal override {
         super._afterTokenTransfer(from, to, tokenId);
 
         /// @dev Call into the vault that is representing this asset and update
@@ -108,12 +79,7 @@ abstract contract PlugTradable is ERC721, Ownable {
     /**
      * See {Ownable-_guardInitializeOwner}.
      */
-    function _guardInitializeOwner()
-        internal
-        pure
-        override
-        returns (bool $guard)
-    {
+    function _guardInitializeOwner() internal pure override returns (bool $guard) {
         $guard = true;
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
-import { ECDSA } from "solady/src/utils/ECDSA.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 
 /**
  * @title Plug:PlugTypes
@@ -15,9 +15,16 @@ import { ECDSA } from "solady/src/utils/ECDSA.sol";
  *      As an extensible base, all projects build on top of Pins
  *      and Plugs.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-04-02)
+ * @author @nftchance/plug-types (2024-04-15)
  */
 library PlugTypesLib {
+    /**
+     * @notice This struct is used to surface the result of a Plug execution.
+     */
+    struct Result {
+        bool success;
+        bytes result;
+    }
     /**
      * @notice This struct is used to encode EIP712Domain data into a hash and
      *         decode EIP712Domain data from a hash.
@@ -29,6 +36,7 @@ library PlugTypesLib {
      * 		{ name: 'verifyingContract', type: 'address' }
      * }>
      */
+
     struct EIP712Domain {
         string name;
         string version;
@@ -37,47 +45,19 @@ library PlugTypesLib {
     }
 
     /**
-     * @notice This struct is used to encode Current data into a hash and
-     *         decode Current data from a hash.
+     * @notice This struct is used to encode Plug data into a hash and
+     *         decode Plug data from a hash.
      *
-     * @dev Current extends EIP712<{
+     * @dev Plug extends EIP712<{
      *      { name: 'target', type: 'address' }
      * 		{ name: 'value', type: 'uint256' }
      * 		{ name: 'data', type: 'bytes' }
      * }>
      */
-    struct Current {
+    struct Plug {
         address target;
         uint256 value;
         bytes data;
-    }
-
-    /**
-     * @notice This struct is used to encode Fuse data into a hash and
-     *         decode Fuse data from a hash.
-     *
-     * @dev Fuse extends EIP712<{
-     *      { name: 'target', type: 'address' }
-     * 		{ name: 'data', type: 'bytes' }
-     * }>
-     */
-    struct Fuse {
-        address target;
-        bytes data;
-    }
-
-    /**
-     * @notice This struct is used to encode Plug data into a hash and
-     *         decode Plug data from a hash.
-     *
-     * @dev Plug extends EIP712<{
-     *      { name: 'current', type: 'Current' }
-     * 		{ name: 'fuses', type: 'Fuse[]' }
-     * }>
-     */
-    struct Plug {
-        Current current;
-        Fuse[] fuses;
     }
 
     /**
@@ -87,17 +67,15 @@ library PlugTypesLib {
      * @dev Plugs extends EIP712<{
      *      { name: 'socket', type: 'address' }
      * 		{ name: 'plugs', type: 'Plug[]' }
-     * 		{ name: 'salt', type: 'bytes32' }
-     * 		{ name: 'fee', type: 'uint256' }
      * 		{ name: 'solver', type: 'bytes' }
+     * 		{ name: 'salt', type: 'bytes32' }
      * }>
      */
     struct Plugs {
         address socket;
         Plug[] plugs;
-        bytes32 salt;
-        uint256 fee;
         bytes solver;
+        bytes32 salt;
     }
 
     /**
@@ -125,7 +103,7 @@ library PlugTypesLib {
  * @dev Contracts that inherit this one must implement the name() and version()
  *      functions to provide the domain separator for EIP-712 signatures.
  * @author @nftchance
- * @author @nftchance/plug-types (2024-04-02)
+ * @author @nftchance/plug-types (2024-04-15)
  */
 abstract contract PlugTypes {
     /// @notice Use the ECDSA library for signature verification.
@@ -145,38 +123,16 @@ abstract contract PlugTypes {
         0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
     /**
-     * @notice Type hash representing the Current data type providing EIP-712
+     * @notice Type hash representing the Plug data type providing EIP-712
      *         compatability for encoding and decoding.
-     * @dev CURRENT_TYPEHASH extends TypeHash<EIP712<{
+     * @dev PLUG_TYPEHASH extends TypeHash<EIP712<{
      *      { name: 'target', type: 'address' }
      *      { name: 'value', type: 'uint256' }
      *      { name: 'data', type: 'bytes' }
      * }>>
      */
-    bytes32 constant CURRENT_TYPEHASH =
-        0x4e1a9992657cd2dadc8cf749c3a5665c35d836a6aa5e695a1b318d00ea261fa4;
-
-    /**
-     * @notice Type hash representing the Fuse data type providing EIP-712
-     *         compatability for encoding and decoding.
-     * @dev FUSE_TYPEHASH extends TypeHash<EIP712<{
-     *      { name: 'target', type: 'address' }
-     *      { name: 'data', type: 'bytes' }
-     * }>>
-     */
-    bytes32 constant FUSE_TYPEHASH =
-        0x6a2e1450f9194ecc5758aac2b0935794f6d5706adcdd5968d7006542aacaa463;
-
-    /**
-     * @notice Type hash representing the Plug data type providing EIP-712
-     *         compatability for encoding and decoding.
-     * @dev PLUG_TYPEHASH extends TypeHash<EIP712<{
-     *      { name: 'current', type: 'Current' }
-     *      { name: 'fuses', type: 'Fuse[]' }
-     * }>>
-     */
     bytes32 constant PLUG_TYPEHASH =
-        0x92e7d74a30e1e523d60bcb5fbb30caa2f5fa9f5fbc4a5499c4e9b8b44b7640fd;
+        0x0d73e94823fdaacb148d9146f00bc268b7834e768ced483d796db05a52e1e395;
 
     /**
      * @notice Type hash representing the Plugs data type providing EIP-712
@@ -184,13 +140,12 @@ abstract contract PlugTypes {
      * @dev PLUGS_TYPEHASH extends TypeHash<EIP712<{
      *      { name: 'socket', type: 'address' }
      *      { name: 'plugs', type: 'Plug[]' }
-     *      { name: 'salt', type: 'bytes32' }
-     *      { name: 'fee', type: 'uint256' }
      *      { name: 'solver', type: 'bytes' }
+     *      { name: 'salt', type: 'bytes32' }
      * }>>
      */
     bytes32 constant PLUGS_TYPEHASH =
-        0xaf14e4c1bb28a29db968085ec12ac09da776141d37392d0c88184a4f3872c45c;
+        0xab17334cacf66e0b0c0e533c2822a50549311ba957ec52ec037e1c8083f023ab;
 
     /**
      * @notice Type hash representing the LivePlugs data type providing EIP-712
@@ -201,7 +156,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant LIVE_PLUGS_TYPEHASH =
-        0xe8b38e73c38238f5d551461957d55a6fe8f9956b61952de931fefb9f6126661e;
+        0x6cd9425d5dd731a623cc0fee82dd49189fd54b9a5d85856406fe9744411d9157;
     /**
      * @notice Name used for the domain separator.
      * @dev This is implemented this way so that it is easy
@@ -209,11 +164,7 @@ abstract contract PlugTypes {
      * @return $name The name of the contract.
      */
 
-    function name()
-        public
-        pure
-        virtual
-        returns (string memory $name);
+    function name() public pure virtual returns (string memory $name);
 
     /**
      * @notice Version used for the domain separator.
@@ -221,11 +172,7 @@ abstract contract PlugTypes {
      *      to retrieve the value and sign the built message.
      * @return $version The version of the contract.
      */
-    function version()
-        public
-        pure
-        virtual
-        returns (string memory $version);
+    function version() public pure virtual returns (string memory $version);
 
     /**
      * @notice The symbol of the Socket only used for metadata purposes.
@@ -238,12 +185,7 @@ abstract contract PlugTypes {
      *      to generate the symbol.
      * @return $symbol The symbol of the Socket.
      */
-    function symbol()
-        public
-        view
-        virtual
-        returns (string memory $symbol)
-    {
+    function symbol() public view virtual returns (string memory $symbol) {
         string memory $name = name();
 
         assembly {
@@ -281,9 +223,7 @@ abstract contract PlugTypes {
      * @param $input The EIP712Domain data to encode.
      * @return $hash The packet hash of the encoded EIP712Domain data.
      */
-    function getEIP712DomainHash(
-        PlugTypesLib.EIP712Domain memory $input
-    )
+    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input)
         public
         pure
         virtual
@@ -301,47 +241,6 @@ abstract contract PlugTypes {
     }
 
     /**
-     * @notice Encode Current data into a packet hash and verify decoded Current data
-     *         from a packet hash to verify type compliance.
-     * @param $input The Current data to encode.
-     * @return $hash The packet hash of the encoded Current data.
-     */
-    function getCurrentHash(PlugTypesLib.Current memory $input)
-        public
-        pure
-        virtual
-        returns (bytes32 $hash)
-    {
-        $hash = keccak256(
-            abi.encode(
-                CURRENT_TYPEHASH,
-                $input.target,
-                $input.value,
-                keccak256($input.data)
-            )
-        );
-    }
-
-    /**
-     * @notice Encode Fuse data into a packet hash and verify decoded Fuse data
-     *         from a packet hash to verify type compliance.
-     * @param $input The Fuse data to encode.
-     * @return $hash The packet hash of the encoded Fuse data.
-     */
-    function getFuseHash(PlugTypesLib.Fuse memory $input)
-        public
-        pure
-        virtual
-        returns (bytes32 $hash)
-    {
-        $hash = keccak256(
-            abi.encode(
-                FUSE_TYPEHASH, $input.target, keccak256($input.data)
-            )
-        );
-    }
-
-    /**
      * @notice Encode Plug data into a packet hash and verify decoded Plug data
      *         from a packet hash to verify type compliance.
      * @param $input The Plug data to encode.
@@ -354,38 +253,8 @@ abstract contract PlugTypes {
         returns (bytes32 $hash)
     {
         $hash = keccak256(
-            abi.encode(
-                PLUG_TYPEHASH,
-                getCurrentHash($input.current),
-                getFuseArrayHash($input.fuses)
-            )
+            abi.encode(PLUG_TYPEHASH, $input.target, $input.value, keccak256($input.data))
         );
-    }
-
-    /**
-     * @notice Encode Fuse[] data into hash and verify the
-     *         decoded Fuse[] data from a packet hash to verify type compliance.
-     * @param $input The Fuse[] data to encode.
-     * @return $hash The packet hash of the encoded Fuse[] data.
-     */
-    function getFuseArrayHash(PlugTypesLib.Fuse[] memory $input)
-        public
-        pure
-        virtual
-        returns (bytes32 $hash)
-    {
-        /// @dev Load the stack.
-        bytes memory encoded;
-        uint256 i;
-        uint256 length = $input.length;
-
-        /// @dev Encode each item in the array.
-        for (i; i < length; i++) {
-            encoded = bytes.concat(encoded, getFuseHash($input[i]));
-        }
-
-        /// @dev Hash the encoded array.
-        $hash = keccak256(encoded);
     }
 
     /**
@@ -405,9 +274,8 @@ abstract contract PlugTypes {
                 PLUGS_TYPEHASH,
                 $input.socket,
                 getPlugArrayHash($input.plugs),
-                $input.salt,
-                $input.fee,
-                keccak256($input.solver)
+                keccak256($input.solver),
+                $input.salt
             )
         );
     }
@@ -451,11 +319,7 @@ abstract contract PlugTypes {
         returns (bytes32 $hash)
     {
         $hash = keccak256(
-            abi.encode(
-                LIVE_PLUGS_TYPEHASH,
-                getPlugsHash($input.plugs),
-                keccak256($input.signature)
-            )
+            abi.encode(LIVE_PLUGS_TYPEHASH, getPlugsHash($input.plugs), keccak256($input.signature))
         );
     }
 }

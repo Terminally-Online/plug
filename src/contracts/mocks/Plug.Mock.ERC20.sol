@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.23;
 
-import { ERC20 } from "solady/src/tokens/ERC20.sol";
+import { ERC20 } from "solady/tokens/ERC20.sol";
 
 contract PlugMockERC20 is ERC20 {
     function mint(address $to, uint256 $amount) public {

@@ -23,6 +23,17 @@ pnpm i
 pnpm dev
 ```
 
+## Building The Address Libraries
+
+In Plug we utilize a self-referencing architecture that enables the ability to mine addresses and then refer to the constants within that contract. This is done so that any time the `Factory` is updated, we do not need to worry about manually updating the address everywhere that it is used. To generate the proper files run:
+
+```bash
+pnpm build:mine:quick
+```
+
+> **NOTE**
+> Due to the architecture, you will need to mine the addresses twice in order for everything to function as the bytecode of things will change once the addresses are updated in `PlugAddressesLib`. A signal to know that you need to run it again is if a test results in `unexpected-address`.
+
 ## Building The Package For Distribution
 
 For version management assistance, `@nftchance/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run:

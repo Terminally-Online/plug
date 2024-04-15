@@ -7,13 +7,13 @@
         "ds-test/=node_modules/ds-test/src/",
         "forge-std/=node_modules/forge-std/src/",
         "@nftchance/plug-core/=node_modules/@nftchance/plug-core/src/",
-        "solady/=node_modules/solady/",
+        "solady/=node_modules/solady/src/",
         "sequence/=node_modules/@0xsequence/wallet-contracts/contracts/"
     ]
     block_timestamp = 1_680_220_800
     bytecode_hash = "none"
     evm_version = "paris"
-    fuzz = { runs = 1_000 }
+    fuzz = { runs = 10_000 }
     gas_reports = ["*"]
     optimizer = true
     optimizer_runs = 10_000
@@ -38,7 +38,7 @@
 [fmt]
     bracket_spacing = true
     int_types = "long"
-    line_length = 70
+    line_length = 100
     multiline_func_header = "all"
     number_underscore = "thousands"
     quote_style = "double"

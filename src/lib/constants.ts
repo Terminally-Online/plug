@@ -7,14 +7,14 @@ const base = (name: string): Contract => ({
     relativePath: '../base/'
 })
 
-const fuse = (name: string): Contract => ({
+const plug = (name: string): Contract => ({
     name,
-    relativePath: '../fuses/'
+    relativePath: '../plugs/'
 })
 
-const protocolFuse = (name: string): Contract => ({
+const protocolPlug = (name: string): Contract => ({
     name,
-    relativePath: '../fuses/protocols/'
+    relativePath: '../plugs/protocols/'
 })
 
 const socket = (name: string): Contract => ({
@@ -26,24 +26,24 @@ export const router = base('Plug.sol')
 export const factory = base('Plug.Factory.sol')
 export const treasury = base('Plug.Treasury.sol')
 
-export const balance = fuse('Plug.Balance.Fuse.sol')
-export const balanceSemiFungible = fuse('Plug.Balance.SemiFungible.Fuse.sol')
-export const baseFee = fuse('Plug.BaseFee.Fuse.sol')
-export const blockNumber = fuse('Plug.BlockNumber.Fuse.sol')
-export const calendar = fuse('Plug.Calendar.Fuse.sol')
-export const limitedCalls = fuse('Plug.LimitedCalls.Fuse.sol')
-export const revocation = fuse('Plug.Revocation.Fuse.sol')
-export const timestamp = fuse('Plug.Timestamp.Fuse.sol')
+export const balance = plug('Plug.Balance.sol')
+export const balanceSemiFungible = plug('Plug.Balance.SemiFungible.sol')
+export const baseFee = plug('Plug.BaseFee.sol')
+export const blockNumber = plug('Plug.BlockNumber.sol')
+export const calendar = plug('Plug.Calendar.sol')
+export const limitedCalls = plug('Plug.LimitedCalls.sol')
+export const revocation = plug('Plug.Revocation.sol')
+export const timestamp = plug('Plug.Timestamp.sol')
 
-export const fraxlend = protocolFuse('Plug.Fraxlend.APY.Fuse.sol')
-export const nounsBid = protocolFuse('Plug.Nouns.Bid.Fuse.sol')
-export const nounsId = protocolFuse('Plug.Nouns.Id.Fuse.sol')
-export const nounsTrait = protocolFuse('Plug.Nouns.Trait.Fuse.sol')
+export const fraxlend = protocolPlug('Plug.Fraxlend.APY.sol')
+export const nounsBid = protocolPlug('Plug.Nouns.Bid.sol')
+export const nounsId = protocolPlug('Plug.Nouns.Id.sol')
+export const nounsTrait = protocolPlug('Plug.Nouns.Trait.sol')
 
 export const vault = socket('Plug.Vault.Socket.sol')
 
-export const constantContracts = [factory, treasury]
-export const etchContracts: Array<Contract> = [
+export const constantContracts: Readonly<Array<Contract>> = [factory] as const
+export const etchContracts: Readonly<Array<Contract>> = [
     // ! Bases
     router,
     factory,

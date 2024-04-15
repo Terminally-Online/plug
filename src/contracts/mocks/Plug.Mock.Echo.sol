@@ -26,11 +26,7 @@ contract PlugMockEcho {
     /**
      * @notice A mock function for testing the framework.
      */
-    function mutedEcho(uint256 $echo)
-        external
-        pure
-        returns (uint256 $slot)
-    {
+    function mutedEcho(uint256 $echo) external pure returns (uint256 $slot) {
         if ($echo % 8 == 0) {
             $slot = 1;
         }
