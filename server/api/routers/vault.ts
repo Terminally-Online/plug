@@ -1,3 +1,4 @@
+import { bytesToHex, encodePacked, toBytes } from "viem"
 import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
@@ -15,7 +16,69 @@ const events = {
 export const vault = Prisma.validator<Prisma.VaultDefaultArgs>()({})
 export type Vault = Prisma.VaultGetPayload<typeof vault>
 
+const CURRENT_IMPLEMENTATION_VERSION = 0
+
+const FACTORY_ADDRESS = ""
+const FACTORY_ABI = []
+
 export default createTRPCRouter({
+	// NOTE: Get the next address that a vault will be deployed at.
+	address: protectedProcedure.query(async ({ ctx }) => {
+		const { nextVaultSalt, nextVaultAddress } = await ctx.db.user.upsert(
+			{
+				where: {
+					id: ctx.session.address
+				},
+				update: {},
+				create: {
+					id: ctx.session.address
+				}
+			}
+		)
+
+		if (!nextVaultSalt || !nextVaultAddress) {
+			// * Need to cast the type to be viem compatible.
+			const salt: string = bytesToHex(
+				toBytes(
+					encodePacked(
+						["address", "uint80", "uint16"],
+						[
+							ctx.session.address as `0x${string}`,
+							BigInt(Date.now() / 1000),
+							CURRENT_IMPLEMENTATION_VERSION
+						]
+					),
+					{ size: 32 }
+				)
+			)
+
+			// TODO: Need to call into the contract to get the next
+			//		 address that will be deployed.
+			const address = ""
+
+			// TODO: Save the address and salt to the database.
+			await ctx.db.user.update(
+				{
+					where: {
+						id: ctx.session.address
+					},
+					data: {
+						id: ctx.session.address,
+						nextVaultSalt: salt,
+						nextVaultAddress: address
+					}
+				}
+			)
+
+			return { salt, address }
+		}
+
+		return {
+			salt: nextVaultSalt,
+			address: nextVaultAddress
+		}
+	}),
+
 	all: protectedProcedure.query(async ({ ctx }) => {
 		try {
 			return await ctx.db.vault.findMany({
@@ -76,17 +139,6 @@ export default createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			try {
 				const { address, chainIds, lastBlockIndexed } = input
-
-				// Make sure the owner field exists.
-				await ctx.db.address.upsert({
-					where: {
-						id: ctx.session.address
-					},
-					update: {},
-					create: {
-						id: ctx.session.address
-					}
-				})
 
 				const vaultsPromises = chainIds.map(async chainId => {
 					return await ctx.db.vault.create({

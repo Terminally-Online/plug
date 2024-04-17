@@ -1,192 +1,158 @@
-//🧩Don't Edit this file.✨Generated in Thu Mar 28 2024 22:52:03 GMT-0500 (Central Daylight Time)✨
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String?     @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  canvases      Canvas[]
-  selecting     Component[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Component {
-  id String @id @default(uuid())
-
-  top    Float
-  left   Float
-  width  Float
-  height Float
-
-  selecting   User?   @relation(fields: [selectingId], references: [id])
-  selectingId String?
-
-  content   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Canvas   Canvas? @relation(fields: [canvasId], references: [id])
-  canvasId String?
-}
-
-model Canvas {
-  id        String   @id @default(uuid())
-  name      String   @default("Untitled Canvas")
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  public    Boolean  @default(false)
-  color     String   @default("#ff4700")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  components Component[]
-}
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+   provider        = "prisma-client-js"
+   previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
-
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
 }
 
-model Address {
-  id String @id
+// Authentication models.
+model User {
+    // `.id` is actually the wallet address of the user.
+    id            String      @id @default(cuid())
+    name          String?
+    email         String?     @unique
+    emailVerified DateTime?
+    image         String?
+    
+    vaults        Vault[]
+    canvases      Canvas[]
+    selecting     Component[]
 
-  vaults Vault[]
+    nextVaultSalt String?
+    nextVaultAddress String?
 }
 
+// Protocol models.
 model Chain {
-  id Int @id
+    id Int @id
+    name String?
 
-  vaults Vault[]
+    vaults Vault[]
 }
 
 model Vault {
-  address String
-  chain   Chain  @relation(fields: [chainId], references: [id])
-  chainId Int
+    address String
+    chain   Chain  @relation(fields: [chainId], references: [id])
+    chainId Int
 
-  name String
+    name String
 
-  lastBlockIndexed Int
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+    lastBlockIndexed Int
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
 
-  livePlugs LivePlugs[]
+    livePlugs    LivePlugs[]
 
-  owner        Address @relation(fields: [ownerAddress], references: [id])
-  ownerAddress String
+    owner        User     @relation(fields: [ownerAddress], references: [id])
+    ownerAddress String
 
-  @@unique([address, chainId])
+    @@unique([address, chainId])
 }
 
 model Domain {
-  verifyingContract String
-  name              String
-  version           String
-  chainId           Int
-  LivePlugs         LivePlugs[]
+    verifyingContract String
+    name              String
+    version           String
+    chainId           Int
+    LivePlugs         LivePlugs[]
 
-  @@id([verifyingContract, name, version, chainId])
+    @@id([verifyingContract, name, version, chainId])
 }
 
 model Current {
-  name String
-  type String
-  data String
+    name String
+    type String
+    data String
 
-  plugs Plug[]
+    plugs Plug[]
 
-  @@id([name, type, data])
+    @@id([name, type, data])
 }
 
 model Fuse {
-  target String
-  data   String
+    target String
+    data   String
 
-  plug   Plug?   @relation(fields: [plugId], references: [id])
-  plugId String?
+    plug   Plug?   @relation(fields: [plugId], references: [id])
+    plugId String?
 
-  @@id([target, data])
+    @@id([target, data])
 }
 
 model Plug {
-  id      String  @id @default(uuid())
-  current Current @relation(fields: [currentName, currentType, currentData], references: [name, type, data])
-  fuses   Fuse[]
+    id      String  @id @default(uuid())
+    current Current @relation(fields: [currentName, currentType, currentData], references: [name, type, data])
+    fuses   Fuse[]
 
-  currentName String
-  currentType String
-  currentData String
+    currentName String
+    currentType String
+    currentData String
 
-  Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
-  plugsId String?
+    Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
+    plugsId String?
 }
 
 model Plugs {
-  id String @id @default(uuid())
+    id String @id @default(uuid())
 
-  socket               String
-  plugs                Plug[]
-  salt                 String
-  fee                  Int
-  maxFeePerGas         Int
-  maxPriorityFeePerGas Int
-  executor             String
+    socket               String
+    plugs                Plug[]
+    salt                 String
+    fee                  Int
+    maxFeePerGas         Int
+    maxPriorityFeePerGas Int
+    executor             String
 
-  LivePlugs LivePlugs[]
+    LivePlugs LivePlugs[]
 }
 
 model LivePlugs {
-  domain Domain @relation(fields: [address, name, version, chainId], references: [verifyingContract, name, version, chainId])
-  vault  Vault  @relation(fields: [address, chainId], references: [address, chainId])
+    domain Domain @relation(fields: [address, name, version, chainId], references: [verifyingContract, name, version, chainId])
+    vault  Vault  @relation(fields: [address, chainId], references: [address, chainId])
 
-  plugs   Plugs  @relation(fields: [plugsId], references: [id])
-  plugsId String
+    plugs   Plugs  @relation(fields: [plugsId], references: [id])
+    plugsId String
 
-  name      String
-  version   String
-  chainId   Int
-  address   String
-  signature String
+    name      String
+    version   String
+    chainId   Int
+    address   String
+    signature String
 
-  @@id([plugsId, address])
+    @@id([plugsId, address])
+}
+
+// Application models.
+model Component {
+    id String @id @default(uuid())
+
+    top    Float
+    left   Float
+    width  Float
+    height Float
+
+    selecting   User?   @relation(fields: [selectingId], references: [id])
+    selectingId String?
+
+    content   Json
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    Canvas   Canvas? @relation(fields: [canvasId], references: [id])
+    canvasId String?
+}
+
+model Canvas {
+    id        String   @id @default(uuid())
+    name      String   @default("Untitled Canvas")
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    public    Boolean  @default(false)
+    color     String   @default("#ff4700")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    components Component[]
 }

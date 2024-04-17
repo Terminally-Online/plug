@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { useChainId, useSwitchChain } from "wagmi"
+import { useSwitchChain } from "wagmi"
 
 import {
 	ArrowRightIcon,
@@ -29,7 +29,6 @@ export const Balance: FC<
 	PropsWithChildren & { direction: 1 | -1; action: string }
 > = ({ direction, action }) => {
 	const address = "0x62180042606624f02d8a130da8a3171e9b33894d"
-	const connectedChainId = useChainId()
 	const { switchChain } = useSwitchChain()
 
 	const { accessible, chainId, domain, handleDomain } = useDomain()
