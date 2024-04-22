@@ -10,9 +10,31 @@ import { PlugConnectorInterface } from "../interfaces/Plug.Connector.Interface.s
 
 /**
  * @title PlugCore
+ * @notice The core logic for executing Plugs and managing the state of the
+ *         Plugs that are being executed. All execution logic is handled
+ *         through the bundled transactions except for revocation as all
+ *         executions should have the capability to be revoked.
  * @author @nftchance (chance@onplug.io)
  */
 abstract contract PlugCore is PlugTypes {
+    /// @dev Keep track of which Plugs have been revoked.
+    mapping(bytes32 => bool) public isRevoked;
+
+    /**
+     * @notice Manage the revocation state of a bundle of Plugs.
+     * @param $plugsHash The hash of the Plugs to revoke.
+     * @param $isRevoked The state to set the Plugs to.
+     */
+    function _revoke(bytes32 $plugsHash, bool $isRevoked) internal {
+        /// @dev Update the internal state of the Plugs to reflect
+        ///      the expected revocation state.
+        isRevoked[$plugsHash] = $isRevoked;
+
+        /// @dev Announce an update of the revocation state to make in-app
+        ///      management straightforward.
+        emit PlugLib.PlugsRevocationUpdated($plugsHash, $isRevoked);
+    }
+
     /**
      * @notice Execute a bundle of Plugs.
      * @param $plugs The Plugs to execute containing the bundle and side effects.
@@ -31,6 +53,10 @@ abstract contract PlugCore is PlugTypes {
         /// @dev Hash the body of the object to ensure the integrity of
         ///      the (bundle of) Plugs that are being executed.
         bytes32 plugsHash = getPlugsHash($plugs);
+
+        /// @dev Revert if the Plugs have been revoked before executing,
+        ///      otherwise allow processing to continue.
+        if (isRevoked[plugsHash]) revert PlugLib.PlugsRevoked();
 
         /// @dev Load the Plug stack into memory for cheaper access.
         uint256 length = $plugs.plugs.length;
@@ -121,5 +147,7 @@ abstract contract PlugCore is PlugTypes {
                 revert PlugLib.CompensationFailed(solver, value);
             }
         }
+
+        emit PlugLib.PlugsExecuted(plugsHash, $results);
     }
 }

@@ -41,4 +41,13 @@ interface PlugSocketInterface {
         external
         payable
         returns (PlugTypesLib.Result[] memory $results);
+
+    /**
+     * @notice Revoke a bundle of Plugs to prevent future use.
+     * @dev This function must be implemented in non-abstract implementations
+     *      of the Socket so that revocation is always allowed.
+     * @param $plugsHash The hash of the Plugs to revoke.
+     * @param $isRevoked The state to set the Plugs to.
+     */
+    function revoke(bytes32 $plugsHash, bool $isRevoked) external;
 }

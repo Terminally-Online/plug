@@ -1131,57 +1131,6 @@ export const plugNounsTraitAbi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PlugRevocation
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const plugRevocationAbi = [
-  {
-    type: 'function',
-    inputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
-    name: 'decode',
-    outputs: [{ name: '$sender', internalType: 'address', type: 'address' }],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '$sender', internalType: 'address', type: 'address' }],
-    name: 'encode',
-    outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
-    stateMutability: 'pure',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$terms', internalType: 'bytes', type: 'bytes' },
-      { name: '$plugsHash', internalType: 'bytes32', type: 'bytes32' },
-    ],
-    name: 'enforce',
-    outputs: [],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-    ],
-    name: 'isRevoked',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$plugsHash', internalType: 'bytes32', type: 'bytes32' },
-      { name: '$revoked', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'revoke',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PlugTimestamp
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1608,6 +1557,13 @@ export const plugVaultSocketAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'isRevoked',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_hash', internalType: 'bytes32', type: 'bytes32' },
       { name: '_signatures', internalType: 'bytes', type: 'bytes' },
@@ -1742,6 +1698,16 @@ export const plugVaultSocketAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '$plugsHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: '$isRevoked', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'revoke',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'router',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -1827,6 +1793,43 @@ export const plugVaultSocketAbi = [
       },
     ],
     name: 'ImageHashUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '$plugsHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: '$results',
+        internalType: 'struct PlugTypesLib.Result[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'success', internalType: 'bool', type: 'bool' },
+          { name: 'result', internalType: 'bytes', type: 'bytes' },
+        ],
+        indexed: false,
+      },
+    ],
+    name: 'PlugsExecuted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '$plugsHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      { name: '$revoked', internalType: 'bool', type: 'bool', indexed: true },
+    ],
+    name: 'PlugsRevocationUpdated',
   },
   {
     type: 'event',
@@ -1942,6 +1945,7 @@ export const plugVaultSocketAbi = [
     name: 'OnlySelfAuth',
   },
   { type: 'error', inputs: [], name: 'PlugFailed' },
+  { type: 'error', inputs: [], name: 'PlugsRevoked' },
   { type: 'error', inputs: [], name: 'Reentrancy' },
   {
     type: 'error',
@@ -2900,76 +2904,6 @@ export const useReadPlugNounsTraitNounTrait =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugRevocationAbi}__
- */
-export const useReadPlugRevocation = /*#__PURE__*/ createUseReadContract({
-  abi: plugRevocationAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"decode"`
- */
-export const useReadPlugRevocationDecode = /*#__PURE__*/ createUseReadContract({
-  abi: plugRevocationAbi,
-  functionName: 'decode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"encode"`
- */
-export const useReadPlugRevocationEncode = /*#__PURE__*/ createUseReadContract({
-  abi: plugRevocationAbi,
-  functionName: 'encode',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"enforce"`
- */
-export const useReadPlugRevocationEnforce = /*#__PURE__*/ createUseReadContract(
-  { abi: plugRevocationAbi, functionName: 'enforce' },
-)
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"isRevoked"`
- */
-export const useReadPlugRevocationIsRevoked =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugRevocationAbi,
-    functionName: 'isRevoked',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugRevocationAbi}__
- */
-export const useWritePlugRevocation = /*#__PURE__*/ createUseWriteContract({
-  abi: plugRevocationAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"revoke"`
- */
-export const useWritePlugRevocationRevoke =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugRevocationAbi,
-    functionName: 'revoke',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugRevocationAbi}__
- */
-export const useSimulatePlugRevocation =
-  /*#__PURE__*/ createUseSimulateContract({ abi: plugRevocationAbi })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugRevocationAbi}__ and `functionName` set to `"revoke"`
- */
-export const useSimulatePlugRevocationRevoke =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugRevocationAbi,
-    functionName: 'revoke',
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugTimestampAbi}__
  */
 export const useReadPlugTimestamp = /*#__PURE__*/ createUseReadContract({
@@ -3383,6 +3317,15 @@ export const useReadPlugVaultSocketImageHash =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"isRevoked"`
+ */
+export const useReadPlugVaultSocketIsRevoked =
+  /*#__PURE__*/ createUseReadContract({
+    abi: plugVaultSocketAbi,
+    functionName: 'isRevoked',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"isValidSignature"`
  */
 export const useReadPlugVaultSocketIsValidSignature =
@@ -3499,6 +3442,15 @@ export const useWritePlugVaultSocketPlug = /*#__PURE__*/ createUseWriteContract(
 )
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"revoke"`
+ */
+export const useWritePlugVaultSocketRevoke =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: plugVaultSocketAbi,
+    functionName: 'revoke',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useWritePlugVaultSocketTransferOwnership =
@@ -3550,6 +3502,15 @@ export const useSimulatePlugVaultSocketPlug =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"revoke"`
+ */
+export const useSimulatePlugVaultSocketRevoke =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plugVaultSocketAbi,
+    functionName: 'revoke',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useSimulatePlugVaultSocketTransferOwnership =
@@ -3589,6 +3550,24 @@ export const useWatchPlugVaultSocketImageHashUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: plugVaultSocketAbi,
     eventName: 'ImageHashUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `eventName` set to `"PlugsExecuted"`
+ */
+export const useWatchPlugVaultSocketPlugsExecutedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plugVaultSocketAbi,
+    eventName: 'PlugsExecuted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugVaultSocketAbi}__ and `eventName` set to `"PlugsRevocationUpdated"`
+ */
+export const useWatchPlugVaultSocketPlugsRevocationUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plugVaultSocketAbi,
+    eventName: 'PlugsRevocationUpdated',
   })
 
 /**

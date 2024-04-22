@@ -59,10 +59,6 @@ contract PlugDeployment is Script {
         );
 
         PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_REVOCATION_SALT, PlugEtcherLib.PLUG_REVOCATION_INITCODE
-        );
-
-        PlugEtcherLib.FACTORY.safeCreate2(
             PlugEtcherLib.PLUG_TIMESTAMP_SALT, PlugEtcherLib.PLUG_TIMESTAMP_INITCODE
         );
 

@@ -95,6 +95,27 @@ contract PlugTest is Test {
         assertEq(preBalance, address(solver).balance);
     }
 
+    function testRevert_PlugEmptyEcho_ExternalSolver_NotCompensated_Revoked() public {
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
+        vm.deal(address(vault), 100 ether);
+
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray, 0, 0, solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
+
+        bytes32 plugsHash = vault.getPlugsHash(plugs);
+
+        vm.prank(vault.owner());
+        vm.expectEmit(address(vault));
+        emit PlugLib.PlugsRevocationUpdated(plugsHash, true);
+        vault.revoke(plugsHash, true);
+
+        vm.expectRevert(PlugLib.PlugsRevoked.selector);
+        plug.plug(livePlugs);
+    }
+
     function test_PlugEmptyEcho_ExternalSolver_Compensated() public {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);

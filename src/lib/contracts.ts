@@ -1988,109 +1988,6 @@ export const contracts = [
         ]
     },
     {
-        "name": "PlugRevocation",
-        "abi": [
-            {
-                "type": "function",
-                "name": "decode",
-                "inputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$sender",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "encode",
-                "inputs": [
-                    {
-                        "name": "$sender",
-                        "type": "address",
-                        "internalType": "address"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$data",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    }
-                ],
-                "stateMutability": "pure"
-            },
-            {
-                "type": "function",
-                "name": "enforce",
-                "inputs": [
-                    {
-                        "name": "$terms",
-                        "type": "bytes",
-                        "internalType": "bytes"
-                    },
-                    {
-                        "name": "$plugsHash",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "isRevoked",
-                "inputs": [
-                    {
-                        "name": "",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "revoke",
-                "inputs": [
-                    {
-                        "name": "$plugsHash",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    },
-                    {
-                        "name": "$revoked",
-                        "type": "bool",
-                        "internalType": "bool"
-                    }
-                ],
-                "outputs": [],
-                "stateMutability": "nonpayable"
-            }
-        ]
-    },
-    {
         "name": "PlugTimestamp",
         "abi": [
             {
@@ -2917,6 +2814,25 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "isRevoked",
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "stateMutability": "view"
+            },
+            {
+                "type": "function",
                 "name": "isValidSignature",
                 "inputs": [
                     {
@@ -3179,6 +3095,24 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "revoke",
+                "inputs": [
+                    {
+                        "name": "$plugsHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "$isRevoked",
+                        "type": "bool",
+                        "internalType": "bool"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
                 "name": "router",
                 "inputs": [],
                 "outputs": [
@@ -3345,6 +3279,56 @@ export const contracts = [
                         "type": "bytes32",
                         "indexed": false,
                         "internalType": "bytes32"
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "PlugsExecuted",
+                "inputs": [
+                    {
+                        "name": "$plugsHash",
+                        "type": "bytes32",
+                        "indexed": true,
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "$results",
+                        "type": "tuple[]",
+                        "indexed": false,
+                        "internalType": "struct PlugTypesLib.Result[]",
+                        "components": [
+                            {
+                                "name": "success",
+                                "type": "bool",
+                                "internalType": "bool"
+                            },
+                            {
+                                "name": "result",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
+                    }
+                ],
+                "anonymous": false
+            },
+            {
+                "type": "event",
+                "name": "PlugsRevocationUpdated",
+                "inputs": [
+                    {
+                        "name": "$plugsHash",
+                        "type": "bytes32",
+                        "indexed": true,
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "$revoked",
+                        "type": "bool",
+                        "indexed": true,
+                        "internalType": "bool"
                     }
                 ],
                 "anonymous": false
@@ -3555,6 +3539,11 @@ export const contracts = [
             {
                 "type": "error",
                 "name": "PlugFailed",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "PlugsRevoked",
                 "inputs": []
             },
             {

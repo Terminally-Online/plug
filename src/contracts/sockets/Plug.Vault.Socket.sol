@@ -35,6 +35,18 @@ contract PlugVaultSocket is PlugSocket, PlugTrading, Receiver, UUPSUpgradeable {
     }
 
     /**
+     * See { PlugSocket-revoke }
+     *
+     * @notice Revocation cannot be signed and delegated to a Solver as unexpected
+     *         delay in revocation could lead to unexpected behavior. Therefore,
+     *         revocation is only allowed by the owner of the Socket.
+     */
+    function revoke(bytes32 $plugsHash, bool $isRevoked) public override onlyOwner {
+        /// @dev Utilize the core revocation functionality that blocks usage.
+        _revoke($plugsHash, $isRevoked);
+    }
+
+    /**
      * See { PlugSocket-name }
      */
     function name() public pure override returns (string memory $name) {

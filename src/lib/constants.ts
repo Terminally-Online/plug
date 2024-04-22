@@ -32,7 +32,6 @@ export const baseFee = plug('Plug.BaseFee.sol')
 export const blockNumber = plug('Plug.BlockNumber.sol')
 export const calendar = plug('Plug.Calendar.sol')
 export const limitedCalls = plug('Plug.LimitedCalls.sol')
-export const revocation = plug('Plug.Revocation.sol')
 export const timestamp = plug('Plug.Timestamp.sol')
 
 export const fraxlend = protocolPlug('Plug.Fraxlend.APY.sol')
@@ -57,7 +56,6 @@ export const etchContracts: Readonly<Array<Contract>> = [
     blockNumber,
     calendar,
     limitedCalls,
-    revocation,
     timestamp,
     // ! Protocols
     fraxlend,

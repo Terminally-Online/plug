@@ -50,10 +50,6 @@ contract DeploymentTest is Test {
         PlugEtcherLib.plugNounsTrait();
     }
 
-    function test_PlugRevocationDeployment() public {
-        PlugEtcherLib.plugRevocation();
-    }
-
     function test_PlugTimestampDeployment() public {
         PlugEtcherLib.plugTimestamp();
     }
