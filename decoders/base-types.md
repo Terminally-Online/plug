@@ -1,6 +1,6 @@
 # Base Types
 
-`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Plugs](/generated/base-types/Plugs) and [Fuses](/generated/base-types/Fuse). Alone these types are not very useful, but together they form the foundation of the [Plug](/) framework.
+`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Plugs](/generated/base-types/Plugs). Alone Plugs are not very useful, but when signed they form the foundation of the [Plug](/) framework.
 
 ## Type Hashes
 
@@ -81,12 +81,8 @@ By default, most libraries include the `EIP712Domain` type in the signature. Thi
 
 ## Plug Types
 
-The `Plug Types` are used to define the [Plug](/generated/base-types/Plug) that is executed.
+The `Plug Types` are used to define the [Plug](/generated/base-types/Plug) that is executed:
 
-When creating new plugs you will utilize:
-
-- [Current](/generated/base-types/Current)
-- [Fuse](/generated/base-types/Fuse)
 - [Plug](/generated/base-types/Plug)
 
 When distributing new plugs you will utilize:

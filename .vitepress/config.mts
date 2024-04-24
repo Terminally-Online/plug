@@ -96,18 +96,6 @@ export default defineConfig({
             items: getItems("./generated/hash-getters"),
           },
           {
-            text: "Digest Getters",
-            link: "/decoders/digest-getters",
-            collapsed: true,
-            items: getItems("./generated/digest-getters"),
-          },
-          {
-            text: "Signer Getters",
-            link: "/decoders/signer-getters",
-            collapsed: true,
-            items: getItems("./generated/signer-getters"),
-          },
-          {
             text: "Fuses",
             link: "/core/fuses",
             collapsed: true,

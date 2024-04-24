@@ -23,8 +23,6 @@ The methods available for public interfacing are:
 While these are the two key functions for public use, there are also internal functions that meant to be overridden including:
 
 - `_enforceRouter`: Extend the validation logic of [Routers](/core/routers).
-- `_enforceSigner`: Extend the validation logic of who can be a signer.
-- `_enforceFuse`: Extend the validation logic of [Fuse](/core/fuses) conditions.
-- `_enforceCurrent`: Extend the validation logic of the executable [Currents](/generated/base-types/Current).
+- `_enforceSignature`: Extend the validation logic of what is accepted as a valid signature.
 
 With these pairings, a `Socket` can be configured to provide the precise functionality desired with ease and without needing to manipulate the core logic of the architecture.

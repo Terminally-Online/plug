@@ -1,6 +1,6 @@
-import { config } from '@nftchance/plug-types'
+import { config } from "@nftchance/plug-types";
 
 export default config({
-	out: './generated/',
-	outDocs: './generated/'
-})
+  out: "./generated/",
+  outDocs: "./generated/",
+});

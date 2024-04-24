@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@nftchance/plug-types':
-    specifier: ^0.9.13
-    version: 0.9.13(esbuild@0.20.0)
+    specifier: ^0.9.15
+    version: 0.9.15(esbuild@0.20.0)
   fs-extra:
     specifier: ^11.2.0
     version: 11.2.0
@@ -1001,16 +1001,16 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: false
 
-  /@nftchance/plug-types@0.9.13(esbuild@0.20.0):
-    resolution: {integrity: sha512-u/49J2Zyz2vlkHRNkHphKGTzEQLjgh6ccGIdDfPux5ZIXzKKYI8GpJnuLKDiF2zxdIAtkZJKy4akmjmVrkFMsw==}
+  /@nftchance/plug-types@0.9.15(esbuild@0.20.0):
+    resolution: {integrity: sha512-f4q24rbYWhU1rA9BSWprDMJd/V5h4CFk4Ki1aQdSqE5cyIjDqVlGdTCB5U6tSM6X8BCSyDXs3r0/kn3msZ5Ptg==}
     hasBin: true
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.2.5)
-      abitype: 1.0.2(zod@3.22.4)
-      bundle-require: 4.0.2(esbuild@0.20.0)
+      abitype: 1.0.2(zod@3.23.4)
+      bundle-require: 4.0.3(esbuild@0.20.0)
       commander: 12.0.0
       dedent: 1.5.3
-      ethers: 6.11.1
+      ethers: 6.12.0
       execa: 8.0.1
       find-up: 7.0.0
       fs-extra: 11.2.0
@@ -1019,7 +1019,7 @@ packages:
       prettier: 3.2.5
       solady: 0.0.188
       tsx: 4.7.2
-      zod: 3.22.4
+      zod: 3.23.4
     transitivePeerDependencies:
       - '@vue/compiler-sfc'
       - babel-plugin-macros
@@ -1275,7 +1275,7 @@ packages:
       - vue
     dev: false
 
-  /abitype@1.0.2(zod@3.22.4):
+  /abitype@1.0.2(zod@3.23.4):
     resolution: {integrity: sha512-aFt4k2H+eiAKy/zxtnORa9iIb10BMBeWL18l8v4+QuwYEBXPxxjSB1bFZCzQmKPoj8m7j68K705l3uY+E2gAjg==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -1286,7 +1286,7 @@ packages:
       zod:
         optional: true
     dependencies:
-      zod: 3.22.4
+      zod: 3.23.4
     dev: false
 
   /aes-js@4.0.0-beta.5:
@@ -1323,8 +1323,8 @@ packages:
       color-convert: 1.9.3
     dev: false
 
-  /bundle-require@4.0.2(esbuild@0.20.0):
-    resolution: {integrity: sha512-jwzPOChofl67PSTW2SGubV9HBQAhhR2i6nskiOThauo9dzwDUgOWQScFVaJkjEfYX+UXiD+LEx8EblQMc2wIag==}
+  /bundle-require@4.0.3(esbuild@0.20.0):
+    resolution: {integrity: sha512-2iscZ3fcthP2vka4Y7j277YJevwmsby/FpFDwjgw34Nl7dtCpt7zz/4TexmHMzY6KZEih7En9ImlbbgUNNQGtA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     peerDependencies:
       esbuild: '>=0.17'
@@ -1492,8 +1492,8 @@ packages:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: false
 
-  /ethers@6.11.1:
-    resolution: {integrity: sha512-mxTAE6wqJQAbp5QAe/+o+rXOID7Nw91OZXvgpjDa1r4fAbq2Nu314oEZSbjoRLacuCzs7kUC3clEvkCQowffGg==}
+  /ethers@6.12.0:
+    resolution: {integrity: sha512-zL5NlOTjML239gIvtVJuaSk0N9GQLi1Hom3ZWUszE5lDTQE/IVB62mrPkQ2W1bGcZwVGSLaetQbWNQSvI4rGDQ==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
@@ -2004,6 +2004,6 @@ packages:
     engines: {node: '>=12.20'}
     dev: false
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+  /zod@3.23.4:
+    resolution: {integrity: sha512-/AtWOKbBgjzEYYQRNfoGKHObgfAZag6qUJX1VbHo2PRBgS+wfWagEY2mizjfyAPcGesrJOcx/wcl0L9WnVrHFw==}
     dev: false
