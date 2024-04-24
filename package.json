@@ -1,6 +1,6 @@
 {
     "name": "@nftchance/plug-docs",
-    "license": "MIT",
+    "license": "BUSL-1.1",
     "scripts": {
         "generate": "rm -rf ./generated/ && pnpm plug docs",
         "dev": "pnpm generate && vitepress dev",
@@ -8,7 +8,7 @@
         "preview": "vitepress preview"
     },
     "dependencies": {
-        "@nftchance/plug-types": "^0.9.2",
+        "@nftchance/plug-types": "^0.9.13",
         "fs-extra": "^11.2.0",
         "pathe": "^1.1.2",
         "vitepress": "^1.0.0-rc.24",
