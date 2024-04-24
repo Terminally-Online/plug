@@ -3113,6 +3113,24 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "revoke",
+                "inputs": [
+                    {
+                        "name": "$plugsHash",
+                        "type": "bytes32[]",
+                        "internalType": "bytes32[]"
+                    },
+                    {
+                        "name": "$isRevoked",
+                        "type": "bool[]",
+                        "internalType": "bool[]"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
                 "name": "router",
                 "inputs": [],
                 "outputs": [

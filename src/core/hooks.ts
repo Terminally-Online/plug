@@ -1708,6 +1708,16 @@ export const plugVaultSocketAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '$plugsHash', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '$isRevoked', internalType: 'bool[]', type: 'bool[]' },
+    ],
+    name: 'revoke',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'router',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
