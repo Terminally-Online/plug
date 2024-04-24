@@ -95,7 +95,7 @@ contract PlugTest is Test {
         assertEq(preBalance, address(solver).balance);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalSolver_NotCompensated_Revoked() public {
+    function testRevert_PlugEmptyEcho_ExternalSolver_NotCompensated_Revocation() public {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
         vm.deal(address(vault), 100 ether);
@@ -112,6 +112,40 @@ contract PlugTest is Test {
         emit PlugLib.PlugsRevocationUpdated(plugsHash, true);
         vault.revoke(plugsHash, true);
 
+        vm.expectRevert(PlugLib.PlugsRevoked.selector);
+        plug.plug(livePlugs);
+    }
+
+    function test_PlugRevocation_Solved_And_Revoked() public {
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
+        vm.deal(address(vault), 100 ether);
+
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray, 0, 0, solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
+
+        bytes32 plugsHash = vault.getPlugsHash(plugs);
+
+        PlugTypesLib.Plug[] memory revocationPlugsArray = new PlugTypesLib.Plug[](1);
+
+        bytes4 revokeSelector = bytes4(keccak256("revoke(bytes32,bool)"));
+        revocationPlugsArray[0] = createPlug(
+            address(vault),
+            PLUG_NO_VALUE,
+            abi.encodeWithSelector(revokeSelector, plugsHash, true),
+            PLUG_EXECUTION
+        );
+        PlugTypesLib.Plugs memory revocationPlugs = createPlugs(revocationPlugsArray, 0, 0, solver);
+        PlugTypesLib.LivePlugs memory revocationLivePlugs = createLivePlugs(revocationPlugs);
+
+        vm.prank(solver);
+        vm.expectEmit(address(vault));
+        emit PlugLib.PlugsRevocationUpdated(plugsHash, true);
+        plug.plug(revocationLivePlugs);
+
+        vm.prank(solver);
         vm.expectRevert(PlugLib.PlugsRevoked.selector);
         plug.plug(livePlugs);
     }
