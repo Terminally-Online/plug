@@ -9,6 +9,12 @@ To utilize this repository there are a few dependencies you must have installed:
 └─ pnpm — "Efficient package manager for Node modules."
 ```
 
+To get started you must run:
+
+```bash
+pnpm i
+```
+
 To generate a suite of assets you will run:
 
 ```bash
