@@ -1,0 +1,18 @@
+{
+  "name": "pitch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate": "tsx index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.3",
+    "tsx": "^4.7.3"
+  }
+}
