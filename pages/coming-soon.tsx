@@ -17,7 +17,7 @@ const Page = () => {
 				</h1>
 
 				<p className="max-w-[320px] text-center text-black/65">
-					You've found a section that is still under construction.
+					You have found a section that is still under construction.
 					Check back soon for updates.
 				</p>
 

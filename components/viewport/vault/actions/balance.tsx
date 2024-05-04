@@ -60,7 +60,7 @@ export const Balance: FC<
 		// * We only switch when it is a deposit because a withdrawal will be
 		//	 executed through an intent instead of a transaction.
 		return direction === 1 && chainId !== domain.chain.id
-	}, [chainId, domain.chain.id])
+	}, [direction, chainId, domain.chain.id])
 
 	return (
 		<div className="flex h-full flex-col">

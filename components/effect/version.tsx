@@ -28,7 +28,7 @@ export const Version: FC = () => {
 			repeatDelay
 		})
 		return controls.stop
-	}, [])
+	}, [major])
 
 	useEffect(() => {
 		const controls = animate(minor, 45, {
@@ -39,7 +39,7 @@ export const Version: FC = () => {
 			repeatDelay
 		})
 		return controls.stop
-	}, [])
+	}, [minor])
 
 	useEffect(() => {
 		const controls = animate(patch, 23, {
@@ -50,7 +50,7 @@ export const Version: FC = () => {
 			repeatDelay
 		})
 		return controls.stop
-	}, [])
+	}, [patch])
 
 	return (
 		<div className="w-full px-8 pt-8 text-right">
