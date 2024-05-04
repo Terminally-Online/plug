@@ -62,12 +62,6 @@ export const Footer: FC = () => (
 						Brand Kit
 					</a>
 					<a
-						href={routes.vision}
-						className="opacity-60 transition-opacity duration-200 hover:opacity-100"
-					>
-						Vision
-					</a>
-					<a
 						href={routes.comingSoon}
 						className="opacity-60 transition-opacity duration-200 hover:opacity-100"
 					>
