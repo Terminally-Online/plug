@@ -26,6 +26,18 @@ export default function Document() {
 				<meta name="msapplication-TileColor" content="#da532c" />
 				<meta name="theme-color" content="#ffffff" />
 
+				{/* Basic Meta */}
+				<meta charSet="utf-8" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1"
+				/>
+				<meta
+					name="description"
+					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
+				/>
+				<title>Plug</title>
+
 				{/* Open Graph */}
 				<meta property="og:title" content="Plug" />
 				<meta property="og:type" content="website" />
