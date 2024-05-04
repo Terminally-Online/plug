@@ -123,7 +123,7 @@ const Steps = () => (
 		<StepCard
 			index={1}
 			title="Set Rules"
-			description="When using Plug all you have to do is setup your transactions and sign a gasless signature that contains."
+			description="Choose a set of conditions to determine when your transaction can be executed."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5, delay: 0.5 }}
@@ -133,7 +133,7 @@ const Steps = () => (
 		<StepCard
 			index={2}
 			title="Define Actions"
-			description="When using Plug all you have to do is setup your transactions and sign a gasless signature that contains."
+			description="Bundle the actions that will automatically execute once all of your rules are satisfied."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5, delay: 1 }}
@@ -143,7 +143,7 @@ const Steps = () => (
 		<StepCard
 			index={3}
 			title="Declare Intent"
-			description="When using Plug all you have to do is setup your transactions and sign a gasless signature that contains."
+			description="Sign a gasless signature to signal your intent of execution then sit back and relax."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5, delay: 1.5 }}
@@ -169,11 +169,10 @@ const Templates = () => {
 	return (
 		<Container className="my-[90px] flex-col items-center gap-4 lg:my-[180px]">
 			<h2 className="text-center text-[28px] font-bold lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
-				Get started in seconds with these templates
+				Start today with best-practice templates
 			</h2>
 			<p className="text-center text-[18px] font-light opacity-40 lg:w-[45%] lg:text-[24px]">
-				Create your own Plugs or build on top of the strategies of
-				industry experts and reclaim countless hours of your time.
+				Automate your recurring transactions, setup scheduled actions, build on top of the strategies of industry experts and reclaim countless hours of your time.
 			</p>
 
 			<div className="grid grid-cols-1 lg:grid-cols-12">
@@ -189,7 +188,7 @@ const Templates = () => {
 							size="lg"
 							color={
 								Object.keys(colors)[
-									index % Object.keys(colors).length
+								index % Object.keys(colors).length
 								] as keyof typeof colors
 							}
 							glow={true}
@@ -228,15 +227,15 @@ const Value = () => {
 			background:
 				active === true
 					? [
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
-							"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
-						]
+						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
+						"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
+						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
+					]
 					: [
-							"rgba(217,217,217,0)",
-							"rgba(217,217,217,0.4)",
-							"rgba(217,217,217,0)"
-						]
+						"rgba(217,217,217,0)",
+						"rgba(217,217,217,0.4)",
+						"rgba(217,217,217,0)"
+					]
 		},
 		transition: {
 			duration: 0.25,
@@ -279,7 +278,7 @@ const Value = () => {
 									height: [
 										10,
 										20 * 2 ** (0.04 * (index / 2) * 8) +
-											Math.random() * 40
+										Math.random() * 40
 									]
 								}}
 								transition={{
