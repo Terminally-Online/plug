@@ -1,17 +1,9 @@
 import type { FC, PropsWithChildren } from "react"
-import { useEffect, useRef } from "react"
-
-import { SewingPinIcon } from "@radix-ui/react-icons"
-
-import { api } from "@/lib/api"
-import { useDebounce } from "@/lib/hooks/useDebounce"
-import CanvasStore from "@/lib/store"
-
-import { Input } from "../ui/input"
 
 export type ToolbarProps = { id: string; name: string }
 
 export const Toolbar: FC<PropsWithChildren<ToolbarProps>> = ({ id, name }) => {
+	return <></>
 	// const rightSideRef = useRef<HTMLDivElement>(null)
 	//
 	// const { debounce, value, debounced } = useDebounce({ initial: name })
