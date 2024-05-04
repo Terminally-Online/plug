@@ -209,6 +209,29 @@ const boomer = async (email: string) => {
         `./outputs/${email !== "" ? email : "default"}/vision.pdf`
     );
 
+    // use ffmpeg to create a gif from the images
+    exec(
+        `ffmpeg -y -framerate 1 -start_number 2 -i './outputs/${
+            email !== "" ? email : "default"
+        }/boomer-images/${finalDeckHash}/%d.png' -vf "palettegen=stats_mode=full" './outputs/${
+            email !== "" ? email : "default"
+        }/boomer-images/${finalDeckHash}/palette.png' && ffmpeg -y -framerate 1 -start_number 2 -i './outputs/${
+            email !== "" ? email : "default"
+        }/boomer-images/${finalDeckHash}/%d.png' -i './outputs/${
+            email !== "" ? email : "default"
+        }/boomer-images/${finalDeckHash}/palette.png' -filter_complex "[0:v]fps=1,setpts=16.0*PTS[v];[v][1:v]paletteuse=dither=bayer:bayer_scale=5" './outputs/${
+            email !== "" ? email : "default"
+        }/deck.gif'`,
+        (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+        }
+    );
+
     console.log(`Deck generated:
     for: ${email}
     path (cmd + click to open): ${absolutePath}
@@ -239,7 +262,7 @@ const onePager = async (email: string) => {
             page.doc.context.obj({
                 Type: "Annot",
                 Subtype: "Link",
-                Rect: [0, 0, image.width, 41],
+                Rect: [0, 0, image.width, 41 * 4],
                 C: [0, 0, 1],
                 A: {
                     Type: "Action",
