@@ -59,7 +59,8 @@ export const Viewport: FC<ViewportProps> = ({ id }) => {
 			onPointerMove={handlerPointerMove}
 		>
 			<Suspense fallback={<div>Loading...</div>}>
-				<Canvas frame={frame} id={id} />
+				{/*<Canvas frame={frame} id={id} />*/}
+				<></>
 			</Suspense>
 		</div>
 	)
