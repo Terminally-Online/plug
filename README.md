@@ -20,7 +20,7 @@ To generate a suite of assets you will run:
 ```bash
 pnpm generate
 or
-pnpm generate <email>
+pnpm generate <watermark>
 ```
 
 When doing this, you will be met with a:
