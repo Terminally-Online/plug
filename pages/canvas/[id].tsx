@@ -13,7 +13,8 @@ type PageProps = {
 const Page: NextPageWithLayout<
 	InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ id }) => {
-	return <Viewport id={id} />
+	// return <Viewport id={id} />
+	return <></>
 }
 
 export const getServerSideProps = (async context => {
