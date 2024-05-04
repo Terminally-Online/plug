@@ -24,17 +24,15 @@ const FACTORY_ABI = []
 export default createTRPCRouter({
 	// NOTE: Get the next address that a vault will be deployed at.
 	address: protectedProcedure.query(async ({ ctx }) => {
-		const { nextVaultSalt, nextVaultAddress } = await ctx.db.user.upsert(
-			{
-				where: {
-					id: ctx.session.address
-				},
-				update: {},
-				create: {
-					id: ctx.session.address
-				}
+		const { nextVaultSalt, nextVaultAddress } = await ctx.db.user.upsert({
+			where: {
+				id: ctx.session.address
+			},
+			update: {},
+			create: {
+				id: ctx.session.address
 			}
-		)
+		})
 
 		if (!nextVaultSalt || !nextVaultAddress) {
 			// * Need to cast the type to be viem compatible.
@@ -57,18 +55,16 @@ export default createTRPCRouter({
 			const address = ""
 
 			// TODO: Save the address and salt to the database.
-			await ctx.db.user.update(
-				{
-					where: {
-						id: ctx.session.address
-					},
-					data: {
-						id: ctx.session.address,
-						nextVaultSalt: salt,
-						nextVaultAddress: address
-					}
+			await ctx.db.user.update({
+				where: {
+					id: ctx.session.address
+				},
+				data: {
+					id: ctx.session.address,
+					nextVaultSalt: salt,
+					nextVaultAddress: address
 				}
-			)
+			})
 
 			return { salt, address }
 		}
