@@ -25,6 +25,17 @@ const nextConfig = {
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
 		return config
+	},
+	async redirects() {
+		return [
+			{
+				source: "/waitlist",
+				destination:
+					"https://docs.google.com/forms/d/e/1FAIpQLSf4ttqF5PizhP_F2jHBGTuaH-q6YunG4PkUcaK8JRhljXg5oQ/viewform",
+				permanent: false,
+				basePath: false
+			}
+		]
 	}
 }
 
