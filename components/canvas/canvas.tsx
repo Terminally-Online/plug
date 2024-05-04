@@ -16,99 +16,100 @@ export type CanvasProps = {
 
 // * This component manages the base canvas and handles the addition of a new component.
 export const Canvas: FC<CanvasProps> = ({ id }) => {
-	const { handleAdd } = useTabs()
-
-	const [initialCanvas] = api.canvas.get.useSuspenseQuery(id)
-	const [canvas, setCanvas] = useState(initialCanvas)
-	const [gridSize, setGridSize] = useState(30)
-
-	api.canvas.onUpdate.useSubscription(undefined, {
-		onData(canvas) {
-			setCanvas(canvas)
-		}
-	})
-
-	const addComponent = api.canvas.component.add.useMutation({
-		onSuccess(component) {
-			setCanvas(previousCanvas => {
-				return {
-					...previousCanvas,
-					components: [...previousCanvas.components, component]
-				}
-			})
-		}
-	})
-
-	const components = useMemo(() => {
-		return canvas.components.reduce(
-			(acc, component) => {
-				acc[component.id] = component
-				return acc
-			},
-			{} as Record<string, (typeof canvas.components)[0]>
-		)
-	}, [canvas])
-
-	const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-		const isShiftClick = e.shiftKey
-		const isCtrlClick = e.ctrlKey
-		const isCommandClick = e.metaKey
-		const isAltClick = e.altKey
-
-		const ready =
-			isShiftClick || isCommandClick || isCtrlClick || isAltClick
-
-		if (!ready) return
-
-		// TODO: This is not right :)
-		const top =
-			-70 + Math.round(CanvasStore.pointer.y / gridSize) * gridSize
-		const left =
-			-10 + Math.round(CanvasStore.pointer.x / gridSize) * gridSize
-
-		addComponent.mutate({
-			id,
-			component: {
-				left,
-				top,
-				width: gridSize * 12 - 1,
-				height: gridSize * 4 - 1,
-				content: ""
-			}
-		})
-	}
-
-	useEffect(() => {
-		if (!canvas) return
-
-		handleAdd({
-			label: canvas.name,
-			color: canvas.color,
-			href: `/canvas/${canvas.id}`,
-			active: true
-		})
-	}, [canvas, handleAdd])
-
-	if (!canvas) return null
-
-	return (
-		<>
-			<Scaler onClick={handleClick}>
-				<Grid size={gridSize} onSizeChange={setGridSize}>
-					<DraggableComponents
-						id={id}
-						initialComponents={components}
-						gridSize={gridSize}
-						activationConstraint={{
-							distance: { x: 3, y: 3 }
-						}}
-					/>
-				</Grid>
-			</Scaler>
-
-			<Toolbar id={id} name={canvas.name} />
-		</>
-	)
+	return <></>
+	// const { handleAdd } = useTabs()
+	//
+	// const [initialCanvas] = api.canvas.get.useSuspenseQuery(id)
+	// const [canvas, setCanvas] = useState(initialCanvas)
+	// const [gridSize, setGridSize] = useState(30)
+	//
+	// api.canvas.onUpdate.useSubscription(undefined, {
+	// 	onData(canvas) {
+	// 		setCanvas(canvas)
+	// 	}
+	// })
+	//
+	// const addComponent = api.canvas.component.add.useMutation({
+	// 	onSuccess(component) {
+	// 		setCanvas(previousCanvas => {
+	// 			return {
+	// 				...previousCanvas,
+	// 				components: [...previousCanvas.components, component]
+	// 			}
+	// 		})
+	// 	}
+	// })
+	//
+	// const components = useMemo(() => {
+	// 	return canvas.components.reduce(
+	// 		(acc, component) => {
+	// 			acc[component.id] = component
+	// 			return acc
+	// 		},
+	// 		{} as Record<string, (typeof canvas.components)[0]>
+	// 	)
+	// }, [canvas])
+	//
+	// const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+	// 	const isShiftClick = e.shiftKey
+	// 	const isCtrlClick = e.ctrlKey
+	// 	const isCommandClick = e.metaKey
+	// 	const isAltClick = e.altKey
+	//
+	// 	const ready =
+	// 		isShiftClick || isCommandClick || isCtrlClick || isAltClick
+	//
+	// 	if (!ready) return
+	//
+	// 	// TODO: This is not right :)
+	// 	const top =
+	// 		-70 + Math.round(CanvasStore.pointer.y / gridSize) * gridSize
+	// 	const left =
+	// 		-10 + Math.round(CanvasStore.pointer.x / gridSize) * gridSize
+	//
+	// 	addComponent.mutate({
+	// 		id,
+	// 		component: {
+	// 			left,
+	// 			top,
+	// 			width: gridSize * 12 - 1,
+	// 			height: gridSize * 4 - 1,
+	// 			content: ""
+	// 		}
+	// 	})
+	// }
+	//
+	// useEffect(() => {
+	// 	if (!canvas) return
+	//
+	// 	handleAdd({
+	// 		label: canvas.name,
+	// 		color: canvas.color,
+	// 		href: `/canvas/${canvas.id}`,
+	// 		active: true
+	// 	})
+	// }, [canvas, handleAdd])
+	//
+	// if (!canvas) return null
+	//
+	// return (
+	// 	<>
+	// 		<Scaler onClick={handleClick}>
+	// 			<Grid size={gridSize} onSizeChange={setGridSize}>
+	// 				<DraggableComponents
+	// 					id={id}
+	// 					initialComponents={components}
+	// 					gridSize={gridSize}
+	// 					activationConstraint={{
+	// 						distance: { x: 3, y: 3 }
+	// 					}}
+	// 				/>
+	// 			</Grid>
+	// 		</Scaler>
+	//
+	// 		<Toolbar id={id} name={canvas.name} />
+	// 	</>
+	// )
 }
 
 export default Canvas
