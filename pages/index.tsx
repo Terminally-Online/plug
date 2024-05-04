@@ -34,6 +34,7 @@ import Ecosystem from "@/components/effect/ecosystem"
 import Glitter from "@/components/effect/glitter"
 import Version from "@/components/effect/version"
 import { colors, greenGradientStyle } from "@/lib/constants"
+import { routes } from "@/lib/routes"
 
 const Hero = () => (
 	<div className="relative flex h-[1050px] w-full w-full overflow-hidden lg:h-[900px] lg:items-center">
@@ -71,10 +72,16 @@ const Hero = () => (
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 1.5 }}
 				>
-					<MainButton
-						text="Get Early Access"
-						className="mt-[30px] w-max"
-					/>
+					<a
+						href={routes.earlyAccess}
+						target="_blank"
+						rel="noreferrer"
+					>
+						<MainButton
+							text="Get Early Access"
+							className="mt-[30px] w-max"
+						/>
+					</a>
 				</motion.div>
 			</div>
 		</Container>
@@ -101,11 +108,13 @@ const CallToAction: FC<{
 			<p className="text-[18px] text-white lg:max-w-[60%] lg:text-[24px]">
 				{description}
 			</p>
-			<MainButton
-				variant="white"
-				text={button}
-				className="mt-[30px] w-full lg:w-max"
-			/>
+			<a href={routes.earlyAccess} target="_blank" rel="noreferrer">
+				<MainButton
+					variant="white"
+					text={button}
+					className="mt-[30px] w-full lg:w-max"
+				/>
+			</a>
 		</motion.div>
 	</Container>
 )
@@ -168,25 +177,33 @@ const Templates = () => {
 			</p>
 
 			<div className="grid grid-cols-1 lg:grid-cols-12">
-				<div className="mt-[40px] grid grid-cols-2 gap-4 lg:col-start-4 lg:col-end-10 lg:grid-cols-3">
+				<a
+					href={routes.earlyAccess}
+					target="_blank"
+					rel="noreferrer"
+					className="mt-[40px] grid grid-cols-2 gap-4 lg:col-start-4 lg:col-end-10 lg:grid-cols-3"
+				>
 					{templates.map((template, index) => (
 						<ActionCard
 							key={index}
 							size="lg"
 							color={
 								Object.keys(colors)[
-								index % Object.keys(colors).length
+									index % Object.keys(colors).length
 								] as keyof typeof colors
 							}
 							glow={true}
 							title={template}
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.5, delay: 0.1 * index }}
+							transition={{
+								duration: 0.5,
+								delay: 0.1 * index
+							}}
 							className={index > 7 ? "hidden lg:flex" : ""}
 						/>
 					))}
-				</div>
+				</a>
 			</div>
 		</Container>
 	)
@@ -211,15 +228,15 @@ const Value = () => {
 			background:
 				active === true
 					? [
-						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
-						"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
-					]
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
+							"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
+						]
 					: [
-						"rgba(217,217,217,0)",
-						"rgba(217,217,217,0.4)",
-						"rgba(217,217,217,0)"
-					]
+							"rgba(217,217,217,0)",
+							"rgba(217,217,217,0.4)",
+							"rgba(217,217,217,0)"
+						]
 		},
 		transition: {
 			duration: 0.25,
@@ -262,7 +279,7 @@ const Value = () => {
 									height: [
 										10,
 										20 * 2 ** (0.04 * (index / 2) * 8) +
-										Math.random() * 40
+											Math.random() * 40
 									]
 								}}
 								transition={{
@@ -1574,47 +1591,71 @@ const Letter = () => (
 	</>
 )
 
-const FrequentlyAskedQuestion: FC<{ text: string, description: string }> = ({ text, description }) => {
+const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
+	text,
+	description
+}) => {
 	const [collapsed, setCollapsed] = useState(true)
 
-	return <div className="flex flex-col gap-2 border-b-[1px] border-[#D9D9D9]/40 pb-4">
-		<button
-			onClick={() => setCollapsed(!collapsed)}
-			className="font-bold flex items-center w-full text-[24px] z-[30]"
-		>
-			{text}
-			<motion.span
-				className="transform transition-transform ml-auto rounded-full bg-[#FBFBFB] p-1"
-				initial={{ rotate: 0 }}
-				animate={{ rotate: collapsed ? 0 : 180 }}
+	return (
+		<div className="flex flex-col gap-2 border-b-[1px] border-[#D9D9D9]/40 pb-4">
+			<button
+				onClick={() => setCollapsed(!collapsed)}
+				className="z-[30] flex w-full items-center text-[24px] font-bold"
+			>
+				{text}
+				<motion.span
+					className="ml-auto transform rounded-full bg-[#FBFBFB] p-1 transition-transform"
+					initial={{ rotate: 0 }}
+					animate={{ rotate: collapsed ? 0 : 180 }}
+					transition={{ duration: 0.2 }}
+				>
+					<ChevronDown size={24} className="opacity-40" />
+				</motion.span>
+			</button>
+			<motion.p
+				className="text-black/65 opacity-40 lg:mr-16"
+				initial={{ height: 0, opacity: 0 }}
+				animate={{
+					height: collapsed ? 0 : "auto",
+					opacity: collapsed ? 0 : 1
+				}}
 				transition={{ duration: 0.2 }}
 			>
-				<ChevronDown size={24} className="opacity-40" />
-			</motion.span>
-		</button>
-		<motion.p
-			className="opacity-40 lg:mr-16 text-black/65"
-			initial={{ height: 0, opacity: 0 }}
-			animate={{ height: collapsed ? 0 : "auto", opacity: collapsed ? 0 : 1 }}
-			transition={{ duration: 0.2 }}
-		>
-			{description}
-		</motion.p>
-	</div>
+				{description}
+			</motion.p>
+		</div>
+	)
 }
 
-const FrequentlyAskedQuestions = () => <Container>
-	<div className="grid lg:grid-cols-12 mb-[90px] lg:mb-[180px]">
-		<h3 className="lg:col-start-2 lg:col-span-4 mb-8 lg:mb-0 text-[28px] font-bold lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">Frequently Asked Questions</h3>
+const FrequentlyAskedQuestions = () => (
+	<Container>
+		<div className="mb-[90px] grid lg:mb-[180px] lg:grid-cols-12">
+			<h3 className="mb-8 text-[28px] font-bold lg:col-span-4 lg:col-start-2 lg:mb-0 lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
+				Frequently Asked Questions
+			</h3>
 
-		<div className="flex flex-col lg:col-start-7 lg:col-span-5 gap-8">
-			<FrequentlyAskedQuestion text="How does Plug work?" description="With a simple plug-and-play interface, you can establish conditions and outcomes across top Ethereum based protocols. Execute immediately, schedule for the future, or set up a recurring transaction. Plug’s bots take care of the hard work." />
-			<FrequentlyAskedQuestion text="Who is Plug for?" description="Plug was made with you in mind. Whether you’re managing on behalf of yourself, a venture fund, a market maker, or a DAO, Plug enables you to operate securely and in ways never before possible without having to write a single line of code. Even if you’re not an expert you can utilize the Plugs curated by the team to get started in seconds." />
-			<FrequentlyAskedQuestion text="What should I automate?" description="All across there are actions that you find boring or difficult and struggle to scale. Automation serves as a way to minimize the impact of each of those downsides and replace them with significant upside and potential. If there’s something you don’t like doing or can’t do, you should automate it." />
-			<FrequentlyAskedQuestion text="Is Plug really trustless?" description="Yes! Plug utilizes intents with embedded transaction conditions that are checked during the time of simulation and onchain execution. You don’t have to trust us or a centralized oracle of any kind. All data is sourced and verified onchain during simulation and execution." />
+			<div className="flex flex-col gap-8 lg:col-span-5 lg:col-start-7">
+				<FrequentlyAskedQuestion
+					text="How does Plug work?"
+					description="With a simple plug-and-play interface, you can establish conditions and outcomes across top Ethereum based protocols. Execute immediately, schedule for the future, or set up a recurring transaction. Plug’s bots take care of the hard work."
+				/>
+				<FrequentlyAskedQuestion
+					text="Who is Plug for?"
+					description="Plug was made with you in mind. Whether you’re managing on behalf of yourself, a venture fund, a market maker, or a DAO, Plug enables you to operate securely and in ways never before possible without having to write a single line of code. Even if you’re not an expert you can utilize the Plugs curated by the team to get started in seconds."
+				/>
+				<FrequentlyAskedQuestion
+					text="What should I automate?"
+					description="All across there are actions that you find boring or difficult and struggle to scale. Automation serves as a way to minimize the impact of each of those downsides and replace them with significant upside and potential. If there’s something you don’t like doing or can’t do, you should automate it."
+				/>
+				<FrequentlyAskedQuestion
+					text="Is Plug really trustless?"
+					description="Yes! Plug utilizes intents with embedded transaction conditions that are checked during the time of simulation and onchain execution. You don’t have to trust us or a centralized oracle of any kind. All data is sourced and verified onchain during simulation and execution."
+				/>
+			</div>
 		</div>
-	</div>
-</Container>
+	</Container>
+)
 
 const Vision = () => {
 	const actions = [
@@ -1767,33 +1808,33 @@ const Vision = () => {
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 1 }}
 				>
-						{Array.from({ length: 100 }).map((_, index) => (
-							<motion.div
-								key={index}
-								style={{
-									x: `${25 + Math.random() * 50}%`,
-									rotate: `${Math.random() * 90 - 45}deg`,
-									transformOrigin: "center",
-									scale: Math.random() * 0.5 + 0.85,
-									color: "#00EF35"
-								}}
-								animate={{
-									opacity: [1, 0],
-									y: ["-10px", "30px"]
-								}}
-								transition={{
-									duration: 2,
-									repeat: Infinity,
-									repeatDelay: getRandomDelay(0, 2)
-								}}
+					{Array.from({ length: 100 }).map((_, index) => (
+						<motion.div
+							key={index}
+							style={{
+								x: `${25 + Math.random() * 50}%`,
+								rotate: `${Math.random() * 90 - 45}deg`,
+								transformOrigin: "center",
+								scale: Math.random() * 0.5 + 0.85,
+								color: "#00EF35"
+							}}
+							animate={{
+								opacity: [1, 0],
+								y: ["-10px", "30px"]
+							}}
+							transition={{
+								duration: 2,
+								repeat: Infinity,
+								repeatDelay: getRandomDelay(0, 2)
+							}}
 							className="relative origin-center"
-							>
-								<Trophy
-									size={24}
-									className="origin-center opacity-40"
-								/>
-							</motion.div>
-						))}
+						>
+							<Trophy
+								size={24}
+								className="origin-center opacity-40"
+							/>
+						</motion.div>
+					))}
 					<div className="absolute bottom-0 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
 				</InfoCard>
 			</div>

@@ -1,7 +1,10 @@
+import Link from "next/link"
+
 import { Footer } from "@/components/base"
 import Navbar from "@/components/base/navbar"
 import { MainButton } from "@/components/buttons"
 import { greenGradientStyle } from "@/lib/constants"
+import { routes } from "@/lib/routes"
 
 const Page = () => {
 	return (
@@ -22,8 +25,16 @@ const Page = () => {
 				</p>
 
 				<div className="mt-8 flex flex-row gap-2">
-					<MainButton variant="secondary" text="Back Home" />
-					<MainButton variant="primary" text="Get Early Access" />
+					<Link href={routes.index}>
+						<MainButton variant="secondary" text="Back Home" />
+					</Link>
+					<a
+						href={routes.earlyAccess}
+						target="_blank"
+						rel="noreferrer"
+					>
+						<MainButton variant="primary" text="Get Early Access" />
+					</a>
 				</div>
 			</div>
 
