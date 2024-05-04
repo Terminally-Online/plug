@@ -27,9 +27,10 @@ function getItems(directory: string) {
 export default defineConfig({
   title: "Plug",
   description: "Documentation for the Plug protocol and application.",
-  appearance: "dark",
+  appearance: false,
   themeConfig: {
-    logo: { light: "/logo-dark.svg", dark: "/logo-white.svg" },
+    logo: "/logo-black.svg",
+    siteTitle: false,
 
     nav: [{ text: "Home", link: "https://www.onplug.io" }],
 
@@ -139,60 +140,7 @@ export default defineConfig({
                 link: "/core/routers/plug",
               },
             ],
-          },
-          {
-            text: "Solvers",
-            link: "/core/solvers",
-            collapsed: true,
-            items: [
-              {
-                text: "solve",
-                link: "/core/solvers/solve",
-              },
-            ],
-          },
-          {
-            text: "Deployable Instances",
-            collapsed: true,
-            items: [
-              {
-                text: "Deterministic",
-                link: "/instances/deployable/deterministic",
-              },
-              {
-                text: "Fuses",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Threshold",
-                    link: "/instances/fuses/threshold",
-                  },
-                  {
-                    text: "Schedule Windows",
-                    link: "/instances/fuses/schedule-windows",
-                  },
-                  {
-                    text: "Limited Calls",
-                    link: "/instances/fuses/limited-calls",
-                  },
-                  {
-                    text: "Revocation",
-                    link: "/instances/fuses/revocation",
-                  },
-                ],
-              },
-              {
-                text: "Sockets",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Vaults",
-                    link: "/instances/vaults",
-                  },
-                ],
-              },
-            ],
-          },
+          }
         ],
       },
     ],
