@@ -1038,7 +1038,7 @@ const Value = () => {
 							<span>Upgradeable Accounts</span>
 						</>
 					}
-					description="Your account can be easily upgraded with new features and capabilities without needing to create a new account. When you want to update, you can."
+					description="As new features and versions are released that bring new capabilities to your onchain account you can upgrade without hassle or needing to re-deploy."
 					{...animation}
 				>
 					<Version />

@@ -29,10 +29,6 @@ export default function Document() {
 				{/* Basic Meta */}
 				<meta charSet="utf-8" />
 				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1"
-				/>
-				<meta
 					name="description"
 					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
 				/>
