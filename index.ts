@@ -22,16 +22,19 @@ const addWatermark = async (
     imagePath: string,
     email: string,
     tag: string,
-    finalDeckHash: string
+    finalDeckHash: string,
+    green: boolean = true
 ) => {
     const image = sharp(imagePath);
     const metadata = await image.metadata();
 
     // @ts-ignore
-    const fontSize = Math.floor(metadata?.width / 20);
+    const fontSize = Math.floor(metadata?.width / 15);
     const svgImage = Buffer.from(`
         <svg width="${metadata.width}" height="${metadata.height}">
-            <text x="50%" y="50%" alignment-baseline="middle" text-anchor="middle" font-family="Arial" font-size="${fontSize}px" fill="white" opacity="0.3" transform="rotate(-45 ${
+            <text x="50%" y="50%" alignment-baseline="middle" text-anchor="middle" font-family="Arial" font-size="${fontSize}px" fill="${
+                green ? "#93DF00" : "#FFFFFF"
+            }" opacity="0.3" transform="rotate(-45 ${
                 // @ts-ignore
                 metadata?.width / 2
                 // @ts-ignore
@@ -103,7 +106,8 @@ const vision = async (email: string) => {
             newPath,
             email !== "" ? email : "",
             "vision-images",
-            finalDeckHash
+            finalDeckHash,
+            false
         );
     }
 
