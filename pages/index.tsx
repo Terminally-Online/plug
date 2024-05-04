@@ -1572,7 +1572,7 @@ const Letter = () => (
 						<Image
 							src="/landing/signature.svg"
 							alt="Signature"
-							width={320}
+							width={280}
 							height={120}
 						/>
 					</div>
