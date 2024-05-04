@@ -13,7 +13,7 @@ const Page = () => {
 
 			<div className="flex min-h-[800px] flex-col items-center justify-center gap-2">
 				<h1
-					className="text-[72px] font-bold"
+					className="text-[48px] font-bold lg:text-[72px]"
 					style={{ ...greenGradientStyle }}
 				>
 					Coming Soon
