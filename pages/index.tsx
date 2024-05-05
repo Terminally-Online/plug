@@ -39,12 +39,7 @@ const Hero = () => (
 	<div className="relative flex h-[1050px] w-full w-full overflow-hidden lg:h-[900px] lg:items-center">
 		<Container>
 			<div className="mt-4 flex flex-col gap-[15px] lg:mt-0 lg:max-w-[70%] lg:gap-[30px]">
-				<motion.h1
-					className="text-[42px] font-bold lg:text-[72px] 2xl:text-[96px]"
-					initial={{ opacity: 0, y: 40 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.5 }}
-				>
+				<h1 className="text-[42px] font-bold lg:text-[72px] 2xl:text-[96px]">
 					Automate your onchain activity and spend
 					<br />
 					time{" "}
@@ -53,22 +48,13 @@ const Hero = () => (
 							touching grass
 						</span>
 					</Glitter>
-				</motion.h1>
-				<motion.p
-					className="text-[18px] font-light text-black/40 lg:max-w-[85%] lg:text-[24px]"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 1 }}
-				>
+				</h1>
+				<p className="text-[18px] font-light text-black/40 lg:max-w-[85%] lg:text-[24px]">
 					Step into a world of recurring transactions and scheduled
 					onchain activity. Build on top of the strategies of industry
 					experts and reclaim countless hours of your time now.
-				</motion.p>
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 1.5 }}
-				>
+				</p>
+				<div>
 					<a
 						href={routes.earlyAccess}
 						target="_blank"
@@ -79,7 +65,7 @@ const Hero = () => (
 							className="mt-[30px] w-max"
 						/>
 					</a>
-				</motion.div>
+				</div>
 			</div>
 		</Container>
 
