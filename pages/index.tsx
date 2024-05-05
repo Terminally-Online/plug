@@ -176,7 +176,7 @@ const Templates = () => {
 									index % Object.keys(colors).length
 								] as keyof typeof colors
 							}
-							glow={true}
+							glow={false}
 							title={template}
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
