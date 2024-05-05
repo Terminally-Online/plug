@@ -65,6 +65,9 @@ dependencies:
   '@vercel/og':
     specifier: ^0.5.20
     version: 0.5.20
+  '@vercel/speed-insights':
+    specifier: ^1.0.10
+    version: 1.0.10(next@14.0.4)(react@18.2.0)(vue@3.3.9)
   '@web3modal/wagmi':
     specifier: ^4.1.0
     version: 4.1.0(@types/react@18.2.64)(@wagmi/connectors@4.1.19)(@wagmi/core@2.6.10)(lit@3.1.0)(typescript@5.3.3)(valtio@1.12.1)(viem@2.9.5)
@@ -4850,6 +4853,35 @@ packages:
       '@resvg/resvg-wasm': 2.6.0
       satori: 0.10.9
       yoga-wasm-web: 0.3.3
+    dev: false
+
+  /@vercel/speed-insights@1.0.10(next@14.0.4)(react@18.2.0)(vue@3.3.9):
+    resolution: {integrity: sha512-4uzdKB0RW6Ff2FkzshzjZ+RlJfLPxgm/00i0XXgxfMPhwnnsk92YgtqsxT9OcPLdJUyVU1DqFlSWWjIQMPkh0g==}
+    requiresBuild: true
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19
+      svelte: ^4
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+    dependencies:
+      next: 14.0.4(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      vue: 3.3.9(typescript@5.3.3)
     dev: false
 
   /@vue/compiler-core@3.3.9:

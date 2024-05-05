@@ -45,6 +45,7 @@
 		"@trpc/react-query": "^10.43.3",
 		"@trpc/server": "^10.43.1",
 		"@vercel/og": "^0.5.20",
+		"@vercel/speed-insights": "^1.0.10",
 		"@web3modal/wagmi": "^4.1.0",
 		"alchemy-sdk": "^3.2.0",
 		"blockies-react-svg": "^0.0.13",

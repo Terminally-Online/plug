@@ -4,6 +4,7 @@ import { Session } from "next-auth"
 import { getSession, SessionProvider } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import { api } from "@/lib/api"
 import { type NextPageWithLayout } from "@/lib/types"
@@ -25,6 +26,7 @@ const PlugApp: AppType<{
 			<SessionProvider session={pageProps.session}>
 				{getLayout(<Component {...pageProps} />)}
 			</SessionProvider>
+			<SpeedInsights />
 		</>
 	)
 }
