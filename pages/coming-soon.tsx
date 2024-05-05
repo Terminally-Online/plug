@@ -1,3 +1,4 @@
+import Head from "next/head"
 import Link from "next/link"
 
 import { Footer } from "@/components/base"
@@ -9,6 +10,10 @@ import { routes } from "@/lib/routes"
 const Page = () => {
 	return (
 		<>
+			<Head>
+				<title>Coming Soon | Plug</title>
+			</Head>
+
 			<Navbar />
 
 			<div className="flex min-h-[800px] flex-col items-center justify-center gap-2">

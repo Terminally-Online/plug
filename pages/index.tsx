@@ -1,5 +1,7 @@
-import { FC, useState } from "react"
+import type { FC } from "react"
+import { useState } from "react"
 
+import Head from "next/head"
 import Image from "next/image"
 
 import { motion } from "framer-motion"
@@ -25,14 +27,11 @@ import {
 	X
 } from "lucide-react"
 
-import { Footer } from "@/components/base"
-import Navbar from "@/components/base/navbar"
+import { Footer, Navbar } from "@/components/base"
 import { MainButton } from "@/components/buttons"
 import { ActionCard, InfoCard, StepCard } from "@/components/cards"
-import Container from "@/components/container/landing"
-import Ecosystem from "@/components/effect/ecosystem"
-import Glitter from "@/components/effect/glitter"
-import Version from "@/components/effect/version"
+import { LandingContainer as Container } from "@/components/container"
+import { Ecosystem, Glitter, Version } from "@/components/effect"
 import { colors, greenGradientStyle } from "@/lib/constants"
 import { routes } from "@/lib/routes"
 
@@ -172,7 +171,9 @@ const Templates = () => {
 				Start today with best-practice templates
 			</h2>
 			<p className="text-center text-[18px] font-light opacity-40 lg:w-[45%] lg:text-[24px]">
-				Automate your recurring transactions, setup scheduled actions, build on top of the strategies of industry experts and reclaim countless hours of your time.
+				Automate your recurring transactions, setup scheduled actions,
+				build on top of the strategies of industry experts and reclaim
+				countless hours of your time.
 			</p>
 
 			<div className="grid grid-cols-1 lg:grid-cols-12">
@@ -188,7 +189,7 @@ const Templates = () => {
 							size="lg"
 							color={
 								Object.keys(colors)[
-								index % Object.keys(colors).length
+									index % Object.keys(colors).length
 								] as keyof typeof colors
 							}
 							glow={true}
@@ -227,15 +228,15 @@ const Value = () => {
 			background:
 				active === true
 					? [
-						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
-						"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-						"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
-					]
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
+							"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
+						]
 					: [
-						"rgba(217,217,217,0)",
-						"rgba(217,217,217,0.4)",
-						"rgba(217,217,217,0)"
-					]
+							"rgba(217,217,217,0)",
+							"rgba(217,217,217,0.4)",
+							"rgba(217,217,217,0)"
+						]
 		},
 		transition: {
 			duration: 0.25,
@@ -278,7 +279,7 @@ const Value = () => {
 									height: [
 										10,
 										20 * 2 ** (0.04 * (index / 2) * 8) +
-										Math.random() * 40
+											Math.random() * 40
 									]
 								}}
 								transition={{
@@ -1844,6 +1845,9 @@ const Vision = () => {
 const Page = () => {
 	return (
 		<>
+			<Head>
+				<title>Home | Plug</title>
+			</Head>
 			<Navbar />
 			<Hero />
 			<Steps />
