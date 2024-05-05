@@ -60,9 +60,9 @@ const Hero = () => (
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 1 }}
 				>
-					Automate your recurring transactions, setup scheduled
-					actions, build on top of the strategies of industry experts
-					and reclaim countless hours of your time.
+					Step into a world of recurring transactions, setup scheduled
+					actions. Build on top of the strategies of industry experts
+					and reclaim countless hours of your time now.
 				</motion.p>
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
@@ -169,9 +169,9 @@ const Templates = () => {
 				Start today with best-practice templates
 			</h2>
 			<p className="text-center text-[18px] font-light opacity-40 lg:w-[45%] lg:text-[24px]">
-				Automate your recurring transactions, setup scheduled actions,
-				build on top of the strategies of industry experts and reclaim
-				countless hours of your time.
+				No need to start from scratch. In just a few minutes, you can
+				deploy a strategy that has been battle-tested by the Plug team
+				and industry experts.
 			</p>
 
 			<div className="grid grid-cols-1 lg:grid-cols-12">
