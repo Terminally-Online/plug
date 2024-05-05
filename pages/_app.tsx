@@ -50,7 +50,7 @@ const PlugApp: AppType<{
 		<>
 			<style jsx global>{`
 				* {
-					font-family: ${satoshi.variable}, sans-serif;
+					font-family: ${satoshi.style.fontFamily}, sans-serif;
 				}
 			`}</style>
 
