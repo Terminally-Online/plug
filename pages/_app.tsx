@@ -47,11 +47,17 @@ const PlugApp: AppType<{
 	const getLayout = Component.getLayout ?? (page => page)
 
 	return (
-		<div className={`${satoshi.variable} font-sans`}>
+		<>
+			<style jsx global>{`
+				* {
+					font-family: ${satoshi.variable}, sans-serif;
+				}
+			`}</style>
+
 			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
 			{getLayout(<Component {...pageProps} />)}
 			<SpeedInsights />
-		</div>
+		</>
 	)
 }
 
