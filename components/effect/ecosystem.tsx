@@ -155,9 +155,11 @@ export const Ecosystem: FC = () => {
 
 	return (
 		<motion.div
-			className="absolute bottom-[-40%] left-[-30%] right-[-30%] flex items-center justify-center lg:bottom-[5%] lg:left-[65%]"
+			className="absolute bottom-[-42%] flex items-center justify-center lg:bottom-[5%] lg:left-[65%] lg:right-[-30%]"
 			style={{
-				minHeight: `${size + 200}px`
+				minHeight: `${size + 200}px`,
+				minWidth: `${size + 200}px`,
+				left: `calc(50% - ${size / 2 + 100}px)`
 			}}
 		>
 			<div className="absolute bottom-0 left-1/2 right-[35%] top-0 z-[20] hidden bg-gradient-to-r from-white/0 to-white lg:visible" />
@@ -183,7 +185,7 @@ export const Ecosystem: FC = () => {
 					transition={rotationTransition}
 				>
 					<motion.div
-						className="flex h-full w-full rounded-lg border-[2px] border-dashed bg-white"
+						className="flex h-full w-full items-center justify-center rounded-lg border-[2px] border-dashed bg-white"
 						style={{ borderColor: "#D9D9D9" }}
 						animate={{
 							borderColor: ["#D9D9D9", "#00EF35", "#D9D9D9"]

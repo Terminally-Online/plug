@@ -60,11 +60,10 @@ const Hero = () => (
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 1 }}
 				>
-					Unlock the power of trustless automation of your
-					transactions with Plug in seconds. Build on top strategies
-					of industry experts or create your own from scratch and
-					never worry about manually clicking a button or missing an
-					opportunity again.
+					Use Plug to build your own transaction workflows or choose
+					from community generated strategies. Let our bots execute
+					your transactions and never worry about missing an
+					opportunity again. No code needed.
 				</motion.p>
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
