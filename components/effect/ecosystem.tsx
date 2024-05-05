@@ -155,12 +155,11 @@ export const Ecosystem: FC = () => {
 
 	return (
 		<motion.div
-			className="absolute bottom-[-42%] flex items-center justify-center lg:bottom-[5%] lg:left-[65%] lg:right-[-30%]"
 			style={{
 				minHeight: `${size + 200}px`,
-				minWidth: `${size + 200}px`,
-				left: `calc(50% - ${size / 2 + 100}px)`
+				minWidth: `${size + 200}px`
 			}}
+			className={`left-[calc(50%_-_${size / 2 + 100}px)] absolute bottom-[-42%] flex items-center justify-center lg:bottom-[5%] lg:left-[65%] lg:right-[-30%]`}
 		>
 			<div className="absolute bottom-0 left-1/2 right-[35%] top-0 z-[20] hidden bg-gradient-to-r from-white/0 to-white lg:visible" />
 
