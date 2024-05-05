@@ -1,32 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document"
 
-import localFont from "@next/font/local"
-
-const satoshi = localFont({
-	src: [
-		{ path: "./assets/Satoshi-Light.ttf", weight: "300" },
-		{
-			path: "./assets/Satoshi-LightItalic.ttf",
-			weight: "300",
-			style: "italic"
-		},
-		{ path: "./assets/Satoshi-Regular.ttf", weight: "400" },
-		{ path: "./assets/Satoshi-Bold.ttf", weight: "700" },
-		{
-			path: "./assets/Satoshi-BoldItalic.ttf",
-			weight: "700",
-			style: "italic"
-		},
-		{ path: "./assets/Satoshi-Black.ttf", weight: "900" },
-		{
-			path: "./assets/Satoshi-BlackItalic.ttf",
-			weight: "900",
-			style: "italic"
-		}
-	],
-	variable: "--font-satoshi"
-})
-
 export default function Document() {
 	return (
 		<Html lang="en">
@@ -88,7 +61,7 @@ export default function Document() {
 				/>
 			</Head>
 
-			<body className={`${satoshi.variable} font-sans`}>
+			<body>
 				<Main />
 				<NextScript />
 			</body>
