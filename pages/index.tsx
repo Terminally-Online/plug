@@ -255,7 +255,7 @@ const Value = () => {
 							<span>24/7 Execution</span>
 						</>
 					}
-					description="Plug keeps your strategies running at all times. Whether you're at dinner, asleep or on vacation, your transactions will be executed."
+					description="Plug keeps your strategies running at all times. Whether you're at dinner, asleep, or on vacation, your transactions will be executed."
 					{...animation}
 					className={`${animation.className} lg:col-span-2 2xl:col-span-1`}
 				>
@@ -301,7 +301,7 @@ const Value = () => {
 							<span>Scheduled Transactions</span>
 						</>
 					}
-					description="Have a specific period of time you want your transaction to be valid? Use the same scheduling methods you are used to on calendars."
+					description="Have a specific period of time you want to execute your transaction? Use the same scheduling methods you are used to on calendars."
 					{...animation}
 				>
 					<div className="ml-auto grid w-full grid-cols-7 grid-rows-4 text-xs">
@@ -499,7 +499,7 @@ const Value = () => {
 							<span>Multichain Signatures</span>
 						</>
 					}
-					description="Sign multiple actions across multiple chains in just one click. No need to sign countless different transactions. Just one and done."
+					description="Sign multiple actions across multiple chains with a single click. Stop signing the same signature over and over."
 					{...animation}
 				>
 					<div className="grayscale-100 ml-16 mt-16 flex w-[100%] flex-row saturate-0 filter">
@@ -615,7 +615,7 @@ const Value = () => {
 							<span>Atomic Rules</span>
 						</>
 					}
-					description="The rules of execution are built into the lowest layer of transaction and checked onchain to enable true trustless automation."
+					description="Rules of execution are embedded into your transaction and validated onchain during simulation and execution to enable completely trustless automation."
 					{...animation}
 				>
 					<svg
@@ -1037,7 +1037,7 @@ const Value = () => {
 							<span>Upgradeable Accounts</span>
 						</>
 					}
-					description="As new features and versions are released that bring new capabilities to your onchain account you can upgrade without hassle or needing to re-deploy."
+					description="As new features and versions are released you can upgrade your account without hassle, paying additional fees or needing to re-deploy."
 					{...animation}
 				>
 					<Version />
@@ -1051,7 +1051,7 @@ const Value = () => {
 							<span>Recurring Outcomes</span>
 						</>
 					}
-					description="With Plug your transactions can be reused and retriggered to run again when the conditions are met without needing to sign a new transaction."
+					description="With Plug your signed intents can be reused to run again when the conditions are met without needing to sign a new transaction."
 					{...animation}
 				>
 					<div
@@ -1237,7 +1237,7 @@ const Value = () => {
 							<span>Generalized Intents</span>
 						</>
 					}
-					description="Plug is designed to support everything right out of the box. Whether you want to swap tokens, lend, borrow, stake or farm, Plug has you covered."
+					description="Plug is designed to support everything right out of the box. Whether you want to swap, lend, borrow, stake, or farm... Plug has you covered."
 					{...animation}
 				>
 					<svg
