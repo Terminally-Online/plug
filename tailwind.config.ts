@@ -11,6 +11,7 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			fontFamily: { sans: ["var(--font-satoshi)", "sans-serif"] },
 			colors: {
 				black: "#121111",
 				white: "#ffffff",

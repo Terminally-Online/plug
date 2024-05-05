@@ -17,6 +17,9 @@ dependencies:
   '@next-auth/prisma-adapter':
     specifier: ^1.0.7
     version: 1.0.7(@prisma/client@5.7.0)(next-auth@4.24.5)
+  '@next/font':
+    specifier: ^14.2.3
+    version: 14.2.3(next@14.0.4)
   '@next/third-parties':
     specifier: ^14.0.4
     version: 14.0.4(next@14.0.4)(react@18.2.0)
@@ -2853,6 +2856,14 @@ packages:
     dependencies:
       glob: 7.1.7
     dev: true
+
+  /@next/font@14.2.3(next@14.0.4):
+    resolution: {integrity: sha512-u35UstQmvl3Yrvv2MOi6RcXMH3xDtmWTXcvkYcC/vCZHLqj/5JQ5UyFRf5saDWxFlZIkEh8HCzwNGoiHIr1/NQ==}
+    peerDependencies:
+      next: '*'
+    dependencies:
+      next: 14.0.4(@babel/core@7.24.0)(react-dom@18.2.0)(react@18.2.0)
+    dev: false
 
   /@next/swc-darwin-arm64@14.0.4:
     resolution: {integrity: sha512-mF05E/5uPthWzyYDyptcwHptucf/jj09i2SXBPwNzbgBNc+XnwzrL0U6BmPjQeOL+FiB+iG1gwBeq7mlDjSRPg==}
