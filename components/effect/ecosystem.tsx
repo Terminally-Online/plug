@@ -159,7 +159,7 @@ export const Ecosystem: FC = () => {
 				minHeight: `${size + 200}px`,
 				minWidth: `${size + 200}px`
 			}}
-			className={`left-[calc(50%_-_${size / 2 + 100}px)] absolute bottom-[-42%] flex items-center justify-center lg:bottom-[5%] lg:left-[65%] lg:right-[-30%]`}
+			className={`absolute bottom-[-42%] left-[calc(50%_-_450px)] flex items-center justify-center lg:bottom-[5%] lg:left-[65%] lg:right-[-30%]`}
 		>
 			<div className="absolute bottom-0 left-1/2 right-[35%] top-0 z-[20] hidden bg-gradient-to-r from-white/0 to-white lg:visible" />
 
