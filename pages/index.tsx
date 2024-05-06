@@ -78,7 +78,7 @@ const CallToAction: FC<{
 }> = ({ text, description, button }) => (
 	<Container className="flex-col">
 		<motion.div
-			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] p-8 lg:min-h-[700px] lg:gap-[30px]"
+			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] p-8 lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]"
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.2 }}
@@ -140,7 +140,7 @@ const Templates = () => {
 		"Top-Up Gearbox Loan Health Factor",
 		"Bid on Noun with Pineapple Hat",
 		"Buy Beta When Majors Move",
-		"Fill Ethena Liquidty Cap",
+		"Fill Ethena Liquidty Cap to Limit",
 		"Renew ENS Annually at Low Gas",
 		"Enter Yearn When Above 65% APY",
 		"Withdraw ETH:USDC Liquidity Rewards",
@@ -158,12 +158,12 @@ const Templates = () => {
 				and industry experts.
 			</p>
 
-			<div className="grid grid-cols-1 lg:grid-cols-12">
+			<div className="grid grid-cols-1 2xl:grid-cols-12">
 				<a
 					href={routes.earlyAccess}
 					target="_blank"
 					rel="noreferrer"
-					className="mt-[40px] grid grid-cols-2 gap-4 lg:col-start-4 lg:col-end-10 lg:grid-cols-3"
+					className="mt-[40px] grid gap-4 md:grid-cols-2 2xl:col-start-4 2xl:col-end-10 2xl:grid-cols-3"
 				>
 					{templates.map((template, index) => (
 						<ActionCard
@@ -182,7 +182,7 @@ const Templates = () => {
 								duration: 0.2,
 								delay: 0.1 * index
 							}}
-							className={index > 7 ? "hidden lg:flex" : ""}
+							className={index > 7 ? "hidden 2xl:flex" : ""}
 						/>
 					))}
 				</a>
@@ -2154,7 +2154,7 @@ const Vision = () => {
 		["Enter Gearbox at Target APY", "nftchance"],
 		["Bid on Noun", "nftchance"],
 		["Rebalance Memecoin Portfolio", "federalreserve"],
-		["Fill Ethena Liquidity Cap", "nftchance"],
+		["Fill Ethena Liquidity Cap to Limit", "nftchance"],
 		["Compound Enjoy Staking Rewards", "nftchance"],
 		["Top-Up Loan Health Factor", "federalreserve"],
 		["Exit Yearn at Target APY", "nftchance"]
