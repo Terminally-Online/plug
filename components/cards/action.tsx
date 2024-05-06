@@ -77,7 +77,7 @@ export const ActionCard: FC<Props> = ({
 
 	useEffect(() => {
 		if (!isInView) return
-		const controls = animate(animatedRuns, runs || Math.floor(Math.random() * 300), {
+		const controls = animate(animatedRuns, runs || Math.floor(Math.random() * 1200) + 200, {
 			duration: 1,
 			delay: 0.5
 		})
