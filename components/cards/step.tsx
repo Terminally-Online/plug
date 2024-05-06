@@ -26,7 +26,7 @@ export const StepCard: FC<Props> = ({
 			}}
 			{...props}
 		>
-			<div className="absolute left-0 top-[25%] ml-4 lg:top-[2%] lg:ml-8">
+			<div className="absolute left-0 top-[25%] ml-4 lg:top-0 lg:ml-8">
 				<p
 					className="absolute text-[72px] font-bold blur-[20px] filter lg:text-[148px]"
 					style={{

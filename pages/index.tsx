@@ -43,11 +43,9 @@ const Hero = () => (
 					Automate your onchain activity and spend
 					<br />
 					time{" "}
-					<Glitter>
-						<span style={{ ...greenGradientStyle }}>
-							touching grass
-						</span>
-					</Glitter>
+					<span style={{ ...greenGradientStyle }}>
+						touching grass
+					</span>
 				</h1>
 				<p className="text-[18px] font-light text-black/40 lg:max-w-[85%] lg:text-[24px]">
 					Step into a world of recurring transactions and scheduled
@@ -83,7 +81,7 @@ const CallToAction: FC<{
 			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] px-[40px] py-[40px] lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]"
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5, delay: 0.5 }}
+			transition={{ duration: 0.2 }}
 		>
 			<h1 className="text-[36px] font-bold text-white lg:max-w-[65%] lg:text-[72px] lg:text-[96px]">
 				{text}
@@ -109,7 +107,7 @@ const Steps = () => (
 			description="Choose a set of conditions to determine when your transaction can be executed."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5, delay: 0.5 }}
+			transition={{ duration: 0.2 }}
 		>
 			<SlidersHorizontal size={24} />
 		</StepCard>
@@ -119,7 +117,7 @@ const Steps = () => (
 			description="Bundle the actions that will automatically execute once all of your rules are satisfied."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5, delay: 1 }}
+			transition={{ duration: 0.2, delay: 0.2 }}
 		>
 			<ArrowDownWideNarrow size={24} />
 		</StepCard>
@@ -129,7 +127,7 @@ const Steps = () => (
 			description="Sign a gasless signature to signal your intent of execution then sit back and relax."
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.5, delay: 1.5 }}
+			transition={{ duration: 0.4, delay: 0.4 }}
 		>
 			<FilePen size={24} />
 		</StepCard>
@@ -143,7 +141,7 @@ const Templates = () => {
 		"Bid on Noun with Pineapple Hat",
 		"Buy Beta When Majors Move",
 		"Fill Ethena Liquidty Cap",
-		"Renew ENS Annualy at Low Gas",
+		"Renew ENS Annually at Low Gas",
 		"Enter Yearn When Above 65% APY",
 		"Withdraw ETH:USDC Liquidity Rewards",
 		"Rebalance Portfolio Monthly"
@@ -181,7 +179,7 @@ const Templates = () => {
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{
-								duration: 0.5,
+								duration: 0.2,
 								delay: 0.1 * index
 							}}
 							className={index > 7 ? "hidden lg:flex" : ""}
@@ -198,7 +196,7 @@ const Value = () => {
 		className: "w-full min-h-[360px]",
 		initial: { opacity: 0, y: 20 },
 		whileInView: { opacity: 1, y: 0 },
-		transition: { duration: 0.5, delay: 1 }
+		transition: { duration: 0.2 }
 	}
 
 	const getDayAnimation = (delay: number, active: boolean = false) => ({
@@ -1489,7 +1487,7 @@ const Letter = () => (
 				className="text-center text-[28px] font-bold lg:w-[65%] lg:text-[64px]"
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5 }}
+				transition={{ duration: 0.2 }}
 			>
 				Letter From The Team
 			</motion.h2>
@@ -1497,7 +1495,7 @@ const Letter = () => (
 				className="text-center text-[18px] font-light opacity-40 lg:w-[40%] lg:text-[24px]"
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 0.4, y: 0 }}
-				transition={{ duration: 0.5, delay: 0.5 }}
+				transition={{ duration: 0.2, delay: 0.2 }}
 			>
 				We’re here to empower humans to benefit from the blockchain to
 				the maximum extent and provide the ability to log off instead of
@@ -1508,7 +1506,7 @@ const Letter = () => (
 				className="mt-[40px] grid lg:grid-cols-12"
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5, delay: 1 }}
+				transition={{ duration: 0.2, delay: 0.4 }}
 			>
 				<div className="col-span-6 col-start-4 bg-[#D9D9D9]/10 px-8 lg:mx-8 lg:px-24">
 					<div className="mb-16 flex flex-row justify-between gap-2">
@@ -1532,7 +1530,7 @@ const Letter = () => (
 							You were not born to watch numbers go up and down.
 							You were not born to obsess over the smallest
 							details of blockchain transactions. You were not
-							born live like a robot in a world of abundance.
+							born to live like a robot in a world of abundance.
 						</p>
 						<p>
 							Plug is designed to give you your life back. To give
@@ -1678,7 +1676,7 @@ const Vision = () => {
 					className="h-[540px] lg:col-span-4 lg:row-span-2 lg:h-full"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.5 }}
+					transition={{ duration: 0.2 }}
 				>
 					<motion.div
 						className="flex flex-col items-end justify-end gap-4 overflow-y-hidden lg:mr-12"
@@ -1741,7 +1739,7 @@ const Vision = () => {
 					className="h-[420px] lg:col-span-2 lg:h-full"
 					initial={{ opacity: 0, y: -20 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 1 }}
+					transition={{ duration: 0.2, delay: 0.2 }}
 				>
 					<div className="flex flex-wrap items-end justify-end">
 						{immutableFactoryBytecode
@@ -1790,7 +1788,7 @@ const Vision = () => {
 					className="h-[320px] lg:col-span-2 lg:h-full"
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 1 }}
+					transition={{ duration: 0.2, delay: 0.4 }}
 				>
 					{Array.from({ length: 100 }).map((_, index) => (
 						<motion.div
