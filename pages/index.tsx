@@ -78,7 +78,7 @@ const CallToAction: FC<{
 }> = ({ text, description, button }) => (
 	<Container className="flex-col">
 		<motion.div
-			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] px-[20px] py-[40px] lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]"
+			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] p-8 lg:min-h-[700px] lg:gap-[30px]"
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.2 }}

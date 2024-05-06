@@ -17,7 +17,7 @@ export const InfoCard: FC<Props> = ({
 	...props
 }) => {
 	const base =
-		"relative flex flex-row items-center gap-8 rounded-xl bg-[#FBFBFB] p-[40px] items-end min-h-[240px]"
+		"relative flex flex-row items-center gap-8 rounded-xl bg-[#FBFBFB] p-8 items-end min-h-[240px]"
 
 	return (
 		<motion.div className={twMerge(base, className)} {...props}>
