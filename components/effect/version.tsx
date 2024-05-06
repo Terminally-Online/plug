@@ -54,7 +54,7 @@ export const Version: FC = () => {
 
 	return (
 		<div className="w-full px-8 pt-8 text-right">
-			<h3 className="ml-auto text-[72px] font-bold tabular-nums text-[rgba(217,217,217,0.4)]">
+			<h3 className="ml-auto text-[72px] font-bold tabular-nums text-[#D9D9D9]">
 				v
 				<span>
 					<motion.span style={{ ...greenGradientStyle }}>

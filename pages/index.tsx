@@ -40,17 +40,17 @@ const Hero = () => (
 		<Container>
 			<div className="mt-4 flex flex-col gap-[15px] lg:mt-0 lg:max-w-[70%] lg:gap-[30px]">
 				<h1 className="text-[42px] font-bold lg:text-[72px] 2xl:text-[96px]">
-					Automate your onchain activity and spend
-					<br />
-					time{" "}
+					Automate your onchain activity with an{" "}
 					<span style={{ ...greenGradientStyle }}>
-						touching grass
-					</span>
+						“if this, then that”
+					</span>{" "}
+					interface.
 				</h1>
 				<p className="text-[18px] font-light text-black/40 lg:max-w-[85%] lg:text-[24px]">
-					Step into a world of recurring transactions and scheduled
-					onchain activity. Build on top of the strategies of industry
-					experts and reclaim countless hours of your time now.
+					Use Plug to build your own transaction workflows or choose
+					from community generated strategies. Let our bots execute
+					your transactions and never worry about missing an
+					opportunity again. No code needed.
 				</p>
 				<div>
 					<a
@@ -78,12 +78,12 @@ const CallToAction: FC<{
 }> = ({ text, description, button }) => (
 	<Container className="flex-col">
 		<motion.div
-			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] px-[40px] py-[40px] lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]"
+			className="flex flex-col justify-center gap-[15px] rounded-lg bg-gradient-to-tr from-[#00EF35] to-[#93DF00] px-[20px] py-[40px] lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]"
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.2 }}
 		>
-			<h1 className="text-[36px] font-bold text-white lg:max-w-[65%] lg:text-[72px] lg:text-[96px]">
+			<h1 className="text-[36px] font-bold text-white lg:max-w-[85%] lg:text-[72px] lg:text-[96px]">
 				{text}
 			</h1>
 			<p className="text-[18px] text-white lg:max-w-[60%] lg:text-[24px]">
@@ -210,9 +210,9 @@ const Value = () => {
 			background:
 				active === true
 					? [
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))",
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))",
 							"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.8))"
+							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))"
 						]
 					: [
 							"rgba(217,217,217,0)",
@@ -254,7 +254,7 @@ const Value = () => {
 									background:
 										index === 13
 											? "linear-gradient(45deg, #00EF35, #93DF00)"
-											: "rgba(217,217,217,0.4)"
+											: "#D9D9D9"
 								}}
 								initial={{ height: 10 }}
 								animate={{
@@ -473,7 +473,6 @@ const Value = () => {
 						</motion.div>
 						<div className="border-r-[1px]" />
 					</div>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -482,7 +481,7 @@ const Value = () => {
 							<span>Multichain Signatures</span>
 						</>
 					}
-					description="Sign multiple actions across multiple chains with a single click. Stop signing the same signature over and over."
+					description="Declare multiple actions across multiple chains with a single gasless signature. Stop signing the same signature over and over."
 					{...animation}
 				>
 					<div className="grayscale-100 ml-16 mt-16 flex w-[100%] flex-row saturate-0 filter">
@@ -588,8 +587,6 @@ const Value = () => {
 							/>
 						</motion.div>
 					</div>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -607,7 +604,7 @@ const Value = () => {
 						viewBox="0 0 479 126"
 						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
-						className="mt-8 lg:mx-auto lg:mt-4 lg:w-[150%] 2xl:mx-0 2xl:w-[100%]"
+						className="mt-8 lg:mx-auto lg:mt-8 lg:w-[150%] 2xl:mx-0 2xl:w-[100%]"
 					>
 						<motion.path
 							d="M0 18.9805H112.217C112.217 18.9805 119.584 19.2795 123.438 22.3844C129.266 27.0795 134.228 40.6805 134.228 40.6805C134.228 40.6805 139.19 54.2814 145.018 58.9765C148.872 62.0814 156.24 62.3805 156.24 62.3805"
@@ -910,8 +907,6 @@ const Value = () => {
 							}}
 						/>
 					</svg>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 
 				<InfoCard
@@ -928,7 +923,7 @@ const Value = () => {
 					{...animation}
 				>
 					<motion.div
-						className="ml-auto mr-[-60px] mt-16 flex w-[420px] items-center gap-6 rounded-lg bg-white px-6 py-2 lg:mt-12"
+						className="mx-auto ml-auto mt-16 flex w-[420px] items-center gap-6 rounded-lg bg-white px-6 py-2"
 						animate={{
 							x: [0, 4, -4, 2, -1, 3, -3, 4, -2, 0],
 							y: [0, 4, -4, 2, -1, 3, -3, 4, -2, 0]
@@ -942,7 +937,7 @@ const Value = () => {
 						}}
 					>
 						<motion.div
-							className="relative flex h-6 w-6 items-center justify-center rounded-full"
+							className="relative flex h-8 w-8 items-center justify-center rounded-full"
 							animate={{
 								background: [
 									"rgba(0,239,53,0.1)",
@@ -975,7 +970,7 @@ const Value = () => {
 										repeatDelay: 4
 									}}
 								>
-									<Check size={12} />
+									<Check size={18} />
 								</motion.span>
 								<motion.span
 									className="absolute left-1/4 top-1/4"
@@ -987,15 +982,15 @@ const Value = () => {
 										repeatDelay: 4
 									}}
 								>
-									<X size={12} />
+									<X size={18} />
 								</motion.span>
 							</motion.span>
 						</motion.div>
 						<h3 className="flex flex-col gap-1">
-							<span className="font-bold">
+							<span className="text-xl font-bold">
 								Bid in Nouns Auction
 							</span>
-							<div className="flex w-full flex-row items-center gap-2">
+							<div className="flex w-full flex-row items-center gap-2 text-lg">
 								<Image
 									src={`/wallets/madison.png`}
 									alt="NFT Chance"
@@ -1010,8 +1005,6 @@ const Value = () => {
 							{Math.floor(Math.random() ** 1.2) + 1} secs. ago
 						</h4>
 					</motion.div>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -1024,8 +1017,6 @@ const Value = () => {
 					{...animation}
 				>
 					<Version />
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -1041,7 +1032,7 @@ const Value = () => {
 						className="ml-[-4px] mt-[-9px] grid w-max grid-rows-3 gap-[2px]"
 						style={{ gridTemplateColumns: "repeat(28, 1fr)" }}
 					>
-						{Array.from({ length: 28 * 7 }).map((_, index) => {
+						{Array.from({ length: 28 * 8 }).map((_, index) => {
 							const background =
 								Math.random() < 0.5
 									? "#D9D9D9"
@@ -1063,8 +1054,6 @@ const Value = () => {
 							)
 						})}
 					</div>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -1210,8 +1199,6 @@ const Value = () => {
 							</motion.div>
 						</motion.div>
 					</div>
-					<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-					<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 				</InfoCard>
 				<InfoCard
 					text={
@@ -1279,7 +1266,7 @@ const Value = () => {
 							d="M307.307 60.6966C305.666 56.1556 311.805 54.7816 310.772 50.2286C307.709 47.7126 302.878 47.0376 298.978 46.9106C295.663 46.8026 289.19 46.9606 287.659 50.5336C286.259 53.7996 291.949 56.6456 290.702 60.7016C281.336 62.0226 271.876 62.5846 262.42 62.6166C262.978 71.2326 263.246 82.8576 258.044 82.9526C253.309 83.0386 248 78.1696 243.94 81.4406C241.06 83.7606 240.406 87.0786 241.357 90.8846C242.503 95.4786 245.094 97.4206 249.793 96.7906C251.897 94.7826 257.21 92.5026 259.703 94.9836C265.682 103.527 262.056 111.944 259.16 120.516C267.672 118.732 276.171 117.053 284.762 119.141C289.295 120.243 292.803 121.634 289.627 126.591C287.336 130.166 286.01 132.811 291.114 134.459C294.798 135.648 316.41 135.14 309.562 128.121C301.564 119.923 317.083 118.006 322.769 117.995C328.313 117.984 333.735 119.03 339.144 120.162C336.039 111.357 332.878 102.329 340.263 95.2616C345.744 90.0156 353.085 102.565 357.765 94.0616C361.155 87.9026 358.899 77.7546 350.223 80.7896C345.587 82.4116 343.741 82.5366 339.24 81.7616C337.463 79.0286 336.627 75.8656 336.691 72.6156C336.774 68.4726 338.013 64.5086 339.358 60.5836C337.681 60.9346 336.009 61.2856 334.339 61.6086C325.345 63.3496 316.006 64.2256 307.307 60.6966Z"
 							stroke-linecap="round"
 							stroke="#FBFBFB"
-							fill="url(#gradient)"
+							fill="#D9D9D9"
 							animate={{
 								opacity: [0, 1]
 							}}
@@ -1351,7 +1338,7 @@ const Value = () => {
 							d="M399.666 182.34C396.366 181.887 393.082 181.319 389.772 180.939C381.832 180.833 391.832 173.166 387.7 168.522C382.851 166.889 368.38 164.334 367.228 171.979C368.503 174.004 370.217 175.875 370.677 178.306C371.636 182.083 368.033 181.081 365.498 181.367C360.266 181.957 355.01 182.322 349.748 182.502C346.625 182.609 343.5 182.644 340.376 182.629C340.405 183.891 340.527 185.153 340.811 186.418C342.564 194.244 345.113 205.185 332.935 202.027C327.521 200.624 327.362 199.855 322.297 202.284C320.285 205.388 320.274 209.424 322.055 212.632C326.916 221.39 332.661 212.568 339.009 214.306C343.922 220.556 343.386 227.927 341.165 235.12C340.647 236.799 340.046 238.489 339.454 240.192C347.749 241.937 356.062 243.843 364.454 242.43C368.33 241.778 372.282 241.431 370.134 236.595C368.77 233.525 366.542 232.697 368.25 229.319C375.25 227.59 380.306 226.032 387.699 228.522C391.868 229.927 391.469 232.578 388.815 235.71C385.13 240.059 387.765 240.636 392.241 241.253C398.666 242.138 410.679 242.126 419.499 241V182.55C412.453 183.01 403.585 182.878 399.666 182.34Z"
 							stroke-linecap="round"
 							stroke="#FBFBFB"
-							fill="url(#gradient)"
+							fill="#D9D9D9"
 							animate={{
 								opacity: [0, 1]
 							}}
@@ -1369,7 +1356,7 @@ const Value = () => {
 							d="M95.1911 22.465C90.5851 21.831 88.2281 18.844 83.9381 21.438C80.5691 23.475 80.0391 27.656 81.4351 31.298C82.4161 33.859 84.4971 36.221 87.2691 36.819C91.1481 37.654 92.9851 34.05 96.5331 34.015C104.622 33.936 103.04 48.581 101.674 53.501C101.03 55.818 100.203 58.12 99.4081 60.436C105.839 59.127 112.292 57.901 118.785 58.26C122.921 58.489 126.99 59.459 130.718 61.283C131.676 64.989 125.949 69.087 127.293 71.614C131.148 78.864 145.699 75.466 150.771 71.776C151.596 68.218 147.302 67.317 147.032 63.965C146.711 59.986 153.77 59.009 156.571 58.509C164.232 57.142 171.913 58.622 179.445 60.205C180.218 57.97 181.015 55.747 181.642 53.511C183.018 48.599 184.617 33.936 176.534 34.015C172.986 34.05 171.149 37.654 167.27 36.819C164.498 36.222 162.417 33.859 161.436 31.298C160.04 27.656 160.57 23.474 163.939 21.438C168.229 18.845 170.586 21.832 175.192 22.465C183.635 23.627 182.448 10.076 181.078 0.5H100.727C102.191 10.432 103.245 23.573 95.1911 22.465Z"
 							stroke-linecap="round"
 							stroke="#FBFBFB"
-							fill="url(#gradient)"
+							fill="#D9D9D9"
 							animate={{
 								opacity: [0, 1]
 							}}
@@ -1441,7 +1428,7 @@ const Value = () => {
 							d="M99.7176 142.717C95.1636 142.76 91.1005 139.981 86.9605 140.053C78.7215 140.196 79.6125 152.184 84.8405 155.756C87.3455 157.468 90.3936 157.219 92.7996 155.45C97.0976 152.29 100.053 154.655 101.769 159.068C104.464 165.995 101.832 173.293 99.5725 179.932C99.5445 180.014 99.5166 180.097 99.4896 180.178C102.256 180.76 105.019 181.361 107.788 181.848C111.909 182.574 116.099 183.07 120.29 182.872C124.557 182.67 132.808 182.61 130.135 176.596C128.79 173.57 125.459 171.257 129.332 168.856C132.722 166.756 137.324 166.639 141.215 167.075C144.539 167.447 150.737 167.897 150.975 172.018C150.152 174.029 148.977 175.892 147.225 177.225C146.353 181.669 149.048 180.886 152.626 181.207C161.853 182.036 171.113 182.576 180.378 182.619C180.208 175.124 183.736 167.667 181.86 160.154C180.631 155.231 177.518 151.982 172.8 155.45C170.394 157.22 167.346 157.468 164.84 155.756C159.611 152.185 158.721 140.196 166.959 140.053C171.1 139.981 175.163 142.76 179.717 142.717C181.542 140.034 182.503 136.92 182.491 133.675C182.475 129.455 180.841 124.834 179.186 120.148C174.461 119.156 169.727 118.228 164.892 118.015C159.276 117.768 140.963 119.308 149.56 128.121C156.029 134.753 136.614 135.811 133.061 134.996C127.067 133.621 126.576 131.35 129.624 126.592C132.784 121.66 129.329 120.245 124.806 119.136C116.768 117.166 108.448 118.711 100.498 120.336C100.112 120.415 99.7235 120.495 99.3355 120.575C100.938 125.115 102.476 129.584 102.49 133.676C102.504 136.919 101.543 140.034 99.7176 142.717Z"
 							stroke-linecap="round"
 							stroke="#FBFBFB"
-							fill="url(#gradient)"
+							fill="#D9D9D9"
 							animate={{
 								opacity: [0, 1]
 							}}
@@ -1472,8 +1459,6 @@ const Value = () => {
 							}}
 						/>
 					</svg>
-					<div className="absolute bottom-1/4 left-0 right-0 top-0 bg-gradient-to-t from-[#FBFBFB] to-[#FBFBFB]/0" />
-					<div className="absolute bottom-0 left-0 right-0 top-3/4 bg-[#FBFBFB]" />
 				</InfoCard>
 			</div>
 		</Container>
@@ -1698,15 +1683,15 @@ const Vision = () => {
 							>
 								<div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00EF35]/10">
 									<Check
-										size={12}
+										size={18}
 										className="text-[#00EF35]"
 									/>
 								</div>
 								<h3 className="flex flex-col gap-1">
-									<span className="font-bold">
+									<span className="text-xl font-bold">
 										{action[0]}
 									</span>
-									<div className="flex w-full flex-row items-center gap-2">
+									<div className="flex w-full flex-row items-center gap-2 text-lg">
 										<Image
 											src={`/wallets/${action[1]}.png`}
 											alt="NFT Chance"
@@ -1743,6 +1728,7 @@ const Vision = () => {
 				>
 					<div className="flex flex-wrap items-end justify-end">
 						{immutableFactoryBytecode
+							.slice(0, 180)
 							.replaceAll(" ", "")
 							.split("")
 							.map((char, index) => {
@@ -1773,8 +1759,6 @@ const Vision = () => {
 									</motion.span>
 								)
 							})}
-						<div className="absolute bottom-1/2 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/30 to-[#FBFBFB]" />
-						<div className="absolute bottom-0 left-0 right-0 top-1/2 bg-[#FBFBFB]" />
 					</div>
 				</InfoCard>
 				<InfoCard
@@ -1789,36 +1773,7 @@ const Vision = () => {
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.2, delay: 0.4 }}
-				>
-					{Array.from({ length: 100 }).map((_, index) => (
-						<motion.div
-							key={index}
-							style={{
-								x: `${25 + Math.random() * 50}%`,
-								rotate: `${Math.random() * 90 - 45}deg`,
-								transformOrigin: "center",
-								scale: Math.random() * 0.5 + 0.85,
-								color: "#00EF35"
-							}}
-							animate={{
-								opacity: [1, 0],
-								y: ["-10px", "30px"]
-							}}
-							transition={{
-								duration: 2,
-								repeat: Infinity,
-								repeatDelay: getRandomDelay(0, 2)
-							}}
-							className="relative origin-center"
-						>
-							<Trophy
-								size={24}
-								className="origin-center opacity-40"
-							/>
-						</motion.div>
-					))}
-					<div className="absolute bottom-0 left-0 right-0 top-0 bg-gradient-to-bl from-[#FBFBFB]/0 to-[#FBFBFB]" />
-				</InfoCard>
+				/>
 			</div>
 		</Container>
 	)
@@ -1836,9 +1791,9 @@ const Page = () => {
 			<Templates />
 			<Value />
 			<CallToAction
-				text="Grass is green. Blockchains aren't."
-				description="Start using next-gen EVM technology with the industry’s leading protocols. Declare generalized from Plug’s state of the art embedded accounts and then go outside and touch some grass."
-				button="Touch Grass"
+				text="Get what you want from every transaction."
+				description="Simultaneous settlement ensures transactions only execute when the conditions and expected outcomes you set in your intent can be met. No fees are paid and tokens move unless everything happens as expected."
+				button="Get Started"
 			/>
 			<Letter />
 			<FrequentlyAskedQuestions />
