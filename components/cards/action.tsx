@@ -3,7 +3,7 @@
 import { useMemo, type FC, useEffect, useState, useRef } from "react"
 
 import { animate, motion, MotionProps, useMotionValue, useTransform } from "framer-motion"
-import { User, Zap } from "lucide-react"
+import { GitFork, User, Zap } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 
 import { colors, tagColors } from "@/lib/constants"
@@ -99,7 +99,7 @@ export const ActionCard: FC<Props> = ({
 					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
 					style={{ backgroundColor: tagColors[color] }}
 				>
-					<User size={16} className="opacity-40" />
+					<GitFork size={16} className="opacity-40" />
 					<motion.span className="tabular-nums">{forksRounded}</motion.span> Forks
 				</div>
 				<div
