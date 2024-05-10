@@ -13,3 +13,6 @@
 [submodule "packages/pitch"]
 	path = packages/pitch
 	url = https://github.com/nftchance/plug-pitch
+[submodule "packages/backend"]
+	path = packages/backend
+	url = https://github.com/nftchance/plug-backend
