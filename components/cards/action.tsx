@@ -1,8 +1,14 @@
 "use client"
 
-import { useMemo, type FC, useEffect, useState, useRef } from "react"
+import { type FC, useEffect, useMemo, useRef, useState } from "react"
 
-import { animate, motion, MotionProps, useMotionValue, useTransform } from "framer-motion"
+import {
+	animate,
+	motion,
+	MotionProps,
+	useMotionValue,
+	useTransform
+} from "framer-motion"
 import { GitFork, User, Zap } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 
@@ -40,49 +46,59 @@ export const ActionCard: FC<Props> = ({
 	const [isInView, setInView] = useState(false)
 
 	const animatedForks = useMotionValue(0)
-	const forksRounded = useTransform(animatedForks, latest => Math.round(latest))
+	const forksRounded = useTransform(animatedForks, latest =>
+		Math.round(latest)
+	)
 	const animatedRuns = useMotionValue(0)
 	const runsRounded = useTransform(animatedRuns, latest => Math.round(latest))
 
 	useEffect(() => {
-		const node = ref.current;
-		if (!node) return;
+		const node = ref.current
+		if (!node) return
 
 		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
+			entries => {
+				entries.forEach(entry => {
 					if (entry.isIntersecting) {
-						setInView(true);
+						setInView(true)
 					}
-				});
+				})
 			},
 			{ threshold: 0.1 }
-		);
+		)
 
-		observer.observe(node);
+		observer.observe(node)
 
 		return () => {
-			observer.unobserve(node);
-		};
-	}, []);
+			observer.unobserve(node)
+		}
+	}, [])
 
 	useEffect(() => {
 		if (!isInView) return
-		const controls = animate(animatedForks, forks || Math.floor(Math.random() * 300), {
-			duration: 1,
-			delay: 0.5
-		})
+		const controls = animate(
+			animatedForks,
+			forks || Math.floor(Math.random() * 300),
+			{
+				duration: 1,
+				delay: 0.5
+			}
+		)
 		return controls.stop
-	}, [forks, isInView])
+	}, [animatedForks, forks, isInView])
 
 	useEffect(() => {
 		if (!isInView) return
-		const controls = animate(animatedRuns, runs || Math.floor(Math.random() * 1200) + 200, {
-			duration: 1,
-			delay: 0.5
-		})
+		const controls = animate(
+			animatedRuns,
+			runs || Math.floor(Math.random() * 1200) + 200,
+			{
+				duration: 1,
+				delay: 0.5
+			}
+		)
 		return controls.stop
-	}, [forks, isInView])
+	}, [animatedRuns, runs, isInView])
 
 	return (
 		<motion.button
@@ -100,14 +116,20 @@ export const ActionCard: FC<Props> = ({
 					style={{ backgroundColor: tagColors[color] }}
 				>
 					<GitFork size={16} className="opacity-40" />
-					<motion.span className="tabular-nums">{forksRounded}</motion.span> Forks
+					<motion.span className="tabular-nums">
+						{forksRounded}
+					</motion.span>{" "}
+					Forks
 				</div>
 				<div
 					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
 					style={{ backgroundColor: tagColors[color] }}
 				>
 					<Zap size={16} className="opacity-40" />
-					<motion.span className="tabular-nums">{runsRounded}</motion.span> Runs
+					<motion.span className="tabular-nums">
+						{runsRounded}
+					</motion.span>{" "}
+					Runs
 				</div>
 			</div>
 			<span className="mt-auto w-[65%] 2xl:w-[90%]">{title}</span>

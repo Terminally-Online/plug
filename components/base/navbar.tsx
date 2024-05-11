@@ -5,9 +5,9 @@ import Link from "next/link"
 
 import { Activity, Book } from "lucide-react"
 
-import { routes } from "@/lib/routes"
+import { routes } from "@/lib/constants/routes"
 
-import Container from "../container/landing"
+import Container from "../landing/container"
 
 // Use the base64 encoded SVG for the Twitter icon as lucide-react has deprecated it.
 const twitter =

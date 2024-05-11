@@ -3,14 +3,13 @@ import { useMemo } from "react"
 import { erc20Abi, isAddress } from "viem"
 import { useReadContracts } from "wagmi"
 
-import { TOKENS } from "@/lib/tokens"
+import { tokens } from "@/lib/constants/tokens"
+import { getLevenshteinDistance } from "@/lib/functions"
 
 import { Search } from "../types/balances"
-import { levenshteinDistance } from "../utils"
 
-// TODO: If you change chains in the middle of the process we could serve you
-//		 the wrong asset address.
-
+// TODO: If you change chains in the middle of the process we could serve 
+///		 you the wrong asset address.
 export const useTokens = ({
 	chainId,
 	address,
@@ -62,7 +61,7 @@ export const useTokens = ({
 		//		 still show up with a logo that exists on another chain.
 		let logoURI = ""
 		if (symbol?.result !== undefined) {
-			const found = TOKENS.find(token => token.symbol === symbol.result)
+			const found = tokens.find(token => token.symbol === symbol.result)
 
 			if (found) logoURI = found.logoURI
 		}
@@ -87,11 +86,11 @@ export const useTokens = ({
 	}, [chainId, query, data])
 
 	const all = useMemo(
-		() => TOKENS.filter(token => token.chainId === chainId),
+		() => tokens.filter(token => token.chainId === chainId),
 		[chainId]
 	)
 
-	const tokens = useMemo(() => {
+	const filtered = useMemo(() => {
 		const staticTokens = all
 			.filter(token => {
 				if (query === "") return true
@@ -108,8 +107,8 @@ export const useTokens = ({
 				)
 			})
 			.sort((a, b) => {
-				const distanceA = levenshteinDistance(a.symbol, query)
-				const distanceB = levenshteinDistance(b.symbol, query)
+				const distanceA = getLevenshteinDistance(a.symbol, query)
+				const distanceB = getLevenshteinDistance(b.symbol, query)
 
 				return distanceA - distanceB
 			})
@@ -119,7 +118,7 @@ export const useTokens = ({
 		return [metadata, ...staticTokens]
 	}, [query, all, metadata])
 
-	return { all, tokens, metadata }
+	return { all, tokens: filtered, metadata }
 }
 
 export default useTokens

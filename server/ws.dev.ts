@@ -21,11 +21,6 @@ const handler = applyWSSHandler({
 	}
 })
 
-const statusString = `   ◍ Plug Websockets ${version} 
-   - Local: ws://localhost:3001
-   - Environments: .env
-`
-
 wss.on("connection", ws => {
 	console.log(`WebSocket client connected. Total: ${wss.clients.size}`)
 
@@ -33,8 +28,6 @@ wss.on("connection", ws => {
 		console.log(`WebSocket client disconnected. Total: ${wss.clients.size}`)
 	})
 })
-
-console.log(statusString)
 
 process.on("SIGTERM", () => {
 	console.log("SIGTERM received. Shutting down WebSocket server.")
@@ -46,3 +39,8 @@ process.on("SIGTERM", () => {
 		process.exit(0)
 	})
 })
+
+console.log(`   🔌 Plug Websockets ${version} 
+- Local: ws://localhost:3001
+- Environments: .env
+`)

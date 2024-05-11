@@ -1,3 +1,3 @@
-import { chains } from "@/lib/blockchain"
+import { chains } from "@/lib/constants"
 
 export type ChainId = (typeof chains)[number]["id"]

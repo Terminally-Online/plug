@@ -3,9 +3,9 @@ import type { FC } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
-import { routes } from "@/lib/routes"
+import { routes } from "@/lib/constants/routes"
 
-import Container from "../container/landing"
+import Container from "../landing/container"
 
 export const Footer: FC = () => (
 	<>

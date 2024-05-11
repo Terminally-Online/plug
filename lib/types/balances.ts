@@ -1,7 +1,7 @@
-import { TOKENS } from "@/lib/tokens"
+import { tokens } from "@/lib/constants/tokens"
 
 export type Search = {
 	query: string
 	isSearching: boolean
-	asset: (typeof TOKENS)[0] | undefined
+	asset: (typeof tokens)[0] | undefined
 }

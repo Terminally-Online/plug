@@ -10,7 +10,7 @@ import { getCsrfToken } from "next-auth/react"
 
 import { SiweMessage } from "siwe"
 
-import { getBaseUrl } from "@/lib/links"
+import { getBaseUrl } from "@/server/client/links"
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {

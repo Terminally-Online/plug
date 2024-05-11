@@ -2,7 +2,7 @@ import type { AppProps, AppType } from "next/app"
 
 import { Session } from "next-auth"
 
-import localFont from "@next/font/local"
+import localFont from "next/font/local"
 // import { getSession, SessionProvider } from "next-auth/react"
 import { GoogleTagManager } from "@next/third-parties/google"
 import { SpeedInsights } from "@vercel/speed-insights/next"

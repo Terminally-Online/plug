@@ -1,6 +1,6 @@
-export const NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+export const nativeTokenAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
-export const TOKENS = [
+export const tokens = [
 	{
 		address: "0x0000000000085d4780B73119b644AE5ecd22b376",
 		name: "TrueUSD",

@@ -1,6 +1,6 @@
 import { exec } from "child_process"
 
-import { version } from "../package.json"
+import { version } from "../../package.json"
 
 const outputString = `   ◍ Plug PostgreSQL Database ${version}`
 const envString = `- Environments: .env`

@@ -1,7 +1,8 @@
 export const localRoutes = {
 	brandKit: "/brand-kit/",
 	comingSoon: "/coming-soon/",
-	index: "/"
+	index: "/",
+	app: "/app",
 }
 
 export const staticRoutes = {

@@ -1,6 +1,10 @@
 generator client {
-    provider        = "prisma-dbml-generator"
+    provider        = "prisma-client-js"
     previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+generator dbml { 
+    provider = "prisma-dbml-generator"
 }
 
 datasource db {

@@ -5,7 +5,7 @@
 // import { useBalance as useNativeBalance } from "wagmi"
 //
 // import { api } from "@/lib/api"
-// import { truncateBalance } from "@/lib/blockchain"
+// import { formatBalance } from "@/lib/blockchain"
 // import { useBalance } from "@/lib/hooks/useBalance"
 // import { useDebounce } from "@/lib/hooks/useDebounce"
 // import { NATIVE_TOKEN_ADDRESS } from "@/lib/tokens"
@@ -119,7 +119,7 @@
 // 	// 	}, [direction, amount, decimals])
 // 	//
 // 	// 	const preBalance = useMemo(
-// 	// 		() => formatNumber(truncateBalance(balance, decimals)),
+// 	// 		() => formatNumber(formatBalance(balance, decimals)),
 // 	// 		[balance, decimals]
 // 	// 	)
 // 	//
@@ -131,7 +131,7 @@
 // 	// 	const postBalance = useMemo(() => {
 // 	// 		if (changedBalance < BigInt(0)) return "0"
 // 	//
-// 	// 		return formatNumber(truncateBalance(changedBalance, decimals))
+// 	// 		return formatNumber(formatBalance(changedBalance, decimals))
 // 	// 	}, [amountBigInt, balance, decimals])
 // 	//
 // 	// 	return {

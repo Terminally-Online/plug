@@ -4,7 +4,7 @@
 //
 // import { TRPCError } from "@trpc/server"
 //
-// import { truncateBalance } from "@/lib/blockchain"
+// import { formatBalance } from "@/lib/blockchain"
 // import { NATIVE_TOKEN_ADDRESS, TOKENS } from "@/lib/tokens"
 // import { formatNumber } from "@/lib/utils"
 // import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
@@ -83,7 +83,7 @@
 //
 // 			const balance = hexToBigInt(tokenBalance as `0x${string}`)
 // 			const balanceFormatted = formatNumber(
-// 				truncateBalance(balance, staticToken.decimals)
+// 				formatBalance(balance, staticToken.decimals)
 // 			)
 //
 // 			return {
