@@ -140,7 +140,7 @@ export default defineConfig({
                 link: "/core/routers/plug",
               },
             ],
-          }
+          },
         ],
       },
     ],
