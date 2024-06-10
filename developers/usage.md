@@ -12,8 +12,8 @@ All of the base tools are in constant iteration and are subject to change. Break
 
 When working with Plug there are two primary packages you may need:
 
-- [`types`](https://www.npmjs.com/package/@nftchance/plug-types): The onchain types for the protocol and signatures.
-- [`core`](https://www.npmjs.com/package/@nftchance/plug-core): The framework to sign and submit intents through a simplified abstraction layer.
+- [**types:**](https://www.npmjs.com/package/@nftchance/plug-types) The onchain types for the protocol and signatures.
+- [**core:**](https://www.npmjs.com/package/@nftchance/plug-core) The framework to sign and submit intents through a simplified abstraction layer.
 
 When working with `core` you'll automatically have `types` installed as a dependency. This means that in most cases you will be able to install `core` alone with:
 
