@@ -1,143 +1,125 @@
-import { default as fse } from "fs-extra";
-import { resolve } from "pathe";
 import { defineConfig, HeadConfig } from "vitepress";
 
-const rootDir = resolve(process.cwd());
-
-const ordering = ["domain", "fuse", "Pin", "Transaction", "Breaker", "Plug"];
-
-// * Get the generated files in a directory and create the array of items.
-function getItems(directory: string) {
-  const directoryPath = resolve(rootDir, directory);
-  const files = fse.readdirSync(directoryPath);
-
-  return files.map((file) => {
-    const name = file.replace(".md", "");
-    const link = `${directory}/${name}`;
-
-    console.log(link);
-
-    return {
-      text: name,
-      link: link.replace("./", ""),
-    };
-  });
-}
-
 export default defineConfig({
-  title: "Plug",
+  title: "Plug Documentation",
+  titleTemplate: ":title | Plug Documentation",
   description: "Documentation for the Plug protocol and application.",
+
   appearance: false,
+  lastUpdated: true,
+
+  markdown: {
+    lineNumbers: true,
+  },
+
   themeConfig: {
-    logo: "/logo-black.svg",
-    siteTitle: false,
+    logo: "/favicon.ico",
+    externalLinkIcon: true,
 
     nav: [{ text: "Home", link: "https://www.onplug.io" }],
+    outline: { level: "deep" },
 
     sidebar: [
       {
-        text: "Introduction",
+        text: "Getting Started",
         items: [
           {
-            text: "Getting Started",
+            text: "Introduction",
             link: "/",
           },
           {
-            text: "Why Plug",
-            collapsed: false,
-            items: [
-              {
-                text: "The Problem and Solution",
-                link: "/introduction/why-plug",
-              },
-              {
-                text: "Transaction Types",
-                link: "/introduction/why/transactions",
-              },
-              {
-                text: "Passive Management",
-                link: "/introduction/why/passive-management",
-              },
-            ],
+            text: "Integrations",
+            link: "/introduction/integrations",
           },
           {
-            text: "FAQ",
+            text: "Frequently Asked Questions",
             link: "/introduction/frequently-asked-questions",
           },
         ],
       },
+
       {
-        text: "Core Mechanisms",
+        text: "Core Concepts",
         items: [
           {
-            text: "EIP-712",
+            text: "Architecture",
+            link: "/concepts/architecture",
+          },
+          {
+            text: "Constraints",
+            link: "/concepts/constraints",
+          },
+          {
+            text: "Actions",
+            link: "/concepts/actions",
+          },
+          {
+            text: "Strategies",
+            link: "/concepts/strategies",
+          },
+        ],
+      },
+
+      {
+        text: "Developers",
+        items: [
+          {
+            text: "Usage",
+            link: "/developers/usage",
+          },
+          {
+            text: "Signatures",
             link: "/decoders/eip-712",
-            collapsed: true,
             items: [
               {
-                text: "Live Pairs",
-                link: "/decoders/eip-712/signed-pairs",
+                text: "Base Types",
+                link: "/decoders/base-types",
+                collapsed: true,
+                items: [
+                  {
+                    text: "EIP712Domain",
+                    link: "/generated/base-types/EIP712Domain",
+                  },
+                  {
+                    text: "Plug",
+                    link: "/generated/base-types/Plug",
+                  },
+                  {
+                    text: "Plugs",
+                    link: "/generated/base-types/Plugs",
+                  },
+                  {
+                    text: "LivePlugs",
+                    link: "/generated/base-types/LivePlugs",
+                  },
+                ],
               },
               {
-                text: "Automated Generation",
-                link: "/decoders/eip-712/automated-generation",
-              },
-            ],
-          },
-          {
-            text: "Base Types",
-            link: "/decoders/base-types",
-            collapsed: true,
-            items: getItems("./generated/base-types"),
-          },
-          {
-            text: "Hash Getters",
-            link: "/decoders/hash-getters",
-            collapsed: true,
-            items: getItems("./generated/hash-getters"),
-          },
-          {
-            text: "Fuses",
-            link: "/core/fuses",
-            collapsed: true,
-            items: [
-              {
-                text: "encode",
-                link: "/core/fuse/encode",
-              },
-              {
-                text: "decode",
-                link: "/core/fuse/decode",
-              },
-              {
-                text: "enforceFuse",
-                link: "/core/fuse/enforce-fuse",
-              },
-            ],
-          },
-          {
-            text: "Sockets",
-            link: "/core/sockets",
-            collapsed: true,
-            items: [
-              {
-                text: "signer",
-                link: "/core/sockets/signer",
-              },
-              {
-                text: "plug",
-                link: "/core/sockets/plug",
-              },
-            ],
-          },
-          {
-            text: "Routers",
-            link: "/core/routers",
-            collapsed: true,
-            items: [
-              {
-                text: "plug",
-                link: "/core/routers/plug",
+                text: "Hash Getters",
+                link: "/decoders/hash-getters",
+                collapsed: true,
+                items: [
+                  {
+                    text: "getEIP712DomainHash",
+                    link: "/generated/hash-getters/getEIP712DomainHash",
+                  },
+                  {
+                    text: "getPlugHash",
+                    link: "/generated/hash-getters/getPlugHash",
+                  },
+                  {
+                    text: "getPlugArrayHash",
+                    link: "/generated/hash-getters/getPlugArrayHash",
+                  },
+                  {
+                    text: "getPlugsHash",
+                    link: "/generated/hash-getters/getPlugsHash",
+                  },
+                  {
+                    text: "getLivePlugsHash",
+                    link: "/generated/hash-getters/getLivePlugsHash",
+                  },
+                ],
               },
             ],
           },
@@ -159,86 +141,69 @@ export default defineConfig({
     },
   },
 
-  lastUpdated: true,
-
   transformHead({ assets }) {
     const head: HeadConfig[] = [];
 
-    head.push([
-      "meta",
+    for (const item of [
       {
         property: "og:image",
         content: "https://docs.onplug.io/opengraph.png",
       },
-    ]);
-
-    // make the image big
-    head.push([
-      "meta",
       {
         property: "og:image:width",
         content: "1920",
       },
-    ]);
-
-    head.push([
-      "meta",
       {
         property: "og:image:height",
         content: "1080",
       },
-    ]);
-
-    head.push([
-      "meta",
       {
         property: "twitter:image",
         content: "https://docs.onplug.io/opengraph.png",
       },
-    ]);
-
-    // make the image large
-    head.push([
-      "meta",
       {
         property: "twitter:image:width",
         content: "1920",
       },
-    ]);
-
-    head.push([
-      "meta",
       {
         property: "twitter:image:height",
         content: "1080",
       },
-    ]);
-
-    head.push([
-      "meta",
       {
         property: "twitter:card",
         content: "summary_large_image",
       },
+    ])
+      head.push(["meta", item]);
+
+    head.push([
+      "link",
+      {
+        rel: "preload",
+        href: assets.find(() => /Satoshi-Variable\.\w+\.woff2/) ?? "",
+        as: "font",
+        type: "font/woff2",
+        crossorigin: "",
+      },
+    ]);
+    head.push(["link", { rel: "icon", href: "/favicon.ico" }]);
+
+    head.push([
+      "script",
+      {
+        async: "",
+        src: "https://www.googletagmanager.com/gtag/js?id=G-CH66Y2E034",
+      },
+    ]);
+    head.push([
+      "script",
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CH66Y2E034');`,
     ]);
 
-    const font = assets.find(() => /Satoshi-Variable\.\w+\.woff2/);
-    if (font)
-      head.push([
-        "link",
-        {
-          rel: "preload",
-          href: font,
-          as: "font",
-          type: "font/woff2",
-          crossorigin: "",
-        },
-      ]);
-
     return head;
-  },
-
-  markdown: {
-    lineNumbers: true,
   },
 });

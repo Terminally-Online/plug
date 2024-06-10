@@ -88,8 +88,8 @@ strong {
   --vp-c-default-3: #242323;
   --vp-c-default-soft: var(--vp-c-gray-soft);
 
-  --vp-c-brand-1: #00ef35;
-  --vp-c-brand-2: #93df00;
+  --vp-c-brand-1: #00e100;
+  --vp-c-brand-2: #00ef35;
   --vp-c-brand-3: #fffc00;
   --vp-c-brand-soft: rgba(255, 174, 0, 0.2);
 
@@ -174,4 +174,77 @@ strong {
 
 .DocSearch {
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
+}
+
+/**
+* Component: Base
+* -------------------------------------------------------------------------- */
+
+a {
+  text-decoration: none !important;
+}
+
+.main > div > div > p > a,
+.main > div > div > p > span > a,
+.main > div > div > ul > li > a,
+.main > div > div > ol > li > a {
+  color: var(--vp-c-brand-1);
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: none !important;
+}
+
+.main > div > div > p > a:hover,
+.main > div > div > p > span > a:hover,
+.main > div > div > ul > li > a:hover,
+.main > div > div > ol > li > a:hover {
+  background: var(--vp-c-brand-2);
+  color: #000000 !important;
+}
+
+code {
+  font-weight: 700 !important;
+}
+
+/**
+* Component: Integrations
+* -------------------------------------------------------------------------- */
+
+.integrations {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.integration {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.integration:hover {
+  background: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+
+.integration > img {
+  width: 25%;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.integration > p {
+  margin: 0;
+  font-weight: 700 !important;
+}
+
+.integration > p:nth-of-type(2) {
+  opacity: 0.6;
+  font-size: 12px;
+  font-weight: 400 !important;
 }

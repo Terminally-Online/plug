@@ -1,6 +1,6 @@
 # Base Types
 
-`Plug` is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Plugs](/generated/base-types/Plugs). Alone Plugs are not very useful, but when signed they form the foundation of the [Plug](/) framework.
+<span style="color: rgba(0,0,0,0.6)">Plug is architected on a handful of [Base EIP-712 Types](/decoders/base-types) that are used to build the [Plugs](/generated/base-types/Plugs). Alone, these types cannot do anything, but when signed they are the foundation of the framework.</span>
 
 ## Type Hashes
 

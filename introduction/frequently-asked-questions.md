@@ -13,38 +13,49 @@ head:
 
 # Frequently Asked Questions
 
-While [Plug](/) is rather simple, it's new and that may lead to many questions that you have never had to ask before. However, it is understandable that you may have some questions. This page will answer some of the most common questions that you may have.
+<span style="color: rgba(0,0,0,0.6)">While [Plug](/) is rather simple to use, it's a new user pattern and that may lead to questions that you have never had to ask before. It is understandable that you may have some questions, so below you can find a general breakdown of the questions we've most commonly been asked.</span>
 
-::: info
+## What is an Intent?
 
-If you are using the documentation and feel that a question or answer belongs here, please do edit the page and submit a PR. We would love to hear from you! If you are looking for more information or have a question not answered here, please [reach out for help](https://twitter.com/nftchance).
+A metaphor will establish this understanding in the simplest way for you. An intent, is a declaration of outcomes that you'd like to see. When you type into Google Maps you only enter the address, not the route you will take. Intents are functionally the same. Contrary to a typical transaction where you declare the exact route you want to take, with an intent you only define the final destination. This way, instead of you managing the complexity a more sophisticated system can calculate the best route and get you there on the quickest path, that has no traffic, avoids construction, and keeps you from being late to your date.
 
-:::
+## What is a Solver doing?
 
-## Why would I want intents?
+When using intents you only declare your outcomes (the final destination). Of course, someone or something still needs to build the transaction that delivers what you're looking for. This is the job of a Solver. There are two distinct types of Solver operations:
 
-Native EVM transactions serve as a constant limiter of the throughput for protocols and users. Bound to the execution path of the blockchain, it is expected for users to not only accept, but wait for the less than ideal performance of the EVM. Declarative transactions (intents) allow you to break free of this limitation and access a much more performant experience with scheduled, automated, and conditional tranasctions to enable more effective transaction settlement.
+1. **Person to Person:** For transactions like swapping tokens you have the ability to avoid direct protocol integration and work with other individuals that have open orders to fill one another. Imagine the simple example where Alice wants to swap 400 **$USDC** to **$ETH** and Bob wants to swap 0.09 **$ETH** to **$USDC** . There are two people that have assets the other wants. This is referred to as a Coincidence of Wants. A Solver works to identify these opportunities and route the assets from one party to another so that each get the best price while having the lowest settlement cost possible.
+2. **Person to Protocol:** For transactions that are not swaps, a Solver works to deliver you the best outcomes, but utilizes the state of the ecosystem rather than a specific person. Instead of finding you an order that gives you the best price, if you say **I want to enter a liquidity pool on Uniswap above 80% APY** a Solver will work to deliver that exact outcome.
 
-## Can I use Plug with protocols already deployed?
+Put simply, a Solver solves for the transaction that will give you at minimum the outcomes you are looking for, often outperforming the expectations set.
 
-Yes! Plug will work with any contract whether it was deployed years in the past, in the present or even years in the future.
+## Are my transactions and Intents private?
 
-## If I want basic support what do I need?
+Privacy of your onchain activity is important, but delivering your desired outcome is more important. Plug routes through MEV blocker mechanisms when possible, but that's not an option on every chain. For the most part, the lack of privacy has one primary risk: _frontrunning_. Risks related to frontrunning are largely limited to token swaps. For typical protocol actions, there is no upside in frontrunning. Often, there is only downside in having done so. In cases where privacy cannot be fully achieved, pre-confirmation agreements with market makers and Solvers enable you to lock in the price of your asset acquisition completely escaping the concern of being frontrun.
 
-To submit an intent all you need to do is prepare the declaration and submit it to the pool of [Solvers](/core/solvers). You can choose to submit things through a vault for value-based actions or a generalized and permisionless router.
+## What are the associated fees?
 
-## Are intents onchain?
+First things first, you only pay a fee on successful execution. You do not pay for failed transactions. You do not pay when you declare your Intent. Intead, when executing an Intent there is an associated fee that covers that cost of Solving and persistent simulation needed to deliver you the best outcomes. Fees are not static. The fees vary across each chain, type of action, and level of compute consumption, in an effort to mirror the dynamics of your typical fee expenditure. Fees as a whole are designed to only result in a marginal increase in cost while delivering a substantially better result. Due to the dynamic nature, you can always find the fee when you declare an intent.
 
-Magically, intents are only ever written onchain once they can be submit to the blockchain they declare an action on. As the base declaration happens with a signature there is no immediate or rent-seeking cost. The only time any cost of execution is incurred is when the transactions are actually run onchain.
+## Do I lose custody of my assets?
 
-## Do I have to use a specific API or Relay?
+No, users do not lose custody of their assets. Users can even take their Intents and execute it themselves if they prefer. Assets are routed through an onchain contract that has been abstracted to approach “backend router” functionality more than a typical wallet or smart account.
 
-No! While there is a first-party API available to you that streamlines the collection, management and distribution of the incoming plugs related to your protocol, it is not required. You can use any API or Relay that you would like to consume the [LivePlugs](/generated/base-types/LivePlugs) and distribute them to the desired network of [Solvers](/core/solvers).
+## What wallets are supported?
 
-## Doesn't this just make my protocol more complex?
+[Metamask](https://metamask.io/), [Rainbow](https://rainbow.me/), [Coinbase](https://www.coinbase.com/wallet/), [Safe](https://safe.global/), [Rabby](https://rabby.io/), etc. We have broad support for [Wallet Connect](https://walletconnect.com/) and our smart contracts support both EOAs and Smart Accounts. If you can sign into other protocols with your wallet, you can use your wallet with Plug.
 
-Quite the opposite! By utilizing [Plug](/) developers are able to remove the management of EVM deficiencies from protocols and provide your users with a much more performant and focused experience. For instance, many protocols require the implementation of time-based limitations. When using [Plug](/) that is no longer the case.
+## What protocols and chains are supported?
 
-## Does my protocol still support native transactions?
+Effectively everything. Due to the generalized nature of our architecture there are very few things that cannot be integrated. You can find a full list of our [active integrations here](/introduction/integrations).
 
-Yes! [Plug](/) is designed to be a solution that allows protocols and users to access the benefits of traditional transactions as well as intents. This allows you to support the best of both worlds and provide your users with the best experience possible in every case.
+## Wen token?
+
+When the flywheel is spinning hard. No sooner. No later. A critical piece of having a functional token ecosystem is to have a mechanism that provides persistent value accrual. Today, that remains the north star for all tokenzation conversations.
+
+## Why haven't you built you built X yet?
+
+We build what users benefit from most. Please don't assume if we haven't implemented something yet it is due to a lack of interest. We index very highly on active feedback and requests from our users. If you have a feature or protocol integration request (**and even general feedback**) [please reach out and tell us](https://twitter.com/onplug_io).
+
+## Is there a public roadmap for what's coming next?
+
+No, there isn't. As a team we do not follow "agile" practices as they create a system that is anything, but agile. Planning every single step to excrutiating detail is paradoxical state of software development. We are not here to operate based on predefined objectives. We focus on what improves your experience most. At a higher level we operate with quarterly objectives on top of multi-year north stars.
