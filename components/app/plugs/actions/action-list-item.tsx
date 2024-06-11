@@ -90,6 +90,7 @@ export const ActionListItem: FC<Props> = ({
 							<ActionItem
 								key={actionName}
 								categoryName={categoryName}
+								// @ts-ignore
 								actionName={actionName}
 								handleVisibleToggle={() =>
 									handleVisibleToggle()
