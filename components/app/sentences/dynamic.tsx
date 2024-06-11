@@ -53,7 +53,7 @@ export const DynamicFragment: FC<{
 		values[index] === undefined || values[index] === ""
 			? inputName
 			: values[index] instanceof Object
-				? formatTitle(values[index].label).toLowerCase()
+				? formatTitle(values[index]?.label ?? "").toLowerCase()
 				: values[index]
 
 	const [valuesVisible, setValuesVisible] = useState(false)
