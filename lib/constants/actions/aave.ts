@@ -87,6 +87,6 @@ export const aave = {
 		info: "Withdraw a specific amount of FRAX tokens used for lending from a specified pool on FraxLend.",
 		icon: CoinsIcon
 	}
-} as const
+}
 
 export default aave

@@ -18,21 +18,18 @@ export const ActionCard: FC<Props> = ({
 	const { handleAddAction } = usePlugs()
 
 	const primaryActions = useMemo(() => {
-		const categoryActions = actions[categoryName]
-		const primaryActions: Record<
-			keyof typeof categoryActions,
-			(typeof categoryActions)[keyof typeof categoryActions]
-		> = {}
+		return Object.keys(actions[categoryName]).reduce(
+			(acc, actionName) => {
+				const { primary, ...action } = actions[categoryName][actionName]
 
-		for (const actionName in categoryActions) {
-			// @ts-ignore
-			if (categoryActions[actionName].primary) {
-				// @ts-ignore
-				primaryActions[actionName] = categoryActions[actionName]
-			}
-		}
+				if (primary) {
+					acc[actionName] = action
+				}
 
-		return primaryActions
+				return acc
+			},
+			{} as Record<string, (typeof actions)[typeof categoryName][string]>
+		)
 	}, [categoryName])
 
 	return (
@@ -43,7 +40,6 @@ export const ActionCard: FC<Props> = ({
 			}}
 		>
 			{Object.keys(primaryActions).map(actionName => {
-				// @ts-ignore
 				const { icon: Icon, ...action } =
 					primaryActions[actionName as keyof typeof primaryActions]
 
@@ -56,14 +52,12 @@ export const ActionCard: FC<Props> = ({
 
 							handleAddAction({
 								categoryName,
-								// @ts-ignore
 								actionName,
 								data: JSON.stringify(action)
 							})
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">
-							{/* @ts-ignore */}
 							{Icon && <Icon size={24} />}
 						</div>
 						<p className="max-w-[120px] text-sm">

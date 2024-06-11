@@ -6,15 +6,12 @@ import { Container, Header } from "@/components/app"
 import { Search } from "@/components/inputs/search"
 import { Tags } from "@/components/inputs/tags"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { routes, tags } from "@/lib/constants"
+import { routes } from "@/lib/constants"
 
 const Page = () => {
 	const { handleAdd } = usePlugs()
 
 	const [search, setSearch] = useState("")
-	const [selectedTag, setSelectedTag] = useState<
-		(typeof tags)[number] | undefined
-	>(tags[0])
 
 	return (
 		<>
@@ -34,7 +31,7 @@ const Page = () => {
 				/>
 			</Container>
 
-			<Tags selectedTag={selectedTag} handleSelectTag={setSelectedTag} />
+			<Tags />
 
 			<Container>
 				<Header

@@ -27,15 +27,17 @@ export const uniswap = {
 		abi: abis.uniswap.swapExactTokensForTokens,
 		inputs: parseAbi([abis.uniswap.swapExactTokensForTokens])[0]["inputs"],
 		sentence: "Swap {0} {1} for exactly {2} {3}.",
-		info: "Swap a specific amount of one token for a specific amount of another token. This can be used as a limit order."
+		info: "Swap a specific amount of one token for a specific amount of another token. This can be used as a limit order.",
+		icon: ArrowRightLeftIcon
 	},
 	swapTokensForExactETH: {
 		address: zeroAddress,
 		abi: abis.uniswap.swapTokensForExactETH,
 		inputs: parseAbi([abis.uniswap.swapTokensForExactETH])[0]["inputs"],
 		sentence: "Swap {0} {1} for at least {2} ETH.",
-		info: "Swap a specific amount of the selected token for a specific amount of ETH. This can be used as a limit order."
+		info: "Swap a specific amount of the selected token for a specific amount of ETH. This can be used as a limit order.",
+		icon: ArrowLeftRightIcon
 	}
-} as const
+}
 
 export default uniswap

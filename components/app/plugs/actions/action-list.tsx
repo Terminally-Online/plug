@@ -1,8 +1,7 @@
 import type { FC } from "react"
 
+import { ActionListItem } from "@/components/app/plugs/actions/action-list-item"
 import { actionCategories } from "@/lib/constants"
-
-import { ActionListItem } from "./action-list-item"
 
 type Props = {
 	handleNestedToggle: () => void
@@ -10,18 +9,13 @@ type Props = {
 
 export const ActionList: FC<Props> = ({ handleNestedToggle }) => (
 	<>
-		{Object.keys(actionCategories).map(categoryName => {
-			const category =
-				actionCategories[categoryName as keyof typeof actionCategories]
-
-			return (
-				<ActionListItem
-					key={categoryName}
-					categoryName={categoryName as keyof typeof actionCategories}
-					category={category}
-					handleVisibleToggle={handleNestedToggle}
-				/>
-			)
-		})}
+		{Object.keys(actionCategories).map(categoryName => (
+			<ActionListItem
+				key={categoryName}
+				categoryName={categoryName}
+				category={actionCategories[categoryName]}
+				handleVisibleToggle={handleNestedToggle}
+			/>
+		))}
 	</>
 )

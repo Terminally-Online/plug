@@ -34,7 +34,12 @@ type PlugContextProps = {
 	handleAddAction: (
 		action: Omit<
 			Workflow["versions"][number]["actions"][number],
-			"id" | "index" | "workflowId" | "categoryName" | "actionName"
+			| "id"
+			| "index"
+			| "workflowId"
+			| "categoryName"
+			| "actionName"
+			| "versionId"
 		> & {
 			categoryName: keyof typeof actionCategories
 			actionName: keyof (typeof actions)[keyof typeof actionCategories]

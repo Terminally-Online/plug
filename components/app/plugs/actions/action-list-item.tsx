@@ -1,20 +1,18 @@
 import type { FC } from "react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 
 import Image from "next/image"
 
 import { ChevronRight } from "lucide-react"
 
-import { ActionCard } from "@/components/app/plugs/actions/action-card"
+import { Frame } from "@/components/app/frames/base"
+import { ActionCard, ActionItem } from "@/components/app/plugs/actions"
 import { Button } from "@/components/buttons"
 import { actionCategories, actions } from "@/lib/constants"
 import { formatTitle } from "@/lib/functions"
 
-import { Frame } from "../../frames/base"
-import { ActionItem } from "./action-item"
-
 type Props = {
-	categoryName: keyof typeof actionCategories
+	categoryName: string
 	category: (typeof actionCategories)[keyof typeof actionCategories]
 	handleVisibleToggle: () => void
 }
@@ -90,11 +88,8 @@ export const ActionListItem: FC<Props> = ({
 							<ActionItem
 								key={actionName}
 								categoryName={categoryName}
-								// @ts-ignore
 								actionName={actionName}
-								handleVisibleToggle={() =>
-									handleVisibleToggle()
-								}
+								handleVisibleToggle={handleVisibleToggle}
 							/>
 						))}
 					</div>

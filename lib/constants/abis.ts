@@ -1,4 +1,7 @@
-export const actionCategories = {
+export const actionCategories: Record<
+	string,
+	{ image: string; gradientFrom: string; gradientTo: string }
+> = {
 	plug: {
 		image: "/protocols/plug.png",
 		gradientFrom: "#00E100",
@@ -24,7 +27,7 @@ export const actionCategories = {
 		gradientFrom: "#FF007A",
 		gradientTo: "#FF9BCB"
 	}
-} as const
+}
 
 export const abis = {
 	plug: {
@@ -85,4 +88,4 @@ export const abis = {
 		swapTokensForExactETH:
 			"function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)"
 	}
-} as const
+}

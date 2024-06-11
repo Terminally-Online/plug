@@ -487,6 +487,6 @@ export const nouns = {
 		icon: HashIcon,
 		primary: true
 	}
-} as const
+}
 
 export default nouns

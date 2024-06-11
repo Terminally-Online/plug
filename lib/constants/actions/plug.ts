@@ -79,6 +79,6 @@ export const plug = {
 		info: "Only allow this Plug to be executed when the block number is greater or lower the value entered. This is an advanced feature, you may prefer to use the timestamp condition.",
 		icon: HashIcon
 	}
-} as const
+}
 
 export default plug

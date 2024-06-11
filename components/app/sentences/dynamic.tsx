@@ -1,17 +1,16 @@
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { Action, Option, StaticAction, Value } from "."
-import { ChevronRight, InfinityIcon } from "lucide-react"
+import { ChevronRight, CircleHelp } from "lucide-react"
 
+import { Frame } from "@/components/app/frames/base"
+import { Action, Option, Value } from "@/components/app/sentences"
+import { getIndexes } from "@/components/app/sentences/fragments"
 import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
 import { actionCategories, actions } from "@/lib/constants"
 import { formatInputName, formatTitle } from "@/lib/functions"
-
-import { Frame } from "../frames/base"
-import { getIndexes } from "./fragments"
 
 export const DynamicFragment: FC<{
 	action: Action
@@ -19,16 +18,26 @@ export const DynamicFragment: FC<{
 	values: Array<Value>
 	handleValue: (value: Value) => void
 }> = ({ action, fragment, values, handleValue }) => {
-	const category =
-		actionCategories[action.categoryName as keyof typeof actionCategories]
-	const staticCategory =
-		actions[action.categoryName as keyof typeof actionCategories]
-	const staticAction: StaticAction =
-		staticCategory[action.actionName as keyof typeof staticCategory]
+	const category = actionCategories[action.categoryName]
+	const staticAction = actions[action.categoryName][action.actionName]
 
-	const Icon = staticAction.icon || InfinityIcon
+	const Icon = staticAction.icon || CircleHelp
+
+	const [valuesVisible, setValuesVisible] = useState(false)
 
 	const [childIndex, index] = useMemo(() => getIndexes(fragment), [fragment])
+
+	const inputName = formatInputName(staticAction.inputs[index].name)
+
+	const label = useMemo(() => {
+		const value = values[index]
+
+		if (value === undefined || value === "") return inputName
+
+		return value instanceof Object
+			? formatTitle(value.label).toLowerCase()
+			: value
+	}, [values, index, inputName])
 
 	const options: Array<Option> | undefined = useMemo(() => {
 		if (!values || !staticAction.options) return undefined
@@ -48,23 +57,13 @@ export const DynamicFragment: FC<{
 		)[index][childValue.value]
 	}, [staticAction, childIndex, index, values])
 
-	const inputName = formatInputName(staticAction.inputs[index].name)
-	const label =
-		values[index] === undefined || values[index] === ""
-			? inputName
-			: values[index] instanceof Object
-				? formatTitle(values[index]?.label ?? "").toLowerCase()
-				: values[index]
-
-	const [valuesVisible, setValuesVisible] = useState(false)
-
 	return (
 		<>
 			<button
 				className="cursor-pointer rounded-lg bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out"
 				style={{
 					background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-					color: `#00E100`
+					color: `#00EF35`
 				}}
 				onClick={() => setValuesVisible(!valuesVisible)}
 			>
@@ -87,7 +86,8 @@ export const DynamicFragment: FC<{
 				handleVisibleToggle={() => setValuesVisible(!valuesVisible)}
 			>
 				<div className="flex flex-col gap-4">
-					{options === undefined &&
+					{/* TODO: Fix this. */}
+					{/* {options === undefined && values[index] instanceof String &&
 						values[index] instanceof Object === false && (
 							<Search
 								icon={<Icon size={14} className="opacity-60" />}
@@ -97,7 +97,7 @@ export const DynamicFragment: FC<{
 									handleValue(value)
 								}
 							/>
-						)}
+						)} */}
 
 					{options !== undefined && (
 						<div className="flex w-full flex-col gap-2">

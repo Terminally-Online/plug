@@ -8,7 +8,7 @@ import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
 
 const Page = () => {
-	const { search, tag, handleAdd, handleSearch, handleTag } = usePlugs()
+	const { search, handleAdd, handleSearch } = usePlugs()
 
 	return (
 		<>
@@ -28,7 +28,7 @@ const Page = () => {
 				/>
 			</Container>
 
-			<Tags selectedTag={tag} handleSelectTag={handleTag} />
+			<Tags />
 
 			<Container className="mb-[20px]">
 				<PlugGrid from={routes.app.plugs.mine} />
