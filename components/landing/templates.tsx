@@ -28,7 +28,7 @@ export const Templates: FC = () => {
 				and industry experts.
 			</p>
 
-			<div className="grid grid-cols-1 2xl:grid-cols-12">
+			<div className="grid w-full grid-cols-1 2xl:grid-cols-12">
 				<a
 					href={routes.earlyAccess}
 					target="_blank"
