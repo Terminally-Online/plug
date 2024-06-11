@@ -73,7 +73,7 @@ export const Value: FC = () => {
 					className={`${animation.className} md:col-span-2 xl:col-span-1`}
 				>
 					<div
-						className="mx-8 grid h-52 gap-[2px] md:h-44 2xl:h-48"
+						className="mx-8 grid h-44 gap-[2px] 2xl:h-48"
 						style={{ gridTemplateColumns: "repeat(14, 1fr)" }}
 					>
 						{Array.from({ length: 14 }).map((_, index) => (
