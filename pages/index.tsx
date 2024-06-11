@@ -1,6 +1,3 @@
-import Head from "next/head"
-
-import { Footer, Navbar } from "@/components/base"
 import {
 	CallToAction,
 	Examples,
@@ -12,33 +9,32 @@ import {
 	Value,
 	Vision
 } from "@/components/landing"
+import { StaticLayout } from "@/components/layouts/static"
+import { NextPageWithLayout } from "@/lib/types"
 
-const Page = () => (
+const Page: NextPageWithLayout = () => (
 	<>
-		<Head>
-			<title>Home | Plug</title>
-		</Head>
-		<Navbar />
 		<Hero />
 		<Steps />
 		<Examples />
 		<Value />
-		<CallToAction
-			text="Get what you want from every transaction."
-			description="Simultaneous settlement ensures transactions only execute when the conditions and expected outcomes you set in your intent can be met. No fees are paid and tokens move unless everything happens as expected."
-			button="Get Started"
-		/>
 		<Templates />
-		<Vision />
 		<CallToAction
-			text="Blockchains were not built for humans."
+			text="Never miss another opportunity."
 			description="Instead of being trapped inside waiting to click the buttons you can go outside and live the life you want without worrying about missing every opportunity. Your capital can finally manage itself."
 			button="Get Early Access"
 		/>
+		<Vision />
 		<Letter />
 		<FrequentlyAskedQuestions />
-		<Footer />
+		<CallToAction
+			text="Level up your onchain activity."
+			description="As soon as your conditions are met and expected outcomes can be delivered your transactions will automatically run without you doing a thing."
+			button="Get Started"
+		/>
 	</>
 )
+
+Page.getLayout = page => <StaticLayout title="Home">{page}</StaticLayout>
 
 export default Page

@@ -83,3 +83,14 @@ body {
 #__next {
 	min-height: 100vh;
 }
+
+.scrollbar-hide {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.controls-hide,
+input[type="number"].controls-hide {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}

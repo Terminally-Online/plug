@@ -32,7 +32,7 @@ const NotFound = () => {
 
 					<Link
 						href="/"
-						className="flex w-full flex-row items-center items-center justify-center gap-4 border-[1px] border-t-[0px] border-stone-950 p-4 px-8 text-center text-white"
+						className="flex w-full flex-row items-center justify-center gap-4 border-[1px] border-t-[0px] border-stone-950 p-4 px-8 text-center text-white"
 					>
 						<Home className="opacity-40" size={18} />
 						RETURN BACK HOME

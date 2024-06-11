@@ -35,7 +35,7 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 			}}
 			animate={{
 				borderColor: active
-					? ["#D9D9D9", "#00EF35", "#00EF35", "#00EF35", "#D9D9D9"]
+					? ["#D9D9D9", "#00E100", "#00E100", "#00E100", "#D9D9D9"]
 					: "#D9D9D9"
 			}}
 			transition={transition}
@@ -47,7 +47,7 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 						? [
 								"#D9D9D9",
 								"#D9D9D9",
-								"#00EF35",
+								"#00E100",
 								"#D9D9D9",
 								"#D9D9D9"
 							]
@@ -92,7 +92,7 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 
 			<motion.div
 				className="absolute bottom-0 h-3 w-3 rounded-full border-[1px]"
-				style={{ backgroundColor: "#00EF35" }}
+				style={{ backgroundColor: "#00E100" }}
 				initial={{ x: -7, y: -(size / 2), scale: 0.6 }}
 				animate={{ y: [0, -(size / 2), 0], scale: [0.6, 1, 0.6] }}
 				transition={{ ...transition }}
@@ -187,7 +187,7 @@ export const Ecosystem: FC = () => {
 						className="flex h-full w-full items-center justify-center rounded-lg border-[2px] border-dashed bg-white"
 						style={{ borderColor: "#D9D9D9" }}
 						animate={{
-							borderColor: ["#D9D9D9", "#00EF35", "#D9D9D9"]
+							borderColor: ["#D9D9D9", "#00E100", "#D9D9D9"]
 						}}
 						transition={{
 							duration: 0.15,

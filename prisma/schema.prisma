@@ -1,9 +1,9 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["fullTextSearch", "fullTextIndex"]
+    previewFeatures = ["fullTextSearch"]
 }
 
-generator dbml { 
+generator dbml {
     provider = "prisma-dbml-generator"
 }
 
@@ -12,138 +12,97 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User {
-    address String  @id @default(cuid())
-    name    String?
+model UserSocket {
+    name          String
+    userAddress   String
+    socketAddress String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 
-    nextVaultSalt    String?
-    nextVaultAddress String?
-
-    workflows Workflow[]
-    vaults    UserVault[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-model Workflow {
-    id   String @id @default(uuid())
-    name String @default("Untitled Workflow")
-
-    // The unsigned version of the components in a workflow.
-    actions Action[]
-
-    workflowForkedId String?
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Backwards relational fields.
-    user        User?   @relation(fields: [userAddress], references: [address])
-    userAddress String?
-}
-
-// Onchain models.
-model Vault {
-    address String
-    chainId Int
-    name    String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Backwards relational fields.
-    UserVault UserVault[]
-
-    @@id([address, chainId])
-}
-
-model UserVault {
-    user        User   @relation(fields: [userAddress], references: [address])
-    userAddress String
-
-    vault        Vault  @relation(fields: [vaultAddress, vaultChainId], references: [address, chainId])
-    vaultAddress String
-    vaultChainId Int
-
-    // Store live plugs relative to a user vault because if the address that owns the
-    // vault changes, then the signatures are no longer valid. However, if they reacquire
-    // ownership then the signatures should be automatically available again.
-    livePlugs LivePlugs[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    Plugs     Plugs[]
-
-    @@id([userAddress, vaultAddress, vaultChainId])
+    @@id([userAddress, socketAddress])
 }
 
 model Action {
-    id String @id @default(uuid())
-
-    // The index that denotes the place in the order in case the array is ever unordered.
-    index Int
-
-    // Onchain fields.
-    target String
-    value  String
-    data   String
-
-    // Backwards relational fields.
-    Workflow   Workflow? @relation(fields: [workflowId], references: [id])
-    workflowId String?
-    plugs      Plugs?    @relation(fields: [plugsId], references: [id])
-    plugsId    String?
+    id           String  @id @default(uuid())
+    index        Int
+    categoryName String
+    actionName   String
+    data         String
+    version      Version @relation(fields: [versionId], references: [id])
+    versionId    String
 }
 
-model Plugs {
-    id String @id @default(uuid())
+model Version {
+    id         String   @id @default(uuid())
+    version    Int
+    actions    Action[]
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    workflow   Workflow @relation(fields: [workflowId], references: [id])
+    workflowId String
 
-    // Signature & simulation related fields.
-    chainId    Int[]
-    executions Execution[]
-
-    // Onchain fields.
-    socket  UserVault @relation(fields: [vaultUserAddress, vaultAddress, vaultChainId], references: [userAddress, vaultAddress, vaultChainId])
-    actions Action[]
-    salt    String
-    fee     Int
-
-    // Backwards relational fields.
-    vaultUserAddress String
-    vaultAddress     String
-    vaultChainId     Int
-    livePlugs        LivePlugs[]
+    @@unique([workflowId, version])
 }
 
-model LivePlugs {
-    id String @id @default(uuid())
-
-    // Onchain fields.
-    plugs     Plugs  @relation(fields: [plugsId], references: [id])
-    plugsId   String
-    signature String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Backwards relational fields.
-    vault            UserVault @relation(fields: [vaultUserAddress, vaultAddress, vaultChainId], references: [userAddress, vaultAddress, vaultChainId])
-    vaultUserAddress String
-    vaultAddress     String
-    vaultChainId     Int
+model Workflow {
+    id               String    @id @default(uuid())
+    name             String    @default("Untitled Plug")
+    userAddress      String
+    color            String
+    isCurated        Boolean   @default(false)
+    isPrivate        Boolean   @default(false)
+    workflowForkedId String?
+    versions         Version[]
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
 }
 
-model Execution {
-    id String @id @default(uuid())
+// model Plugs {
+//     id String @id @default(uuid())
 
-    simulation Boolean
+//     // Signature & simulation related fields.
+//     chainId    Int[]
+//     executions Execution[]
 
-    // TODO: Store the results of a simulation.
+//     // Onchain fields.
+//     socket  UserSocket       @relation(fields: [socketUserAddress, socketAddress], references: [userAddress, socketAddress])
+//     actions WorkflowAction[]
+//     salt    String
+//     fee     Int
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+//     // Backwards relational fields.
+//     socketUserAddress String
+//     socketAddress     String
+//     livePlugs         LivePlugs[]
+// }
 
-    Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
-    plugsId String?
-}
+// model LivePlugs {
+//     id String @id @default(uuid())
+
+//     // Onchain fields.
+//     plugs     Plugs  @relation(fields: [plugsId], references: [id])
+//     plugsId   String
+//     signature String
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+
+//     // Backwards relational fields.
+//     socket            UserSocket @relation(fields: [socketUserAddress, socketAddress], references: [userAddress, socketAddress])
+//     socketUserAddress String
+//     socketAddress     String
+// }
+
+// model Execution {
+//     id String @id @default(uuid())
+
+//     simulation Boolean
+
+//     // TODO: Store the results of a simulation.
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+
+//     Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
+//     plugsId String?
+// }

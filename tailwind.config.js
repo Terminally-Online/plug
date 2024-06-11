@@ -18,12 +18,33 @@ module.exports = {
 			}
 		},
 		extend: {
+			fontFamily: { sans: ["var(--font-satoshi)", "sans-serif"] },
 			colors: {
+				background: "#FFFFFF",
+				search: "#F8F8F8",
+
+				'grayscale-0': "#f8f8f8",
+				'grayscale-100': "#EBECEC",
+				'grayscale-200': "#D6D8D8",
+				'grayscale-300': "#C2C5C5",
+				'grayscale-400': "#aeb2b1",
+				'grayscale-500': "#999e9e",
+				'grayscale-600': "#858b8b",
+				'grayscale-700': "#717877",
+				'grayscale-800': "#5d6564",
+				'grayscale-900': "#485150",
+				'grayscale-1000': "#343e3d",
+				'grayscale-1100': "#1f2525",
+
+				'plug-green': "#00E100",
+				'plug-yellow': "#A3F700",
+
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
+
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))"

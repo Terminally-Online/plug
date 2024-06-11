@@ -13,7 +13,7 @@ const projectId =
 
 const metadata = {
 	name: "Plug",
-	description: '"IF This, Then That" for Ethereum.',
+	description: '"IF This, Then That" for Ethereum blockchains and protocols.',
 	url: "https://onplug.io",
 	icons: ["https://onplug.io/favicon.ico"]
 }
@@ -24,7 +24,9 @@ const config = defaultWagmiConfig({
 	chains,
 	projectId,
 	metadata,
-	ssr: true
+	ssr: true,
+	enableEIP6963: true,
+	enableEmail: true
 })
 
 createWeb3Modal({ wagmiConfig: config, projectId })

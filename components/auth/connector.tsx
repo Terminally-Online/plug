@@ -5,13 +5,13 @@ import { type FC, type PropsWithChildren, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import { XIcon } from "lucide-react"
-import { useAccount, useEnsName } from "wagmi"
+import { useAccount } from "wagmi"
 
-import Button from "./button"
+import Button from "../buttons/auth"
 
-export const WalletConnector: FC<PropsWithChildren> = ({ children }) => {
+export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
 	const router = useRouter()
 
 	const { address } = useAccount()
@@ -44,7 +44,7 @@ export const WalletConnector: FC<PropsWithChildren> = ({ children }) => {
 					/>
 
 					<motion.div
-						className="absolute bottom-0 right-0 top-0 z-[999999] flex flex flex h-full w-[420px] flex-col justify-center gap-2 border-l-[1px] border-stone-950 bg-stone-900 bg-opacity-90 backdrop-blur-xl"
+						className="absolute bottom-0 right-0 top-0 z-[999999] flex h-full w-[420px] flex-col justify-center gap-2 border-l-[1px] border-stone-950 bg-stone-900 bg-opacity-90 backdrop-blur-xl"
 						initial={{ opacity: 0, right: "-10%" }}
 						animate={{ opacity: 1, right: 0 }}
 						exit={{ opacity: 0 }}
@@ -87,5 +87,3 @@ export const WalletConnector: FC<PropsWithChildren> = ({ children }) => {
 		</>
 	)
 }
-
-export default WalletConnector

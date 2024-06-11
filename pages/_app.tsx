@@ -1,14 +1,16 @@
+import { Suspense } from "react"
+
 import type { AppProps, AppType } from "next/app"
+import localFont from "next/font/local"
 
 import { Session } from "next-auth"
+import { getSession } from "next-auth/react"
 
-import localFont from "next/font/local"
-// import { getSession, SessionProvider } from "next-auth/react"
 import { GoogleTagManager } from "@next/third-parties/google"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
-// import { api } from "@/lib/api"
-import { type NextPageWithLayout } from "@/lib/types"
+import { RootProvider } from "@/contexts/RootProvider"
+import { NextPageWithLayout } from "@/lib/types"
+import { api } from "@/server/client"
 
 import "./styles.css"
 
@@ -37,36 +39,35 @@ const satoshi = localFont({
 	variable: "--font-satoshi"
 })
 
-type AppPropsWithLayout = AppProps & {
+const PlugApp: AppType<{ session: Session | null }> = ({
+	Component,
+	pageProps
+}: AppProps & {
 	Component: NextPageWithLayout
-}
-
-const PlugApp: AppType<{
-	session: Session | null
-}> = ({ Component, pageProps }: AppPropsWithLayout) => {
+}) => {
 	const getLayout = Component.getLayout ?? (page => page)
 
 	return (
 		<>
-			<style jsx global>{`
-				* {
-					font-family: ${satoshi.style.fontFamily}, sans-serif;
-				}
-			`}</style>
-
+			<style jsx global>
+				{`
+					* {
+						font-family: ${satoshi.style.fontFamily}, sans-serif;
+					}
+				`}
+			</style>
 			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
-			{getLayout(<Component {...pageProps} />)}
-			<SpeedInsights />
+			<RootProvider session={pageProps.session}>
+				{getLayout(<Component {...pageProps} />)}
+			</RootProvider>
 		</>
 	)
 }
 
-export default PlugApp
+PlugApp.getInitialProps = async ({ ctx }) => {
+	return {
+		session: await getSession(ctx)
+	}
+}
 
-// PlugApp.getInitialProps = async ({ ctx }) => {
-// 	return {
-// 		session: await getSession(ctx)
-// 	}
-// }
-//
-// export default api.withTRPC(PlugApp)
+export default api.withTRPC(PlugApp)

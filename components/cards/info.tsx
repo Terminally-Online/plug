@@ -30,9 +30,7 @@ export const InfoCard: FC<Props> = ({
 					{text}
 				</h2>
 				{description && (
-					<p className="text-black/65 lg:w-[95%] lg:max-w-[560px]">
-						{description}
-					</p>
+					<p className="max-w-[640px] text-black/65">{description}</p>
 				)}
 			</div>
 		</motion.div>

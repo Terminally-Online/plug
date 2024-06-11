@@ -10,6 +10,10 @@ const nextConfig = {
 			{
 				protocol: "https",
 				hostname: "assets.smold.app"
+			},
+			{
+				protocol: "https",
+				hostname: "ipfs.io"
 			}
 		]
 	},

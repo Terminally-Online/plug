@@ -48,8 +48,6 @@ export const useBalance = ({
 		const [name, symbol, decimals, balance] =
 			(isAddress(typedAddress) && data) || []
 
-		console.log(data)
-
 		if (tokenAddress === undefined) return undefined
 
 		// NOTE: Use the logoURI of a similar token in name -- This could end up being a bad decision, but

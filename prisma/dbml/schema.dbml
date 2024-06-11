@@ -2,119 +2,55 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table User {
-  address String [pk]
-  name String
-  nextVaultSalt String
-  nextVaultAddress String
-  workflows Workflow [not null]
-  vaults UserVault [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table Workflow {
-  id String [pk]
-  name String [not null, default: 'Untitled Workflow']
-  actions Action [not null]
-  workflowForkedId String
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  user User
-  userAddress String
-}
-
-Table Vault {
-  address String [not null]
-  chainId Int [not null]
+Table UserSocket {
   name String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  UserVault UserVault [not null]
-
-  indexes {
-    (address, chainId) [pk]
-  }
-}
-
-Table UserVault {
-  user User [not null]
   userAddress String [not null]
-  vault Vault [not null]
-  vaultAddress String [not null]
-  vaultChainId Int [not null]
-  livePlugs LivePlugs [not null]
+  socketAddress String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  Plugs Plugs [not null]
 
   indexes {
-    (userAddress, vaultAddress, vaultChainId) [pk]
+    (userAddress, socketAddress) [pk]
   }
 }
 
 Table Action {
   id String [pk]
   index Int [not null]
-  target String [not null]
-  value String [not null]
+  categoryName String [not null]
+  actionName String [not null]
   data String [not null]
-  Workflow Workflow
-  workflowId String
-  plugs Plugs
-  plugsId String
+  version Version [not null]
+  versionId String [not null]
 }
 
-Table Plugs {
+Table Version {
   id String [pk]
-  chainId Int[] [not null]
-  executions Execution [not null]
-  socket UserVault [not null]
+  version Int [not null]
   actions Action [not null]
-  salt String [not null]
-  fee Int [not null]
-  vaultUserAddress String [not null]
-  vaultAddress String [not null]
-  vaultChainId Int [not null]
-  livePlugs LivePlugs [not null]
-}
-
-Table LivePlugs {
-  id String [pk]
-  plugs Plugs [not null]
-  plugsId String [not null]
-  signature String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  vault UserVault [not null]
-  vaultUserAddress String [not null]
-  vaultAddress String [not null]
-  vaultChainId Int [not null]
+  workflow Workflow [not null]
+  workflowId String [not null]
+
+  indexes {
+    (workflowId, version) [unique]
+  }
 }
 
-Table Execution {
+Table Workflow {
   id String [pk]
-  simulation Boolean [not null]
+  name String [not null, default: 'Untitled Plug']
+  userAddress String [not null]
+  color String [not null]
+  isCurated Boolean [not null, default: false]
+  isPrivate Boolean [not null, default: false]
+  workflowForkedId String
+  versions Version [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  Plugs Plugs
-  plugsId String
 }
 
-Ref: Workflow.userAddress > User.address
+Ref: Action.versionId > Version.id
 
-Ref: UserVault.userAddress > User.address
-
-Ref: UserVault.(vaultAddress, vaultChainId) > Vault.(address, chainId)
-
-Ref: Action.workflowId > Workflow.id
-
-Ref: Action.plugsId > Plugs.id
-
-Ref: Plugs.(vaultUserAddress, vaultAddress, vaultChainId) > UserVault.(userAddress, vaultAddress, vaultChainId)
-
-Ref: LivePlugs.plugsId > Plugs.id
-
-Ref: LivePlugs.(vaultUserAddress, vaultAddress, vaultChainId) > UserVault.(userAddress, vaultAddress, vaultChainId)
-
-Ref: Execution.plugsId > Plugs.id
+Ref: Version.workflowId > Workflow.id
