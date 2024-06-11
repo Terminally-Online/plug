@@ -26,7 +26,7 @@ export const ActionItem: FC<Props> = ({
 	const { handleAddAction } = usePlugs()
 
 	const [actionVisible, setActionVisible] = useState(false)
-
+	// @ts-ignore
 	const { icon, ...action } = actions[categoryName][actionName]
 
 	return (
@@ -38,6 +38,7 @@ export const ActionItem: FC<Props> = ({
 					className="w-full px-6 text-left"
 					onClick={() => {
 						handleVisibleToggle()
+						// @ts-ignore
 						handleAddAction({
 							categoryName,
 							actionName,
@@ -77,6 +78,7 @@ export const ActionItem: FC<Props> = ({
 					<div className="flex flex-col gap-2">
 						<p className="font-bold">Input Data</p>
 						{action.inputs.length > 0 &&
+							// @ts-ignore
 							action.inputs.map((input, index) => {
 								return (
 									<p

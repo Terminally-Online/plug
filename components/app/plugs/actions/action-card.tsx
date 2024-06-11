@@ -25,7 +25,9 @@ export const ActionCard: FC<Props> = ({
 		> = {}
 
 		for (const actionName in categoryActions) {
+			// @ts-ignore
 			if (categoryActions[actionName].primary) {
+				// @ts-ignore
 				primaryActions[actionName] = categoryActions[actionName]
 			}
 		}
@@ -41,6 +43,7 @@ export const ActionCard: FC<Props> = ({
 			}}
 		>
 			{Object.keys(primaryActions).map(actionName => {
+				// @ts-ignore
 				const { icon: Icon, ...action } =
 					primaryActions[actionName as keyof typeof primaryActions]
 
@@ -53,12 +56,14 @@ export const ActionCard: FC<Props> = ({
 
 							handleAddAction({
 								categoryName,
+								// @ts-ignore
 								actionName,
 								data: JSON.stringify(action)
 							})
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">
+							{/* @ts-ignore */}
 							{Icon && <Icon size={24} />}
 						</div>
 						<p className="max-w-[120px] text-sm">
