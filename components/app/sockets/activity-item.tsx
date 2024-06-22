@@ -1,19 +1,15 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
 import { AlertCircle, CheckCircle, ChevronRight, XCircle } from "lucide-react"
-import { Blocks, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/buttons"
 import { useFrame } from "@/contexts"
 import { colors } from "@/lib"
 import { formatTitle } from "@/lib/functions"
 
-// Adjust the import path as necessary
 import { Frame } from "../frames/base"
-
-// Adjust the import path as necessary
 
 type ActivityItemProps = {
 	text: string
