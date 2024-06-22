@@ -1,5 +1,6 @@
 export { BalancesProvider, useBalances } from "@/contexts/BalancesProvider"
 export { DomainProvider, useDomain } from "@/contexts/DomainProvider"
+export { FrameProvider, useFrame } from "@/contexts/FrameProvider"
 export { PlugProvider, usePlugs } from "@/contexts/PlugProvider"
 export { RootProvider } from "@/contexts/RootProvider"
 export { SocketProvider, useSockets } from "@/contexts/SocketProvider"

@@ -10,8 +10,8 @@ export const action = createTRPCRouter({
 	add: protectedProcedure
 		.input(
 			z.object({
-				id: z.string(),
-				version: z.number(),
+				id: z.string().optional(),
+				version: z.number().optional(),
 				action: z.object({
 					categoryName: z.string(),
 					actionName: z.string(),
@@ -21,14 +21,17 @@ export const action = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
+				if (input.id === undefined)
+					throw new TRPCError({ code: "BAD_REQUEST" })
+
 				const versionNumber =
 					(await ctx.db.version.count({
 						where: { workflowId: input.id }
 					})) + 1
 
-				// If there are not any previous versions, we do not have any actions to
-				// carry over, so we create a new version with the current action
 				if (versionNumber === 1) {
+					// If there are not any previous versions, we do not have any actions to
+					// carry over, so we create a new version with the current action
 					await ctx.db.version.create({
 						data: {
 							workflowId: input.id,
@@ -41,10 +44,12 @@ export const action = createTRPCRouter({
 							}
 						}
 					})
-				}
-				// Create a new version based on the most recent version and add
-				// an action to it at the end of actions.
-				else {
+				} else {
+					// Create a new version based on the most recent version and add
+					// an action to it at the end of actions.
+					if (input.version === undefined)
+						throw new TRPCError({ code: "BAD_REQUEST" })
+
 					const previousVersion = await ctx.db.version.findFirst({
 						where: {
 							workflowId: input.id,
@@ -80,8 +85,67 @@ export const action = createTRPCRouter({
 					})
 				}
 
-				const plug = await ctx.db.workflow.findUnique({
+				const plug = await ctx.db.workflow.update({
 					where: { id: input.id },
+					data: { updatedAt: new Date() },
+					include: {
+						versions: {
+							include: {
+								actions: { orderBy: { index: "asc" } }
+							},
+							orderBy: { version: "desc" }
+						}
+					}
+				})
+
+				ctx.emitter.emit(events.edit, plug)
+
+				return plug
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
+	edit: protectedProcedure
+		.input(
+			z.object({
+				id: z.string().optional(),
+				actions: z.array(
+					z.object({
+						categoryName: z.string(),
+						actionName: z.string(),
+						data: z.string()
+					})
+				)
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			try {
+				if (input.id === undefined)
+					throw new TRPCError({ code: "BAD_REQUEST" })
+
+				const versionNumber =
+					(await ctx.db.version.count({
+						where: { workflowId: input.id }
+					})) + 1
+
+				await ctx.db.version.create({
+					data: {
+						workflowId: input.id,
+						version: versionNumber,
+						actions: {
+							createMany: {
+								data: input.actions.map((action, index) => ({
+									...action,
+									index
+								}))
+							}
+						}
+					}
+				})
+
+				const plug = await ctx.db.workflow.update({
+					where: { id: input.id },
+					data: { updatedAt: new Date() },
 					include: {
 						versions: {
 							include: {
@@ -146,8 +210,9 @@ export const action = createTRPCRouter({
 					}
 				})
 
-				const plug = await ctx.db.workflow.findUnique({
+				const plug = await ctx.db.workflow.update({
 					where: { id: action.version.workflowId },
+					data: { updatedAt: new Date() },
 					include: {
 						versions: {
 							include: {

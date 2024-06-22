@@ -3,17 +3,13 @@ import { FC } from "react"
 import Image from "next/image"
 
 import { X } from "lucide-react"
-import { AbiParameter } from "viem"
 
 import { usePlugs } from "@/contexts"
+import { useActions } from "@/contexts/ActionProvider"
 import { actionCategories } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 import { Fragments } from "./fragments"
-
-export type Action = NonNullable<
-	ReturnType<typeof usePlugs>["plugs"]
->[number]["versions"][number]["actions"][number]
 
 export type Option = {
 	icon: JSX.Element | undefined
@@ -23,16 +19,9 @@ export type Option = {
 
 export type Value = string | Option | undefined
 
-export type StaticAction = {
-	address: string
-	abi: string
-	inputs: Array<AbiParameter>
-	options: Array<Array<Option> | { [key: string]: Array<Option> }> | undefined
-	sentence: string
-	info: string
-	icon: string
-	primary: true
-}
+export type Action = NonNullable<
+	ReturnType<typeof usePlugs>["plugs"]
+>[number]["versions"][number]["actions"][number]
 
 type Props = {
 	action: Action
@@ -40,7 +29,7 @@ type Props = {
 }
 
 export const Sentence: FC<Props> = ({ action, preview = false }) => {
-	const { handleRemoveAction } = usePlugs()
+	const { handleRemove } = useActions()
 
 	return (
 		<div
@@ -70,7 +59,7 @@ export const Sentence: FC<Props> = ({ action, preview = false }) => {
 			{preview === false && (
 				<button
 					className="group mb-auto ml-4 mt-[4px] cursor-pointer rounded-full border-[1px] border-grayscale-100 p-1 hover:bg-grayscale-100"
-					onClick={() => handleRemoveAction(action)}
+					onClick={() => handleRemove(action)}
 				>
 					<X
 						size={14}

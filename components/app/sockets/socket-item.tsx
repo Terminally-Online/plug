@@ -12,7 +12,7 @@ type Props = { socket: UserSocket }
 
 export const SocketItem: FC<Props> = ({ socket }) => {
 	// TODO: Implement the backend functionality for this.
-	const activity = Array.from({ length: 7 }, () => Math.random())
+	const activity = Array.from({ length: 10 }, () => Math.random())
 	// TODO: Implement display of the deployed chains.
 
 	return (
@@ -37,8 +37,8 @@ export const SocketItem: FC<Props> = ({ socket }) => {
 					<div
 						key={index}
 						className={cn(
-							"mt-auto w-6 rounded-md",
-							index === 6
+							"mt-auto w-4 rounded-md",
+							index === 9
 								? "bg-gradient-to-tr from-[#00E100] to-[#A3F700]"
 								: "bg-grayscale-100"
 						)}

@@ -3,12 +3,27 @@ import type { FC } from "react"
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 
-type Props = { checked: boolean; handleChange: (checked: boolean) => void }
+import { cn } from "@/lib"
 
-export const Checkbox: FC<Props> = ({ checked, handleChange }) => (
+type Props = {
+	checked: boolean
+	handleChange: (checked: boolean) => void
+	disabled?: boolean
+}
+
+export const Checkbox: FC<Props> = ({
+	checked,
+	handleChange,
+	disabled = false
+}) => (
 	<button
-		className="h-min w-min cursor-pointer rounded-[6px] bg-gradient-to-tr from-[#00E100] to-[#A3F700] p-[2px]"
-		onClick={() => handleChange(!checked)}
+		className={cn(
+			"h-min w-min rounded-[6px] p-[2px]",
+			disabled === false
+				? "cursor-pointer bg-gradient-to-tr from-[#00E100] to-[#A3F700]"
+				: "cursor-not-allowed bg-grayscale-100"
+		)}
+		onClick={() => disabled === false && handleChange(!checked)}
 	>
 		<motion.div
 			className="rounded-[4px] p-[2px]"

@@ -4,9 +4,14 @@ import { Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
 
 import { WalletProvider } from "@/components/auth/connector"
-import { BalancesProvider, SocketProvider } from "@/contexts"
+import {
+	BalancesProvider,
+	FrameProvider,
+	PlugProvider,
+	SocketProvider
+} from "@/contexts"
 
-import { PlugProvider } from "./PlugProvider"
+import { ActionProvider } from "./ActionProvider"
 
 type Props = PropsWithChildren & {
 	session: Session | null
@@ -14,12 +19,16 @@ type Props = PropsWithChildren & {
 
 export const RootProvider: FC<Props> = ({ session, children }) => (
 	<SessionProvider session={session}>
-		<SocketProvider>
-			<PlugProvider>
-				<BalancesProvider>
-					<WalletProvider>{children}</WalletProvider>
-				</BalancesProvider>
-			</PlugProvider>
-		</SocketProvider>
+		<FrameProvider>
+			<SocketProvider>
+				<PlugProvider>
+					<ActionProvider>
+						<BalancesProvider>
+							<WalletProvider>{children}</WalletProvider>
+						</BalancesProvider>
+					</ActionProvider>
+				</PlugProvider>
+			</SocketProvider>
+		</FrameProvider>
 	</SessionProvider>
 )

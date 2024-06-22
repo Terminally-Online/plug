@@ -2,6 +2,8 @@ import { FC, useEffect, useMemo, useState } from "react"
 
 import { Action, Value } from "."
 
+import { useActions } from "@/contexts/ActionProvider"
+
 import { DynamicFragment } from "./dynamic"
 import { StaticFragment } from "./static"
 
@@ -20,23 +22,21 @@ export const getIndexes = (fragment: string) => {
 	return [null, Number(sanitized[0])] as [null, number]
 }
 
-// NOTE: This entire component is a lil' bit confusing to read at first glance, and
-//       requires some Typescript trickery to get the values to update correctly, but
-//       it works well for the use case. If you are confused, just go through each piece
-//       again. This component is one of the few actually commented/documented because
-//       it is one of the few that cannot be easily understood without context.
+// NOTE: This entire component is the collection of fragments that make up a sentence.
 export const Fragments: FC<Props> = ({ action }) => {
+	const { handleEdit } = useActions()
+
+	const parsed = action.data ? JSON.parse(action.data) : undefined
+
 	// Split all of the sentence fragments into an appropriate array based on the
 	// regex shape that enables the f-string like syntax.
-	const fragments = useMemo(() => {
-		if (action.data === undefined) return []
-
-		const parsed = JSON.parse(action.data)
-
-		if (!parsed["sentence"]) return []
-
-		return parsed["sentence"].split(regex) as string[]
-	}, [action])
+	const fragments = useMemo(
+		() =>
+			!parsed || !parsed["sentence"]
+				? []
+				: (parsed["sentence"].split(regex) as string[]),
+		[parsed]
+	)
 
 	// Filter down to only the dynamic fragments that match the regex pattern
 	// so that we can use the carried index value to update the correct indexes
@@ -46,6 +46,7 @@ export const Fragments: FC<Props> = ({ action }) => {
 		[fragments]
 	)
 
+	// TODO: Values are assumed to be undefined right now rather than stored in the database.
 	const [values, setValues] = useState<Array<Value>>(
 		Array(dynamicFragments.length).fill(undefined)
 	)
@@ -73,6 +74,10 @@ export const Fragments: FC<Props> = ({ action }) => {
 			)
 		)
 	}
+
+	// useEffect(() => {
+	// 	// handleEdit(values)
+	// }, [values, handleEdit])
 
 	return (
 		<>

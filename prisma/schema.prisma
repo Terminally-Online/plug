@@ -16,8 +16,9 @@ model UserSocket {
     name          String
     userAddress   String
     socketAddress String
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@id([userAddress, socketAddress])
 }
@@ -28,18 +29,22 @@ model Action {
     categoryName String
     actionName   String
     data         String
-    version      Version @relation(fields: [versionId], references: [id])
+    version      Version @relation(fields: [versionId], references: [id], onDelete: Cascade)
     versionId    String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Version {
     id         String   @id @default(uuid())
     version    Int
     actions    Action[]
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    workflow   Workflow @relation(fields: [workflowId], references: [id])
+    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
     workflowId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@unique([workflowId, version])
 }
@@ -53,8 +58,9 @@ model Workflow {
     isPrivate        Boolean   @default(false)
     workflowForkedId String?
     versions         Version[]
-    createdAt        DateTime  @default(now())
-    updatedAt        DateTime  @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 // model Plugs {

@@ -1,20 +1,20 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-export const useClipboard = () => {
-	const [isCopied, setIsCopied] = useState<boolean>(false)
+export const useClipboard = (text: string) => {
+	const [copied, setCopied] = useState<boolean>(false)
 
-	const copy = useCallback(async (text: string): Promise<void> => {
-		try {
-			await navigator.clipboard.writeText(text)
-			setIsCopied(true)
-			setTimeout(() => setIsCopied(false), 2000)
-		} catch (err) {
-			console.error("Failed to copy: ", err)
-			setIsCopied(false)
+	useEffect(() => {
+		let timeout: NodeJS.Timeout | null = null
+
+		if (copied) {
+			navigator.clipboard.writeText(text)
+			timeout = setTimeout(() => setCopied(false), 2000)
 		}
-	}, [])
 
-	return { copy, isCopied }
+		return () => (timeout ? clearTimeout(timeout) : undefined)
+	}, [text, copied])
+
+	return { copied, handleCopied: useCallback(() => setCopied(true), []) }
 }
 
 export default useClipboard

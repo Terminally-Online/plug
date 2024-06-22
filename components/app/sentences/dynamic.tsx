@@ -71,7 +71,7 @@ export const DynamicFragment: FC<{
 			</button>
 
 			<Frame
-				className="z-[2]"
+				className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={
 					<Image
 						src={category.image}
@@ -81,23 +81,23 @@ export const DynamicFragment: FC<{
 						className="rounded-md"
 					/>
 				}
-				label={`${formatTitle(action.actionName)}${values.length >= 1 ? `: ${formatTitle(inputName)}` : ""}`}
+				label={`${formatTitle(action.actionName)}${values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
 				visible={valuesVisible}
 				handleVisibleToggle={() => setValuesVisible(!valuesVisible)}
 			>
 				<div className="flex flex-col gap-4">
-					{/* TODO: Fix this. */}
-					{/* {options === undefined && values[index] instanceof String &&
-						values[index] instanceof Object === false && (
+					{options === undefined &&
+						values[index] instanceof String && (
 							<Search
 								icon={<Icon size={14} className="opacity-60" />}
 								placeholder={formatTitle(inputName)}
+								// @ts-ignore
 								search={values[index]}
 								handleSearch={(value: string) =>
 									handleValue(value)
 								}
 							/>
-						)} */}
+						)}
 
 					{options !== undefined && (
 						<div className="flex w-full flex-col gap-2">

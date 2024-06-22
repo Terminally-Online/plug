@@ -9,7 +9,7 @@ import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
 
 const Page = () => {
-	const { handleAdd } = usePlugs()
+	const { actions } = usePlugs()
 
 	const [search, setSearch] = useState("")
 
@@ -20,7 +20,9 @@ const Page = () => {
 					size="lg"
 					back={routes.app.plugs.index}
 					label="Templates"
-					nextOnClick={() => handleAdd(routes.app.plugs.templates)}
+					nextOnClick={() =>
+						actions.plug.handleAdd(routes.app.plugs.templates)
+					}
 					nextLabel={<Plus size={14} className="opacity-60" />}
 				/>
 				<Search

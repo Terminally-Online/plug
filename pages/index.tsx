@@ -29,7 +29,7 @@ const Page: NextPageWithLayout = () => (
 		<FrequentlyAskedQuestions />
 		<CallToAction
 			text="Level up your onchain activity."
-			description="As soon as your conditions are met and expected outcomes can be delivered your transactions will automatically run without you doing a thing."
+			description="As soon as all of the constraints on your intent are met and expected outcomes can be delivered your transaction will automatically run without you doing a thing."
 			button="Get Started"
 		/>
 	</>

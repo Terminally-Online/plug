@@ -30,7 +30,7 @@ export const ActionListItem: FC<Props> = ({
 				className="flex flex-col items-center gap-2"
 				onClick={() => setActionItemsVisible(!actionItemsVisible)}
 			>
-				<div className="flex w-full flex-row items-center gap-2">
+				<div className="flex w-full flex-row items-center gap-4">
 					<Image
 						src={category.image}
 						alt={categoryName}
@@ -41,7 +41,6 @@ export const ActionListItem: FC<Props> = ({
 					<p className="text-lg font-bold">
 						{formatTitle(categoryName)}
 					</p>
-
 					<Button
 						variant="secondary"
 						className="ml-auto p-1"

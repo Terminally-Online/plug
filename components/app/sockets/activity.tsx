@@ -1,16 +1,27 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
-import { motion } from "framer-motion"
+import { animate, motion, useMotionValue, useTransform } from "framer-motion"
 import { FileCog, FileTerminal } from "lucide-react"
 
 import { formatNumber } from "@/lib/functions"
 import { cn } from "@/lib/utils"
 
 import { Header } from "../header"
+import { ActivityList } from "./activity-list"
 
 export const SocketActivity = () => {
 	// TODO: Implement the backend functionality for this.
-	const activity = Array.from({ length: 7 }, () => Math.random())
+	// const activity = Array.from({ length: 7 }, () => Math.random())
+	// hard coded values
+	const activity = [0.5, 0.7, 0.1, 0.9, 0.4, 0.3, 0.9]
+
+	const _pending = useMotionValue(0)
+	const pending = useTransform(_pending, latest =>
+		formatNumber(Math.round(latest))
+	)
+
+	const _run = useMotionValue(0)
+	const run = useTransform(_run, latest => formatNumber(Math.round(latest)))
 
 	const [start, end] = useMemo(
 		() => [
@@ -28,6 +39,14 @@ export const SocketActivity = () => {
 		],
 		[]
 	)
+
+	useEffect(() => {
+		return animate(_pending, 203).stop
+	}, [_pending])
+
+	useEffect(() => {
+		return animate(_run, 1900).stop
+	}, [_run])
 
 	return (
 		<>
@@ -61,15 +80,15 @@ export const SocketActivity = () => {
 
 				<div className="flex flex-row gap-2">
 					<div className="w-full rounded-lg bg-grayscale-100 p-4">
-						<h4 className="text-2xl font-bold">
-							{formatNumber(200)}
-						</h4>
+						<motion.h4 className="text-2xl font-bold">
+							{pending}
+						</motion.h4>
 						<p className="opacity-40">Pending</p>
 					</div>
 					<div className="w-full rounded-lg bg-grayscale-100 p-4">
-						<h4 className="text-2xl font-bold">
-							{formatNumber(1900)}
-						</h4>
+						<motion.h4 className="text-2xl font-bold">
+							{run}
+						</motion.h4>
 						<p className="opacity-40">Run</p>
 					</div>
 				</div>
@@ -81,10 +100,7 @@ export const SocketActivity = () => {
 				label="Runs"
 			/>
 
-			<p className="opacity-60">
-				Pending and completed Plug runs in your Socket will appear
-				here...
-			</p>
+			<ActivityList />
 		</>
 	)
 }

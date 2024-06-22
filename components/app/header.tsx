@@ -39,12 +39,12 @@ export const Header: FC<Props> = ({
 	nextOnClick,
 	nextLabel
 }) => {
-	const base = "font-bold"
+	const base = "font-bold truncate"
 
 	return (
 		<div
 			className={cn(
-				"flex w-full flex-row items-center gap-2",
+				"flex w-full flex-row items-center gap-4",
 				variants[variant]
 			)}
 		>

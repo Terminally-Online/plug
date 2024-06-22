@@ -3,7 +3,7 @@ import { tags } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 export const Tags = () => {
-	const { tag, handleTag } = usePlugs()
+	const { tag, actions } = usePlugs()
 
 	return (
 		<div className="relative mb-[20px] mt-2">
@@ -19,7 +19,7 @@ export const Tags = () => {
 							index === 0 && "ml-4",
 							index === tags.length - 1 && "mr-24"
 						)}
-						onClick={() => handleTag(tag)}
+						onClick={() => actions.plug.handleTag(tag)}
 					>
 						{tagItem}
 					</button>

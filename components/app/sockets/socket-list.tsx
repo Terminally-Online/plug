@@ -11,11 +11,11 @@ export const SocketList = () => {
 	return (
 		<>
 			{hasSockets ? (
-				<>
+				<div className="flex flex-col gap-2">
 					{sockets.map((socket, index) => (
 						<SocketItem key={index} socket={socket} />
 					))}
-				</>
+				</div>
 			) : (
 				<div className="my-32 flex flex-col gap-[30px]">
 					<p className="mx-auto w-[80%] max-w-[360px] text-center text-lg opacity-60">

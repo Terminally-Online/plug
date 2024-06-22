@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Info } from "lucide-react"
 
 import { Button } from "@/components/buttons"
-import { usePlugs } from "@/contexts"
+import { useActions } from "@/contexts/ActionProvider"
 import { actionCategories, actions } from "@/lib/constants"
 import { formatAddress, formatTitle } from "@/lib/functions"
 
@@ -23,7 +23,7 @@ export const ActionItem: FC<Props> = ({
 	actionName,
 	handleVisibleToggle
 }) => {
-	const { handleAddAction } = usePlugs()
+	const { handleAdd } = useActions()
 
 	const [actionVisible, setActionVisible] = useState(false)
 	const { icon, ...action } = actions[categoryName][actionName]
@@ -37,7 +37,7 @@ export const ActionItem: FC<Props> = ({
 					className="w-full px-6 text-left"
 					onClick={() => {
 						handleVisibleToggle()
-						handleAddAction({
+						handleAdd({
 							categoryName,
 							actionName,
 							data: JSON.stringify(action)

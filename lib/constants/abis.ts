@@ -39,7 +39,7 @@ export const abis = {
 			"function encode(uint8 $lessThanOrGreaterThan, uint256 $datetime) public pure returns (bytes memory $data)",
 		tokenBalance:
 			"function encode(address $holder, address $asset, uint8 $lessThanOrGreaterThan, uint256 $amount) public pure returns (bytes memory $data)",
-		rateLimit: "function encode(uint128 $max, uint32 $replenishRate)",
+		rateLimit: "function encode(uint128 $max, uint32 $frequency)",
 		limitedCalls:
 			"function encode(uint256 $count) public pure returns (bytes memory $terms)",
 		cooldown:

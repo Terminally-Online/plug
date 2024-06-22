@@ -15,11 +15,7 @@ export const BalancesContext = createContext<{
 })
 
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
-	const {
-		debounce: handleSearch,
-		value: search,
-		debounced: debouncedSearch
-	} = useDebounce({ initial: "" })
+	const [search, debouncedSearch, handleSearch] = useDebounce("")
 
 	return (
 		<BalancesContext.Provider

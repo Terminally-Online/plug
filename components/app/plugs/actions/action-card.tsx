@@ -1,6 +1,7 @@
 import { type FC, useMemo } from "react"
 
 import { usePlugs } from "@/contexts"
+import { useActions } from "@/contexts/ActionProvider"
 import { actionCategories, actions } from "@/lib/constants"
 import { formatTitle } from "@/lib/functions"
 
@@ -15,7 +16,7 @@ export const ActionCard: FC<Props> = ({
 	category,
 	handleVisibleToggle
 }) => {
-	const { handleAddAction } = usePlugs()
+	const { handleAdd } = useActions()
 
 	const primaryActions = useMemo(() => {
 		return Object.keys(actions[categoryName]).reduce(
@@ -50,7 +51,7 @@ export const ActionCard: FC<Props> = ({
 						onClick={() => {
 							handleVisibleToggle()
 
-							handleAddAction({
+							handleAdd({
 								categoryName,
 								actionName,
 								data: JSON.stringify(action)

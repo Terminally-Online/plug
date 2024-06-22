@@ -8,25 +8,17 @@ import { routes } from "@/lib/constants"
 type Props = { from: string; count?: number; all?: boolean }
 
 export const PlugGrid: FC<Props> = ({ from, count, all = false }) => {
-	const { plugs, filteredPlugs, search, handleSearch } = usePlugs()
+	const { plugs, search, actions } = usePlugs()
 
-	const activePlugs = all === false && search !== "" ? filteredPlugs : plugs
-
-	if (activePlugs === undefined) return null
+	if (plugs === undefined) return null
 
 	return (
 		<>
-			{activePlugs && activePlugs.length > 0 ? (
+			{plugs && plugs.length > 0 ? (
 				<div className="grid grid-cols-2 gap-1 lg:grid-cols-4">
-					{activePlugs
-						.slice(0, count || activePlugs.length)
-						.map(plug => (
-							<PlugGridItem
-								key={plug.id}
-								from={from}
-								plug={plug}
-							/>
-						))}
+					{plugs.slice(0, count || plugs.length).map(plug => (
+						<PlugGridItem key={plug.id} from={from} plug={plug} />
+					))}
 				</div>
 			) : search !== "" ? (
 				<div className="my-64 flex flex-col gap-[30px]">
@@ -36,7 +28,7 @@ export const PlugGrid: FC<Props> = ({ from, count, all = false }) => {
 					<div className="mx-auto flex flex-row gap-1">
 						<Button
 							className="w-max"
-							onClick={() => handleSearch("")}
+							onClick={() => actions.plug.handleSearch("")}
 						>
 							Clear Search
 						</Button>

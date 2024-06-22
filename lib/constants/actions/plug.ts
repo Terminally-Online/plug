@@ -47,7 +47,7 @@ export const plug = {
 		abi: abis.plug.limitedCalls,
 		inputs: parseAbi([abis.plug.limitedCalls])[0]["inputs"],
 		options: undefined,
-		sentence: "Can only be called {0} times",
+		sentence: "Can only ever be called {0} times",
 		info: "Only allow this Plug to be executed a certain number of times before expiring. This can be used to execute a transaction a pre-determined amount of times.",
 		icon: Tally5Icon,
 		primary: true
@@ -66,7 +66,7 @@ export const plug = {
 		abi: abis.plug.rateLimit,
 		inputs: parseAbi([abis.plug.rateLimit])[0]["inputs"],
 		options: undefined,
-		sentence: "Can only be called {0} times every {1}",
+		sentence: "Can be called {0} times every {1}",
 		info: "Control the frequency at which this Plug can be called. This can be used to set up a pre-determined number of recurring transactions with a pre-determined gap of time between them. ",
 		icon: InfinityIcon
 	},

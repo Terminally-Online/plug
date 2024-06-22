@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="no"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<defs>
+		<linearGradient id="green-gradient" x1="0" x2="1" y1="1" y2="0">
+					<stop offset="0%" stop-color="#00E100" />
+					<stop offset="100%" stop-color="#A3F700" />
+				</linearGradient>
+        </defs>
+
+  <path fill="url(#green-gradient)" d="M60.6,-21.6C66.7,-1.2,51.4,24.2,27.9,42.2C4.5,60.1,-27.1,70.4,-38.5,60.4C-49.9,50.4,-41.1,19.9,-31.3,-5.6C-21.6,-31.2,-10.8,-51.8,8.3,-54.5C27.3,-57.2,54.6,-41.9,60.6,-21.6Z" transform="translate(100 100)" />
+</svg>
