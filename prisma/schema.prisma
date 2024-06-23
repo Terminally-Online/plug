@@ -16,51 +16,24 @@ model UserSocket {
     name          String
     userAddress   String
     socketAddress String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @default(now()) @updatedAt
 
     @@id([userAddress, socketAddress])
 }
 
-model Action {
-    id           String  @id @default(uuid())
-    index        Int
-    categoryName String
-    actionName   String
-    data         String
-    version      Version @relation(fields: [versionId], references: [id], onDelete: Cascade)
-    versionId    String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-}
-
-model Version {
-    id         String   @id @default(uuid())
-    version    Int
-    actions    Action[]
-    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-    workflowId String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@unique([workflowId, version])
-}
-
 model Workflow {
-    id               String    @id @default(uuid())
-    name             String    @default("Untitled Plug")
-    userAddress      String
-    color            String
-    isCurated        Boolean   @default(false)
-    isPrivate        Boolean   @default(false)
-    workflowForkedId String?
-    versions         Version[]
+    id          String   @id @default(uuid())
+    name        String   @default("Untitled Plug")
+    userAddress String
+    color       String
+    isCurated   Boolean  @default(false)
+    isPrivate   Boolean  @default(false)
+    actions     String   @default("[]")
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    workflowForkedId String?
 }
 
 // model Plugs {

@@ -11,6 +11,7 @@ import { Frame } from "../../base"
 export const ActionsFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()
 	const [search, setSearch] = useState("")
+
 	return (
 		<Frame
 			className="scrollbar-hide z-[1] h-[calc(100vh-80px)] overflow-y-auto"
@@ -26,6 +27,7 @@ export const ActionsFrame = () => {
 					search={search}
 					handleSearch={setSearch}
 				/>
+
 				<ActionList
 					handleNestedToggle={() => handleFrameVisible(undefined)}
 				/>

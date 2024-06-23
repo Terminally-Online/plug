@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
@@ -11,8 +11,6 @@ import {
 	SocketProvider
 } from "@/contexts"
 
-import { ActionProvider } from "./ActionProvider"
-
 type Props = PropsWithChildren & {
 	session: Session | null
 }
@@ -22,11 +20,9 @@ export const RootProvider: FC<Props> = ({ session, children }) => (
 		<FrameProvider>
 			<SocketProvider>
 				<PlugProvider>
-					<ActionProvider>
-						<BalancesProvider>
-							<WalletProvider>{children}</WalletProvider>
-						</BalancesProvider>
-					</ActionProvider>
+					<BalancesProvider>
+						<WalletProvider>{children}</WalletProvider>
+					</BalancesProvider>
 				</PlugProvider>
 			</SocketProvider>
 		</FrameProvider>

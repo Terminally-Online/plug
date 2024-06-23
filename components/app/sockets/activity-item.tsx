@@ -11,13 +11,6 @@ import { formatTitle } from "@/lib/functions"
 
 import { Frame } from "../frames/base"
 
-type ActivityItemProps = {
-	text: string
-	color: keyof typeof colors
-	status: string
-	time: string
-}
-
 const getStatusIcon = (status: string) => {
 	switch (status) {
 		case "success":
@@ -43,7 +36,12 @@ const getStatusIcon = (status: string) => {
 	}
 }
 
-export const ActivityItem: FC<ActivityItemProps> = ({ text, status, time }) => {
+export const ActivityItem: FC<{
+	text: string
+	color: keyof typeof colors
+	status: string
+	time: string
+}> = ({ text, status, time }) => {
 	const icon = getStatusIcon(status)
 	const { handleFrameVisible, frameVisible } = useFrame()
 

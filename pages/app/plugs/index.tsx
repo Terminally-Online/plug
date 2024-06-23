@@ -9,7 +9,7 @@ import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
 
 const Page = () => {
-	const { search, actions } = usePlugs()
+	const { search, handle } = usePlugs()
 
 	return (
 		<>
@@ -18,16 +18,14 @@ const Page = () => {
 					size="lg"
 					back={routes.app.index}
 					label="Plugs"
-					nextOnClick={() =>
-						actions.plug.handleAdd(routes.app.plugs.index)
-					}
+					nextOnClick={() => handle.plug.add(routes.app.plugs.index)}
 					nextLabel={<Plus size={14} className="opacity-60" />}
 				/>
 				<Search
 					icon={<SearchIcon size={14} className="opacity-60" />}
 					placeholder="Search templates"
 					search={search}
-					handleSearch={actions.plug.handleSearch}
+					handleSearch={handle.search}
 				/>
 			</Container>
 

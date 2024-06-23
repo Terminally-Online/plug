@@ -16,9 +16,19 @@ export const plug = {
 		address: zeroAddress,
 		abi: abis.plug.baseFee,
 		inputs: parseAbi([abis.plug.baseFee])[0]["inputs"],
-		options: undefined,
+		options: [
+			[
+				{ label: "Greater than", value: ">" },
+				{ label: "Less than", value: "<" }
+			],
+			[
+				{ label: "Low", value: "low" },
+				{ label: "Medium", value: "medium" },
+				{ label: "High", value: "high" }
+			]
+		],
 		sentence: "Base gas fee is {0} {1}",
-		info: "Only allow this Plug to be executed when the base gas fee is greater or less than the value entered. This can be used to schedule future exectuions when gas is low.",
+		info: "Only allow this Plug to be executed when the base gas fee is greater or less than the value entered. This can be used to schedule future executions when gas is low.",
 		icon: FuelIcon,
 		primary: true
 	},
@@ -26,9 +36,15 @@ export const plug = {
 		address: zeroAddress,
 		abi: abis.plug.tokenBalance,
 		inputs: parseAbi([abis.plug.tokenBalance])[0]["inputs"],
-		options: undefined,
+		options: [
+			[
+				{ label: "Greater than", value: ">" },
+				{ label: "Less than", value: "<" },
+				{ label: "Equal to", value: "=" }
+			]
+		],
 		sentence: "Balance of {1} is {2} {3}",
-		info: "Only allow this Plug to be executed when the balance of the selected token is greater or lower than the value entered for the address entered. This can be used to auto-allocate funds that are recieved in this Socket or to act based on token changes in another address.",
+		info: "Only allow this Plug to be executed when the balance of the selected token is greater or lower than the value entered for the address entered. This can be used to auto-allocate funds that are received in this Socket or to act based on token changes in another address.",
 		icon: GemIcon,
 		primary: true
 	},
@@ -56,8 +72,19 @@ export const plug = {
 		address: zeroAddress,
 		abi: abis.plug.cooldown,
 		inputs: parseAbi([abis.plug.cooldown])[0]["inputs"],
-		options: undefined,
-		sentence: "Time between calls is at least {0}",
+		options: [
+			[
+				{ label: "Seconds", value: "seconds" },
+				{ label: "Minutes", value: "minutes" },
+				{ label: "Hours", value: "hours" },
+				{ label: "Days", value: "days" },
+				{ label: "Weeks", value: "weeks" },
+				{ label: "Months", value: "months" },
+				{ label: "Quarters", value: "quarters" },
+				{ label: "Years", value: "years" }
+			]
+		],
+		sentence: "Time between calls is at least {0} {1}",
 		info: "Only allow this Plug to be executed after a certain amount of time has passed since the last execution. This can be used to set up recurring transactions with a pre-determined gap of time between them.",
 		icon: SnowflakeIcon
 	},
@@ -65,18 +92,36 @@ export const plug = {
 		address: zeroAddress,
 		abi: abis.plug.rateLimit,
 		inputs: parseAbi([abis.plug.rateLimit])[0]["inputs"],
-		options: undefined,
-		sentence: "Can be called {0} times every {1}",
-		info: "Control the frequency at which this Plug can be called. This can be used to set up a pre-determined number of recurring transactions with a pre-determined gap of time between them. ",
+		options: [
+			[
+				{ label: "Seconds", value: "seconds" },
+				{ label: "Minutes", value: "minutes" },
+				{ label: "Hours", value: "hours" },
+				{ label: "Days", value: "days" },
+				{ label: "Weeks", value: "weeks" },
+				{ label: "Months", value: "months" },
+				{ label: "Quarters", value: "quarters" },
+				{ label: "Years", value: "years" }
+			]
+		],
+		sentence: "Can be called {0} times every {1} {2}",
+		info: "Control the frequency at which this Plug can be called. This can be used to set up a pre-determined number of recurring transactions with a pre-determined gap of time between them.",
 		icon: InfinityIcon
 	},
+
 	blockNumber: {
 		address: zeroAddress,
 		abi: abis.plug.blockNumber,
-		options: undefined,
 		inputs: parseAbi([abis.plug.blockNumber])[0]["inputs"],
+		options: [
+			[
+				{ label: "Greater than", value: ">" },
+				{ label: "Less than", value: "<" },
+				{ label: "Equal to", value: "=" }
+			]
+		],
 		sentence: "Block number must be {0} {1}",
-		info: "Only allow this Plug to be executed when the block number is greater or lower the value entered. This is an advanced feature, you may prefer to use the timestamp condition.",
+		info: "Only allow this Plug to be executed when the block number is greater or lower than the value entered. This is an advanced feature, you may prefer to use the timestamp condition.",
 		icon: HashIcon
 	}
 }

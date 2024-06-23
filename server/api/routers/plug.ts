@@ -5,17 +5,11 @@ import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
 import { colors } from "@/lib/constants"
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure
-} from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 import { action } from "./action"
 
-const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({
-	include: { versions: { include: { actions: true } } }
-})
+const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
 
 export const events = {
@@ -23,22 +17,6 @@ export const events = {
 	rename: "rename-plug",
 	edit: "edit-plug",
 	delete: "delete-plug"
-} as const
-
-const orderBy = { updatedAt: "desc" } as const
-
-const include = {
-	versions: {
-		include: {
-			actions: { orderBy: { index: "asc" } }
-		},
-		orderBy: { version: "desc" }
-	}
-} as const
-
-const includeAndOrderBy = {
-	include,
-	orderBy
 } as const
 
 const subsription = (event: string) =>
@@ -78,16 +56,14 @@ export const plug = createTRPCRouter({
 									contains: input.search,
 									mode: "insensitive"
 								}
-							},
-							...includeAndOrderBy
+							}
 						})
 
 					// if (input.tag) return
 				}
 
 				return await ctx.db.workflow.findMany({
-					where: { userAddress: ctx.session.address },
-					...includeAndOrderBy
+					where: { userAddress: ctx.session.address }
 				})
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
@@ -106,8 +82,7 @@ export const plug = createTRPCRouter({
 								Math.random() * Object.keys(colors).length
 							)
 						] as keyof typeof colors
-					},
-					include
+					}
 				})
 
 				ctx.emitter.emit(events.add, plug)
@@ -135,8 +110,7 @@ export const plug = createTRPCRouter({
 						...forkingData,
 						name: `${forking.name} (Fork)`,
 						userAddress: ctx.session.address
-					},
-					include
+					}
 				})
 
 				ctx.emitter.emit(events.add, plug)
@@ -168,8 +142,7 @@ export const plug = createTRPCRouter({
 						name: input.name,
 						color: input.color,
 						isPrivate: input.isPrivate
-					},
-					include
+					}
 				})
 
 				ctx.emitter.emit(events.edit, plug)

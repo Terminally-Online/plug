@@ -10,7 +10,7 @@ import { NextPageWithLayout } from "@/lib/types"
 
 const Page: NextPageWithLayout = () => {
 	const { address, sockets, handleAdd: handleSocketAdd } = useSockets()
-	const { actions } = usePlugs()
+	const { handle } = usePlugs()
 
 	const hasSockets = sockets && sockets.length > 0
 
@@ -19,7 +19,7 @@ const Page: NextPageWithLayout = () => {
 			<Header
 				size="lg"
 				label="Plug"
-				nextOnClick={() => actions.plug.handleAdd(routes.app.index)}
+				nextOnClick={() => handle.plug.add(routes.app.index)}
 				nextLabel={<Plus size={14} className="opacity-60" />}
 			/>
 

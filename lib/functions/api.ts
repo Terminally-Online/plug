@@ -1,5 +1,9 @@
 import { getSession } from "next-auth/react"
 
+import { ACTION_REGEX } from "@/contexts/PlugProvider"
+
+import { actionCategories, actions } from "../constants"
+
 export const isConnected = async (ctx: any, callback: () => any) => {
 	if (!(await getSession(ctx))) {
 		return {
@@ -11,4 +15,28 @@ export const isConnected = async (ctx: any, callback: () => any) => {
 	}
 
 	return callback()
+}
+
+export const getValues = (
+	categoryName: keyof typeof actionCategories,
+	actionName: keyof (typeof actions)[keyof typeof actionCategories]
+) => {
+	const staticAction = actions[categoryName][actionName]
+
+	const fragments = staticAction
+		? (staticAction["sentence"].split(ACTION_REGEX) as string[])
+		: []
+
+	const dynamic = fragments.filter(fragment => fragment.match(ACTION_REGEX))
+
+	return Array(dynamic.length).fill(undefined)
+}
+
+export const getIndexes = (fragment: string) => {
+	const sanitized = fragment.replace("{", "").replace("}", "").split("=>")
+
+	if (sanitized.length > 1)
+		return [sanitized[0], sanitized[1]].map(Number) as [number, number]
+
+	return [null, Number(sanitized[0])] as [null, number]
 }

@@ -1,20 +1,19 @@
-import type { FC } from "react"
-import { useState } from "react"
+import { FC, useState } from "react"
 
 import Image from "next/image"
 
 import { Info } from "lucide-react"
 
 import { Button } from "@/components/buttons"
-import { useActions } from "@/contexts/ActionProvider"
-import { actionCategories, actions } from "@/lib/constants"
-import { formatAddress, formatTitle } from "@/lib/functions"
+import { usePlugs } from "@/contexts"
+import { actionCategories, actions as staticActions } from "@/lib/constants"
+import { formatAddress, formatTitle, getValues } from "@/lib/functions"
 
 import { Frame } from "../../frames/base"
 
 type Props = {
 	categoryName: keyof typeof actionCategories
-	actionName: keyof (typeof actions)[keyof typeof actionCategories]
+	actionName: keyof (typeof staticActions)[keyof typeof actionCategories]
 	handleVisibleToggle: () => void
 }
 
@@ -23,10 +22,13 @@ export const ActionItem: FC<Props> = ({
 	actionName,
 	handleVisibleToggle
 }) => {
-	const { handleAdd } = useActions()
+	const { id, actions, handle } = usePlugs()
 
 	const [actionVisible, setActionVisible] = useState(false)
-	const { icon, ...action } = actions[categoryName][actionName]
+
+	const { icon, ...action } = staticActions[categoryName][actionName]
+
+	if (!id) return null
 
 	return (
 		<>
@@ -36,12 +38,19 @@ export const ActionItem: FC<Props> = ({
 					sizing="md"
 					className="w-full px-6 text-left"
 					onClick={() => {
-						handleVisibleToggle()
-						handleAdd({
-							categoryName,
-							actionName,
-							data: JSON.stringify(action)
+						handle.action.edit({
+							id,
+							actions: JSON.stringify([
+								...actions,
+								{
+									categoryName,
+									actionName,
+									values: getValues(categoryName, actionName)
+								}
+							])
 						})
+
+						handleVisibleToggle()
 					}}
 				>
 					{formatTitle(actionName)}

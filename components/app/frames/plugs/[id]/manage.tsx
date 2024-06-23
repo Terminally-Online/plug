@@ -12,7 +12,7 @@ import { useNavigation } from "@/lib/hooks/useNavigation"
 export const ManageFrame = () => {
 	const { id, from } = useNavigation()
 	const { frameVisible, handleFrameVisible } = useFrame()
-	const { plug, actions } = usePlugs()
+	const { plug, handle } = usePlugs()
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(
 		plug?.name ?? "",
@@ -24,8 +24,8 @@ export const ManageFrame = () => {
 
 		nameRef.current = debouncedName
 
-		actions.plug.handleEdit({ ...plug, name: debouncedName })
-	}, [nameRef, plug, debouncedName, actions])
+		handle.plug.edit({ ...plug, name: debouncedName })
+	}, [nameRef, plug, debouncedName, handle])
 
 	if (!plug) return null
 
@@ -51,7 +51,7 @@ export const ManageFrame = () => {
 					<Checkbox
 						checked={plug.isPrivate}
 						handleChange={(checked: boolean) =>
-							actions.plug.handleEdit({
+							handle.plug.edit({
 								...plug,
 								isPrivate: checked
 							})
@@ -76,7 +76,7 @@ export const ManageFrame = () => {
 											: "transparent"
 								}}
 								onClick={() =>
-									actions.plug.handleEdit({
+									handle.plug.edit({
 										...plug,
 										color
 									})
@@ -98,7 +98,7 @@ export const ManageFrame = () => {
 			<Button
 				variant="destructive"
 				className="mt-[20px] w-full"
-				onClick={() => actions.plug.handleDelete({ id, from })}
+				onClick={() => handle.plug.delete({ id, from })}
 			>
 				Delete
 			</Button>

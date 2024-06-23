@@ -8,7 +8,7 @@ import { routes } from "@/lib/constants"
 type Props = { from: string; count?: number; all?: boolean }
 
 export const PlugGrid: FC<Props> = ({ from, count, all = false }) => {
-	const { plugs, search, actions } = usePlugs()
+	const { plugs, search, handle } = usePlugs()
 
 	if (plugs === undefined) return null
 
@@ -28,7 +28,7 @@ export const PlugGrid: FC<Props> = ({ from, count, all = false }) => {
 					<div className="mx-auto flex flex-row gap-1">
 						<Button
 							className="w-max"
-							onClick={() => actions.plug.handleSearch("")}
+							onClick={() => handle.search("")}
 						>
 							Clear Search
 						</Button>

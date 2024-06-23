@@ -1,5 +1,12 @@
 import { FC } from "react"
 
-export const StaticFragment: FC<{ fragment: string }> = ({ fragment }) => (
-	<span>{fragment} </span>
-)
+import { usePlugs } from "@/contexts"
+
+export const StaticFragment: FC<{ index: number; fragmentIndex: number }> = ({
+	index,
+	fragmentIndex
+}) => {
+	const { fragments } = usePlugs()
+
+	return <span>{fragments[index][fragmentIndex]} </span>
+}

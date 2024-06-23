@@ -1,72 +1,81 @@
-import type { FC, PropsWithChildren } from "react"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import {
+	ContextType,
+	createContext,
+	FC,
+	PropsWithChildren,
+	useContext,
+	useEffect,
+	useMemo,
+	useState
+} from "react"
 
 import { useRouter } from "next/navigation"
 
-import { Value } from "@/components/app/sentences"
-import { tags } from "@/lib/constants"
-import { useDebounce } from "@/lib/hooks"
+import {
+	actionCategories,
+	actions as staticActions,
+	tags
+} from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
-
-type PlugContextProps = {
-	// Single plug fields and methods
-	plugs?: Array<Workflow>
-	id?: string
-	plug?: Workflow
-	version?: number
-
-	search: string
-	tag: (typeof tags)[number]
-
-	// Action methods for a single plug
-	actions: {
-		plug: {
-			handleSelect: (id?: string) => void
-			handleSearch: (search: string) => void
-			handleTag: (tag: (typeof tags)[number]) => void
-			handleAdd: (from: string) => void
-			handleEdit: ({
-				name,
-				color,
-				isPrivate
-			}: Pick<Workflow, "name" | "color" | "isPrivate">) => void
-			handleDelete: ({ id, from }: { id: string; from?: string }) => void
-			handleFork: ({ id, from }: { id: string; from?: string }) => void
-			handleVersion: (direction: 1 | -1) => void
-		}
-	}
-}
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) =>
 	!plugs ? [plug] : [plug, ...plugs]
 
-const getActions = (plug: Workflow | undefined, version: number) =>
-	plug && plug.versions[plug.versions.length - version]
-		? plug.versions[plug.versions.length - version].actions
-		: []
-
 export const ACTION_REGEX = /({\d+(?:=>\d+)?})/g
 
-export const PlugContext = createContext<PlugContextProps>({
+type WorkflowData = Pick<Workflow, "name" | "color" | "isPrivate">
+
+export type Option = {
+	icon: JSX.Element | undefined
+	label: string
+	value: string | number
+}
+
+export type Value = string | Option | undefined | null
+
+export const PlugContext = createContext<{
+	plugs?: Array<Workflow>
+	id?: string
+	plug?: Workflow
+
+	search: string
+	tag: (typeof tags)[number]
+
+	handle: {
+		select: (data?: string) => void
+		search: (data: string) => void
+		tag: (data: (typeof tags)[number]) => void
+		plug: {
+			add: (data: string) => void
+			edit: (data: { id: string } & WorkflowData) => void
+			delete: (data: { id: string; from?: string }) => void
+			fork: (data: { id: string; from?: string }) => void
+		}
+		action: {
+			edit: (data: { id?: string; actions: string }) => void
+		}
+	}
+}>({
 	plugs: [],
 	id: undefined,
 	plug: undefined,
-	version: undefined,
 
 	search: "",
 	tag: tags[0],
 
-	actions: {
+	handle: {
+		select: () => {},
+		search: () => {},
+		tag: () => {},
 		plug: {
-			handleSelect: () => {},
-			handleSearch: () => {},
-			handleTag: () => {},
-			handleAdd: () => {},
-			handleEdit: () => {},
-			handleDelete: () => {},
-			handleFork: () => {},
-			handleVersion: () => {}
+			add: () => {},
+			edit: () => {},
+			delete: () => {},
+			fork: () => {}
+		},
+		action: {
+			edit: () => {}
 		}
 	}
 })
@@ -74,53 +83,18 @@ export const PlugContext = createContext<PlugContextProps>({
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const router = useRouter()
 
-	const [id, setId] = useState<PlugContextProps["id"]>()
-	const [version, setVersion] = useState(0)
-	const [search, debouncedSearch, handleSearch] = useDebounce("")
-	const [tag, setTag] = useState<(typeof tags)[number]>(tags[0])
-
 	const { data: apiPlugs } = api.plug.all.useQuery()
 
-	const [plugs, setPlugs] = useState<PlugContextProps["plugs"]>(apiPlugs)
+	const [plugs, setPlugs] =
+		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
+	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
+
+	const [search, handleSearch] = useState("")
+	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
 
 	const plug = useMemo(
 		() => plugs && plugs.find(plug => plug.id === id),
 		[plugs, id]
-	)
-
-	const actions = useMemo(() => getActions(plug, version), [plug, version])
-
-	const fragments = useMemo(
-		() =>
-			!actions
-				? []
-				: actions.map(action => {
-						const parsed = action.data
-							? JSON.parse(action.data)
-							: undefined
-
-						return !parsed || !parsed["sentence"]
-							? []
-							: (parsed["sentence"].split(
-									ACTION_REGEX
-								) as string[])
-					}),
-		[actions]
-	)
-
-	// Filter down to only the dynamic fragments that match the regex pattern
-	// so that we can use the carried index value to update the correct indexes
-	// when one is updated by the user.
-	const dynamic = useMemo(
-		() =>
-			fragments.map(fragment =>
-				fragment.filter(fragment => fragment.match(ACTION_REGEX))
-			),
-		[fragments]
-	)
-
-	const [values, setValues] = useState<Array<Array<Value>>>(
-		dynamic.map(fragment => fragment.map(() => undefined))
 	)
 
 	const handleCreate = (
@@ -142,36 +116,10 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			)
 	}
 
-	const handleAdd = api.plug.add.useMutation({
-		onSuccess: data => handleCreate(data)
-	})
-	const handleFork = api.plug.fork.useMutation({
-		onSuccess: data => handleCreate(data)
-	})
 	api.plug.onAdd.useSubscription(undefined, {
 		onData: data => handleCreate({ plug: data, from: "" }, false)
 	})
 
-	const handleEdit = api.plug.edit.useMutation({
-		onMutate: data => {
-			const previous = plugs ?? []
-
-			setPlugs(
-				previous.map(p =>
-					p.id === data.id
-						? {
-								...p,
-								...data,
-								updatedAt: new Date()
-							}
-						: p
-				)
-			)
-
-			return previous
-		},
-		onError: (_, __, context) => setPlugs(context)
-	})
 	api.plug.onEdit.useSubscription(undefined, {
 		onData: data =>
 			setPlugs(prev =>
@@ -185,18 +133,6 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			)
 	})
 
-	const handleDelete = api.plug.delete.useMutation({
-		onMutate: data => {
-			const previous = plugs ?? []
-
-			setPlugs(previous.filter(plug => plug.id !== data.id))
-
-			router.push(data.from ?? `/app/plugs/`)
-
-			return previous
-		},
-		onError: (_, __, context) => setPlugs(context)
-	})
 	api.plug.onDelete.useSubscription(undefined, {
 		onData: (data: Workflow) =>
 			setPlugs(prev =>
@@ -204,16 +140,70 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			)
 	})
 
-	useEffect(() => {
-		// When a new plug is selected, we want to set it to the latest version
-		// and when it is updated (in this client or another client), we automatically
-		// update the local state to use the latest version.
-		if (plug) setVersion(plug.versions[0]?.version ?? 1)
-	}, [plug])
+	const handle = {
+		plug: {
+			add: api.plug.add.useMutation({
+				onSuccess: data => handleCreate(data)
+			}),
+			edit: api.plug.edit.useMutation({
+				onMutate: data => {
+					const previous = plugs ?? []
 
-	const handleAddAction = api.plug.action.add.useMutation()
-	const handleEditAction = api.plug.action.edit.useMutation()
-	const handleRemoveAction = api.plug.action.remove.useMutation()
+					setPlugs(
+						previous.map(p =>
+							p.id === data.id
+								? {
+										...p,
+										...data,
+										updatedAt: new Date()
+									}
+								: p
+						)
+					)
+
+					return previous
+				},
+				onError: (_, __, context) => setPlugs(context)
+			}),
+			delete: api.plug.delete.useMutation({
+				onMutate: data => {
+					const previous = plugs ?? []
+
+					setPlugs(previous.filter(plug => plug.id !== data.id))
+
+					router.push(data.from ?? `/app/plugs/`)
+
+					return previous
+				},
+				onError: (_, __, context) => setPlugs(context)
+			}),
+			fork: api.plug.fork.useMutation({
+				onSuccess: data => handleCreate(data)
+			})
+		},
+		action: {
+			edit: api.plug.action.edit.useMutation({
+				onMutate: data => {
+					const previous = plugs ?? []
+
+					setPlugs(
+						previous.map(p =>
+							p.id === data.id
+								? {
+										...p,
+										actions: data.actions,
+										updatedAt: new Date()
+									}
+								: p
+						)
+					)
+
+					return previous
+				},
+				onError: (_, __, context) => setPlugs(context)
+			})
+		}
+	}
 
 	return (
 		<PlugContext.Provider
@@ -221,30 +211,22 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 				plugs,
 				id,
 				plug,
-				version,
 
 				search,
 				tag,
 
-				actions: {
+				handle: {
+					select: handleId,
+					search: handleSearch,
+					tag: handleTag,
 					plug: {
-						handleSelect: setId,
-						handleSearch,
-						handleTag: setTag,
-						handleAdd: (from: string) => handleAdd.mutate(from),
-						handleEdit: ({ name, color, isPrivate }) =>
-							handleEdit.mutate({
-								id,
-								name,
-								color,
-								isPrivate
-							}),
-						handleDelete: ({ id, from }) =>
-							handleDelete.mutate({ id, from }),
-						handleFork: ({ id, from }) =>
-							handleFork.mutate({ id, from }),
-						handleVersion: (direction: 1 | -1) =>
-							setVersion(prev => prev + direction)
+						add: data => handle.plug.add.mutate(data),
+						edit: data => handle.plug.edit.mutate(data),
+						delete: data => handle.plug.delete.mutate(data),
+						fork: data => handle.plug.fork.mutate(data)
+					},
+					action: {
+						edit: data => handle.action.edit.mutate(data)
 					}
 				}
 			}}
@@ -257,9 +239,41 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 export const usePlugs = (id?: string) => {
 	const context = useContext(PlugContext)
 
-	useEffect(() => {
-		if (id) context.actions.plug.handleSelect(id)
-	}, [context.actions.plug, id])
+	const { plug } = context
 
-	return context
+	const actions: Array<{
+		categoryName: keyof typeof actionCategories
+		actionName: keyof (typeof staticActions)[keyof typeof actionCategories]
+		values: Array<Value>
+	}> = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
+
+	// Split all of the sentence fragments into an appropriate array based on the
+	// regex shape that enables the f-string like syntax.
+	const fragments = useMemo(() => {
+		return actions.map(action => {
+			const staticAction =
+				staticActions[action.categoryName][action.actionName]
+
+			return staticAction
+				? (staticAction["sentence"].split(ACTION_REGEX) as string[])
+				: []
+		})
+	}, [actions])
+
+	const dynamic = useMemo(() => {
+		return fragments.map(sentence =>
+			sentence.filter(fragment => fragment.match(ACTION_REGEX))
+		)
+	}, [fragments])
+
+	useEffect(() => {
+		if (id) context.handle.select(id)
+	}, [context.handle, id])
+
+	return {
+		...context,
+		actions,
+		fragments,
+		dynamic
+	}
 }

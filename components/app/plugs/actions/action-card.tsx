@@ -1,37 +1,34 @@
-import { type FC, useMemo } from "react"
+import { FC, useMemo } from "react"
 
 import { usePlugs } from "@/contexts"
-import { useActions } from "@/contexts/ActionProvider"
-import { actionCategories, actions } from "@/lib/constants"
-import { formatTitle } from "@/lib/functions"
+import { actionCategories, actions as staticActions } from "@/lib/constants"
+import { formatTitle, getValues } from "@/lib/functions"
 
-type Props = {
+export const ActionCard: FC<{
 	categoryName: keyof typeof actionCategories
 	category: (typeof actionCategories)[keyof typeof actionCategories]
 	handleVisibleToggle: () => void
-}
-
-export const ActionCard: FC<Props> = ({
-	categoryName,
-	category,
-	handleVisibleToggle
-}) => {
-	const { handleAdd } = useActions()
+}> = ({ categoryName, category, handleVisibleToggle }) => {
+	const { id, actions, handle } = usePlugs()
 
 	const primaryActions = useMemo(() => {
-		return Object.keys(actions[categoryName]).reduce(
+		return Object.keys(staticActions[categoryName]).reduce(
 			(acc, actionName) => {
-				const { primary, ...action } = actions[categoryName][actionName]
+				const { primary, ...action } =
+					staticActions[categoryName][actionName]
 
-				if (primary) {
-					acc[actionName] = action
-				}
+				if (primary) acc[actionName] = action
 
 				return acc
 			},
-			{} as Record<string, (typeof actions)[typeof categoryName][string]>
+			{} as Record<
+				string,
+				(typeof staticActions)[typeof categoryName][string]
+			>
 		)
 	}, [categoryName])
+
+	if (!id) return null
 
 	return (
 		<div
@@ -41,21 +38,29 @@ export const ActionCard: FC<Props> = ({
 			}}
 		>
 			{Object.keys(primaryActions).map(actionName => {
-				const { icon: Icon, ...action } =
-					primaryActions[actionName as keyof typeof primaryActions]
+				const { icon: Icon } = primaryActions[actionName]
 
 				return (
 					<button
 						key={actionName}
 						className="group mx-auto flex cursor-pointer flex-col items-center gap-2 text-center text-white"
 						onClick={() => {
-							handleVisibleToggle()
-
-							handleAdd({
-								categoryName,
-								actionName,
-								data: JSON.stringify(action)
+							handle.action.edit({
+								id,
+								actions: JSON.stringify([
+									...actions,
+									{
+										categoryName,
+										actionName,
+										values: getValues(
+											categoryName,
+											actionName
+										)
+									}
+								])
 							})
+
+							handleVisibleToggle()
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">

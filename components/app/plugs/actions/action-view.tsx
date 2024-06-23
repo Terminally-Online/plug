@@ -1,36 +1,27 @@
-import { Sentence } from "@/components/app/sentences"
+import { Sentence } from "@/components/app/sentences/sentence"
 import { Button } from "@/components/buttons"
-import { useFrame } from "@/contexts"
-import { useActions } from "@/contexts/ActionProvider"
+import { useFrame, usePlugs } from "@/contexts"
 
 export const ActionView = () => {
 	const { handleFrameVisible } = useFrame()
-	const { actions } = useActions()
+	const { actions } = usePlugs()
 
 	return (
 		<>
 			{actions && actions.length > 0 ? (
-				<div className="mb-72">
-					<div className="flex flex-col">
-						{actions.map((action, index) => (
-							<>
-								<Sentence action={action} />
+				<div className="mb-72 flex flex-col">
+					{Array.from({ length: actions.length }).map((_, index) => (
+						<Sentence key={index} index={index} />
+					))}
 
-								{index < actions.length - 1 && (
-									<div className="mx-auto h-4 w-[2px] bg-grayscale-100" />
-								)}
-							</>
-						))}
-					</div>
-
-					{/*<div className="mt-12">
+					<div className="mt-12">
 						<h4 className="font-bold opacity-40">
 							Next Action Suggestions
 						</h4>
-					</div> */}
+					</div>
 				</div>
 			) : (
-				<div className="mx-auto my-20 flex max-w-[80%] flex-col gap-2 text-center">
+				<div className="mx-auto my-auto flex h-full max-w-[80%] flex-col gap-2 text-center">
 					<p className="text-lg font-bold">
 						No actions have been added yet.
 					</p>
