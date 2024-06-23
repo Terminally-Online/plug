@@ -1,31 +1,41 @@
 export const actionCategories: Record<
 	string,
-	{ image: string; gradientFrom: string; gradientTo: string }
+	{
+		image: string
+		gradientFrom: string
+		gradientTo: string
+		chains: Array<"ethereum" | "optimism" | "base" | "arbitrum">
+	}
 > = {
 	plug: {
 		image: "/protocols/plug.png",
 		gradientFrom: "#00E100",
-		gradientTo: "#A3F700"
+		gradientTo: "#A3F700",
+		chains: ["ethereum", "optimism", "base", "arbitrum"]
 	},
 	nouns: {
 		image: "/protocols/nouns.png",
 		gradientFrom: "#E9C80B",
-		gradientTo: "#FFE02C"
+		gradientTo: "#FFE02C",
+		chains: ["ethereum"]
 	},
 	fraxlend: {
 		image: "/protocols/frax-lend.png",
 		gradientFrom: "#000000",
-		gradientTo: "#323232"
+		gradientTo: "#323232",
+		chains: ["ethereum"]
 	},
 	aave: {
 		image: "/protocols/aave.png",
 		gradientFrom: "#33B7C5",
-		gradientTo: "#B254A0"
+		gradientTo: "#B254A0",
+		chains: ["ethereum"]
 	},
 	uniswap: {
 		image: "/protocols/uniswap.png",
 		gradientFrom: "#FF007A",
-		gradientTo: "#FF9BCB"
+		gradientTo: "#FF9BCB",
+		chains: ["ethereum", "optimism", "base"]
 	}
 }
 

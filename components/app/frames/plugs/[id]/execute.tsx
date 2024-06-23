@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import Image from "next/image"
 
@@ -17,13 +17,31 @@ import { ActionPreview } from "@/components/app/plugs/actions"
 import { Button } from "@/components/buttons"
 import { Checkbox } from "@/components/inputs"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
+import { actionCategories } from "@/lib"
+import { formatTitle } from "@/lib/functions"
 
 export const ExecuteFrame = () => {
 	const { socket, sockets, handleSelect } = useSockets()
-	const { plug } = usePlugs()
+	const { actions, plug } = usePlugs()
 	const { frameVisible, handleFrameVisible } = useFrame()
 
 	const [chainsSelected, setChainsSelected] = useState<string[]>([])
+
+	const chainsAvailable = useMemo(() => {
+		return Array.from(
+			actions
+				.map(
+					action =>
+						new Set(actionCategories[action.categoryName].chains)
+				)
+				// @ts-ignore -- Don't feel like properly typing this right now.
+				.reduce((acc, curr) => {
+					if (acc === null) return curr
+
+					return new Set([...acc].filter(chain => curr.has(chain)))
+				}, null)
+		)
+	}, [actions])
 
 	const handleSocketSelect = (socketAddress: string) => {
 		handleSelect(socketAddress)
@@ -39,7 +57,8 @@ export const ExecuteFrame = () => {
 	}
 
 	useEffect(() => {
-		if (chainsSelected.length === 0) setChainsSelected(["ethereum"])
+		if (frameVisible === "chain" && chainsAvailable.length === 1)
+			setChainsSelected([chainsAvailable[0]])
 
 		if (socket === undefined && sockets && sockets.length === 1) {
 			handleSelect(sockets[0].socketAddress)
@@ -47,7 +66,7 @@ export const ExecuteFrame = () => {
 
 		if (frameVisible === "socket") handleFrameVisible("chain")
 	}, [
-		chainsSelected,
+		chainsAvailable,
 		socket,
 		sockets,
 		frameVisible,
@@ -127,91 +146,41 @@ export const ExecuteFrame = () => {
 						: undefined
 				}
 				icon={<Globe size={18} className="opacity-60" />}
-				label="Choose Action"
+				label={"Choose Chain" + (chainsAvailable.length > 1 ? "s" : "")}
 				visible={frameVisible === "chain"}
 				handleVisibleToggle={() => handleFrameVisible(undefined)}
 				hasOverlay={true}
 			>
 				<div className="flex flex-col gap-4">
-					<div className="flex flex-row items-center gap-4">
-						<Checkbox
-							checked={chainsSelected.includes("ethereum")}
-							handleChange={() => handleChainSelect("ethereum")}
-							disabled={false}
-						/>
-
-						<div className="mr-auto flex flex-row gap-2">
-							<Image
-								src="/blockchain/ethereum.png"
-								alt="Optimism"
-								width={24}
-								height={24}
+					{chainsAvailable.map((chain, index) => (
+						<div
+							key={`chain-${index}`}
+							className="flex flex-row items-center gap-4"
+						>
+							<Checkbox
+								checked={chainsSelected.includes(chain)}
+								handleChange={() => handleChainSelect(chain)}
 							/>
-							<p className="font-bold">Ethereum</p>
+
+							<div className="mr-auto flex flex-row gap-2">
+								<Image
+									src={`/blockchain/${chain}.png`}
+									alt={formatTitle(chain)}
+									width={64}
+									height={64}
+									className="h-6 w-6"
+								/>
+								<p className="font-bold">
+									{formatTitle(chain)}
+								</p>
+							</div>
+
+							<p className="tabular-nums opacity-60">
+								23.005 ETH
+							</p>
 						</div>
+					))}
 
-						<p className="tabular-nums opacity-60">23.005 ETH</p>
-					</div>
-					<div className="flex flex-row items-center gap-4">
-						<Checkbox
-							checked={chainsSelected.includes("optimism")}
-							handleChange={() => handleChainSelect("optimism")}
-							disabled={true}
-						/>
-
-						<div className="mr-auto flex flex-row gap-2">
-							<Image
-								src="/blockchain/optimism.png"
-								alt="Optimism"
-								width={24}
-								height={24}
-							/>
-							<p className="font-bold">Optimism</p>
-							<p className="opacity-60">Not Available</p>
-						</div>
-
-						<p className="tabular-nums opacity-60">2.192 ETH</p>
-					</div>
-					<div className="flex flex-row items-center gap-4">
-						<Checkbox
-							checked={chainsSelected.includes("arbitrum")}
-							handleChange={() => handleChainSelect("arbitrum")}
-							disabled={true}
-						/>
-
-						<div className="mr-auto flex flex-row gap-2">
-							<Image
-								src="/blockchain/arbitrum.png"
-								alt="Optimism"
-								width={24}
-								height={24}
-							/>
-							<p className="font-bold">Arbitrum</p>
-							<p className="opacity-60">Not Available</p>
-						</div>
-
-						<p className="tabular-nums opacity-60">0.804 ETH</p>
-					</div>
-					<div className="flex flex-row items-center gap-4">
-						<Checkbox
-							checked={chainsSelected.includes("base")}
-							handleChange={() => handleChainSelect("base")}
-							disabled={true}
-						/>
-
-						<div className="mr-auto flex flex-row gap-2">
-							<Image
-								src="/blockchain/base.png"
-								alt="Optimism"
-								width={24}
-								height={24}
-							/>
-							<p className="font-bold">Base</p>
-							<p className="opacity-60">Not Available</p>
-						</div>
-
-						<p className="tabular-nums opacity-60">16.318 ETH</p>
-					</div>
 					<div className="mt-4 flex flex-row gap-4">
 						<Button
 							variant="secondary"
@@ -241,94 +210,8 @@ export const ExecuteFrame = () => {
 				hasOverlay={true}
 			>
 				<div className="flex flex-col gap-4">
-					{/* <p className="font-bold opacity-60">Actions</p>
-					<ActionPreview /> */}
 					<p className="font-bold opacity-60">Actions</p>
-
-					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/plug.png"
-							alt="Plug"
-							width={32}
-							height={32}
-							className="h-6 w-6 rounded-md"
-						/>
-						<p className="font-bold">
-							Can only be called{" "}
-							<span
-								style={{
-									background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-									color: `#00EF35`
-								}}
-								className="rounded px-2 py-1 font-bold"
-							>
-								1
-							</span>{" "}
-							times every{" "}
-							<span
-								style={{
-									background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-									color: `#00EF35`
-								}}
-								className="rounded px-2 py-1 font-bold"
-							>
-								day
-							</span>
-						</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/nouns.png"
-							alt="Nouns"
-							width={32}
-							height={32}
-							className="h-6 w-6 rounded-md"
-						/>
-						<p className="font-bold">
-							Noun has{" "}
-							<span
-								style={{
-									background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-									color: `#00EF35`
-								}}
-								className="rounded px-2 py-1 font-bold"
-							>
-								glasses
-							</span>{" "}
-							of{" "}
-							<span
-								style={{
-									background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-									color: `#00EF35`
-								}}
-								className="rounded px-2 py-1 font-bold"
-							>
-								yellow
-							</span>{" "}
-						</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/nouns.png"
-							alt="Nouns"
-							width={32}
-							height={32}
-							className="h-6 w-6 rounded-md"
-						/>
-						<p className="font-bold">
-							Bid on Noun with{" "}
-							<span
-								style={{
-									background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-									color: `#00EF35`
-								}}
-								className="rounded px-2 py-1 font-bold"
-							>
-								8
-							</span>{" "}
-							$ETH
-						</p>
-					</div>
+					<ActionPreview />
 
 					{socket && (
 						<p className="mt-4 flex font-bold">
@@ -350,30 +233,30 @@ export const ExecuteFrame = () => {
 					<p className="flex font-bold">
 						<span className="mr-auto opacity-60">Run On</span>
 						{chainsSelected.map(chain => (
-							<>
-								<Image
-									className="ml-[-10px] h-6 w-6"
-									src={`/blockchain/${chain}.png`}
-									alt={chain}
-									width={24}
-									height={24}
-								/>
-							</>
+							<Image
+								key={chain}
+								className="ml-[-10px] h-6 w-6"
+								src={`/blockchain/${chain}.png`}
+								alt={chain}
+								width={24}
+								height={24}
+							/>
 						))}
 					</p>
+
 					<p className="flex font-bold">
 						<span className="mr-auto opacity-60">Fee</span>
-						<div className="flex flex-row gap-2">
+						<span className="flex flex-row gap-2">
 							<span className="opacity-40">0.0011 ETH</span>
 							<span>$4.19</span>
-						</div>
+						</span>
 					</p>
 
 					<Button
 						className="mt-4 w-full"
 						onClick={() => handleFrameVisible("executing")}
 					>
-						Run Transaction
+						Submit Transaction
 					</Button>
 				</div>
 			</Frame>
