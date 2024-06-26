@@ -45,7 +45,7 @@ With just one line of code, you've instantiated everything that is needed to cre
 
 ## Signing an Intent
 
-When creating an intent, you'll create a set of constraints that define the limits of execution as well as any transactions that should be submit in order to execute the intent.
+When creating an intent, you'll create a set of constraints that define the limits of execution as well as any transactions that should be submitted in order to execute the intent.
 
 In practice, this is as simple as:
 
@@ -76,7 +76,7 @@ await plug.submit(plugs);
 
 ## Streaming Intents
 
-On the other side of things, Solvers have the ability to listen for newly created intents that can be submit onchain. Using the same framework used to sign intents, a Solver can open a connection to the distribution channel with:
+On the other side of things, Solvers have the ability to listen for newly created intents that can be submitted onchain. Using the same framework used to sign intents, a Solver can open a connection to the distribution channel with:
 
 ::: code-group
 
