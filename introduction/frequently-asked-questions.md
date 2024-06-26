@@ -34,7 +34,7 @@ Privacy of your onchain activity is important, but delivering your desired outco
 
 ## What are the associated fees?
 
-First things first, you only pay a fee on successful execution. You do not pay for failed transactions. You do not pay when you declare your Intent. Intead, when executing an Intent there is an associated fee that covers that cost of Solving and persistent simulation needed to deliver you the best outcomes. Fees are not static. The fees vary across each chain, type of action, and level of compute consumption, in an effort to mirror the dynamics of your typical fee expenditure. Fees as a whole are designed to only result in a marginal increase in cost while delivering a substantially better result. Due to the dynamic nature, you can always find the fee when you declare an intent.
+First things first, you only pay a fee on successful execution. You do not pay for failed transactions. You do not pay when you declare your Intent. Instead, when executing an Intent there is an associated fee that covers that cost of Solving and persistent simulation needed to deliver you the best outcomes. Fees are not static. The fees vary across each chain, type of action, and level of compute consumption, in an effort to mirror the dynamics of your typical fee expenditure. Fees as a whole are designed to only result in a marginal increase in cost while delivering a substantially better result. Due to the dynamic nature, you can always find the fee when you declare an intent.
 
 ## Do I lose custody of my assets?
 
@@ -50,7 +50,7 @@ Effectively everything. Due to the generalized nature of our architecture there 
 
 ## Wen token?
 
-When the flywheel is spinning hard. No sooner. No later. A critical piece of having a functional token ecosystem is to have a mechanism that provides persistent value accrual. Today, that remains the north star for all tokenzation conversations.
+When the flywheel is spinning hard. No sooner. No later. A critical piece of having a functional token ecosystem is to have a mechanism that provides persistent value accrual. Today, that remains the north star for all tokenization conversations.
 
 ## Why haven't you built you built X yet?
 
@@ -58,4 +58,4 @@ We build what users benefit from most. Please don't assume if we haven't impleme
 
 ## Is there a public roadmap for what's coming next?
 
-No, there isn't. As a team we do not follow "agile" practices as they create a system that is anything, but agile. Planning every single step to excrutiating detail is paradoxical state of software development. We are not here to operate based on predefined objectives. We focus on what improves your experience most. At a higher level we operate with quarterly objectives on top of multi-year north stars.
+No, there isn't. As a team we do not follow "agile" practices as they create a system that is anything, but agile. Planning every single step to excruciating detail is paradoxical state of software development. We are not here to operate based on predefined objectives. We focus on what improves your experience most. At a higher level we operate with quarterly objectives on top of multi-year north stars.
