@@ -3,7 +3,7 @@
 pragma solidity 0.8.23;
 
 import { PlugConnectorInterface, PlugTypesLib } from "../../interfaces/Plug.Connector.Interface.sol";
-import { PlugNounsLib } from "../../libraries/protocols/Plug.Nouns.Lib.sol";
+import { PlugNounsLib, NounsArtInterface } from "../../libraries/protocols/nouns/Plug.Nouns.Lib.sol";
 
 /**
  * @title Plug Nouns Trait
@@ -15,26 +15,17 @@ import { PlugNounsLib } from "../../libraries/protocols/Plug.Nouns.Lib.sol";
  * @author @masonchain
  */
 contract PlugNounsTrait is PlugConnectorInterface {
-    /// @dev Function hashes of the trait getters.
-    bytes32 public constant BACKGROUND_SELECTOR = keccak256(abi.encode("background(uint256 index)"));
-    bytes32 public constant HEAD_SELECTOR = keccak256(abi.encode("head(uint256 index)"));
-    bytes32 public constant GLASSES_SELECTOR = keccak256(abi.encode("glasses(uint256 index)"));
-    bytes32 public constant BODY_SELECTOR = keccak256(abi.encode("body(uint256 index)"));
-    bytes32 public constant ACCESSORY_SELECTOR = keccak256(abi.encode("accessory(uint256 index)"));
-
-    /// @dev Metadata storage contract for Nouns.
-    /// @notice We use a raw address instead of interface here because we are
-    ///         dynamically building the function to be called by decoding the
-    ///         selector from the data provided.
-    address art;
-
     /**
      * See {PlugConnectorInterface-enforce}.
      */
     function enforce(bytes calldata $terms, bytes32) public view {
+        /// @dev Recover the encoded trait data.
         (bytes32 selector, bytes32 trait) = decode($terms);
 
-        require(nounTrait(selector) == trait, "NounsTraitFuse:invalid-trait");
+        /// @dev Ensure that the trait is the same as the one we are looking for.
+        if (nounTrait(selector) != trait) {
+            revert PlugNounsLib.InsufficientReason();
+        }
     }
 
     /**
@@ -58,16 +49,25 @@ contract PlugNounsTrait is PlugConnectorInterface {
      * @param $trait The trait to retrieve.
      * @return $live The live wire to decode.
      */
-    function encode(bytes32 $selector, bytes32 $trait) public pure virtual returns (bytes memory) {
+    function encode(
+        bytes32 $selector,
+        bytes32 $trait
+    )
+        public
+        pure
+        virtual
+        returns (bytes memory $live)
+    {
         if (
-            $selector == HEAD_SELECTOR || $selector == GLASSES_SELECTOR
-                || $selector == BODY_SELECTOR || $selector == ACCESSORY_SELECTOR
-                || $selector == BACKGROUND_SELECTOR
+            $selector == PlugNounsLib.HEAD_SELECTOR || $selector == PlugNounsLib.GLASSES_SELECTOR
+                || $selector == PlugNounsLib.BODY_SELECTOR
+                || $selector == PlugNounsLib.ACCESSORY_SELECTOR
+                || $selector == PlugNounsLib.BACKGROUND_SELECTOR
         ) { } else {
-            revert("NounsTraitFuse:invalid-selector");
+            revert PlugNounsLib.InvalidSelector($selector);
         }
 
-        return abi.encode($selector, $trait);
+        $live = abi.encode($selector, $trait);
     }
 
     /**
@@ -84,30 +84,23 @@ contract PlugNounsTrait is PlugConnectorInterface {
             PlugNounsLib.TOKEN.seeds(nounId);
 
         /// @dev Get the seed for the specified trait from the Seed struct.
-        uint256 traitSeed;
-        if ($selector == HEAD_SELECTOR) {
-            traitSeed = head;
-        } else if ($selector == GLASSES_SELECTOR) {
-            traitSeed = glasses;
-        } else if ($selector == BODY_SELECTOR) {
-            traitSeed = body;
-        } else if ($selector == ACCESSORY_SELECTOR) {
-            traitSeed = accessory;
-        } else if ($selector == BACKGROUND_SELECTOR) {
-            traitSeed = background;
+        bytes memory trait;
+        if ($selector == PlugNounsLib.HEAD_SELECTOR) {
+            trait = PlugNounsLib.ART.heads(head);
+        } else if ($selector == PlugNounsLib.GLASSES_SELECTOR) {
+            trait = PlugNounsLib.ART.glasses(glasses);
+        } else if ($selector == PlugNounsLib.BODY_SELECTOR) {
+            trait = PlugNounsLib.ART.bodies(body);
+        } else if ($selector == PlugNounsLib.ACCESSORY_SELECTOR) {
+            trait = PlugNounsLib.ART.accessories(accessory);
+        } else if ($selector == PlugNounsLib.BACKGROUND_SELECTOR) {
+            /// @dev For some reason `backgrounds` returns a string
+            ///      instead of bytes, so we need to convert it.
+            trait = bytes(PlugNounsLib.ART.backgrounds(background));
         } else {
-            revert("NounsTraitFuse:invalid-selector");
+            revert PlugNounsLib.InvalidSelector($selector);
         }
 
-        /// @dev Build the transaction data to call the Noun contract.
-        bytes memory data = abi.encodeWithSelector(bytes4($selector), traitSeed);
-
-        /// @dev Retrieve the trait.
-        (bool success, bytes memory returnData) = art.staticcall(data);
-
-        /// @dev Ensure the call succeeded -- out of scope Nouns are not alive.
-        require(success, "NounsTraitFuse:trait-call-failed");
-
-        $traitHash = keccak256(returnData);
+        $traitHash = keccak256(trait);
     }
 }

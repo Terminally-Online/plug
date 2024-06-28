@@ -38,6 +38,7 @@ library PlugLib {
 
     error CompensationFailed(address $recipient, uint256 $value);
 
+    error ThresholdInvalid();
     error ThresholdExceeded(uint256 $expected, uint256 $reality);
     error ThresholdInsufficient(uint256 $expected, uint256 $reality);
 

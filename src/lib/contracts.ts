@@ -157,11 +157,6 @@ export const contracts = [
                         "internalType": "address"
                     },
                     {
-                        "name": "$type",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    },
-                    {
                         "name": "$operator",
                         "type": "uint8",
                         "internalType": "uint8"
@@ -187,11 +182,6 @@ export const contracts = [
                         "name": "$asset",
                         "type": "address",
                         "internalType": "address"
-                    },
-                    {
-                        "name": "$type",
-                        "type": "uint8",
-                        "internalType": "uint8"
                     },
                     {
                         "name": "$operator",
@@ -1705,11 +1695,6 @@ export const contracts = [
                 ],
                 "outputs": [
                     {
-                        "name": "$bidder",
-                        "type": "address",
-                        "internalType": "address"
-                    },
-                    {
                         "name": "$bid",
                         "type": "uint256",
                         "internalType": "uint256"
@@ -1721,11 +1706,6 @@ export const contracts = [
                 "type": "function",
                 "name": "encode",
                 "inputs": [
-                    {
-                        "name": "$bidder",
-                        "type": "address",
-                        "internalType": "address"
-                    },
                     {
                         "name": "$bid",
                         "type": "uint256",
@@ -1757,7 +1737,7 @@ export const contracts = [
                     }
                 ],
                 "outputs": [],
-                "stateMutability": "view"
+                "stateMutability": "nonpayable"
             },
             {
                 "type": "error",
@@ -1786,7 +1766,7 @@ export const contracts = [
                 ],
                 "outputs": [
                     {
-                        "name": "$tokenId",
+                        "name": "$id",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -1798,7 +1778,7 @@ export const contracts = [
                 "name": "encode",
                 "inputs": [
                     {
-                        "name": "$value",
+                        "name": "$id",
                         "type": "uint256",
                         "internalType": "uint256"
                     }
@@ -1837,71 +1817,6 @@ export const contracts = [
         "abi": [
             {
                 "type": "function",
-                "name": "ACCESSORY_SELECTOR",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "BACKGROUND_SELECTOR",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "BODY_SELECTOR",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "GLASSES_SELECTOR",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
-                "name": "HEAD_SELECTOR",
-                "inputs": [],
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes32",
-                        "internalType": "bytes32"
-                    }
-                ],
-                "stateMutability": "view"
-            },
-            {
-                "type": "function",
                 "name": "decode",
                 "inputs": [
                     {
@@ -1941,7 +1856,7 @@ export const contracts = [
                 ],
                 "outputs": [
                     {
-                        "name": "",
+                        "name": "$live",
                         "type": "bytes",
                         "internalType": "bytes"
                     }
@@ -1984,6 +1899,22 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "view"
+            },
+            {
+                "type": "error",
+                "name": "InsufficientReason",
+                "inputs": []
+            },
+            {
+                "type": "error",
+                "name": "InvalidSelector",
+                "inputs": [
+                    {
+                        "name": "$selector",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ]
             }
         ]
     },
@@ -3616,17 +3547,6 @@ export const contracts = [
                 "type": "error",
                 "name": "TradingAlreadyInitialized",
                 "inputs": []
-            },
-            {
-                "type": "error",
-                "name": "TypeInvalid",
-                "inputs": [
-                    {
-                        "name": "$reality",
-                        "type": "uint8",
-                        "internalType": "uint8"
-                    }
-                ]
             },
             {
                 "type": "error",

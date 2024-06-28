@@ -3,7 +3,7 @@
 pragma solidity 0.8.23;
 
 import { PlugConnectorInterface, PlugTypesLib } from "../../interfaces/Plug.Connector.Interface.sol";
-import { PlugNounsLib } from "../../libraries/protocols/Plug.Nouns.Lib.sol";
+import { PlugNounsLib } from "../../libraries/protocols/nouns/Plug.Nouns.Lib.sol";
 
 /**
  * @title Plug Nouns Id Fuse
@@ -27,18 +27,18 @@ contract PlugNounsId is PlugConnectorInterface {
     /**
      * @notice Decode the live wire into the tokenId.
      * @param $live The live wire to decode.
-     * @return $tokenId The id of the token being requested.
+     * @return $id The id of the token being requested.
      */
-    function decode(bytes calldata $live) public view virtual returns (uint256 $tokenId) {
+    function decode(bytes calldata $live) public view virtual returns (uint256 $id) {
         return abi.decode($live, (uint256));
     }
 
     /**
      * @notice Encode the tokenId into the live wire.
-     * @param $value The tokenId to encode.
+     * @param $id The tokenId to encode.
      * @return $data The encoded token id of the noun being bid on.
      */
-    function encode(uint256 $value) public pure virtual returns (bytes memory $data) {
-        $data = abi.encode($value);
+    function encode(uint256 $id) public pure virtual returns (bytes memory $data) {
+        $data = abi.encode($id);
     }
 }

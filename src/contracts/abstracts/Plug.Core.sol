@@ -79,37 +79,8 @@ abstract contract PlugCore is PlugTypes {
                 revert PlugLib.ValueInvalid(plug.target, plug.value, address(this).balance);
             }
 
-            /// @dev Recover the byte that is being used to denote the type of
-            ///      Plug being executed. It has to be done this way because
-            ///      instead of declaring multiple EIP712 types, we are using
-            ///      a single type and encoding the data in a way that is
-            ///      recoverable and solvable in a single type and call.
-            bytes1 plugType = plug.data[0];
-
-            /// @dev This check is a conditional Plug that requires access
-            ///      to the hash and is confirming the current state of some
-            ///      onchain data in an external contract.
-            if (plugType & 0x01 == plugType) {
-                /// @dev Call the Plug to determine that is operating as a
-                ///      condition and enforce the outcome of the condition
-                ///      if it is not met (reverts).
-                ($results[i].success, $results[i].result) = plug.target.call{ value: plug.value }(
-                    abi.encodeWithSelector(
-                        PlugConnectorInterface.enforce.selector, plug.data[1:], plugsHash
-                    )
-                );
-            }
-            /// @dev Make the call to the Plug and bubble up the
-            ///      result if it happens to fail.
-            else if (plugType & 0x02 == plugType) {
-                ($results[i].success, $results[i].result) =
-                    plug.target.call{ value: plug.value }(plug.data[1:]);
-            }
-            /// @dev If an invalid Plug type was provided revert to protect
-            ///      against fund siphoning when no work is done.
-            else {
-                revert PlugLib.TypeInvalid(uint8(plugType));
-            }
+            ($results[i].success, $results[i].result) =
+                plug.target.call{ value: plug.value }(plug.data[1:]);
 
             /// @dev If the call failed, bubble up the revert reason if needed.
             PlugLib.bubbleRevert($results[i].success, $results[i].result);

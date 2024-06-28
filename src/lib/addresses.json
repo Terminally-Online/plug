@@ -24,18 +24,18 @@
     }
   },
   "Plug.Vault.Socket.sol": {
-    "initCodeHash": "0x4f4ab30119e64e1bf4cc43463e59d1fca0116994d2ab6597e5a9c5c6b4aebd4e",
+    "initCodeHash": "0xe50786d79fa6116336d6290f4e8295eeedfee61a4e8183fe618d1cf166dad223",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000589b8fd678fdff3fe4c7d501",
-      "address": "0x000aD5f7205669658CC45C026c825aCE20Be4aDa",
+      "salt": "0x00000000000000000000000000000000000000009e32a2e996f3ff3f3478b6c6",
+      "address": "0x003127AA10e6fbfa8047Fa422A878aa3517BdABc",
       "rarity": "0"
     }
   },
   "Plug.Balance.sol": {
-    "initCodeHash": "0xffef66d8dd3173fc22927ae387cf1da3bbd028719ab88c0e0451f4de6d5a1d96",
+    "initCodeHash": "0xe7e74d01ab07550139a4fad4ec4973a96173333249260138bac4603939c161b8",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000b52b2246dcf6ff3f57a52568",
-      "address": "0x002180aAAA9Abd2B9035db0B17Ec09720bF5E17d",
+      "salt": "0x0000000000000000000000000000000000000000c8d43cb46decff3f30a67713",
+      "address": "0xcD00A77A2E1Eb619567DF61A8b88007FEC22D7f0",
       "rarity": "0"
     }
   },
@@ -104,10 +104,10 @@
     }
   },
   "Plug.Nouns.Bid.sol": {
-    "initCodeHash": "0x60d3c6aae533c672b4101c9a80e1c249f3c3785f09d3d1343f76cae731b56c2d",
+    "initCodeHash": "0xf17e7a4d28d23caa5c810da16cad69ddcb9dfe0e58cc693b3e75df4ac3c77cbe",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000976eb3910ebcff3f2d6976b7",
-      "address": "0x003862D31AFB473422FbE9EDfbd7e579Aa15B9d4",
+      "salt": "0x00000000000000000000000000000000000000008c3ec03959f4ff3f5d2b623b",
+      "address": "0x0094365bd746663d738B20c424CA475f4f185021",
       "rarity": "0"
     }
   },
@@ -120,10 +120,10 @@
     }
   },
   "Plug.Nouns.Trait.sol": {
-    "initCodeHash": "0xfa0c4d44db499bdbd81c0ee11dc5afe1380b8fbca42dacbb7a1717ae8a845f7e",
+    "initCodeHash": "0x562109adedc7554ebe7f3d91e976afa2cf9ec7b8288a6258b09ec6d244f3d054",
     "deployment": {
-      "salt": "0x0000000000000000000000000000000000000000e3d2c30b22f7ff3f16349e6f",
-      "address": "0x0013352589EC7b91Fd1Ac90c09930BaAd0f24E20",
+      "salt": "0x00000000000000000000000000000000000000002e154d086bd5ff3fb54b4955",
+      "address": "0x00C5f2Cb0Fde0050DAc67f7FB6d1bB3362F43c40",
       "rarity": "0"
     }
   }

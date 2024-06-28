@@ -19,9 +19,6 @@ contract PlugBalanceTest is Test {
     uint8 aboveOperator = 1;
     uint256 belowBalance = 100 + 1;
     uint256 aboveBalance = 100 - 1;
-    uint8 nativeType;
-    uint8 erc20Type = 1;
-    uint8 erc721Type = 2;
     uint256 balance = 100;
 
     function setUp() public virtual {
@@ -36,32 +33,25 @@ contract PlugBalanceTest is Test {
 
     function test_enforce_Encoding() public {
         bytes memory terms =
-            connector.encode(address(this), address(0), nativeType, belowOperator, belowBalance);
-        (
-            address decodedHolder,
-            address decodedAsset,
-            uint8 decodedType,
-            uint8 decodedOperator,
-            uint256 decodedBalance
-        ) = connector.decode(terms);
+            connector.encode(address(this), address(0), belowOperator, belowBalance);
+        (address decodedHolder, address decodedAsset, uint8 decodedOperator, uint256 decodedBalance)
+        = connector.decode(terms);
 
         assertEq(decodedHolder, address(this));
         assertEq(decodedAsset, address(0));
-        assertEq(decodedType, nativeType);
         assertEq(decodedOperator, belowOperator);
         assertEq(decodedBalance, belowBalance);
     }
 
     function test_enforce_BelowNativeBalance() public view {
         bytes memory terms =
-            connector.encode(address(this), address(0), nativeType, belowOperator, belowBalance);
+            connector.encode(address(this), address(0), belowOperator, belowBalance);
         connector.enforce(terms, plugsHash);
     }
 
     function test_enforce_BelowNativeBalance_Exceeded() public {
         uint256 expected = balance - 1;
-        bytes memory terms =
-            connector.encode(address(this), address(0), nativeType, belowOperator, expected);
+        bytes memory terms = connector.encode(address(this), address(0), belowOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(PlugLib.ThresholdExceeded.selector, expected, balance)
         );
@@ -70,14 +60,13 @@ contract PlugBalanceTest is Test {
 
     function test_enforce_AboveNativeBalance() public view {
         bytes memory terms =
-            connector.encode(address(this), address(0), nativeType, aboveOperator, aboveBalance);
+            connector.encode(address(this), address(0), aboveOperator, aboveBalance);
         connector.enforce(terms, plugsHash);
     }
 
     function testRevert_enforce_AboveNativeBalance_Insufficient() public {
         uint256 expected = balance + 1;
-        bytes memory terms =
-            connector.encode(address(this), address(0), nativeType, aboveOperator, expected);
+        bytes memory terms = connector.encode(address(this), address(0), aboveOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(PlugLib.ThresholdInsufficient.selector, expected, balance)
         );
@@ -85,16 +74,15 @@ contract PlugBalanceTest is Test {
     }
 
     function test_enforce_BelowERC20Balance() public view {
-        bytes memory terms = connector.encode(
-            address(this), address(mockERC20), erc20Type, belowOperator, belowBalance
-        );
+        bytes memory terms =
+            connector.encode(address(this), address(mockERC20), belowOperator, belowBalance);
         connector.enforce(terms, plugsHash);
     }
 
     function test_enforce_BelowERC20Balance_Exceeded() public {
         uint256 expected = balance - 1;
         bytes memory terms =
-            connector.encode(address(this), address(mockERC20), erc20Type, belowOperator, expected);
+            connector.encode(address(this), address(mockERC20), belowOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(PlugLib.ThresholdExceeded.selector, expected, balance)
         );
@@ -102,16 +90,15 @@ contract PlugBalanceTest is Test {
     }
 
     function test_enforce_AboveERC20Balance() public view {
-        bytes memory terms = connector.encode(
-            address(this), address(mockERC20), erc20Type, aboveOperator, aboveBalance
-        );
+        bytes memory terms =
+            connector.encode(address(this), address(mockERC20), aboveOperator, aboveBalance);
         connector.enforce(terms, plugsHash);
     }
 
     function testRevert_enforce_AboveERC20Balance_Insufficient() public {
         uint256 expected = balance + 1;
         bytes memory terms =
-            connector.encode(address(this), address(mockERC20), erc20Type, aboveOperator, expected);
+            connector.encode(address(this), address(mockERC20), aboveOperator, expected);
         vm.expectRevert(
             abi.encodeWithSelector(PlugLib.ThresholdInsufficient.selector, expected, balance)
         );
@@ -119,31 +106,27 @@ contract PlugBalanceTest is Test {
     }
 
     function test_enforce_BelowERC721Balance() public view {
-        bytes memory terms =
-            connector.encode(address(this), address(mockERC721), erc721Type, belowOperator, 2);
+        bytes memory terms = connector.encode(address(this), address(mockERC721), belowOperator, 2);
         connector.enforce(terms, plugsHash);
     }
 
     function test_enforce_BelowERC721Balance_Exceeded() public {
         uint256 expected = 0;
-        bytes memory terms = connector.encode(
-            address(this), address(mockERC721), erc721Type, belowOperator, expected
-        );
+        bytes memory terms =
+            connector.encode(address(this), address(mockERC721), belowOperator, expected);
         vm.expectRevert(abi.encodeWithSelector(PlugLib.ThresholdExceeded.selector, expected, 1));
         connector.enforce(terms, plugsHash);
     }
 
     function test_enforce_AboveERC721Balance() public view {
-        bytes memory terms =
-            connector.encode(address(this), address(mockERC721), erc721Type, aboveOperator, 0);
+        bytes memory terms = connector.encode(address(this), address(mockERC721), aboveOperator, 0);
         connector.enforce(terms, plugsHash);
     }
 
     function testRevert_enforce_AboveERC721Balance_Insufficient() public {
         uint256 expected = 1 + 1;
-        bytes memory terms = connector.encode(
-            address(this), address(mockERC721), erc721Type, aboveOperator, expected
-        );
+        bytes memory terms =
+            connector.encode(address(this), address(mockERC721), aboveOperator, expected);
         vm.expectRevert(abi.encodeWithSelector(PlugLib.ThresholdInsufficient.selector, expected, 1));
         connector.enforce(terms, plugsHash);
     }

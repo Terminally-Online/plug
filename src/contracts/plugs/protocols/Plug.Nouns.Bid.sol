@@ -3,7 +3,7 @@
 pragma solidity 0.8.23;
 
 import { PlugConnectorInterface, PlugTypesLib } from "../../interfaces/Plug.Connector.Interface.sol";
-import { PlugNounsLib } from "../../libraries/protocols/Plug.Nouns.Lib.sol";
+import { PlugNounsLib } from "../../libraries/protocols/nouns/Plug.Nouns.Lib.sol";
 
 /**
  * @title Plug Nouns Bid Fuse
@@ -19,15 +19,23 @@ contract PlugNounsBid is PlugConnectorInterface {
     /**
      * See {PlugConnectorInterface-enforce}.
      */
-    function enforce(bytes calldata $terms, bytes32) public view override {
-        (address $bidder, uint256 $bid) = decode($terms);
+    function enforce(bytes calldata $terms, bytes32) public override {
+        uint256 $bid = decode($terms);
 
         /// @dev Get the current state of the auction.
-        (,,,, address $winner,) = PlugNounsLib.AUCTION_HOUSE.auction();
+        (,,, uint256 $endTime, address $winner, bool $settled) =
+            PlugNounsLib.AUCTION_HOUSE.auction();
+
+        /// @dev If the previous auction has not been settled and needs to be, it must be
+        ///      settled before a new auction can be started and bid placed.
+        if ($settled == false && block.timestamp >= $endTime) {
+            /// @dev Place the bid on the upcoming noun.
+            PlugNounsLib.AUCTION_HOUSE.settleCurrentAndCreateNewAuction();
+        }
 
         /// @dev Prevent the user from bidding on an auction that they
         ///      have already won / are winning.
-        if ($winner == $bidder) {
+        if ($winner == msg.sender) {
             revert PlugNounsLib.InsufficientReason();
         }
 
@@ -35,18 +43,15 @@ contract PlugNounsBid is PlugConnectorInterface {
         if (msg.sender.balance < $bid) {
             revert PlugNounsLib.InsufficientBalance();
         }
-
-        /// @TODO: Make sure the bid value is large enough to cover
-        ///		   the minimum bid.
     }
 
-    function decode(bytes calldata $live) public pure returns (address $bidder, uint256 $bid) {
+    function decode(bytes calldata $live) public pure returns (uint256 $bid) {
         /// @dev Decode the live data.
-        ($bidder, $bid) = abi.decode($live, (address, uint256));
+        ($bid) = abi.decode($live, (uint256));
     }
 
-    function encode(address $bidder, uint256 $bid) public pure returns (bytes memory $live) {
+    function encode(uint256 $bid) public pure returns (bytes memory $live) {
         /// @dev Encode the live data.
-        $live = abi.encode($bidder, $bid);
+        $live = abi.encode($bid);
     }
 }

@@ -35,11 +35,10 @@ contract PlugBalance is PlugConnectorInterface, PlugThresholdEnforce {
      */
     function enforce(bytes calldata $terms, bytes32) public view {
         /// @dev Determine the balance lookup definition.
-        (address $holder, address $asset, uint8 $type, uint8 $operator, uint256 $threshold) =
-            decode($terms);
+        (address $holder, address $asset, uint8 $operator, uint256 $threshold) = decode($terms);
 
         /// @dev If it is a native asset, ensure the balance is within bounds defined.
-        if ($type == 0) {
+        if ($asset == address(0)) {
             _enforce($operator, $threshold, $holder.balance);
         }
         /// @dev Otherwise, ensure the balance of an ERC20 or ERC721 token is within
@@ -55,10 +54,10 @@ contract PlugBalance is PlugConnectorInterface, PlugThresholdEnforce {
     function decode(bytes calldata $data)
         public
         pure
-        returns (address $holder, address $asset, uint8 $type, uint8 $operator, uint256 $threshold)
+        returns (address $holder, address $asset, uint8 $operator, uint256 $threshold)
     {
-        ($holder, $asset, $type, $operator, $threshold) =
-            abi.decode($data, (address, address, uint8, uint8, uint256));
+        ($holder, $asset, $operator, $threshold) =
+            abi.decode($data, (address, address, uint8, uint256));
     }
 
     /**
@@ -67,7 +66,6 @@ contract PlugBalance is PlugConnectorInterface, PlugThresholdEnforce {
     function encode(
         address $holder,
         address $asset,
-        uint8 $type,
         uint8 $operator,
         uint256 $threshold
     )
@@ -76,6 +74,6 @@ contract PlugBalance is PlugConnectorInterface, PlugThresholdEnforce {
         returns (bytes memory $data)
     {
         /// @dev Encode the holder, asset, operator, and threshold.
-        $data = abi.encode($holder, $asset, $type, $operator, $threshold);
+        $data = abi.encode($holder, $asset, $operator, $threshold);
     }
 }

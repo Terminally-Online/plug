@@ -138,7 +138,6 @@ export const plugBalanceAbi = [
     outputs: [
       { name: '$holder', internalType: 'address', type: 'address' },
       { name: '$asset', internalType: 'address', type: 'address' },
-      { name: '$type', internalType: 'uint8', type: 'uint8' },
       { name: '$operator', internalType: 'uint8', type: 'uint8' },
       { name: '$threshold', internalType: 'uint256', type: 'uint256' },
     ],
@@ -149,7 +148,6 @@ export const plugBalanceAbi = [
     inputs: [
       { name: '$holder', internalType: 'address', type: 'address' },
       { name: '$asset', internalType: 'address', type: 'address' },
-      { name: '$type', internalType: 'uint8', type: 'uint8' },
       { name: '$operator', internalType: 'uint8', type: 'uint8' },
       { name: '$threshold', internalType: 'uint256', type: 'uint256' },
     ],
@@ -990,18 +988,12 @@ export const plugNounsBidAbi = [
     type: 'function',
     inputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     name: 'decode',
-    outputs: [
-      { name: '$bidder', internalType: 'address', type: 'address' },
-      { name: '$bid', internalType: 'uint256', type: 'uint256' },
-    ],
+    outputs: [{ name: '$bid', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'pure',
   },
   {
     type: 'function',
-    inputs: [
-      { name: '$bidder', internalType: 'address', type: 'address' },
-      { name: '$bid', internalType: 'uint256', type: 'uint256' },
-    ],
+    inputs: [{ name: '$bid', internalType: 'uint256', type: 'uint256' }],
     name: 'encode',
     outputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     stateMutability: 'pure',
@@ -1014,7 +1006,7 @@ export const plugNounsBidAbi = [
     ],
     name: 'enforce',
     outputs: [],
-    stateMutability: 'view',
+    stateMutability: 'nonpayable',
   },
   { type: 'error', inputs: [], name: 'InsufficientBalance' },
   { type: 'error', inputs: [], name: 'InsufficientReason' },
@@ -1029,12 +1021,12 @@ export const plugNounsIdAbi = [
     type: 'function',
     inputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     name: 'decode',
-    outputs: [{ name: '$tokenId', internalType: 'uint256', type: 'uint256' }],
+    outputs: [{ name: '$id', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [{ name: '$value', internalType: 'uint256', type: 'uint256' }],
+    inputs: [{ name: '$id', internalType: 'uint256', type: 'uint256' }],
     name: 'encode',
     outputs: [{ name: '$data', internalType: 'bytes', type: 'bytes' }],
     stateMutability: 'pure',
@@ -1058,41 +1050,6 @@ export const plugNounsIdAbi = [
 export const plugNounsTraitAbi = [
   {
     type: 'function',
-    inputs: [],
-    name: 'ACCESSORY_SELECTOR',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'BACKGROUND_SELECTOR',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'BODY_SELECTOR',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'GLASSES_SELECTOR',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'HEAD_SELECTOR',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     name: 'decode',
     outputs: [
@@ -1108,7 +1065,7 @@ export const plugNounsTraitAbi = [
       { name: '$trait', internalType: 'bytes32', type: 'bytes32' },
     ],
     name: 'encode',
-    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    outputs: [{ name: '$live', internalType: 'bytes', type: 'bytes' }],
     stateMutability: 'pure',
   },
   {
@@ -1127,6 +1084,12 @@ export const plugNounsTraitAbi = [
     name: 'nounTrait',
     outputs: [{ name: '$traitHash', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
+  },
+  { type: 'error', inputs: [], name: 'InsufficientReason' },
+  {
+    type: 'error',
+    inputs: [{ name: '$selector', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'InvalidSelector',
   },
 ] as const
 
@@ -1977,11 +1940,6 @@ export const plugVaultSocketAbi = [
     name: 'SolverInvalid',
   },
   { type: 'error', inputs: [], name: 'TradingAlreadyInitialized' },
-  {
-    type: 'error',
-    inputs: [{ name: '$reality', internalType: 'uint8', type: 'uint8' }],
-    name: 'TypeInvalid',
-  },
   { type: 'error', inputs: [], name: 'UnauthorizedCallContext' },
   {
     type: 'error',
@@ -2791,12 +2749,34 @@ export const useReadPlugNounsBidEncode = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsBidAbi}__ and `functionName` set to `"enforce"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsBidAbi}__
  */
-export const useReadPlugNounsBidEnforce = /*#__PURE__*/ createUseReadContract({
+export const useWritePlugNounsBid = /*#__PURE__*/ createUseWriteContract({
   abi: plugNounsBidAbi,
-  functionName: 'enforce',
 })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugNounsBidAbi}__ and `functionName` set to `"enforce"`
+ */
+export const useWritePlugNounsBidEnforce = /*#__PURE__*/ createUseWriteContract(
+  { abi: plugNounsBidAbi, functionName: 'enforce' },
+)
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsBidAbi}__
+ */
+export const useSimulatePlugNounsBid = /*#__PURE__*/ createUseSimulateContract({
+  abi: plugNounsBidAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugNounsBidAbi}__ and `functionName` set to `"enforce"`
+ */
+export const useSimulatePlugNounsBidEnforce =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plugNounsBidAbi,
+    functionName: 'enforce',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsIdAbi}__
@@ -2835,51 +2815,6 @@ export const useReadPlugNounsIdEnforce = /*#__PURE__*/ createUseReadContract({
 export const useReadPlugNounsTrait = /*#__PURE__*/ createUseReadContract({
   abi: plugNounsTraitAbi,
 })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"ACCESSORY_SELECTOR"`
- */
-export const useReadPlugNounsTraitAccessorySelector =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitAbi,
-    functionName: 'ACCESSORY_SELECTOR',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"BACKGROUND_SELECTOR"`
- */
-export const useReadPlugNounsTraitBackgroundSelector =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitAbi,
-    functionName: 'BACKGROUND_SELECTOR',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"BODY_SELECTOR"`
- */
-export const useReadPlugNounsTraitBodySelector =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitAbi,
-    functionName: 'BODY_SELECTOR',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"GLASSES_SELECTOR"`
- */
-export const useReadPlugNounsTraitGlassesSelector =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitAbi,
-    functionName: 'GLASSES_SELECTOR',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"HEAD_SELECTOR"`
- */
-export const useReadPlugNounsTraitHeadSelector =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugNounsTraitAbi,
-    functionName: 'HEAD_SELECTOR',
-  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugNounsTraitAbi}__ and `functionName` set to `"decode"`
