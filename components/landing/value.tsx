@@ -113,7 +113,7 @@ export const Value: FC = () => {
 							<span>Loss Mitigation</span>
 						</div>
 					}
-					description="Automatically protect yourself from losses in the volatile market and instantly react with to every change you don't your desires."
+					description="Automatically protect yourself from losses in the volatile market and instantly react to every change of the ecosystem."
 					{...animation}
 				>
 					<Mitigation />
