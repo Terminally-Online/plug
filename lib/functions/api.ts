@@ -2,7 +2,7 @@ import { getSession } from "next-auth/react"
 
 import { ACTION_REGEX } from "@/contexts/PlugProvider"
 
-import { actionCategories, actions } from "../constants"
+import { actions, categories } from "../constants"
 
 export const isConnected = async (ctx: any, callback: () => any) => {
 	if (!(await getSession(ctx))) {
@@ -18,8 +18,8 @@ export const isConnected = async (ctx: any, callback: () => any) => {
 }
 
 export const getValues = (
-	categoryName: keyof typeof actionCategories,
-	actionName: keyof (typeof actions)[keyof typeof actionCategories]
+	categoryName: keyof typeof categories,
+	actionName: keyof (typeof actions)[keyof typeof categories]
 ) => {
 	const staticAction = actions[categoryName][actionName]
 

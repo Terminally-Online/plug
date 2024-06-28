@@ -26,14 +26,24 @@ model Workflow {
     id          String   @id @default(uuid())
     name        String   @default("Untitled Plug")
     userAddress String
+    actions     String   @default("[]")
     color       String
+    tags        String[]
     isCurated   Boolean  @default(false)
     isPrivate   Boolean  @default(false)
-    actions     String   @default("[]")
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
 
     workflowForkedId String?
+}
+
+model FeatureRequest {
+    id          String   @id @default(uuid())
+    userAddress String // save the users address
+    context     String // save the search
+    message     String? // user input, optional
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
 }
 
 // model Plugs {

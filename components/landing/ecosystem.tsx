@@ -118,7 +118,7 @@ const Lines: FC<{ size: number }> = ({ size = 900 }) => {
 		"rocket-pool.png",
 		"compound.png",
 		"maker.png",
-		"frax-lend.png",
+		"fraxlend.png",
 		"curve.png",
 		"lido.png",
 		"synthetix.png",

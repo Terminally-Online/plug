@@ -6,7 +6,7 @@ import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
 import { Checkbox, Search } from "@/components/inputs"
 import { useFrame, usePlugs } from "@/contexts"
-import { colors, useDebounce } from "@/lib"
+import { cardColors, useDebounce } from "@/lib"
 import { useNavigation } from "@/lib/hooks/useNavigation"
 
 export const ManageFrame = () => {
@@ -35,7 +35,6 @@ export const ManageFrame = () => {
 			icon={<Settings size={18} className="opacity-60" />}
 			label="Manage Plug"
 			visible={frameVisible === "manage"}
-			handleVisibleToggle={() => handleFrameVisible(undefined)}
 		>
 			<div className="flex flex-col gap-4">
 				<Search
@@ -63,15 +62,15 @@ export const ManageFrame = () => {
 					<p className="font-bold">Color</p>
 
 					<div className="ml-auto flex flex-wrap items-center gap-1">
-						{Object.keys(colors).map(color => (
+						{Object.keys(cardColors).map(color => (
 							<div
 								key={color}
 								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[2px]"
 								style={{
 									borderColor:
 										plug.color === color
-											? colors[
-													color as keyof typeof colors
+											? cardColors[
+													color as keyof typeof cardColors
 												]
 											: "transparent"
 								}}
@@ -85,8 +84,10 @@ export const ManageFrame = () => {
 								<div
 									className="h-full w-full rounded-full border-[2px] border-white transition-all duration-200 ease-in-out"
 									style={{
-										backgroundColor:
-											colors[color as keyof typeof colors]
+										background:
+											cardColors[
+												color as keyof typeof cardColors
+											]
 									}}
 								/>
 							</div>

@@ -22,6 +22,7 @@ export const plug = {
 				{ label: "Less than", value: "<" }
 			],
 			[
+				// NEED TO ADD REAL VALUES HERE
 				{ label: "Low", value: "low" },
 				{ label: "Medium", value: "medium" },
 				{ label: "High", value: "high" }
@@ -37,11 +38,13 @@ export const plug = {
 		abi: abis.plug.tokenBalance,
 		inputs: parseAbi([abis.plug.tokenBalance])[0]["inputs"],
 		options: [
+			undefined,
 			[
 				{ label: "Greater than", value: ">" },
 				{ label: "Less than", value: "<" },
 				{ label: "Equal to", value: "=" }
-			]
+			],
+			undefined
 		],
 		sentence: "Balance of {1} is {2} {3}",
 		info: "Only allow this Plug to be executed when the balance of the selected token is greater or lower than the value entered for the address entered. This can be used to auto-allocate funds that are received in this Socket or to act based on token changes in another address.",
@@ -52,8 +55,15 @@ export const plug = {
 		address: zeroAddress,
 		abi: abis.plug.timestamp,
 		inputs: parseAbi([abis.plug.timestamp])[0]["inputs"],
-		options: undefined,
-		sentence: "Timestamp is {0} {1}",
+		options: [
+			[
+				{ label: "Greater than", value: ">" },
+				{ label: "Less than", value: "<" },
+				{ label: "Equal to", value: "=" }
+			],
+			undefined
+		],
+		sentence: "Is {0} {1}",
 		info: "Only allow this Plug to be executed when the current time is before or after the value entered. This can be used to schedule a transaction to occur before or after a specified date and time.",
 		icon: ClockIcon,
 		primary: true
@@ -73,6 +83,7 @@ export const plug = {
 		abi: abis.plug.cooldown,
 		inputs: parseAbi([abis.plug.cooldown])[0]["inputs"],
 		options: [
+			undefined,
 			[
 				{ label: "Seconds", value: "seconds" },
 				{ label: "Minutes", value: "minutes" },
@@ -93,6 +104,8 @@ export const plug = {
 		abi: abis.plug.rateLimit,
 		inputs: parseAbi([abis.plug.rateLimit])[0]["inputs"],
 		options: [
+			undefined,
+			undefined,
 			[
 				{ label: "Seconds", value: "seconds" },
 				{ label: "Minutes", value: "minutes" },
@@ -118,7 +131,8 @@ export const plug = {
 				{ label: "Greater than", value: ">" },
 				{ label: "Less than", value: "<" },
 				{ label: "Equal to", value: "=" }
-			]
+			],
+			undefined
 		],
 		sentence: "Block number must be {0} {1}",
 		info: "Only allow this Plug to be executed when the block number is greater or lower than the value entered. This is an advanced feature, you may prefer to use the timestamp condition.",

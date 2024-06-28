@@ -20,6 +20,7 @@ export const aave = {
 				{ label: "Borrow", value: "borrow" },
 				{ label: "Lending", value: "lending" }
 			],
+			// undefined,
 			[
 				{ label: "Less than", value: "<" },
 				{ label: "Greater than", value: ">" }
@@ -34,33 +35,35 @@ export const aave = {
 		icon: SquarePercentIcon,
 		primary: true
 	},
-	utilizationRate: {
-		address: zeroAddress,
-		abi: abis.fraxlend.utilizationRate,
-		inputs: parseAbi([abis.fraxlend.utilizationRate])[0]["inputs"],
-		options: [
-			[
-				{ label: "Less than", value: "<" },
-				{ label: "Greater than", value: ">" }
-			]
-		],
-		// {0} is the asset type (user will select from an imported list)
-		// {1} is the comparison condition (less than/greater than) selected by user
-		// {2} is the utilization rate value entered by user
-		sentence: "Utilization rate for {0} is {1} {2}",
-		info: "Check the utilization rate of a specific borrow & lend pool on FraxLend to confirm that the utilization rate is less than or greater than the value entered.",
-		icon: GaugeIcon,
-		primary: true
-	},
+	// utilizationRate: {
+	// 	address: zeroAddress,
+	// 	abi: abis.fraxlend.utilizationRate,
+	// 	inputs: parseAbi([abis.fraxlend.utilizationRate])[0]["inputs"],
+	// 	options: [
+	// 		[
+	// 			{ label: "Less than", value: "<" },
+	// 			{ label: "Greater than", value: ">" }
+	// 		]
+	// 	],
+	// 	// {0} is the asset type (user will select from an imported list)
+	// 	// {1} is the comparison condition (less than/greater than) selected by user
+	// 	// {2} is the utilization rate value entered by user
+	// 	sentence: "Utilization rate for {0} is {1} {2}",
+	// 	info: "Check the utilization rate of a specific borrow & lend pool on FraxLend to confirm that the utilization rate is less than or greater than the value entered.",
+	// 	icon: GaugeIcon,
+	// 	primary: true
+	// },
 	health: {
 		address: zeroAddress,
 		abi: abis.fraxlend.health,
 		inputs: parseAbi([abis.fraxlend.health])[0]["inputs"],
 		options: [
+			// undefined,
 			[
 				{ label: "Less than", value: "<" },
 				{ label: "Greater than", value: ">" }
 			]
+			// undefined
 		],
 		// {0} is the asset type (user will select from an imported list)
 		// {1} is the comparison condition (less than/greater than) selected by user
@@ -122,33 +125,33 @@ export const aave = {
 		sentence: "Close position in {0}",
 		info: "Withdraw all assets including deposits and accrued interest from the specified pool on FraxLend.",
 		icon: CircleParkingIcon
-	},
-	lendFrax: {
-		address: zeroAddress,
-		abi: abis.fraxlend.lendFrax,
-		inputs: parseAbi([abis.fraxlend.lendFrax])[0]["inputs"],
-		options: [
-			// No options needed here as the user will input values directly
-		],
-		// {0} is the amount of $FRAX to lend (user input)
-		// {1} is the pool to lend in (user will select from an imported list)
-		sentence: "Lend {0} $FRAX to {1}",
-		info: "Lend the entered amount of $FRAX tokens within a specified pool on FraxLend.",
-		icon: HandCoinsIcon
-	},
-	withdrawFrax: {
-		address: zeroAddress,
-		abi: abis.fraxlend.withdrawFrax,
-		inputs: parseAbi([abis.fraxlend.withdrawFrax])[0]["inputs"],
-		options: [
-			// No options needed here as the user will input values directly
-		],
-		// {0} is the amount of $FRAX to withdraw (user input)
-		// {1} is the pool to withdraw from (user will select from an imported list)
-		sentence: "Withdraw {0} $FRAX from {1}",
-		info: "Withdraw a specific amount of FRAX tokens used for lending from a specified pool on FraxLend.",
-		icon: CoinsIcon
 	}
+	// lendFrax: {
+	// 	address: zeroAddress,
+	// 	abi: abis.fraxlend.lendFrax,
+	// 	inputs: parseAbi([abis.fraxlend.lendFrax])[0]["inputs"],
+	// 	options: [
+	// 		// No options needed here as the user will input values directly
+	// 	],
+	// 	// {0} is the amount of $FRAX to lend (user input)
+	// 	// {1} is the pool to lend in (user will select from an imported list)
+	// 	sentence: "Lend {0} $FRAX to {1}",
+	// 	info: "Lend the entered amount of $FRAX tokens within a specified pool on FraxLend.",
+	// 	icon: HandCoinsIcon
+	// },
+	// withdrawFrax: {
+	// 	address: zeroAddress,
+	// 	abi: abis.fraxlend.withdrawFrax,
+	// 	inputs: parseAbi([abis.fraxlend.withdrawFrax])[0]["inputs"],
+	// 	options: [
+	// 		// No options needed here as the user will input values directly
+	// 	],
+	// 	// {0} is the amount of $FRAX to withdraw (user input)
+	// 	// {1} is the pool to withdraw from (user will select from an imported list)
+	// 	sentence: "Withdraw {0} $FRAX from {1}",
+	// 	info: "Withdraw a specific amount of FRAX tokens used for lending from a specified pool on FraxLend.",
+	// 	icon: CoinsIcon
+	// }
 }
 
 export default aave

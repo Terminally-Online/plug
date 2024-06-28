@@ -1,17 +1,63 @@
 import { useState } from "react"
 
+import { useMotionValueEvent, useScroll } from "framer-motion"
 import { Earth, Gem, Plus, SearchIcon } from "lucide-react"
 
+import { Workflow } from "@prisma/client"
+
 import { Container, Header } from "@/components/app"
+import { PlugGrid } from "@/components/app/plugs/grid"
 import { Search } from "@/components/inputs/search"
 import { Tags } from "@/components/inputs/tags"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
+import { useSearch } from "@/lib/hooks/useSearch"
+import { api } from "@/server/client"
 
 const Page = () => {
+	const { scrollYProgress } = useScroll()
 	const { handle } = usePlugs()
+	const {
+		search,
+		debouncedSearch,
+		tag,
+		handleSearch,
+		handleTag,
+		handleReset
+	} = useSearch()
 
-	const [search, setSearch] = useState("")
+	const [communityPlugs, setCommunityPlugs] = useState<{
+		count?: number
+		plugs: Array<Workflow>
+	}>({ plugs: [] })
+
+	const { data: curatedPlugs } = api.plug.all.useQuery({ target: "curated" })
+	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
+		{
+			search: debouncedSearch,
+			tag,
+			limit: 20
+		},
+		{
+			getNextPageParam(lastPage) {
+				return lastPage.nextCursor
+			},
+			onSuccess(data) {
+				setCommunityPlugs(() => ({
+					count: data.pages[data.pages.length - 1].count,
+					plugs: data.pages.flatMap(page => page.plugs)
+				}))
+			}
+		}
+	)
+
+	useMotionValueEvent(scrollYProgress, "change", latest => {
+		if (!communityPlugs || isLoading || latest < 0.8) return
+
+		if ((communityPlugs.count ?? 0) > communityPlugs.plugs.length) {
+			fetchNextPage()
+		}
+	})
 
 	return (
 		<>
@@ -19,36 +65,52 @@ const Page = () => {
 				<Header
 					size="lg"
 					back={routes.app.plugs.index}
-					label="Templates"
+					label="Discover"
 					nextOnClick={() =>
 						handle.plug.add(routes.app.plugs.templates)
 					}
 					nextLabel={<Plus size={14} className="opacity-60" />}
 				/>
+
 				<Search
 					icon={<SearchIcon size={14} className="opacity-60" />}
-					placeholder="Search templates"
+					placeholder="Search Plugs"
 					search={search}
-					handleSearch={setSearch}
+					handleSearch={handleSearch}
+					clear={true}
 				/>
 			</Container>
 
-			<Tags />
+			<Tags tag={tag} handleTag={handleTag} />
 
 			<Container>
-				<Header
-					size="md"
-					icon={<Gem size={14} className="opacity-60" />}
-					label="Curated"
-				/>
-				{/* Show the currently curated Plugs. */}
+				{curatedPlugs && curatedPlugs.length > 0 && (
+					<>
+						<Header
+							size="md"
+							icon={<Gem size={14} className="opacity-60" />}
+							label="Curated"
+						/>
+						<PlugGrid
+							from={routes.app.plugs.templates}
+							count={4}
+							plugs={curatedPlugs}
+						/>
+					</>
+				)}
 
 				<Header
 					size="md"
 					icon={<Earth size={14} className="opacity-60" />}
 					label="Community"
 				/>
-				{/* Show the community plugs that have been vetted for safety. */}
+				<PlugGrid
+					className="mb-4"
+					from={routes.app.plugs.templates}
+					search={search || tag}
+					handleReset={handleReset}
+					plugs={communityPlugs.plugs}
+				/>
 			</Container>
 		</>
 	)

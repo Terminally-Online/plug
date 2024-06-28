@@ -24,9 +24,8 @@ export const ShareFrame = () => {
 			icon={<Badge size={18} className="opacity-60" />}
 			label="Share Plug"
 			visible={frameVisible === "share"}
-			handleVisibleToggle={() => handleFrameVisible(undefined)}
 		>
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">
 					<Link size={14} className="opacity-60" />
 					<p className="font-bold">Direct Link</p>

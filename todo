@@ -1,0 +1,88 @@
+Do These:
+    ✔ Sticky header @chance @done(24-06-27 13:48)
+    ☐ On logged in homepage, when user has no plugs, show 2 curated Plugs and CTA to create a Plug @@chance @started(24-06-27 11:55)
+        ☐ Include curated plugs in the homepage
+        ✔ Create a plug call to action @done(24-06-27 11:55)
+    ☐ Schedule component @chance
+        ☐ Date picker component @chance
+            Notes: I am in the research phase of this.
+    ☐ Input validation @chance
+    ☐ ETH balances when selecting a chain to execute on @chance
+    ☐ Share images for Plugs
+    ✘ Store static assets in a CDN cause we have way too many static files and they are going to eat an insane amount of bandwidth @cancelled(24-06-27 02:12)
+    ☐ Handle 404 and 504 errors for when we retrieve a specific Plug
+    ☐ You should not be able to edit the actions in a preview state
+    ☐ After forking, do not show it in the templates unless the actions have changed @chance
+    ☐ When a plug is deleted that you are viewing that is not yours... @chance
+        Redirect w/ Modal Laid On Top    
+            Redirect: Home
+            Modal: Hey, the Plug you were viewing was deleted.
+                Button: Top Templates (shows Templates->See All)
+
+    ✔ Wallet connection and disconnection view @chance @done(24-06-27 01:04)
+        ✔ Log out user when it is disconnected @chance @done(24-06-27 01:21)
+    ✔ Update plug.all/infinite endpoint to return all plugs for a user @chance @started(24-06-26 13:52) @done(24-06-26 21:45) @lasted(7h53m23s)
+        ✔ Searching and tag filtering @started(24-06-26 17:42) @done(24-06-26 21:45) @lasted(4h3m16s)
+            ✔ Searching @done(24-06-26 17:42)
+            ✔ Tag filtering @done(24-06-26 21:45)
+                Notes: Just add a tag field to action categories. When an action is added, add the tag type.
+        ✔ We do not want this to be a protectedProcedure @done(24-06-26 13:52)
+        ✔ Infinite scrolling with pagination and cursor look up @chance @done(24-06-26 17:42)
+        ✔ Manage this on `mine/` so that we have truncated results for our personal plugs as well @done(24-06-26 23:24)
+    ✔ "See all" actually functioning for Plugs @done(24-06-26 17:44)
+    ✔ You should not be able to edit a Plug that is not yours @chance @started(24-06-25 16:29) @done(24-06-25 16:49) @lasted(20m13s)
+    ✔ Share and fork buttons @chance @started(24-06-24 15:50) @done(24-06-24 16:55) @lasted(1h5m13s)
+    ✔ Images in option frames @drake @started(24-06-24 18:00) @done(24-06-26 14:02) @lasted(1d20h2m13s)
+    ✔ Better looking card design @chance @done(24-06-24 23:24)
+        ✔ Apply it to the color preview in the plugs/[id] page as well @chance @done(24-06-24 23:33)
+    ✔ Show supported chains and proper function call in action info frame @chance @done(24-06-24 23:57)
+
+    
+Drake Tasks:
+    ☐ Rounded square logos
+        Source and share w/ chance because image uploads from my side don't work.
+
+    ✔ Integration request functionality @started(24-06-27 14:31) @done(24-06-27 19:32) @lasted(5h1m1s)
+    ✔ update .ts files in lib/constants with undefined inputs @drake
+    ✔ Use logo where it says Plug on home page @drake
+    ✔ Next actions component @drake @started(24-06-24 15:50) @done(24-06-27 00:02) @lasted(2d8h12m24s)
+        ✔ Contextual sorting of actions that are already selected @started(24-06-26 23:30) @done(24-06-27 00:20m) @lasted(50m)
+    ✔ Do curated plugs update when you search / tag filter or are they persistent?
+        ✔ Are they hidden when you search/filter by tag? @done(24-06-27 14:24)
+            Notes: You make these decisions. There are code references for you already. You should have all 
+                   the technical knowledge needed to make these decisions and update the API/frontend
+                   to whatever decision you make.
+                ✔ Decision: @done(24-06-27 14:24)
+                    In MVP, curated plugs are persistent. 
+                    They are not hidden when you search/filter by tag.
+    ✔ Functioning search in actions view frame @drake @started(24-06-27 11:25) @done(24-06-27 14:25) @lasted(3h25s)
+        ✔ Functioning Info buttons when searching category @started(24-06-27 14:03) @done(24-06-27 14:25) @lasted(22m26s)
+
+Bugs:
+    ☐ When you plugs are edited that you do not own they show up on your homepage.
+    ☐ Choosing a different secondary value in parent dependent action values does not result in the new value being saved. @chance
+        Notes: If you choose a noun accessory, and then choose a new one, the old one is still saved. This is presumably
+               due to the "new value" checks that I implemented where we are checking if the parent value is the same,
+               and if so, we early return resulting in the new child value not being saved..
+    ☐ Need to remove the viewed plugs from the users context plug list after they stop viewing a plug.
+    ☐ When you direct access a plug, it errors out when the global context has not yet been loaded
+    ✔ Fix type error in actions index @chance @done(24-06-26 17:52)
+    ✔ Actions are visible behind action search and run/schedule buttons @chance @done(24-06-24 21:22)
+    ✔ Fix scrolling in big frames @chance @done(24-06-24 23:04)
+        Notes: A piece of this is because there are multiple frames open at once when there shouldn't be.
+        Conclusion: This was the entirety of the issue. Broke them into their own frames with only one
+                    active at a time and everything resolved itself.
+    ✔ h1 in frame header is causing a hierarchy issue @chance @started(24-06-24 23:14) @done(24-06-24 23:18) @lasted(4m6s
+    ✘ When you scroll in a frame the background should not be scrolled with it @chance @cancelled(24-06-26 13:56)
+        ✔ Make the scrollbar prettier @chance @started(24-06-24 23:43) @done(24-06-24 23:47) @lasted(4m2s)
+            Conclusion: I just hid it because it is 2024 and who the hell cares about scrollbars.
+
+Blocked:
+    ☐ Socket deployment / instantiation
+
+    ☐ Intent signing and submission
+    ☐ Transaction execution
+        ☐ Fee estimation
+        ☐ Activity
+
+    ☐ Proper function mapping to integrations

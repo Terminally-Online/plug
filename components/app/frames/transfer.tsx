@@ -21,7 +21,7 @@ import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
-import { useBalances, useSockets } from "@/contexts"
+import { useBalances, useFrame, useSockets } from "@/contexts"
 import { getChainImage } from "@/lib/functions"
 
 import { Footer } from "../footer"
@@ -39,13 +39,15 @@ const DEFAULT_TRANSFER = {
 }
 
 export const TransferFrame = () => {
+	const { frameVisible, handleFrameVisible } = useFrame()
+
 	// TODO: Probably use the wallet client unless it would require them to change their network
 	const client = createPublicClient({
 		chain: mainnet,
 		transport: http()
 	})
 
-	const [transferVisible, setTransferVisible] = useState(false)
+	// const [transferVisible, setTransferVisible] = useState(false)
 	const [transfer, setTransfer] = useState<{
 		action?: "receive" | "send"
 		token?: NonNullable<typeof balances>[number]
@@ -107,16 +109,16 @@ export const TransferFrame = () => {
 		return [true, transfer.action === "send" ? "Withdraw" : "Deposit"]
 	}, [ensAddress, transfer])
 
-	useEffect(() => {
-		if (transferVisible === false) setTransfer(DEFAULT_TRANSFER)
-	}, [transferVisible])
+	// useEffect(() => {
+	// 	if (transferVisible === false) setTransfer(DEFAULT_TRANSFER)
+	// }, [transferVisible])
 
 	return (
 		<>
 			<Footer>
 				<Button
 					className="w-full"
-					onClick={() => setTransferVisible(!transferVisible)}
+					onClick={() => handleFrameVisible("transfer")}
 				>
 					Transfer
 				</Button>
@@ -126,8 +128,9 @@ export const TransferFrame = () => {
 				className="z-[2]"
 				icon={<ArrowLeftRight size={18} className="opacity-60" />}
 				label="Choose Transfer Direction"
-				visible={transferVisible && transfer.token === undefined}
-				handleVisibleToggle={() => setTransferVisible(!transferVisible)}
+				visible={
+					frameVisible === "transfer" && transfer.token === undefined
+				}
 			>
 				<div className="flex flex-col gap-4">
 					<button
@@ -228,7 +231,6 @@ export const TransferFrame = () => {
 				handleBack={() =>
 					setTransfer({ ...transfer, action: undefined })
 				}
-				handleVisibleToggle={() => setTransferVisible(false)}
 			>
 				<div className="flex h-full min-h-[280px] flex-col gap-4">
 					<Search
@@ -256,7 +258,6 @@ export const TransferFrame = () => {
 				handleBack={() =>
 					setTransfer({ ...transfer, token: undefined })
 				}
-				handleVisibleToggle={() => setTransferVisible(false)}
 				hasOverlay={true}
 			>
 				{transfer.token && (
@@ -336,7 +337,6 @@ export const TransferFrame = () => {
 						to: undefined
 					})
 				}
-				handleVisibleToggle={() => setTransferVisible(false)}
 			>
 				<div className="flex flex-col gap-4">
 					<div className="flex flex-col gap-2">

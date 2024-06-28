@@ -8,6 +8,7 @@ import { getSession } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
+import { FeatureRequestFrame } from "@/components/app/frames/misc/feature-request"
 import { RootProvider } from "@/contexts/RootProvider"
 import { NextPageWithLayout } from "@/lib/types"
 import { api } from "@/server/client"
@@ -58,6 +59,8 @@ const PlugApp: AppType<{ session: Session | null }> = ({
 			</style>
 			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
 			<RootProvider session={pageProps.session}>
+				<FeatureRequestFrame />
+
 				{getLayout(<Component {...pageProps} />)}
 			</RootProvider>
 		</>

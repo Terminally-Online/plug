@@ -1,15 +1,16 @@
-import { useState } from "react"
-
-import { PlugZap, Plus, Puzzle, SearchIcon, ToyBrick } from "lucide-react"
+import { PlugZap, Plus, Puzzle, ToyBrick } from "lucide-react"
 
 import { Container, Header } from "@/components/app"
 import { PlugGrid } from "@/components/app/plugs/grid"
-import { Search, Tags } from "@/components/inputs"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
+import { api } from "@/server/client"
 
 const Page = () => {
-	const { search, handle } = usePlugs()
+	const { handle } = usePlugs()
+
+	const { data: othersPlugs } = api.plug.all.useQuery({ target: "others" })
+	const { data: myPlugs } = api.plug.all.useQuery({ target: "mine" })
 
 	return (
 		<>
@@ -21,25 +22,19 @@ const Page = () => {
 					nextOnClick={() => handle.plug.add(routes.app.plugs.index)}
 					nextLabel={<Plus size={14} className="opacity-60" />}
 				/>
-				<Search
-					icon={<SearchIcon size={14} className="opacity-60" />}
-					placeholder="Search templates"
-					search={search}
-					handleSearch={handle.search}
-				/>
-			</Container>
 
-			<Tags />
-
-			<Container>
 				<Header
 					size="md"
 					icon={<Puzzle size={14} className="opacity-60" />}
-					label="Templates"
+					label="Discover"
 					nextHref={routes.app.plugs.templates}
 					nextLabel="See All"
 				/>
-				<PlugGrid from={routes.app.plugs.index} count={4} />
+				<PlugGrid
+					from={routes.app.plugs.index}
+					count={4}
+					plugs={othersPlugs}
+				/>
 
 				<Header
 					size="md"
@@ -48,7 +43,11 @@ const Page = () => {
 					nextHref={routes.app.plugs.mine}
 					nextLabel="See All"
 				/>
-				<PlugGrid from={routes.app.plugs.index} count={6} />
+				<PlugGrid
+					from={routes.app.plugs.index}
+					count={6}
+					plugs={myPlugs}
+				/>
 
 				<Header
 					size="md"

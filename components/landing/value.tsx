@@ -40,9 +40,9 @@ export const Value: FC = () => {
 			background:
 				active === true
 					? [
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))",
-							"linear-gradient(45deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-							"linear-gradient(45deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))"
+							"linear-gradient(30deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))",
+							"linear-gradient(30deg, rgba(0,239,53,1), rgba(147,233,0,1))",
+							"linear-gradient(30deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))"
 						]
 					: [
 							"rgba(217,217,217,0)",
@@ -83,7 +83,7 @@ export const Value: FC = () => {
 								style={{
 									background:
 										index === 13
-											? "linear-gradient(45deg, #00E100, #A3F700)"
+											? "linear-gradient(30deg, #00E100, #A3F700)"
 											: "#D9D9D9"
 								}}
 								initial={{ height: 10 }}
@@ -450,7 +450,7 @@ export const Value: FC = () => {
 							const background =
 								Math.random() < 0.5
 									? "#D9D9D9"
-									: "linear-gradient(45deg, #00E100, #A3F700)"
+									: "linear-gradient(30deg, #00E100, #A3F700)"
 							return (
 								<motion.div
 									key={index}
@@ -978,7 +978,7 @@ export const Value: FC = () => {
 								className="absolute top-[-5px] h-3 w-3 rounded-full"
 								style={{
 									background:
-										"linear-gradient(45deg, #00E100, #A3F700)"
+										"linear-gradient(30deg, #00E100, #A3F700)"
 								}}
 								animate={{
 									left: ["97%", "0%"]

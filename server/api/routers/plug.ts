@@ -5,7 +5,11 @@ import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
 import { colors } from "@/lib/constants"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure
+} from "@/server/api/trpc"
 
 import { action } from "./action"
 
@@ -16,15 +20,18 @@ export const events = {
 	add: "add-plug",
 	rename: "rename-plug",
 	edit: "edit-plug",
-	delete: "delete-plug"
+	delete: "delete-plug",
+	view: "view-plug"
 } as const
 
-const subsription = (event: string) =>
+const views: Record<string, number> = {}
+
+const subscription = (event: string) =>
 	protectedProcedure.subscription(async ({ ctx }) => {
 		return observable<Workflow>(emit => {
 			// Only send events to the user that created the Plug.
 			const handleSubscription = (data: Workflow) => {
-				if (data.userAddress === ctx.session.address) emit.next(data)
+				emit.next(data)
 			}
 
 			ctx.emitter.on(event, handleSubscription)
@@ -34,36 +41,157 @@ const subsription = (event: string) =>
 	})
 
 export const plug = createTRPCRouter({
-	all: protectedProcedure
-		.input(
-			z
-				.object({
-					search: z.string().optional(),
-					tag: z.string().optional()
-				})
-				.optional()
-		)
+	get: publicProcedure
+		.input(z.string().optional())
 		.query(async ({ input, ctx }) => {
 			try {
-				if (input) {
-					// if (input.search && input.tag) return
+				if (input === undefined)
+					throw new TRPCError({ code: "BAD_REQUEST" })
 
-					if (input.search)
-						return await ctx.db.workflow.findMany({
-							where: {
-								userAddress: ctx.session.address,
-								name: {
-									contains: input.search,
-									mode: "insensitive"
-								}
+				const plug = await ctx.db.workflow.findUnique({
+					where: {
+						id: input,
+						isPrivate: false
+					}
+				})
+
+				return plug
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
+
+	infinite: protectedProcedure
+		.input(
+			z.object({
+				mine: z.boolean().optional(),
+				cursor: z.string().nullish(),
+				limit: z.number().optional().default(10),
+				search: z.string().optional(),
+				tag: z.string().optional()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			const { cursor, search, tag } = input
+
+			const sessionWhere =
+				input.mine === true
+					? {
+							userAddress: ctx.session.address
+						}
+					: {
+							isPrivate: false,
+							isCurated: false,
+							userAddress: {
+								not: ctx.session.address
+							},
+							actions: { not: "[]" }
+						}
+
+			const count = await ctx.db.workflow.count({
+				where: {
+					name: search
+						? {
+								contains: search,
+								mode: "insensitive",
+								not: input.mine ? undefined : "Untitled Plug"
 							}
-						})
-
-					// if (input.tag) return
+						: {
+								not: input.mine ? undefined : "Untitled Plug"
+							},
+					tags: tag
+						? {
+								has: tag
+							}
+						: undefined,
+					...sessionWhere
 				}
+			})
+
+			const plugs = await ctx.db.workflow.findMany({
+				where: {
+					name: search
+						? {
+								contains: search,
+								mode: "insensitive",
+								not: input.mine ? undefined : "Untitled Plug"
+							}
+						: {
+								not: input.mine ? undefined : "Untitled Plug"
+							},
+					tags: tag
+						? {
+								has: tag
+							}
+						: undefined,
+					...sessionWhere
+				},
+				cursor: cursor ? { id: cursor } : undefined,
+				take: input.limit + 1,
+				orderBy: { createdAt: "asc" }
+			})
+
+			let nextCursor: typeof cursor | undefined = undefined
+			if (plugs.length > input.limit) {
+				const nextItem = plugs.pop()
+				nextCursor = nextItem!.id
+			}
+
+			return {
+				plugs: plugs,
+				nextCursor,
+				count
+			}
+		}),
+
+	all: protectedProcedure
+		.input(
+			z.object({
+				target: z.union([
+					z.literal("mine"),
+					z.literal("others"),
+					z.literal("curated")
+				]),
+				search: z.string().optional(),
+				tag: z.string().optional()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			// .query = GET
+			try {
+				if (input.target === "mine")
+					return await ctx.db.workflow.findMany({
+						where: {
+							userAddress: ctx.session.address
+						},
+						orderBy: {
+							updatedAt: "desc"
+						}
+					})
+
+				if (input.target === "curated")
+					return await ctx.db.workflow.findMany({
+						where: {
+							isPrivate: false,
+							isCurated: true,
+							actions: { not: "[]" }
+						},
+						orderBy: {
+							updatedAt: "desc"
+						}
+					})
 
 				return await ctx.db.workflow.findMany({
-					where: { userAddress: ctx.session.address }
+					where: {
+						isPrivate: false,
+						userAddress: {
+							not: ctx.session.address
+						},
+						actions: { not: "[]" }
+					},
+					orderBy: {
+						updatedAt: "desc"
+					}
 				})
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
@@ -134,15 +262,22 @@ export const plug = createTRPCRouter({
 				if (input.id === undefined)
 					throw new TRPCError({ code: "BAD_REQUEST" })
 
+				const { id, ...data } = input
+
+				const editingPlug = await ctx.db.workflow.findUniqueOrThrow({
+					where: {
+						id
+					}
+				})
+
+				if (editingPlug.userAddress !== ctx.session.address)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
 				const plug = await ctx.db.workflow.update({
 					where: {
-						id: input.id
+						id
 					},
-					data: {
-						name: input.name,
-						color: input.color,
-						isPrivate: input.isPrivate
-					}
+					data
 				})
 
 				ctx.emitter.emit(events.edit, plug)
@@ -156,6 +291,15 @@ export const plug = createTRPCRouter({
 		.input(z.object({ id: z.string(), from: z.string().optional() }))
 		.mutation(async ({ input, ctx }) => {
 			try {
+				const deletingPlug = await ctx.db.workflow.findUniqueOrThrow({
+					where: {
+						id: input.id
+					}
+				})
+
+				if (deletingPlug.userAddress !== ctx.session.address)
+					throw new TRPCError({ code: "UNAUTHORIZED" })
+
 				const plug = await ctx.db.workflow.delete({
 					where: {
 						id: input.id
@@ -170,9 +314,40 @@ export const plug = createTRPCRouter({
 			}
 		}),
 
-	onAdd: subsription(events.add),
-	onEdit: subsription(events.edit),
-	onDelete: subsription(events.delete),
+	// below are subscriptions
+	onAdd: subscription(events.add), // sends message to subscribers
+	onEdit: subscription(events.edit),
+	onDelete: subscription(events.delete),
+
+	onView: protectedProcedure // when subscription is opened, user is logged in
+		.input(z.string().optional())
+		.subscription(async ({ input, ctx }) => {
+			// subscription logic
+			try {
+				if (input === undefined)
+					throw new TRPCError({ code: "BAD_REQUEST" })
+
+				return observable<number>(emit => {
+					// in memory state manager, this gives us a constant stream
+					const handleSubscription = () => {
+						// define
+						emit.next(views[input])
+					}
+
+					views[input] = (views[input] ?? 0) + 1 // increment
+					ctx.emitter.on(events.view, handleSubscription) // call handleSubscription
+					ctx.emitter.emit(events.view) // show results from handleSubscription
+
+					return () => {
+						views[input] = views[input] - 1 // decrement
+						ctx.emitter.emit(events.view)
+						ctx.emitter.off(events.view, handleSubscription) //
+					}
+				})
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
 
 	action
 })

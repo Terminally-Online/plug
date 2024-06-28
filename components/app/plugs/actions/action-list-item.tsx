@@ -1,99 +1,55 @@
-import type { FC } from "react"
-import { useState } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
 import { ChevronRight } from "lucide-react"
 
-import { Frame } from "@/components/app/frames/base"
-import { ActionCard, ActionItem } from "@/components/app/plugs/actions"
+import { ActionCard } from "@/components/app/plugs/actions"
 import { Button } from "@/components/buttons"
-import { actionCategories, actions } from "@/lib/constants"
+import { useFrame } from "@/contexts"
+import { categories } from "@/lib/constants"
 import { formatTitle } from "@/lib/functions"
 
-type Props = {
+export const ActionListItem: FC<{
 	categoryName: string
-	category: (typeof actionCategories)[keyof typeof actionCategories]
-	handleVisibleToggle: () => void
-}
+}> = ({ categoryName }) => {
+	const { handleFrameVisible } = useFrame()
 
-export const ActionListItem: FC<Props> = ({
-	categoryName,
-	category,
-	handleVisibleToggle
-}) => {
-	const [actionItemsVisible, setActionItemsVisible] = useState(false)
+	const category = categories[categoryName]
 
 	return (
 		<div className="flex flex-col gap-4">
-			<button
-				className="flex flex-col items-center gap-2"
-				onClick={() => setActionItemsVisible(!actionItemsVisible)}
-			>
-				<div className="flex w-full flex-row items-center gap-4">
+			<div className="flex flex-col items-center gap-2">
+				<button
+					className="group flex w-full flex-row items-center gap-4"
+					onClick={() => handleFrameVisible(categoryName)}
+				>
 					<Image
 						src={category.image}
 						alt={categoryName}
-						width={24}
-						height={24}
-						className="rounded-md"
+						width={32}
+						height={32}
+						className="h-6 w-6 rounded-md"
 					/>
+
 					<p className="text-lg font-bold">
 						{formatTitle(categoryName)}
 					</p>
+
 					<Button
 						variant="secondary"
-						className="ml-auto p-1"
-						onClick={() =>
-							setActionItemsVisible(!actionItemsVisible)
-						}
+						className="ml-auto p-1 group-hover:bg-grayscale-100"
+						onClick={() => handleFrameVisible(categoryName)}
 					>
-						<ChevronRight size={14} className="opacity-60" />
+						<ChevronRight
+							size={14}
+							className="opacity-60 group-hover:opacity-80"
+						/>
 					</Button>
-				</div>
+				</button>
 
-				<ActionCard
-					categoryName={categoryName}
-					category={category}
-					handleVisibleToggle={handleVisibleToggle}
-				/>
-			</button>
-
-			<Frame
-				className="scrollbar-hide z-[2] h-[calc(100vh-80px)] overflow-y-auto"
-				icon={
-					<Image
-						src={category.image}
-						alt={categoryName}
-						width={24}
-						height={24}
-						className="rounded-md"
-					/>
-				}
-				label={formatTitle(categoryName)}
-				visible={actionItemsVisible}
-				handleBack={() => setActionItemsVisible(!actionItemsVisible)}
-				handleVisibleToggle={() => handleVisibleToggle()}
-			>
-				<div className="flex flex-col gap-8">
-					<ActionCard
-						categoryName={categoryName}
-						category={category}
-						handleVisibleToggle={handleVisibleToggle}
-					/>
-
-					<div className="flex flex-col gap-2">
-						{Object.keys(actions[categoryName]).map(actionName => (
-							<ActionItem
-								key={actionName}
-								categoryName={categoryName}
-								actionName={actionName}
-								handleVisibleToggle={handleVisibleToggle}
-							/>
-						))}
-					</div>
-				</div>
-			</Frame>
+				<ActionCard categoryName={categoryName} category={category} />
+			</div>
 		</div>
 	)
 }

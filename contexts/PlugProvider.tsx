@@ -11,13 +11,13 @@ import {
 
 import { useRouter } from "next/navigation"
 
-import {
-	actionCategories,
-	actions as staticActions,
-	tags
-} from "@/lib/constants"
+import { useSession } from "next-auth/react"
+
+import { categories, actions as staticActions, tags } from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
+
+import { useFrame } from "./FrameProvider"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) =>
 	!plugs ? [plug] : [plug, ...plugs]
@@ -30,6 +30,7 @@ export type Option = {
 	icon: JSX.Element | undefined
 	label: string
 	value: string | number
+	imagePath?: string
 }
 
 export type Value = string | Option | undefined | null
@@ -83,11 +84,15 @@ export const PlugContext = createContext<{
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const router = useRouter()
 
-	const { data: apiPlugs } = api.plug.all.useQuery()
+	const { data: session } = useSession()
+
+	const { data: apiPlugs } = api.plug.all.useQuery({ target: "mine" })
 
 	const [plugs, setPlugs] =
 		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
 	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
+
+	const { data: apiPlug } = api.plug.get.useQuery(id)
 
 	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
@@ -205,6 +210,13 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		}
 	}
 
+	useEffect(() => {
+		if (!apiPlug || !plugs || plugs.some(plug => plug.id === apiPlug.id))
+			return
+
+		setPlugs(prev => (prev ? prev.concat(apiPlug) : [apiPlug]))
+	}, [apiPlug, plugs])
+
 	return (
 		<PlugContext.Provider
 			value={{
@@ -237,15 +249,34 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 }
 
 export const usePlugs = (id?: string) => {
+	const { frameVisible } = useFrame()
+
 	const context = useContext(PlugContext)
 
 	const { plug } = context
 
+	const [chains, setChains] = useState<string[]>([])
+
 	const actions: Array<{
-		categoryName: keyof typeof actionCategories
-		actionName: keyof (typeof staticActions)[keyof typeof actionCategories]
+		categoryName: keyof typeof categories
+		actionName: keyof (typeof staticActions)[keyof typeof categories]
 		values: Array<Value>
 	}> = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
+
+	const chainsAvailable = useMemo(() => {
+		if (!actions) return []
+
+		const set = actions
+			.map(action => new Set(categories[action.categoryName].chains))
+			// @ts-ignore -- Don't feel like properly typing this right now.
+			.reduce((acc, curr) => {
+				if (acc === null) return curr
+
+				return new Set([...acc].filter(chain => curr.has(chain)))
+			}, null)
+
+		return set ? Array.from(set) : []
+	}, [actions])
 
 	// Split all of the sentence fragments into an appropriate array based on the
 	// regex shape that enables the f-string like syntax.
@@ -266,14 +297,36 @@ export const usePlugs = (id?: string) => {
 		)
 	}, [fragments])
 
+	const handleChainSelect = (chain: string) => {
+		setChains(prev =>
+			prev.includes(chain)
+				? prev.filter(c => c !== chain)
+				: [...prev, chain]
+		)
+	}
+
 	useEffect(() => {
 		if (id) context.handle.select(id)
 	}, [context.handle, id])
 
+	// When there is only one chain available, select it by default. The user
+	// will first go to the Socket frame so we are preloading the chain.
+	useEffect(() => {
+		if (chainsAvailable.length === 1) setChains([chainsAvailable[0]])
+	}, [frameVisible, chainsAvailable])
+
 	return {
 		...context,
 		actions,
+		chains,
+		chainsAvailable,
 		fragments,
-		dynamic
+		dynamic,
+		handle: {
+			...context.handle,
+			chain: {
+				select: handleChainSelect
+			}
+		}
 	}
 }

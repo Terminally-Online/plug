@@ -19,7 +19,7 @@ export const tags = [
 ] as const
 
 export const greenGradientStyle = {
-	background: "linear-gradient(45deg, #00E100, #A3F700)",
+	background: "linear-gradient(30deg, #00E100, #A3F700)",
 	WebkitBackgroundClip: "text",
 	WebkitTextFillColor: "transparent"
 }

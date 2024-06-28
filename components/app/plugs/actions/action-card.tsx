@@ -1,14 +1,14 @@
 import { FC, useMemo } from "react"
 
-import { usePlugs } from "@/contexts"
-import { actionCategories, actions as staticActions } from "@/lib/constants"
+import { useFrame, usePlugs } from "@/contexts"
+import { categories, actions as staticActions } from "@/lib/constants"
 import { formatTitle, getValues } from "@/lib/functions"
 
 export const ActionCard: FC<{
-	categoryName: keyof typeof actionCategories
-	category: (typeof actionCategories)[keyof typeof actionCategories]
-	handleVisibleToggle: () => void
-}> = ({ categoryName, category, handleVisibleToggle }) => {
+	categoryName: keyof typeof categories
+	category: (typeof categories)[keyof typeof categories]
+}> = ({ categoryName, category }) => {
+	const { handleFrameVisible } = useFrame()
 	const { id, actions, handle } = usePlugs()
 
 	const primaryActions = useMemo(() => {
@@ -34,7 +34,7 @@ export const ActionCard: FC<{
 		<div
 			className="flex h-36 w-full flex-row items-center rounded-[20px] p-4"
 			style={{
-				background: `linear-gradient(45deg, ${category.gradientFrom}, ${category.gradientTo})`
+				background: `linear-gradient(30deg, ${category.gradientFrom}, ${category.gradientTo})`
 			}}
 		>
 			{Object.keys(primaryActions).map(actionName => {
@@ -43,7 +43,7 @@ export const ActionCard: FC<{
 				return (
 					<button
 						key={actionName}
-						className="group mx-auto flex cursor-pointer flex-col items-center gap-2 text-center text-white"
+						className="group relative z-[3] mx-auto flex cursor-pointer flex-col items-center gap-2 text-center text-white"
 						onClick={() => {
 							handle.action.edit({
 								id,
@@ -60,7 +60,7 @@ export const ActionCard: FC<{
 								])
 							})
 
-							handleVisibleToggle()
+							handleFrameVisible(undefined)
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">

@@ -11,7 +11,7 @@ import { Frame } from "../../base"
 
 export const ManageFrame = () => {
 	const { socket, handleRename } = useSockets()
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameVisible } = useFrame()
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	const [name, debouncedName, handleDebounce, debouncedRef] = useDebounce(
@@ -30,7 +30,6 @@ export const ManageFrame = () => {
 			className="z-[2]"
 			label="Manage Socket"
 			visible={frameVisible === "manage"}
-			handleVisibleToggle={() => handleFrameVisible(undefined)}
 		>
 			<Search
 				icon={<PencilLine size={14} className="opacity-60" />}

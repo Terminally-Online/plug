@@ -1,8 +1,10 @@
-import { type FC, type PropsWithChildren, useEffect } from "react"
+import { FC, PropsWithChildren, useEffect } from "react"
 
+import { motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
 import { Button } from "@/components/buttons"
+import { useFrame } from "@/contexts"
 import { cn } from "@/lib/utils"
 
 import { Header } from "../header"
@@ -12,7 +14,6 @@ type Props = PropsWithChildren & {
 	visible: boolean
 	icon?: JSX.Element
 	handleBack?: () => void
-	handleVisibleToggle: () => void
 	hasOverlay?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
@@ -23,40 +24,45 @@ export const Frame: FC<Props> = ({
 	visible,
 	icon,
 	handleBack,
-	handleVisibleToggle,
 	hasOverlay = false
 }) => {
+	const { handleFrameVisible } = useFrame()
+
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") handleVisibleToggle()
+			if (event.key === "Escape") handleFrameVisible(undefined)
 		}
 
-		if (visible) {
-			document.addEventListener("keydown", handleKeyDown)
-		}
+		if (visible) document.addEventListener("keydown", handleKeyDown)
 
-		return () => {
-			document.removeEventListener("keydown", handleKeyDown)
-		}
-	}, [visible, handleVisibleToggle])
+		return () => document.removeEventListener("keydown", handleKeyDown)
+	}, [visible, handleFrameVisible])
 
 	return (
 		<>
 			{visible ? (
 				<>
-					<div
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
-							"fixed bottom-0 left-0 right-0 top-0 z-[1] cursor-pointer",
+							"fixed bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30"
 						)}
-						onClick={handleVisibleToggle}
+						onClick={() => handleFrameVisible(undefined)}
 					/>
 
-					<div
+					<motion.div
+						initial={{ y: "100%" }}
+						animate={{ y: 0 }}
+						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							"fixed bottom-0 left-0 w-full rounded-t-[20px] bg-white px-6 py-8",
-							className
+							className,
+							"z-[11]"
 						)}
 					>
 						<div className="flex flex-row items-center gap-2">
@@ -79,7 +85,9 @@ export const Frame: FC<Props> = ({
 								icon={icon}
 								label={label}
 								nextPadded={false}
-								nextOnClick={handleVisibleToggle}
+								nextOnClick={() =>
+									handleFrameVisible(undefined)
+								}
 								nextLabel={
 									<X size={14} className="opacity-60" />
 								}
@@ -87,7 +95,7 @@ export const Frame: FC<Props> = ({
 						</div>
 
 						{children}
-					</div>
+					</motion.div>
 				</>
 			) : null}
 		</>

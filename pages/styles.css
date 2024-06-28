@@ -94,3 +94,14 @@ input[type="number"].controls-hide {
 	-moz-appearance: textfield;
 	appearance: textfield;
 }
+
+/* Completely hide all scrollbars */
+*::-webkit-scrollbar {
+	display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}

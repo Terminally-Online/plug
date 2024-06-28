@@ -170,8 +170,8 @@ export const Vision: FC = () => {
 							className="h-4 w-full rounded-full"
 							animate={{
 								backgroundImage: [
-									"linear-gradient(45deg, #00E100, #A3F700)",
-									"linear-gradient(45deg, #D9D9D9, #D9D9D9)"
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
 								]
 							}}
 							transition={{
@@ -186,8 +186,8 @@ export const Vision: FC = () => {
 							className="h-4 w-full rounded-full"
 							animate={{
 								backgroundImage: [
-									"linear-gradient(45deg, #00E100, #A3F700)",
-									"linear-gradient(45deg, #D9D9D9, #D9D9D9)"
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
 								]
 							}}
 							transition={{
@@ -202,8 +202,8 @@ export const Vision: FC = () => {
 							className="h-4 w-full rounded-full"
 							animate={{
 								backgroundImage: [
-									"linear-gradient(45deg, #00E100, #A3F700)",
-									"linear-gradient(45deg, #D9D9D9, #D9D9D9)"
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
 								]
 							}}
 							transition={{
@@ -218,8 +218,8 @@ export const Vision: FC = () => {
 							className="h-4 w-full rounded-full"
 							animate={{
 								backgroundImage: [
-									"linear-gradient(45deg, #00E100, #A3F700)",
-									"linear-gradient(45deg, #D9D9D9, #D9D9D9)"
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
 								]
 							}}
 							transition={{

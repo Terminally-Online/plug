@@ -34,7 +34,8 @@ export const Button: FC<Props> = ({
 	onClick,
 	className,
 	children,
-	external = false
+	external = false,
+	disabled = false
 }) => {
 	const base =
 		"outline-none rounded-full font-bold transition-all duration-200 hover:text-opacity-100"
@@ -42,13 +43,14 @@ export const Button: FC<Props> = ({
 	if (onClick)
 		return (
 			<button
-				onClick={onClick}
+				onClick={disabled ? undefined : onClick}
 				className={cn(
 					variants[variant],
 					sizings[sizing],
 					base,
 					className
 				)}
+				disabled={disabled}
 			>
 				{children}
 			</button>

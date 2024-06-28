@@ -14,7 +14,11 @@ const nextConfig = {
 			{
 				protocol: "https",
 				hostname: "ipfs.io"
-			}
+			},
+			{
+				protocol: "https",
+				hostname: "**",
+			},
 		]
 	},
 	/** We run eslint as a separate task in CI */

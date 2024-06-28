@@ -2,13 +2,13 @@ import Image from "next/image"
 
 import { Sentence } from "@/components/app/sentences/sentence"
 import { usePlugs } from "@/contexts"
-import { actionCategories } from "@/lib"
+import { categories } from "@/lib"
 
 export const ActionPreview = () => {
 	const { actions } = usePlugs()
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="mb-4 flex flex-col gap-2">
 			{actions.map((action, index) => (
 				<div key={index} className="relative">
 					{index < actions.length - 1 && (
@@ -19,9 +19,7 @@ export const ActionPreview = () => {
 						<div className="flex flex-row items-center gap-4">
 							<Image
 								className="h-6 w-6 rounded-md"
-								src={
-									actionCategories[action.categoryName].image
-								}
+								src={categories[action.categoryName].image}
 								alt={`Icon for ${action.categoryName}`}
 								width={24}
 								height={24}

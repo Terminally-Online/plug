@@ -1,12 +1,9 @@
-import {
-	Ellipsis,
-	GitFork,
-	Play,
-	Redo,
-	SearchIcon,
-	Share,
-	Undo
-} from "lucide-react"
+import { useEffect, useState } from "react"
+
+import { useSession } from "next-auth/react"
+
+import BlockiesSvg from "blockies-react-svg"
+import { Ellipsis, GitFork, SearchIcon, Share } from "lucide-react"
 
 import { Container, Header } from "@/components/app"
 import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
@@ -18,14 +15,36 @@ import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
 import { useFrame } from "@/contexts"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { colors, routes } from "@/lib/constants"
+import { cardColors, routes } from "@/lib/constants"
+import { formatAddress } from "@/lib/functions"
 import { useNavigation } from "@/lib/hooks/useNavigation"
 import { NextPageWithLayout } from "@/lib/types"
+import { api } from "@/server/client"
 
 const Page: NextPageWithLayout = () => {
+	const { data: session } = useSession()
 	const { id, from } = useNavigation()
-	const { plug, handle } = usePlugs(id)
 	const { handleFrameVisible } = useFrame()
+	const { plug, handle } = usePlugs(id)
+
+	const [views, setViews] = useState<number | undefined>(undefined)
+	const [dots, setDots] = useState<number>(0)
+
+	api.plug.onView.useSubscription(id, {
+		onStarted: () => setViews(1),
+		onData: count => setViews(count)
+	})
+
+	const own =
+		plug !== undefined && session && session.address === plug.userAddress
+
+	useEffect(() => {
+		const interval = setInterval(
+			() => setDots(prevDots => (prevDots + 1) % 4),
+			1000
+		)
+		return () => clearInterval(interval)
+	}, [])
 
 	if (!plug) return null
 
@@ -37,44 +56,66 @@ const Page: NextPageWithLayout = () => {
 					back={from ?? routes.app.plugs.mine}
 					icon={
 						<div
-							className="h-6 w-6 rounded-md"
+							className="h-6 w-6 min-w-6 rounded-md"
 							style={{
-								backgroundColor:
-									colors[plug.color as keyof typeof colors]
+								backgroundImage: cardColors[plug.color]
 							}}
 						/>
 					}
 					label={plug.name === "" ? "Untitled Plug" : plug.name}
-					nextOnClick={() => handleFrameVisible("manage")}
-					nextLabel={<Ellipsis size={14} className="opacity-60" />}
+					nextOnClick={
+						own ? () => handleFrameVisible("manage") : () => {}
+					}
+					nextLabel={
+						own ? (
+							<Ellipsis size={14} className="opacity-60" />
+						) : (
+							<div className="flex flex-row items-center gap-2">
+								<BlockiesSvg
+									address={plug.userAddress}
+									className="h-5 w-5 rounded-md"
+								/>
+								<p className="text-sm font-bold opacity-40">
+									{formatAddress(plug.userAddress)}
+								</p>
+							</div>
+						)
+					}
+					nextEmpty={own === false}
 				/>
 
-				<ActionView />
-			</div>
+				<div className="mb-4 flex flex-row items-center gap-4">
+					{views !== undefined && (
+						<div className="flex flex-row items-center gap-2">
+							<div className="relative h-3 w-3">
+								<div
+									className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 transform rounded-full"
+									style={{
+										background: `linear-gradient(to right, rgba(0,239,54,1), rgba(147,223,0,1))`
+									}}
+								/>
+								<div
+									className="absolute left-0 top-0 h-3 w-3 animate-pulse rounded-full bg-plug-green/40"
+									style={{
+										background: `linear-gradient(to right, rgba(0,239,54,0.4), rgba(147,223,0,0.4))`
+									}}
+								/>
+							</div>
+							<p className="text-sm font-bold opacity-40">
+								<span className="font-bold">{views}</span>{" "}
+								<span>Viewing Now</span>
+								{Array.from({ length: dots }).map(
+									(_, index) => (
+										<span key={index}>.</span>
+									)
+								)}
+							</p>
+						</div>
+					)}
 
-			<Container className="fixed bottom-0 left-0 right-0 flex flex-col overflow-y-visible">
-				<div className="relative overflow-y-visible pt-16">
-					<Search
-						className="z-[4]"
-						icon={<SearchIcon size={14} className="opacity-60" />}
-						placeholder="Search protocols and actions"
-						handleOnClick={() => handleFrameVisible("actions")}
-					>
-						<div className="absolute bottom-[60px] left-0 right-0 top-0 z-[-1] bg-gradient-to-t from-white to-white/0" />
-						<div className="absolute bottom-0 left-0 right-0 z-[-1] h-[60px] bg-white" />
-					</Search>
-				</div>
-
-				<Button
-					className="mb-4 mt-2"
-					onClick={() => handleFrameVisible("socket")}
-				>
-					Run
-				</Button>
-
-				{/* <div className="flex flex-row justify-between gap-2 bg-white pb-2 pt-2">
-					<button
-						className="cursor-pointer p-4 text-black/65 hover:text-black"
+					<Button
+						variant="secondary"
+						className="group ml-auto p-1"
 						onClick={() =>
 							handle.plug.fork({
 								id: plug.id,
@@ -82,15 +123,56 @@ const Page: NextPageWithLayout = () => {
 							})
 						}
 					>
-						<GitFork size={14} />
-					</button>
-					<button
-						className="cursor-pointer p-4 text-black/65 hover:text-black"
+						<GitFork
+							size={14}
+							className="opacity-60 group-hover:opacity-80"
+						/>
+					</Button>
+
+					<Button
+						variant="secondary"
+						className="group p-1"
 						onClick={() => handleFrameVisible("share")}
 					>
-						<Share size={14} />
-					</button>
-				</div> */}
+						<Share
+							size={14}
+							className="opacity-60 group-hover:opacity-80"
+						/>
+					</Button>
+				</div>
+
+				<ActionView />
+			</div>
+
+			<Container className="fixed bottom-0 left-0 right-0 flex flex-col overflow-y-visible">
+				<div className="absolute bottom-[150px] left-0 right-0 top-0 z-[-1] bg-gradient-to-t from-white to-white/0" />
+				<div className="absolute bottom-0 left-0 right-0 z-[-1] h-[150px] bg-white" />
+
+				{own && (
+					<Search
+						className="z-[4] pt-16"
+						icon={<SearchIcon size={14} className="opacity-60" />}
+						placeholder="Search protocols and actions"
+						handleOnClick={() => handleFrameVisible("actions")}
+					/>
+				)}
+
+				<div className="mb-4 mt-2 flex flex-row gap-2">
+					<Button
+						variant="secondary"
+						className="w-max"
+						onClick={() => handleFrameVisible("socket-run")}
+					>
+						Run
+					</Button>
+
+					<Button
+						className="w-full"
+						onClick={() => handleFrameVisible("socket-schedule")}
+					>
+						Schedule
+					</Button>
+				</div>
 			</Container>
 
 			<>

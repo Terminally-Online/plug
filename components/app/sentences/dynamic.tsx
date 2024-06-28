@@ -2,6 +2,8 @@ import { FC, useMemo } from "react"
 
 import Image from "next/image"
 
+import { useSession } from "next-auth/react"
+
 import { ChevronRight, CircleHelp } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
@@ -9,23 +11,27 @@ import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
 import { useFrame, usePlugs } from "@/contexts"
 import { Option, Value } from "@/contexts/PlugProvider"
-import { actionCategories, actions as staticActions } from "@/lib/constants"
+import { cn } from "@/lib"
+import { categories, actions as staticActions } from "@/lib/constants"
 import { formatInputName, formatTitle, getIndexes } from "@/lib/functions"
 
 export const DynamicFragment: FC<{
 	index: number
 	fragmentIndex: number
 }> = ({ index, fragmentIndex }) => {
+	const { data: session } = useSession()
 	const { frameVisible, handleFrameVisible } = useFrame()
-	const { id, actions, fragments, dynamic, handle } = usePlugs()
+	const { id, plug, actions, fragments, dynamic, handle } = usePlugs()
 
 	const action = actions[index]
 	const fragment = fragments[index][fragmentIndex]
 
-	const category = actionCategories[action.categoryName]
+	const category = categories[action.categoryName]
 	const staticAction = staticActions[action.categoryName][action.actionName]
 
 	const Icon = staticAction.icon || CircleHelp
+
+	const own = plug && session && session.address === plug.userAddress
 
 	const [childIndex, parentIndex] = useMemo(
 		() => getIndexes(fragment),
@@ -119,11 +125,18 @@ export const DynamicFragment: FC<{
 	return (
 		<>
 			<button
-				className="cursor-pointer rounded-lg bg-gradient-to-tr px-2 py-1 font-bold text-plug-green transition-all duration-200 ease-in-out"
+				className={cn(
+					"rounded-lg bg-gradient-to-tr px-2 py-1 font-bold text-plug-green transition-all duration-200 ease-in-out",
+					own === true ? "cursor-pointer" : "cursor-default"
+				)}
 				style={{
 					background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 				}}
-				onClick={() => handleFrameVisible(`${index}-${fragmentIndex}`)}
+				onClick={() =>
+					own
+						? handleFrameVisible(`${index}-${fragmentIndex}`)
+						: undefined
+				}
 			>
 				{label}
 			</button>
@@ -141,7 +154,6 @@ export const DynamicFragment: FC<{
 				}
 				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
 				visible={frameVisible === `${index}-${fragmentIndex}`}
-				handleVisibleToggle={() => handleFrameVisible(undefined)}
 			>
 				<div className="flex flex-col gap-4">
 					{options === undefined &&
@@ -161,10 +173,21 @@ export const DynamicFragment: FC<{
 							{options.map((option, optionIndex) => (
 								<button
 									key={`${index}-${optionIndex}`}
-									className="group flex w-full text-left font-bold"
+									className="group flex w-full items-center text-left font-bold"
 									onClick={() => handleValue(option)}
 								>
-									{formatTitle(option.label)}
+									<div className="flex flex-row items-center gap-4">
+										{option.imagePath && (
+											<Image
+												src={option.imagePath}
+												alt=""
+												width={64}
+												height={64}
+												className="w-6"
+											/>
+										)}
+										{formatTitle(option.label)}
+									</div>
 
 									<Button
 										variant="secondary"

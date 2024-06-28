@@ -20,6 +20,7 @@ export const fraxlend = {
 				{ label: "Borrow", value: "borrow" },
 				{ label: "Lending", value: "lending" }
 			],
+			undefined,
 			[
 				{ label: "Less than", value: "<" },
 				{ label: "Greater than", value: ">" }

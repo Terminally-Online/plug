@@ -1,16 +1,30 @@
-import { Cable, Cross, Plus, UsersRound, X } from "lucide-react"
+import Image from "next/image"
+
+import BlockiesSvg from "blockies-react-svg"
+import { Cable, Plus, UsersRound } from "lucide-react"
+import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { Container, Header } from "@/components/app"
+import { AccountFrame } from "@/components/app/frames/account"
 import { PlugGrid } from "@/components/app/plugs/grid"
 import { SocketList } from "@/components/app/sockets/socket-list"
-import { AuthButton, Button } from "@/components/buttons"
-import { usePlugs, useSockets } from "@/contexts"
+import { AuthButton } from "@/components/buttons"
+import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { routes } from "@/lib/constants"
+import { formatAddress } from "@/lib/functions"
 import { NextPageWithLayout } from "@/lib/types"
 
+import { normalize } from "viem/ens"
+
 const Page: NextPageWithLayout = () => {
+	const { handleFrameVisible } = useFrame()
 	const { address, sockets, handleAdd: handleSocketAdd } = useSockets()
-	const { handle } = usePlugs()
+	const { plugs, handle } = usePlugs()
+
+	const { data: ensName } = useEnsName({ address: address as `0x${string}` })
+	const { data: ensAvatar } = useEnsAvatar({
+		name: normalize(ensName ?? "") || undefined
+	})
 
 	const hasSockets = sockets && sockets.length > 0
 
@@ -18,31 +32,54 @@ const Page: NextPageWithLayout = () => {
 		<>
 			<Header
 				size="lg"
-				label="Plug"
+				label={
+					<>
+						<div
+							className="mr-2 flex w-max flex-row items-center gap-2 rounded-md p-2"
+							style={{
+								backgroundImage:
+									"linear-gradient(30deg, #00E100, #A3F700)"
+							}}
+						>
+							<Image
+								src="/white-icon.svg"
+								alt="Logo"
+								width={662}
+								height={616}
+								className="h-3 w-auto"
+							/>
+						</div>
+						<p className="mr-auto text-xl font-bold">Plug</p>
+					</>
+				}
 				nextOnClick={() => handle.plug.add(routes.app.index)}
 				nextLabel={<Plus size={14} className="opacity-60" />}
-			/>
-
-			<div className="flex flex-col gap-2 rounded-md bg-grayscale-100 p-4">
-				<div className="flex w-full items-center font-bold">
-					<h3>Hey, Plug is in private testing mode</h3>
-					<Button
-						variant="secondary"
-						className="ml-auto p-1"
-						onClick={() => {}}
+			>
+				{address && (
+					<button
+						className="ml-auto flex flex-row items-center gap-2"
+						onClick={() => handleFrameVisible("account")}
 					>
-						<X size={14} className="opacity-60" />
-					</Button>
-				</div>
-				<p className="mr-8 text-sm">
-					Nothing is final and everything is subject to change. If you
-					stumble upon any bugs or have feedback please let us know
-					for a little treat as a thank you!
-				</p>
-				<p className="text-sm font-bold underline">
-					Submit Feedback Now
-				</p>
-			</div>
+						{ensAvatar ? (
+							<Image
+								src={ensAvatar}
+								alt="ENS Avatar"
+								width={24}
+								height={24}
+								className="rounded-md"
+							/>
+						) : (
+							<BlockiesSvg
+								className="h-6 w-6 rounded-md"
+								address={address}
+							/>
+						)}
+						<p className="font-bold opacity-40">
+							{formatAddress(address)}
+						</p>
+					</button>
+				)}
+			</Header>
 
 			<Header
 				size="md"
@@ -51,7 +88,7 @@ const Page: NextPageWithLayout = () => {
 				nextHref={routes.app.plugs.index}
 				nextLabel="See All"
 			/>
-			<PlugGrid from={routes.app.index} count={8} all={true} />
+			<PlugGrid from={routes.app.index} count={8} plugs={plugs} />
 
 			<Header
 				size="md"
@@ -73,10 +110,40 @@ const Page: NextPageWithLayout = () => {
 			) : (
 				<SocketList />
 			)}
+
+			<AccountFrame />
 		</>
 	)
 }
 
-Page.getLayout = page => <Container>{page}</Container>
+Page.getLayout = page => (
+	<>
+		{/* <Header
+			size="lg"
+			label={
+				<>
+					<div
+						className="mr-2 flex w-max flex-row items-center gap-2 rounded-md p-2"
+						style={{
+							backgroundImage:
+								"linear-gradient(30deg, #00E100, #A3F700)"
+						}}
+					>
+						<Image
+							src="/white-icon.svg"
+							alt="Logo"
+							width={662}
+							height={616}
+							className="h-3 w-auto"
+						/>
+					</div>
+					<p className="mr-auto text-xl font-bold">Plug</p>
+				</>
+			}
+			className="z-[20] bg-white"
+		/> */}
+		<Container>{page}</Container>
+	</>
+)
 
 export default Page

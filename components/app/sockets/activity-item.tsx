@@ -79,7 +79,6 @@ export const ActivityItem: FC<{
 				}
 				label={text}
 				visible={frameVisible === `activityDetails-${time}`}
-				handleVisibleToggle={() => handleFrameVisible(undefined)}
 			>
 				<p className="font-bold opacity-60">Actions</p>
 
@@ -266,7 +265,7 @@ export const ActivityItem: FC<{
 					<span className="mr-auto opacity-60">Run On</span>
 
 					<Image
-						className="ml-[-10px] h-6 w-6"
+						className="ml-[-20px] h-6 w-6"
 						src={`/blockchain/ethereum.png`}
 						alt={"Ethereum"}
 						width={24}
