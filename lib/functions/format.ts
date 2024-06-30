@@ -58,7 +58,7 @@ export const formatInputName = (input: string | undefined) =>
 		.join(" ")
 		.toLowerCase() ?? ""
 
-export function formatTimeSince(date: Date): string {
+export const formatTimeSince = (date: Date): string => {
 	const now = new Date()
 	const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
@@ -86,4 +86,14 @@ export function formatTimeSince(date: Date): string {
 		return `${Math.floor(interval)} minute${Math.floor(interval) > 1 ? "s" : ""} ago`
 	}
 	return `${Math.floor(seconds)} second${seconds > 1 ? "s" : ""} ago`
+}
+
+// Format a date in the format of "name of the week, month, date"
+// Example: "Wed Apr 24"
+export const formatDate = (date: Date): string => {
+	const dayOfWeek = date.toLocaleString("en-US", { weekday: "short" }) // "Wed"
+	const month = date.toLocaleString("en-US", { month: "short" }) // "Apr"
+	const dayOfMonth = date.getDate() // 24
+
+	return `${dayOfWeek} ${month} ${dayOfMonth}`
 }

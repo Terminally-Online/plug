@@ -45,21 +45,10 @@ export const Header: FC<Props> = ({
 	className,
 	children
 }) => {
-	// const ref = useRef<HTMLDivElement>(null)
-	// const { scrollYProgress } = useScroll({
-	// 	target: ref,
-	// 	offset: ["end end", "start start"]
-	// })
-
 	const base = "font-bold truncate"
-
-	// const opacity = useTransform(scrollYProgress, latest =>
-	// 	latest > 0.98 ? "block" : "none"
-	// )
 
 	return (
 		<div
-			// ref={ref}
 			className={cn(
 				"sticky top-0 z-[2] flex w-full flex-row items-center gap-4 bg-white",
 				variants[variant],
@@ -101,21 +90,6 @@ export const Header: FC<Props> = ({
 			{nextEmpty === true && nextLabel && (nextHref || nextOnClick) && (
 				<div className="ml-auto">{nextLabel}</div>
 			)}
-
-			{/* <AnimatePresence>
-				<motion.div
-					className="absolute bottom-[-1rem] left-0 right-0 h-4 bg-gradient-to-b from-white to-white/0 transition-all duration-200 ease-in-out"
-					style={{
-						display: opacity
-					}}
-					initial={{ opacity: 0 }}
-					animate={{
-						opacity: 1
-					}}
-					exit={{ opacity: 0 }}
-					transition={{ duration: 0.2, ease: "easeInOut" }}
-				/>
-			</AnimatePresence> */}
 		</div>
 	)
 }
