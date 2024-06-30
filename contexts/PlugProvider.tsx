@@ -13,7 +13,12 @@ import { useRouter } from "next/navigation"
 
 import { useSession } from "next-auth/react"
 
-import { categories, actions as staticActions, tags } from "@/lib/constants"
+import {
+	categories,
+	routes,
+	actions as staticActions,
+	tags
+} from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
@@ -48,7 +53,7 @@ export const PlugContext = createContext<{
 		search: (data: string) => void
 		tag: (data: (typeof tags)[number]) => void
 		plug: {
-			add: (data: string) => void
+			add: (data?: string) => void
 			edit: (data: { id: string } & WorkflowData) => void
 			delete: (data: { id: string; from?: string }) => void
 			fork: (data: { id: string; from?: string }) => void
@@ -84,18 +89,16 @@ export const PlugContext = createContext<{
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const router = useRouter()
 
-	const { data: session } = useSession()
+	const { handleFrameVisible } = useFrame()
 
-	const { data: apiPlugs } = api.plug.all.useQuery({ target: "mine" })
-
-	const [plugs, setPlugs] =
-		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
 	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
-
-	const { data: apiPlug } = api.plug.get.useQuery(id)
-
 	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
+
+	const { data: apiPlugs } = api.plug.all.useQuery({ target: "mine" })
+	const [plugs, setPlugs] =
+		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
+	const { data: apiPlug } = api.plug.get.useQuery(id)
 
 	const plug = useMemo(
 		() => plugs && plugs.find(plug => plug.id === id),
@@ -139,10 +142,17 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	})
 
 	api.plug.onDelete.useSubscription(undefined, {
-		onData: (data: Workflow) =>
+		onData: (data: Workflow) => {
+			// If the user was viewing the deleted plug, show a confirmation frame to signal that.
+			if (id === data.id) {
+				handleFrameVisible("deleted")
+				router.push(routes.app.index)
+			}
+
 			setPlugs(prev =>
 				prev ? prev.filter(plug => plug.id !== data.id) : []
 			)
+		}
 	})
 
 	const handle = {
@@ -307,7 +317,7 @@ export const usePlugs = (id?: string) => {
 
 	useEffect(() => {
 		if (id) context.handle.select(id)
-	}, [context.handle, id])
+	}, [id, context.handle])
 
 	// When there is only one chain available, select it by default. The user
 	// will first go to the Socket frame so we are preloading the chain.

@@ -73,7 +73,7 @@ export const ActionView = () => {
 					(protocolFrequency[a.categoryName] || 0)
 				)
 			})
-			.slice(0, 5)
+			.slice(0, 3)
 	}, [actions])
 
 	return (

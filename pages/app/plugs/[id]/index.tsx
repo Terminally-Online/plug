@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"
-
 import { useSession } from "next-auth/react"
 
 import BlockiesSvg from "blockies-react-svg"
@@ -16,10 +14,9 @@ import { Search } from "@/components/inputs"
 import { useFrame } from "@/contexts"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { cardColors, routes } from "@/lib/constants"
-import { formatAddress } from "@/lib/functions"
+import { formatAddress, formatTimeSince } from "@/lib/functions"
 import { useNavigation } from "@/lib/hooks/useNavigation"
 import { NextPageWithLayout } from "@/lib/types"
-import { api } from "@/server/client"
 
 const Page: NextPageWithLayout = () => {
 	const { data: session } = useSession()
@@ -27,24 +24,8 @@ const Page: NextPageWithLayout = () => {
 	const { handleFrameVisible } = useFrame()
 	const { plug, handle } = usePlugs(id)
 
-	const [views, setViews] = useState<number | undefined>(undefined)
-	const [dots, setDots] = useState<number>(0)
-
-	api.plug.onView.useSubscription(id, {
-		onStarted: () => setViews(1),
-		onData: count => setViews(count)
-	})
-
 	const own =
 		plug !== undefined && session && session.address === plug.userAddress
-
-	useEffect(() => {
-		const interval = setInterval(
-			() => setDots(prevDots => (prevDots + 1) % 4),
-			1000
-		)
-		return () => clearInterval(interval)
-	}, [])
 
 	if (!plug) return null
 
@@ -85,33 +66,9 @@ const Page: NextPageWithLayout = () => {
 				/>
 
 				<div className="mb-4 flex flex-row items-center gap-4">
-					{views !== undefined && (
-						<div className="flex flex-row items-center gap-2">
-							<div className="relative h-3 w-3">
-								<div
-									className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 transform rounded-full"
-									style={{
-										background: `linear-gradient(to right, rgba(0,239,54,1), rgba(147,223,0,1))`
-									}}
-								/>
-								<div
-									className="absolute left-0 top-0 h-3 w-3 animate-pulse rounded-full bg-plug-green/40"
-									style={{
-										background: `linear-gradient(to right, rgba(0,239,54,0.4), rgba(147,223,0,0.4))`
-									}}
-								/>
-							</div>
-							<p className="text-sm font-bold opacity-40">
-								<span className="font-bold">{views}</span>{" "}
-								<span>Viewing Now</span>
-								{Array.from({ length: dots }).map(
-									(_, index) => (
-										<span key={index}>.</span>
-									)
-								)}
-							</p>
-						</div>
-					)}
+					<div className="font-bold opacity-40">
+						Last updated {formatTimeSince(plug.updatedAt)}
+					</div>
 
 					<Button
 						variant="secondary"

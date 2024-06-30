@@ -31,7 +31,10 @@ const Page = () => {
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const { data: curatedPlugs } = api.plug.all.useQuery({ target: "curated" })
+	const { data: curatedPlugs } = api.plug.all.useQuery({
+		target: "curated",
+		limit: 4
+	})
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
 			search: debouncedSearch,

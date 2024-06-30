@@ -1,5 +1,6 @@
 import { FC } from "react"
 
+import { usePathname } from "next/navigation"
 import { useRouter } from "next/router"
 
 import { Workflow } from "@prisma/client"
@@ -26,6 +27,9 @@ export const PlugGrid: FC<Props> = ({
 	...props
 }) => {
 	const router = useRouter()
+	const pathname = usePathname()
+
+	const { handle } = usePlugs()
 
 	if (plugs === undefined) return null
 
@@ -42,6 +46,31 @@ export const PlugGrid: FC<Props> = ({
 								plug={plug}
 							/>
 						))}
+				</div>
+			) : [routes.app.index, routes.app.plugs.mine].includes(
+					router.pathname
+			  ) ? (
+				<div className="my-64 flex flex-col gap-[30px]">
+					<p className="mx-auto max-w-[380px] text-center text-lg opacity-60">
+						Browse the existing templates or create your first Plug
+						from scratch by clicking the button below and assembling
+						your strategy.
+					</p>
+					<div className="mx-auto flex flex-row gap-1">
+						<Button
+							variant="secondary"
+							href={routes.app.plugs.templates}
+							className="w-max"
+						>
+							See Templates
+						</Button>
+						<Button
+							className="w-max"
+							onClick={() => handle.plug.add(pathname)}
+						>
+							Create
+						</Button>
+					</div>
 				</div>
 			) : search !== "" && plugs.length === 0 ? (
 				<div className="mx-auto my-44 flex h-full max-w-[80%] flex-col gap-2 text-center">
@@ -62,30 +91,6 @@ export const PlugGrid: FC<Props> = ({
 							</Button>
 						</div>
 					)}
-				</div>
-			) : [routes.app.index, routes.app.plugs.mine].includes(
-					router.pathname
-			  ) ? (
-				<div className="my-64 flex flex-col gap-[30px]">
-					<p className="mx-auto max-w-[65%] text-center text-lg opacity-60">
-						Create your first Plug from scratch by clicking the
-						button below and assembling your strategy.
-					</p>
-					<div className="mx-auto flex flex-row gap-1">
-						<Button
-							variant="secondary"
-							href={routes.app.plugs.create}
-							className="w-max"
-						>
-							See Templates
-						</Button>
-						<Button
-							href={`${routes.app.plugs.create}?from=${routes.app.plugs.mine}`}
-							className="w-max"
-						>
-							Create
-						</Button>
-					</div>
 				</div>
 			) : (
 				<></>

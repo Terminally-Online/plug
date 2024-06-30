@@ -153,7 +153,8 @@ export const plug = createTRPCRouter({
 					z.literal("curated")
 				]),
 				search: z.string().optional(),
-				tag: z.string().optional()
+				tag: z.string().optional(),
+				limit: z.number().optional()
 			})
 		)
 		.query(async ({ input, ctx }) => {
@@ -164,6 +165,7 @@ export const plug = createTRPCRouter({
 						where: {
 							userAddress: ctx.session.address
 						},
+						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
 						}
@@ -176,6 +178,7 @@ export const plug = createTRPCRouter({
 							isCurated: true,
 							actions: { not: "[]" }
 						},
+						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
 						}
@@ -189,6 +192,7 @@ export const plug = createTRPCRouter({
 						},
 						actions: { not: "[]" }
 					},
+					take: input.limit ? input.limit : undefined,
 					orderBy: {
 						updatedAt: "desc"
 					}
@@ -236,7 +240,7 @@ export const plug = createTRPCRouter({
 				const plug = await ctx.db.workflow.create({
 					data: {
 						...forkingData,
-						name: `${forking.name} (Fork)`,
+						name: forking.name,
 						userAddress: ctx.session.address
 					}
 				})

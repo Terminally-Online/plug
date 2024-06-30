@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren, useEffect } from "react"
 
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
 import { Button } from "@/components/buttons"
@@ -39,7 +39,7 @@ export const Frame: FC<Props> = ({
 	}, [visible, handleFrameVisible])
 
 	return (
-		<>
+		<AnimatePresence>
 			{visible ? (
 				<>
 					<motion.div
@@ -58,6 +58,7 @@ export const Frame: FC<Props> = ({
 					<motion.div
 						initial={{ y: "100%" }}
 						animate={{ y: 0 }}
+						exit={{ y: "100%" }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							"fixed bottom-0 left-0 w-full rounded-t-[20px] bg-white px-6 py-8",
@@ -98,6 +99,6 @@ export const Frame: FC<Props> = ({
 					</motion.div>
 				</>
 			) : null}
-		</>
+		</AnimatePresence>
 	)
 }

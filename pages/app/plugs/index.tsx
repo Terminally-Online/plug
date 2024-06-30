@@ -9,8 +9,14 @@ import { api } from "@/server/client"
 const Page = () => {
 	const { handle } = usePlugs()
 
-	const { data: othersPlugs } = api.plug.all.useQuery({ target: "others" })
-	const { data: myPlugs } = api.plug.all.useQuery({ target: "mine" })
+	const { data: othersPlugs } = api.plug.all.useQuery({
+		target: "others",
+		limit: 4
+	})
+	const { data: myPlugs } = api.plug.all.useQuery({
+		target: "mine",
+		limit: 6
+	})
 
 	return (
 		<>

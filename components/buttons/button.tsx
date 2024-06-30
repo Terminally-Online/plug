@@ -38,7 +38,7 @@ export const Button: FC<Props> = ({
 	disabled = false
 }) => {
 	const base =
-		"outline-none rounded-full font-bold transition-all duration-200 hover:text-opacity-100"
+		"cursor-pointer outline-none rounded-full font-bold transition-all duration-200 hover:text-opacity-100"
 
 	if (onClick)
 		return (

@@ -56,26 +56,44 @@ export const AccountFrame = () => {
 			<div className="flex flex-col gap-2">
 				<p className="flex font-bold">
 					Address
-					<span className="ml-auto flex flex-row items-center gap-2 text-opacity-40">
+					<span className="ml-auto opacity-40">
 						{formatAddress(address)}
 					</span>
 				</p>
 
 				<p className="flex font-bold">
 					ENS
-					<span className="ml-auto flex flex-row items-center gap-2 text-opacity-40">
-						{ensName}
-					</span>
+					<span className="ml-auto opacity-40">{ensName}</span>
+				</p>
+
+				<p className="flex font-bold">
+					Fees Earned
+					<span className="ml-auto opacity-40">0.00 ETH</span>
+				</p>
+
+				<p className="flex items-center font-bold">
+					Points Earned
+					<span className="ml-auto opacity-40">Coming Soon</span>
 				</p>
 			</div>
 
-			<Button
-				variant="destructive"
-				className="mt-4 w-full"
-				onClick={() => disconnect()}
-			>
-				Log Out
-			</Button>
+			<div className="mt-4 flex flex-row gap-2">
+				<Button
+					variant="destructive"
+					className="w-max"
+					onClick={() => disconnect()}
+				>
+					Logout
+				</Button>
+				<Button
+					variant="disabled"
+					className="w-full"
+					onClick={() => {}}
+					disabled
+				>
+					Claim Earnings
+				</Button>
+			</div>
 		</Frame>
 	)
 }

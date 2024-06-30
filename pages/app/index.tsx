@@ -13,18 +13,22 @@ import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { routes } from "@/lib/constants"
 import { formatAddress } from "@/lib/functions"
 import { NextPageWithLayout } from "@/lib/types"
+import { api } from "@/server/client"
 
 import { normalize } from "viem/ens"
 
 const Page: NextPageWithLayout = () => {
 	const { handleFrameVisible } = useFrame()
-	const { address, sockets, handleAdd: handleSocketAdd } = useSockets()
-	const { plugs, handle } = usePlugs()
+	const {
+		address,
+		ensName,
+		ensAvatar,
+		sockets,
+		handleAdd: handleSocketAdd
+	} = useSockets()
+	const { handle } = usePlugs()
 
-	const { data: ensName } = useEnsName({ address: address as `0x${string}` })
-	const { data: ensAvatar } = useEnsAvatar({
-		name: normalize(ensName ?? "") || undefined
-	})
+	const { data: plugs } = api.plug.all.useQuery({ target: "mine", limit: 8 })
 
 	const hasSockets = sockets && sockets.length > 0
 
@@ -75,7 +79,7 @@ const Page: NextPageWithLayout = () => {
 							/>
 						)}
 						<p className="font-bold opacity-40">
-							{formatAddress(address)}
+							{ensName ?? formatAddress(address)}
 						</p>
 					</button>
 				)}

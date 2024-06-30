@@ -9,12 +9,21 @@ import {
 
 import { useSession } from "next-auth/react"
 
-import { WalletProvider } from "@/contexts"
+import { useEnsAvatar, useEnsName } from "wagmi"
+
 import { UserSocket } from "@/server/api/routers/socket"
 import { api } from "@/server/client"
 
+import {
+	GetEnsAvatarReturnType,
+	GetEnsNameReturnType,
+	normalize
+} from "viem/ens"
+
 export const SocketContext = createContext<{
 	address: string | undefined
+	ensName: GetEnsNameReturnType | undefined
+	ensAvatar: GetEnsAvatarReturnType | undefined
 	socket: UserSocket | undefined
 	sockets: Array<UserSocket> | undefined
 	handleAdd: () => void
@@ -23,6 +32,8 @@ export const SocketContext = createContext<{
 	handleDeploy: (chainIds: Array<number>, version?: number) => void
 }>({
 	address: undefined,
+	ensName: undefined,
+	ensAvatar: undefined,
 	socket: undefined,
 	sockets: undefined,
 	handleAdd: () => {},
@@ -34,6 +45,13 @@ export const SocketContext = createContext<{
 export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: session } = useSession()
 	const { data: apiSockets } = api.socket.all.useQuery()
+
+	const { data: ensName } = useEnsName({
+		address: session?.address as `0x${string}`
+	})
+	const { data: ensAvatar } = useEnsAvatar({
+		name: normalize(ensName ?? "") || undefined
+	})
 
 	const [socketAddress, setSocketAddress] = useState<string | undefined>(
 		undefined
@@ -70,25 +88,25 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	})
 
 	return (
-		<WalletProvider>
-			<SocketContext.Provider
-				value={{
-					address: session?.address,
-					socket,
-					sockets,
-					handleAdd: () => handleSocketAdd.mutate(),
-					handleSelect: setSocketAddress,
-					handleRename: (name: string) =>
-						handleSocketRename.mutate({
-							address: socketAddress || "",
-							name
-						}),
-					handleDeploy: () => {}
-				}}
-			>
-				{children}
-			</SocketContext.Provider>
-		</WalletProvider>
+		<SocketContext.Provider
+			value={{
+				address: session?.address,
+				ensName,
+				ensAvatar,
+				socket,
+				sockets,
+				handleAdd: () => handleSocketAdd.mutate(),
+				handleSelect: setSocketAddress,
+				handleRename: (name: string) =>
+					handleSocketRename.mutate({
+						address: socketAddress || "",
+						name
+					}),
+				handleDeploy: () => {}
+			}}
+		>
+			{children}
+		</SocketContext.Provider>
 	)
 }
 
