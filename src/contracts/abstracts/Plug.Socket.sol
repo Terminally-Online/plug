@@ -42,11 +42,10 @@ abstract contract PlugSocket is PlugSocketInterface, PlugCore, PlugEnforce, Reen
         external
         payable
         virtual
+        enforceSender
         nonReentrant
         returns (PlugTypesLib.Result[] memory $results)
     {
-        // TODO: Make sure only intended signers have permission to submit here.
-
         $results = _plug($plugs, address(0), 0);
     }
 

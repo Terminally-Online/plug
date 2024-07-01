@@ -24,10 +24,10 @@
     }
   },
   "Plug.Vault.Socket.sol": {
-    "initCodeHash": "0xe50786d79fa6116336d6290f4e8295eeedfee61a4e8183fe618d1cf166dad223",
+    "initCodeHash": "0x70ce24d6b8ab0ae202d4f6bded3389d1fd3f652cc9791a962a6fa4d70e678658",
     "deployment": {
-      "salt": "0x00000000000000000000000000000000000000009e32a2e996f3ff3f3478b6c6",
-      "address": "0x003127AA10e6fbfa8047Fa422A878aa3517BdABc",
+      "salt": "0x0000000000000000000000000000000000000000859c74ba46e0ff3f6ec95af9",
+      "address": "0x00BCC1db7b4e98D4Fe887Ed6e4Cf4bc8503e4d56",
       "rarity": "0"
     }
   },

@@ -149,6 +149,19 @@ contract PlugVaultSocket is PlugSocket, PlugTrading, Receiver, UUPSUpgradeable {
     }
 
     /**
+     * See { PlugEnforce._enforceSender }
+     */
+    function _enforceSender(address $sender)
+        internal
+        view
+        virtual
+        override
+        returns (bool $allowed)
+    {
+        $allowed = $sender == owner() || $sender == address(this);
+    }
+
+    /**
      * See { UUPSUpgradeable._authorizeUpgrade }
      */
     function _authorizeUpgrade(address) internal virtual override onlyThis { }

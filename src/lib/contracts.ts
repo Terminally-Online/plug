@@ -3513,6 +3513,17 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "SenderInvalid",
+                "inputs": [
+                    {
+                        "name": "$reality",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            },
+            {
+                "type": "error",
                 "name": "SignatureInvalid",
                 "inputs": []
             },

@@ -27,6 +27,7 @@ library PlugLib {
 
     error CallerInvalid(address $expected, address $reality);
 
+    error SenderInvalid(address $reality);
     error RouterInvalid(address $reality);
     error SignatureInvalid();
     error SolverInvalid(address $expected, address $reality);

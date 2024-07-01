@@ -1925,6 +1925,11 @@ export const plugVaultSocketAbi = [
     inputs: [{ name: '$reality', internalType: 'address', type: 'address' }],
     name: 'RouterInvalid',
   },
+  {
+    type: 'error',
+    inputs: [{ name: '$reality', internalType: 'address', type: 'address' }],
+    name: 'SenderInvalid',
+  },
   { type: 'error', inputs: [], name: 'SignatureInvalid' },
   {
     type: 'error',
