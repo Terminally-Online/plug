@@ -23,7 +23,7 @@ Factual constraints validate conditions based on actual states or events that ha
 
 For example, defining a factual constraint might take the shape of **if a payment has been received** or **that a particular NFT has been transferred to a specific address** before proceeding with a transaction. This type of constraint ensures that all conditions based on real events align with the required state at the time of transaction execution.
 
-## Seperation of Concerns
+## Separation of Concerns
 
 Before Plug, protocols have had to bake in base requirements into the lowest level of their protocol. This means, that there is a wide range of different limitations placed on the interaction patterns throughout the ecosystem that follow no general pattern or standardized architecture. Protocol teams have to concern themselves with rebuilding the wheel. Users lose all control of opinion and influence while having to accept a transaction definition state that is exceptionally limiting.
 
