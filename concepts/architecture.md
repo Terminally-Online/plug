@@ -25,7 +25,7 @@ There is no need to understand the underlying mechanics of Plug or all the piece
 
 ### Declaring Intents
 
-When using Plug, users only has to declare the intent they want to take. This can be done through the [official Plug Platform](https://onplug.io) or through the [Plug SDK](https://github.com/nftchance/plug-core).
+When using Plug, users only have to declare the intent they want to take. This can be done through the [official Plug Platform](https://onplug.io) or through the [Plug SDK](https://github.com/nftchance/plug-core).
 
 The [Plug platform](https://onplug.io) can be used to build intents that compose a variety of [constraints](/concepts/constraints) and [actions](/concepts/actions) throughout the blockchain ecosystem without requiring any technical knowledge or custom code. Alternatively, the [SDK](https://github.com/nftchance/plug-core) exposes the abstraction function and components needed for other primitive interfaces to directly integrate with Plug and deliver the benefits to the users of their own application.
 

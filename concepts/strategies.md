@@ -12,7 +12,7 @@ Instead, you can learn the ins-and-outs of the Plug framework by exploring strat
 
 ## Creating a Strategy
 
-When you have a opinion about the type of intents you'd like to use, getting started is extremely simple with [our plug-and-play platform](https://onplug.io). All of [our integrations](/introduction/integrations) can be browsed, dug into, and assembled with one another to create a strategy that meets your precise needs and preferences. All you have to do is:
+When you have an opinion about the type of intents you'd like to use, getting started is extremely simple with [our plug-and-play platform](https://onplug.io). All of [our integrations](/introduction/integrations) can be browsed, dug into, and assembled with one another to create a strategy that meets your precise needs and preferences. All you have to do is:
 
 1. Declare the limits placed on the execution of your intent from the predefined options.
 2. Choose from the list of actions enabled by [the primitives integrated](/introduction/integrations) into Plug with no technical skill required and no code to write.

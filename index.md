@@ -63,7 +63,7 @@ The experience and functionality delivered by our team is entirely guided by you
 
 Plug comes with a powerful set of features built directly into the core framework which can be customized and configured based on the needs of each individual user.
 
-Here's a quick overview of the main feateures you'll probably be interested in as you're getting started. This isn't an exhaustive list, just some highlights.
+Here's a quick overview of the main features you'll probably be interested in as you're getting started. This isn't an exhaustive list, just some highlights.
 
 ### How we make product decisions
 
@@ -98,7 +98,7 @@ Connect multiple primitives together with ease that have historically been indep
 Before Plug, the choices you had for real onchain automation were effectively non-existent.
 
 - **Before:** If you wanted to enter a Yearn Vault when APY reached 50%, you would have to constantly pull out your phone, log in, connect your wallet, check the rewards, move the proper funds, and enter manually. Finally, once you've done all that you still have to routinely check the rewards and exit when the rates go down.
-- **After:** You can set an intent to enter a Yearn Vault when it reaches your target APY. Not only does this free you up to research other strategies or spend time with your family, it also ensures that you enter the vault immediately when it reaches the target APY giving you maxmimal yield within your constraint.
+- **After:** You can set an intent to enter a Yearn Vault when it reaches your target APY. Not only does this free you up to research other strategies or spend time with your family, it also ensures that you enter the vault immediately when it reaches the target APY giving you maximal yield within your constraint.
 
 The benefits of intents paired with general automation leads to unlocks that have seemed impossible for over a decade...
 
