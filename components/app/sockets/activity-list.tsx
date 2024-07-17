@@ -1,5 +1,7 @@
 import { FC } from "react"
 
+import { motion } from "framer-motion"
+
 import { ActivityItem } from "./activity-item"
 
 export const ActivityList: FC = () => {
@@ -179,17 +181,46 @@ export const ActivityList: FC = () => {
 	}
 
 	return (
-		<div className="flex flex-col gap-2">
+		<motion.div
+			className="flex flex-col gap-2"
+			initial="hidden"
+			animate="visible"
+			variants={{
+				hidden: { opacity: 0 },
+				visible: {
+					opacity: 1,
+					transition: {
+						staggerChildren: 0.05
+					}
+				}
+			}}
+		>
 			{activities.map((activity, index) => (
-				<ActivityItem
+				<motion.div
 					key={index}
-					text={activity.text}
-					// @ts-ignore
-					color={activity.color}
-					status={activity.status}
-					time={activity.time}
-				/>
+					variants={{
+						hidden: { opacity: 0, y: 10 },
+						visible: {
+							opacity: 1,
+							y: 0,
+							transition: {
+								type: "spring",
+								stiffness: 100,
+								damping: 10
+							}
+						}
+					}}
+				>
+					<ActivityItem
+						key={index}
+						text={activity.text}
+						// @ts-ignore
+						color={activity.color}
+						status={activity.status}
+						time={activity.time}
+					/>
+				</motion.div>
 			))}
-		</div>
+		</motion.div>
 	)
 }

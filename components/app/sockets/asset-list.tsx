@@ -1,5 +1,6 @@
-import { type FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 
+import { motion } from "framer-motion"
 import { LoaderCircle } from "lucide-react"
 
 import { useBalances } from "@/contexts"
@@ -68,19 +69,47 @@ export const SocketAssetList: FC<Props> = ({
 
 	return (
 		<>
-			<div className="flex flex-col gap-2">
+			<motion.div
+				className="flex flex-col gap-2"
+				initial="hidden"
+				animate="visible"
+				variants={{
+					hidden: { opacity: 0 },
+					visible: {
+						opacity: 1,
+						transition: {
+							staggerChildren: 0.05
+						}
+					}
+				}}
+			>
 				{balances.map(
 					(token, index) =>
 						token && (
-							<SocketAssetItem
+							<motion.div
 								key={index}
-								token={token}
-								priceData={priceData}
-								handleSelect={handleSelect}
-							/>
+								variants={{
+									hidden: { opacity: 0, y: 10 },
+									visible: {
+										opacity: 1,
+										y: 0,
+										transition: {
+											type: "spring",
+											stiffness: 100,
+											damping: 10
+										}
+									}
+								}}
+							>
+								<SocketAssetItem
+									token={token}
+									priceData={priceData}
+									handleSelect={handleSelect}
+								/>
+							</motion.div>
 						)
 				)}
-			</div>
+			</motion.div>
 
 			{hasFrame && <TransferFrame />}
 		</>

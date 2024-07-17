@@ -5,6 +5,7 @@ import Image from "next/image"
 import { AlertCircle, CheckCircle, ChevronRight, XCircle } from "lucide-react"
 
 import { Button } from "@/components/buttons"
+import { AccordionContent } from "@/components/utils/accordion/AccordionContent"
 import { Counter } from "@/components/utils/Counter"
 import { DateSince } from "@/components/utils/DateSince"
 import { useFrame } from "@/contexts"
@@ -28,9 +29,9 @@ const getStatusIcon = (status: string) => {
 		case "error":
 			return (
 				<div className="relative w-10">
-					<div className="bg-plug-red absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full blur-2xl filter" />
+					<div className="absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-plug-red blur-2xl filter" />
 					<XCircle
-						className="text-plug-red absolute top-1/2 h-6 w-6 -translate-y-1/2 text-center"
+						className="absolute top-1/2 h-6 w-6 -translate-y-1/2 text-center text-plug-red"
 						size={16}
 					/>
 				</div>
@@ -207,14 +208,10 @@ export const ActivityItem: FC<{
 
 	const pastDate = new Date(Date.now() - 60000 * 0.2)
 
-	// const handleClick = () => {
-	// 	handleFrameVisible(`activityDetails-${time}`)
-	// }
-
 	return (
 		<>
 			<button
-				className="group group flex h-min w-full cursor-pointer flex-col items-center gap-4 overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 bg-white p-4 transition-all duration-200 ease-in-out hover:border-white hover:bg-grayscale-0"
+				className="group group flex h-min w-full cursor-pointer flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 bg-white p-4 transition-all duration-200 ease-in-out hover:border-white hover:bg-grayscale-0"
 				onClick={() => setExpanded(!expanded)}
 			>
 				<span className="flex w-full flex-row">
@@ -236,7 +233,7 @@ export const ActivityItem: FC<{
 					</span>
 				</span>
 
-				{expanded && (
+				<AccordionContent expanded={expanded}>
 					<span className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 pt-4 text-left">
 						<Actions />
 
@@ -260,11 +257,14 @@ export const ActivityItem: FC<{
 								</span>
 								<div className="flex flex-row gap-2">
 									<span className="flex flex-row items-center gap-2 opacity-60">
-										<Counter count={0.00135} decimals={5} />{" "}
+										<Counter
+											count={expanded ? 0.00135 : 0}
+											decimals={5}
+										/>{" "}
 										ETH
 									</span>
 									<span className="flex flex-row font-bold">
-										$<Counter count={6.11} />
+										$<Counter count={expanded ? 6.11 : 0} />
 									</span>
 								</div>
 							</p>
@@ -288,7 +288,7 @@ export const ActivityItem: FC<{
 							</div>
 						)} */}
 					</span>
-				)}
+				</AccordionContent>
 			</button>
 		</>
 	)

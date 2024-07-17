@@ -2,6 +2,7 @@ import { FC, useCallback, useMemo, useState } from "react"
 
 import Image from "next/image"
 
+import { AccordionContent } from "@/components/utils/accordion/AccordionContent"
 import { Counter } from "@/components/utils/Counter"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
@@ -56,7 +57,7 @@ export const SocketAssetItem: FC<Props> = ({
 		<div className="flex cursor-pointer flex-col gap-4">
 			<button
 				className={cn(
-					"group group flex h-min w-full cursor-pointer flex-col items-center gap-4 overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 p-4 transition-all duration-200 ease-in-out",
+					"group group flex h-min w-full cursor-pointer flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 p-4 transition-all duration-200 ease-in-out",
 					expanded
 						? "bg-grayscale-0 hover:bg-white"
 						: "bg-white hover:border-white hover:bg-grayscale-0"
@@ -68,14 +69,14 @@ export const SocketAssetItem: FC<Props> = ({
 						<Image
 							src={token.logoURI ?? ""}
 							alt={token.symbol}
-							className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="animate-fade-in absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							width={72}
 							height={72}
 						/>
 						<Image
 							src={token.logoURI ?? ""}
 							alt={token.symbol}
-							className="absolute left-1/2 top-1/2 min-h-10 min-w-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
+							className="animate-fade-in absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-grayscale-100"
 							width={48}
 							height={48}
 						/>
@@ -131,7 +132,7 @@ export const SocketAssetItem: FC<Props> = ({
 					</span>
 				</span>
 
-				{expanded && (
+				<AccordionContent expanded={expanded}>
 					<span className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 pt-4">
 						{token.chains.map((chain, index) => (
 							<div
@@ -151,16 +152,25 @@ export const SocketAssetItem: FC<Props> = ({
 								</p>
 
 								<p className="flex flex-col tabular-nums opacity-60">
-									<Counter count={chain.balanceFormatted} />
+									<Counter
+										count={
+											expanded
+												? chain.balanceFormatted
+												: 0
+										}
+									/>
 								</p>
 
 								<p className="flex min-w-[60px] flex-row items-center text-right font-bold tabular-nums">
-									<Counter count={chain.percentage} />%
+									<Counter
+										count={expanded ? chain.percentage : 0}
+									/>
+									%
 								</p>
 							</div>
 						))}
 					</span>
-				)}
+				</AccordionContent>
 			</button>
 		</div>
 	)
