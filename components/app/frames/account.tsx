@@ -54,26 +54,33 @@ export const AccountFrame = () => {
 			visible={frameVisible === "account"}
 		>
 			<div className="flex flex-col gap-2">
-				<p className="flex font-bold">
-					Address
-					<span className="ml-auto opacity-40">
-						{formatAddress(address)}
-					</span>
-				</p>
+				<div className="mb-4 flex flex-row items-center gap-2">
+					<div className="flex w-full flex-col rounded-lg bg-grayscale-100 p-4 font-bold">
+						<span className="text-2xl">0.61 ETH</span>
+						<span className="opacity-40">Fees Earned</span>
+					</div>
+
+					<div className="flex w-full flex-col rounded-lg bg-grayscale-100 p-4 font-bold">
+						<span className="text-2xl">312</span>
+						<span className="opacity-40">Points Earned</span>
+					</div>
+				</div>
 
 				<p className="flex font-bold">
-					ENS
-					<span className="ml-auto opacity-40">{ensName}</span>
+					Plugs Used
+					<span className="ml-auto opacity-40">31</span>
 				</p>
-
 				<p className="flex font-bold">
-					Fees Earned
-					<span className="ml-auto opacity-40">0.00 ETH</span>
+					Runs
+					<span className="ml-auto opacity-40">412</span>
 				</p>
-
-				<p className="flex items-center font-bold">
-					Points Earned
-					<span className="ml-auto opacity-40">Coming Soon</span>
+				<p className="flex font-bold">
+					Users Onboarded
+					<span className="ml-auto opacity-40">51</span>
+				</p>
+				<p className="flex font-bold">
+					Account Age
+					<span className="ml-auto opacity-40">18 days</span>
 				</p>
 			</div>
 

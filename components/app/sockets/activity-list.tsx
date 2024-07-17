@@ -5,12 +5,6 @@ import { ActivityItem } from "./activity-item"
 export const ActivityList: FC = () => {
 	const activities = [
 		{
-			text: "Bid on Noun with Yellow Glasses",
-			color: "green",
-			status: "success",
-			time: "2s ago"
-		},
-		{
 			text: "Lend ETH with High APY",
 			color: "blue",
 			status: "success",
@@ -23,19 +17,6 @@ export const ActivityList: FC = () => {
 			time: "3m ago"
 		},
 		{
-			text: "Bid on Noun with Yellow Glasses",
-			color: "yellow",
-			status: "success",
-			time: "10m ago"
-		},
-		{
-			text: "Bid on Noun with Yellow Glasses",
-
-			color: "yellow",
-			status: "warning",
-			time: "15m ago"
-		},
-		{
 			text: "Exit Aave When Below 10% APY",
 
 			color: "blue",
@@ -43,7 +24,7 @@ export const ActivityList: FC = () => {
 			time: "1h ago"
 		},
 		{
-			text: "Borrow on Aave",
+			text: "Manage Aave Position",
 			color: "blue",
 			status: "success",
 			time: "2h ago"
@@ -55,7 +36,7 @@ export const ActivityList: FC = () => {
 			time: "3h ago"
 		},
 		{
-			text: "Top-Up Gearbox Loan Health Factor",
+			text: "Balance Gearbox",
 			color: "orange",
 			status: "success",
 			time: "6h ago"
@@ -186,8 +167,6 @@ export const ActivityList: FC = () => {
 			status: "error",
 			time: "11d ago"
 		}
-
-		// Add more activities as needed
 	]
 
 	if (activities.length === 0) {
@@ -200,7 +179,7 @@ export const ActivityList: FC = () => {
 	}
 
 	return (
-		<>
+		<div className="flex flex-col gap-2">
 			{activities.map((activity, index) => (
 				<ActivityItem
 					key={index}
@@ -211,6 +190,6 @@ export const ActivityList: FC = () => {
 					time={activity.time}
 				/>
 			))}
-		</>
+		</div>
 	)
 }

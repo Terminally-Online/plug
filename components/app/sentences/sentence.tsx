@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react"
 
 import { X } from "lucide-react"
 
+import { Button } from "@/components/buttons"
 import { usePlugs } from "@/contexts"
 import { categories } from "@/lib/constants"
 import { cn } from "@/lib/utils"
@@ -46,8 +47,9 @@ export const Sentence: FC<{
 				</p>
 
 				{preview === false && own && (
-					<button
-						className="group mb-auto ml-4 mt-[4px] cursor-pointer rounded-full border-[1px] border-grayscale-100 p-1 hover:bg-grayscale-100"
+					<Button
+						variant="secondary"
+						className="mb-auto ml-4 mt-[4px] p-1"
 						onClick={() =>
 							handle.action.edit({
 								id,
@@ -57,11 +59,8 @@ export const Sentence: FC<{
 							})
 						}
 					>
-						<X
-							size={14}
-							className="opacity-60 group-hover:opacity-80"
-						/>
-					</button>
+						<X size={14} />
+					</Button>
 				)}
 			</div>
 

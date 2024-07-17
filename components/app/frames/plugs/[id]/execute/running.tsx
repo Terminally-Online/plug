@@ -38,9 +38,7 @@ export const RunningFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={
-				<LoaderCircle size={18} className="animate-spin opacity-60" />
-			}
+			icon={<LoaderCircle size={18} className="animate-spin" />}
 			label={label}
 			visible={isFrame}
 		>

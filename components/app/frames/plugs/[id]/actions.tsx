@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo } from "react"
+import { FC, useEffect, useMemo } from "react"
 
 import Image from "next/image"
 
@@ -7,9 +7,9 @@ import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
 import { ActionCard, ActionItem } from "@/components/app/plugs/actions"
 import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
-import { useFrame, usePlugs } from "@/contexts"
+import { useFrame } from "@/contexts"
 import { abis, categories, actions as staticActions, useDebounce } from "@/lib"
-import { formatAddress, formatTitle, getValues } from "@/lib/functions"
+import { formatAddress, formatTitle } from "@/lib/functions"
 
 import { Frame } from "../../base"
 
@@ -55,14 +55,14 @@ export const ActionsFrame: FC = () => {
 		<>
 			<Frame
 				className="scrollbar-hide z-[1] h-[calc(100vh-80px)] overflow-y-auto"
-				icon={<Blocks size={18} className="opacity-60" />}
+				icon={<Blocks size={18} />}
 				label="Add Action"
 				visible={frameVisible === "actions"}
 			>
 				<div className="flex flex-col gap-4">
 					<Search
 						className="mb-4"
-						icon={<SearchIcon size={14} className="opacity-60" />}
+						icon={<SearchIcon size={14} />}
 						placeholder="Search protocols and actions"
 						search={search}
 						handleSearch={handleDebounce}
@@ -136,17 +136,14 @@ export const ActionsFrame: FC = () => {
 											</p>
 											<Button
 												variant="secondary"
-												className="ml-auto p-1 group-hover:bg-grayscale-100"
+												className="ml-auto p-1"
 												onClick={() =>
 													handleFrameVisible(
 														categoryName
 													)
 												}
 											>
-												<ChevronRight
-													size={14}
-													className="opacity-60 group-hover:opacity-80"
-												/>
+												<ChevronRight size={14} />
 											</Button>
 										</button>
 

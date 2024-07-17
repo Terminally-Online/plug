@@ -20,7 +20,7 @@ export const aave = {
 				{ label: "Borrow", value: "borrow" },
 				{ label: "Lending", value: "lending" }
 			],
-			// undefined,
+			undefined,
 			[
 				{ label: "Less than", value: "<" },
 				{ label: "Greater than", value: ">" }
@@ -56,19 +56,18 @@ export const aave = {
 	health: {
 		address: zeroAddress,
 		abi: abis.fraxlend.health,
-		inputs: parseAbi([abis.fraxlend.health])[0]["inputs"],
+		inputs: parseAbi([abis.aave.health])[0]["inputs"],
 		options: [
-			// undefined,
 			[
 				{ label: "Less than", value: "<" },
 				{ label: "Greater than", value: ">" }
-			]
-			// undefined
+			],
+			undefined
 		],
 		// {0} is the asset type (user will select from an imported list)
 		// {1} is the comparison condition (less than/greater than) selected by user
 		// {2} is the health value entered by user
-		sentence: "Health of borrow position in {0} is {1} {2}",
+		sentence: "Health of borrow position is {0} {1}",
 		info: "Check the health of a specific loan on FraxLend to determine if it is less than or greater than the value entered. This can be used to automatically add or remove collateral based on your loan health.",
 		icon: AmbulanceIcon,
 		primary: true
@@ -76,13 +75,30 @@ export const aave = {
 	addCollateral: {
 		address: zeroAddress,
 		abi: abis.fraxlend.addCollateral,
-		inputs: parseAbi([abis.fraxlend.addCollateral])[0]["inputs"],
+		inputs: parseAbi([abis.aave.deposit])[0]["inputs"],
 		options: [
-			// No options needed here as the user will input values directly
+			undefined,
+			[
+				{
+					label: "ETH",
+					value: "0x03"
+					// imagePath: `${BACKGROUND_PATH}bg-warm.png`
+				},
+				{
+					label: "WETH",
+					value: "0x03"
+					// imagePath: `${BODY_PATH}body-blue-sky.png`
+				},
+				{
+					label: "USDC",
+					value: "0x03"
+					// imagePath: `${ACCESSORY_PATH}accessory-bling-anchor.png`
+				}
+			]
 		],
 		// {0} is the asset type (user will select from an imported list)
 		// {1} is the amount of collateral to add (user input)
-		sentence: "Increase collateral in {0} with {1}",
+		sentence: "Increase collateral with {0} {1}",
 		info: "Add the entered amount to a borrow and lend pool on FraxLend. This can be used to increase your borrow limit.",
 		icon: HandCoinsIcon
 	},

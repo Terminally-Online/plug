@@ -51,7 +51,7 @@ export const ChainFrame = () => {
 					? () => handleFrameVisible(prevFrame)
 					: undefined
 			}
-			icon={<Globe size={18} className="opacity-60" />}
+			icon={<Globe size={18} />}
 			label={"Choose Chain" + (chainsAvailable.length > 1 ? "s" : "")}
 			visible={isFrame}
 			hasOverlay={true}

@@ -11,7 +11,7 @@ import { useNavigation } from "@/lib/hooks/useNavigation"
 
 export const ManageFrame = () => {
 	const { id, from } = useNavigation()
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameVisible } = useFrame()
 	const { plug, handle } = usePlugs()
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(
@@ -32,13 +32,13 @@ export const ManageFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={<Settings size={18} className="opacity-60" />}
+			icon={<Settings size={18} />}
 			label="Manage Plug"
 			visible={frameVisible === "manage"}
 		>
 			<div className="flex flex-col gap-4">
 				<Search
-					icon={<PencilLine size={14} className="opacity-60" />}
+					icon={<PencilLine size={14} />}
 					placeholder="Plug name"
 					search={name}
 					handleSearch={handleName}

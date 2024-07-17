@@ -55,7 +55,7 @@ const Page: NextPageWithLayout = () => {
 					handleSearch={(search: string) => handleSearch(search)}
 				/>
 
-				<div className="flex flex-row gap-2 text-lg font-bold">
+				<div className="flex flex-row gap-4 text-lg font-bold">
 					<h3
 						className={cn(
 							tab !== "activity" && "opacity-40",

@@ -21,13 +21,13 @@ export const ShareFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={<Badge size={18} className="opacity-60" />}
+			icon={<Badge size={18} />}
 			label="Share Plug"
 			visible={frameVisible === "share"}
 		>
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">
-					<Link size={14} className="opacity-60" />
+					<Link size={14} />
 					<p className="font-bold">Direct Link</p>
 					<Button
 						variant="secondary"
@@ -40,7 +40,7 @@ export const ShareFrame = () => {
 				</div>
 
 				<div className="flex flex-row items-center gap-2">
-					<Twitter size={14} className="opacity-60" />
+					<Twitter size={14} />
 					<p className="font-bold">Twitter</p>
 					<a
 						className="ml-auto"
@@ -55,7 +55,7 @@ export const ShareFrame = () => {
 				</div>
 
 				<div className="flex flex-row items-center gap-2">
-					<Send size={14} className="opacity-60" />
+					<Send size={14} />
 					<p className="font-bold">Telegram</p>
 					<a
 						className="ml-auto"
@@ -71,7 +71,6 @@ export const ShareFrame = () => {
 
 				<div className="flex flex-row items-center gap-2">
 					<Image
-						className="opacity-60"
 						src="/icons/farcaster.svg"
 						alt="Farcaster"
 						width={14}

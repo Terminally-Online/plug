@@ -32,7 +32,7 @@ export const ManageFrame = () => {
 			visible={frameVisible === "manage"}
 		>
 			<Search
-				icon={<PencilLine size={14} className="opacity-60" />}
+				icon={<PencilLine size={14} />}
 				placeholder="Socket name"
 				search={name}
 				handleSearch={handleDebounce}

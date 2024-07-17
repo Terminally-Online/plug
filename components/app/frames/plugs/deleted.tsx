@@ -16,7 +16,7 @@ export const DeletedFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={<Trash2 size={18} className="opacity-60" />}
+			icon={<Trash2 size={18} />}
 			label="Plug Deleted"
 			visible={frameVisible === "deleted"}
 		>

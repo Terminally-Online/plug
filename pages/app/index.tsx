@@ -57,7 +57,7 @@ const Page: NextPageWithLayout = () => {
 					</>
 				}
 				nextOnClick={() => handle.plug.add(routes.app.index)}
-				nextLabel={<Plus size={14} className="opacity-60" />}
+				nextLabel={<Plus size={14} />}
 			>
 				{address && (
 					<button

@@ -72,7 +72,7 @@ const Page = () => {
 					nextOnClick={() =>
 						handle.plug.add(routes.app.plugs.templates)
 					}
-					nextLabel={<Plus size={14} className="opacity-60" />}
+					nextLabel={<Plus size={14} />}
 				/>
 
 				<Search
@@ -87,7 +87,7 @@ const Page = () => {
 			<Tags tag={tag} handleTag={handleTag} />
 
 			<Container>
-				{curatedPlugs && curatedPlugs.length > 0 && (
+				{!search && !tag && curatedPlugs && curatedPlugs.length > 0 && (
 					<>
 						<Header
 							size="md"

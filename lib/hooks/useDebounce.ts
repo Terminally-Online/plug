@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 
+import { usePathname } from "next/navigation"
+
 export const useDebounce = (
 	initial: string,
 	delay = 250
@@ -11,6 +13,8 @@ export const useDebounce = (
 	(value: string) => void,
 	React.MutableRefObject<string>
 ] => {
+	const pathname = usePathname()
+
 	const valueRef = useRef<string>(initial)
 
 	const [value, setValue] = useState<string>(initial)
@@ -23,6 +27,13 @@ export const useDebounce = (
 
 		return () => clearTimeout(timeout)
 	}, [value, delay])
+
+	useEffect(() => {
+		if (!pathname) return
+
+		setValue(initial)
+		setDebounced(initial)
+	}, [pathname, initial])
 
 	return [value, debounced, setValue, valueRef]
 }

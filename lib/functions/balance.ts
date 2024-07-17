@@ -90,6 +90,7 @@ export const getBalancesForChain = async (address: string, chain: Network) => {
 }
 
 type ChainBalance = {
+	address: string
 	chainId: number
 	chainName: string
 	decimals: number
@@ -122,6 +123,7 @@ export const getBalances = async (address: string, chains = networks) => {
 				const existingToken = acc.find(t => t.symbol === token.symbol)
 
 				const chain = {
+					address: token.address,
 					chainId: token.chainId,
 					chainName: token.chainName,
 					decimals: token.decimals,
@@ -155,9 +157,9 @@ export const getBalances = async (address: string, chains = networks) => {
 					chains: token.chains.map(chain => ({
 						...chain,
 						percentage: Number.parseFloat(
-							Math.round(
+							Number(
 								(Number(chain.balance) / totalBalance) * 100
-							).toFixed(4)
+							).toFixed(2)
 						)
 					}))
 				}

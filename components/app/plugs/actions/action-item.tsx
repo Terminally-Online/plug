@@ -67,7 +67,7 @@ export const ActionItem: FC<Props> = ({
 						handleFrameVisible(`${categoryName}-${actionName}`)
 					}
 				>
-					<Info size={14} className="opacity-60" />
+					<Info size={14} />
 				</button>
 			</div>
 		</>

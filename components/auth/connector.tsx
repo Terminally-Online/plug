@@ -54,11 +54,7 @@ export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
 							className="group absolute right-4 top-4 cursor-pointer text-white"
 							onClick={handleClose}
 						>
-							<XIcon
-								width={16}
-								height={16}
-								className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-80"
-							/>
+							<XIcon width={16} height={16} />
 						</button>
 
 						<div className="mt-auto flex flex-col gap-4 p-12">

@@ -38,6 +38,7 @@ module.exports = {
 
 				'plug-green': "#00E100",
 				'plug-yellow': "#A3F700",
+				'plug-red': "#FF0000",
 
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",

@@ -41,10 +41,7 @@ export const ActionListItem: FC<{
 						className="ml-auto p-1 group-hover:bg-grayscale-100"
 						onClick={() => handleFrameVisible(categoryName)}
 					>
-						<ChevronRight
-							size={14}
-							className="opacity-60 group-hover:opacity-80"
-						/>
+						<ChevronRight size={14} />
 					</Button>
 				</button>
 

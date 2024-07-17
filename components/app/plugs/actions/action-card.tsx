@@ -66,7 +66,7 @@ export const ActionCard: FC<{
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">
 							{Icon && <Icon size={24} />}
 						</div>
-						<p className="max-w-[120px] text-sm">
+						<p className="max-w-[120px] text-sm font-bold">
 							{formatTitle(actionName)}
 						</p>
 					</button>

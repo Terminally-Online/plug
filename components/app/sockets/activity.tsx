@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react"
 import { animate, motion, useMotionValue, useTransform } from "framer-motion"
 import { FileCog, FileTerminal } from "lucide-react"
 
+import { Counter } from "@/components/utils/Counter"
 import { formatNumber } from "@/lib/functions"
 import { cn } from "@/lib/utils"
 
@@ -10,18 +11,7 @@ import { Header } from "../header"
 import { ActivityList } from "./activity-list"
 
 export const SocketActivity = () => {
-	// TODO: Implement the backend functionality for this.
-	// const activity = Array.from({ length: 7 }, () => Math.random())
-	// hard coded values
-	const activity = [0.5, 0.7, 0.1, 0.9, 0.4, 0.3, 0.9]
-
-	const _pending = useMotionValue(0)
-	const pending = useTransform(_pending, latest =>
-		formatNumber(Math.round(latest))
-	)
-
-	const _run = useMotionValue(0)
-	const run = useTransform(_run, latest => formatNumber(Math.round(latest)))
+	const activity = Array.from({ length: 7 }, () => Math.random())
 
 	const [start, end] = useMemo(
 		() => [
@@ -40,14 +30,6 @@ export const SocketActivity = () => {
 		[]
 	)
 
-	useEffect(() => {
-		return animate(_pending, 203).stop
-	}, [_pending])
-
-	useEffect(() => {
-		return animate(_run, 1900).stop
-	}, [_run])
-
 	return (
 		<>
 			<div className="flex flex-col gap-4">
@@ -59,8 +41,8 @@ export const SocketActivity = () => {
 								className={cn(
 									"mt-auto w-full rounded-md",
 									index === 6
-										? "bg-gradient-to-tr from-[#00E100] to-[#A3F700]"
-										: "bg-grayscale-100"
+										? "bg-gradient-to-tr from-plug-green to-plug-yellow"
+										: "bg-grayscale-0"
 								)}
 								initial={{
 									height: "10px"
@@ -72,33 +54,33 @@ export const SocketActivity = () => {
 						))}
 					</div>
 
-					<div className="flex flex-row gap-2">
-						<p className="opacity-40">{start}</p>
-						<p className="ml-auto opacity-40">{end}</p>
+					<div className="flex flex-row gap-2 text-sm tabular-nums">
+						<p className="opacity-60">{start}</p>
+						<p className="ml-auto opacity-60">{end}</p>
 					</div>
 				</div>
 
 				<div className="flex flex-row gap-2">
-					<div className="w-full rounded-lg bg-grayscale-100 p-4">
-						<motion.h4 className="text-2xl font-bold">
-							{pending}
-						</motion.h4>
-						<p className="opacity-40">Pending</p>
+					<div className="w-full rounded-[16px] bg-grayscale-0 p-4">
+						<Counter
+							className="mr-auto w-max text-2xl font-bold"
+							count={201}
+							decimals={0}
+						/>
+						<p className="font-bold opacity-40">Pending</p>
 					</div>
-					<div className="w-full rounded-lg bg-grayscale-100 p-4">
-						<motion.h4 className="text-2xl font-bold">
-							{run}
-						</motion.h4>
-						<p className="opacity-40">Run</p>
+					<div className="w-full rounded-[16px] bg-grayscale-0 p-4">
+						<Counter
+							className="mr-auto w-max text-2xl font-bold"
+							count={9351}
+							decimals={0}
+						/>
+						<p className="font-bold opacity-40">Run</p>
 					</div>
 				</div>
 			</div>
 
-			<Header
-				size="md"
-				icon={<FileCog size={14} className="opacity-60" />}
-				label="Runs"
-			/>
+			<Header size="md" icon={<FileCog size={14} />} label="Runs" />
 
 			<ActivityList />
 		</>

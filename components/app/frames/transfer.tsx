@@ -126,7 +126,7 @@ export const TransferFrame = () => {
 
 			<Frame
 				className="z-[2]"
-				icon={<ArrowLeftRight size={18} className="opacity-60" />}
+				icon={<ArrowLeftRight size={18} />}
 				label="Choose Transfer Direction"
 				visible={
 					frameVisible === "transfer" && transfer.token === undefined
@@ -141,10 +141,7 @@ export const TransferFrame = () => {
 					>
 						<div className="flex w-full flex-row gap-2">
 							<div className="flex w-full flex-row items-center gap-2">
-								<SquareArrowDownRight
-									size={14}
-									className="opacity-60"
-								/>
+								<SquareArrowDownRight size={14} />
 								<p className="font-bold">To Socket</p>
 							</div>
 
@@ -158,10 +155,7 @@ export const TransferFrame = () => {
 									})
 								}
 							>
-								<ArrowRight
-									size={14}
-									className="ml-auto opacity-60"
-								/>
+								<ArrowRight size={14} className="ml-auto " />
 							</Button>
 						</div>
 						<p className="max-w-[85%] opacity-60">
@@ -182,7 +176,7 @@ export const TransferFrame = () => {
 							<div className="flex w-full flex-row items-center gap-2">
 								<SquareArrowDownRight
 									size={14}
-									className="rotate-[270deg] opacity-60"
+									className="rotate-[270deg]"
 								/>
 								<p className="font-bold">From Socket</p>
 							</div>
@@ -194,10 +188,7 @@ export const TransferFrame = () => {
 									setTransfer({ ...transfer, action: "send" })
 								}
 							>
-								<ArrowRight
-									size={14}
-									className="ml-auto opacity-60"
-								/>
+								<ArrowRight size={14} className="ml-auto" />
 							</Button>
 						</div>
 						<p className="max-w-[85%] opacity-60">
@@ -214,13 +205,10 @@ export const TransferFrame = () => {
 					transfer.action === "send" ? (
 						<SquareArrowDownRight
 							size={14}
-							className="rotate-[270deg] opacity-60"
+							className="rotate-[270deg]"
 						/>
 					) : (
-						<SquareArrowDownRight
-							size={14}
-							className="opacity-60"
-						/>
+						<SquareArrowDownRight size={14} />
 					)
 				}
 				label={`${transfer.action === "send" ? "Withdraw" : "Deposit"} Token`}
@@ -234,7 +222,7 @@ export const TransferFrame = () => {
 			>
 				<div className="flex h-full min-h-[280px] flex-col gap-4">
 					<Search
-						icon={<SearchIcon size={14} className="opacity-60" />}
+						icon={<SearchIcon size={14} />}
 						placeholder="Search activity and assets"
 						search={search}
 						handleSearch={(search: string) => handleSearch(search)}
@@ -252,7 +240,7 @@ export const TransferFrame = () => {
 
 			<Frame
 				className="scrollbar-hide z-[4] max-h-[calc(100vh-80px)] overflow-y-auto"
-				icon={<Globe size={14} className="opacity-60" />}
+				icon={<Globe size={14} />}
 				label={`${transfer.action === "send" ? "Withdraw" : "Deposit"} On`}
 				visible={transfer.token !== undefined}
 				handleBack={() =>
@@ -312,10 +300,7 @@ export const TransferFrame = () => {
 											setTransfer({ ...transfer, chain })
 										}
 									>
-										<ChevronRight
-											size={14}
-											className="opacity-60"
-										/>
+										<ChevronRight size={14} />
 									</Button>
 								</button>
 							)
@@ -326,7 +311,7 @@ export const TransferFrame = () => {
 
 			<Frame
 				className="scrollbar-hide z-[5] max-h-[calc(100vh-80px)] overflow-y-auto"
-				icon={<ReceiptText size={18} className="opacity-60" />}
+				icon={<ReceiptText size={18} />}
 				label={`${transfer.action === "send" ? "Withdraw" : "Deposit"} Details`}
 				visible={transfer.chain !== undefined}
 				handleBack={() =>
@@ -341,7 +326,7 @@ export const TransferFrame = () => {
 				<div className="flex flex-col gap-4">
 					<div className="flex flex-col gap-2">
 						<Search
-							icon={<Wallet size={14} className="opacity-60" />}
+							icon={<Wallet size={14} />}
 							placeholder="Amount"
 							search={transfer.amount?.toString() ?? ""}
 							handleSearch={(amount: string) =>
@@ -406,10 +391,7 @@ export const TransferFrame = () => {
 											height={24}
 										/>
 									) : (
-										<User
-											size={14}
-											className="opacity-60"
-										/>
+										<User size={14} />
 									)
 								}
 								placeholder="Recipient"

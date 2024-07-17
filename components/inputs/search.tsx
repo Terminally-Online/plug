@@ -63,7 +63,7 @@ export const Search: FC<Props> = ({
 			<div
 				className={cn(
 					"flex w-full cursor-pointer items-center gap-4 bg-grayscale-0 p-4 px-6",
-					textArea ? "rounded-lg" : "rounded-full"
+					textArea ? "rounded-lg" : "rounded-[16px]"
 				)}
 				onClick={
 					handleOnClick
@@ -109,10 +109,7 @@ export const Search: FC<Props> = ({
 									ease: "easeInOut"
 								}}
 							>
-								<X
-									size={14}
-									className="opacity-60 group-hover:opacity-80"
-								/>
+								<X size={14} className="opacity-60" />
 							</motion.button>
 						)}
 					</AnimatePresence>

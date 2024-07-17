@@ -143,10 +143,7 @@ export const ActionView = () => {
 												})
 											}
 										>
-											<Plus
-												size={14}
-												className="opacity-60 group-hover:opacity-80"
-											/>
+											<Plus size={14} />
 										</Button>
 									</button>
 								))}

@@ -49,7 +49,7 @@ const Page: NextPageWithLayout = () => {
 					}
 					nextLabel={
 						own ? (
-							<Ellipsis size={14} className="opacity-60" />
+							<Ellipsis size={14} />
 						) : (
 							<div className="flex flex-row items-center gap-2">
 								<BlockiesSvg
@@ -80,10 +80,7 @@ const Page: NextPageWithLayout = () => {
 							})
 						}
 					>
-						<GitFork
-							size={14}
-							className="opacity-60 group-hover:opacity-80"
-						/>
+						<GitFork size={14} />
 					</Button>
 
 					<Button
@@ -91,10 +88,7 @@ const Page: NextPageWithLayout = () => {
 						className="group p-1"
 						onClick={() => handleFrameVisible("share")}
 					>
-						<Share
-							size={14}
-							className="opacity-60 group-hover:opacity-80"
-						/>
+						<Share size={14} />
 					</Button>
 				</div>
 

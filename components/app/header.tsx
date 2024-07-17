@@ -1,7 +1,5 @@
-import { type FC, useRef } from "react"
+import { FC } from "react"
 
-import { AnimatePresence, motion, useTransform } from "framer-motion"
-import { useScroll } from "framer-motion"
 import { ChevronLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -56,8 +54,12 @@ export const Header: FC<Props> = ({
 			)}
 		>
 			{back && (
-				<Button variant="secondary" href={back} className="mr-2 p-1">
-					<ChevronLeft size={14} className="opacity-60" />
+				<Button
+					variant="secondary"
+					href={back}
+					className="mr-2 rounded-[10px] p-1"
+				>
+					<ChevronLeft size={14} />
 				</Button>
 			)}
 
@@ -78,8 +80,8 @@ export const Header: FC<Props> = ({
 					className={cn(
 						"outline-none",
 						size === "md" && nextPadded === true
-							? "px-2 py-1 text-xs"
-							: "p-1",
+							? "rounded-[10px] px-2 py-1 text-xs"
+							: "rounded-[10px] p-1",
 						children === undefined && "ml-auto"
 					)}
 				>

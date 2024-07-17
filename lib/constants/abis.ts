@@ -142,14 +142,17 @@ export const abis: Record<string, Record<string, string>> = {
 			"function encode(uint256 $amount, address $pool) public pure returns (bytes memory $data)"
 	},
 	aave: {
+		health: "function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
 		borrowRate:
-			"function encode(address $pool, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
+			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		depositRate:
-			"function encode(address $pool, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
+			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
+		deposit:
+			"function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)",
 		loanHealth:
-			"function encode(address $pool, uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
+			"function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
 		rewardClaim:
-			"function encode(address $pool, uint256 $amount) public pure returns (bytes memory $data)"
+			"function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)"
 	},
 	uniswap: {
 		swapExactETH:

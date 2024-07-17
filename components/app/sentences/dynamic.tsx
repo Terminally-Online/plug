@@ -160,7 +160,7 @@ export const DynamicFragment: FC<{
 						action.values[parentIndex] instanceof Object ===
 							false && (
 							<Search
-								icon={<Icon size={14} className="opacity-60" />}
+								icon={<Icon size={14} />}
 								placeholder={formatTitle(inputName)}
 								// @ts-ignore
 								search={action.values[parentIndex]}
@@ -196,7 +196,7 @@ export const DynamicFragment: FC<{
 									>
 										<ChevronRight
 											size={14}
-											className="float-right opacity-60"
+											className="float-right"
 										/>
 									</Button>
 								</button>

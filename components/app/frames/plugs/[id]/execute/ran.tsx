@@ -27,7 +27,7 @@ export const RanFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={<CheckCircle size={18} className="opacity-60" />}
+			icon={<CheckCircle size={18} />}
 			label={label}
 			visible={isFrame}
 		>
@@ -44,8 +44,9 @@ export const RanFrame = () => {
 						{plug.name}
 					</span>{" "}
 					<span className="opacity-60">
-						transaction was successfully executed. Your balances
-						have updated and you can now resume editing your Plug.
+						{prevFrame === "schedule"
+							? "intent successfully signed. When all the constraints of your Plug are met, your transaction will be automatically submitted."
+							: "transaction was successfully submit. Your balances have updated and you can now resume editing your Plug."}
 					</span>
 				</p>
 

@@ -36,7 +36,7 @@ export const RunFrame = () => {
 		<Frame
 			className="z-[2]"
 			handleBack={handleBack}
-			icon={<Eye size={18} className="opacity-60" />}
+			icon={<Eye size={18} />}
 			label={
 				prevFrameSuffix === "schedule"
 					? "Intent Preview"

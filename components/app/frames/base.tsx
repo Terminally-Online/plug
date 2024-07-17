@@ -73,10 +73,7 @@ export const Frame: FC<Props> = ({
 									onClick={handleBack}
 									className="mb-[20px] mr-2 h-min p-1"
 								>
-									<ChevronLeft
-										size={14}
-										className="opacity-60"
-									/>
+									<ChevronLeft size={14} />
 								</Button>
 							)}
 
@@ -89,9 +86,7 @@ export const Frame: FC<Props> = ({
 								nextOnClick={() =>
 									handleFrameVisible(undefined)
 								}
-								nextLabel={
-									<X size={14} className="opacity-60" />
-								}
+								nextLabel={<X size={14} />}
 							/>
 						</div>
 

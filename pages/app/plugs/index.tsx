@@ -15,7 +15,7 @@ const Page = () => {
 	})
 	const { data: myPlugs } = api.plug.all.useQuery({
 		target: "mine",
-		limit: 6
+		limit: 12
 	})
 
 	return (
@@ -26,7 +26,7 @@ const Page = () => {
 					back={routes.app.index}
 					label="Plugs"
 					nextOnClick={() => handle.plug.add(routes.app.plugs.index)}
-					nextLabel={<Plus size={14} className="opacity-60" />}
+					nextLabel={<Plus size={14} />}
 				/>
 
 				<Header
@@ -36,11 +36,7 @@ const Page = () => {
 					nextHref={routes.app.plugs.templates}
 					nextLabel="See All"
 				/>
-				<PlugGrid
-					from={routes.app.plugs.index}
-					count={4}
-					plugs={othersPlugs}
-				/>
+				<PlugGrid from={routes.app.plugs.index} plugs={othersPlugs} />
 
 				<Header
 					size="md"
@@ -49,17 +45,13 @@ const Page = () => {
 					nextHref={routes.app.plugs.mine}
 					nextLabel="See All"
 				/>
-				<PlugGrid
-					from={routes.app.plugs.index}
-					count={6}
-					plugs={myPlugs}
-				/>
+				<PlugGrid from={routes.app.plugs.index} plugs={myPlugs} />
 
-				<Header
+				{/* <Header
 					size="md"
 					icon={<ToyBrick size={14} className="opacity-60" />}
 					label="Protocol Actions"
-				/>
+				/> */}
 			</Container>
 		</>
 	)

@@ -36,7 +36,7 @@ export const SocketFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			icon={<Users size={18} className="opacity-60" />}
+			icon={<Users size={18} />}
 			label="Choose Socket"
 			visible={isFrame}
 		>
@@ -67,10 +67,7 @@ export const SocketFrame = () => {
 									)
 								}
 							>
-								<ChevronRight
-									size={14}
-									className="opacity-60"
-								/>
+								<ChevronRight size={14} />
 							</Button>
 						</div>
 					))

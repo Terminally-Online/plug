@@ -8,7 +8,7 @@ type Props = {
 	>[number]["chains"]
 }
 
-const size = 24
+const size = 14
 const radius = 50
 const circumference = 2 * Math.PI * radius
 const viewbox = 120
@@ -50,11 +50,11 @@ export const AssetPercentages: FC<Props> = ({ chains }) => {
 							r={radius}
 							fill="transparent"
 							stroke={getChainColor(chain.chainId)}
-							strokeWidth="6"
+							strokeWidth="20"
 							strokeDasharray={dashArray}
 							transform={`rotate(${-90 + rotation})`}
 							style={{
-								transition: "stroke-dasharray 1.2s ease 0s"
+								transition: "stroke-dasharray 3s ease 0s"
 							}}
 						/>
 					)

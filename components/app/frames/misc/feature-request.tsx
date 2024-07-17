@@ -31,7 +31,7 @@ export const FeatureRequestFrame = () => {
 	return (
 		<>
 			<Frame
-				icon={<Sparkle size={18} className="opacity-60" />}
+				icon={<Sparkle size={18} />}
 				label="Feature Request"
 				visible={isFrame}
 				handleBack={from ? () => handleFrameVisible(from) : undefined}
@@ -47,7 +47,7 @@ export const FeatureRequestFrame = () => {
 
 					<Search
 						className="w-full"
-						icon={<Pen size={14} className="opacity-60" />}
+						icon={<Pen size={14} />}
 						placeholder="Have specific details to share? Go ahead!"
 						search={message}
 						handleSearch={setMessage}
@@ -84,7 +84,7 @@ export const FeatureRequestFrame = () => {
 			</Frame>
 
 			<Frame
-				icon={<CheckCircle size={18} className="opacity-60" />}
+				icon={<CheckCircle size={18} />}
 				label="Feature Request Submit"
 				visible={frameVisible?.split("-")[0] === "featureRequestSubmit"}
 			>
