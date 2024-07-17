@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC, PropsWithChildren, useEffect, useState } from "react"
 
 import { Counter } from "./Counter"
 
@@ -34,7 +34,9 @@ const getTimeSince = (date: Date) => {
 	return { interval: Math.floor(seconds), unit: "s" }
 }
 
-export const DateSince: FC<{ date: Date }> = ({ date }) => {
+export const DateSince: FC<
+	{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLSpanElement>
+> = ({ date, ...props }) => {
 	const [timeSince, setTimeSince] = useState(getTimeSince(date))
 
 	useEffect(() => {
@@ -46,7 +48,7 @@ export const DateSince: FC<{ date: Date }> = ({ date }) => {
 	}, [date])
 
 	return (
-		<span className="flex flex-row">
+		<span className="flex flex-row" {...props}>
 			<span className="ml-auto">
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>

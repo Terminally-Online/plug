@@ -7,6 +7,9 @@ import { useDisconnect, useEnsAvatar, useEnsName } from "wagmi"
 
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
+import { StatCard } from "@/components/cards/stat"
+import { Counter } from "@/components/utils/Counter"
+import { DateSince } from "@/components/utils/DateSince"
 import { useFrame, useSockets } from "@/contexts"
 import { formatAddress } from "@/lib/functions"
 
@@ -55,32 +58,59 @@ export const AccountFrame = () => {
 		>
 			<div className="flex flex-col gap-2">
 				<div className="mb-4 flex flex-row items-center gap-2">
-					<div className="flex w-full flex-col rounded-lg bg-grayscale-100 p-4 font-bold">
-						<span className="text-2xl">0.61 ETH</span>
-						<span className="opacity-40">Fees Earned</span>
-					</div>
+					<StatCard>
+						<span className="mr-auto flex flex-row gap-2 text-2xl font-bold">
+							<Counter
+								className="w-max"
+								count={201}
+								decimals={0}
+							/>
+							<span className="opacity-40">ETH</span>
+						</span>
+						<p className="font-bold opacity-40">Fees Earned</p>
+					</StatCard>
 
-					<div className="flex w-full flex-col rounded-lg bg-grayscale-100 p-4 font-bold">
-						<span className="text-2xl">312</span>
-						<span className="opacity-40">Points Earned</span>
-					</div>
+					<StatCard>
+						<Counter
+							className="mr-auto w-max text-2xl font-bold"
+							count={321}
+							decimals={0}
+						/>
+						<p className="font-bold opacity-40">Points Earned</p>
+					</StatCard>
 				</div>
 
 				<p className="flex font-bold">
-					Plugs Used
-					<span className="ml-auto opacity-40">31</span>
+					<span className="w-full">Plugs Used</span>
+					<Counter
+						className="ml-auto opacity-40"
+						count={31}
+						decimals={0}
+					/>
 				</p>
 				<p className="flex font-bold">
-					Runs
-					<span className="ml-auto opacity-40">412</span>
+					<span className="w-full">Runs</span>
+					<Counter
+						className="ml-auto opacity-40"
+						count={412}
+						decimals={0}
+					/>
 				</p>
 				<p className="flex font-bold">
-					Users Onboarded
-					<span className="ml-auto opacity-40">51</span>
+					<span className="w-full">Users Onboarded</span>
+					<Counter
+						className="ml-auto opacity-40"
+						count={51}
+						decimals={0}
+					/>
 				</p>
 				<p className="flex font-bold">
-					Account Age
-					<span className="ml-auto opacity-40">18 days</span>
+					<span className="w-full">Account Created</span>
+					<DateSince
+						className="flex w-full flex-row items-center opacity-40"
+						date={new Date()}
+					/>
+					{/* <span className="ml-auto opacity-40">18 days</span> */}
 				</p>
 			</div>
 

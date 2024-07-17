@@ -1,10 +1,10 @@
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 
-import { animate, motion, useMotionValue, useTransform } from "framer-motion"
-import { FileCog, FileTerminal } from "lucide-react"
+import { motion } from "framer-motion"
+import { FileCog } from "lucide-react"
 
+import { StatCard } from "@/components/cards/stat"
 import { Counter } from "@/components/utils/Counter"
-import { formatNumber } from "@/lib/functions"
 import { cn } from "@/lib/utils"
 
 import { Header } from "../header"
@@ -61,26 +61,30 @@ export const SocketActivity = () => {
 				</div>
 
 				<div className="flex flex-row gap-2">
-					<div className="w-full rounded-[16px] bg-grayscale-0 p-4">
+					<StatCard>
 						<Counter
 							className="mr-auto w-max text-2xl font-bold"
 							count={201}
 							decimals={0}
 						/>
 						<p className="font-bold opacity-40">Pending</p>
-					</div>
-					<div className="w-full rounded-[16px] bg-grayscale-0 p-4">
+					</StatCard>
+					<StatCard>
 						<Counter
 							className="mr-auto w-max text-2xl font-bold"
 							count={9351}
 							decimals={0}
 						/>
 						<p className="font-bold opacity-40">Run</p>
-					</div>
+					</StatCard>
 				</div>
 			</div>
 
-			<Header size="md" icon={<FileCog size={14} />} label="Runs" />
+			<Header
+				size="md"
+				icon={<FileCog size={14} className="opacity-40" />}
+				label="Runs"
+			/>
 
 			<ActivityList />
 		</>

@@ -2,7 +2,6 @@ import Image from "next/image"
 
 import BlockiesSvg from "blockies-react-svg"
 import { Cable, Plus, UsersRound } from "lucide-react"
-import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { Container, Header } from "@/components/app"
 import { AccountFrame } from "@/components/app/frames/account"
@@ -14,8 +13,6 @@ import { routes } from "@/lib/constants"
 import { formatAddress } from "@/lib/functions"
 import { NextPageWithLayout } from "@/lib/types"
 import { api } from "@/server/client"
-
-import { normalize } from "viem/ens"
 
 const Page: NextPageWithLayout = () => {
 	const { handleFrameVisible } = useFrame()
@@ -39,7 +36,7 @@ const Page: NextPageWithLayout = () => {
 				label={
 					<>
 						<div
-							className="mr-2 flex w-max flex-row items-center gap-2 rounded-md p-2"
+							className="flex w-max flex-row items-center rounded-[10px] p-2"
 							style={{
 								backgroundImage:
 									"linear-gradient(30deg, #00E100, #A3F700)"
@@ -87,7 +84,7 @@ const Page: NextPageWithLayout = () => {
 
 			<Header
 				size="md"
-				icon={<Cable size={14} className="opacity-60" />}
+				icon={<Cable size={14} className="opacity-40" />}
 				label="Plugs"
 				nextHref={routes.app.plugs.index}
 				nextLabel="See All"
@@ -96,8 +93,8 @@ const Page: NextPageWithLayout = () => {
 
 			<Header
 				size="md"
-				icon={<UsersRound size={14} className="opacity-60" />}
-				label="Sockets"
+				icon={<UsersRound size={14} className="opacity-40" />}
+				label="Accounts"
 				nextOnClick={handleSocketAdd}
 				nextLabel={hasSockets ? "Create New" : undefined}
 			/>

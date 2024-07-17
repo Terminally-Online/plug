@@ -3,6 +3,8 @@ import { FC } from "react"
 import { usePathname } from "next/navigation"
 import { useRouter } from "next/router"
 
+import { motion } from "framer-motion"
+
 import { Workflow } from "@prisma/client"
 
 import { PlugGridItem } from "@/components/app/plugs/grid-item"
@@ -36,17 +38,42 @@ export const PlugGrid: FC<Props> = ({
 	return (
 		<div {...props}>
 			{plugs && plugs.length > 0 ? (
-				<div className="grid grid-cols-2 gap-1 lg:grid-cols-4">
+				<motion.div
+					className="grid grid-cols-2 gap-1 lg:grid-cols-4"
+					initial="hidden"
+					animate="visible"
+					variants={{
+						hidden: { opacity: 0 },
+						visible: {
+							opacity: 1,
+							transition: {
+								staggerChildren: 0.05
+							}
+						}
+					}}
+				>
 					{plugs
 						.slice(0, count || plugs.length)
 						.map((plug, index) => (
-							<PlugGridItem
+							<motion.div
 								key={`${plug.id}-${index}`}
-								from={from}
-								plug={plug}
-							/>
+								variants={{
+									hidden: { opacity: 0, y: 10 },
+									visible: {
+										opacity: 1,
+										y: 0,
+										transition: {
+											type: "spring",
+											stiffness: 100,
+											damping: 10
+										}
+									}
+								}}
+							>
+								<PlugGridItem from={from} plug={plug} />
+							</motion.div>
 						))}
-				</div>
+				</motion.div>
 			) : [routes.app.index, routes.app.plugs.mine].includes(
 					router.pathname
 			  ) ? (

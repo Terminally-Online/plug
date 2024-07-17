@@ -65,6 +65,7 @@ const Page: NextPageWithLayout = () => {
 					>
 						Activity
 					</h3>
+
 					<h3
 						className={cn(
 							tab !== "assets" && "opacity-40",
