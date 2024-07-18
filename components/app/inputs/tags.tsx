@@ -2,10 +2,8 @@ import { createRef, FC, useEffect, useRef } from "react"
 
 import { motion } from "framer-motion"
 
-import { tags } from "@/lib/constants"
-import { cn } from "@/lib/utils"
-
-import { Button } from "../buttons"
+import { Button } from "@/components"
+import { cn, tags } from "@/lib"
 
 export const Tags: FC<{
 	tag?: string

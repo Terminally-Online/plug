@@ -5,12 +5,9 @@ import { Plus, SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Container, Header, PlugGrid } from "@/components/app"
-import { Search } from "@/components/inputs/search"
-import { Tags } from "@/components/inputs/tags"
+import { Container, Header, PlugGrid, Search, Tags } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { routes } from "@/lib/constants"
-import { useSearch } from "@/lib/hooks/useSearch"
+import { routes, useSearch } from "@/lib"
 import { api } from "@/server/client"
 
 // Notes: We do not use the contextual plugs here because we want search without

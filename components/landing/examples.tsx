@@ -1,14 +1,14 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
 import { motion } from "framer-motion"
 
-import { Container } from "@/components/landing/container"
+import { LandingContainer } from "@/components"
 
 export const Examples: FC = () => (
 	<>
-		<Container className="mt-[90px] flex-col items-center gap-4">
+		<LandingContainer className="mt-[90px] flex-col items-center gap-4">
 			<h2 className="text-center text-[28px] font-bold lg:w-[60%] lg:text-[64px] 2xl:w-[40%]">
 				A simple way to plug-and-play.
 			</h2>
@@ -17,7 +17,7 @@ export const Examples: FC = () => (
 				no-code builder in seconds and combine the power of top
 				protocols.
 			</p>
-		</Container>
+		</LandingContainer>
 
 		<div className="my-[45px] border-y-[2px] border-[#D9D9D9] lg:my-[90px]">
 			<div className="grid lg:grid-cols-12 lg:grid-rows-2">

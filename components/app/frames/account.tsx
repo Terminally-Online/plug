@@ -5,10 +5,7 @@ import { signOut } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { useDisconnect, useEnsAvatar, useEnsName } from "wagmi"
 
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { StatCard } from "@/components/cards/stat"
-import { Counter, DateSince } from "@/components/utils"
+import { Button, Counter, DateSince, Frame, StatCard } from "@/components"
 import { useFrame, useSockets } from "@/contexts"
 
 import { normalize } from "viem/ens"

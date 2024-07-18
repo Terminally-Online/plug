@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { motion } from "framer-motion"
 
-import { ActivityItem } from "@/components/app"
+import { ActivityItem } from "@/components"
 
 export const ActivityList: FC = () => {
 	const activities = [

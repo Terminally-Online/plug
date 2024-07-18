@@ -1,9 +1,7 @@
 import { Trash2 } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-
-import { Frame } from "../base"
 
 export const DeletedFrame = () => {
 	const { frameVisible } = useFrame()

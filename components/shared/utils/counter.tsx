@@ -1,9 +1,8 @@
-// TODO: Add support for decimals.
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
 
-import { cn } from "@/lib"
+import { cn } from "@/lib/utils"
 
 const isDate = (input: string) => input.includes("/")
 

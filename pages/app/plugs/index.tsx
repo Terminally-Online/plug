@@ -1,8 +1,8 @@
 import { PlugZap, Plus, Puzzle } from "lucide-react"
 
-import { Container, Header, PlugGrid } from "@/components/app"
+import { Container, Header, PlugGrid } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { routes } from "@/lib/constants"
+import { routes } from "@/lib"
 import { api } from "@/server/client"
 
 const Page = () => {

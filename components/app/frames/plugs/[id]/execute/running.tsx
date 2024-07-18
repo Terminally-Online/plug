@@ -2,9 +2,8 @@ import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
+import { Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-
-import { Frame } from "../../../base"
 
 export const RunningFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

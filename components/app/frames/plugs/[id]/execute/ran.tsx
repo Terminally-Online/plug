@@ -2,11 +2,9 @@ import Image from "next/image"
 
 import { CheckCircle } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-import { formatTitle } from "@/lib/functions"
-
-import { Frame } from "../../../base"
+import { formatTitle } from "@/lib"
 
 export const RanFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

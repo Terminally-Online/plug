@@ -1,8 +1,8 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { motion, MotionProps } from "framer-motion"
 
-import { greenGradientStyle } from "@/lib/constants"
+import { greenGradientStyle } from "@/lib"
 
 type Props = PropsWithChildren & {
 	index: number

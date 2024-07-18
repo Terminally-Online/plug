@@ -1,13 +1,13 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
 import { motion } from "framer-motion"
 
-import { Container } from "@/components/landing/container"
+import { LandingContainer } from "@/components"
 
 export const Letter: FC = () => (
-	<Container className="my-[90px] flex-col items-center gap-4">
+	<LandingContainer className="my-[90px] flex-col items-center gap-4">
 		<motion.h2
 			className="text-center text-[28px] font-bold lg:text-[64px]"
 			initial={{ opacity: 0, y: 20 }}
@@ -88,5 +88,5 @@ export const Letter: FC = () => (
 				</div>
 			</div>
 		</motion.div>
-	</Container>
+	</LandingContainer>
 )

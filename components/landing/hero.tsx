@@ -1,16 +1,14 @@
-import type { FC } from "react"
+import { FC } from "react"
 
-import { Button } from "@/components/buttons"
-import { Container } from "@/components/landing/container"
-import { Ecosystem } from "@/components/landing/ecosystem"
-import { greenGradientStyle, routes } from "@/lib/constants"
+import { Button, Ecosystem, LandingContainer } from "@/components"
+import { greenGradientStyle, routes } from "@/lib"
 
 const EARLY_ACCESS =
 	process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
 
 export const Hero: FC = () => (
 	<div className="relative flex h-[1050px] w-full overflow-hidden lg:h-[900px] lg:items-center">
-		<Container>
+		<LandingContainer>
 			<div className="mt-16 flex flex-col gap-[15px] lg:mt-0 lg:max-w-[70%] lg:gap-[30px]">
 				<h1 className="text-[42px] font-bold sm:text-[52px] md:text-[72px] 2xl:text-[96px]">
 					Automate your onchain activity with an{" "}
@@ -32,7 +30,7 @@ export const Hero: FC = () => (
 					{EARLY_ACCESS ? "Get Early Access" : "Enter the App"}
 				</Button>
 			</div>
-		</Container>
+		</LandingContainer>
 
 		<Ecosystem />
 	</div>

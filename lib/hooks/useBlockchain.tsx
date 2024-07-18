@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react"
 
-import { formatAddress, getBlockExplorerAddress } from "@/lib/functions"
+import { formatAddress, getBlockExplorerAddress } from "@/lib"
 
 export const useBlockchain = ({ address }: { address: string }) => {
 	const displayAddress = useMemo(() => formatAddress(address), [address])

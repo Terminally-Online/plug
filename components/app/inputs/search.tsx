@@ -1,7 +1,6 @@
 import { FC, PropsWithChildren, RefObject, useEffect, useRef } from "react"
 
-import { motion } from "framer-motion"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"

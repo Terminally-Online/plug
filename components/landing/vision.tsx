@@ -1,23 +1,12 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import {
-	Check,
-	Code,
-	Earth,
-	Globe,
-	PowerOff,
-	Sparkles,
-	Unplug,
-	Wallet,
-	Zap
-} from "lucide-react"
+import { Check, Code, PowerOff, Wallet } from "lucide-react"
 
-import { InfoCard } from "@/components/cards"
-import { Container } from "@/components/landing/container"
-import { greenGradientStyle } from "@/lib/constants"
+import { InfoCard, LandingContainer } from "@/components"
+import { greenGradientStyle } from "@/lib"
 
 export const Vision: FC = () => {
 	const actions = [
@@ -43,7 +32,7 @@ export const Vision: FC = () => {
 	}
 
 	return (
-		<Container className="mt-8">
+		<LandingContainer className="mt-8">
 			<div className="grid w-full grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
 				<InfoCard
 					text={
@@ -245,6 +234,6 @@ export const Vision: FC = () => {
 					</div>
 				</InfoCard>
 			</div>
-		</Container>
+		</LandingContainer>
 	)
 }

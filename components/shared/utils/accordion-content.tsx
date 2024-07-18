@@ -1,6 +1,6 @@
 import { FC, useRef } from "react"
 
-import { cn } from "@/lib"
+import { cn } from "@/lib/utils"
 
 type Props = { expanded: boolean } & React.HTMLAttributes<HTMLSpanElement>
 

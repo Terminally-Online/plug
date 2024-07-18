@@ -4,13 +4,13 @@ import {
 	FrequentlyAskedQuestions,
 	Hero,
 	Letter,
+	StaticLayout,
 	Steps,
 	Templates,
 	Value,
 	Vision
-} from "@/components/landing"
-import { StaticLayout } from "@/components/layouts/static"
-import { NextPageWithLayout } from "@/lib/types"
+} from "@/components"
+import { NextPageWithLayout } from "@/lib"
 
 const Page: NextPageWithLayout = () => (
 	<>

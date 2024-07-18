@@ -6,14 +6,16 @@ import { useSession } from "next-auth/react"
 
 import { ChevronRight, CircleHelp } from "lucide-react"
 
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { Search } from "@/components/inputs"
-import { useFrame, usePlugs } from "@/contexts"
-import { Option, Value } from "@/contexts/PlugProvider"
-import { cn } from "@/lib"
-import { categories, actions as staticActions } from "@/lib/constants"
-import { formatInputName, formatTitle, getIndexes } from "@/lib/functions"
+import { Button, Frame, Search } from "@/components"
+import { Option, useFrame, usePlugs, Value } from "@/contexts"
+import {
+	categories,
+	cn,
+	formatInputName,
+	formatTitle,
+	getIndexes,
+	actions as staticActions
+} from "@/lib"
 
 type Props = {
 	index: number

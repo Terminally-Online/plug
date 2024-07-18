@@ -4,11 +4,9 @@ import Image from "next/image"
 
 import { Globe } from "lucide-react"
 
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { Checkbox } from "@/components/inputs"
+import { Button, Checkbox, Frame } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { formatTitle } from "@/lib/functions"
+import { formatTitle } from "@/lib"
 
 export const ChainFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

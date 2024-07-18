@@ -1,7 +1,8 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { motion, MotionProps } from "framer-motion"
-import { twMerge } from "tailwind-merge"
+
+import { cn } from "@/lib/utils"
 
 type Props = PropsWithChildren & {
 	text: string | React.ReactNode
@@ -20,7 +21,7 @@ export const InfoCard: FC<Props> = ({
 		"relative flex flex-row items-center gap-8 rounded-xl bg-[#FBFBFB] p-8 items-end min-h-[240px]"
 
 	return (
-		<motion.div className={twMerge(base, className)} {...props}>
+		<motion.div className={cn(base, className)} {...props}>
 			<div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden rounded-xl">
 				{children}
 			</div>

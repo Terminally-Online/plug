@@ -3,9 +3,7 @@ import { useState } from "react"
 import { CheckCircle, Sparkle } from "lucide-react"
 import { Pen } from "lucide-react"
 
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { Search } from "@/components/inputs"
+import { Button, Frame, Search } from "@/components"
 import { useFrame } from "@/contexts"
 import { api } from "@/server/client"
 

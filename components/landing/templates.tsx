@@ -1,8 +1,7 @@
 import type { FC } from "react"
 
-import { ActionCard } from "@/components/cards"
-import { Container } from "@/components/landing/container"
-import { colors, routes } from "@/lib/constants"
+import { LandingActionCard, LandingContainer } from "@/components"
+import { colors, routes } from "@/lib"
 
 export const Templates: FC = () => {
 	const templates = [
@@ -18,7 +17,7 @@ export const Templates: FC = () => {
 	]
 
 	return (
-		<Container className="my-[90px] flex-col items-center gap-4">
+		<LandingContainer className="my-[90px] flex-col items-center gap-4">
 			<h2 className="text-center text-[28px] font-bold lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
 				Start today with best-practice templates
 			</h2>
@@ -36,7 +35,7 @@ export const Templates: FC = () => {
 					className="mt-[40px] grid gap-4 md:grid-cols-2 2xl:col-start-4 2xl:col-end-10 2xl:grid-cols-3"
 				>
 					{templates.map((template, index) => (
-						<ActionCard
+						<LandingActionCard
 							key={index}
 							size="lg"
 							color={
@@ -57,6 +56,6 @@ export const Templates: FC = () => {
 					))}
 				</a>
 			</div>
-		</Container>
+		</LandingContainer>
 	)
 }

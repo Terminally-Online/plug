@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
-import { colors } from "@/lib/constants"
+import { colors } from "@/lib"
 import {
 	createTRPCRouter,
 	protectedProcedure,

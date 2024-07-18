@@ -3,10 +3,9 @@ import { FC, useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
 import { LoaderCircle } from "lucide-react"
 
-import { SocketAssetItem } from "@/components/app"
-import { TransferFrame } from "@/components/app/frames/transfer"
+import { SocketAssetItem, TransferFrame } from "@/components"
 import { useBalances } from "@/contexts"
-import { getPrices } from "@/lib/functions/llama/price"
+import { getPrices } from "@/lib"
 
 type Props = {
 	balances: ReturnType<typeof useBalances>["balances"]

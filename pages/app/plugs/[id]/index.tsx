@@ -3,20 +3,26 @@ import { useSession } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { Ellipsis, GitFork, SearchIcon, Share } from "lucide-react"
 
-import { Container, Header } from "@/components/app"
-import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
-import { ExecuteFrame } from "@/components/app/frames/plugs/[id]/execute"
-import { ManageFrame } from "@/components/app/frames/plugs/[id]/manage"
-import { ShareFrame } from "@/components/app/frames/plugs/[id]/share"
-import { ActionView } from "@/components/app/plugs/actions/action-view"
-import { Button } from "@/components/buttons"
-import { Search } from "@/components/inputs"
-import { useFrame } from "@/contexts"
-import { usePlugs } from "@/contexts/PlugProvider"
-import { cardColors, routes } from "@/lib/constants"
-import { formatAddress, formatTimeSince } from "@/lib/functions"
-import { useNavigation } from "@/lib/hooks/useNavigation"
-import { NextPageWithLayout } from "@/lib/types"
+import {
+	ActionsFrame,
+	ActionView,
+	Button,
+	Container,
+	ExecuteFrame,
+	Header,
+	ManagePlugFrame,
+	Search,
+	ShareFrame
+} from "@/components"
+import { useFrame, usePlugs } from "@/contexts"
+import {
+	cardColors,
+	formatAddress,
+	formatTimeSince,
+	NextPageWithLayout,
+	routes,
+	useNavigation
+} from "@/lib"
 
 const Page: NextPageWithLayout = () => {
 	const { data: session } = useSession()
@@ -128,7 +134,7 @@ const Page: NextPageWithLayout = () => {
 
 			<>
 				<ExecuteFrame />
-				<ManageFrame />
+				<ManagePlugFrame />
 				<ActionsFrame />
 				<ShareFrame />
 			</>

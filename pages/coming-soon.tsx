@@ -1,9 +1,5 @@
-import Head from "next/head"
-
-import { Button } from "@/components/buttons"
-import { StaticLayout } from "@/components/layouts/static"
-import { greenGradientStyle, routes } from "@/lib/constants"
-import { NextPageWithLayout } from "@/lib/types"
+import { Button, StaticLayout } from "@/components"
+import { greenGradientStyle, NextPageWithLayout, routes } from "@/lib"
 
 const Page: NextPageWithLayout = () => (
 	<div className="flex min-h-[800px] flex-col items-center justify-center gap-2">

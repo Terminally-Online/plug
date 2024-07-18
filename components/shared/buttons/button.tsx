@@ -1,8 +1,8 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import Link from "next/link"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib"
 
 type Props = {
 	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive"

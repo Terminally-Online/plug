@@ -4,10 +4,14 @@ import Image from "next/image"
 
 import { Info } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-import { categories, actions as staticActions } from "@/lib/constants"
-import { formatTitle, getValues } from "@/lib/functions"
+import {
+	categories,
+	formatTitle,
+	getValues,
+	actions as staticActions
+} from "@/lib"
 
 type Props = {
 	categoryName: keyof typeof categories

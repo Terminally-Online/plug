@@ -3,10 +3,8 @@ import { useEffect } from "react"
 import BlockiesSvg from "blockies-react-svg"
 import { ChevronRight, Users } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button, Frame } from "@/components"
 import { useFrame, useSockets } from "@/contexts"
-
-import { Frame } from "../../../base"
 
 export const SocketFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

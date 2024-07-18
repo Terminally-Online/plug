@@ -18,12 +18,9 @@ import {
 import { createPublicClient, http, isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
-import { Footer, SocketAssetList } from "@/components/app"
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { Search } from "@/components/inputs"
+import { Button, Footer, Frame, Search, SocketAssetList } from "@/components"
 import { useBalances, useFrame, useSockets } from "@/contexts"
-import { getChainImage } from "@/lib/functions"
+import { getChainImage } from "@/lib"
 
 import { mainnet } from "viem/chains"
 

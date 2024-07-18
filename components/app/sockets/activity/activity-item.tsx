@@ -4,9 +4,8 @@ import Image from "next/image"
 
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
-import { AccordionContent, Counter, DateSince } from "@/components/utils"
-import { colors } from "@/lib"
-import { formatTitle } from "@/lib/functions"
+import { AccordionContent, Counter, DateSince } from "@/components"
+import { colors, formatTitle } from "@/lib"
 
 const getStatusIcon = (status: string) => {
 	switch (status) {

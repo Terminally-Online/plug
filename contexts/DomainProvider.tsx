@@ -1,9 +1,16 @@
-import type { FC, PropsWithChildren } from "react"
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import {
+	createContext,
+	FC,
+	PropsWithChildren,
+	useContext,
+	useEffect,
+	useMemo,
+	useState
+} from "react"
 
 import { useChainId } from "wagmi"
 
-import { chains, mainnets, testnets } from "@/lib/constants"
+import { chains, mainnets, testnets } from "@/lib/constants/blockchain"
 
 type Domain = {
 	testnets: boolean

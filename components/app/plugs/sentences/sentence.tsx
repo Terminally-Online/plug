@@ -6,12 +6,9 @@ import { useSession } from "next-auth/react"
 
 import { X } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button, Fragments } from "@/components"
 import { usePlugs } from "@/contexts"
-import { categories } from "@/lib/constants"
-import { cn } from "@/lib/utils"
-
-import { Fragments } from "./fragments"
+import { categories, cn } from "@/lib"
 
 export const Sentence: FC<{
 	index: number

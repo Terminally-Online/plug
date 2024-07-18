@@ -4,8 +4,7 @@ import Link from "next/link"
 
 import BlockiesSvg from "blockies-react-svg"
 
-import { formatAddress } from "@/lib/functions"
-import { cn } from "@/lib/utils"
+import { cn, formatAddress } from "@/lib"
 import { UserSocket } from "@/server/api/routers/socket"
 
 type Props = { socket: UserSocket }

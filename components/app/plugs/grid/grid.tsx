@@ -7,10 +7,9 @@ import { motion } from "framer-motion"
 
 import { Workflow } from "@prisma/client"
 
-import { PlugGridItem } from "@/components/app"
-import { Button } from "@/components/buttons"
-import { usePlugs } from "@/contexts/PlugProvider"
-import { routes } from "@/lib/constants"
+import { Button, PlugGridItem } from "@/components"
+import { usePlugs } from "@/contexts"
+import { routes } from "@/lib"
 
 type Props = {
 	from: string
@@ -39,7 +38,10 @@ export const PlugGrid: FC<Props> = ({
 		<div {...props}>
 			{plugs && plugs.length > 0 ? (
 				<motion.div
-					className="grid grid-cols-2 gap-1 lg:grid-cols-4"
+					className="grid gap-1"
+					style={{
+						gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`
+					}}
 					initial="hidden"
 					animate="visible"
 					variants={{

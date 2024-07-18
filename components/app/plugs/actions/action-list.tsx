@@ -1,5 +1,5 @@
-import { ActionListItem } from "@/components/app"
-import { categories } from "@/lib/constants"
+import { ActionListItem } from "@/components"
+import { categories } from "@/lib"
 
 export const ActionList = () => (
 	<>

@@ -3,11 +3,9 @@ import { FC, PropsWithChildren, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
-import { Button } from "@/components/buttons"
+import { Button, Header } from "@/components"
 import { useFrame } from "@/contexts"
-import { cn } from "@/lib/utils"
-
-import { Header } from "../layout/header"
+import { cn } from "@/lib"
 
 type Props = PropsWithChildren & {
 	label: string

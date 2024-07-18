@@ -2,8 +2,6 @@ import { FC, useEffect } from "react"
 
 import { animate, motion, useMotionValue, useTransform } from "framer-motion"
 
-import { greenGradientStyle } from "@/lib/constants"
-
 export const Mitigation: FC = () => {
 	const patch = useMotionValue(0)
 	const patchRounded = useTransform(patch, latest => Math.round(latest))

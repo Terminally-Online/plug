@@ -3,9 +3,7 @@ import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { FileCog } from "lucide-react"
 
-import { ActivityList, Header } from "@/components/app"
-import { StatCard } from "@/components/cards/stat"
-import { Counter } from "@/components/utils/counter"
+import { ActivityList, Counter, Header, StatCard } from "@/components"
 import { cn } from "@/lib/utils"
 
 export const SocketActivity = () => {

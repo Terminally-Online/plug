@@ -1,5 +1,3 @@
-import { Suspense } from "react"
-
 import type { AppProps, AppType } from "next/app"
 import localFont from "next/font/local"
 
@@ -8,10 +6,9 @@ import { getSession } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-import { FeatureRequestFrame } from "@/components/app/frames/misc/feature-request"
-import { DeletedFrame } from "@/components/app/frames/plugs/deleted"
+import { DeletedFrame, FeatureRequestFrame } from "@/components"
 import { RootProvider } from "@/contexts/RootProvider"
-import { NextPageWithLayout } from "@/lib/types"
+import { NextPageWithLayout } from "@/lib"
 import { api } from "@/server/client"
 
 import "./styles.css"

@@ -1,8 +1,8 @@
 import Image from "next/image"
 
-import { Sentence } from "@/components/app"
+import { Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
-import { categories } from "@/lib"
+import { categories } from "@/lib/constants"
 
 export const ActionPreview = () => {
 	const { actions } = usePlugs()

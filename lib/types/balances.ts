@@ -1,4 +1,4 @@
-import { tokens } from "@/lib/constants/tokens"
+import { tokens } from "@/lib"
 
 export type Search = {
 	query: string

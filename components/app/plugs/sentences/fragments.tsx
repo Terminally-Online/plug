@@ -1,9 +1,7 @@
 import { FC } from "react"
 
-import { ACTION_REGEX, usePlugs } from "@/contexts/PlugProvider"
-
-import { DynamicFragment } from "./dynamic"
-import { StaticFragment } from "./static"
+import { DynamicFragment, StaticFragment } from "@/components"
+import { ACTION_REGEX, usePlugs } from "@/contexts"
 
 export const Fragments: FC<{
 	index: number

@@ -4,11 +4,9 @@ import Image from "next/image"
 
 import { ChevronRight } from "lucide-react"
 
-import { ActionCard } from "@/components/app"
-import { Button } from "@/components/buttons"
+import { ActionCard, Button } from "@/components"
 import { useFrame } from "@/contexts"
-import { categories } from "@/lib/constants"
-import { formatTitle } from "@/lib/functions"
+import { categories, formatTitle } from "@/lib"
 
 export const ActionListItem: FC<{
 	categoryName: string

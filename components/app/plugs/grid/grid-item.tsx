@@ -2,7 +2,7 @@ import type { FC } from "react"
 
 import Link from "next/link"
 
-import { cardColors } from "@/lib/constants"
+import { cardColors } from "@/lib"
 import { Workflow } from "@/server/api/routers/plug"
 
 type Props = { from: string; plug: Workflow }

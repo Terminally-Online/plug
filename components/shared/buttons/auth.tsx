@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { getCsrfToken, signIn, useSession } from "next-auth/react"
 
@@ -7,7 +7,7 @@ import { useAccount, useChainId, useSignMessage } from "wagmi"
 
 import { useWeb3Modal } from "@web3modal/wagmi/react"
 
-import { Button } from "@/components/buttons"
+import { Button } from "@/components"
 
 export type ButtonProps = {
 	callbackUrl?: string

@@ -4,14 +4,16 @@ import Image from "next/image"
 
 import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
 
-import { ActionCard, ActionItem } from "@/components/app"
-import { Button } from "@/components/buttons"
-import { Search } from "@/components/inputs"
+import { ActionCard, ActionItem, Button, Frame, Search } from "@/components"
 import { useFrame } from "@/contexts"
-import { abis, categories, actions as staticActions, useDebounce } from "@/lib"
-import { formatAddress, formatTitle } from "@/lib/functions"
-
-import { Frame } from "../../base"
+import {
+	abis,
+	categories,
+	formatAddress,
+	formatTitle,
+	actions as staticActions,
+	useDebounce
+} from "@/lib"
 
 export const ActionsFrame: FC = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

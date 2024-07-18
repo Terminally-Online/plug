@@ -6,11 +6,9 @@ import { useSession } from "next-auth/react"
 
 import { Plus } from "lucide-react"
 
-import { Sentence } from "@/components/app"
-import { Button } from "@/components/buttons"
+import { Button, Sentence } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-import { actions, categories } from "@/lib"
-import { formatTitle, getValues } from "@/lib/functions"
+import { actions, categories, formatTitle, getValues } from "@/lib"
 
 const baseSuggestions = Object.entries(actions).flatMap(
 	([categoryName, actions]) =>

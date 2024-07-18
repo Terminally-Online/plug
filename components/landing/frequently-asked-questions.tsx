@@ -1,10 +1,9 @@
-import type { FC } from "react"
-import { useState } from "react"
+import { FC, useState } from "react"
 
 import { motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 
-import { Container } from "@/components/landing/container"
+import { LandingContainer } from "@/components"
 
 const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
 	text,
@@ -44,7 +43,7 @@ const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
 }
 
 export const FrequentlyAskedQuestions: FC = () => (
-	<Container>
+	<LandingContainer>
 		<div className="my-[90px] grid lg:grid-cols-12">
 			<h3 className="mb-8 text-[28px] font-bold lg:col-span-4 lg:col-start-2 lg:mb-0 lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
 				Frequently Asked Questions
@@ -69,5 +68,5 @@ export const FrequentlyAskedQuestions: FC = () => (
 				/>
 			</div>
 		</div>
-	</Container>
+	</LandingContainer>
 )

@@ -3,14 +3,15 @@ import Image from "next/image"
 import BlockiesSvg from "blockies-react-svg"
 import { Cable, Plus, UsersRound } from "lucide-react"
 
-import { Container, Header } from "@/components/app"
-import { AccountFrame } from "@/components/app/frames/account"
-import { PlugGrid } from "@/components/app/plugs/grid/grid"
-import { SocketList } from "@/components/app/sockets/list/socket-list"
+import {
+	AccountFrame,
+	Container,
+	Header,
+	PlugGrid,
+	SocketList
+} from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { routes } from "@/lib/constants"
-import { formatAddress } from "@/lib/functions"
-import { NextPageWithLayout } from "@/lib/types"
+import { formatAddress, NextPageWithLayout, routes } from "@/lib"
 import { api } from "@/server/client"
 
 const Page: NextPageWithLayout = () => {

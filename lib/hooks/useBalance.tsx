@@ -4,7 +4,7 @@ import { isAddress } from "viem"
 import { erc20Abi } from "viem"
 import { useReadContracts } from "wagmi"
 
-import { tokens } from "@/lib/constants/tokens"
+import { tokens } from "@/lib"
 
 export const useBalance = ({
 	chainId,

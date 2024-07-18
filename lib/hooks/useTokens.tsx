@@ -3,12 +3,11 @@ import { useMemo } from "react"
 import { erc20Abi, isAddress } from "viem"
 import { useReadContracts } from "wagmi"
 
-import { tokens } from "@/lib/constants/tokens"
-import { getLevenshteinDistance } from "@/lib/functions"
+import { getLevenshteinDistance, tokens } from "@/lib"
 
 import { Search } from "../types/balances"
 
-// TODO: If you change chains in the middle of the process we could serve 
+// TODO: If you change chains in the middle of the process we could serve
 ///		 you the wrong asset address.
 export const useTokens = ({
 	chainId,

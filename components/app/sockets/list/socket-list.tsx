@@ -1,9 +1,7 @@
 import { motion } from "framer-motion"
 
-import { AuthButton, Button } from "@/components/buttons"
+import { AuthButton, Button, SocketItem } from "@/components"
 import { useSockets } from "@/contexts"
-
-import { SocketItem } from "./socket-item"
 
 export const SocketList = () => {
 	const { address, sockets, handleAdd: handleSocketAdd } = useSockets()

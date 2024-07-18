@@ -1,8 +1,7 @@
 import { Alchemy, Network } from "alchemy-sdk"
 import { hexToBigInt } from "viem"
 
-import { nativeTokenAddress, tokens } from "@/lib/constants"
-import { formatBalance } from "@/lib/functions"
+import { formatBalance, nativeTokenAddress, tokens } from "@/lib"
 
 export const networks = [
 	Network.ETH_MAINNET,

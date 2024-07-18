@@ -8,15 +8,13 @@ import { Ellipsis, SearchIcon } from "lucide-react"
 import {
 	Container,
 	Header,
+	ManageSocketFrame,
+	Search,
 	SocketActivity,
 	SocketAssetList
-} from "@/components/app"
-import { ManageFrame } from "@/components/app/frames/sockets/[address]/manage"
-import { Search } from "@/components/inputs/search"
+} from "@/components"
 import { useBalances, useFrame, useSockets } from "@/contexts"
-import { routes } from "@/lib/constants"
-import { NextPageWithLayout } from "@/lib/types"
-import { cn } from "@/lib/utils"
+import { cn, NextPageWithLayout, routes } from "@/lib"
 
 const Page: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -42,7 +40,7 @@ const Page: NextPageWithLayout = () => {
 				icon={
 					<BlockiesSvg
 						address={socket.socketAddress}
-						className="h-6 w-6 rounded-lg"
+						className="h-6 w-6 rounded-sm"
 					/>
 				}
 				label={socket.name}
@@ -89,7 +87,7 @@ const Page: NextPageWithLayout = () => {
 				)}
 			</div>
 
-			<ManageFrame />
+			<ManageSocketFrame />
 		</>
 	)
 }

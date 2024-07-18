@@ -1,15 +1,14 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 import Link from "next/link"
 
-import { routes } from "@/lib/constants/routes"
+import { LandingContainer } from "@/components"
+import { routes } from "@/lib"
 
-import Container from "../../landing/container"
-
-export const Footer: FC = () => (
+export const LandingFooter: FC = () => (
 	<>
-		<Container className="mb-16 mt-24 flex-col gap-2 lg:gap-4">
+		<LandingContainer className="mb-16 mt-24 flex-col gap-2 lg:gap-4">
 			<Image src="/black-logo.svg" alt="Logo" width={96} height={64} />
 
 			<div className="grid grid-cols-1 lg:grid-cols-12">
@@ -91,10 +90,10 @@ export const Footer: FC = () => (
 					</Link>
 				</div>
 			</div>
-		</Container>
+		</LandingContainer>
 
 		<div className="bg-[#d9d9d9]/10">
-			<Container className="flex flex-col gap-2 py-4 lg:flex-row lg:gap-8">
+			<LandingContainer className="flex flex-col gap-2 py-4 lg:flex-row lg:gap-8">
 				<p>Copyright Terminally Online, Inc. 2024</p>
 				<Link
 					href="/coming-soon/"
@@ -108,9 +107,9 @@ export const Footer: FC = () => (
 				>
 					Privacy Policy
 				</Link>
-			</Container>
+			</LandingContainer>
 		</div>
 	</>
 )
 
-export default Footer
+export default LandingFooter

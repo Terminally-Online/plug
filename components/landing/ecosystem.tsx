@@ -1,4 +1,4 @@
-import { type FC, useMemo } from "react"
+import { FC, useMemo } from "react"
 
 import Image from "next/image"
 

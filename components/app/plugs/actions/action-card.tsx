@@ -1,8 +1,12 @@
 import { FC, useMemo } from "react"
 
 import { useFrame, usePlugs } from "@/contexts"
-import { categories, actions as staticActions } from "@/lib/constants"
-import { formatTitle, getValues } from "@/lib/functions"
+import {
+	categories,
+	formatTitle,
+	getValues,
+	actions as staticActions
+} from "@/lib"
 
 export const ActionCard: FC<{
 	categoryName: keyof typeof categories

@@ -11,8 +11,7 @@ import {
 
 import { useRouter } from "next/navigation"
 
-import { useSession } from "next-auth/react"
-
+import { useFrame } from "@/contexts"
 import {
 	categories,
 	routes,
@@ -21,8 +20,6 @@ import {
 } from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
-
-import { useFrame } from "./FrameProvider"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) =>
 	!plugs ? [plug] : [plug, ...plugs]

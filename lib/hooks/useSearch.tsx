@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import useDebounce from "./useDebounce"
+import { useDebounce } from "@/lib"
 
 export const useSearch = () => {
 	const [search, debouncedSearch, handleSearch] = useDebounce("")

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import {
 	ArrowRight,
-	Calendar,
 	CalendarPlus,
 	ChevronLeft,
 	ChevronRight,
@@ -10,13 +9,9 @@ import {
 } from "lucide-react"
 import { DateRange, DayPicker } from "react-day-picker"
 
-import { Button } from "@/components/buttons"
-import { Dropdown } from "@/components/inputs/dropdown"
+import { Button, Dropdown, Frame } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { cn } from "@/lib"
-import { formatDate } from "@/lib/functions"
-
-import { Frame } from "../../../base"
+import { cn, formatDate } from "@/lib"
 
 const frequencies = [
 	{ label: "Never", value: "0" },

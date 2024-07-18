@@ -1,12 +1,11 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import { ArrowDownWideNarrow, FilePen, SlidersHorizontal } from "lucide-react"
 
-import { StepCard } from "@/components/cards"
-import { Container } from "@/components/landing/container"
+import { LandingContainer, StepCard } from "@/components"
 
 export const Steps: FC = () => (
-	<Container className="grid gap-8 xl:grid-cols-3">
+	<LandingContainer className="grid gap-8 xl:grid-cols-3">
 		<StepCard
 			index={1}
 			title="Set Constraints"
@@ -37,5 +36,5 @@ export const Steps: FC = () => (
 		>
 			<FilePen size={24} />
 		</StepCard>
-	</Container>
+	</LandingContainer>
 )

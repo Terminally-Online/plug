@@ -1,11 +1,10 @@
-import { bytesToHex, encodePacked, toBytes } from "viem"
 import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
-import { getBalances } from "@/lib/functions/balance"
+import { getBalances } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const userSocket = Prisma.validator<Prisma.UserSocketDefaultArgs>()({})

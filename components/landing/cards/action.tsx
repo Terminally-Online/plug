@@ -1,6 +1,4 @@
-"use client"
-
-import { type FC, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 import {
 	animate,
@@ -9,10 +7,9 @@ import {
 	useMotionValue,
 	useTransform
 } from "framer-motion"
-import { GitFork, User, Zap } from "lucide-react"
-import { twMerge } from "tailwind-merge"
+import { GitFork, Zap } from "lucide-react"
 
-import { colors, tagColors } from "@/lib/constants"
+import { cn, colors, tagColors } from "@/lib"
 
 type Props = {
 	size?: "md" | "lg"
@@ -29,7 +26,7 @@ const sizes: Record<NonNullable<Props["size"]>, string> = {
 	lg: "text-md lg:text-xl font-bold min-h-[140px] lg:min-h-[200px]"
 }
 
-export const ActionCard: FC<Props> = ({
+export const LandingActionCard: FC<Props> = ({
 	size = "md",
 	color = "blue",
 	glow = false,
@@ -103,7 +100,7 @@ export const ActionCard: FC<Props> = ({
 	return (
 		<motion.button
 			ref={ref}
-			className={twMerge(base, sizes[size], className)}
+			className={cn(base, sizes[size], className)}
 			style={{
 				backgroundColor: colors[color],
 				boxShadow: glow ? `0 0 20px ${colors[color]}` : "none"
@@ -137,4 +134,4 @@ export const ActionCard: FC<Props> = ({
 	)
 }
 
-export default ActionCard
+export default LandingActionCard

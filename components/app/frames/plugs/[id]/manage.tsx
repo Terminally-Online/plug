@@ -2,14 +2,11 @@ import { useEffect } from "react"
 
 import { PencilLine, Settings } from "lucide-react"
 
-import { Frame } from "@/components/app/frames/base"
-import { Button } from "@/components/buttons"
-import { Checkbox, Search } from "@/components/inputs"
+import { Button, Checkbox, Frame, Search } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-import { cardColors, useDebounce } from "@/lib"
-import { useNavigation } from "@/lib/hooks/useNavigation"
+import { cardColors, useDebounce, useNavigation } from "@/lib"
 
-export const ManageFrame = () => {
+export const ManagePlugFrame = () => {
 	const { id, from } = useNavigation()
 	const { frameVisible } = useFrame()
 	const { plug, handle } = usePlugs()

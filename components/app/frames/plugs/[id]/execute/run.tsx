@@ -3,11 +3,8 @@ import Image from "next/image"
 import BlockiesSvg from "blockies-react-svg"
 import { Eye } from "lucide-react"
 
-import { ActionPreview } from "@/components/app/plugs/actions"
-import { Button } from "@/components/buttons"
+import { ActionPreview, Button, Frame } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-
-import { Frame } from "../../../base"
 
 export const RunFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

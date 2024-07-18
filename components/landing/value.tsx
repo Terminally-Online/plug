@@ -1,4 +1,4 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Image from "next/image"
 
@@ -17,10 +17,7 @@ import {
 	X
 } from "lucide-react"
 
-import { Container, Mitigation } from "@/components/landing"
-
-import { InfoCard } from "../cards"
-import { Fees } from "./fees"
+import { Container, Fees, InfoCard, Mitigation } from "@/components"
 
 export const Value: FC = () => {
 	const animation = {

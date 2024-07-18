@@ -3,14 +3,6 @@ import { createElement } from "react"
 import { motion } from "framer-motion"
 
 export const Fees = () => {
-	const transition = {
-		duration: 0.2,
-		delay: 0.2,
-		repeat: Infinity,
-		repeatDelay: 2,
-		repeatType: "reverse"
-	}
-
 	return (
 		<svg
 			width="642"

@@ -1,12 +1,9 @@
-import type { FC } from "react"
-
-import Image from "next/image"
+import { FC } from "react"
 
 import { motion } from "framer-motion"
 
-import { Button } from "@/components/buttons"
-import { Container } from "@/components/landing/container"
-import { routes } from "@/lib/constants"
+import { Button, LandingContainer } from "@/components"
+import { routes } from "@/lib"
 
 const EARLY_ACCESS =
 	process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
@@ -17,7 +14,7 @@ export const CallToAction: FC<{
 	button: string
 }> = ({ text, description, button }) => {
 	return (
-		<Container className="relative flex-col">
+		<LandingContainer className="relative flex-col">
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
@@ -47,6 +44,6 @@ export const CallToAction: FC<{
 					</Button>
 				</div>
 			</motion.div>
-		</Container>
+		</LandingContainer>
 	)
 }
