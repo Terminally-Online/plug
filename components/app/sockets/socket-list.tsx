@@ -1,18 +1,27 @@
 import { motion } from "framer-motion"
 
-import { Button } from "@/components/buttons"
+import { AuthButton, Button } from "@/components/buttons"
 import { useSockets } from "@/contexts"
 
 import { SocketItem } from "./socket-item"
 
 export const SocketList = () => {
-	const { sockets, handleAdd: handleSocketAdd } = useSockets()
+	const { address, sockets, handleAdd: handleSocketAdd } = useSockets()
 
 	const hasSockets = sockets && sockets.length > 0
 
 	return (
 		<>
-			{hasSockets ? (
+			{address === undefined ? (
+				<div className="my-32 flex flex-col gap-[30px]">
+					<p className="mx-auto w-[80%] max-w-[360px] text-center text-lg opacity-60">
+						Step into Plug and get started by connecting your wallet
+						to manage your Sockets and Plug in one place.
+					</p>
+
+					<AuthButton />
+				</div>
+			) : hasSockets ? (
 				<motion.div
 					className="flex flex-col gap-2"
 					initial="hidden"

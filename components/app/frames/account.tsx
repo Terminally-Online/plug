@@ -44,16 +44,16 @@ export const AccountFrame = () => {
 						alt="ENS Avatar"
 						width={24}
 						height={24}
-						className="rounded-md"
+						className="h-6 w-6 rounded-sm"
 					/>
 				) : (
 					<BlockiesSvg
-						className="h-6 w-6 rounded-md"
+						className="h-6 w-6 rounded-sm"
 						address={address}
 					/>
 				)
 			}
-			label="Account"
+			label="Wallet"
 			visible={frameVisible === "account"}
 		>
 			<div className="flex flex-col gap-2">
@@ -105,7 +105,7 @@ export const AccountFrame = () => {
 					/>
 				</p>
 				<p className="flex font-bold">
-					<span className="w-full">Account Created</span>
+					<span className="w-full">User Since</span>
 					<DateSince
 						className="flex w-full flex-row items-center opacity-40"
 						date={new Date()}

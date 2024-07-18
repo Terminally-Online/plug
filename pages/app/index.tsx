@@ -36,7 +36,7 @@ const Page: NextPageWithLayout = () => {
 				label={
 					<>
 						<div
-							className="flex w-max flex-row items-center rounded-[10px] p-2"
+							className="flex h-6 w-6 flex-row items-center justify-center rounded-sm"
 							style={{
 								backgroundImage:
 									"linear-gradient(30deg, #00E100, #A3F700)"
@@ -67,11 +67,11 @@ const Page: NextPageWithLayout = () => {
 								alt="ENS Avatar"
 								width={24}
 								height={24}
-								className="rounded-md"
+								className="h-6 w-6 rounded-sm"
 							/>
 						) : (
 							<BlockiesSvg
-								className="h-6 w-6 rounded-md"
+								className="h-6 w-6 rounded-sm"
 								address={address}
 							/>
 						)}
@@ -98,53 +98,13 @@ const Page: NextPageWithLayout = () => {
 				nextOnClick={handleSocketAdd}
 				nextLabel={hasSockets ? "Create New" : undefined}
 			/>
-
-			{address === undefined ? (
-				<div className="my-32 flex flex-col gap-[30px]">
-					<p className="mx-auto w-[80%] max-w-[360px] text-center text-lg opacity-60">
-						Step into Plug and get started by connecting your wallet
-						to manage your Sockets and Plug in one place.
-					</p>
-
-					<AuthButton />
-				</div>
-			) : (
-				<SocketList />
-			)}
+			<SocketList />
 
 			<AccountFrame />
 		</>
 	)
 }
 
-Page.getLayout = page => (
-	<>
-		{/* <Header
-			size="lg"
-			label={
-				<>
-					<div
-						className="mr-2 flex w-max flex-row items-center gap-2 rounded-md p-2"
-						style={{
-							backgroundImage:
-								"linear-gradient(30deg, #00E100, #A3F700)"
-						}}
-					>
-						<Image
-							src="/white-icon.svg"
-							alt="Logo"
-							width={662}
-							height={616}
-							className="h-3 w-auto"
-						/>
-					</div>
-					<p className="mr-auto text-xl font-bold">Plug</p>
-				</>
-			}
-			className="z-[20] bg-white"
-		/> */}
-		<Container>{page}</Container>
-	</>
-)
+Page.getLayout = page => <Container>{page}</Container>
 
 export default Page

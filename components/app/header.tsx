@@ -20,7 +20,7 @@ type Props = {
 } & React.HTMLAttributes<HTMLDivElement>
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
-	raw: "pb-4 pt-8",
+	raw: "pb-4 pt-4",
 	frame: "pb-4"
 }
 
@@ -48,7 +48,7 @@ export const Header: FC<Props> = ({
 	return (
 		<div
 			className={cn(
-				"sticky top-0 z-[2] flex w-full flex-row items-center gap-4 bg-white",
+				"sticky top-0 z-[2] flex w-full select-none flex-row items-center gap-4 bg-white",
 				variants[variant],
 				className
 			)}
@@ -80,8 +80,8 @@ export const Header: FC<Props> = ({
 					className={cn(
 						"outline-none",
 						size === "md" && nextPadded === true
-							? "rounded-[10px] px-2 py-1 text-xs"
-							: "rounded-[10px] p-1",
+							? "rounded-sm px-2 py-1 text-xs"
+							: "rounded-sm p-1",
 						children === undefined && "ml-auto"
 					)}
 				>

@@ -91,7 +91,7 @@ const Page = () => {
 					<>
 						<Header
 							size="md"
-							icon={<Gem size={14} className="opacity-60" />}
+							icon={<Gem size={14} className="opacity-40" />}
 							label="Curated"
 						/>
 						<PlugGrid
@@ -104,7 +104,7 @@ const Page = () => {
 
 				<Header
 					size="md"
-					icon={<Earth size={14} className="opacity-60" />}
+					icon={<Earth size={14} className="opacity-40" />}
 					label="Community"
 				/>
 				<PlugGrid

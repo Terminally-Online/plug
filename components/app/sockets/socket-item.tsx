@@ -22,7 +22,7 @@ export const SocketItem: FC<Props> = ({ socket }) => {
 		>
 			<BlockiesSvg
 				address={socket.socketAddress}
-				className="h-10 w-10 rounded-lg"
+				className="h-10 w-10 rounded-md"
 			/>
 
 			<div className="flex flex-col">
@@ -37,7 +37,7 @@ export const SocketItem: FC<Props> = ({ socket }) => {
 					<div
 						key={index}
 						className={cn(
-							"mt-auto w-4 rounded-md",
+							"mt-auto w-4 rounded-sm",
 							index === 9
 								? "bg-gradient-to-tr from-[#00E100] to-[#A3F700]"
 								: "bg-grayscale-100"

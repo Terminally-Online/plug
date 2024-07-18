@@ -65,7 +65,7 @@ export const Frame: FC<Props> = ({
 						exit={{ y: "100%" }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
-							"fixed bottom-0 left-0 w-full rounded-t-[20px] bg-white px-6 py-8",
+							"fixed bottom-0 left-0 w-full rounded-t-lg bg-white px-6 py-8",
 							className,
 							"z-[11]"
 						)}

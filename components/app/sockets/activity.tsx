@@ -39,7 +39,7 @@ export const SocketActivity = () => {
 							<motion.div
 								key={index}
 								className={cn(
-									"mt-auto w-full rounded-md",
+									"mt-auto w-full rounded-lg",
 									index === 6
 										? "bg-gradient-to-tr from-plug-green to-plug-yellow"
 										: "bg-grayscale-0"
