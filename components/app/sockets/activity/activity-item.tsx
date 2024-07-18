@@ -1,18 +1,12 @@
-import { FC, useMemo, useState } from "react"
+import { FC, useState } from "react"
 
 import Image from "next/image"
 
-import { AlertCircle, CheckCircle, ChevronRight, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
-import { Button } from "@/components/buttons"
-import { AccordionContent } from "@/components/utils/accordion/AccordionContent"
-import { Counter } from "@/components/utils/Counter"
-import { DateSince } from "@/components/utils/DateSince"
-import { useFrame } from "@/contexts"
-import { cn, colors } from "@/lib"
+import { AccordionContent, Counter, DateSince } from "@/components/utils"
+import { colors } from "@/lib"
 import { formatTitle } from "@/lib/functions"
-
-import { Frame } from "../frames/base"
 
 const getStatusIcon = (status: string) => {
 	switch (status) {

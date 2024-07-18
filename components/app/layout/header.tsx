@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-import { Button } from "../buttons"
+import { Button } from "../../buttons"
 
 type Props = {
 	variant?: "raw" | "frame"

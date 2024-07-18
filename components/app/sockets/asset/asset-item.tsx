@@ -2,14 +2,12 @@ import { FC, useCallback, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { AccordionContent } from "@/components/utils/accordion/AccordionContent"
-import { Counter } from "@/components/utils/Counter"
+import { AssetPercentages } from "@/components/app"
+import { AccordionContent, Counter } from "@/components/utils"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
 import { getChainImage } from "@/lib/functions"
 import { PriceData } from "@/lib/functions/llama/price"
-
-import { AssetPercentages } from "./asset-percentages"
 
 type Props = {
 	token: NonNullable<ReturnType<typeof useBalances>["balances"]>[number]

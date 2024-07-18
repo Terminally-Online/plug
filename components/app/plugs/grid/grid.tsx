@@ -7,25 +7,25 @@ import { motion } from "framer-motion"
 
 import { Workflow } from "@prisma/client"
 
-import { PlugGridItem } from "@/components/app/plugs/grid-item"
+import { PlugGridItem } from "@/components/app"
 import { Button } from "@/components/buttons"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
 
 type Props = {
 	from: string
+	plugs: Array<Workflow> | undefined
+	count?: number
 	search?: string
 	handleReset?: () => void
-	count?: number
-	plugs: Array<Workflow> | undefined
 } & React.HTMLAttributes<HTMLDivElement>
 
 export const PlugGrid: FC<Props> = ({
 	from,
+	plugs,
+	count,
 	search,
 	handleReset,
-	count,
-	plugs,
 	...props
 }) => {
 	const router = useRouter()

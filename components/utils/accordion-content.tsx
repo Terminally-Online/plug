@@ -1,7 +1,5 @@
 import { FC, useRef } from "react"
 
-import { motion } from "framer-motion"
-
 import { cn } from "@/lib"
 
 type Props = { expanded: boolean } & React.HTMLAttributes<HTMLSpanElement>

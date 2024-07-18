@@ -2,11 +2,10 @@ import Image from "next/image"
 
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
+import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
 import { useFrame, usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
-
-import { Frame } from "../../base"
 
 export const ShareFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()

@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
 
-import { ActionCard, ActionItem } from "@/components/app/plugs/actions"
+import { ActionCard, ActionItem } from "@/components/app"
 import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
 import { useFrame } from "@/contexts"

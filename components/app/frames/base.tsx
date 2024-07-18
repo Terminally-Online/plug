@@ -7,7 +7,7 @@ import { Button } from "@/components/buttons"
 import { useFrame } from "@/contexts"
 import { cn } from "@/lib/utils"
 
-import { Header } from "../header"
+import { Header } from "../layout/header"
 
 type Props = PropsWithChildren & {
 	label: string

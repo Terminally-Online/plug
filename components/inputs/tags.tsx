@@ -21,7 +21,7 @@ export const Tags: FC<{
 			)
 
 			if (tagRefs.current[activeIndex].current) {
-				const activeTag = tagRefs.current[activeIndex].current
+				const activeTag = tagRefs.current[activeIndex].current!
 				const activeTagOffsetLeft = activeTag.offsetLeft
 				const remInPixels = 16
 

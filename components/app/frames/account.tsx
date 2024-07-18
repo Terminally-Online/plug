@@ -8,10 +8,8 @@ import { useDisconnect, useEnsAvatar, useEnsName } from "wagmi"
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
 import { StatCard } from "@/components/cards/stat"
-import { Counter } from "@/components/utils/Counter"
-import { DateSince } from "@/components/utils/DateSince"
+import { Counter, DateSince } from "@/components/utils"
 import { useFrame, useSockets } from "@/contexts"
-import { formatAddress } from "@/lib/functions"
 
 import { normalize } from "viem/ens"
 

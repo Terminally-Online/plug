@@ -5,10 +5,13 @@ import { useRouter } from "next/router"
 import BlockiesSvg from "blockies-react-svg"
 import { Ellipsis, SearchIcon } from "lucide-react"
 
-import { Container, Header } from "@/components/app"
+import {
+	Container,
+	Header,
+	SocketActivity,
+	SocketAssetList
+} from "@/components/app"
 import { ManageFrame } from "@/components/app/frames/sockets/[address]/manage"
-import { SocketActivity } from "@/components/app/sockets/activity"
-import { SocketAssetList } from "@/components/app/sockets/asset-list"
 import { Search } from "@/components/inputs/search"
 import { useBalances, useFrame, useSockets } from "@/contexts"
 import { routes } from "@/lib/constants"

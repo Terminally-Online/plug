@@ -1,6 +1,6 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
 
-type Props = PropsWithChildren & {}
+type Props = PropsWithChildren
 
 export const Footer: FC<Props> = ({ children }) => {
 	return (

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react"
 
 import { Plus } from "lucide-react"
 
-import { Sentence } from "@/components/app/sentences/sentence"
+import { Sentence } from "@/components/app"
 import { Button } from "@/components/buttons"
 import { useFrame, usePlugs } from "@/contexts"
 import { actions, categories } from "@/lib"

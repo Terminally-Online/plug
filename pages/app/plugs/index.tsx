@@ -1,7 +1,6 @@
-import { PlugZap, Plus, Puzzle, ToyBrick } from "lucide-react"
+import { PlugZap, Plus, Puzzle } from "lucide-react"
 
-import { Container, Header } from "@/components/app"
-import { PlugGrid } from "@/components/app/plugs/grid"
+import { Container, Header, PlugGrid } from "@/components/app"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { routes } from "@/lib/constants"
 import { api } from "@/server/client"

@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-import { Sentence } from "@/components/app/sentences/sentence"
+import { Sentence } from "@/components/app"
 import { usePlugs } from "@/contexts"
 import { categories } from "@/lib"
 

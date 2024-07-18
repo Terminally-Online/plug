@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react"
 
-import { Counter } from "./Counter"
+import { Counter } from "./counter"
 
 const getTimeSince = (date: Date) => {
 	const now = new Date()

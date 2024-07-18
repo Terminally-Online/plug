@@ -5,8 +5,7 @@ import { Earth, Gem, Plus, SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Container, Header } from "@/components/app"
-import { PlugGrid } from "@/components/app/plugs/grid"
+import { Container, Header, PlugGrid } from "@/components/app"
 import { Search } from "@/components/inputs/search"
 import { Tags } from "@/components/inputs/tags"
 import { usePlugs } from "@/contexts/PlugProvider"

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 import Image from "next/image"
 
@@ -18,14 +18,13 @@ import {
 import { createPublicClient, http, isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
+import { Footer, SocketAssetList } from "@/components/app"
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/buttons"
 import { Search } from "@/components/inputs"
 import { useBalances, useFrame, useSockets } from "@/contexts"
 import { getChainImage } from "@/lib/functions"
 
-import { Footer } from "../footer"
-import { SocketAssetList } from "../sockets/asset-list"
 import { mainnet } from "viem/chains"
 
 // TODO: Implement the functionality to actually withdraw and deposit funds from and to the Socket.

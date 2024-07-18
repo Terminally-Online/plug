@@ -1,4 +1,4 @@
-import { ActionListItem } from "@/components/app/plugs/actions/action-list-item"
+import { ActionListItem } from "@/components/app"
 import { categories } from "@/lib/constants"
 
 export const ActionList = () => (

@@ -15,10 +15,12 @@ import { cn } from "@/lib"
 import { categories, actions as staticActions } from "@/lib/constants"
 import { formatInputName, formatTitle, getIndexes } from "@/lib/functions"
 
-export const DynamicFragment: FC<{
+type Props = {
 	index: number
 	fragmentIndex: number
-}> = ({ index, fragmentIndex }) => {
+}
+
+export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 	const { data: session } = useSession()
 	const { frameVisible, handleFrameVisible } = useFrame()
 	const { id, plug, actions, fragments, dynamic, handle } = usePlugs()

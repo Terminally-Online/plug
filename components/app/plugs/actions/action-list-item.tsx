@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { ChevronRight } from "lucide-react"
 
-import { ActionCard } from "@/components/app/plugs/actions"
+import { ActionCard } from "@/components/app"
 import { Button } from "@/components/buttons"
 import { useFrame } from "@/contexts"
 import { categories } from "@/lib/constants"

@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { redirect, useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { api } from "@/server/client"
 

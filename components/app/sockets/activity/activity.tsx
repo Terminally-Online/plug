@@ -3,12 +3,10 @@ import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { FileCog } from "lucide-react"
 
+import { ActivityList, Header } from "@/components/app"
 import { StatCard } from "@/components/cards/stat"
-import { Counter } from "@/components/utils/Counter"
+import { Counter } from "@/components/utils/counter"
 import { cn } from "@/lib/utils"
-
-import { Header } from "../header"
-import { ActivityList } from "./activity-list"
 
 export const SocketActivity = () => {
 	const activity = Array.from({ length: 7 }, () => Math.random())

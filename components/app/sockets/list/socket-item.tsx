@@ -1,4 +1,4 @@
-import type { FC } from "react"
+import { FC } from "react"
 
 import Link from "next/link"
 
@@ -6,7 +6,7 @@ import BlockiesSvg from "blockies-react-svg"
 
 import { formatAddress } from "@/lib/functions"
 import { cn } from "@/lib/utils"
-import type { UserSocket } from "@/server/api/routers/socket"
+import { UserSocket } from "@/server/api/routers/socket"
 
 type Props = { socket: UserSocket }
 
