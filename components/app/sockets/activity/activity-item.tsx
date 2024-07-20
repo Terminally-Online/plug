@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
-import { AccordionContent, Counter, DateSince } from "@/components"
+import { Accordion, Counter, DateSince } from "@/components"
 import { colors, formatTitle } from "@/lib"
 
 const getStatusIcon = (status: string) => {
@@ -198,35 +198,14 @@ export const ActivityItem: FC<{
 	const [expanded, setExpanded] = useState(false)
 
 	const icon = getStatusIcon(status)
-
 	const pastDate = new Date(Date.now() - 60000 * 0.2)
 
 	return (
-		<>
-			<button
-				className="group group flex h-min w-full cursor-pointer flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 bg-white p-4 transition-all duration-200 ease-in-out hover:border-white hover:bg-grayscale-0"
-				onClick={() => setExpanded(!expanded)}
-			>
-				<span className="flex w-full flex-row">
-					{icon}
-					<span className="flex flex-1 flex-col truncate text-left">
-						<span className="font-bold">{text}</span>
-						<span className="opacity-60">
-							{formatTitle(status)}
-						</span>
-					</span>
-
-					<span className="flex flex-col text-right">
-						<span className="font-bold">
-							<DateSince date={pastDate} />
-						</span>
-						<span className="opacity-60">
-							{<Counter count={pastDate.toLocaleDateString()} />}
-						</span>
-					</span>
-				</span>
-
-				<AccordionContent expanded={expanded}>
+		<Accordion
+			expanded={expanded}
+			onExpand={() => setExpanded(!expanded)}
+			accordion={
+				<>
 					<span className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 pt-4 text-left">
 						<Actions />
 
@@ -281,8 +260,24 @@ export const ActivityItem: FC<{
 							</div>
 						)} */}
 					</span>
-				</AccordionContent>
-			</button>
-		</>
+				</>
+			}
+		>
+			<div className="flex w-full flex-row">
+				{icon}
+				<div className="flex flex-1 flex-col truncate text-left">
+					<p className="font-bold">{text}</p>
+					<p className="opacity-60">{formatTitle(status)}</p>
+				</div>
+				<div className="flex flex-col text-right">
+					<p className="font-bold">
+						<DateSince date={pastDate} />
+					</p>
+					<p className="opacity-60">
+						<Counter count={pastDate.toLocaleDateString()} />
+					</p>
+				</div>
+			</div>
+		</Accordion>
 	)
 }

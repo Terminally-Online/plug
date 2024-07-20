@@ -32,7 +32,7 @@ const getChainColor = (chainId: number) => {
 	}
 }
 
-export const AssetPercentages: FC<Props> = ({ chains }) => {
+export const SocketTokenPercentages: FC<Props> = ({ chains }) => {
 	let accumulatedPercentage = 0
 
 	return (

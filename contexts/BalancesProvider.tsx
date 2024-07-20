@@ -44,6 +44,8 @@ export const useBalances = ({ address }: { address: string }) => {
 	const balances = useMemo(() => {
 		if (apiBalances === undefined) return undefined
 
+		if (search === "") return apiBalances
+
 		return apiBalances.filter(
 			token =>
 				token?.symbol.toLowerCase().includes(search.toLowerCase()) ||

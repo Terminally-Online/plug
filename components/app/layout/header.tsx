@@ -47,7 +47,7 @@ export const Header: FC<Props> = ({
 	return (
 		<div
 			className={cn(
-				"sticky top-0 z-[2] flex w-full select-none flex-row items-center gap-4 bg-white",
+				"flex w-full select-none flex-row items-center gap-4 bg-white",
 				variants[variant],
 				className
 			)}

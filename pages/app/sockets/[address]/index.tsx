@@ -3,18 +3,19 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 
 import BlockiesSvg from "blockies-react-svg"
-import { Ellipsis, SearchIcon } from "lucide-react"
+import { Ellipsis } from "lucide-react"
 
 import {
 	Container,
 	Header,
 	ManageSocketFrame,
-	Search,
 	SocketActivity,
-	SocketAssetList
+	SocketPositionList,
+	SocketTabs,
+	SocketTokens
 } from "@/components"
-import { useBalances, useFrame, useSockets } from "@/contexts"
-import { cn, NextPageWithLayout, routes } from "@/lib"
+import { useFrame, useSockets } from "@/contexts"
+import { NextPageWithLayout, routes } from "@/lib"
 
 const Page: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -22,11 +23,8 @@ const Page: NextPageWithLayout = () => {
 
 	const { socket, handleSelect } = useSockets()
 	const { handleFrameVisible } = useFrame()
-	const { search, balances, handleSearch } = useBalances({
-		address: socket?.socketAddress || ""
-	})
 
-	const [tab, setTab] = useState<"assets" | "activity" | "search">("activity")
+	const [selected, setSelected] = useState(0)
 
 	useEffect(() => handleSelect(address), [handleSelect, address])
 
@@ -34,64 +32,37 @@ const Page: NextPageWithLayout = () => {
 
 	return (
 		<>
-			<Header
-				size="lg"
-				back={routes.app.index}
-				icon={
-					<BlockiesSvg
-						address={socket.socketAddress}
-						className="h-6 w-6 rounded-sm"
-					/>
-				}
-				label={socket.name}
-				nextOnClick={() => handleFrameVisible("manage")}
-				nextLabel={<Ellipsis size={14} />}
-			/>
-
-			<div className="flex flex-col gap-4">
-				<Search
-					icon={<SearchIcon size={14} className="opacity-60" />}
-					placeholder="Search activity and assets"
-					search={search}
-					handleSearch={(search: string) => handleSearch(search)}
+			<Container>
+				<Header
+					size="lg"
+					back={routes.app.index}
+					icon={
+						<BlockiesSvg
+							address={socket.socketAddress}
+							className="h-6 w-6 rounded-sm"
+						/>
+					}
+					label={socket.name}
+					nextOnClick={() => handleFrameVisible("manage")}
+					nextLabel={<Ellipsis size={14} />}
 				/>
+			</Container>
 
-				<div className="flex flex-row gap-4 text-lg font-bold">
-					<h3
-						className={cn(
-							tab !== "activity" && "opacity-40",
-							"cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100"
-						)}
-						onClick={() => setTab("activity")}
-					>
-						Activity
-					</h3>
+			<SocketTabs selected={selected} onSelect={setSelected} />
 
-					<h3
-						className={cn(
-							tab !== "assets" && "opacity-40",
-							"cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100"
-						)}
-						onClick={() => setTab("assets")}
-					>
-						Assets
-					</h3>
-				</div>
-			</div>
-
-			<div className="mt-[20px]">
-				{tab === "assets" ? (
-					<SocketAssetList balances={balances} />
-				) : (
+			<Container>
+				{selected === 0 ? (
 					<SocketActivity />
+				) : selected === 1 ? (
+					<SocketTokens />
+				) : (
+					<SocketPositionList />
 				)}
-			</div>
 
-			<ManageSocketFrame />
+				<ManageSocketFrame />
+			</Container>
 		</>
 	)
 }
-
-Page.getLayout = page => <Container>{page}</Container>
 
 export default Page
