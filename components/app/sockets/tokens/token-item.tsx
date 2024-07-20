@@ -127,7 +127,7 @@ export const SocketTokenItem: FC<Props> = ({
 					</div>
 				) : (
 					<>
-						<div className="flex w-full flex-row items-center gap-4 tabular-nums">
+						<div className="flex w-full flex-row items-center gap-4 text-left tabular-nums">
 							<div className="relative h-10 w-10">
 								<Image
 									src={token.logoURI ?? ""}

@@ -18,7 +18,7 @@ import {
 import { createPublicClient, http, isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
-import { Button, Footer, Frame, Search, SocketAssetList } from "@/components"
+import { Button, Footer, Frame, Search, SocketTokenList } from "@/components"
 import { useBalances, useFrame, useSockets } from "@/contexts"
 import { getChainImage } from "@/lib"
 
@@ -224,9 +224,8 @@ export const TransferFrame = () => {
 						handleSearch={(search: string) => handleSearch(search)}
 					/>
 
-					<SocketAssetList
-						balances={balances}
-						hasFrame={false}
+					<SocketTokenList
+						// balances={balances}
 						handleSelect={(
 							token: NonNullable<typeof balances>[number]
 						) => setTransfer({ ...transfer, token })}

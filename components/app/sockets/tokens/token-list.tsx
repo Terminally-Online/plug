@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState } from "react"
 
 import { motion } from "framer-motion"
 
-import { SocketTokenItem, TransferFrame } from "@/components"
+import { SocketTokenItem } from "@/components"
 import { useBalances, useSockets } from "@/contexts"
 import { getPrices } from "@/lib"
 

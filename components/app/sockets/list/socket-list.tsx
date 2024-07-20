@@ -35,23 +35,7 @@ export const SocketList = () => {
 					}}
 				>
 					{sockets.map((socket, index) => (
-						<motion.div
-							key={index}
-							variants={{
-								hidden: { opacity: 0, y: 10 },
-								visible: {
-									opacity: 1,
-									y: 0,
-									transition: {
-										type: "spring",
-										stiffness: 100,
-										damping: 10
-									}
-								}
-							}}
-						>
-							<SocketItem key={index} socket={socket} />
-						</motion.div>
+						<SocketItem key={index} socket={socket} />
 					))}
 				</motion.div>
 			) : (

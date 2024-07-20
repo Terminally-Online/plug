@@ -84,7 +84,8 @@ module.exports = {
 			borderRadius: {
 				lg: "16px",
 				md: "10px",
-				sm: "8px"
+				sm: "8px",
+				xs: "4px"
 			},
 
 			keyframes: {
