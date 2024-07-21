@@ -2,9 +2,20 @@ import { useState } from "react"
 
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
-import { Header, SocketTokenList, TransferFrame } from "@/components"
+import {
+	Button,
+	Footer,
+	Header,
+	SocketTokenList,
+	TransferFrame
+} from "@/components"
+import { useFrame } from "@/contexts"
 
-export const SocketTokens = () => {
+import { SocketCollectibleGrid } from "../collectibles"
+
+export const SocketAssets = () => {
+	const { handleFrameVisible } = useFrame()
+
 	const [tokensExpanded, setTokensExpanded] = useState(false)
 	const [collectiblesExpanded, setCollectiblesExpanded] = useState(false)
 
@@ -26,7 +37,16 @@ export const SocketTokens = () => {
 				nextLabel="See all"
 				nextOnClick={() => setCollectiblesExpanded(true)}
 			/>
-			{/* TODO: Add collectibles into the API and build a list */}
+			<SocketCollectibleGrid expanded={collectiblesExpanded} />
+
+			<Footer>
+				<Button
+					className="w-full"
+					onClick={() => handleFrameVisible("transfer")}
+				>
+					Transfer
+				</Button>
+			</Footer>
 
 			<TransferFrame />
 		</>

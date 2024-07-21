@@ -111,15 +111,6 @@ export const TransferFrame = () => {
 
 	return (
 		<>
-			<Footer>
-				<Button
-					className="w-full"
-					onClick={() => handleFrameVisible("transfer")}
-				>
-					Transfer
-				</Button>
-			</Footer>
-
 			<Frame
 				className="z-[2]"
 				icon={<ArrowLeftRight size={18} />}

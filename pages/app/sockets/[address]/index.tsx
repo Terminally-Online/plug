@@ -10,9 +10,9 @@ import {
 	Header,
 	ManageSocketFrame,
 	SocketActivity,
+	SocketAssets,
 	SocketPositionList,
-	SocketTabs,
-	SocketTokens
+	SocketTabs
 } from "@/components"
 import { useFrame, useSockets } from "@/contexts"
 import { NextPageWithLayout, routes } from "@/lib"
@@ -54,7 +54,7 @@ const Page: NextPageWithLayout = () => {
 				{selected === 0 ? (
 					<SocketActivity />
 				) : selected === 1 ? (
-					<SocketTokens />
+					<SocketAssets />
 				) : (
 					<SocketPositionList />
 				)}

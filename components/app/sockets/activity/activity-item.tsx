@@ -206,7 +206,7 @@ export const ActivityItem: FC<{
 			onExpand={() => setExpanded(!expanded)}
 			accordion={
 				<>
-					<span className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 pt-4 text-left">
+					<div className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 pt-4 text-left">
 						<Actions />
 
 						<div className="flex flex-col gap-2">
@@ -259,7 +259,7 @@ export const ActivityItem: FC<{
 								</Button>
 							</div>
 						)} */}
-					</span>
+					</div>
 				</>
 			}
 		>
@@ -273,7 +273,7 @@ export const ActivityItem: FC<{
 					<p className="font-bold">
 						<DateSince date={pastDate} />
 					</p>
-					<p className="opacity-60">
+					<p className="text-sm opacity-60">
 						<Counter count={pastDate.toLocaleDateString()} />
 					</p>
 				</div>

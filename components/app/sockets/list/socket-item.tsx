@@ -43,7 +43,7 @@ export const SocketItem: FC<Props> = ({ socket }) => {
 					<div className="relative h-10 w-10">
 						<BlockiesSvg
 							address={socket.socketAddress}
-							className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 						/>
 						<BlockiesSvg
 							address={socket.socketAddress}
@@ -63,7 +63,7 @@ export const SocketItem: FC<Props> = ({ socket }) => {
 							<div
 								key={index}
 								className={cn(
-									"rounded-xs mt-auto w-4",
+									"mt-auto w-4 rounded-xs",
 									index === 6
 										? "bg-gradient-to-tr from-[#00E100] to-[#A3F700]"
 										: "bg-grayscale-100"

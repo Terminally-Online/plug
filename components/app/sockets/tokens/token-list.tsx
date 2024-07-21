@@ -70,7 +70,7 @@ export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
 					}
 				}}
 			>
-				{(balances || Array(8).fill(undefined)).map((token, index) => (
+				{(balances || Array(5).fill(undefined)).map((token, index) => (
 					<SocketTokenItem
 						key={index}
 						token={token}
