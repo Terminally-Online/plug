@@ -1,7 +1,5 @@
 import { FC } from "react"
 
-import { motion } from "framer-motion"
-
 import { Accordion } from "@/components"
 import { RouterOutputs } from "@/server/client"
 
@@ -19,39 +17,24 @@ export const SocketCollectibleItem: FC<Props> = ({
 	const loading = collectible === undefined
 
 	return (
-		<motion.div
-			variants={{
-				hidden: { opacity: 0, y: 10 },
-				visible: {
-					opacity: 1,
-					y: 0,
-					transition: {
-						type: "spring",
-						stiffness: 100,
-						damping: 10
-					}
-				}
-			}}
-		>
-			<Accordion
-				loading={loading}
-				expanded={false}
-				onExpand={() => {}}
-				noPaddingChildren={
-					<div
-						style={{
-							position: "relative",
-							width: "100%",
-							paddingTop: "100%", // This creates a square based on the width
-							backgroundImage: `url(${collectible?.display_image_url || collection.imageUrl})`,
-							backgroundSize: "contain",
-							backgroundPosition: "center",
-							backgroundRepeat: "no-repeat"
-						}}
-					/>
-				}
-				noPadding={true}
-			/>
-		</motion.div>
+		<Accordion
+			loading={loading}
+			expanded={false}
+			onExpand={() => {}}
+			noPaddingChildren={
+				<div
+					style={{
+						position: "relative",
+						width: "100%",
+						paddingTop: "100%",
+						backgroundImage: `url(${collectible?.display_image_url || collection.imageUrl})`,
+						backgroundSize: "cover",
+						backgroundPosition: "center",
+						backgroundRepeat: "no-repeat"
+					}}
+				/>
+			}
+			noPadding={true}
+		/>
 	)
 }

@@ -1,8 +1,8 @@
-import { FC } from "react"
+import { FC, useMemo, useState } from "react"
 
 import { motion } from "framer-motion"
 
-import { SocketTokenItem } from "@/components"
+import { Button, SocketTokenItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { RouterOutputs } from "@/server/client"
 
@@ -13,15 +13,18 @@ type Props = {
 	) => void
 }
 
-// TODO: Fix whatever is wrong with drakes token retrieval.
-// 		NOTES: Gut feeling is that it has nothing to do with the amount and some request is throwing for some reason and it is not properly handled.
-// TODO: Implement see all that minimizes the list down to tokens than have > $5 dollars.
-
-export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
+export const SocketTokenList: FC<Props> = ({ expanded, handleSelect }) => {
 	const { tokens } = useBalances()
 
+	const visibleTokens = useMemo(() => {
+		if (tokens === undefined) return Array(5).fill(undefined)
+
+		if (expanded) return tokens
+
+		return tokens.filter(token => token.totalValue > 1)
+	}, [expanded, tokens])
+
 	return (
-		<>
 			<motion.div
 				className="flex flex-col gap-2"
 				initial="hidden"
@@ -36,7 +39,7 @@ export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
 					}
 				}}
 			>
-				{(tokens || Array(5).fill(undefined)).map((token, index) => (
+				{visibleTokens.map((token, index) => (
 					<SocketTokenItem
 						key={index}
 						token={token}
@@ -44,6 +47,5 @@ export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
 					/>
 				))}
 			</motion.div>
-		</>
 	)
 }

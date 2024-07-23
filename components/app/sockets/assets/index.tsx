@@ -16,7 +16,6 @@ export const SocketAssets = () => {
 	const { handleFrameVisible } = useFrame()
 
 	const [tokensExpanded, setTokensExpanded] = useState(false)
-	const [collectiblesExpanded, setCollectiblesExpanded] = useState(false)
 
 	return (
 		<>
@@ -24,8 +23,8 @@ export const SocketAssets = () => {
 				size="md"
 				icon={<CircleDollarSign size={14} className="opacity-40" />}
 				label="Tokens"
-				nextLabel="See all"
-				nextOnClick={() => setTokensExpanded(true)}
+				nextLabel={tokensExpanded ? "Collapse" : "See All"}
+				nextOnClick={() => setTokensExpanded(!tokensExpanded)}
 			/>
 			<SocketTokenList expanded={tokensExpanded} />
 
@@ -33,10 +32,8 @@ export const SocketAssets = () => {
 				size="md"
 				icon={<ImageIcon size={14} className="opacity-40" />}
 				label="Collectibles"
-				nextLabel="See all"
-				nextOnClick={() => setCollectiblesExpanded(true)}
 			/>
-			<SocketCollectionList expanded={collectiblesExpanded} />
+			<SocketCollectionList />
 
 			<Footer>
 				<Button

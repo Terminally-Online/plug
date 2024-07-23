@@ -5,9 +5,7 @@ import { motion } from "framer-motion"
 import { SocketCollectionItem } from "@/components"
 import { useBalances } from "@/contexts"
 
-type Props = { expanded?: boolean }
-
-export const SocketCollectionList: FC<Props> = ({ expanded = false }) => {
+export const SocketCollectionList: FC = () => {
 	const { collectibles } = useBalances()
 
 	if (!collectibles) return <></>
@@ -27,14 +25,12 @@ export const SocketCollectionList: FC<Props> = ({ expanded = false }) => {
 				}
 			}}
 		>
-			{Object.keys(collectibles).map(collection => {
-				return (
-					<SocketCollectionItem
-						key={collection}
-						collection={collectibles[collection]}
-					/>
-				)
-			})}
+			{Object.keys(collectibles).map(collection => (
+				<SocketCollectionItem
+					key={collection}
+					collection={collectibles[collection]}
+				/>
+			))}
 		</motion.div>
 	)
 }
