@@ -4,7 +4,7 @@ import { useBalances } from "@/contexts"
 
 type Props = {
 	chains: NonNullable<
-		ReturnType<typeof useBalances>["balances"]
+		ReturnType<typeof useBalances>["tokens"]
 	>[number]["chains"]
 }
 
