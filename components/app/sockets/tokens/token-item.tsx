@@ -1,58 +1,28 @@
-import { FC, useCallback, useMemo, useState } from "react"
+import { FC, useCallback, useState } from "react"
 
 import Image from "next/image"
 
 import { motion } from "framer-motion"
 
-import {
-	Accordion,
-	AccordionContent,
-	Counter,
-	SocketTokenPercentages
-} from "@/components"
-import { useBalances } from "@/contexts"
-import { cn, getChainImage, PriceData } from "@/lib"
+import { Accordion, Counter, SocketTokenPercentages } from "@/components"
+import { cn, getChainImage } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 type Props = {
-	token?: NonNullable<ReturnType<typeof useBalances>["balances"]>[number]
-	priceData?: PriceData
+	token?: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
 	handleSelect?: (
-		token: NonNullable<ReturnType<typeof useBalances>["balances"]>[number]
+		token: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
 	) => void
 }
 
-export const SocketTokenItem: FC<Props> = ({
-	token,
-	priceData,
-	handleSelect
-}) => {
+export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
 	const [expanded, setExpanded] = useState(false)
 
-	const priceChange = priceData
-		? token &&
-			priceData[
-				`${token.chains[0].chainName.toLowerCase()}:${token.chains[0].address}`
-			]?.change
-		: undefined
-
-	const totalValue = useMemo(() => {
-		if (token === undefined || priceData === undefined) return undefined
-
-		return token.chains
-			.map(token => {
-				const coinKey =
-					`${token.chainName.toLowerCase()}:${token.address}` as const
-
-				const price =
-					token.balanceFormatted * priceData[coinKey]?.price ?? 0
-
-				return price
-			})
-			.reduce((acc, price) => acc + price, 0)
-	}, [priceData, token])
+	const priceChange = token?.chains[0].change
 
 	const handleClick = useCallback(() => {
 		if (token === undefined) return
+
 		if (handleSelect !== undefined) handleSelect(token)
 		else setExpanded(!expanded)
 	}, [token, expanded, handleSelect])
@@ -126,81 +96,72 @@ export const SocketTokenItem: FC<Props> = ({
 						<p>.</p>
 					</div>
 				) : (
-					<>
-						<div className="flex w-full flex-row items-center gap-4 text-left tabular-nums">
-							<div className="relative h-10 w-10">
-								<Image
-									src={token.logoURI ?? ""}
-									alt={token.symbol}
-									className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
-									width={72}
-									height={72}
-								/>
-								<Image
-									src={token.logoURI ?? ""}
-									alt={token.symbol}
-									className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
-									width={48}
-									height={48}
-								/>
-							</div>
-
-							<div className="flex flex-col text-left">
-								<p className="font-bold">{token.name}</p>
-								<p className="flex flex-row items-center gap-2">
-									<SocketTokenPercentages
-										chains={token.chains}
-									/>
-									<span className="flex flex-row items-center gap-2 text-sm opacity-60">
-										<Counter
-											count={token.balanceFormatted}
-										/>
-										{token.symbol}
-									</span>
-								</p>
-							</div>
-
-							<div className="ml-auto flex flex-col text-right">
-								<span className="flex flex-row items-center gap-2 font-bold">
-									<span className="ml-auto flex flex-row items-center">
-										{totalValue ? (
-											<>
-												$
-												<Counter count={totalValue} />
-											</>
-										) : (
-											"-"
-										)}
-									</span>
-								</span>
-
-								<span
-									className={cn(
-										"text-sm",
-										priceChange === undefined
-											? "opacity-60"
-											: priceChange > 0
-												? "text-plug-green"
-												: "text-red-500"
-									)}
-								>
-									<span className="ml-auto flex flex-row items-center">
-										{priceChange !== undefined ? (
-											<>
-												<Counter count={priceChange} />%
-											</>
-										) : (
-											"-"
-										)}
-									</span>
-								</span>
-							</div>
+					<div className="flex w-full flex-row items-center gap-4 text-left tabular-nums">
+						<div className="relative h-10 w-10">
+							<Image
+								src={token.logoURI ?? ""}
+								alt={token.symbol}
+								className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+								width={140}
+								height={140}
+							/>
+							<Image
+								src={token.logoURI ?? ""}
+								alt={token.symbol}
+								className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+								width={140}
+								height={140}
+							/>
 						</div>
 
-						<AccordionContent
-							expanded={expanded}
-						></AccordionContent>
-					</>
+						<div className="flex flex-col text-left">
+							<p className="font-bold">{token.name}</p>
+							<p className="flex flex-row items-center gap-2">
+								<SocketTokenPercentages chains={token.chains} />
+								<span className="flex flex-row items-center gap-2 text-sm opacity-60">
+									<Counter count={token.balanceFormatted} />
+									{token.symbol}
+								</span>
+							</p>
+						</div>
+
+						<div className="ml-auto flex flex-col text-right">
+							<span className="flex flex-row items-center gap-2 font-bold">
+								<span className="ml-auto flex flex-row items-center">
+									{token.totalValue ? (
+										<>
+											$
+											<Counter count={token.totalValue} />
+										</>
+									) : (
+										"-"
+									)}
+								</span>
+							</span>
+
+							<span
+								className={cn(
+									"text-sm",
+									priceChange === undefined
+										? "opacity-60"
+										: priceChange > 0
+											? "text-plug-green"
+											: "text-red-500"
+								)}
+							>
+								<span className="ml-auto flex flex-row items-center">
+									{priceChange !== undefined ? (
+										<>
+											{priceChange > 0 && "+"}
+											<Counter count={priceChange} />%
+										</>
+									) : (
+										"-"
+									)}
+								</span>
+							</span>
+						</div>
+					</div>
 				)}
 			</Accordion>
 		</motion.div>

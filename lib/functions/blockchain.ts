@@ -29,7 +29,9 @@ export const getBlockExplorerBlock = (
 	return `${getBlockExplorerUrl(chainId)}/block/${block}`
 }
 
-export const getChainImage = (chainId: number) => {
+export const getChainImage = (chainId: number | string) => {
+	if (typeof chainId === "string") return `/blockchain/${chainId}.png`
+
 	switch (chainId) {
 		case 1:
 			return "/blockchain/ethereum.png"

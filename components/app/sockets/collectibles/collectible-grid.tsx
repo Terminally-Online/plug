@@ -1,37 +1,28 @@
 import { FC } from "react"
 
-import { motion } from "framer-motion"
+import { SocketCollectibleItem } from "@/components"
+import { RouterOutputs } from "@/server/client"
 
-import { SocketCollectibleItem } from "./collectible-item"
+type Collectibles = NonNullable<RouterOutputs["socket"]["collectibles"]>
 
-type Props = { expanded?: boolean }
+type Props = {
+	collection: Collectibles[keyof Collectibles]
+}
 
-export const SocketCollectibleGrid: FC<Props> = ({ expanded = false }) => {
-	const balances = undefined
+export const SocketCollectibleGrid: FC<Props> = ({ collection }) => {
+	if (!collection) return <></>
 
 	return (
-		<motion.div
-			className="mb-24 grid gap-2"
-			style={{
-				gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`
-			}}
-			initial="hidden"
-			animate="visible"
-			variants={{
-				hidden: { opacity: 0 },
-				visible: {
-					opacity: 1,
-					transition: {
-						staggerChildren: 0.05
-					}
-				}
-			}}
-		>
-			{(balances || Array(6).fill(undefined)).map(
-				(collectible, index) => (
-					<SocketCollectibleItem key={index} />
+		<div className="grid grid-cols-2 gap-4">
+			{collection.collectibles.map((collectible, index) => {
+				return (
+					<SocketCollectibleItem
+						key={index}
+						collection={collection}
+						collectible={collectible}
+					/>
 				)
-			)}
-		</motion.div>
+			})}
+		</div>
 	)
 }

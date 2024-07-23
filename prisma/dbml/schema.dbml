@@ -36,3 +36,28 @@ Table FeatureRequest {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
 }
+
+Table OpenseaCollection {
+  slug String [pk]
+  collection String [not null]
+  name String [not null]
+  description String [not null]
+  imageUrl String [not null]
+  bannerImageUrl String [not null]
+  owner String [not null]
+  category String [not null]
+  isDisabled Boolean [not null]
+  isNsfw Boolean [not null]
+  traitOffersEnabled Boolean [not null]
+  collectionOffersEnabled Boolean [not null]
+  openseaUrl String [not null]
+  projectUrl String [not null]
+  wikiUrl String [not null]
+  discordUrl String [not null]
+  telegramUrl String [not null]
+  twitterUsername String [not null]
+  instagramUsername String [not null]
+  totalSupply Int [not null]
+  chain String [not null]
+  createdDate DateTime [not null]
+}

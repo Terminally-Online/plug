@@ -46,6 +46,31 @@ model FeatureRequest {
     updatedAt   DateTime @default(now()) @updatedAt
 }
 
+model OpenseaCollection {
+    slug                    String   @id @unique
+    collection              String
+    name                    String
+    description             String
+    imageUrl                String
+    bannerImageUrl          String
+    owner                   String
+    category                String
+    isDisabled              Boolean
+    isNsfw                  Boolean
+    traitOffersEnabled      Boolean
+    collectionOffersEnabled Boolean
+    openseaUrl              String
+    projectUrl              String
+    wikiUrl                 String
+    discordUrl              String
+    telegramUrl             String
+    twitterUsername         String
+    instagramUsername       String
+    totalSupply             Int
+    chain                   String
+    createdDate             DateTime
+}
+
 // model Plugs {
 //     id String @id @default(uuid())
 

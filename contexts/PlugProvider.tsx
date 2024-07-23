@@ -95,7 +95,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: apiPlugs } = api.plug.all.useQuery({ target: "mine" })
 	const [plugs, setPlugs] =
 		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
-	const { data: apiPlug } = api.plug.get.useQuery(id)
+
+	const { data: apiPlug } = api.plug.get.useQuery(id!, { enabled: !!id })
 
 	const plug = useMemo(
 		() => plugs && plugs.find(plug => plug.id === id),

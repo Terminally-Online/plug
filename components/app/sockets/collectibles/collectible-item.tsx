@@ -1,12 +1,22 @@
+import { FC } from "react"
+
 import { motion } from "framer-motion"
 
 import { Accordion } from "@/components"
-import { cn } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
-export const SocketCollectibleItem = () => {
-	const collectible = undefined
-	// const loading = collectible === undefined
-	const loading = true
+type Collectibles = NonNullable<RouterOutputs["socket"]["collectibles"]>
+
+type Props = {
+	collection: Collectibles[keyof Collectibles]
+	collectible?: Collectibles[keyof Collectibles]["collectibles"][number]
+}
+
+export const SocketCollectibleItem: FC<Props> = ({
+	collection,
+	collectible
+}) => {
+	const loading = collectible === undefined
 
 	return (
 		<motion.div
@@ -28,50 +38,20 @@ export const SocketCollectibleItem = () => {
 				expanded={false}
 				onExpand={() => {}}
 				noPaddingChildren={
-					<image
-						className={cn(
-							"min-h-40 w-full border-b-[1px] border-grayscale-100 bg-grayscale-0 ",
-							loading
-								? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
-								: "transition-all duration-200 ease-in-out group-hover:bg-grayscale-200"
-						)}
-						height="100%"
-						width="auto"
+					<div
+						style={{
+							position: "relative",
+							width: "100%",
+							paddingTop: "100%", // This creates a square based on the width
+							backgroundImage: `url(${collectible?.display_image_url || collection.imageUrl})`,
+							backgroundSize: "contain",
+							backgroundPosition: "center",
+							backgroundRepeat: "no-repeat"
+						}}
 					/>
 				}
-			>
-				<div className="mr-auto w-full text-left">
-					<p
-						className={cn(
-							"truncate whitespace-nowrap font-bold",
-							loading && "invisible"
-						)}
-					>
-						Token Name
-					</p>
-
-					<div className="flex flex-row items-center gap-2">
-						<image
-							className={cn(
-								"h-4 w-4 rounded-full",
-								loading
-									? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
-									: "bg-grayscale-100"
-							)}
-							height="100%"
-							width="auto"
-						/>
-						<p
-							className={cn(
-								"text-sm opacity-60",
-								loading && "invisible"
-							)}
-						>
-							Collection Name
-						</p>
-					</div>
-				</div>
-			</Accordion>
+				noPadding={true}
+			/>
 		</motion.div>
 	)
 }

@@ -1,13 +1,13 @@
 export type PriceData = Record<
 	`${string}:${string}`,
-	{
+	Partial<{
 		decimals: number
 		symbol: string
 		price: number
 		timestamp: number
 		confidence: number
-		change: number | undefined
-	}
+		change: number
+	}>
 >
 
 export const getPrices = async (

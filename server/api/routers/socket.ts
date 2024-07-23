@@ -4,7 +4,8 @@ import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
-import { getBalances } from "@/lib"
+import { getBalances, getTokens } from "@/lib"
+import { getCollectibles } from "@/lib/functions/opensea"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const userSocket = Prisma.validator<Prisma.UserSocketDefaultArgs>()({})
@@ -189,5 +190,31 @@ export const socket = createTRPCRouter({
 		} catch (e) {
 			throw new TRPCError({ code: "BAD_REQUEST" })
 		}
-	})
+	}),
+
+	tokens: protectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input }) => {
+			try {
+				if (input === undefined) return []
+
+				return await getTokens(input)
+			} catch (e) {
+				console.error(e)
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
+
+	collectibles: protectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input }) => {
+			try {
+				if (input === undefined) return {}
+
+				return await getCollectibles(input)
+			} catch (e) {
+				console.error(e)
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		})
 })

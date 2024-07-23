@@ -1,33 +1,30 @@
-import {
-	createContext,
-	FC,
-	PropsWithChildren,
-	useContext,
-	useMemo
-} from "react"
+import { createContext, FC, PropsWithChildren, useContext } from "react"
 
-import { useDebounce } from "@/lib"
-import { api } from "@/server/client"
+import { api, RouterOutputs } from "@/server/client"
+
+import { useSockets } from "./SocketProvider"
 
 export const BalancesContext = createContext<{
-	search: string
-	debouncedSearch: string
-	handleSearch: (search: string) => void
+	tokens: RouterOutputs["socket"]["tokens"] | undefined
+	collectibles: RouterOutputs["socket"]["collectibles"] | undefined
 }>({
-	search: "",
-	debouncedSearch: "",
-	handleSearch: () => {}
+	tokens: [],
+	collectibles: {}
 })
 
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
-	const [search, debouncedSearch, handleSearch] = useDebounce("")
+	const { socket } = useSockets()
+
+	const { data: tokens } = api.socket.tokens.useQuery(socket?.socketAddress)
+	const { data: collectibles } = api.socket.collectibles.useQuery(
+		socket?.socketAddress
+	)
 
 	return (
 		<BalancesContext.Provider
 			value={{
-				search,
-				debouncedSearch,
-				handleSearch
+				tokens,
+				collectibles
 			}}
 		>
 			{children}
@@ -35,29 +32,4 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 }
 
-export const useBalances = ({ address }: { address: string }) => {
-	const { search, debouncedSearch, handleSearch } =
-		useContext(BalancesContext)
-
-	const { data: apiBalances } = api.socket.balances.useQuery(address)
-
-	const balances = useMemo(() => {
-		if (apiBalances === undefined) return undefined
-
-		if (search === "") return apiBalances
-
-		return apiBalances.filter(
-			token =>
-				token?.symbol.toLowerCase().includes(search.toLowerCase()) ||
-				token?.name.toLowerCase().includes(search.toLowerCase())
-		)
-	}, [apiBalances, search])
-
-	return {
-		address,
-		search,
-		debouncedSearch,
-		balances,
-		handleSearch
-	}
-}
+export const useBalances = () => useContext(BalancesContext)

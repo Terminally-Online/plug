@@ -1,58 +1,24 @@
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC } from "react"
 
 import { motion } from "framer-motion"
 
 import { SocketTokenItem } from "@/components"
-import { useBalances, useSockets } from "@/contexts"
-import { getPrices } from "@/lib"
+import { useBalances } from "@/contexts"
+import { RouterOutputs } from "@/server/client"
 
 type Props = {
 	expanded?: boolean
 	handleSelect?: (
-		token: NonNullable<ReturnType<typeof useBalances>["balances"]>[number]
+		token: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
 	) => void
 }
 
-// TODO: Handle expanded.
+// TODO: Fix whatever is wrong with drakes token retrieval.
+// 		NOTES: Gut feeling is that it has nothing to do with the amount and some request is throwing for some reason and it is not properly handled.
+// TODO: Implement see all that minimizes the list down to tokens than have > $5 dollars.
 
 export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
-	const { socket } = useSockets()
-	const { balances } = useBalances({
-		address: socket?.socketAddress || ""
-	})
-
-	const [priceData, setPriceData] = useState<
-		| undefined
-		| Record<
-				`${string}:${string}`,
-				{
-					decimals: number
-					symbol: string
-					price: number
-					timestamp: number
-					confidence: number
-					change: number | undefined
-				}
-		  >
-	>()
-
-	const coinsKey = useMemo(() => {
-		if (balances === undefined) return []
-
-		return balances.flatMap(token =>
-			token.chains.flatMap(
-				chain => `${chain.chainName.toLowerCase()}:${chain.address}`
-			)
-		)
-	}, [balances])
-
-	useEffect(() => {
-		if (coinsKey === undefined) return
-
-		getPrices(coinsKey.join(",")).then(setPriceData)
-	}, [coinsKey])
-
-	useEffect(() => console.log(priceData), [priceData])
+	const { tokens } = useBalances()
 
 	return (
 		<>
@@ -70,11 +36,10 @@ export const SocketTokenList: FC<Props> = ({ handleSelect }) => {
 					}
 				}}
 			>
-				{(balances || Array(5).fill(undefined)).map((token, index) => (
+				{(tokens || Array(5).fill(undefined)).map((token, index) => (
 					<SocketTokenItem
 						key={index}
 						token={token}
-						priceData={priceData}
 						handleSelect={handleSelect}
 					/>
 				))}

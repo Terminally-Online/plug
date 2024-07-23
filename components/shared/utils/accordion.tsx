@@ -8,6 +8,7 @@ type Props = {
 	expanded?: boolean
 	onExpand?: () => void
 	noPaddingChildren?: React.ReactNode
+	noPadding?: boolean
 	accordion?: React.ReactNode
 } & PropsWithChildren &
 	React.HTMLAttributes<HTMLButtonElement>
@@ -17,6 +18,7 @@ export const Accordion: FC<Props> = ({
 	expanded = false,
 	onExpand = () => {},
 	noPaddingChildren,
+	noPadding = false,
 	children,
 	className,
 	accordion
@@ -38,7 +40,12 @@ export const Accordion: FC<Props> = ({
 	>
 		{noPaddingChildren}
 
-		<div className="flex h-min w-full flex-col p-4">
+		<div
+			className={cn(
+				"flex h-min w-full flex-col",
+				noPadding === false && "p-4"
+			)}
+		>
 			{children}
 
 			{accordion && (

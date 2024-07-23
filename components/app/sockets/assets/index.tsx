@@ -6,12 +6,11 @@ import {
 	Button,
 	Footer,
 	Header,
+	SocketCollectionList,
 	SocketTokenList,
 	TransferFrame
 } from "@/components"
 import { useFrame } from "@/contexts"
-
-import { SocketCollectibleGrid } from "../collectibles"
 
 export const SocketAssets = () => {
 	const { handleFrameVisible } = useFrame()
@@ -37,7 +36,7 @@ export const SocketAssets = () => {
 				nextLabel="See all"
 				nextOnClick={() => setCollectiblesExpanded(true)}
 			/>
-			<SocketCollectibleGrid expanded={collectiblesExpanded} />
+			<SocketCollectionList expanded={collectiblesExpanded} />
 
 			<Footer>
 				<Button
