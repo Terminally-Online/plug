@@ -10,22 +10,16 @@ import {
 	ChevronRight,
 	Globe,
 	ReceiptText,
-	SearchIcon,
 	SquareArrowDownRight,
 	User,
 	Wallet
 } from "lucide-react"
-import { createPublicClient, http, isAddress, zeroAddress } from "viem"
+import { isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
-import { Button, Footer, Frame, Search, SocketTokenList } from "@/components"
+import { Button, Frame, Search, SocketTokenList } from "@/components"
 import { useBalances, useFrame, useSockets } from "@/contexts"
 import { getChainImage } from "@/lib"
-
-import { mainnet } from "viem/chains"
-
-// TODO: Implement the functionality to actually withdraw and deposit funds from and to the Socket.
-// NOTE: This will be pending until a Socket is deployed onto testnet to enable the ability of writing Socket and Wallet interactions at the same time.
 
 const DEFAULT_TRANSFER = {
 	token: undefined,
@@ -35,19 +29,12 @@ const DEFAULT_TRANSFER = {
 }
 
 export const TransferFrame = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameVisible } = useFrame()
 
-	// TODO: Probably use the wallet client unless it would require them to change their network
-	const client = createPublicClient({
-		chain: mainnet,
-		transport: http()
-	})
-
-	// const [transferVisible, setTransferVisible] = useState(false)
 	const [transfer, setTransfer] = useState<{
 		action?: "receive" | "send"
-		token?: NonNullable<typeof balances>[number]
-		chain?: NonNullable<typeof balances>[number]["chains"][0]
+		token?: NonNullable<typeof tokens>[number]
+		chain?: NonNullable<typeof tokens>[number]["chains"][0]
 		amount?: string | undefined
 		to?: string
 	}>(DEFAULT_TRANSFER)
@@ -65,9 +52,7 @@ export const TransferFrame = () => {
 					socket?.socketAddress
 			: "") || ""
 
-	const { search, balances, handleSearch } = useBalances({
-		address: fromAddress
-	})
+	const { tokens } = useBalances()
 
 	// NOTE: This is not used currently, but it will be for the transaction functionality so leaving it here until then.
 	const toAddress =
@@ -208,17 +193,10 @@ export const TransferFrame = () => {
 				}
 			>
 				<div className="flex h-full min-h-[280px] flex-col gap-4">
-					<Search
-						icon={<SearchIcon size={14} />}
-						placeholder="Search activity and assets"
-						search={search}
-						handleSearch={(search: string) => handleSearch(search)}
-					/>
-
 					<SocketTokenList
 						// balances={balances}
 						handleSelect={(
-							token: NonNullable<typeof balances>[number]
+							token: NonNullable<typeof tokens>[number]
 						) => setTransfer({ ...transfer, token })}
 					/>
 				</div>
