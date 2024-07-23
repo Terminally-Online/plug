@@ -152,7 +152,6 @@ export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
 								<span className="ml-auto flex flex-row items-center">
 									{priceChange !== undefined ? (
 										<>
-											{priceChange > 0 && "+"}
 											<Counter count={priceChange} />%
 										</>
 									) : (
