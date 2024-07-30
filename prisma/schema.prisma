@@ -71,42 +71,6 @@ model OpenseaCollection {
     createdDate             DateTime
 }
 
-// model Plugs {
-//     id String @id @default(uuid())
-
-//     // Signature & simulation related fields.
-//     chainId    Int[]
-//     executions Execution[]
-
-//     // Onchain fields.
-//     socket  UserSocket       @relation(fields: [socketUserAddress, socketAddress], references: [userAddress, socketAddress])
-//     actions WorkflowAction[]
-//     salt    String
-//     fee     Int
-
-//     // Backwards relational fields.
-//     socketUserAddress String
-//     socketAddress     String
-//     livePlugs         LivePlugs[]
-// }
-
-// model LivePlugs {
-//     id String @id @default(uuid())
-
-//     // Onchain fields.
-//     plugs     Plugs  @relation(fields: [plugsId], references: [id])
-//     plugsId   String
-//     signature String
-
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-
-//     // Backwards relational fields.
-//     socket            UserSocket @relation(fields: [socketUserAddress, socketAddress], references: [userAddress, socketAddress])
-//     socketUserAddress String
-//     socketAddress     String
-// }
-
 // model Execution {
 //     id String @id @default(uuid())
 

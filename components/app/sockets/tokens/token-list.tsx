@@ -25,27 +25,27 @@ export const SocketTokenList: FC<Props> = ({ expanded, handleSelect }) => {
 	}, [expanded, tokens])
 
 	return (
-			<motion.div
-				className="flex flex-col gap-2"
-				initial="hidden"
-				animate="visible"
-				variants={{
-					hidden: { opacity: 0 },
-					visible: {
-						opacity: 1,
-						transition: {
-							staggerChildren: 0.05
-						}
+		<motion.div
+			className="flex flex-col gap-2"
+			initial="hidden"
+			animate="visible"
+			variants={{
+				hidden: { opacity: 0 },
+				visible: {
+					opacity: 1,
+					transition: {
+						staggerChildren: 0.05
 					}
-				}}
-			>
-				{visibleTokens.map((token, index) => (
-					<SocketTokenItem
-						key={index}
-						token={token}
-						handleSelect={handleSelect}
-					/>
-				))}
-			</motion.div>
+				}
+			}}
+		>
+			{visibleTokens.map((token, index) => (
+				<SocketTokenItem
+					key={index}
+					token={token}
+					handleSelect={handleSelect}
+				/>
+			))}
+		</motion.div>
 	)
 }
