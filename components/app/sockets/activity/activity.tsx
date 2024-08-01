@@ -1,4 +1,6 @@
-import { useMemo } from "react"
+"use client"
+
+import { FC, HTMLAttributes, useMemo } from "react"
 
 import { motion } from "framer-motion"
 import { FileCog } from "lucide-react"
@@ -6,7 +8,9 @@ import { FileCog } from "lucide-react"
 import { ActivityList, Counter, Header, StatCard } from "@/components"
 import { cn } from "@/lib/utils"
 
-export const SocketActivity = () => {
+export const SocketActivity: FC<HTMLAttributes<HTMLDivElement>> = ({
+	...props
+}) => {
 	const activity = Array.from({ length: 7 }, () => Math.random())
 
 	const [start, end] = useMemo(
@@ -27,7 +31,7 @@ export const SocketActivity = () => {
 	)
 
 	return (
-		<>
+		<div {...props}>
 			<div className="flex flex-col gap-4">
 				<div className="flex flex-col gap-2">
 					<div className="ml-auto mt-auto flex min-h-[124px] w-full flex-row gap-2">
@@ -83,6 +87,6 @@ export const SocketActivity = () => {
 			/>
 
 			<ActivityList />
-		</>
+		</div>
 	)
 }

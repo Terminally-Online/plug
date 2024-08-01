@@ -1,18 +1,21 @@
-import { FC } from "react"
+import { FC, HTMLAttributes } from "react"
 
-import { motion } from "framer-motion"
+import { motion, MotionProps } from "framer-motion"
 
 import { SocketCollectionItem } from "@/components"
 import { useBalances } from "@/contexts"
+import { cn } from "@/lib"
 
-export const SocketCollectionList: FC = () => {
+export const SocketCollectionList: FC<
+	HTMLAttributes<HTMLDivElement> & MotionProps
+> = ({ className, ...props }) => {
 	const { collectibles } = useBalances()
 
 	if (!collectibles) return <></>
 
 	return (
 		<motion.div
-			className="mb-24 flex flex-col gap-2"
+			className={cn("mb-24 flex flex-col gap-2", className)}
 			initial="hidden"
 			animate="visible"
 			variants={{
@@ -24,6 +27,7 @@ export const SocketCollectionList: FC = () => {
 					}
 				}
 			}}
+			{...(props as MotionProps)}
 		>
 			{Object.keys(collectibles).map(collection => (
 				<SocketCollectionItem

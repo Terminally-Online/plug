@@ -2,12 +2,30 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Table ConsoleColumn {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  key String [not null]
+  index Int [not null]
+  width Int
+  console Console [not null]
+  consoleId String [not null]
+}
+
+Table Console {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  columns ConsoleColumn [not null]
+}
+
 Table UserSocket {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
   name String [not null]
   userAddress String [not null]
   socketAddress String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
 
   indexes {
     (userAddress, socketAddress) [pk]
@@ -16,29 +34,30 @@ Table UserSocket {
 
 Table Workflow {
   id String [pk]
-  name String [not null, default: 'Untitled Plug']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
   userAddress String [not null]
+  name String [not null, default: 'Untitled Plug']
+  isCurated Boolean [not null, default: false]
+  isPrivate Boolean [not null, default: false]
   actions String [not null, default: '[]']
   color String [not null]
   tags String[] [not null]
-  isCurated Boolean [not null, default: false]
-  isPrivate Boolean [not null, default: false]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
   workflowForkedId String
 }
 
 Table FeatureRequest {
   id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
   userAddress String [not null]
   context String [not null]
   message String
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
 }
 
 Table OpenseaCollection {
   slug String [pk]
+  createdDate DateTime [default: `now()`, not null]
   collection String [not null]
   name String [not null]
   description String [not null]
@@ -59,5 +78,6 @@ Table OpenseaCollection {
   instagramUsername String [not null]
   totalSupply Int [not null]
   chain String [not null]
-  createdDate DateTime [not null]
 }
+
+Ref: ConsoleColumn.consoleId > Console.id

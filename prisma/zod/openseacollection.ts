@@ -1,0 +1,26 @@
+import * as z from "zod"
+
+export const _OpenseaCollectionModel = z.object({
+  slug: z.string(),
+  createdDate: z.date(),
+  collection: z.string(),
+  name: z.string(),
+  description: z.string(),
+  imageUrl: z.string(),
+  bannerImageUrl: z.string(),
+  owner: z.string(),
+  category: z.string(),
+  isDisabled: z.boolean(),
+  isNsfw: z.boolean(),
+  traitOffersEnabled: z.boolean(),
+  collectionOffersEnabled: z.boolean(),
+  openseaUrl: z.string(),
+  projectUrl: z.string(),
+  wikiUrl: z.string(),
+  discordUrl: z.string(),
+  telegramUrl: z.string(),
+  twitterUsername: z.string(),
+  instagramUsername: z.string(),
+  totalSupply: z.number().int(),
+  chain: z.string(),
+})

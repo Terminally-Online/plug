@@ -1,9 +1,10 @@
-import { FC, useMemo, useState } from "react"
+import { FC, HTMLAttributes, useMemo, useState } from "react"
 
-import { motion } from "framer-motion"
+import { motion, MotionProps } from "framer-motion"
 
 import { Button, SocketTokenItem } from "@/components"
 import { useBalances } from "@/contexts"
+import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 type Props = {
@@ -11,9 +12,15 @@ type Props = {
 	handleSelect?: (
 		token: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
 	) => void
-}
+} & MotionProps &
+	HTMLAttributes<HTMLDivElement>
 
-export const SocketTokenList: FC<Props> = ({ expanded, handleSelect }) => {
+export const SocketTokenList: FC<Props> = ({
+	expanded,
+	handleSelect,
+	className,
+	...props
+}) => {
 	const { tokens } = useBalances()
 
 	const visibleTokens = useMemo(() => {
@@ -26,7 +33,7 @@ export const SocketTokenList: FC<Props> = ({ expanded, handleSelect }) => {
 
 	return (
 		<motion.div
-			className="flex flex-col gap-2"
+			className={cn("flex flex-col gap-2", className)}
 			initial="hidden"
 			animate="visible"
 			variants={{
@@ -38,6 +45,7 @@ export const SocketTokenList: FC<Props> = ({ expanded, handleSelect }) => {
 					}
 				}
 			}}
+			{...(props as MotionProps)}
 		>
 			{visibleTokens.map((token, index) => (
 				<SocketTokenItem

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { FC, HTMLAttributes, useState } from "react"
 
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
@@ -12,13 +12,15 @@ import {
 } from "@/components"
 import { useFrame } from "@/contexts"
 
-export const SocketAssets = () => {
+export const SocketAssets: FC<HTMLAttributes<HTMLDivElement>> = ({
+	...props
+}) => {
 	const { handleFrameVisible } = useFrame()
 
 	const [tokensExpanded, setTokensExpanded] = useState(false)
 
 	return (
-		<>
+		<div {...props}>
 			<Header
 				size="md"
 				icon={<CircleDollarSign size={14} className="opacity-40" />}
@@ -35,7 +37,7 @@ export const SocketAssets = () => {
 			/>
 			<SocketCollectionList />
 
-			<Footer>
+			{/* <Footer>
 				<Button
 					className="w-full"
 					onClick={() => handleFrameVisible("transfer")}
@@ -44,7 +46,7 @@ export const SocketAssets = () => {
 				</Button>
 			</Footer>
 
-			<TransferFrame />
-		</>
+			<TransferFrame /> */}
+		</div>
 	)
 }

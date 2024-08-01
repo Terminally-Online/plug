@@ -1,4 +1,5 @@
 export * from "@/contexts/BalancesProvider"
+export * from "@/contexts/ConsoleProvider"
 export * from "@/contexts/DomainProvider"
 export * from "@/contexts/FrameProvider"
 export * from "@/contexts/PlugProvider"

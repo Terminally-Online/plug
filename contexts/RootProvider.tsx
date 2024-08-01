@@ -11,6 +11,8 @@ import {
 	WalletProvider
 } from "@/contexts"
 
+import { ConsoleProvider } from "./ConsoleProvider"
+
 type Props = PropsWithChildren & {
 	session: Session | null
 }
@@ -22,7 +24,7 @@ export const RootProvider: FC<Props> = ({ session, children }) => (
 				<SocketProvider>
 					<PlugProvider>
 						<BalancesProvider>
-							<WalletProvider>{children}</WalletProvider>
+							<ConsoleProvider>{children}</ConsoleProvider>
 						</BalancesProvider>
 					</PlugProvider>
 				</SocketProvider>

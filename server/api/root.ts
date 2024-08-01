@@ -1,15 +1,16 @@
 import { inferRouterInputs, inferRouterOutputs } from "@trpc/server"
 
+import { console } from "@/server/api/routers/console"
+import { misc } from "@/server/api/routers/misc"
 import { plug } from "@/server/api/routers/plug"
 import { socket } from "@/server/api/routers/socket"
 import { createTRPCRouter } from "@/server/api/trpc"
 
-import { misc } from "./routers/misc"
-
 export const appRouter = createTRPCRouter({
-	socket,
+	console,
+	misc,
 	plug,
-	misc
+	socket
 })
 
 export type AppRouter = typeof appRouter

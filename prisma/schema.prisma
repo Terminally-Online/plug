@@ -7,47 +7,125 @@ generator dbml {
     provider = "prisma-dbml-generator"
 }
 
+generator zod {
+    provider              = "zod-prisma"
+    output                = "./zod"
+    relationModel         = "default"
+    modelCase             = "PascalCase"
+    modelSuffix           = "Model"
+    useDecimalJs          = true
+    prismaJsonNullability = true
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
+model ConsoleColumn {
+    id String @id @default(uuid())
+
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    key   String
+    index Int
+    width Int?
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    console   Console @relation(fields: [consoleId], references: [id])
+    consoleId String
+}
+
+model Console {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // One-to-many 
+    // ---------------------------------------------------------------------------
+    columns ConsoleColumn[]
+}
+
 model UserSocket {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
     name          String
     userAddress   String
     socketAddress String
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @default(now()) @updatedAt
 
+    // ---------------------------------------------------------------------------
+    // Identification
+    // ---------------------------------------------------------------------------
     @@id([userAddress, socketAddress])
 }
 
 model Workflow {
-    id          String   @id @default(uuid())
-    name        String   @default("Untitled Plug")
-    userAddress String
-    actions     String   @default("[]")
-    color       String
-    tags        String[]
-    isCurated   Boolean  @default(false)
-    isPrivate   Boolean  @default(false)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @default(now()) @updatedAt
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    userAddress      String
+    name             String   @default("Untitled Plug")
+    isCurated        Boolean  @default(false)
+    isPrivate        Boolean  @default(false)
+    actions          String   @default("[]")
+    color            String
+    tags             String[]
     workflowForkedId String?
 }
 
 model FeatureRequest {
-    id          String   @id @default(uuid())
-    userAddress String // save the users address
-    context     String // save the search
-    message     String? // user input, optional
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @default(now()) @updatedAt
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    userAddress String
+    context     String
+    message     String?
 }
 
 model OpenseaCollection {
-    slug                    String   @id @unique
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    slug        String   @id @unique
+    createdDate DateTime @default(now())
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
     collection              String
     name                    String
     description             String
@@ -68,19 +146,4 @@ model OpenseaCollection {
     instagramUsername       String
     totalSupply             Int
     chain                   String
-    createdDate             DateTime
 }
-
-// model Execution {
-//     id String @id @default(uuid())
-
-//     simulation Boolean
-
-//     // TODO: Store the results of a simulation.
-
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-
-//     Plugs   Plugs?  @relation(fields: [plugsId], references: [id])
-//     plugsId String?
-// }
