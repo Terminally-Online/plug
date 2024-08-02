@@ -11,7 +11,7 @@ export const ShareFrame = () => {
 	const { plug } = usePlugs()
 
 	const { copied, handleCopied } = useClipboard(
-		`${window.location.origin}/app/plugs/${plug?.id || ""}`
+		`${window.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`
 	)
 
 	if (!plug) return null
@@ -42,7 +42,7 @@ export const ShareFrame = () => {
 					<p className="font-bold">Twitter</p>
 					<a
 						className="ml-auto"
-						href={`https://twitter.com/intent/tweet?text=${plug.name} using @onplug_io:%0A%0A${window.location.origin}${routes.app.plugs.index}/${plug.id}`}
+						href={`https://twitter.com/intent/tweet?text=${plug.name} using @onplug_io:%0A%0A${window.location.origin}${routes.app}/?id=${plug.id}`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -57,7 +57,7 @@ export const ShareFrame = () => {
 					<p className="font-bold">Telegram</p>
 					<a
 						className="ml-auto"
-						href={`https://t.me/share/url?url=${window.location.origin}${routes.app.plugs.index}/${plug.id}&text=${plug.name} using @onplug_io`}
+						href={`https://t.me/share/url?url=${window.location.origin}${routes.app}/?id=${plug.id}&text=${plug.name} using @onplug_io`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -77,7 +77,7 @@ export const ShareFrame = () => {
 					<p className="font-bold">Warpcast</p>
 					<a
 						className="ml-auto"
-						href={`https://warpcast.com/~/compose?text=https://twitter.com/intent/tweet?text=${plug.name}%20using%20@onplug_io&embeds[]=${window.location.origin}${routes.app.plugs.index}/${plug.id}`}
+						href={`https://warpcast.com/~/compose?text=https://twitter.com/intent/tweet?text=${plug.name}%20using%20@onplug_io&embeds[]=${window.location.origin}${routes.app}/?id=${plug.id}`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>

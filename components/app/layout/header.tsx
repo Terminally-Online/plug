@@ -3,6 +3,7 @@ import { FC } from "react"
 import { ChevronLeft } from "lucide-react"
 
 import { Button } from "@/components"
+import { usePage } from "@/contexts"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -42,6 +43,8 @@ export const Header: FC<Props> = ({
 	className,
 	children
 }) => {
+	const { handlePage } = usePage()
+
 	const base = "font-bold truncate"
 
 	return (
@@ -55,7 +58,7 @@ export const Header: FC<Props> = ({
 			{back && (
 				<Button
 					variant="secondary"
-					href={back}
+					onClick={() => handlePage({ key: back })}
 					className="mr-2 rounded-[10px] p-1"
 				>
 					<ChevronLeft size={14} />

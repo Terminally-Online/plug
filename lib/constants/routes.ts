@@ -2,18 +2,7 @@ export const localRoutes = {
 	brandKit: "/brand-kit/",
 	comingSoon: "/coming-soon/",
 	index: "/",
-	app: {
-		index: "/app/",
-		accounts: {
-			create: "/app/accounts/create/"
-		},
-		plugs: {
-			index: "/app/plugs/",
-			templates: "/app/plugs/templates/",
-			mine: "/app/plugs/mine/",
-			create: "/app/plugs/create/"
-		}
-	}
+	app: "/app/"
 }
 
 export const staticRoutes = {

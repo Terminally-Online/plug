@@ -6,18 +6,22 @@ import {
 	useState
 } from "react"
 
-type Page = "home" | "discover" | "mine" | "activity" | "create" | "plug"
+import { Page } from "@/lib"
+
+const DEFAULT_PAGE: Page = {
+	key: "home"
+} as const
 
 export const PageContext = createContext<{
 	page: Page
 	handlePage: (page: Page) => void
 }>({
-	page: "home",
+	page: DEFAULT_PAGE,
 	handlePage: () => {}
 })
 
 export const PageProvider: FC<PropsWithChildren> = ({ children }) => {
-	const [page, handlePage] = useState<Page>("home")
+	const [page, handlePage] = useState<Page>(DEFAULT_PAGE)
 
 	return (
 		<PageContext.Provider

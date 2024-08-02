@@ -9,15 +9,8 @@ import {
 	useState
 } from "react"
 
-import { useRouter } from "next/navigation"
-
-import { useFrame } from "@/contexts"
-import {
-	categories,
-	routes,
-	actions as staticActions,
-	tags
-} from "@/lib/constants"
+import { useFrame, usePage } from "@/contexts"
+import { categories, actions as staticActions, tags } from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
@@ -84,8 +77,7 @@ export const PlugContext = createContext<{
 })
 
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
-	const router = useRouter()
-
+	const { handlePage } = usePage()
 	const { handleFrameVisible } = useFrame()
 
 	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
@@ -117,9 +109,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			setPlugs(prev => spread(prev, data.plug))
 
 		if (redirect)
-			router.push(
-				`/app/plugs/${data.plug.id}${data.from ? `?from=${data.from}` : ""}`
-			)
+			handlePage({ key: "plug", from: data.from, id: data.plug.id })
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
@@ -143,8 +133,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		onData: (data: Workflow) => {
 			// If the user was viewing the deleted plug, show a confirmation frame to signal that.
 			if (id === data.id) {
+				handlePage({ key: "home" })
 				handleFrameVisible("deleted")
-				router.push(routes.app.index)
 			}
 
 			setPlugs(prev =>
@@ -184,7 +174,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 
 					setPlugs(previous.filter(plug => plug.id !== data.id))
 
-					router.push(data.from ?? `/app/plugs/`)
+					handlePage({ key: data.from ?? "/app/plugs/" })
 
 					return previous
 				},

@@ -1,15 +1,15 @@
 import { FC, HTMLAttributes, useState } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
-import { SearchIcon } from "lucide-react"
+import { Earth, Gem, SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Container, PlugGrid, Search, Tags } from "@/components"
-import { cn, routes, useSearch } from "@/lib"
+import { Container, Header, PlugGrid, Search, Tags } from "@/components"
+import { useSearch } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsMine: FC<
+export const PageDiscover: FC<
 	HTMLAttributes<HTMLDivElement> & { column?: boolean }
 > = ({ column = false, ...props }) => {
 	const { scrollYProgress } = useScroll()
@@ -22,14 +22,17 @@ export const PlugsMine: FC<
 		handleReset
 	} = useSearch()
 
-	const [plugs, setPlugs] = useState<{
+	const [communityPlugs, setCommunityPlugs] = useState<{
 		count?: number
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
+	const { data: curatedPlugs } = api.plug.all.useQuery({
+		target: "curated",
+		limit: 4
+	})
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
-			mine: true,
 			search: debouncedSearch,
 			tag,
 			limit: 20
@@ -39,7 +42,7 @@ export const PlugsMine: FC<
 				return lastPage.nextCursor
 			},
 			onSuccess(data) {
-				setPlugs(() => ({
+				setCommunityPlugs(() => ({
 					count: data.pages[data.pages.length - 1].count,
 					plugs: data.pages.flatMap(page => page.plugs)
 				}))
@@ -48,16 +51,16 @@ export const PlugsMine: FC<
 	)
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (!plugs || isLoading || latest < 0.8) return
+		if (!communityPlugs || isLoading || latest < 0.8) return
 
-		if ((plugs.count ?? 0) > plugs.plugs.length) {
+		if ((communityPlugs.count ?? 0) > communityPlugs.plugs.length) {
 			fetchNextPage()
 		}
 	})
 
 	return (
 		<div {...props}>
-			<Container>
+			<Container column={column}>
 				<Search
 					icon={<SearchIcon size={14} className="opacity-60" />}
 					placeholder="Search Plugs"
@@ -67,17 +70,35 @@ export const PlugsMine: FC<
 				/>
 			</Container>
 
-			{(plugs?.count ?? 0) > 0 && (
-				<Tags tag={tag} handleTag={handleTag} />
-			)}
+			<Tags tag={tag} handleTag={handleTag} />
 
-			<Container>
+			<Container column={column}>
+				{!search && !tag && curatedPlugs && curatedPlugs.length > 0 && (
+					<>
+						<Header
+							size="md"
+							icon={<Gem size={14} className="opacity-40" />}
+							label="Curated"
+						/>
+						<PlugGrid
+							from={"discover"}
+							count={4}
+							plugs={curatedPlugs}
+						/>
+					</>
+				)}
+
+				<Header
+					size="md"
+					icon={<Earth size={14} className="opacity-40" />}
+					label="Community"
+				/>
 				<PlugGrid
 					className="mb-4"
-					from={routes.app.plugs.mine}
+					from={"discover"}
 					search={search || tag}
 					handleReset={handleReset}
-					plugs={plugs.plugs}
+					plugs={communityPlugs.plugs}
 				/>
 			</Container>
 		</div>

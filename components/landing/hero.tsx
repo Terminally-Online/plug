@@ -24,7 +24,7 @@ export const Hero: FC = () => (
 					opportunity again. No code needed.
 				</p>
 				<Button
-					href={EARLY_ACCESS ? routes.earlyAccess : routes.app.index}
+					href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
 					className="mt-[30px] w-max"
 				>
 					{EARLY_ACCESS ? "Get Early Access" : "Enter the App"}

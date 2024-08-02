@@ -7,13 +7,13 @@ import { Draggable } from "@hello-pangea/dnd"
 import {
 	Header,
 	PlugsDiscover,
+	PlugsMine,
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
 	SocketPositionList,
 	SocketTokenList
 } from "@/components/app"
-import { PlugsMine } from "@/components/app/plugs/mine"
 import { ConsoleColumnAddOptions } from "@/components/console"
 import { Plugs } from "@/components/shared/framework/plugs"
 import { useSockets } from "@/contexts"

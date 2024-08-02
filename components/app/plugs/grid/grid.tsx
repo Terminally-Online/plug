@@ -1,15 +1,13 @@
 import { FC } from "react"
 
 import { usePathname } from "next/navigation"
-import { useRouter } from "next/router"
 
 import { motion } from "framer-motion"
 
 import { Workflow } from "@prisma/client"
 
 import { Button, PlugGridItem } from "@/components"
-import { usePlugs } from "@/contexts"
-import { routes } from "@/lib"
+import { usePage, usePlugs } from "@/contexts"
 
 type Props = {
 	from: string
@@ -27,9 +25,9 @@ export const PlugGrid: FC<Props> = ({
 	handleReset,
 	...props
 }) => {
-	const router = useRouter()
 	const pathname = usePathname()
 
+	const { handlePage } = usePage()
 	const { handle } = usePlugs()
 
 	if (plugs === undefined) return null
@@ -87,7 +85,7 @@ export const PlugGrid: FC<Props> = ({
 					<div className="mx-auto mt-8 flex flex-row gap-1">
 						<Button
 							variant="secondary"
-							href={routes.app.plugs.templates}
+							onClick={() => handlePage({ key: "discover" })}
 							className="w-max"
 						>
 							See Templates

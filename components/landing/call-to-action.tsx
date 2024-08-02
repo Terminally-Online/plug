@@ -35,9 +35,7 @@ export const CallToAction: FC<{
 					</p>
 					<Button
 						variant="white"
-						href={
-							EARLY_ACCESS ? routes.earlyAccess : routes.app.index
-						}
+						href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
 						className="mt-[30px] w-max"
 					>
 						{button}

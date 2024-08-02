@@ -2,9 +2,8 @@ import { FC, HTMLAttributes } from "react"
 
 import { PlugZap, Puzzle } from "lucide-react"
 
-import { Header, PlugGrid } from "@/components/app"
+import { Header, PlugGrid } from "@/components"
 import { usePage } from "@/contexts"
-import { routes } from "@/lib"
 import { api } from "@/server/client"
 
 export const Plugs: FC<
@@ -23,37 +22,33 @@ export const Plugs: FC<
 
 	return (
 		<div {...props}>
-			{!hideEmpty ||
-				(hideEmpty && (discoveryPlugs?.length ?? 0) > 0 && (
-					<>
-						<Header
-							size="md"
-							icon={<Puzzle size={14} className="opacity-40" />}
-							label="Discover"
-							nextOnClick={() => handlePage("discover")}
-							nextLabel="See All"
-						/>
+			{(!hideEmpty ||
+				(hideEmpty && (discoveryPlugs?.length ?? 0) > 0)) && (
+				<>
+					<Header
+						size="md"
+						icon={<Puzzle size={14} className="opacity-40" />}
+						label="Discover"
+						nextOnClick={() => handlePage({ key: "discover" })}
+						nextLabel="See All"
+					/>
 
-						<PlugGrid
-							from={routes.app.index}
-							plugs={discoveryPlugs}
-						/>
-					</>
-				))}
+					<PlugGrid from={"home"} plugs={discoveryPlugs} />
+				</>
+			)}
 
-			{!hideEmpty ||
-				(hideEmpty && (myPlugs?.length ?? 0) > 0 && (
-					<>
-						<Header
-							size="md"
-							icon={<PlugZap size={14} className="opacity-40" />}
-							label="My Plugs"
-							nextHref={routes.app.plugs.mine}
-							nextLabel="See All"
-						/>
-						<PlugGrid from={routes.app.index} plugs={myPlugs} />
-					</>
-				))}
+			{(!hideEmpty || (hideEmpty && (myPlugs?.length ?? 0) > 0)) && (
+				<>
+					<Header
+						size="md"
+						icon={<PlugZap size={14} className="opacity-40" />}
+						label="My Plugs"
+						nextOnClick={() => handlePage({ key: "mine" })}
+						nextLabel="See All"
+					/>
+					<PlugGrid from={"home"} plugs={myPlugs} />
+				</>
+			)}
 		</div>
 	)
 }
