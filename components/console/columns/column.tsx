@@ -6,8 +6,8 @@ import { Draggable } from "@hello-pangea/dnd"
 
 import {
 	Header,
-	PlugsDiscover,
-	PlugsMine,
+	PageDiscover,
+	PageMine,
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
@@ -122,12 +122,12 @@ export const ConsoleColumn: FC<{
 								) : column.key === "PLUGS" ? (
 									<Plugs className="px-4" />
 								) : column.key === "DISCOVER" ? (
-									<PlugsDiscover
+									<PageDiscover
 										className="pt-4"
 										column={true}
 									/>
 								) : column.key === "MY_PLUGS" ? (
-									<PlugsMine className="pt-4" column={true} />
+									<PageMine className="pt-4" column={true} />
 								) : column.key === "ASSETS" ? (
 									<SocketAssets className="px-4" />
 								) : column.key === "ACTIVITY" ? (

@@ -113,6 +113,8 @@ export const getTokens = async (
 
 	// Aggregate canonical tokens into one another.
 	const multichainTokens = individualTokens.reduce((acc, token) => {
+		if (token === undefined) return acc
+
 		const existingToken = acc.find(t => t.symbol === token.symbol)
 
 		if (existingToken) {

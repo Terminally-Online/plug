@@ -2,8 +2,6 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { UserSocketModel } from "@/prisma/zod"
-
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
 export const COLUMN_KEYS = {
