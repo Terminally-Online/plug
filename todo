@@ -1,7 +1,4 @@
 Do These:
-    ☐ Fix the build error in Vercel.
-    ☐ Fix all the broken socket references after the console to socket migration.
-    
     Console:
         ☐ NEED TO FIGURE OUT: where do users initiate the transfer assets interaction flow
         
