@@ -1,8 +1,6 @@
-"use client"
-
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
-import { ConsoleColumn, ConsoleColumnAdd } from "@/components/console"
+import { ConsoleColumn, ConsoleColumnAdd } from "@/components"
 import { useSockets } from "@/contexts"
 
 export const ConsoleColumnRow = () => {

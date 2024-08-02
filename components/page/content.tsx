@@ -4,7 +4,7 @@ import {
 	PageHome,
 	PageMine,
 	PagePlug
-} from "@/components/app"
+} from "@/components"
 import { usePage } from "@/contexts"
 
 export const PageContent = () => {

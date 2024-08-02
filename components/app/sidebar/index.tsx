@@ -4,7 +4,7 @@ import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
 import { Book, ClipboardCheck, Github, LogOut, Plus } from "lucide-react"
 
-import { Button } from "@/components/shared"
+import { Button } from "@/components"
 import { useSockets } from "@/contexts"
 import { useClipboard } from "@/lib"
 

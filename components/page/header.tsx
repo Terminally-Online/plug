@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 
-import { Button } from "@/components/shared"
+import { ActionView, Button, Container, Header } from "@/components"
 import { useFrame, usePage, usePlugs, useSockets } from "@/contexts"
 import {
 	cardColors,
@@ -14,9 +14,6 @@ import {
 	formatTimeSince,
 	formatTitle
 } from "@/lib"
-
-import { Container, Header } from "../layout"
-import { ActionView } from "../plugs"
 
 const HomePageHeader = () => {
 	const { page, handlePage } = usePage()

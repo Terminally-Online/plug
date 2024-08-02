@@ -1,4 +1,4 @@
-import { ConsoleColumnRow, ConsoleSidebar } from "@/components/console"
+import { ConsoleColumnRow, ConsoleSidebar } from "@/components"
 
 const Page = () => {
 	return (

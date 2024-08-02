@@ -12,7 +12,7 @@ import {
 	Wallet
 } from "lucide-react"
 
-import { Header } from "@/components/app"
+import { Header } from "@/components"
 import { useSockets } from "@/contexts"
 import { formatTitle } from "@/lib"
 import { COLUMN_KEYS } from "@/server/api/routers/socket/columns"

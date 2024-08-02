@@ -5,17 +5,17 @@ import { Grip, X } from "lucide-react"
 import { Draggable } from "@hello-pangea/dnd"
 
 import {
+	ConsoleColumnAddOptions,
 	Header,
 	PageDiscover,
 	PageMine,
+	Plugs,
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
 	SocketPositionList,
 	SocketTokenList
-} from "@/components/app"
-import { ConsoleColumnAddOptions } from "@/components/console"
-import { Plugs } from "@/components/shared/framework/plugs"
+} from "@/components"
 import { useSockets } from "@/contexts"
 import { cn, formatTitle } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"

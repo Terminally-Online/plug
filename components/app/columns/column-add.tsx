@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { Plus } from "lucide-react"
 
-import { Button } from "@/components/shared"
+import { Button } from "@/components"
 import { useSockets } from "@/contexts"
 
 export const ConsoleColumnAdd = () => {

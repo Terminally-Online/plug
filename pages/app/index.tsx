@@ -1,7 +1,6 @@
-import { PageContent, PageHeader } from "@/components/app"
-import { NextPageWithLayout } from "@/lib"
+import { PageContent, PageHeader } from "@/components"
 
-const Page: NextPageWithLayout = () => {
+const Page = () => {
 	return (
 		<>
 			<PageHeader />

@@ -1,5 +1,4 @@
-import { AccountFrame, Container, SocketAssets } from "@/components"
-import { Plugs } from "@/components/shared/framework/plugs"
+import { AccountFrame, Container, Plugs, SocketAssets } from "@/components"
 
 export const PageHome = () => (
 	<>
