@@ -5,12 +5,11 @@ import Image from "next/image"
 import { Globe } from "lucide-react"
 
 import { Button, Checkbox, Frame } from "@/components"
-import { useFrame, usePlugs, useSockets } from "@/contexts"
+import { useFrame, usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
 
 export const ChainFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()
-	const { sockets } = useSockets()
 	const { chains, chainsAvailable, handle } = usePlugs()
 
 	const isFrame = frameVisible
@@ -44,11 +43,6 @@ export const ChainFrame = () => {
 	return (
 		<Frame
 			className="z-[2]"
-			handleBack={
-				sockets && sockets.length > 1
-					? () => handleFrameVisible(prevFrame)
-					: undefined
-			}
 			icon={<Globe size={18} />}
 			label={"Choose Chain" + (chainsAvailable.length > 1 ? "s" : "")}
 			visible={isFrame}

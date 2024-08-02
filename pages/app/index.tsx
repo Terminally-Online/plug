@@ -3,31 +3,17 @@ import Image from "next/image"
 import BlockiesSvg from "blockies-react-svg"
 import { Cable, Plus, UsersRound } from "lucide-react"
 
-import {
-	AccountFrame,
-	Container,
-	Header,
-	PlugGrid,
-	SocketList
-} from "@/components"
+import { AccountFrame, Container, Header, PlugGrid } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { formatAddress, NextPageWithLayout, routes } from "@/lib"
 import { api } from "@/server/client"
 
 const Page: NextPageWithLayout = () => {
 	const { handleFrameVisible } = useFrame()
-	const {
-		address,
-		ensName,
-		ensAvatar,
-		sockets,
-		handleAdd: handleSocketAdd
-	} = useSockets()
+	const { address, ensName, ensAvatar } = useSockets()
 	const { handle } = usePlugs()
 
 	const { data: plugs } = api.plug.all.useQuery({ target: "mine", limit: 8 })
-
-	const hasSockets = sockets && sockets.length > 0
 
 	return (
 		<>
@@ -95,10 +81,7 @@ const Page: NextPageWithLayout = () => {
 				size="md"
 				icon={<UsersRound size={14} className="opacity-40" />}
 				label="Accounts"
-				nextOnClick={handleSocketAdd}
-				nextLabel={hasSockets ? "Create New" : undefined}
 			/>
-			<SocketList />
 
 			<AccountFrame />
 		</>

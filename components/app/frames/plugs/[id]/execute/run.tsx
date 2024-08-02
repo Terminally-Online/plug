@@ -8,7 +8,7 @@ import { useFrame, usePlugs, useSockets } from "@/contexts"
 
 export const RunFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()
-	const { socket, sockets } = useSockets()
+	const { socket } = useSockets()
 	const { chains, chainsAvailable } = usePlugs()
 
 	const isFrame =
@@ -23,9 +23,7 @@ export const RunFrame = () => {
 	const handleBack =
 		prevFrameSuffix !== "schedule"
 			? chainsAvailable.length === 1
-				? sockets && sockets.length === 1
-					? undefined
-					: () => handleFrameVisible(`socket-${prevFrameSuffix}`)
+				? undefined
 				: () => handleFrameVisible(`chain-${prevFrameSuffix}`)
 			: () => handleFrameVisible(`schedule`)
 
@@ -45,19 +43,6 @@ export const RunFrame = () => {
 			<div className="flex flex-col gap-2">
 				<p className="font-bold opacity-60">Actions</p>
 				<ActionPreview />
-
-				{socket && (
-					<p className="mt-4 flex font-bold">
-						<span className="mr-auto opacity-60">Use Socket</span>
-						<div className="flex flex-row items-center gap-2">
-							<BlockiesSvg
-								address={socket.socketAddress}
-								className="h-5 w-5 rounded-md"
-							/>
-							<p className="mr-auto font-bold">{socket.name}</p>
-						</div>
-					</p>
-				)}
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-60">Run On</span>

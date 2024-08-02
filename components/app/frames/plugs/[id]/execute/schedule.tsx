@@ -24,7 +24,6 @@ const frequencies = [
 
 export const ScheduleFrame = () => {
 	const { frameVisible, handleFrameVisible } = useFrame()
-	const { sockets } = useSockets()
 	const { chainsAvailable } = usePlugs()
 
 	const [date, setDate] = useState<DateRange | undefined>({
@@ -39,9 +38,7 @@ export const ScheduleFrame = () => {
 
 	const handleBack =
 		chainsAvailable.length === 1
-			? sockets && sockets.length === 1
-				? undefined
-				: () => handleFrameVisible("socket-schedule")
+			? undefined
 			: () => handleFrameVisible("chain-schedule")
 
 	return (

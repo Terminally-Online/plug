@@ -1,9 +1,10 @@
 Do These:
     ☐ Fix the build error in Vercel.
-
+    ☐ Fix all the broken socket references after the console to socket migration.
+    
     Console:
         ☐ NEED TO FIGURE OUT: where do users initiate the transfer assets interaction flow
-
+        
         Small:
             ☐ Fix hydration error
                 Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
