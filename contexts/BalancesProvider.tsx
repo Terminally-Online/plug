@@ -4,6 +4,8 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { useSockets } from "./SocketProvider"
 
+const DURATION = 10 * 60 * 1000
+
 export const BalancesContext = createContext<{
 	tokens: RouterOutputs["socket"]["balances"]["tokens"] | undefined
 	collectibles:
@@ -18,10 +20,18 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { socket } = useSockets()
 
 	const { data: tokens } = api.socket.balances.tokens.useQuery(
-		socket?.socketAddress
+		socket?.socketAddress,
+		{
+			refetchInterval: DURATION,
+			enabled: socket?.socketAddress !== undefined
+		}
 	)
 	const { data: collectibles } = api.socket.balances.collectibles.useQuery(
-		socket?.socketAddress
+		socket?.socketAddress,
+		{
+			refetchInterval: DURATION,
+			enabled: socket?.socketAddress !== undefined
+		}
 	)
 
 	return (

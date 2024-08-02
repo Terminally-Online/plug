@@ -23,7 +23,6 @@ Do These:
                 ☐ add contact info to database.
             ☐ Show total asset value when viewing tokens.
                 Notes: This does not include collectibles.
-            ☐ Refresh tokens and prices on a regular basis when that column / page is open.
 
         Medium:
             ☐ Update navigation links while in console to update the state of the column rather redirect to the app page.
@@ -85,6 +84,7 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Refresh tokens and prices on a regular basis when that column / page is open. @done(24-08-01 23:45) @project(Do These.Console.Small)
   ✔ Change "Plugs" column into "Discover" and "My Plugs" columns. @done(24-08-01 19:20) @project(Do These.Console.Small)
   ✔ Migrate Console Model columns to be stored on a Socket. @done(24-08-01 17:02) @project(Do These.Console.Medium)
     Notes: With this we will have a single user reference as well as it will be portable across console and app.

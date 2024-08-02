@@ -58,8 +58,6 @@ const Page: NextPageWithLayout = () => {
 				) : (
 					<SocketPositionList />
 				)}
-
-				<ManageSocketFrame />
 			</Container>
 		</>
 	)

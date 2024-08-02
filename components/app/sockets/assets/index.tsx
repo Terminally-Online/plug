@@ -10,7 +10,7 @@ import {
 	SocketTokenList,
 	TransferFrame
 } from "@/components"
-import { useFrame } from "@/contexts"
+import { useBalances, useFrame } from "@/contexts"
 
 export const SocketAssets: FC<HTMLAttributes<HTMLDivElement>> = ({
 	...props

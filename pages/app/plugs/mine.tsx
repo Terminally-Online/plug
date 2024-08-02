@@ -13,7 +13,7 @@ const Page = () => {
 			<Container>
 				<Header
 					size="lg"
-					back={routes.app.plugs.index}
+					back={routes.app.index}
 					label="My Plugs"
 					nextOnClick={() => handle.plug.add(routes.app.plugs.mine)}
 					nextLabel={<Plus size={14} className="opacity-60" />}

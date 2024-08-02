@@ -12,7 +12,7 @@ const Page = () => {
 			<Container>
 				<Header
 					size="lg"
-					back={routes.app.plugs.index}
+					back={routes.app.index}
 					label="Discover"
 					nextOnClick={() =>
 						handle.plug.add(routes.app.plugs.templates)

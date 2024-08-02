@@ -40,7 +40,7 @@ export const PlugGrid: FC<Props> = ({
 				<motion.div
 					className="grid gap-1"
 					style={{
-						gridTemplateColumns: `repeat(auto-fill, minmax(160px, 1fr))`
+						gridTemplateColumns: `repeat(auto-fit, minmax(160px, 1fr))`
 					}}
 					initial="hidden"
 					animate="visible"
@@ -79,7 +79,7 @@ export const PlugGrid: FC<Props> = ({
 			) : search === "" ? (
 				<div className="my-64 flex flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
-					<p className="mx-auto max-w-[320px] text-center text-lg opacity-60">
+					<p className="mx-auto max-w-[320px] opacity-60">
 						Create your first Plug from scratch or discover one of
 						the existing curated and community Plugs now.
 					</p>
@@ -103,7 +103,7 @@ export const PlugGrid: FC<Props> = ({
 			) : search !== "" && plugs.length === 0 ? (
 				<div className="mx-auto my-44 flex h-full max-w-[80%] flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
-					<p className="opacity-60">
+					<p className="mx-auto max-w-[320px] opacity-60">
 						We looked through all of the results but could not find
 						any matches. Reset your filter or try a different
 						search.

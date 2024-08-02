@@ -3,11 +3,16 @@ import { FC, HTMLAttributes } from "react"
 import { PlugZap, Puzzle } from "lucide-react"
 
 import { Header, PlugGrid } from "@/components/app"
+import { usePage } from "@/contexts"
 import { routes } from "@/lib"
 import { api } from "@/server/client"
 
-export const Plugs: FC<HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-	const { data: othersPlugs } = api.plug.all.useQuery({
+export const Plugs: FC<
+	HTMLAttributes<HTMLDivElement> & { hideEmpty?: boolean }
+> = ({ hideEmpty = false, ...props }) => {
+	const { handlePage } = usePage()
+
+	const { data: discoveryPlugs } = api.plug.all.useQuery({
 		target: "others",
 		limit: 4
 	})
@@ -18,23 +23,37 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
 
 	return (
 		<div {...props}>
-			<Header
-				size="md"
-				icon={<Puzzle size={14} className="opacity-40" />}
-				label="Discover"
-				nextHref={routes.app.plugs.templates}
-				nextLabel="See All"
-			/>
-			<PlugGrid from={routes.app.plugs.index} plugs={othersPlugs} />
+			{!hideEmpty ||
+				(hideEmpty && (discoveryPlugs?.length ?? 0) > 0 && (
+					<>
+						<Header
+							size="md"
+							icon={<Puzzle size={14} className="opacity-40" />}
+							label="Discover"
+							nextOnClick={() => handlePage("discover")}
+							nextLabel="See All"
+						/>
 
-			<Header
-				size="md"
-				icon={<PlugZap size={14} className="opacity-40" />}
-				label="My Plugs"
-				nextHref={routes.app.plugs.mine}
-				nextLabel="See All"
-			/>
-			<PlugGrid from={routes.app.plugs.index} plugs={myPlugs} />
+						<PlugGrid
+							from={routes.app.index}
+							plugs={discoveryPlugs}
+						/>
+					</>
+				))}
+
+			{!hideEmpty ||
+				(hideEmpty && (myPlugs?.length ?? 0) > 0 && (
+					<>
+						<Header
+							size="md"
+							icon={<PlugZap size={14} className="opacity-40" />}
+							label="My Plugs"
+							nextHref={routes.app.plugs.mine}
+							nextLabel="See All"
+						/>
+						<PlugGrid from={routes.app.index} plugs={myPlugs} />
+					</>
+				))}
 		</div>
 	)
 }

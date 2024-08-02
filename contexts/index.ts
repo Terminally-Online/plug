@@ -1,6 +1,7 @@
 export * from "@/contexts/BalancesProvider"
 export * from "@/contexts/DomainProvider"
 export * from "@/contexts/FrameProvider"
+export * from "@/contexts/PagesProvider"
 export * from "@/contexts/PlugProvider"
 export * from "@/contexts/RootProvider"
 export * from "@/contexts/SocketProvider"
