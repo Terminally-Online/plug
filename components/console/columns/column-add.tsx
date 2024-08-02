@@ -3,16 +3,16 @@ import { useMemo } from "react"
 import { Plus } from "lucide-react"
 
 import { Button } from "@/components/shared"
-import { useConsole } from "@/contexts"
+import { useSockets } from "@/contexts"
 
 export const ConsoleColumnAdd = () => {
-	const { console, handle } = useConsole()
+	const { socket, handle } = useSockets()
 
-	const isAdding = useMemo(
-		() =>
-			console?.columns.find(column => column.key === "ADD") !== undefined,
-		[console]
-	)
+	const isAdding = useMemo(() => {
+		if (socket === undefined) return false
+
+		return socket.columns.find(column => column.key === "ADD") !== undefined
+	}, [socket])
 
 	if (isAdding) return null
 
@@ -24,7 +24,7 @@ export const ConsoleColumnAdd = () => {
 			<Button
 				variant="secondary"
 				className="flex flex-row items-center gap-2 font-bold"
-				onClick={() => handle.add({ key: "ADD" })}
+				onClick={() => handle.columns.add({ key: "ADD" })}
 			>
 				<Plus size={14} />
 				Add Column

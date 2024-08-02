@@ -40,7 +40,7 @@ export const PlugGrid: FC<Props> = ({
 				<motion.div
 					className="grid gap-1"
 					style={{
-						gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`
+						gridTemplateColumns: `repeat(auto-fill, minmax(160px, 1fr))`
 					}}
 					initial="hidden"
 					animate="visible"
@@ -76,16 +76,15 @@ export const PlugGrid: FC<Props> = ({
 							</motion.div>
 						))}
 				</motion.div>
-			) : [routes.app.index, routes.app.plugs.mine].includes(
-					router.pathname
-			  ) ? (
-				<div className="my-64 flex flex-col gap-[30px]">
-					<p className="mx-auto max-w-[380px] text-center text-lg opacity-60">
-						Browse the existing templates or create your first Plug
-						from scratch by clicking the button below and assembling
-						your strategy.
+			) : search === "" ? (
+				<div className="my-64 flex flex-col gap-2 text-center">
+					<p className="text-lg font-bold">No Plugs found.</p>
+					<p className="mx-auto max-w-[320px] text-center text-lg opacity-60">
+						Create your first Plug from scratch or discover one of
+						the existing curated and community Plugs now.
 					</p>
-					<div className="mx-auto flex flex-row gap-1">
+
+					<div className="mx-auto mt-8 flex flex-row gap-1">
 						<Button
 							variant="secondary"
 							href={routes.app.plugs.templates}
@@ -103,7 +102,7 @@ export const PlugGrid: FC<Props> = ({
 				</div>
 			) : search !== "" && plugs.length === 0 ? (
 				<div className="mx-auto my-44 flex h-full max-w-[80%] flex-col gap-2 text-center">
-					<p className="text-lg font-bold">No results found.</p>
+					<p className="text-lg font-bold">No Plugs found.</p>
 					<p className="opacity-60">
 						We looked through all of the results but could not find
 						any matches. Reset your filter or try a different

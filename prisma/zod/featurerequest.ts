@@ -1,6 +1,6 @@
 import * as z from "zod"
 
-export const _FeatureRequestModel = z.object({
+export const FeatureRequestModel = z.object({
   id: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),

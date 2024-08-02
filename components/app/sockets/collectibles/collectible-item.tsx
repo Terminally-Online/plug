@@ -3,17 +3,14 @@ import { FC } from "react"
 import { Accordion } from "@/components"
 import { RouterOutputs } from "@/server/client"
 
-type Collectibles = NonNullable<RouterOutputs["socket"]["collectibles"]>
+type Collectibles = NonNullable<
+	RouterOutputs["socket"]["balances"]["collectibles"]
+>
 
-type Props = {
+export const SocketCollectibleItem: FC<{
 	collection: Collectibles[keyof Collectibles]
 	collectible?: Collectibles[keyof Collectibles]["collectibles"][number]
-}
-
-export const SocketCollectibleItem: FC<Props> = ({
-	collection,
-	collectible
-}) => {
+}> = ({ collection, collectible }) => {
 	const loading = collectible === undefined
 
 	return (

@@ -1,7 +1,7 @@
 import { createRef, FC, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
-import { Activity, CircleDollarSign, Landmark, PiggyBank } from "lucide-react"
+import { Activity, Landmark, PiggyBank } from "lucide-react"
 
 import { cn, formatTitle } from "@/lib"
 
@@ -20,12 +20,10 @@ const tabs = [
 	}
 ]
 
-type Props = {
+export const SocketTabs: FC<{
 	selected: number
 	onSelect: (index: number) => void
-}
-
-export const SocketTabs: FC<Props> = ({ selected, onSelect }) => {
+}> = ({ selected, onSelect }) => {
 	const textRefs = useRef(tabs.map(() => createRef<HTMLButtonElement>()))
 	const [underlineStyle, setUnderlineStyle] = useState({ width: 0, x: 0 })
 

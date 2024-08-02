@@ -2,11 +2,15 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { createTRPCRouter, protectedProcedure } from "../trpc"
+import { UserSocketModel } from "@/prisma/zod"
 
-const keys = {
+import { createTRPCRouter, protectedProcedure } from "../../trpc"
+
+export const COLUMN_KEYS = {
 	ADD: "ADD",
 	PLUGS: "PLUGS",
+	DISCOVER: "DISCOVER",
+	MY_PLUGS: "MY_PLUGS",
 	ACTIVITY: "ACTIVITY",
 	ASSETS: "ASSETS",
 	TOKENS: "TOKENS",
@@ -16,43 +20,30 @@ const keys = {
 	SETTINGS: "SETTINGS"
 }
 
-export const console = createTRPCRouter({
-	get: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.console.upsert({
-			where: { id: ctx.session.address },
-			create: {
-				id: ctx.session.address,
-				columns: {
-					createMany: {
-						data: [
-							{ key: keys.PLUGS, index: 0 },
-							{ key: keys.ACTIVITY, index: 1 }
-						]
-					}
-				}
-			},
-			update: {},
-			include: { columns: true }
-		})
-	}),
+export const DEFAULT_COLUMNS = [
+	{ key: COLUMN_KEYS.PLUGS, index: 0 },
+	{ key: COLUMN_KEYS.ACTIVITY, index: 1 }
+]
+
+export const columns = createTRPCRouter({
 	add: protectedProcedure
 		.input(z.object({ key: z.string(), id: z.string().optional() }))
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
-				if (Object.values(keys).includes(input.key) === false)
+				if (Object.values(COLUMN_KEYS).includes(input.key) === false)
 					throw new TRPCError({
 						code: "BAD_REQUEST",
 						message: "Invalid column key."
 					})
 
 				const columns = await tx.consoleColumn.findMany({
-					where: { consoleId: ctx.session.address }
+					where: { socketId: ctx.session.address }
 				})
 
 				if (columns === null) throw new TRPCError({ code: "NOT_FOUND" })
 
 				if (input.id === undefined)
-					return await tx.console.update({
+					return await tx.userSocket.update({
 						where: { id: ctx.session.address },
 						data: {
 							columns: {
@@ -69,7 +60,7 @@ export const console = createTRPCRouter({
 						include: { columns: { orderBy: { index: "asc" } } }
 					})
 
-				return await tx.console.update({
+				return await tx.userSocket.update({
 					where: { id: ctx.session.address },
 					data: {
 						columns: {
@@ -93,7 +84,7 @@ export const console = createTRPCRouter({
 					where: { id: input }
 				})
 
-				const console = await tx.console.update({
+				return await tx.userSocket.update({
 					where: { id: ctx.session.address },
 					data: {
 						columns: {
@@ -105,10 +96,6 @@ export const console = createTRPCRouter({
 					},
 					include: { columns: { orderBy: { index: "asc" } } }
 				})
-
-				if (console === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-				return console
 			})
 		}),
 	resize: protectedProcedure
@@ -119,7 +106,7 @@ export const console = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			return await ctx.db.console.update({
+			return await ctx.db.userSocket.update({
 				where: { id: ctx.session.address },
 				data: {
 					columns: {
@@ -142,14 +129,14 @@ export const console = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
 				const columns = await tx.consoleColumn.findMany({
-					where: { consoleId: ctx.session.address },
+					where: { socketId: ctx.session.address },
 					orderBy: { index: "asc" }
 				})
 
 				const [movedColumn] = columns.splice(input.from, 1)
 				columns.splice(input.to, 0, movedColumn)
 
-				return await tx.console.update({
+				return await tx.userSocket.update({
 					where: { id: ctx.session.address },
 					data: {
 						columns: {
@@ -158,7 +145,8 @@ export const console = createTRPCRouter({
 								data: columns.map((column, index) => ({
 									...column,
 									consoleId: undefined,
-									index
+									index,
+									socketId: undefined
 								}))
 							}
 						}

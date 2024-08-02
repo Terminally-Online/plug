@@ -1,6 +1,6 @@
 import * as z from "zod"
 
-export const _OpenseaCollectionModel = z.object({
+export const OpenseaCollectionModel = z.object({
   slug: z.string(),
   createdDate: z.date(),
   collection: z.string(),

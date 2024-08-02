@@ -3,13 +3,13 @@ import { FC } from "react"
 import { SocketCollectibleItem } from "@/components"
 import { RouterOutputs } from "@/server/client"
 
-type Collectibles = NonNullable<RouterOutputs["socket"]["collectibles"]>
+type Collectibles = NonNullable<
+	RouterOutputs["socket"]["balances"]["collectibles"]
+>
 
-type Props = {
+export const SocketCollectibleGrid: FC<{
 	collection: Collectibles[keyof Collectibles]
-}
-
-export const SocketCollectibleGrid: FC<Props> = ({ collection }) => {
+}> = ({ collection }) => {
 	if (!collection) return <></>
 
 	return (

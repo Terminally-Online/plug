@@ -13,17 +13,27 @@ import {
 } from "lucide-react"
 
 import { Header } from "@/components/app"
-import { useConsole } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { formatTitle } from "@/lib"
+import { COLUMN_KEYS } from "@/server/api/routers/socket/columns"
 
 type Props = {
 	id: string
 }
 
-const options = [
+const options: Array<{
+	label: keyof typeof COLUMN_KEYS
+	description: string
+	icon: JSX.Element
+}> = [
 	{
-		label: "PLUGS",
-		description: "Create, edit, and discover Plugs.",
+		label: "DISCOVER",
+		description: "Discover curated and community Plugs.",
+		icon: <Cable size={14} className="opacity-40" />
+	},
+	{
+		label: "MY_PLUGS",
+		description: "Create, edit, and run your Plugs.",
 		icon: <Cable size={14} className="opacity-40" />
 	},
 	{
@@ -64,7 +74,7 @@ const options = [
 ] as const
 
 export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
-	const { handle } = useConsole()
+	const { handle } = useSockets()
 
 	return (
 		<>
@@ -80,14 +90,20 @@ export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
 					<button
 						key={option.label}
 						className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
-						onClick={() => handle.add({ key: option.label, id })}
+						onClick={() =>
+							handle.columns.add({ key: option.label, id })
+						}
 					>
 						<div className="flex flex-row items-center gap-4">
 							{option.icon}
 
 							<div className="flex flex-col">
 								<p className="font-bold opacity-40">
-									{formatTitle(option.label.toLowerCase())}
+									{formatTitle(
+										option.label
+											.replace("_", " ")
+											.toLowerCase()
+									)}
 								</p>
 								<p className="text-sm opacity-60">
 									{option.description}

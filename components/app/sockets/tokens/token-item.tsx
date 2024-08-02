@@ -8,14 +8,14 @@ import { Accordion, Counter, SocketTokenPercentages } from "@/components"
 import { cn, getChainImage } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
-type Props = {
-	token?: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
+export const SocketTokenItem: FC<{
+	token?: NonNullable<RouterOutputs["socket"]["balances"]["tokens"]>[number]
 	handleSelect?: (
-		token: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
+		token: NonNullable<
+			RouterOutputs["socket"]["balances"]["tokens"]
+		>[number]
 	) => void
-}
-
-export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
+}> = ({ token, handleSelect }) => {
 	const [expanded, setExpanded] = useState(false)
 
 	const priceChange = token?.chains[0].change
@@ -96,7 +96,7 @@ export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
 						<p>.</p>
 					</div>
 				) : (
-					<div className="flex w-full flex-row items-center gap-4 text-left tabular-nums">
+					<div className="flex flex-row items-center gap-4">
 						<div className="relative h-10 w-10">
 							<Image
 								src={token.logoURI ?? ""}
@@ -113,21 +113,10 @@ export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
 								height={140}
 							/>
 						</div>
-
-						<div className="flex flex-col text-left">
-							<p className="font-bold">{token.name}</p>
-							<p className="flex flex-row items-center gap-2">
-								<SocketTokenPercentages chains={token.chains} />
-								<span className="flex flex-row items-center gap-2 text-sm opacity-60">
-									<Counter count={token.balanceFormatted} />
-									{token.symbol}
-								</span>
-							</p>
-						</div>
-
-						<div className="ml-auto flex flex-col text-right">
-							<span className="flex flex-row items-center gap-2 font-bold">
-								<span className="ml-auto flex flex-row items-center">
+						<div className="flex w-full flex-col items-center tabular-nums">
+							<div className="flex w-full flex-row font-bold">
+								<p>{token.name}</p>
+								<p className="ml-auto flex flex-row items-center">
 									{token.totalValue ? (
 										<>
 											$
@@ -136,29 +125,43 @@ export const SocketTokenItem: FC<Props> = ({ token, handleSelect }) => {
 									) : (
 										"-"
 									)}
-								</span>
-							</span>
+								</p>
+							</div>
 
-							<span
-								className={cn(
-									"text-sm",
-									priceChange === undefined
-										? "opacity-60"
-										: priceChange > 0
-											? "text-plug-green"
-											: "text-red-500"
-								)}
-							>
-								<span className="ml-auto flex flex-row items-center">
-									{priceChange !== undefined ? (
-										<>
-											<Counter count={priceChange} />%
-										</>
-									) : (
-										"-"
+							<div className="flex w-full flex-row">
+								<p className="flex flex-row items-center gap-2">
+									<SocketTokenPercentages
+										chains={token.chains}
+									/>
+									<span className="flex flex-row items-center gap-2 text-sm opacity-60">
+										<Counter
+											count={token.balanceFormatted}
+										/>
+										{token.symbol}
+									</span>
+								</p>
+
+								<p
+									className={cn(
+										"ml-auto text-sm",
+										priceChange === undefined
+											? "opacity-60"
+											: priceChange > 0
+												? "text-plug-green"
+												: "text-red-500"
 									)}
-								</span>
-							</span>
+								>
+									<span className="ml-auto flex flex-row items-center">
+										{priceChange !== undefined ? (
+											<>
+												<Counter count={priceChange} />%
+											</>
+										) : (
+											"-"
+										)}
+									</span>
+								</p>
+							</div>
 						</div>
 					</div>
 				)}

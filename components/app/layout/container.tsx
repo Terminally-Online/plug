@@ -2,10 +2,13 @@ import { FC, PropsWithChildren } from "react"
 
 import { cn } from "@/lib/utils"
 
-type Props = PropsWithChildren & React.HTMLProps<HTMLDivElement>
-
-export const Container: FC<Props> = ({ children, className, ...props }) => (
-	<div className={cn("mx-4 flex flex-col", className)} {...props}>
+export const Container: FC<
+	PropsWithChildren & React.HTMLProps<HTMLDivElement> & { column?: boolean }
+> = ({ column = false, children, className, ...props }) => (
+	<div
+		className={cn("flex flex-col", column === false && "mx-4", className)}
+		{...props}
+	>
 		{children}
 	</div>
 )

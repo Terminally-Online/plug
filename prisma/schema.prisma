@@ -8,13 +8,9 @@ generator dbml {
 }
 
 generator zod {
-    provider              = "zod-prisma"
-    output                = "./zod"
-    relationModel         = "default"
-    modelCase             = "PascalCase"
-    modelSuffix           = "Model"
-    useDecimalJs          = true
-    prismaJsonNullability = true
+    provider     = "zod-prisma"
+    output       = "./zod"
+    useDecimalJs = true
 }
 
 datasource db {
@@ -41,25 +37,13 @@ model ConsoleColumn {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    console   Console @relation(fields: [consoleId], references: [id])
-    consoleId String
-}
-
-model Console {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    id        String   @id @unique @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // One-to-many 
-    // ---------------------------------------------------------------------------
-    columns ConsoleColumn[]
+    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socketId String
 }
 
 model UserSocket {
+    id String @id @default(uuid())
+
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
@@ -69,14 +53,12 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name          String
-    userAddress   String
     socketAddress String
 
     // ---------------------------------------------------------------------------
-    // Identification
+    // One-to-many 
     // ---------------------------------------------------------------------------
-    @@id([userAddress, socketAddress])
+    columns ConsoleColumn[]
 }
 
 model Workflow {

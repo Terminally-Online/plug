@@ -2,25 +2,22 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { motion, MotionProps } from "framer-motion"
 
-import { Button, SocketTokenItem } from "@/components"
+import { SocketTokenItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
-type Props = {
-	expanded?: boolean
-	handleSelect?: (
-		token: NonNullable<RouterOutputs["socket"]["tokens"]>[number]
-	) => void
-} & MotionProps &
-	HTMLAttributes<HTMLDivElement>
-
-export const SocketTokenList: FC<Props> = ({
-	expanded,
-	handleSelect,
-	className,
-	...props
-}) => {
+export const SocketTokenList: FC<
+	HTMLAttributes<HTMLDivElement> &
+		MotionProps & {
+			expanded?: boolean
+			handleSelect?: (
+				token: NonNullable<
+					RouterOutputs["socket"]["balances"]["tokens"]
+				>[number]
+			) => void
+		}
+> = ({ expanded, handleSelect, className, ...props }) => {
 	const { tokens } = useBalances()
 
 	const visibleTokens = useMemo(() => {

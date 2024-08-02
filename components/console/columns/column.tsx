@@ -1,57 +1,47 @@
-"use client"
-
-import { FC, Suspense, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 import { Grip, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
-import { Prisma } from "@prisma/client"
 
 import {
 	Header,
+	PlugsDiscover,
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
 	SocketPositionList,
 	SocketTokenList
 } from "@/components/app"
+import { PlugsMine } from "@/components/app/plugs/mine"
+import { ConsoleColumnAddOptions } from "@/components/console"
 import { Plugs } from "@/components/shared/framework/plugs"
-import { useConsole } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { cn, formatTitle } from "@/lib"
+import { ConsoleColumnModel } from "@/prisma/types"
 
-import { ConsoleColumnAddOptions } from "./column-add-options"
-
-const consoleColumnModel = Prisma.validator<Prisma.ConsoleDefaultArgs>()({})
-export type ConsoleColumnModel = Prisma.ConsoleColumnGetPayload<
-	typeof consoleColumnModel
->
-
-type Props = {
-	column: ConsoleColumnModel
-}
-
-const MIN_COLUMN_WIDTH = 240
+const DEFAULT_COLUMN_WIDTH = 420
+const MIN_COLUMN_WIDTH = 380
 const MAX_COLUMN_WIDTH = 920
 
 const getBoundedWidth = (width: number) =>
 	Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
-export const ConsoleColumn: FC<Props> = ({ column }) => {
+export const ConsoleColumn: FC<{
+	column: ConsoleColumnModel
+}> = ({ column }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { handle } = useConsole()
+	const { handle } = useSockets()
 
 	const [isResizing, setIsResizing] = useState(false)
-
-	const { id } = column
-	const { resize } = handle
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			resize({
-				id,
+			handle.columns.resize({
+				id: column.id,
 				width: getBoundedWidth(
 					e.clientX - resizeRef.current.getBoundingClientRect().left
 				)
@@ -71,7 +61,7 @@ export const ConsoleColumn: FC<Props> = ({ column }) => {
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [isResizing, id, resize])
+	}, [isResizing, column.id, handle.columns])
 
 	return (
 		<div className={cn(column.index === 0 && "ml-2")}>
@@ -86,7 +76,7 @@ export const ConsoleColumn: FC<Props> = ({ column }) => {
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
-							width: `${column.width ?? 380}px`
+							width: `${column.width ?? DEFAULT_COLUMN_WIDTH}px`
 						}}
 					>
 						<div
@@ -114,19 +104,30 @@ export const ConsoleColumn: FC<Props> = ({ column }) => {
 										/>
 									}
 									label={formatTitle(
-										column.key.toLowerCase()
+										column.key
+											.replace("_", " ")
+											.toLowerCase()
 									)}
 									nextPadded={false}
-									nextOnClick={() => handle.remove(column.id)}
+									nextOnClick={() =>
+										handle.columns.remove(column.id)
+									}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
 
 							<div className="overflow-y-scrol">
 								{column.key === "ADD" ? (
-									<ConsoleColumnAddOptions id={id} />
+									<ConsoleColumnAddOptions id={column.id} />
 								) : column.key === "PLUGS" ? (
 									<Plugs className="px-4" />
+								) : column.key === "DISCOVER" ? (
+									<PlugsDiscover
+										className="pt-4"
+										column={true}
+									/>
+								) : column.key === "MY_PLUGS" ? (
+									<PlugsMine className="pt-4" column={true} />
 								) : column.key === "ASSETS" ? (
 									<SocketAssets className="px-4" />
 								) : column.key === "ACTIVITY" ? (

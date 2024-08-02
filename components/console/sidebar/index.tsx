@@ -1,18 +1,8 @@
-import { useEffect, useState } from "react"
-
 import Image from "next/image"
 
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
-import {
-	Book,
-	Check,
-	ClipboardCheck,
-	Github,
-	LogOut,
-	Plug,
-	Plus
-} from "lucide-react"
+import { Book, ClipboardCheck, Github, LogOut, Plus } from "lucide-react"
 
 import { Button } from "@/components/shared"
 import { useSockets } from "@/contexts"
@@ -21,8 +11,6 @@ import { useClipboard } from "@/lib"
 export const ConsoleSidebar = () => {
 	const { address, ensAvatar } = useSockets()
 	const { copied, handleCopied } = useClipboard(address ?? "")
-
-	const [imageLoaded, setImageLoaded] = useState(false)
 
 	return (
 		<div className="flex h-screen min-w-20 flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
@@ -45,7 +33,6 @@ export const ConsoleSidebar = () => {
 									width={72}
 									height={72}
 									className="h-full w-full rounded-sm"
-									onLoad={() => setImageLoaded(true)}
 								/>
 							) : (
 								<BlockiesSvg
@@ -82,7 +69,7 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<Button
-					variant="secondary"
+					variant="primary"
 					href="https://docs.onplug.io"
 					sizing="sm"
 					className="rounded-sm p-1 outline-none"

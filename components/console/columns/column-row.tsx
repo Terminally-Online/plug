@@ -3,18 +3,21 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn, ConsoleColumnAdd } from "@/components/console"
-import { useConsole } from "@/contexts"
+import { useSockets } from "@/contexts"
 
 export const ConsoleColumnRow = () => {
-	const { console, handle } = useConsole()
+	const { socket, handle } = useSockets()
 
 	const onDragEnd = (result: DropResult) => {
 		if (!result.destination) return
 
-		handle.move({ from: result.source.index, to: result.destination.index })
+		handle.columns.move({
+			from: result.source.index,
+			to: result.destination.index
+		})
 	}
 
-	if (console === undefined) return null
+	if (socket === undefined) return null
 
 	return (
 		<div className="flex h-screen flex-row overflow-x-auto overflow-y-hidden">
@@ -26,7 +29,7 @@ export const ConsoleColumnRow = () => {
 							className="flex flex-row"
 							{...provided.droppableProps}
 						>
-							{console.columns
+							{socket.columns
 								.sort((a, b) => a.index - b.index)
 								.map(column => (
 									<ConsoleColumn

@@ -5,8 +5,10 @@ import { api, RouterOutputs } from "@/server/client"
 import { useSockets } from "./SocketProvider"
 
 export const BalancesContext = createContext<{
-	tokens: RouterOutputs["socket"]["tokens"] | undefined
-	collectibles: RouterOutputs["socket"]["collectibles"] | undefined
+	tokens: RouterOutputs["socket"]["balances"]["tokens"] | undefined
+	collectibles:
+		| RouterOutputs["socket"]["balances"]["collectibles"]
+		| undefined
 }>({
 	tokens: [],
 	collectibles: {}
@@ -15,8 +17,10 @@ export const BalancesContext = createContext<{
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { socket } = useSockets()
 
-	const { data: tokens } = api.socket.tokens.useQuery(socket?.socketAddress)
-	const { data: collectibles } = api.socket.collectibles.useQuery(
+	const { data: tokens } = api.socket.balances.tokens.useQuery(
+		socket?.socketAddress
+	)
+	const { data: collectibles } = api.socket.balances.collectibles.useQuery(
 		socket?.socketAddress
 	)
 

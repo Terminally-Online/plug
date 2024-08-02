@@ -14,7 +14,7 @@ type Props = {
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
 	primary:
-		"relative bg-gradient-to-tr from-plug-green to-plug-yellow text-white before:absolute before:inset-0 before:bg-gradient-to-tr before:from-plug-green before:to-plug-yellow before:rounded-lg before:w-full before:h-full before:blur-sm before:z-[-1] hover:before:blur-md text-opacity-90 transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+		"relative bg-gradient-to-tr from-plug-green to-plug-yellow text-white before:absolute before:inset-0 before:bg-gradient-to-tr before:from-plug-green before:to-plug-yellow before:rounded-lg before:w-full before:h-full before:blur-sm before:z-[-1] hover:before:blur-md transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	secondary:
 		"border-[1px] border-grayscale-0 text-black hover:border-white hover:bg-grayscale-0 items-center flex justify-center text-opacity-60 whitespace-nowrap bg-white [&.active]:bg-grayscale-0 [&.active]:text-opacity-100 [&.active]:hover:bg-grayscale-100 [&.active]:hover:border-grayscale-0",
 	white: "bg-white text-black hover:bg-opacity-80",

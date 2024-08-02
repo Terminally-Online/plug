@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
 import { motion, MotionProps } from "framer-motion"
 
@@ -11,7 +11,11 @@ export const SocketCollectionList: FC<
 > = ({ className, ...props }) => {
 	const { collectibles } = useBalances()
 
-	if (!collectibles) return <></>
+	const visibleCollectibles = useMemo(() => {
+		if (collectibles === undefined) return Array(10).fill(undefined)
+
+		return Object.keys(collectibles)
+	}, [, collectibles])
 
 	return (
 		<motion.div
@@ -29,10 +33,10 @@ export const SocketCollectionList: FC<
 			}}
 			{...(props as MotionProps)}
 		>
-			{Object.keys(collectibles).map(collection => (
+			{visibleCollectibles.map(collection => (
 				<SocketCollectionItem
 					key={collection}
-					collection={collectibles[collection]}
+					collection={collectibles?.[collection]}
 				/>
 			))}
 		</motion.div>

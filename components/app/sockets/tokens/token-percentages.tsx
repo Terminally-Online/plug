@@ -2,12 +2,6 @@ import type { FC } from "react"
 
 import { useBalances } from "@/contexts"
 
-type Props = {
-	chains: NonNullable<
-		ReturnType<typeof useBalances>["tokens"]
-	>[number]["chains"]
-}
-
 const size = 14
 const radius = 50
 const circumference = 2 * Math.PI * radius
@@ -32,7 +26,11 @@ const getChainColor = (chainId: number) => {
 	}
 }
 
-export const SocketTokenPercentages: FC<Props> = ({ chains }) => {
+export const SocketTokenPercentages: FC<{
+	chains: NonNullable<
+		ReturnType<typeof useBalances>["tokens"]
+	>[number]["chains"]
+}> = ({ chains }) => {
 	let accumulatedPercentage = 0
 
 	return (
