@@ -13,7 +13,7 @@ export const BalancesContext = createContext<{
 		| undefined
 }>({
 	tokens: [],
-	collectibles: {}
+	collectibles: []
 })
 
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {

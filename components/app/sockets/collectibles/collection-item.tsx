@@ -10,15 +10,17 @@ import { RouterOutputs } from "@/server/client"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 
-type Collectibles = NonNullable<
-	RouterOutputs["socket"]["balances"]["collectibles"]
->
-
 export const SocketCollectionItem: FC<{
-	collection: Collectibles[keyof Collectibles] | undefined
+	collection:
+		| NonNullable<
+				RouterOutputs["socket"]["balances"]["collectibles"]
+		  >[number]
+		| undefined
 }> = ({ collection }) => {
 	const [expanded, setExpanded] = useState(false)
 	const [error, setError] = useState(false)
+
+	console.log("collection", collection)
 
 	if (error) return <></>
 

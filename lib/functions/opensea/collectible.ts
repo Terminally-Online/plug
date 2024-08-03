@@ -209,6 +209,7 @@ export const getCollectibles = async (
 				where: { cacheOwner: address },
 				orderBy: { updatedAt: "desc" }
 			}
-		}
+		},
+		orderBy: { createdAt: "desc" }
 	})
 }

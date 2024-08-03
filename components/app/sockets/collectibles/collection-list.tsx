@@ -11,12 +11,10 @@ export const SocketCollectionList: FC<
 > = ({ className, ...props }) => {
 	const { collectibles } = useBalances()
 
-	console.log("collectibles", collectibles)
-
 	const visibleCollectibles = useMemo(() => {
 		if (collectibles === undefined) return Array(10).fill(undefined)
 
-		return Object.keys(collectibles)
+		return collectibles
 	}, [, collectibles])
 
 	return (
@@ -35,10 +33,10 @@ export const SocketCollectionList: FC<
 			}}
 			{...(props as MotionProps)}
 		>
-			{visibleCollectibles.map(collection => (
+			{visibleCollectibles.map((collection, index) => (
 				<SocketCollectionItem
-					key={collection}
-					collection={collectibles?.[collection]}
+					key={index}
+					collection={collectibles?.[index]}
 				/>
 			))}
 		</motion.div>

@@ -21,7 +21,7 @@ export const balances = createTRPCRouter({
 	collectibles: protectedProcedure
 		.input(z.string().optional())
 		.query(async ({ input }) => {
-			if (input === undefined) return {}
+			if (input === undefined) return []
 
 			return await getCollectibles(input)
 		})
