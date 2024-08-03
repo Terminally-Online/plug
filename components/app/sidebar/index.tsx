@@ -1,16 +1,25 @@
 import Image from "next/image"
 
+import { signOut } from "next-auth/react"
+
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
 import { Book, ClipboardCheck, Github, LogOut, Plus } from "lucide-react"
+import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
 import { useSockets } from "@/contexts"
 import { useClipboard } from "@/lib"
 
 export const ConsoleSidebar = () => {
-	const { address, ensAvatar } = useSockets()
-	const { copied, handleCopied } = useClipboard(address ?? "")
+	const { address, ensAvatar, socket } = useSockets()
+	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
+
+	const { disconnect } = useDisconnect({
+		mutation: {
+			onSuccess: () => signOut({ callbackUrl: "/" })
+		}
+	})
 
 	return (
 		<div className="flex h-screen min-w-20 flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
@@ -99,7 +108,7 @@ export const ConsoleSidebar = () => {
 
 				<Button
 					variant="secondary"
-					onClick={() => {}}
+					onClick={() => disconnect()}
 					sizing="sm"
 					className="rounded-sm p-1 outline-none"
 				>

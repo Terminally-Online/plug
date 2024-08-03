@@ -13,11 +13,6 @@ Do These:
                 Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
             ☐ Make resizing more performant.
                 Notes: right now it is rerendering everything on a new frame as well as posting into the database.
-            ☐ Right now, a lot of the floating text things have been designed for mobile-only.
-                Notes: This results in wide columns having a less than ideal appearance.
-            ☐ Clicking pfp should copy socket address
-            ☐ Sign out does not work in Console
-                Notes: This is explicit to console -- It is working in the app.
             ☐ Referal functionality.
             ☐ Settings column.
                 ☐ add contact info to database.
@@ -84,6 +79,11 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Sign out does not work in Console @done(24-08-02 22:20) @project(Do These.Console.Small)
+    Notes: This is explicit to console -- It is working in the app.
+  ✔ Clicking pfp should copy socket address @done(24-08-02 22:19) @project(Do These.Console.Small)
+  ✔ Right now, a lot of the floating text things have been designed for mobile-only. @done(24-08-02 22:18) @project(Do These.Console.Small)
+    Notes: This results in wide columns having a less than ideal appearance.
   ✔ Automatic app → console → app display on resize @done(24-08-02 16:28) @project(Do These.Shared)
   ✔ Refresh tokens and prices on a regular basis when that column / page is open. @done(24-08-01 23:45) @project(Do These.Console.Small)
   ✔ Change "Plugs" column into "Discover" and "My Plugs" columns. @done(24-08-01 19:20) @project(Do These.Console.Small)

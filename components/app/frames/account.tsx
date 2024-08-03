@@ -21,9 +21,7 @@ export const AccountFrame = () => {
 
 	const { disconnect } = useDisconnect({
 		mutation: {
-			onSuccess(data) {
-				signOut({ callbackUrl: "/" })
-			}
+			onSuccess: () => signOut({ callbackUrl: "/" })
 		}
 	})
 
