@@ -1,14 +1,7 @@
 import axios from "axios"
 
 import { OpenseaCollectible } from "@/lib/types"
-import {
-	OpenseaCollectibleCacheModel,
-	OpenseaCollectibleModel,
-	OpenseaCollectionModel
-} from "@/prisma/types"
 import { db } from "@/server/db"
-
-type OpenseaCollectibles = Array<OpenseaCollectible>
 
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
@@ -20,10 +13,7 @@ const getAPIKey = () => {
 	return keys?.[Math.floor(Math.random() * keys.length)]
 }
 
-export const getOpenseaCollection = async (
-	slug: string,
-	chain: string
-): Promise<OpenseaCollectionModel> => {
+export const getOpenseaCollection = async (slug: string, chain: string) => {
 	const cachedCollection = await db.openseaCollection.findUnique({
 		where: { slug }
 	})
@@ -88,8 +78,8 @@ export const getOpenseaCollectiblesForChain = async (
 	chain: string,
 	limit = 200,
 	next?: string,
-	collectibles: OpenseaCollectibles = []
-): Promise<OpenseaCollectibles> => {
+	collectibles: Array<OpenseaCollectible> = []
+): Promise<Array<OpenseaCollectible>> => {
 	const response = await axios.get(
 		`https://api.opensea.io/api/v2/chain/${chain}/account/${address}/nfts?limit=${limit}${next ? `&next=${next}` : ""}`,
 		{
@@ -128,7 +118,7 @@ export const getCollectiblesForChain = async (
 	chain: string,
 	limit = 200,
 	next?: string
-): Promise<OpenseaCollectibleModel[]> => {
+) => {
 	const cachedCollectibles = await db.openseaCollectibleCache.findUnique({
 		where: { socketId_chain: { socketId: address, chain } },
 		include: { collectibles: { include: { collection: true } } }
