@@ -1,22 +1,14 @@
+"use client"
+
 import { FC, HTMLAttributes, useState } from "react"
 
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
-import {
-	Button,
-	Footer,
-	Header,
-	SocketCollectionList,
-	SocketTokenList,
-	TransferFrame
-} from "@/components"
-import { useBalances, useFrame } from "@/contexts"
+import { Header, SocketCollectionList, SocketTokenList } from "@/components"
 
 export const SocketAssets: FC<HTMLAttributes<HTMLDivElement>> = ({
 	...props
 }) => {
-	const { handleFrameVisible } = useFrame()
-
 	const [tokensExpanded, setTokensExpanded] = useState(false)
 
 	return (

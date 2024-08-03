@@ -25,9 +25,9 @@ const DesktopPage = () => {
 }
 
 const Page = () => {
-	const { isMobile } = useMediaQuery()
+	const { md } = useMediaQuery()
 
-	return isMobile ? <MobilePage /> : <DesktopPage />
+	return md ? <DesktopPage /> : <MobilePage />
 }
 
 export default Page

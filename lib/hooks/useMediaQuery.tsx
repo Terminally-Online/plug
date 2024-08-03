@@ -1,17 +1,63 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+
+const BREAKPOINTS = {
+	sm: 640,
+	md: 768,
+	lg: 1024,
+	xl: 1280,
+	"2xl": 1536
+} as const
+
+type Breakpoint = keyof typeof BREAKPOINTS
+
+type BreakpointState = {
+	[K in Breakpoint]: boolean
+}
 
 export const useMediaQuery = () => {
-	const [isMobile, setIsMobile] = useState(false)
+	const mediaQueries = useMemo(
+		() =>
+			Object.entries(BREAKPOINTS).map(
+				([key, value]) => [key, `(min-width: ${value}px)`] as const
+			),
+		[]
+	)
+
+	const [state, setState] = useState<BreakpointState>(
+		() =>
+			Object.keys(BREAKPOINTS).reduce(
+				(acc, key) => ({
+					...acc,
+					[key]: false
+				}),
+				{}
+			) as BreakpointState
+	)
 
 	useEffect(() => {
-		const handleResize = () => {
-			setIsMobile(window.innerWidth < 768)
+		const mediaQueryLists = mediaQueries.map(([_, query]) =>
+			window.matchMedia(query)
+		)
+
+		const handleChange = () => {
+			const newState = mediaQueryLists.reduce(
+				(acc, mql, index) => ({
+					...acc,
+					[mediaQueries[index][0]]: mql.matches
+				}),
+				{} as BreakpointState
+			)
+
+			setState(newState)
 		}
 
-		window.addEventListener("resize", handleResize)
+		mediaQueryLists.forEach(mql => mql.addListener(handleChange))
+		handleChange() // Set initial state
 
-		return () => window.removeEventListener("resize", handleResize)
-	}, [])
+		return () => {
+			mediaQueryLists.forEach(mql => mql.removeListener(handleChange))
+		}
+	}, [mediaQueries])
 
-	return { isMobile }
+	return state
 }

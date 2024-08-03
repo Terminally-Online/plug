@@ -26,21 +26,21 @@ const formatForDisplay = (input: number | string, decimals = 2) => {
 }
 
 const MinusColumn = () => (
-	<div>
+	<span>
 		<span>-</span>
-	</div>
+	</span>
 )
 
 const CommaColumn = () => (
-	<div>
+	<span>
 		<span>,</span>
-	</div>
+	</span>
 )
 
 const DecimalColumn = () => (
-	<div>
+	<span>
 		<span>.</span>
-	</div>
+	</span>
 )
 
 const SlashColumn = () => (
@@ -85,7 +85,7 @@ export const Counter: FC<
 	const numArray = formatForDisplay(count, decimals)
 
 	return (
-		<div
+		<span
 			className={cn(
 				"relative flex w-full flex-row-reverse overflow-hidden",
 				className
@@ -105,6 +105,6 @@ export const Counter: FC<
 					<NumberColumn key={index} digit={number} />
 				)
 			)}
-		</div>
+		</span>
 	)
 }

@@ -1,10 +1,13 @@
 Do These:
+    Shared:
+        ☐ Fix hydration error
+            Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
+        ☐ Where do users initiate the transfer assets interaction flow
+        ☐ Cache balances in the database
+            ☐ Refresh prices on a regular basis since it comes from a free api
+
     Console:
-        ☐ NEED TO FIGURE OUT: where do users initiate the transfer assets interaction flow
-        
         Small:
-            ☐ Fix hydration error
-                Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
             ☐ When you drag a column it halts as the previous state for a second before confirming.
             ☐ Instant socket address resolution.
                 Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
@@ -81,6 +84,7 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Automatic app → console → app display on resize @done(24-08-02 16:28) @project(Do These.Shared)
   ✔ Refresh tokens and prices on a regular basis when that column / page is open. @done(24-08-01 23:45) @project(Do These.Console.Small)
   ✔ Change "Plugs" column into "Discover" and "My Plugs" columns. @done(24-08-01 19:20) @project(Do These.Console.Small)
   ✔ Migrate Console Model columns to be stored on a Socket. @done(24-08-01 17:02) @project(Do These.Console.Medium)
