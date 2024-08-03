@@ -4,7 +4,7 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { useSockets } from "./SocketProvider"
 
-const DURATION = 10 * 60 * 1000
+const DURATION = 5 * 60 * 1000
 
 export const BalancesContext = createContext<{
 	tokens: RouterOutputs["socket"]["balances"]["tokens"] | undefined

@@ -1,5 +1,3 @@
-import { Prisma } from "@prisma/client"
-
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 import { balances } from "./balances"
@@ -23,7 +21,7 @@ export const socket = createTRPCRouter({
 				}
 			},
 			update: {},
-			include: { columns: true }
+			include: { columns: true, collectibles: true }
 		})
 	}),
 	balances,

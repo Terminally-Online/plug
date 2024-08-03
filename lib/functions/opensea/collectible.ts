@@ -130,7 +130,7 @@ export const getCollectiblesForChain = async (
 	next?: string
 ): Promise<OpenseaCollectibleModel[]> => {
 	const cachedCollectibles = await db.openseaCollectibleCache.findUnique({
-		where: { chain_owner: { chain, owner: address } },
+		where: { socketId_chain: { socketId: address, chain } },
 		include: { collectibles: { include: { collection: true } } }
 	})
 
@@ -167,14 +167,20 @@ export const getCollectiblesForChain = async (
 	}))
 
 	await db.openseaCollectible.deleteMany({
-		where: { cacheChain: chain, cacheOwner: address }
+		where: { owner: address, cacheChain: chain }
 	})
 
+	const socket = await db.userSocket.findFirst({
+		where: { socketAddress: address }
+	})
+
+	if (socket === null) return []
+
 	const collectiblesCache = await db.openseaCollectibleCache.upsert({
-		where: { chain_owner: { chain, owner: address } },
+		where: { socketId_chain: { socketId: socket.id, chain } },
 		create: {
 			chain,
-			owner: address,
+			socketId: socket.id,
 			collectibles: {
 				createMany: {
 					data: transformed
@@ -198,15 +204,21 @@ export const getCollectibles = async (
 	address: string,
 	chains = ["ethereum", "optimism", "base"]
 ) => {
+	const socket = await db.userSocket.findFirst({
+		where: { socketAddress: address }
+	})
+
+	if (socket === null) return []
+
 	await Promise.all(
-		chains.map(chain => getCollectiblesForChain(address, chain))
+		chains.map(async chain => await getCollectiblesForChain(address, chain))
 	)
 
 	return await db.openseaCollection.findMany({
-		where: { collectibles: { some: { cacheOwner: address } } },
+		where: { collectibles: { some: { cacheSocketId: socket.id } } },
 		include: {
 			collectibles: {
-				where: { cacheOwner: address },
+				where: { cacheSocketId: socket.id },
 				orderBy: { updatedAt: "desc" }
 			}
 		},

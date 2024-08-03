@@ -3,13 +3,13 @@ import { FC } from "react"
 import { Accordion } from "@/components"
 import { RouterOutputs } from "@/server/client"
 
-type Collectibles = NonNullable<
-	RouterOutputs["socket"]["balances"]["collectibles"]
->
-
 export const SocketCollectibleItem: FC<{
-	collection: Collectibles[keyof Collectibles]
-	collectible?: Collectibles[keyof Collectibles]["collectibles"][number]
+	collection: NonNullable<
+		RouterOutputs["socket"]["balances"]["collectibles"]
+	>[number]
+	collectible?: NonNullable<
+		RouterOutputs["socket"]["balances"]["collectibles"]
+	>[number]["collectibles"][number]
 }> = ({ collection, collectible }) => {
 	const loading = collectible === undefined
 
@@ -24,7 +24,7 @@ export const SocketCollectibleItem: FC<{
 						position: "relative",
 						width: "100%",
 						paddingTop: "100%",
-						backgroundImage: `url(${collectible?.display_image_url || collection.imageUrl})`,
+						backgroundImage: `url(${collectible?.displayImageUrl || collection.imageUrl})`,
 						backgroundSize: "cover",
 						backgroundPosition: "center",
 						backgroundRepeat: "no-repeat"

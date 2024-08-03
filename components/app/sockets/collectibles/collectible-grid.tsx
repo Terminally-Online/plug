@@ -3,12 +3,10 @@ import { FC } from "react"
 import { SocketCollectibleItem } from "@/components"
 import { RouterOutputs } from "@/server/client"
 
-type Collectibles = NonNullable<
-	RouterOutputs["socket"]["balances"]["collectibles"]
->
-
 export const SocketCollectibleGrid: FC<{
-	collection: Collectibles[keyof Collectibles]
+	collection: NonNullable<
+		RouterOutputs["socket"]["balances"]["collectibles"]
+	>[number]
 }> = ({ collection }) => {
 	if (!collection) return <></>
 

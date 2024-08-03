@@ -19,29 +19,7 @@ Table UserSocket {
   updatedAt DateTime [default: `now()`, not null]
   socketAddress String [not null]
   columns ConsoleColumn [not null]
-}
-
-Table Workflow {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  userAddress String [not null]
-  name String [not null, default: 'Untitled Plug']
-  isCurated Boolean [not null, default: false]
-  isPrivate Boolean [not null, default: false]
-  actions String [not null, default: '[]']
-  color String [not null]
-  tags String[] [not null]
-  workflowForkedId String
-}
-
-Table FeatureRequest {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  userAddress String [not null]
-  context String [not null]
-  message String
+  collectibles OpenseaCollectibleCache [not null]
 }
 
 Table OpenseaCollection {
@@ -91,24 +69,50 @@ Table OpenseaCollectible {
   collection OpenseaCollection [not null]
   collectionSlug String [not null]
   cache OpenseaCollectibleCache [not null]
+  cacheSocketId String [not null]
   cacheChain String [not null]
-  cacheOwner String [not null]
 }
 
 Table OpenseaCollectibleCache {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   chain String [not null]
-  owner String [not null]
   collectibles OpenseaCollectible [not null]
+  socket UserSocket [not null]
+  socketId String [not null]
 
   indexes {
-    (chain, owner) [pk]
+    (socketId, chain) [pk]
   }
+}
+
+Table Workflow {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  userAddress String [not null]
+  name String [not null, default: 'Untitled Plug']
+  isCurated Boolean [not null, default: false]
+  isPrivate Boolean [not null, default: false]
+  actions String [not null, default: '[]']
+  color String [not null]
+  tags String[] [not null]
+  workflowForkedId String
+}
+
+Table FeatureRequest {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  userAddress String [not null]
+  context String [not null]
+  message String
 }
 
 Ref: ConsoleColumn.socketId > UserSocket.id
 
 Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
 
-Ref: OpenseaCollectible.(cacheChain, cacheOwner) > OpenseaCollectibleCache.(chain, owner)
+Ref: OpenseaCollectible.(cacheSocketId, cacheChain) > OpenseaCollectibleCache.(socketId, chain)
+
+Ref: OpenseaCollectibleCache.socketId > UserSocket.id

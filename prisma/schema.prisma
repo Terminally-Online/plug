@@ -52,44 +52,13 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // One-to-many 
     // ---------------------------------------------------------------------------
-    columns ConsoleColumn[]
-}
-
-model Workflow {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    columns      ConsoleColumn[]
+    collectibles OpenseaCollectibleCache[]
 
     // ---------------------------------------------------------------------------
-    // Fields
+    // Indexes
     // ---------------------------------------------------------------------------
-    userAddress      String
-    name             String   @default("Untitled Plug")
-    isCurated        Boolean  @default(false)
-    isPrivate        Boolean  @default(false)
-    actions          String   @default("[]")
-    color            String
-    tags             String[]
-    workflowForkedId String?
-}
-
-model FeatureRequest {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    userAddress String
-    context     String
-    message     String?
+    @@index([socketAddress])
 }
 
 model OpenseaCollection {
@@ -165,9 +134,9 @@ model OpenseaCollectible {
     // ---------------------------------------------------------------------------
     collection     OpenseaCollection       @relation(fields: [collectionSlug], references: [slug])
     collectionSlug String
-    cache          OpenseaCollectibleCache @relation(fields: [cacheChain, cacheOwner], references: [chain, owner])
+    cache          OpenseaCollectibleCache @relation(fields: [cacheSocketId, cacheChain], references: [socketId, chain])
+    cacheSocketId  String
     cacheChain     String
-    cacheOwner     String
 }
 
 model OpenseaCollectibleCache {
@@ -181,7 +150,6 @@ model OpenseaCollectibleCache {
     // Fields
     // ---------------------------------------------------------------------------
     chain String
-    owner String
 
     // ---------------------------------------------------------------------------
     // One-to-many
@@ -189,7 +157,50 @@ model OpenseaCollectibleCache {
     collectibles OpenseaCollectible[]
 
     // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socketId String
+
+    // ---------------------------------------------------------------------------
     // Identification
     // ---------------------------------------------------------------------------
-    @@id([chain, owner])
+    @@id([socketId, chain])
+}
+
+model Workflow {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    userAddress      String
+    name             String   @default("Untitled Plug")
+    isCurated        Boolean  @default(false)
+    isPrivate        Boolean  @default(false)
+    actions          String   @default("[]")
+    color            String
+    tags             String[]
+    workflowForkedId String?
+}
+
+model FeatureRequest {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    userAddress String
+    context     String
+    message     String?
 }
