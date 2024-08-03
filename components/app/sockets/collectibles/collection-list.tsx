@@ -11,6 +11,8 @@ export const SocketCollectionList: FC<
 > = ({ className, ...props }) => {
 	const { collectibles } = useBalances()
 
+	console.log("collectibles", collectibles)
+
 	const visibleCollectibles = useMemo(() => {
 		if (collectibles === undefined) return Array(10).fill(undefined)
 

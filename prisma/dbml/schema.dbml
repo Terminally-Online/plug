@@ -46,7 +46,8 @@ Table FeatureRequest {
 
 Table OpenseaCollection {
   slug String [pk]
-  createdDate DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
   collection String [not null]
   name String [not null]
   description String [not null]
@@ -67,6 +68,47 @@ Table OpenseaCollection {
   instagramUsername String [not null]
   totalSupply Int [not null]
   chain String [not null]
+  collectibles OpenseaCollectible [not null]
+}
+
+Table OpenseaCollectible {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  identifier String [not null]
+  contract String [not null]
+  tokenStandard String [not null]
+  name String [not null]
+  description String
+  imageUrl String
+  displayImageUrl String
+  displayAnimationUrl String
+  metadataUrl String
+  openseaUrl String [not null]
+  isDisabled Boolean [not null]
+  isNsfw Boolean [not null]
+  owner String [not null]
+  collection OpenseaCollection [not null]
+  collectionSlug String [not null]
+  cache OpenseaCollectibleCache [not null]
+  cacheChain String [not null]
+  cacheOwner String [not null]
+}
+
+Table OpenseaCollectibleCache {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  chain String [not null]
+  owner String [not null]
+  collectibles OpenseaCollectible [not null]
+
+  indexes {
+    (chain, owner) [pk]
+  }
 }
 
 Ref: ConsoleColumn.socketId > UserSocket.id
+
+Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
+
+Ref: OpenseaCollectible.(cacheChain, cacheOwner) > OpenseaCollectibleCache.(chain, owner)

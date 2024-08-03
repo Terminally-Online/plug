@@ -1,26 +1,39 @@
 import axios from "axios"
 
-import { OpenseaCollection } from "@prisma/client"
-
 import { OpenseaCollectible } from "@/lib/types"
+import {
+	OpenseaCollectibleCacheModel,
+	OpenseaCollectibleModel,
+	OpenseaCollectionModel
+} from "@/prisma/types"
 import { db } from "@/server/db"
 
-type Collectibles = Array<OpenseaCollectible>
+type OpenseaCollectibles = Array<OpenseaCollectible>
+
+const MINUTE = 60 * 1000
+const HOUR = 60 * MINUTE
+const COLLECTION_CACHE_TIME = 24 * HOUR * 7
+const COLLECTIBLES_CACHE_TIME = 10 * MINUTE
 
 const getAPIKey = () => {
 	const keys = process.env.OPENSEA_API_KEY?.split(",")
 	return keys?.[Math.floor(Math.random() * keys.length)]
 }
 
-export const getCollection = async (
+export const getOpenseaCollection = async (
 	slug: string,
 	chain: string
-): Promise<OpenseaCollection> => {
-	const collection = await db.openseaCollection.findUnique({
+): Promise<OpenseaCollectionModel> => {
+	const cachedCollection = await db.openseaCollection.findUnique({
 		where: { slug }
 	})
 
-	if (collection) return collection
+	const cache =
+		cachedCollection &&
+		cachedCollection.updatedAt >
+			new Date(Date.now() - COLLECTION_CACHE_TIME)
+
+	if (cache) return cachedCollection
 
 	const response = await axios.get(
 		`https://api.opensea.io/api/v2/collections/${slug}`,
@@ -55,7 +68,7 @@ export const getCollection = async (
 		instagramUsername: data.instagram_username,
 		totalSupply: data.total_supply,
 		chain,
-		createdDate: new Date(data.created_date)
+		createdAt: new Date(data.created_date)
 	}
 
 	return await db.openseaCollection.upsert({
@@ -70,13 +83,13 @@ export const getCollection = async (
 	})
 }
 
-export const getCollectiblesForChain = async (
+export const getOpenseaCollectiblesForChain = async (
 	address: string,
 	chain: string,
 	limit = 200,
 	next?: string,
-	collectibles: Collectibles = []
-): Promise<Collectibles> => {
+	collectibles: OpenseaCollectibles = []
+): Promise<OpenseaCollectibles> => {
 	const response = await axios.get(
 		`https://api.opensea.io/api/v2/chain/${chain}/account/${address}/nfts?limit=${limit}${next ? `&next=${next}` : ""}`,
 		{
@@ -88,21 +101,19 @@ export const getCollectiblesForChain = async (
 	)
 
 	const responseCollectibles = await Promise.all(
-		response.data.nfts.map(async (nft: OpenseaCollectible) => {
-			return {
-				...nft,
-				collection: await getCollection(
-					nft.collection as unknown as string,
-					chain
-				)
-			}
-		})
+		response.data.nfts.map(async (collectible: OpenseaCollectible) => ({
+			...collectible,
+			collection: await getOpenseaCollection(
+				collectible.collection as unknown as string,
+				chain
+			)
+		}))
 	)
 
 	collectibles = [...collectibles, ...responseCollectibles]
 
 	return response.data.next
-		? getCollectiblesForChain(
+		? getOpenseaCollectiblesForChain(
 				address,
 				chain,
 				limit,
@@ -112,53 +123,92 @@ export const getCollectiblesForChain = async (
 		: collectibles
 }
 
+export const getCollectiblesForChain = async (
+	address: string,
+	chain: string,
+	limit = 200,
+	next?: string
+): Promise<OpenseaCollectibleModel[]> => {
+	const cachedCollectibles = await db.openseaCollectibleCache.findUnique({
+		where: { chain_owner: { chain, owner: address } },
+		include: { collectibles: { include: { collection: true } } }
+	})
+
+	const cache =
+		cachedCollectibles &&
+		cachedCollectibles.updatedAt >
+			new Date(Date.now() - COLLECTIBLES_CACHE_TIME)
+
+	if (cache) return cachedCollectibles.collectibles
+
+	const collectibles = await getOpenseaCollectiblesForChain(
+		address,
+		chain,
+		limit,
+		next
+	)
+
+	const transformed = collectibles.map((collectible: OpenseaCollectible) => ({
+		identifier: collectible.identifier,
+		collectionSlug: collectible.collection.slug,
+		contract: collectible.contract,
+		tokenStandard: collectible.token_standard,
+		name: collectible.name,
+		description: collectible.description,
+		imageUrl: collectible.image_url,
+		displayImageUrl: collectible.display_image_url,
+		displayAnimationUrl: collectible.display_animation_url,
+		metadataUrl: collectible.metadata_url,
+		openseaUrl: collectible.opensea_url,
+		updatedAt: new Date(collectible.updated_at),
+		isDisabled: collectible.is_disabled,
+		isNsfw: collectible.is_nsfw,
+		owner: address
+	}))
+
+	await db.openseaCollectible.deleteMany({
+		where: { cacheChain: chain, cacheOwner: address }
+	})
+
+	const collectiblesCache = await db.openseaCollectibleCache.upsert({
+		where: { chain_owner: { chain, owner: address } },
+		create: {
+			chain,
+			owner: address,
+			collectibles: {
+				createMany: {
+					data: transformed
+				}
+			}
+		},
+		update: {
+			collectibles: {
+				createMany: {
+					data: transformed
+				}
+			}
+		},
+		include: { collectibles: { include: { collection: true } } }
+	})
+
+	return collectiblesCache.collectibles
+}
+
 export const getCollectibles = async (
 	address: string,
 	chains = ["ethereum", "optimism", "base"]
 ) => {
-	const responses = await Promise.allSettled(
+	await Promise.all(
 		chains.map(chain => getCollectiblesForChain(address, chain))
 	)
 
-	const collectibles = responses.flatMap(response => {
-		if (response.status === "fulfilled") {
-			return response.value
-		}
-		return []
-	})
-
-	const cleanedCollectibles = collectibles
-		.filter(nft => nft.is_disabled === false)
-		.sort(
-			(a, b) =>
-				new Date(b.updated_at).getTime() -
-				new Date(a.updated_at).getTime()
-		)
-
-	// move collection out of the collectible into the collectibles object
-	const groupedCollectibles = cleanedCollectibles.reduce(
-		(acc, collectible) => {
-			const slug = collectible.collection.slug
-
-			if (!acc[slug])
-				acc[slug] = {
-					...collectible.collection,
-					collectibles: []
-				}
-
-			const { collection, ...data } = collectible
-
-			acc[slug].collectibles.push(data)
-
-			return acc
-		},
-		{} as Record<
-			string,
-			OpenseaCollection & {
-				collectibles: Array<Omit<OpenseaCollectible, "collection">>
+	return await db.openseaCollection.findMany({
+		where: { collectibles: { some: { cacheOwner: address } } },
+		include: {
+			collectibles: {
+				where: { cacheOwner: address },
+				orderBy: { updatedAt: "desc" }
 			}
-		>
-	)
-
-	return groupedCollectibles
+		}
+	})
 }

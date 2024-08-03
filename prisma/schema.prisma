@@ -96,8 +96,9 @@ model OpenseaCollection {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
-    slug        String   @id @unique
-    createdDate DateTime @default(now())
+    slug      String   @id @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
     // Fields
@@ -122,4 +123,73 @@ model OpenseaCollection {
     instagramUsername       String
     totalSupply             Int
     chain                   String
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    collectibles OpenseaCollectible[]
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@index([slug, chain])
+}
+
+model OpenseaCollectible {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    identifier          String
+    contract            String
+    tokenStandard       String
+    name                String
+    description         String?
+    imageUrl            String?
+    displayImageUrl     String?
+    displayAnimationUrl String?
+    metadataUrl         String?
+    openseaUrl          String
+    isDisabled          Boolean
+    isNsfw              Boolean
+    owner               String
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    collection     OpenseaCollection       @relation(fields: [collectionSlug], references: [slug])
+    collectionSlug String
+    cache          OpenseaCollectibleCache @relation(fields: [cacheChain, cacheOwner], references: [chain, owner])
+    cacheChain     String
+    cacheOwner     String
+}
+
+model OpenseaCollectibleCache {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    chain String
+    owner String
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    collectibles OpenseaCollectible[]
+
+    // ---------------------------------------------------------------------------
+    // Identification
+    // ---------------------------------------------------------------------------
+    @@id([chain, owner])
 }
