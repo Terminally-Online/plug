@@ -1,13 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    directory: "/"
+    directory: "package/app"
     schedule:
       interval: "daily"
     groups:
       production-dependencies:
         patterns:
-          - "packages/app"
+          - "*"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
