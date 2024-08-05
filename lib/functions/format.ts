@@ -26,7 +26,7 @@ export const formatBalance = (
 	value: string | bigint | bigint | undefined,
 	decimals: number | undefined
 ) => {
-	if (!value || !decimals) return 0
+	if (!value || !decimals) return undefined
 
 	return Number.parseFloat(
 		(Number(value) / 10 ** Number(decimals)).toFixed(4)

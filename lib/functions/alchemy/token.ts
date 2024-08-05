@@ -1,201 +1,362 @@
 import { Alchemy, Network } from "alchemy-sdk"
-import { hexToBigInt } from "viem"
 
-import { formatBalance, getPrices, nativeTokenAddress, tokens } from "@/lib"
+import {
+	formatBalance,
+	getPriceKey,
+	getPrices,
+	nativeTokenAddress,
+	tokens as staticTokens
+} from "@/lib"
+import { TokenBalanceModel, TokenPriceModel } from "@/prisma/types"
+import { db } from "@/server/db"
 
-type Tokens = Array<{
-	address: string
-	name: string
-	symbol: string
-	logoURI: string
-	balance: bigint
-	balanceFormatted: number
-	chains: Array<{
-		address: string
-		chainId: number
-		chainName: string
-		decimals: number
-		balance: bigint
-		balanceFormatted: number
-	}>
-}>
+const prohibitedNameInclusions = [
+	".com",
+	".io",
+	".org",
+	".net",
+	".app",
+	".gg",
+	".xyz",
+	".claims",
+	".finance",
+	".tech",
+	".exchange",
+	".wallet",
+	".capital",
+	".fund",
+	".capital",
+	".su",
+	".cloud",
+	".events"
+]
+
+const prohibitedSymbolInclusions = [
+	...prohibitedNameInclusions,
+	"claim",
+	"airdrop",
+	"visit"
+]
+
+const MINUTE = 60 * 1000
+const TOKEN_BALANCES_CACHE_TIME = 3 * MINUTE
 
 const getNetworkMetadata = (network: Network) => {
 	switch (network) {
 		case Network.ETH_MAINNET:
 			return {
-				chainId: 1,
-				chainName: "Ethereum"
+				id: 1,
+				name: "ethereum"
 			}
 		case Network.OPT_MAINNET:
 			return {
-				chainId: 10,
-				chainName: "Optimism"
+				id: 10,
+				name: "optimism"
 			}
 		case Network.BASE_MAINNET:
 			return {
-				chainId: 8453,
-				chainName: "Base"
+				id: 8453,
+				name: "base"
 			}
 		default:
 			return {
-				chainId: 1,
-				chainName: "Ethereum"
+				id: 1,
+				name: "ethereum"
 			}
 	}
 }
 
-export const getTokensForChain = async (address: string, chain: Network) => {
-	const networkMetadata = getNetworkMetadata(chain)
+const getIsExcluded = (token: AlchemyTokenBalance) => {
+	const isInvalidBalance = token.balance === 0
 
-	const alchemy = new Alchemy({
-		apiKey: process.env.ALCHEMY_API_KEY,
-		network: chain
-	})
+	const IsMissingName = token.name === undefined
 
-	const balance = await alchemy.core.getBalance(address)
-	const { tokenBalances } = await alchemy.core.getTokenBalances(address)
+	const isProhibitedName = prohibitedNameInclusions.some(inclusion =>
+		token.name?.toLowerCase().includes(inclusion)
+	)
 
-	const nativeAndERC20Balances = [
-		{
-			...networkMetadata,
-			contractAddress: nativeTokenAddress,
-			tokenBalance: balance
-		},
-		...tokenBalances
+	const isProhibitedSymbol = prohibitedSymbolInclusions.some(inclusion =>
+		token.symbol?.toLowerCase().includes(inclusion)
+	)
+
+	return !(
+		isInvalidBalance ||
+		IsMissingName ||
+		isProhibitedName ||
+		isProhibitedSymbol
+	)
+}
+
+const getAlchemyTokensForChain = async (
+	alchemy: Alchemy,
+	address: string,
+	chain: {
+		id: number
+		name: string
+	},
+	pageKey?: string,
+	balances: Array<AlchemyTokenBalance> = []
+): Promise<Array<AlchemyTokenBalance>> => {
+	if (pageKey === undefined) {
+		const nativeBalance = await alchemy.core.getBalance(address)
+
+		if (nativeBalance.toString() !== "0") {
+			const balance = formatBalance(
+				nativeBalance.toString(),
+				18
+			)?.toString()
+
+			balances = [
+				{
+					contract: nativeTokenAddress,
+					balance: Number(balance),
+					name: "Ethereum",
+					symbol: "ETH",
+					decimals: 18,
+					logo: "https://assets.smold.app/api/token/1/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/logo-128.png"
+				}
+			]
+		}
+	}
+
+	const { tokens, pageKey: nextPageKey } =
+		await alchemy.core.getTokensForOwner(
+			address,
+			pageKey
+				? {
+						pageKey: pageKey
+					}
+				: undefined
+		)
+
+	balances = [
+		...balances,
+		...tokens
+			.map(token => {
+				const staticToken = staticTokens.find(t => {
+					const matchingAddress =
+						t.address.toLowerCase() ===
+						token.contractAddress.toLowerCase()
+
+					const matchingChainId = t.chainId === chain.id
+
+					return matchingAddress && matchingChainId
+				})
+
+				const decimals = token.decimals || staticToken?.decimals
+				const name = token.name || staticToken?.name
+				const logo = token.logo || staticToken?.logoURI
+				const symbol = token.symbol || staticToken?.symbol
+
+				return {
+					contract: token.contractAddress,
+					balance: Number(token.balance),
+					decimals: decimals,
+					name: name,
+					symbol: symbol,
+					logo: logo
+				}
+			})
+			.filter(getIsExcluded)
 	]
 
-	return nativeAndERC20Balances
-		.map(token => {
-			const staticToken = tokens.find(
-				t =>
-					t.address.toLowerCase() ===
-						token.contractAddress.toLowerCase() &&
-					t.chainId === networkMetadata.chainId
+	return nextPageKey
+		? getAlchemyTokensForChain(
+				alchemy,
+				address,
+				chain,
+				nextPageKey,
+				balances
+			)
+		: balances
+}
+
+const getTokensForChain = async (address: string, network: Network) => {
+	const chain = getNetworkMetadata(network)
+
+	const cachedTokens = await db.tokenBalanceCache.findUnique({
+		where: { socketId_chain: { socketId: address, chain: chain.name } },
+		include: { tokens: true }
+	})
+
+	const cache =
+		cachedTokens &&
+		cachedTokens.updatedAt >
+			new Date(Date.now() - TOKEN_BALANCES_CACHE_TIME)
+
+	if (cache) return cachedTokens.tokens
+
+	const balances = await getAlchemyTokensForChain(
+		new Alchemy({
+			apiKey: process.env.ALCHEMY_API_KEY,
+			network
+		}),
+		address,
+		chain
+	)
+
+	const socket = await db.userSocket.findFirst({
+		where: { socketAddress: address }
+	})
+
+	if (socket === null) return []
+
+	await db.tokenBalance.deleteMany({
+		where: { cacheSocketId: socket.id, cacheChain: chain.name }
+	})
+
+	const tokenBalancesCache = await db.tokenBalanceCache.upsert({
+		where: { socketId_chain: { socketId: socket.id, chain: chain.name } },
+		create: {
+			chain: chain.name,
+			socketId: socket.id,
+			tokens: {
+				createMany: {
+					data: balances
+				}
+			}
+		},
+		update: {
+			tokens: {
+				createMany: {
+					data: balances
+				}
+			}
+		},
+		include: { tokens: true }
+	})
+
+	return tokenBalancesCache.tokens
+}
+
+const aggregateTokensByChain = async (balances: Array<TokenBalanceModel>) => {
+	const groupedTokens = balances.reduce(
+		(acc, token) => {
+			if (
+				token === undefined ||
+				!token.name ||
+				!token.symbol ||
+				!token.balance ||
+				!token.decimals
+			)
+				return acc
+
+			const existingToken = acc.find(
+				t => t.name === token.name && t.symbol === token.symbol
 			)
 
-			if (!staticToken || token.tokenBalance === null) return undefined
+			const chainToken = {
+				chain: token.cacheChain,
+				contract: token.contract,
+				balance: token.balance,
+				decimals: token.decimals
+			}
 
-			const balance = hexToBigInt(token.tokenBalance as `0x${string}`)
-			const balanceFormatted = formatBalance(
-				balance,
-				staticToken.decimals
+			if (existingToken) {
+				existingToken.balance += token.balance
+				existingToken.chains.push(chainToken)
+			} else {
+				acc.push({
+					name: token.name,
+					symbol: token.symbol,
+					balance: token.balance,
+					logo: token.logo ?? undefined,
+					chains: [chainToken]
+				})
+			}
+
+			return acc
+		},
+		[] as Array<{
+			name: string
+			symbol: string
+			balance: number
+			logo: string | undefined
+			chains: Array<{
+				chain: string
+				contract: string
+				balance: number
+				decimals: number
+			}>
+		}>
+	)
+
+	const aggregate = groupedTokens.map(token => {
+		return {
+			...token,
+			chains: token.chains.map(chain => {
+				const ratio = (chain.balance * 10000) / token.balance
+				const decimal = parseInt(ratio.toString())
+				const percentage = Number.parseFloat((decimal / 100).toFixed(2))
+
+				return {
+					...chain,
+					percentage
+				}
+			})
+		}
+	})
+
+	const prices = (
+		await getPrices(
+			aggregate.flatMap(token =>
+				token.chains.flatMap(chain =>
+					getPriceKey(chain.chain, chain.contract)
+				)
 			)
+		)
+	).reduce(
+		(acc, price) => ({
+			...acc,
+			[price.id]: price
+		}),
+		{} as Record<string, TokenPriceModel>
+	)
+
+	const tokens = aggregate.map(token => {
+		const chains = token.chains.map(chain => {
+			const price = prices[getPriceKey(chain.chain, chain.contract)]
 
 			return {
-				...networkMetadata,
-				...staticToken,
-				address: token.contractAddress,
-				balance,
-				balanceFormatted
+				...chain,
+				price: price?.price ?? 0,
+				change: price?.change ?? 0,
+				value: chain.balance * (price?.price ?? 0)
 			}
 		})
-		.filter(token => (token?.balance ?? BigInt(0)) !== BigInt(0))
+
+		const value = chains.reduce((acc, chain) => acc + chain.value, 0)
+
+		return {
+			...token,
+			chains,
+			value
+		}
+	})
+
+	return tokens.sort((a, b) => Number(b.value) - Number(a.value))
 }
 
 export const getTokens = async (
 	address: string,
 	networks = [Network.ETH_MAINNET, Network.OPT_MAINNET, Network.BASE_MAINNET]
 ) => {
-	const responses = await Promise.allSettled(
-		networks.map(chain => getTokensForChain(address, chain))
+	const socket = await db.userSocket.findFirst({
+		where: { socketAddress: address }
+	})
+
+	if (socket === null) return []
+
+	await Promise.all(
+		networks.map(async chain => await getTokensForChain(address, chain))
 	)
 
-	// Get token holders per network.
-	const individualTokens = responses
-		.flatMap(response => {
-			if (response.status === "fulfilled") {
-				return response.value
-			}
-			return []
-		})
-		.filter(token => token !== undefined)
-
-	// Aggregate canonical tokens into one another.
-	const multichainTokens = individualTokens.reduce((acc, token) => {
-		if (token === undefined) return acc
-
-		const existingToken = acc.find(t => t.symbol === token.symbol)
-
-		if (existingToken) {
-			existingToken.balance += token.balance
-			existingToken.balanceFormatted += token.balanceFormatted
-			existingToken.chains.push(token)
-		} else {
-			acc.push({
-				...token,
-				chains: [token]
-			})
-		}
-
-		return acc
-	}, [] as Tokens)
-
-	// Determine the percentage held of each token on each chain.
-	const aggregatedTokens = multichainTokens.map(token => {
-		const totalBalance = token.chains.reduce(
-			(acc, chain) => acc + Number(chain.balance),
-			0
-		)
-
-		return {
-			...token,
-			chains: token.chains.map(chain => ({
-				...chain,
-				percentage: Number.parseFloat(
-					Number(
-						(Number(chain.balance) / totalBalance) * 100
-					).toFixed(2)
-				)
-			}))
+	const balances = await db.tokenBalance.findMany({
+		where: {
+			cacheSocketId: socket.id,
+			balance: { gt: 0 }
 		}
 	})
 
-	// Build the URL parameter used to retrieve the prices in one request.
-	const tokenKeys = multichainTokens
-		.flatMap(token =>
-			token.chains.flatMap(
-				chain => `${chain.chainName.toLowerCase()}:${chain.address}`
-			)
-		)
-		.join(",")
-
-	// Get the prices for each token on each network.
-	const priceData = await getPrices(tokenKeys)
-	// Add the price, price change and token value to each token of each network.
-	const pricedTokens = aggregatedTokens.map(token => {
-		return {
-			...token,
-			chains: token.chains.map(chain => {
-				const chainPriceData =
-					priceData[
-						`${chain.chainName.toLowerCase()}:${chain.address}`
-					]
-
-				return {
-					...chain,
-					price: chainPriceData?.price ?? 0,
-					change: chainPriceData?.change ?? 0,
-					value: chain.balanceFormatted * (chainPriceData?.price ?? 0)
-				}
-			})
-		}
-	})
-	// Add the total value of the token to each token accounting for the value on each network.
-	const valuedTokens = pricedTokens.map(token => {
-		return {
-			...token,
-			totalValue: token.chains.reduce(
-				(acc, chain) => acc + chain.value,
-				0
-			)
-		}
-	})
-
-	// Sort the tokens by the total value.
-	const sortedTokens = valuedTokens.sort(
-		(a, b) => (Number(b?.totalValue) ?? 0) - (Number(a?.totalValue) ?? 0)
-	)
-
-	return sortedTokens
+	return await aggregateTokensByChain(balances)
 }

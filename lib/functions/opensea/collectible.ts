@@ -156,15 +156,15 @@ export const getCollectiblesForChain = async (
 		owner: address
 	}))
 
-	await db.openseaCollectible.deleteMany({
-		where: { owner: address, cacheChain: chain }
-	})
-
 	const socket = await db.userSocket.findFirst({
 		where: { socketAddress: address }
 	})
 
 	if (socket === null) return []
+
+	await db.openseaCollectible.deleteMany({
+		where: { owner: address, cacheChain: chain }
+	})
 
 	const collectiblesCache = await db.openseaCollectibleCache.upsert({
 		where: { socketId_chain: { socketId: socket.id, chain } },

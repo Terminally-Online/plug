@@ -19,7 +19,51 @@ Table UserSocket {
   updatedAt DateTime [default: `now()`, not null]
   socketAddress String [not null]
   columns ConsoleColumn [not null]
+  tokens TokenBalanceCache [not null]
   collectibles OpenseaCollectibleCache [not null]
+}
+
+Table TokenPrice {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  chain String [not null]
+  address String [not null]
+  price Float [not null, default: 0]
+  change Float [not null, default: 0]
+  decimals Int
+  symbol String
+  timestamp Int
+  confidence Float
+}
+
+Table TokenBalance {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  contract String [not null]
+  rawBalance Int
+  balance Int
+  name String
+  symbol String
+  decimals Int
+  logo String
+  cache TokenBalanceCache [not null]
+  cacheSocketId String [not null]
+  cacheChain String [not null]
+}
+
+Table TokenBalanceCache {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  chain String [not null]
+  tokens TokenBalance [not null]
+  socket UserSocket [not null]
+  socketId String [not null]
+
+  indexes {
+    (socketId, chain) [pk]
+  }
 }
 
 Table OpenseaCollection {
@@ -110,6 +154,10 @@ Table FeatureRequest {
 }
 
 Ref: ConsoleColumn.socketId > UserSocket.id
+
+Ref: TokenBalance.(cacheSocketId, cacheChain) > TokenBalanceCache.(socketId, chain)
+
+Ref: TokenBalanceCache.socketId > UserSocket.id
 
 Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
 

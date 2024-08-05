@@ -13,13 +13,13 @@ const getDashArray = (percentage: number) => {
 	return `${filledLength} ${emptyLength}`
 }
 
-const getChainColor = (chainId: number) => {
-	switch (chainId) {
-		case 1:
+const getChainColor = (chain: string) => {
+	switch (chain) {
+		case "ethereum":
 			return "#393939"
-		case 10:
+		case "optimism":
 			return "#FF0420"
-		case 8453:
+		case "base":
 			return "#0052FF"
 		default:
 			return "#393939"
@@ -47,7 +47,7 @@ export const SocketTokenPercentages: FC<{
 							key={index}
 							r={radius}
 							fill="transparent"
-							stroke={getChainColor(chain.chainId)}
+							stroke={getChainColor(chain.chain)}
 							strokeWidth="20"
 							strokeDasharray={dashArray}
 							transform={`rotate(${-90 + rotation})`}

@@ -25,7 +25,7 @@ export const SocketTokenList: FC<
 
 		if (expanded) return tokens
 
-		return tokens.filter(token => token.totalValue > 1)
+		return tokens.filter(token => token.value > 1)
 	}, [expanded, tokens])
 
 	return (

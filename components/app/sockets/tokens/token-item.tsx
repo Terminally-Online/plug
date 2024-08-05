@@ -5,8 +5,10 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 
 import { Accordion, Counter, SocketTokenPercentages } from "@/components"
-import { cn, getChainImage } from "@/lib"
+import { cn, formatTitle, getChainImage } from "@/lib"
 import { RouterOutputs } from "@/server/client"
+
+import { TokenImage } from "./token-image"
 
 export const SocketTokenItem: FC<{
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["tokens"]>[number]
@@ -55,24 +57,20 @@ export const SocketTokenItem: FC<{
 									className="flex flex-row items-center gap-4"
 								>
 									<Image
-										src={getChainImage(chain.chainId)}
-										alt="Ethereum"
+										src={getChainImage(chain.chain)}
+										alt={chain.chain}
 										className="h-4 w-4 rounded-full"
 										width={16}
 										height={16}
 									/>
 
 									<p className="mr-auto font-bold">
-										{chain.chainName}
+										{formatTitle(chain.chain)}
 									</p>
 
 									<p className="flex flex-col tabular-nums opacity-60">
 										<Counter
-											count={
-												expanded
-													? chain.balanceFormatted
-													: 0
-											}
+											count={expanded ? chain.balance : 0}
 										/>
 									</p>
 
@@ -97,30 +95,16 @@ export const SocketTokenItem: FC<{
 					</div>
 				) : (
 					<div className="flex flex-row items-center gap-4">
-						<div className="relative h-10 w-10">
-							<Image
-								src={token.logoURI ?? ""}
-								alt={token.symbol}
-								className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
-								width={140}
-								height={140}
-							/>
-							<Image
-								src={token.logoURI ?? ""}
-								alt={token.symbol}
-								className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
-								width={140}
-								height={140}
-							/>
-						</div>
+						<TokenImage logo={token.logo} symbol={token.symbol} />
+
 						<div className="flex w-full flex-col items-center tabular-nums">
 							<div className="flex w-full flex-row font-bold">
 								<p>{token.name}</p>
 								<p className="ml-auto flex flex-row items-center">
-									{token.totalValue ? (
+									{token.value ? (
 										<>
 											$
-											<Counter count={token.totalValue} />
+											<Counter count={token.value} />
 										</>
 									) : (
 										"-"
@@ -133,11 +117,11 @@ export const SocketTokenItem: FC<{
 									<SocketTokenPercentages
 										chains={token.chains}
 									/>
-									<span className="flex flex-row items-center gap-2 text-sm opacity-60">
-										<Counter
-											count={token.balanceFormatted}
-										/>
-										{token.symbol}
+									<span className="flex w-max flex-row items-center gap-1 text-sm opacity-60">
+										<Counter count={token.balance} />
+										<span className="w-max whitespace-nowrap">
+											{token.symbol.toUpperCase()}
+										</span>
 									</span>
 								</p>
 

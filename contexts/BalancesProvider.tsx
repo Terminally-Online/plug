@@ -26,6 +26,7 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 			enabled: socket?.socketAddress !== undefined
 		}
 	)
+
 	const { data: collectibles } = api.socket.balances.collectibles.useQuery(
 		socket?.socketAddress,
 		{
