@@ -1,7 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "gitsubmodule"
-    directory: "packages/app"
+    directory: "/"
+    allow:
+      - dependency-name: "packages/app"
+      - dependency-name: "packages/core"
     schedule:
       interval: "daily"
     groups:
