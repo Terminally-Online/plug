@@ -7,9 +7,7 @@ updates:
     groups:
       production-dependencies:
         patterns:
-          - "*"
-    ignore:
-      - dependency-name: "packages/solver"
+          - "packages/app"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
