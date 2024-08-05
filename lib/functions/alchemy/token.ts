@@ -282,16 +282,20 @@ const aggregateTokensByChain = async (balances: Array<TokenBalanceModel>) => {
 	const aggregate = groupedTokens.map(token => {
 		return {
 			...token,
-			chains: token.chains.map(chain => {
-				const ratio = (chain.balance * 10000) / token.balance
-				const decimal = parseInt(ratio.toString())
-				const percentage = Number.parseFloat((decimal / 100).toFixed(2))
+			chains: token.chains
+				.map(chain => {
+					const ratio = (chain.balance * 10000) / token.balance
+					const decimal = parseInt(ratio.toString())
+					const percentage = Number.parseFloat(
+						(decimal / 100).toFixed(2)
+					)
 
-				return {
-					...chain,
-					percentage
-				}
-			})
+					return {
+						...chain,
+						percentage
+					}
+				})
+				.sort((a, b) => b.percentage - a.percentage)
 		}
 	})
 
