@@ -1,5 +1,4 @@
 version: 2
-
 updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
@@ -9,6 +8,8 @@ updates:
       production-dependencies:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "packages/solver"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
