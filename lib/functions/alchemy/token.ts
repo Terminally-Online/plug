@@ -1,4 +1,5 @@
 import { Alchemy, Network } from "alchemy-sdk"
+import { hexToBigInt } from "viem"
 
 import {
 	formatBalance,
@@ -101,15 +102,12 @@ const getAlchemyTokensForChain = async (
 		const nativeBalance = await alchemy.core.getBalance(address)
 
 		if (nativeBalance.toString() !== "0") {
-			const balance = formatBalance(
-				nativeBalance.toString(),
-				18
-			)?.toString()
+			const balance = formatBalance(nativeBalance.toString(), 18)
 
 			balances = [
 				{
 					contract: nativeTokenAddress,
-					balance: Number(balance),
+					balance,
 					name: "Ethereum",
 					symbol: "ETH",
 					decimals: 18,

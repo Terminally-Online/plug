@@ -42,8 +42,7 @@ Table TokenBalance {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   contract String [not null]
-  rawBalance Int
-  balance Int
+  balance Float
   name String
   symbol String
   decimals Int

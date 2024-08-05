@@ -45,7 +45,7 @@ export const TokenImage: FC<{ logo?: string; symbol?: string }> = ({
 	const [imageError, setImageError] = useState(false)
 
 	return (
-		<div className="relative h-10 w-10 bg-grayscale-0">
+		<div className="relative h-10 w-10">
 			{logo === "" || imageError ? (
 				<>
 					<div

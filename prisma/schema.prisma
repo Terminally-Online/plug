@@ -95,7 +95,7 @@ model TokenBalance {
     // Fields
     // ---------------------------------------------------------------------------
     contract String
-    balance  Int?
+    balance  Float?
     name     String?
     symbol   String?
     decimals Int?

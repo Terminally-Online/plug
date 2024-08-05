@@ -3,8 +3,6 @@ Do These:
         ☐ Fix hydration error
             Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
         ☐ Where do users initiate the transfer assets interaction flow
-        ☐ Cache balances in the database
-            ☐ Refresh prices on a regular basis since it comes from a free api
 
     Console:
         Small:
@@ -79,6 +77,10 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Cache balances in the database @done(24-08-05 00:06) @project(Do These.Shared)
+  ✔ Refresh prices on a regular basis since it comes from a free api @done(24-08-05 00:06) @project(Do These.Shared)
+  ✔ Native tokens are not returned in the token balances right now as the value is always 0. @done(24-08-05 00:06) @project(Do These.Shared)
+  ✔ WETH is showing up with a balance of zero for some reason. @done(24-08-05 00:06) @project(Do These.Shared)
   ✔ Sign out does not work in Console @done(24-08-02 22:20) @project(Do These.Console.Small)
     Notes: This is explicit to console -- It is working in the app.
   ✔ Clicking pfp should copy socket address @done(24-08-02 22:19) @project(Do These.Console.Small)
