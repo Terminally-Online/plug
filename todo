@@ -4,8 +4,11 @@ Do These:
             Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
         ☐ Where do users initiate the transfer assets interaction flow
         ☐ Balances can sometimes zero because they were truncated before their first digit.
-        ☐ Native balance on ethereum shows differently?
+        ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
+        ☐ Balances should always have at least 3 numbers.
+            39401 is acceptable if they hold a full balance.
+            39401.00123 if they hold a fraction balance.
 
     Console:
         Small:

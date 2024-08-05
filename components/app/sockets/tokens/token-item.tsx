@@ -104,7 +104,10 @@ export const SocketTokenItem: FC<{
 									{token.value ? (
 										<>
 											$
-											<Counter count={token.value} />
+											<Counter
+												count={token.value}
+												targetDecimals={2}
+											/>
 										</>
 									) : (
 										"-"
@@ -138,7 +141,11 @@ export const SocketTokenItem: FC<{
 									<span className="ml-auto flex flex-row items-center">
 										{priceChange !== undefined ? (
 											<>
-												<Counter count={priceChange} />%
+												<Counter
+													count={priceChange}
+													targetDecimals={2}
+												/>
+												%
 											</>
 										) : (
 											"-"

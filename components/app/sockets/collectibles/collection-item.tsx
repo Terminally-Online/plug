@@ -20,8 +20,6 @@ export const SocketCollectionItem: FC<{
 	const [expanded, setExpanded] = useState(false)
 	const [error, setError] = useState(false)
 
-	console.log("collection", collection)
-
 	if (error) return <></>
 
 	return (
