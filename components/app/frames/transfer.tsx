@@ -19,7 +19,7 @@ import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
 import { Button, Frame, Search, SocketTokenList } from "@/components"
 import { useBalances, useFrame, useSockets } from "@/contexts"
-import { getChainImage } from "@/lib"
+import { formatTitle, getChainImage } from "@/lib"
 
 const DEFAULT_TRANSFER = {
 	token: undefined,
@@ -81,10 +81,7 @@ export const TransferFrame = () => {
 					return [false, "Invalid ENS"]
 			}
 		}
-		if (
-			Number(transfer.amount ?? 0) >
-			Number(transfer.token?.balanceFormatted ?? 0)
-		)
+		if (Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0))
 			return [false, "Insufficient Balance"]
 
 		return [true, transfer.action === "send" ? "Withdraw" : "Deposit"]
@@ -225,26 +222,23 @@ export const TransferFrame = () => {
 								>
 									<div className="flex w-full flex-row items-center gap-2">
 										<Image
-											src={getChainImage(chain.chainId)}
+											src={getChainImage(chain.chain)}
 											alt="Ethereum"
 											className="h-6 w-6 rounded-full"
 											width={48}
 											height={48}
 										/>
 										<p className="mr-auto font-bold">
-											{chain.chainName}
+											{formatTitle(chain.chain)}
 										</p>
 
 										<p className="ml-auto flex flex-row items-center gap-2 tabular-nums">
 											<span className="opacity-60">
-												{chain.balanceFormatted.toLocaleString()}
+												{chain.balance.toLocaleString()}
 											</span>
 											<Image
 												className="h-4 w-4 rounded-full"
-												src={
-													transfer.token?.logoURI ??
-													""
-												}
+												src={transfer.token?.logo ?? ""}
 												alt={
 													transfer.token?.symbol ?? ""
 												}
@@ -300,7 +294,7 @@ export const TransferFrame = () => {
 							<span className="flex w-max flex-row items-center gap-2">
 								<Image
 									className="h-4 w-4 rounded-full"
-									src={transfer.token?.logoURI ?? ""}
+									src={transfer.token?.logo ?? ""}
 									alt={transfer.token?.symbol ?? ""}
 									width={48}
 									height={48}
@@ -311,7 +305,7 @@ export const TransferFrame = () => {
 										onClick={() =>
 											setTransfer({
 												...transfer,
-												amount: transfer.token?.balanceFormatted.toString()
+												amount: transfer.token?.balance.toString()
 											})
 										}
 									>
@@ -373,7 +367,7 @@ export const TransferFrame = () => {
 					<Button
 						variant={
 							Number(transfer.amount ?? 0) >
-								Number(transfer.token?.balanceFormatted ?? 0) ||
+								Number(transfer.token?.balance ?? 0) ||
 							transferValid[0] === false
 								? "disabled"
 								: "primary"
