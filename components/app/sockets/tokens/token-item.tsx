@@ -106,7 +106,7 @@ export const SocketTokenItem: FC<{
 											$
 											<Counter
 												count={token.value}
-												targetDecimals={2}
+												decimals={2}
 											/>
 										</>
 									) : (
@@ -143,7 +143,7 @@ export const SocketTokenItem: FC<{
 											<>
 												<Counter
 													count={priceChange}
-													targetDecimals={2}
+													decimals={2}
 												/>
 												%
 											</>

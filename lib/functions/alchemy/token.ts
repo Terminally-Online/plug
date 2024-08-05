@@ -141,10 +141,10 @@ const getAlchemyTokensForChain = async (
 					return matchingAddress && matchingChainId
 				})
 
-				const decimals = token.decimals || staticToken?.decimals
-				const name = token.name || staticToken?.name
+				const decimals = staticToken?.decimals || token.decimals
+				const name = staticToken?.name || token.name
 				const logo = token.logo || staticToken?.logoURI
-				const symbol = token.symbol || staticToken?.symbol
+				const symbol = staticToken?.symbol || token.symbol
 
 				return {
 					contract: token.contractAddress,

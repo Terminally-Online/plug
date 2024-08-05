@@ -65,7 +65,6 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement>> = ({
 						<Counter
 							className="mr-auto w-max text-2xl font-bold"
 							count={201}
-							decimals={0}
 						/>
 						<p className="font-bold opacity-40">Pending</p>
 					</StatCard>
@@ -73,7 +72,6 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement>> = ({
 						<Counter
 							className="mr-auto w-max text-2xl font-bold"
 							count={9351}
-							decimals={0}
 						/>
 						<p className="font-bold opacity-40">Run</p>
 					</StatCard>

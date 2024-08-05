@@ -11,14 +11,14 @@ const isDate = (input: string) => input.includes("/")
 const formatForDisplay = (
 	input: number | string,
 	formatDecimals: boolean,
-	targetDecimals?: number
+	decimals?: number
 ) => {
 	if (typeof input === "number") {
 		const absCount = Math.abs(input)
 		let formattedNumber: string[]
 
 		if (formatDecimals) {
-			if (Number.isInteger(absCount) && targetDecimals === undefined) {
+			if (Number.isInteger(absCount) && decimals === undefined) {
 				// For whole numbers without specified decimals, don't add decimal places
 				formattedNumber = absCount.toLocaleString("en-US").split("")
 			} else {
@@ -27,9 +27,9 @@ const formatForDisplay = (
 
 				let decimalPlacesToKeep: number
 
-				if (targetDecimals !== undefined) {
+				if (decimals !== undefined) {
 					// Use the manually specified number of decimal places
-					decimalPlacesToKeep = targetDecimals
+					decimalPlacesToKeep = decimals
 				} else {
 					// Find the index of the first non-zero digit after decimal point
 					const decimalIndex = stringNumber.indexOf(".")
@@ -54,7 +54,7 @@ const formatForDisplay = (
 				)
 
 				// Trim trailing zeros, but keep at least 2 decimal places or the targetDecimals
-				if (targetDecimals === undefined) {
+				if (decimals === undefined) {
 					formatted = formatted.replace(/\.?0+$/, "")
 					if (
 						formatted.includes(".") &&
@@ -135,16 +135,10 @@ export const Counter: FC<
 	{
 		count: number | string
 		formatDecimals?: boolean
-		targetDecimals?: number
+		decimals?: number
 	} & React.HTMLAttributes<HTMLDivElement>
-> = ({
-	count,
-	formatDecimals = true,
-	targetDecimals,
-	className = "",
-	...props
-}) => {
-	const numArray = formatForDisplay(count, formatDecimals, targetDecimals)
+> = ({ count, formatDecimals = true, decimals, className = "", ...props }) => {
+	const numArray = formatForDisplay(count, formatDecimals, decimals)
 
 	return (
 		<span

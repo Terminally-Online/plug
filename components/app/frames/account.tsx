@@ -53,11 +53,7 @@ export const AccountFrame = () => {
 				<div className="mb-4 flex flex-row items-center gap-2">
 					<StatCard>
 						<span className="mr-auto flex flex-row gap-2 text-2xl font-bold">
-							<Counter
-								className="w-max"
-								count={201}
-								decimals={0}
-							/>
+							<Counter className="w-max" count={201} />
 							<span className="opacity-40">ETH</span>
 						</span>
 						<p className="font-bold opacity-40">Fees Earned</p>
@@ -67,7 +63,6 @@ export const AccountFrame = () => {
 						<Counter
 							className="mr-auto w-max text-2xl font-bold"
 							count={321}
-							decimals={0}
 						/>
 						<p className="font-bold opacity-40">Points Earned</p>
 					</StatCard>
@@ -75,27 +70,15 @@ export const AccountFrame = () => {
 
 				<p className="flex font-bold">
 					<span className="w-full">Plugs Used</span>
-					<Counter
-						className="ml-auto opacity-40"
-						count={31}
-						decimals={0}
-					/>
+					<Counter className="ml-auto opacity-40" count={31} />
 				</p>
 				<p className="flex font-bold">
 					<span className="w-full">Runs</span>
-					<Counter
-						className="ml-auto opacity-40"
-						count={412}
-						decimals={0}
-					/>
+					<Counter className="ml-auto opacity-40" count={412} />
 				</p>
 				<p className="flex font-bold">
 					<span className="w-full">Users Onboarded</span>
-					<Counter
-						className="ml-auto opacity-40"
-						count={51}
-						decimals={0}
-					/>
+					<Counter className="ml-auto opacity-40" count={51} />
 				</p>
 				<p className="flex font-bold">
 					<span className="w-full">User Since</span>
