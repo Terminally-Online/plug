@@ -5,6 +5,10 @@ updates:
     allow:
       - dependency-name: "packages/app"
       - dependency-name: "packages/core"
+      - dependency-name: "packages/docs"
+      - dependency-name: "packages/pitch"
+      - dependency-name: "packages/router"
+      - dependency-name: "packages/types"
     schedule:
       interval: "daily"
     groups:
