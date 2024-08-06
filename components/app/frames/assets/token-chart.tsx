@@ -59,7 +59,7 @@ export const TokenPriceChart: FC<{
 			| undefined
 		>
 	>({})
-	const [period, setPeriod] = useState(periods[1])
+	const [period, setPeriod] = useState(periods[0])
 
 	const priceData = historicalPriceData[period.label]
 
@@ -195,7 +195,6 @@ export const TokenPriceChart: FC<{
 	useEffect(() => {
 		const start = priceData?.[0]?.price
 		const end = priceData?.[priceData.length - 1]?.price
-
 		const change = start && end ? ((end - start) / start) * 100 : undefined
 
 		handleHeader({ title: period.title, change })
