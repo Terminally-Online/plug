@@ -1,12 +1,4 @@
-import {
-	FC,
-	ForwardedRef,
-	HTMLAttributes,
-	RefObject,
-	useEffect,
-	useRef,
-	useState
-} from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 import Image from "next/image"
 
@@ -93,7 +85,13 @@ export const TokenImage: FC<{
 	}, [logo, symbol, color, handleColor])
 
 	return (
-		<div className="relative h-10 w-10">
+		<div
+			className="relative h-10"
+			style={{
+				width: `${dimensions.content}rem`,
+				height: `${dimensions.content}rem`
+			}}
+		>
 			<canvas ref={canvasRef} style={{ display: "none" }} />
 
 			{logo === "" || imageError ? (
