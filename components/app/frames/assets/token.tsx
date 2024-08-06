@@ -13,7 +13,21 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 	const { frameVisible } = useFrame()
 	const { tokens } = useBalances()
 
+	const token = useMemo(
+		() =>
+			tokens &&
+			tokens.find(token => token.symbol === symbol && token.name),
+		[tokens, symbol]
+	)
+
 	const [color, setColor] = useState("")
+	const [header, setHeader] = useState<{
+		title?: string
+		change?: number
+	}>({
+		title: undefined,
+		change: undefined
+	})
 	const [tooltipData, setTooltipData] = useState<
 		| {
 				timestamp: string
@@ -28,14 +42,9 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 			frameVisible.split("_/_/_")[1] === symbol
 		: false
 
-	const token = useMemo(
-		() =>
-			tokens &&
-			tokens.find(token => token.symbol === symbol && token.name),
-		[tokens, symbol]
-	)
-
 	const change = useMemo(() => {
+		if (header.change && !tooltipData) return header.change
+
 		if (tooltipData) {
 			const percentageChange =
 				(tooltipData.price - tooltipData.start) / tooltipData.start
@@ -44,7 +53,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 		}
 
 		return token?.chains[0].change
-	}, [tooltipData, token])
+	}, [header, tooltipData, token])
 
 	const formatTimestamp = (timestamp: number) => {
 		if (isNaN(timestamp)) return
@@ -115,12 +124,12 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 						)}
 					>
 						<p className="ml-auto flex w-max flex-row font-bold">
-							<Counter count={change ?? 0} decimals={2} />%
+							<Counter count={change || 0} decimals={2} />%
 						</p>
 						<p className="ml-auto flex flex-row items-center">
 							{tooltipData
 								? formatTimestamp(Number(tooltipData.timestamp))
-								: "Today"}
+								: (header.title ?? "Past Week")}
 						</p>
 					</div>
 				</div>
@@ -130,6 +139,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					chain={token.chains[0].chain}
 					contract={token.chains[0].contract}
 					color={color}
+					handleHeader={setHeader}
 					handleTooltip={setTooltipData}
 				/>
 
@@ -171,9 +181,9 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 							<Image
 								src={getChainImage(chain.chain)}
 								alt={chain.chain}
-								className="h-4 w-4 rounded-full"
-								width={16}
-								height={16}
+								className="h-6 w-6 rounded-full"
+								width={32}
+								height={32}
 							/>
 
 							<p className="mr-auto font-bold">

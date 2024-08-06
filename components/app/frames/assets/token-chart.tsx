@@ -1,6 +1,13 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import {
+	Line,
+	LineChart,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis
+} from "recharts"
 
 import { Button } from "@/components/shared"
 import { cn } from "@/lib"
@@ -8,23 +15,27 @@ import { cn } from "@/lib"
 const periods = [
 	{
 		label: "1d",
-		period: "1h",
-		span: "24"
+		period: "30m",
+		span: "48",
+		title: "Today"
 	},
 	{
 		label: "1w",
 		period: "6h",
-		span: "42"
+		span: "42",
+		title: "Past Week"
 	},
 	{
 		label: "1m",
 		period: "12h",
-		span: "60"
+		span: "60",
+		title: "Past Month"
 	},
 	{
 		label: "1y",
 		period: "3d",
-		span: "121"
+		span: "121",
+		title: "Past Year"
 	}
 ]
 
@@ -33,12 +44,13 @@ export const TokenPriceChart: FC<{
 	chain: string
 	contract: string
 	color: string
+	handleHeader: (data: { title: string; change?: number }) => void
 	handleTooltip: (data?: {
 		timestamp: string
 		price: number
 		start: number
 	}) => void
-}> = ({ enabled, chain, contract, color, handleTooltip }) => {
+}> = ({ enabled, chain, contract, color, handleHeader, handleTooltip }) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [historicalPriceData, setHistoricalPriceData] = useState<
 		Record<
@@ -49,8 +61,6 @@ export const TokenPriceChart: FC<{
 	>({})
 	const [period, setPeriod] = useState(periods[1])
 
-	const key = `${chain}:${contract}`
-	const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}`
 	const priceData = historicalPriceData[period.label]
 
 	const domain = useMemo(() => {
@@ -73,17 +83,41 @@ export const TokenPriceChart: FC<{
 	}> = ({ cx, cy, index }) => {
 		if (priceData && index === priceData.length - 1) {
 			return (
-				<circle
-					cx={cx}
-					cy={cy}
-					r={4}
-					fill={color}
-					className="blinking-dot"
-				/>
+				<g>
+					<circle cx={cx} cy={cy} r={12} fill={color}>
+						<animate
+							attributeName="r"
+							values="8;5;8"
+							dur="1s"
+							repeatCount="indefinite"
+							keyTimes="0;0.5;1"
+							keySplines="0.1 0.8 0.2 1; 0.1 0.8 0.2 1"
+							calcMode="spline"
+							begin="0s;animate2.end+1s"
+						/>
+						<animate
+							id="animate2"
+							attributeName="opacity"
+							values="0;0.5;0"
+							dur="1s"
+							repeatCount="indefinite"
+							keyTimes="0;0.5;1"
+							keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+							calcMode="spline"
+						/>
+					</circle>
+					<circle cx={cx} cy={cy} r={5} fill={color} />
+				</g>
 			)
 		}
+
 		return null
 	}
+
+	const ActiveDot: FC<{
+		cx?: number
+		cy?: number
+	}> = ({ cx, cy }) => <circle cx={cx} cy={cy} r={5} fill={color} />
 
 	const handleMouseMove = (e: any) => {
 		if (e.activePayload && e.activePayload.length) {
@@ -109,6 +143,7 @@ export const TokenPriceChart: FC<{
 	const fetchHistoricalPriceData = useCallback(
 		async (isRetry = false) => {
 			if (!enabled) return
+
 			setIsLoading(true)
 
 			const failure = {
@@ -116,6 +151,9 @@ export const TokenPriceChart: FC<{
 				price: 0,
 				error: "Could not load price data."
 			}
+
+			const key = `${chain}:${contract}`
+			const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}`
 
 			try {
 				if (isRetry) {
@@ -147,28 +185,24 @@ export const TokenPriceChart: FC<{
 				setIsLoading(false)
 			}
 		},
-		[enabled, key, period, url]
+		[enabled, period]
 	)
 
 	useEffect(() => {
 		fetchHistoricalPriceData()
-	}, [key, period, url])
+	}, [period])
+
+	useEffect(() => {
+		const start = priceData?.[0]?.price
+		const end = priceData?.[priceData.length - 1]?.price
+
+		const change = start && end ? ((end - start) / start) * 100 : undefined
+
+		handleHeader({ title: period.title, change })
+	}, [period, historicalPriceData])
 
 	return (
 		<div className="w-full pt-8">
-			<style>
-				{`
-                    @keyframes blink {
-                        0% { opacity: 0; }
-                        50% { opacity: 1; }
-                        100% { opacity: 0; }
-                    }
-                    .blinking-dot {
-                        animation: blink 1.5s infinite;
-                    }
-                `}
-			</style>
-
 			{isLoading ? (
 				<div className="flex min-h-[240px] flex-col items-center justify-center">
 					<p className="font-bold opacity-40">
@@ -208,6 +242,7 @@ export const TokenPriceChart: FC<{
 							strokeWidth={4}
 							strokeLinecap="round"
 							dot={<Dot />}
+							activeDot={<ActiveDot />}
 							isAnimationActive={false}
 						/>
 						<XAxis
@@ -215,6 +250,7 @@ export const TokenPriceChart: FC<{
 							axisLine={false}
 							tickLine={false}
 							tick={false}
+							padding={{ right: 20 }}
 						/>
 						<YAxis
 							domain={domain}
@@ -222,6 +258,7 @@ export const TokenPriceChart: FC<{
 							tickLine={false}
 							tick={false}
 						/>
+						<Tooltip content={<></>} cursor={<></>} />
 					</LineChart>
 				</ResponsiveContainer>
 			)}
