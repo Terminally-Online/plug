@@ -115,9 +115,9 @@ export const TokenImage: FC<{
 							minWidth: `${dimensions.content}rem`
 						}}
 					>
-						<p className="font-bold text-white">
+						<span className="font-bold text-white">
 							{symbol.slice(0, 1).toUpperCase()}
-						</p>
+						</span>
 					</div>
 				</>
 			) : (

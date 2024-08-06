@@ -22,16 +22,7 @@ export const SocketTokenItem: FC<{
 }> = ({ token, handleSelect }) => {
 	const { handleFrameVisible } = useFrame()
 
-	const [expanded, setExpanded] = useState(false)
-
 	const priceChange = token?.chains[0].change
-
-	// const handleClick = useCallback(() => {
-	// 	if (token === undefined) return
-
-	// 	if (handleSelect !== undefined) handleSelect(token)
-	// 	else setExpanded(!expanded)
-	// }, [token, expanded, handleSelect])
 
 	return (
 		<>
@@ -51,7 +42,7 @@ export const SocketTokenItem: FC<{
 			>
 				<Accordion
 					loading={token === undefined}
-					expanded={expanded}
+					expanded={false}
 					onExpand={
 						token === undefined
 							? () => {}
