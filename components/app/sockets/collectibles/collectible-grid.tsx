@@ -1,3 +1,5 @@
+"use client"
+
 import { FC } from "react"
 
 import { SocketCollectibleItem } from "@/components"
@@ -8,6 +10,10 @@ export const SocketCollectibleGrid: FC<{
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]
 }> = ({ collection }) => {
+	// TODO: Hydration error is coming from here.
+
+	return <></>
+
 	if (!collection) return <></>
 
 	return (
