@@ -147,7 +147,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					<p className="mr-auto flex flex-col items-center">
 						<span className="mr-auto opacity-40">Balance</span>
 						<span
-							className="mr-auto flex h-12 flex-row items-center gap-1 text-lg"
+							className="mr-auto flex h-8 flex-row items-center text-lg"
 							style={{ color: color }}
 						>
 							<TokenImage
@@ -156,7 +156,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 								size="xs"
 							/>
 							<Counter
-								className="mr-1 w-max"
+								className="ml-4 mr-2 w-max"
 								count={token.balance}
 								decimals={2}
 							/>
@@ -165,14 +165,21 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					</p>
 					<p className="ml-auto flex flex-col items-center text-center">
 						<span className="ml-auto opacity-40">Value</span>
-						<span className="mx-auto flex h-12 w-max items-center text-lg">
+						<span className="mx-auto flex h-8 w-max items-center text-lg">
 							$
-							<Counter count={token.value} decimals={2} />
+							<Counter
+								count={
+									tooltipData
+										? token.balance * tooltipData.price
+										: token.value
+								}
+								decimals={2}
+							/>
 						</span>
 					</p>
 				</div>
 
-				<div className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 px-6 py-8 text-lg">
+				<div className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 px-6 pb-8 pt-4 text-lg">
 					{token.chains.map((chain, index) => (
 						<div
 							key={index}
