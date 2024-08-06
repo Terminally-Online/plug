@@ -1,6 +1,7 @@
 import {
 	PageActivity,
 	PageDiscover,
+	PageEarnings,
 	PageHome,
 	PageMine,
 	PagePlug
@@ -21,6 +22,8 @@ export const PageContent = () => {
 			return <PageMine />
 		case "plug":
 			return <PagePlug />
+		case "earnings":
+			return <PageEarnings />
 		default:
 			return <></>
 	}

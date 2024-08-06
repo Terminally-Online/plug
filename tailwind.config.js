@@ -41,6 +41,9 @@ module.exports = {
 				'plug-yellow': "#A3F700",
 				'plug-red': "#FF0000",
 
+				'sun-orange': "#FFA800",
+				'sun-yellow': "#FAFF00",
+
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",

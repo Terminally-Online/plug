@@ -13,6 +13,7 @@ import {
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
+	SocketEarnings,
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
@@ -122,10 +123,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === "PLUGS" ? (
 									<Plugs className="px-4" />
 								) : column.key === "DISCOVER" ? (
-									<PageDiscover
-										className="pt-4"
-										column={true}
-									/>
+									<PageDiscover className="pt-4" />
 								) : column.key === "MY_PLUGS" ? (
 									<PageMine className="pt-4" column={true} />
 								) : column.key === "ASSETS" ? (
@@ -142,7 +140,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === "POSITIONS" ? (
 									<SocketPositionList className="px-4 pt-4" />
 								) : column.key === "EARNINGS" ? (
-									<></>
+									<SocketEarnings className="px-4 pt-4" />
 								) : column.key === "SETTINGS" ? (
 									<></>
 								) : (

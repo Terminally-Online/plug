@@ -1,19 +1,14 @@
 Do These:
     Shared:
-        ☐ Fix hydration error
-            Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
         ☐ Where do users initiate the transfer assets interaction flow
         ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
         ☐ Log in state is broken after having updated the base layout of everything.
-        ☐ Timestamp of token price hovering tooltip is not accurate
-            Notes: It is reading as 1970 instead of the correct data.
 
     Console:
         Small:
             ☐ When you drag a column it halts as the previous state for a second before confirming.
-            ☐ Instant socket address resolution.
-                Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
+                Notes: I do not know what causes this.
             ☐ Make resizing more performant.
                 Notes: right now it is rerendering everything on a new frame as well as posting into the database.
             ☐ Referal functionality.
@@ -23,6 +18,9 @@ Do These:
                 Notes: This does not include collectibles.
 
         Medium:
+            ☐ Use historical price for the current price so that it has the appropriate change percent.
+            ☐ Instant socket address resolution.
+                Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
             ☐ Update navigation links while in console to update the state of the column rather redirect to the app page.
                 ☐ Back button in context of the column.
             ☐ Frames in the context of the column instead of the full page.
@@ -43,6 +41,7 @@ Do These:
                 ☐ Add total execution count to top
                 ☐ Chart showing asset value over time  
             ☐ Revoke all    
+            ☐ Add swap/send functionality to the token page.
             
     App:
         ☐ On logged in homepage, when user has no plugs, show 2 curated Plugs and CTA to create a Plug @@chance @started(24-06-27 11:55)
@@ -82,6 +81,10 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Fix hydration error @done(24-08-06 17:36) @project(Do These.Shared)
+    Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
+  ✔ Timestamp of token price hovering tooltip is not accurate @done(24-08-06 14:31) @project(Do These.Shared)
+    Notes: It is reading as 1970 instead of the correct data.
   ✔ Balances can sometimes zero because they were truncated before their first digit. @done(24-08-05 16:12) @project(Do These.Shared)
   ✔ Balances should always have at least 3 numbers. @done(24-08-05 16:12) @project(Do These.Shared)
     39401 is acceptable if they hold a full balance.

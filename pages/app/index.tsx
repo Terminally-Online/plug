@@ -17,7 +17,7 @@ const MobilePage = () => {
 
 const DesktopPage = () => {
 	return (
-		<div className="min-w-screen flex w-full flex-row overflow-visible">
+		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
 			<ConsoleColumnRow />
 		</div>

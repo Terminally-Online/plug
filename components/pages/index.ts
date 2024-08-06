@@ -1,5 +1,6 @@
 export * from "./activity"
 export * from "./discover"
+export * from "./earnings"
 export * from "./home"
 export * from "./mine"
 export * from "./plug"
