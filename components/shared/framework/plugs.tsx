@@ -13,11 +13,11 @@ export const Plugs: FC<
 
 	const { data: discoveryPlugs } = api.plug.all.useQuery({
 		target: "others",
-		limit: 4
+		limit: 2
 	})
 	const { data: myPlugs } = api.plug.all.useQuery({
 		target: "mine",
-		limit: 12
+		limit: 4
 	})
 
 	return (
