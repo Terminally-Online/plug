@@ -1,9 +1,8 @@
-"use client"
-
 import { FC, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
 
+import { useClient } from "@/lib"
 import { cn } from "@/lib/utils"
 
 const isDate = (input: string) => input.includes("/")
@@ -142,7 +141,11 @@ export const Counter: FC<
 		decimals?: number
 	} & React.HTMLAttributes<HTMLDivElement>
 > = ({ count, formatDecimals = true, decimals, className = "", ...props }) => {
+	const isClient = useClient()
+
 	const numArray = formatForDisplay(count, formatDecimals, decimals)
+
+	if (!isClient) return null
 
 	return (
 		<span

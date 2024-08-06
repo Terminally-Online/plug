@@ -1,5 +1,6 @@
 export { useBalance } from "./useBalance"
 export { useBlockchain } from "./useBlockchain"
+export { useClient } from "./useClient"
 export { useClipboard } from "./useClipboard"
 export { useDebounce } from "./useDebounce"
 export { useInterval } from "./useInterval"

@@ -1,5 +1,7 @@
 import { FC, useRef } from "react"
 
+import { useClient } from "wagmi"
+
 import { cn } from "@/lib/utils"
 
 type Props = { expanded: boolean } & React.HTMLAttributes<HTMLSpanElement>
@@ -12,6 +14,10 @@ export const AccordionContent: FC<Props> = ({
 	...props
 }) => {
 	const ref = useRef<HTMLDivElement>(null)
+
+	const isClient = useClient()
+
+	if (!isClient) return null
 
 	return (
 		<span
