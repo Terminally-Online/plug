@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, useMemo, useState } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
 import { motion, MotionProps } from "framer-motion"
 
@@ -25,7 +25,7 @@ export const SocketTokenList: FC<
 
 		if (expanded) return tokens
 
-		return tokens.filter(token => token.value > 1)
+		return tokens.slice(0, 5)
 	}, [expanded, tokens])
 
 	return (
