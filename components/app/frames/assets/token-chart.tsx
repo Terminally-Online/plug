@@ -33,7 +33,11 @@ export const TokenPriceChart: FC<{
 	chain: string
 	contract: string
 	color: string
-	handleTooltip: (data?: { timestamp: string; price: number }) => void
+	handleTooltip: (data?: {
+		timestamp: string
+		price: number
+		start: number
+	}) => void
 }> = ({ enabled, chain, contract, color, handleTooltip }) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [historicalPriceData, setHistoricalPriceData] = useState<
@@ -83,7 +87,10 @@ export const TokenPriceChart: FC<{
 
 	const handleMouseMove = (e: any) => {
 		if (e.activePayload && e.activePayload.length) {
-			handleTooltip(e.activePayload[0].payload)
+			handleTooltip({
+				...e.activePayload[0].payload,
+				start: priceData && priceData[0].price
+			})
 		}
 	}
 

@@ -18,6 +18,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 		| {
 				timestamp: string
 				price: number
+				start: number
 		  }
 		| undefined
 	>()
@@ -37,8 +38,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 	const change = useMemo(() => {
 		if (tooltipData) {
 			const percentageChange =
-				((token?.chains[0].price ?? 0) - tooltipData.price) /
-				tooltipData.price
+				(tooltipData.price - tooltipData.start) / tooltipData.start
 
 			return percentageChange * 100
 		}
