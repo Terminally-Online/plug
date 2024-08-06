@@ -23,8 +23,8 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 	>()
 
 	const isFrame = frameVisible
-		? frameVisible.split("-")[0] === "token" &&
-			frameVisible.split("-")[1] === symbol
+		? frameVisible.split("_/_/_")[0] === "token" &&
+			frameVisible.split("_/_/_")[1] === symbol
 		: false
 
 	const token = useMemo(
@@ -45,6 +45,25 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 
 		return token?.chains[0].change
 	}, [tooltipData, token])
+
+	const formatTimestamp = (timestamp: number) => {
+		if (isNaN(timestamp)) return
+
+		const milliseconds =
+			timestamp.toString().length === 10 ? timestamp * 1000 : timestamp
+		const date = new Date(milliseconds)
+
+		const formatter = new Intl.DateTimeFormat("en-US", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: true
+		})
+
+		return formatter.format(date)
+	}
 
 	if (token === undefined) return null
 
@@ -100,9 +119,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 						</p>
 						<p className="ml-auto flex flex-row items-center">
 							{tooltipData
-								? new Date(
-										tooltipData.timestamp
-									).toLocaleString()
+								? formatTimestamp(Number(tooltipData.timestamp))
 								: "Today"}
 						</p>
 					</div>
@@ -131,6 +148,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 							<Counter
 								className="mr-1 w-max"
 								count={token.balance}
+								decimals={2}
 							/>
 							{token.symbol}
 						</span>

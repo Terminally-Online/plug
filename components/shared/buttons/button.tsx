@@ -14,7 +14,7 @@ type Props = {
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
 	primary:
-		"relative bg-gradient-to-tr from-plug-green to-plug-yellow text-white before:absolute before:inset-0 before:bg-gradient-to-tr before:from-plug-green before:to-plug-yellow before:rounded-lg before:w-full before:h-full before:blur-sm before:z-[-1] hover:before:blur-md transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+		"relative bg-gradient-to-tr from-plug-green to-plug-yellow text-white before:absolute before:inset-0 before:bg-gradient-to-tr before:from-plug-green before:to-plug-yellow before:w-full before:h-full before:blur-sm before:z-[-1] hover:before:blur-md transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	secondary:
 		"border-[1px] border-grayscale-0 text-black hover:border-white hover:bg-grayscale-0 items-center flex justify-center text-opacity-60 whitespace-nowrap bg-white [&.active]:bg-grayscale-0 [&.active]:text-opacity-100 [&.active]:hover:bg-grayscale-100 [&.active]:hover:border-grayscale-0",
 	white: "bg-white text-black hover:bg-opacity-80",
@@ -24,9 +24,9 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 
 const sizings: HTMLAttributes<HTMLButtonElement> &
 	Record<NonNullable<Props["sizing"]>, string> = {
-	sm: "py-[8px] px-[24px] text-xs",
-	md: "py-[10px] px-[32px] text-sm",
-	lg: "py-[12px] px-[40px]"
+	sm: "py-[8px] px-[24px] text-xs rounded-sm before:rounded-sm",
+	md: "py-[10px] px-[32px] text-sm rounded-md before:rounded-md",
+	lg: "py-[12px] px-[40px] rounded-lg before:rounded-lg"
 }
 
 export const Button: FC<Props> = ({
@@ -41,7 +41,7 @@ export const Button: FC<Props> = ({
 	...props
 }) => {
 	const base =
-		"cursor-pointer outline-none rounded-lg font-bold transition-all duration-200 hover:text-opacity-100 select-none"
+		"cursor-pointer outline-none font-bold transition-all duration-200 hover:text-opacity-100 select-none"
 
 	if (onClick)
 		return (

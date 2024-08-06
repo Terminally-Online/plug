@@ -1,12 +1,10 @@
-import { FC, useCallback, useState } from "react"
-
-import Image from "next/image"
+import { FC } from "react"
 
 import { motion } from "framer-motion"
 
 import { Accordion, Counter, SocketTokenPercentages } from "@/components"
 import { useFrame } from "@/contexts"
-import { cn, formatTitle, getChainImage } from "@/lib"
+import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { TokenFrame } from "../../frames/assets/token"
@@ -19,10 +17,12 @@ export const SocketTokenItem: FC<{
 			RouterOutputs["socket"]["balances"]["tokens"]
 		>[number]
 	) => void
-}> = ({ token, handleSelect }) => {
+}> = ({ token }) => {
 	const { handleFrameVisible } = useFrame()
 
 	const priceChange = token?.chains[0].change
+
+	const frameHandle = `token_/_/_${token?.symbol ?? ""}`
 
 	return (
 		<>
@@ -46,7 +46,7 @@ export const SocketTokenItem: FC<{
 					onExpand={
 						token === undefined
 							? () => {}
-							: () => handleFrameVisible(`token-${token.symbol}`)
+							: () => handleFrameVisible(frameHandle)
 					}
 				>
 					{token === undefined ? (

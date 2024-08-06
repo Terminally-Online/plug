@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react"
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
@@ -7,24 +7,24 @@ import { cn } from "@/lib"
 
 const periods = [
 	{
-		label: "1h",
-		value: "1h"
-	},
-	{
 		label: "1d",
-		value: "1d"
+		period: "1h",
+		span: "24"
 	},
 	{
 		label: "1w",
-		value: "7d"
+		period: "6h",
+		span: "42"
 	},
 	{
 		label: "1m",
-		value: "30d"
+		period: "12h",
+		span: "60"
 	},
 	{
 		label: "1y",
-		value: "365d"
+		period: "3d",
+		span: "121"
 	}
 ]
 
@@ -35,16 +35,24 @@ export const TokenPriceChart: FC<{
 	color: string
 	handleTooltip: (data?: { timestamp: string; price: number }) => void
 }> = ({ enabled, chain, contract, color, handleTooltip }) => {
+	const [isLoading, setIsLoading] = useState(false)
 	const [historicalPriceData, setHistoricalPriceData] = useState<
-		Record<string, Array<{ timestamp: string; price: number }>>
+		Record<
+			string,
+			| Array<{ timestamp: string; price: number; error?: string }>
+			| undefined
+		>
 	>({})
-	const [period, setPeriod] = useState<string>("1h")
+	const [period, setPeriod] = useState(periods[1])
 
 	const key = `${chain}:${contract}`
-	const url = `https://coins.llama.fi/chart/${key}?span=100&period=${period}`
+	const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}`
+	const priceData = historicalPriceData[period.label]
 
 	const domain = useMemo(() => {
-		const periodData = historicalPriceData[period]
+		const periodData = historicalPriceData[period.label]
+
+		if (periodData === undefined || periodData[0]?.error) return [0, 1]
 
 		if (!periodData || periodData.length === 0) return [0, 1]
 
@@ -59,7 +67,7 @@ export const TokenPriceChart: FC<{
 		cy?: number
 		index?: number
 	}> = ({ cx, cy, index }) => {
-		if (index === historicalPriceData[period]?.length - 1) {
+		if (priceData && index === priceData.length - 1) {
 			return (
 				<circle
 					cx={cx}
@@ -83,22 +91,61 @@ export const TokenPriceChart: FC<{
 		handleTooltip(undefined)
 	}
 
+	const handleRetry = () => {
+		setHistoricalPriceData(prevData => ({
+			...prevData,
+			[period.label]: undefined
+		}))
+		fetchHistoricalPriceData(true)
+	}
+
+	const fetchHistoricalPriceData = useCallback(
+		async (isRetry = false) => {
+			if (!enabled) return
+			setIsLoading(true)
+
+			const failure = {
+				timestamp: new Date().toISOString(),
+				price: 0,
+				error: "Could not load price data."
+			}
+
+			try {
+				if (isRetry) {
+					await new Promise(resolve => setTimeout(resolve, 2000))
+				}
+
+				const response = await fetch(url)
+				if (!response.ok) {
+					throw new Error("Network response was not ok")
+				}
+
+				const data = await response.json()
+				const prices = data.coins[key]?.prices
+
+				if (prices === undefined) {
+					throw new Error("No price data available")
+				}
+
+				setHistoricalPriceData(prevData => ({
+					...prevData,
+					[period.label]: prices
+				}))
+			} catch (error) {
+				setHistoricalPriceData(prevData => ({
+					...prevData,
+					[period.label]: [failure]
+				}))
+			} finally {
+				setIsLoading(false)
+			}
+		},
+		[enabled, key, period, url]
+	)
+
 	useEffect(() => {
-		if (!enabled) return
-
-		const fetchHistoricalPriceData = async () => {
-			if (historicalPriceData[period]) return historicalPriceData[period]
-
-			const response = await fetch(url)
-			const data = await response.json()
-
-			setHistoricalPriceData({
-				[period]: data.coins[key].prices
-			})
-		}
-
 		fetchHistoricalPriceData()
-	}, [enabled, key, period, url])
+	}, [key, period, url])
 
 	return (
 		<div className="w-full pt-8">
@@ -115,7 +162,27 @@ export const TokenPriceChart: FC<{
                 `}
 			</style>
 
-			{historicalPriceData[period] ? (
+			{isLoading ? (
+				<div className="flex min-h-[240px] flex-col items-center justify-center">
+					<p className="font-bold opacity-40">
+						Loading price data...
+					</p>
+				</div>
+			) : priceData?.[0]?.error ? (
+				<div className="flex min-h-[240px] flex-col items-center justify-center gap-2">
+					<p className="font-bold opacity-40">
+						{priceData?.[0]?.error}
+					</p>
+
+					<Button
+						onClick={handleRetry}
+						variant="secondary"
+						sizing="md"
+					>
+						Retry
+					</Button>
+				</div>
+			) : (
 				<ResponsiveContainer
 					minHeight={240}
 					height="100%"
@@ -123,7 +190,7 @@ export const TokenPriceChart: FC<{
 					style={{ marginLeft: "-15%" }}
 				>
 					<LineChart
-						data={historicalPriceData[period]}
+						data={priceData}
 						onMouseMove={handleMouseMove}
 						onMouseLeave={handleMouseLeave}
 					>
@@ -150,12 +217,6 @@ export const TokenPriceChart: FC<{
 						/>
 					</LineChart>
 				</ResponsiveContainer>
-			) : (
-				<div className="flex min-h-[240px] flex-col items-center justify-center">
-					<p className="font-bold opacity-40">
-						Loading price data...
-					</p>
-				</div>
 			)}
 
 			<div className="mt-4 flex flex-row justify-center gap-2">
@@ -165,14 +226,14 @@ export const TokenPriceChart: FC<{
 						variant="secondary"
 						className={cn(
 							"rounded-sm p-1 px-2",
-							period === p.value && "active"
+							period.label === p.label && "active"
 						)}
-						onClick={() => setPeriod(p.value)}
+						onClick={() => setPeriod(p)}
 					>
 						<span
 							className={cn(
 								"text-black transition-all duration-200 ease-in-out",
-								period === p.value
+								period.label === p.label
 									? "text-opacity-100"
 									: "text-opacity-40"
 							)}
