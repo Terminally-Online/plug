@@ -13,6 +13,7 @@ type Props = PropsWithChildren & {
 	icon?: JSX.Element
 	handleBack?: () => void
 	hasOverlay?: boolean
+	hasChildrenPadding?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 export const Frame: FC<Props> = ({
@@ -22,7 +23,8 @@ export const Frame: FC<Props> = ({
 	visible,
 	icon,
 	handleBack,
-	hasOverlay = false
+	hasOverlay = false,
+	hasChildrenPadding = true
 }) => {
 	const { handleFrameVisible } = useFrame()
 
@@ -63,12 +65,12 @@ export const Frame: FC<Props> = ({
 						exit={{ y: "100%" }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
-							"fixed bottom-0 left-0 w-full rounded-t-lg bg-white px-6 py-8",
+							"fixed bottom-0 left-0 w-full rounded-t-lg bg-white",
 							className,
 							"z-[11]"
 						)}
 					>
-						<div className="flex flex-row items-center gap-2">
+						<div className="flex flex-row items-center gap-2 px-6 py-4">
 							{handleBack && (
 								<Button
 									variant="secondary"
@@ -92,7 +94,9 @@ export const Frame: FC<Props> = ({
 							/>
 						</div>
 
-						{children}
+						<div className={cn(hasChildrenPadding && "px-6 py-8")}>
+							{children}
+						</div>
 					</motion.div>
 				</>
 			) : null}

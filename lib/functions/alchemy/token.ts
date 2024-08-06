@@ -286,9 +286,7 @@ const aggregateTokensByChain = async (balances: Array<TokenBalanceModel>) => {
 				.map(chain => {
 					const ratio = (chain.balance * 10000) / token.balance
 					const decimal = parseInt(ratio.toString())
-					const percentage = Number.parseFloat(
-						(decimal / 100).toFixed(2)
-					)
+					const percentage = decimal / 100
 
 					return {
 						...chain,

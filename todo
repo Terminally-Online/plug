@@ -3,12 +3,9 @@ Do These:
         ☐ Fix hydration error
             Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
         ☐ Where do users initiate the transfer assets interaction flow
-        ☐ Balances can sometimes zero because they were truncated before their first digit.
         ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
-        ☐ Balances should always have at least 3 numbers.
-            39401 is acceptable if they hold a full balance.
-            39401.00123 if they hold a fraction balance.
+        ☐ Log in state is broken after having updated the base layout of everything.
 
     Console:
         Small:
@@ -83,6 +80,10 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Balances can sometimes zero because they were truncated before their first digit. @done(24-08-05 16:12) @project(Do These.Shared)
+  ✔ Balances should always have at least 3 numbers. @done(24-08-05 16:12) @project(Do These.Shared)
+    39401 is acceptable if they hold a full balance.
+    39401.00123 if they hold a fraction balance.
   ✔ Cache balances in the database @done(24-08-05 00:06) @project(Do These.Shared)
   ✔ Refresh prices on a regular basis since it comes from a free api @done(24-08-05 00:06) @project(Do These.Shared)
   ✔ Native tokens are not returned in the token balances right now as the value is always 0. @done(24-08-05 00:06) @project(Do These.Shared)
