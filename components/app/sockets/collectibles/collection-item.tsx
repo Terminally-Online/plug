@@ -91,7 +91,7 @@ export const SocketCollectionItem: FC<{
 									width={48}
 									height={48}
 								/>
-								<p className="text-sm opacity-60">
+								<p className="text-sm font-bold opacity-40">
 									{collection.collectibles.length} Token
 									{collection.collectibles.length > 1 && "s"}
 								</p>
