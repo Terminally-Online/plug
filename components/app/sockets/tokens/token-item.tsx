@@ -79,12 +79,12 @@ export const SocketTokenItem: FC<{
 									</p>
 								</div>
 
-								<div className="flex w-full flex-row">
+								<div className="flex w-full flex-row font-bold">
 									<p className="flex flex-row items-center gap-2">
 										<SocketTokenPercentages
 											chains={token.chains}
 										/>
-										<span className="flex w-max flex-row items-center gap-1 text-sm opacity-60">
+										<span className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
 											<Counter count={token.balance} />
 											<span className="w-max whitespace-nowrap">
 												{token.symbol.toUpperCase()}
