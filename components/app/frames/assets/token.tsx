@@ -14,6 +14,13 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 	const { tokens } = useBalances()
 
 	const [color, setColor] = useState("")
+	const [tooltipData, setTooltipData] = useState<
+		| {
+				timestamp: string
+				price: number
+		  }
+		| undefined
+	>()
 
 	const isFrame = frameVisible
 		? frameVisible.split("-")[0] === "token" &&
@@ -26,6 +33,18 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 			tokens.find(token => token.symbol === symbol && token.name),
 		[tokens, symbol]
 	)
+
+	const change = useMemo(() => {
+		if (tooltipData) {
+			const percentageChange =
+				((token?.chains[0].price ?? 0) - tooltipData.price) /
+				tooltipData.price
+
+			return percentageChange * 100
+		}
+
+		return token?.chains[0].change
+	}, [tooltipData, token])
 
 	if (token === undefined) return null
 
@@ -51,7 +70,11 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					<div className="flex flex-col items-center font-bold">
 						<p className="mr-auto flex w-max flex-row">
 							$
-							<Counter count={token.chains[0].price} />
+							<Counter
+								count={
+									tooltipData?.price || token.chains[0].price
+								}
+							/>
 						</p>
 						<p
 							className="mr-auto"
@@ -65,22 +88,22 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					<div
 						className={cn(
 							"ml-auto flex flex-col items-center",
-							token.chains[0].change === undefined
+							change === undefined
 								? "opacity-60"
-								: token.chains[0].change > 0
+								: change > 0
 									? "text-plug-green"
 									: "text-red-500"
 						)}
 					>
 						<p className="ml-auto flex w-max flex-row font-bold">
-							<Counter
-								count={token.chains[0].change}
-								decimals={2}
-							/>
-							%
+							<Counter count={change ?? 0} decimals={2} />%
 						</p>
 						<p className="ml-auto flex flex-row items-center">
-							Today
+							{tooltipData
+								? new Date(
+										tooltipData.timestamp
+									).toLocaleString()
+								: "Today"}
 						</p>
 					</div>
 				</div>
@@ -90,6 +113,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 					chain={token.chains[0].chain}
 					contract={token.chains[0].contract}
 					color={color}
+					handleTooltip={setTooltipData}
 				/>
 
 				<div className="mt-4 flex flex-row items-center justify-between border-t-[1px] border-grayscale-100 px-6 py-4 font-bold">

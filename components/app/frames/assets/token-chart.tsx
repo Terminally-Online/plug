@@ -3,7 +3,7 @@ import React, { FC, useEffect, useMemo, useState } from "react"
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/shared"
-import { getAssetColor } from "@/lib"
+import { cn } from "@/lib"
 
 const periods = [
 	{
@@ -33,7 +33,8 @@ export const TokenPriceChart: FC<{
 	chain: string
 	contract: string
 	color: string
-}> = ({ enabled, chain, contract, color }) => {
+	handleTooltip: (data?: { timestamp: string; price: number }) => void
+}> = ({ enabled, chain, contract, color, handleTooltip }) => {
 	const [historicalPriceData, setHistoricalPriceData] = useState<
 		Record<string, Array<{ timestamp: string; price: number }>>
 	>({})
@@ -72,10 +73,22 @@ export const TokenPriceChart: FC<{
 		return null
 	}
 
+	const handleMouseMove = (e: any) => {
+		if (e.activePayload && e.activePayload.length) {
+			handleTooltip(e.activePayload[0].payload)
+		}
+	}
+
+	const handleMouseLeave = () => {
+		handleTooltip(undefined)
+	}
+
 	useEffect(() => {
 		if (!enabled) return
 
 		const fetchHistoricalPriceData = async () => {
+			if (historicalPriceData[period]) return historicalPriceData[period]
+
 			const response = await fetch(url)
 			const data = await response.json()
 
@@ -102,47 +115,69 @@ export const TokenPriceChart: FC<{
                 `}
 			</style>
 
-			<ResponsiveContainer
-				minHeight={240}
-				height="100%"
-				width="100%"
-				style={{ marginLeft: "-15%" }}
-			>
-				<LineChart data={historicalPriceData[period]}>
-					<Line
-						type="monotone"
-						dataKey="price"
-						stroke={color}
-						strokeWidth={4}
-						strokeLinecap="round"
-						dot={<Dot />}
-						isAnimationActive={false}
-					/>
-					<XAxis
-						dataKey="timestamp"
-						axisLine={false}
-						tickLine={false}
-						tick={false}
-					/>
-					<YAxis
-						domain={domain}
-						axisLine={false}
-						tickLine={false}
-						tick={false}
-					/>
-				</LineChart>
-			</ResponsiveContainer>
+			{historicalPriceData[period] ? (
+				<ResponsiveContainer
+					minHeight={240}
+					height="100%"
+					width="100%"
+					style={{ marginLeft: "-15%" }}
+				>
+					<LineChart
+						data={historicalPriceData[period]}
+						onMouseMove={handleMouseMove}
+						onMouseLeave={handleMouseLeave}
+					>
+						<Line
+							type="monotone"
+							dataKey="price"
+							stroke={color}
+							strokeWidth={4}
+							strokeLinecap="round"
+							dot={<Dot />}
+							isAnimationActive={false}
+						/>
+						<XAxis
+							dataKey="timestamp"
+							axisLine={false}
+							tickLine={false}
+							tick={false}
+						/>
+						<YAxis
+							domain={domain}
+							axisLine={false}
+							tickLine={false}
+							tick={false}
+						/>
+					</LineChart>
+				</ResponsiveContainer>
+			) : (
+				<div className="flex min-h-[240px] flex-col items-center justify-center">
+					<p className="font-bold opacity-40">
+						Loading price data...
+					</p>
+				</div>
+			)}
 
 			<div className="mt-4 flex flex-row justify-center gap-2">
-				{periods.map(period => (
+				{periods.map(p => (
 					<Button
-						key={period.label}
+						key={p.label}
 						variant="secondary"
-						className="rounded-sm p-1 px-2"
-						onClick={() => setPeriod(period.value)}
+						className={cn(
+							"rounded-sm p-1 px-2",
+							period === p.value && "active"
+						)}
+						onClick={() => setPeriod(p.value)}
 					>
-						<span className="text-black text-opacity-40">
-							{period.label.toUpperCase()}
+						<span
+							className={cn(
+								"text-black transition-all duration-200 ease-in-out",
+								period === p.value
+									? "text-opacity-100"
+									: "text-opacity-40"
+							)}
+						>
+							{p.label.toUpperCase()}
 						</span>
 					</Button>
 				))}

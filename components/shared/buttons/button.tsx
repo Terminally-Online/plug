@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react"
+import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 import Link from "next/link"
 
@@ -22,7 +22,8 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 	destructive: "bg-gradient-to-tr from-[#EF0E00] to-[#DF5000] text-white"
 }
 
-const sizings: Record<NonNullable<Props["sizing"]>, string> = {
+const sizings: HTMLAttributes<HTMLButtonElement> &
+	Record<NonNullable<Props["sizing"]>, string> = {
 	sm: "py-[8px] px-[24px] text-xs",
 	md: "py-[10px] px-[32px] text-sm",
 	lg: "py-[12px] px-[40px]"
@@ -36,7 +37,8 @@ export const Button: FC<Props> = ({
 	className,
 	children,
 	external = false,
-	disabled = false
+	disabled = false,
+	...props
 }) => {
 	const base =
 		"cursor-pointer outline-none rounded-lg font-bold transition-all duration-200 hover:text-opacity-100 select-none"
@@ -44,6 +46,8 @@ export const Button: FC<Props> = ({
 	if (onClick)
 		return (
 			<button
+				{...props}
+				type="button"
 				onClick={disabled ? undefined : onClick}
 				className={cn(
 					variants[variant],

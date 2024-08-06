@@ -6,6 +6,8 @@ Do These:
         ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
         ☐ Log in state is broken after having updated the base layout of everything.
+        ☐ Timestamp of token price hovering tooltip is not accurate
+            Notes: It is reading as 1970 instead of the correct data.
 
     Console:
         Small:
