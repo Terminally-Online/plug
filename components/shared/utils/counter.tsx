@@ -64,7 +64,11 @@ const formatForDisplay = (
 					}
 				}
 
-				formattedNumber = formatted.split("")
+				formattedNumber = Number(formatted)
+					.toLocaleString("en-US", {
+						maximumFractionDigits: 20
+					})
+					.split("")
 			}
 		} else {
 			formattedNumber = absCount

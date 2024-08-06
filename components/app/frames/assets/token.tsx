@@ -54,6 +54,7 @@ export const TokenFrame: FC<{ symbol: string }> = ({ symbol }) => {
 							<Counter count={token.chains[0].price} />
 						</p>
 						<p
+							className="mr-auto"
 							style={{
 								color
 							}}

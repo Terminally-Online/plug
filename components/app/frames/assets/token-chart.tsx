@@ -88,7 +88,7 @@ export const TokenPriceChart: FC<{
 	}, [enabled, key, period, url])
 
 	return (
-		<div className="w-full pt-4">
+		<div className="w-full pt-8">
 			<style>
 				{`
                     @keyframes blink {
