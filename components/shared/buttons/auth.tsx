@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren } from "react"
 
-import { getCsrfToken, signIn, useSession } from "next-auth/react"
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react"
 
 import { SiweMessage } from "siwe"
-import { useAccount, useChainId, useSignMessage } from "wagmi"
+import { useAccount, useChainId, useDisconnect, useSignMessage } from "wagmi"
 
 import { useWeb3Modal } from "@web3modal/wagmi/react"
 
@@ -26,6 +26,11 @@ export const AuthButton: FC<PropsWithChildren<ButtonProps>> = ({
 	const { signMessageAsync, isLoading } = useSignMessage()
 
 	const { data: session } = useSession()
+	const { disconnect } = useDisconnect({
+		mutation: {
+			onSuccess: () => signOut({ callbackUrl: "/" })
+		}
+	})
 
 	const handleLogin = async () => {
 		if (!isConnected) {
@@ -61,13 +66,19 @@ export const AuthButton: FC<PropsWithChildren<ButtonProps>> = ({
 	return (
 		<>
 			{session?.address ? (
-				<>{session.address}</>
+				<Button
+					variant="destructive"
+					className="w-full"
+					onClick={() => disconnect()}
+				>
+					Logout
+				</Button>
 			) : (
-				<Button onClick={handleLogin}>
+				<Button className="w-full" onClick={handleLogin}>
 					{isConnected
 						? isLoading
-							? "Proving Ownership..."
-							: "Prove Account Ownership"
+							? "Signing Message..."
+							: "Sign Message"
 						: "Connect Wallet"}
 				</Button>
 			)}

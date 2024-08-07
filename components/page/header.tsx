@@ -29,7 +29,7 @@ const HomePageHeader = () => {
 					{address ? (
 						<button
 							className="flex flex-row items-center gap-2"
-							onClick={() => handleFrameVisible("account")}
+							onClick={() => handleFrameVisible("auth")}
 						>
 							{ensAvatar ? (
 								<Image

@@ -21,7 +21,7 @@ type Props = {
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
 	raw: "pb-4 pt-4",
-	frame: "pb-4"
+	frame: "pb-0"
 }
 
 const sizes: Record<NonNullable<Props["size"]>, string> = {

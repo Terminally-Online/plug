@@ -1,4 +1,5 @@
 import {
+	AuthFrame,
 	ConsoleColumnRow,
 	ConsoleSidebar,
 	PageContent,
@@ -27,7 +28,13 @@ const DesktopPage = () => {
 const Page = () => {
 	const { md } = useMediaQuery()
 
-	return md ? <DesktopPage /> : <MobilePage />
+	return (
+		<>
+			{md ? <DesktopPage /> : <MobilePage />}
+
+			<AuthFrame />
+		</>
+	)
 }
 
 export default Page

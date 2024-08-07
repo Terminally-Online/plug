@@ -12,14 +12,14 @@ export const SocketCollectionList: FC<
 	const { collectibles } = useBalances()
 
 	const visibleCollectibles = useMemo(() => {
-		if (collectibles === undefined) return Array(10).fill(undefined)
+		if (collectibles === undefined) return Array(5).fill(undefined)
 
 		return collectibles
 	}, [, collectibles])
 
 	return (
 		<motion.div
-			className={cn("mb-24 flex flex-col gap-2", className)}
+			className={cn("mb-4 flex flex-col gap-2", className)}
 			initial="hidden"
 			animate="visible"
 			variants={{
