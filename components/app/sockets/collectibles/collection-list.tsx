@@ -18,27 +18,29 @@ export const SocketCollectionList: FC<
 	}, [, collectibles])
 
 	return (
-		<motion.div
-			className={cn("mb-4 flex flex-col gap-2", className)}
-			initial="hidden"
-			animate="visible"
-			variants={{
-				hidden: { opacity: 0 },
-				visible: {
-					opacity: 1,
-					transition: {
-						staggerChildren: 0.05
+		<>
+			<motion.div
+				className={cn("mb-4 flex flex-col gap-2", className)}
+				initial="hidden"
+				animate="visible"
+				variants={{
+					hidden: { opacity: 0 },
+					visible: {
+						opacity: 1,
+						transition: {
+							staggerChildren: 0.05
+						}
 					}
-				}
-			}}
-			{...(props as MotionProps)}
-		>
-			{visibleCollectibles.map((collection, index) => (
-				<SocketCollectionItem
-					key={index}
-					collection={collectibles?.[index]}
-				/>
-			))}
-		</motion.div>
+				}}
+				{...(props as MotionProps)}
+			>
+				{visibleCollectibles.map((collection, index) => (
+					<SocketCollectionItem
+						key={index}
+						collection={collectibles?.[index]}
+					/>
+				))}
+			</motion.div>
+		</>
 	)
 }

@@ -10,12 +10,6 @@ export const SocketCollectibleGrid: FC<{
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]
 }> = ({ collection }) => {
-	// TODO: Hydration error is coming from here.
-
-	return <></>
-
-	if (!collection) return <></>
-
 	return (
 		<div className="grid grid-cols-2 gap-4">
 			{collection.collectibles.map((collectible, index) => {

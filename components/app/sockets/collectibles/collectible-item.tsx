@@ -1,7 +1,10 @@
 import { FC } from "react"
 
-import { Accordion } from "@/components"
+import { Accordion, TestFrame } from "@/components"
+import { useFrame } from "@/contexts"
 import { RouterOutputs } from "@/server/client"
+
+import { CollectibleFrame } from "../../frames/assets/collectible"
 
 export const SocketCollectibleItem: FC<{
 	collection: NonNullable<
@@ -11,27 +14,25 @@ export const SocketCollectibleItem: FC<{
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]["collectibles"][number]
 }> = ({ collection, collectible }) => {
-	const loading = collectible === undefined
+	const { handleFrameVisible } = useFrame()
 
 	return (
-		<Accordion
-			loading={loading}
-			expanded={false}
-			onExpand={() => {}}
-			noPaddingChildren={
-				<div
-					style={{
-						position: "relative",
-						width: "100%",
-						paddingTop: "100%",
-						backgroundImage: `url(${collectible?.displayImageUrl || collection.imageUrl})`,
-						backgroundSize: "cover",
-						backgroundPosition: "center",
-						backgroundRepeat: "no-repeat"
-					}}
-				/>
-			}
-			noPadding={true}
-		/>
+		<>
+			<div
+				className="w-full rounded-md"
+				style={{
+					paddingTop: "100%",
+					backgroundImage: `url(${collectible?.displayImageUrl || collection.imageUrl})`,
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat"
+				}}
+				onClick={() =>
+					handleFrameVisible(
+						`${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
+					)
+				}
+			/>
+		</>
 	)
 }

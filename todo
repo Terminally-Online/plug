@@ -18,6 +18,7 @@ Do These:
             ☐ plugs.all is a protectedProcedure, but it should be a publicProcedure so that you can browse without connecting.
 
         Medium:
+            ☐ We should be able to have multiple frames open at once because on desktop they stay relative to their context.
             ☐ Use historical price for the current price so that it has the appropriate change percent.
             ☐ Instant socket address resolution.
                 Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.

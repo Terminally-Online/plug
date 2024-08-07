@@ -8,7 +8,7 @@ const HOUR = 60 * MINUTE
 const COLLECTION_CACHE_TIME = 24 * HOUR * 7
 const COLLECTIBLES_CACHE_TIME = 10 * MINUTE
 
-const getAPIKey = () => {
+export const getAPIKey = () => {
 	const keys = process.env.OPENSEA_API_KEY?.split(",")
 	return keys?.[Math.floor(Math.random() * keys.length)]
 }
