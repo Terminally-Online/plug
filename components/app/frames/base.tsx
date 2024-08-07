@@ -5,7 +5,7 @@ import { ChevronLeft, X } from "lucide-react"
 
 import { Button, Header } from "@/components"
 import { useFrame } from "@/contexts"
-import { cn } from "@/lib"
+import { cn, useMediaQuery } from "@/lib"
 
 type Props = PropsWithChildren & {
 	label: string
@@ -26,6 +26,7 @@ export const Frame: FC<Props> = ({
 	hasOverlay = false,
 	hasChildrenPadding = true
 }) => {
+	const { md } = useMediaQuery()
 	const { handleFrameVisible } = useFrame()
 
 	useEffect(() => {
@@ -52,7 +53,8 @@ export const Frame: FC<Props> = ({
 							delay: 0.1
 						}}
 						className={cn(
-							"fixed bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
+							md ? "absolute" : "fixed",
+							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30"
 						)}
@@ -65,7 +67,8 @@ export const Frame: FC<Props> = ({
 						exit={{ y: "100%" }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
-							"fixed bottom-0 left-0 w-full rounded-t-lg bg-white",
+							md ? "absolute" : "fixed",
+							"bottom-0 left-0 w-full rounded-t-lg bg-white",
 							className,
 							"z-[11]"
 						)}

@@ -1,9 +1,8 @@
 Do These:
     Shared:
-        ☐ Where do users initiate the transfer assets interaction flow
         ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
-        ☐ Log in state is broken after having updated the base layout of everything.
+        ☐ Improve the onboarding / authentication flow.
 
     Console:
         Small:
@@ -16,6 +15,7 @@ Do These:
                 ☐ add contact info to database.
             ☐ Show total asset value when viewing tokens.
                 Notes: This does not include collectibles.
+            ☐ plugs.all is a protectedProcedure, but it should be a publicProcedure so that you can browse without connecting.
 
         Medium:
             ☐ Use historical price for the current price so that it has the appropriate change percent.
@@ -81,6 +81,8 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Where do users initiate the transfer assets interaction flow @done(24-08-06 23:00) @project(Do These.Shared)
+  ✔ Log in state is broken after having updated the base layout of everything. @done(24-08-06 22:52) @project(Do These.Shared)
   ✔ Fix hydration error @done(24-08-06 17:36) @project(Do These.Shared)
     Notes: This started when I added <SocketActivity /> -- No idea why it is happening though.
   ✔ Timestamp of token price hovering tooltip is not accurate @done(24-08-06 14:31) @project(Do These.Shared)
