@@ -24,7 +24,7 @@ type Props = {
 
 export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 	const { data: session } = useSession()
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { isFrame, handleFrame } = useFrame(`${index}-${fragmentIndex}`)
 	const { id, plug, actions, fragments, dynamic, handle } = usePlugs()
 
 	const action = actions[index]
@@ -123,7 +123,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 			})
 
 		// If the value selected was from a list of options, close the frame.
-		if (value instanceof Object) handleFrameVisible(undefined)
+		if (value instanceof Object) handleFrame(undefined)
 	}
 
 	return (
@@ -136,11 +136,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 				style={{
 					background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 				}}
-				onClick={() =>
-					own
-						? handleFrameVisible(`${index}-${fragmentIndex}`)
-						: undefined
-				}
+				onClick={() => (own ? handleFrame() : undefined)}
 			>
 				{label}
 			</button>
@@ -157,7 +153,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 					/>
 				}
 				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
-				visible={frameVisible === `${index}-${fragmentIndex}`}
+				visible={isFrame}
 			>
 				<div className="flex flex-col gap-4">
 					{options === undefined &&

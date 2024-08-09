@@ -1,39 +1,29 @@
 import Image from "next/image"
 
-import BlockiesSvg from "blockies-react-svg"
 import { Eye } from "lucide-react"
 
 import { ActionPreview, Button, Frame } from "@/components"
-import { useFrame, usePlugs, useSockets } from "@/contexts"
+import { useFrame, usePlugs } from "@/contexts"
 
 export const RunFrame = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
-	const { socket } = useSockets()
+	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame("run", "-")
 	const { chains, chainsAvailable } = usePlugs()
 
-	const isFrame =
-		frameVisible !== undefined &&
-		(frameVisible === "run" || frameVisible.split("-")[0] === "run")
-
-	const prevFrameSuffix =
-		frameVisible !== undefined && frameVisible.split("-")[1] === "schedule"
-			? "schedule"
-			: "run"
-
 	const handleBack =
-		prevFrameSuffix !== "schedule"
+		prevFrame !== "schedule"
 			? chainsAvailable.length === 1
 				? undefined
-				: () => handleFrameVisible(`chain-${prevFrameSuffix}`)
-			: () => handleFrameVisible(`schedule`)
+				: () => handleFrame(`chain-${prevFrame}`)
+			: () => handleFrame(`schedule`)
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			handleBack={handleBack}
 			icon={<Eye size={18} />}
 			label={
-				prevFrameSuffix === "schedule"
+				prevFrame === "schedule"
 					? "Intent Preview"
 					: "Transaction Preview"
 			}
@@ -68,11 +58,9 @@ export const RunFrame = () => {
 
 				<Button
 					className="mt-4 w-full"
-					onClick={() =>
-						handleFrameVisible(`running-${prevFrameSuffix}`)
-					}
+					onClick={() => handleFrame(`running-${prevFrame}`)}
 				>
-					{prevFrameSuffix === "schedule"
+					{prevFrame === "schedule"
 						? "Sign Intent"
 						: "Submit Transaction"}
 				</Button>

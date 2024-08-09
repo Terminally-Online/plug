@@ -1,3 +1,5 @@
+import { FC } from "react"
+
 import Image from "next/image"
 
 import { useSession } from "next-auth/react"
@@ -17,7 +19,7 @@ import {
 
 const HomePageHeader = () => {
 	const { page, handlePage } = usePage()
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame({ id: "global" })
 	const { address, ensAvatar } = useSockets()
 	const { handle } = usePlugs()
 
@@ -29,7 +31,7 @@ const HomePageHeader = () => {
 					{address ? (
 						<button
 							className="flex flex-row items-center gap-2"
-							onClick={() => handleFrameVisible("auth")}
+							onClick={() => handleFrame("auth")}
 						>
 							{ensAvatar ? (
 								<Image
@@ -98,7 +100,7 @@ const HomePageHeader = () => {
 const PlugHeader = () => {
 	const { data: session } = useSession()
 	const { page } = usePage()
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame({ id: "global" })
 	const { plug, handle } = usePlugs(page.id)
 
 	const own =
@@ -120,9 +122,7 @@ const PlugHeader = () => {
 					/>
 				}
 				label={plug.name === "" ? "Untitled Plug" : plug.name}
-				nextOnClick={
-					own ? () => handleFrameVisible("manage") : () => {}
-				}
+				nextOnClick={own ? () => handleFrame("manage") : () => {}}
 				nextLabel={
 					own ? (
 						<Ellipsis size={14} />
@@ -162,7 +162,7 @@ const PlugHeader = () => {
 				<Button
 					variant="secondary"
 					className="group p-1"
-					onClick={() => handleFrameVisible("share")}
+					onClick={() => handleFrame("share")}
 				>
 					<Share size={14} />
 				</Button>

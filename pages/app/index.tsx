@@ -32,7 +32,7 @@ const Page = () => {
 		<>
 			{md ? <DesktopPage /> : <MobilePage />}
 
-			<AuthFrame />
+			<AuthFrame id="global" />
 		</>
 	)
 }

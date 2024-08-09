@@ -29,7 +29,7 @@ const DEFAULT_TRANSFER = {
 }
 
 export const TransferFrame = () => {
-	const { frameVisible } = useFrame()
+	const { isFrame } = useFrame({ id: "global", key: "transfer" })
 
 	const [transfer, setTransfer] = useState<{
 		action?: "receive" | "send"
@@ -93,13 +93,11 @@ export const TransferFrame = () => {
 
 	return (
 		<>
-			<Frame
+			{/* <Frame
 				className="z-[2]"
 				icon={<ArrowLeftRight size={18} />}
 				label="Choose Transfer Direction"
-				visible={
-					frameVisible === "transfer" && transfer.token === undefined
-				}
+				visible={isFrame}
 			>
 				<div className="flex flex-col gap-4">
 					<button
@@ -380,7 +378,7 @@ export const TransferFrame = () => {
 						{transferValid[1]}
 					</Button>
 				</div>
-			</Frame>
+			</Frame> */}
 		</>
 	)
 }

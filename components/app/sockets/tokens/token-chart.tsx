@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import {
 	Line,
@@ -39,7 +39,7 @@ const periods = [
 	}
 ]
 
-export const TokenPriceChart: FC<{
+export const SocketTokenPriceChart: FC<{
 	enabled: boolean
 	chain: string
 	contract: string
@@ -185,12 +185,12 @@ export const TokenPriceChart: FC<{
 				setIsLoading(false)
 			}
 		},
-		[enabled, period]
+		[enabled, period, chain, contract]
 	)
 
 	useEffect(() => {
 		fetchHistoricalPriceData()
-	}, [period])
+	}, [period, fetchHistoricalPriceData])
 
 	useEffect(() => {
 		const start = priceData?.[0]?.price
@@ -198,7 +198,7 @@ export const TokenPriceChart: FC<{
 		const change = start && end ? ((end - start) / start) * 100 : undefined
 
 		handleHeader({ title: period.title, change })
-	}, [period, historicalPriceData])
+	}, [period, historicalPriceData, handleHeader, priceData])
 
 	return (
 		<div className="w-full pt-8">

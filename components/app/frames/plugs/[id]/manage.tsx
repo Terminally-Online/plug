@@ -8,7 +8,7 @@ import { cardColors, useDebounce, useNavigation } from "@/lib"
 
 export const ManagePlugFrame = () => {
 	const { id, from } = useNavigation()
-	const { frameVisible } = useFrame()
+	const { frameKey, isFrame } = useFrame("manage")
 	const { plug, handle } = usePlugs()
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(
@@ -28,10 +28,11 @@ export const ManagePlugFrame = () => {
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<Settings size={18} />}
 			label="Manage Plug"
-			visible={frameVisible === "manage"}
+			visible={isFrame}
 		>
 			<div className="flex flex-col gap-4">
 				<Search

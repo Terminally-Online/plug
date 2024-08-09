@@ -4,7 +4,7 @@ import { Button, Container, Plugs, SocketAssets } from "@/components"
 import { useFrame } from "@/contexts"
 
 export const PageHome = () => {
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame({ id: "global" })
 	const { data: session } = useSession()
 
 	return (
@@ -17,7 +17,7 @@ export const PageHome = () => {
 				) : (
 					<>
 						<p>Authenticate to proceed.</p>
-						<Button onClick={() => handleFrameVisible("auth")}>
+						<Button onClick={() => handleFrame("auth")}>
 							Authenticate
 						</Button>
 					</>

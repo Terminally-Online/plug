@@ -35,7 +35,7 @@ const getTimeSince = (date: Date) => {
 }
 
 export const DateSince: FC<
-	{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLSpanElement>
+	{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLParagraphElement>
 > = ({ date, ...props }) => {
 	const [timeSince, setTimeSince] = useState(getTimeSince(date))
 
@@ -48,11 +48,12 @@ export const DateSince: FC<
 	}, [date])
 
 	return (
-		<span className="flex flex-row" {...props}>
-			<span className="ml-auto">
+		<p className="flex w-max flex-row whitespace-nowrap" {...props}>
+			141239s ago
+			{/* <span>
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>
-			{timeSince.unit} ago
-		</span>
+			{timeSince.unit} ago */}
+		</p>
 	)
 }

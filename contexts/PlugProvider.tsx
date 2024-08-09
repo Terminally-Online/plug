@@ -78,7 +78,7 @@ export const PlugContext = createContext<{
 
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { handlePage } = usePage()
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame("deleted")
 
 	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
 	const [search, handleSearch] = useState("")
@@ -134,7 +134,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			// If the user was viewing the deleted plug, show a confirmation frame to signal that.
 			if (id === data.id) {
 				handlePage({ key: "home" })
-				handleFrameVisible("deleted")
+				handleFrame()
 			}
 
 			setPlugs(prev =>
@@ -247,8 +247,6 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 }
 
 export const usePlugs = (id?: string) => {
-	const { frameVisible } = useFrame()
-
 	const context = useContext(PlugContext)
 
 	const { plug } = context
@@ -311,7 +309,7 @@ export const usePlugs = (id?: string) => {
 	// will first go to the Socket frame so we are preloading the chain.
 	useEffect(() => {
 		if (chainsAvailable.length === 1) setChains([chainsAvailable[0]])
-	}, [frameVisible, chainsAvailable])
+	}, [chainsAvailable])
 
 	return {
 		...context,

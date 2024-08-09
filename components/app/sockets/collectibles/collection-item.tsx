@@ -12,12 +12,13 @@ import { CollectibleFrame } from "../../frames/assets/collectible"
 import { SocketCollectibleGrid } from "./collectible-grid"
 
 export const SocketCollectionItem: FC<{
+	id: string
 	collection:
 		| NonNullable<
 				RouterOutputs["socket"]["balances"]["collectibles"]
 		  >[number]
 		| undefined
-}> = ({ collection }) => {
+}> = ({ id, collection }) => {
 	const [expanded, setExpanded] = useState(false)
 	const [error, setError] = useState(false)
 
@@ -50,7 +51,10 @@ export const SocketCollectionItem: FC<{
 					}
 					accordion={
 						collection && (
-							<SocketCollectibleGrid collection={collection} />
+							<SocketCollectibleGrid
+								id={id}
+								collection={collection}
+							/>
 						)
 					}
 				>
@@ -109,6 +113,7 @@ export const SocketCollectionItem: FC<{
 				collection.collectibles.map(collectible => (
 					<CollectibleFrame
 						key={collectible.identifier}
+						id={id}
 						collection={collection}
 						collectible={collectible}
 					/>

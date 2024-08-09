@@ -9,39 +9,28 @@ import { useFrame, usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
 
 export const ChainFrame = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const {
+		frameKey,
+		isFrame,
+		prevFrame: nextFrame,
+		handleFrame
+	} = useFrame("chain", "-")
 	const { chains, chainsAvailable, handle } = usePlugs()
-
-	const isFrame = frameVisible
-		? frameVisible.split("-")[0] === "chain"
-		: false
-
-	const prevFrame = frameVisible
-		? `socket-${frameVisible.split("-")[1]}`
-		: undefined
-
-	const nextFrame = frameVisible ? frameVisible.split("-")[1] : undefined
 
 	const isDisabled = chains.length === 0
 
 	useEffect(() => {
-		if (isFrame === false || frameVisible === undefined) return
+		if (isFrame === false) return
 
 		console.log(nextFrame)
 
 		if (chains.length < 2 && chainsAvailable.length === 1)
-			handleFrameVisible(nextFrame)
-	}, [
-		chains,
-		chainsAvailable,
-		isFrame,
-		frameVisible,
-		nextFrame,
-		handleFrameVisible
-	])
+			handleFrame(nextFrame)
+	}, [chains, chainsAvailable, isFrame, nextFrame, handleFrame])
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<Globe size={18} />}
 			label={"Choose Chain" + (chainsAvailable.length > 1 ? "s" : "")}
@@ -77,7 +66,7 @@ export const ChainFrame = () => {
 				<Button
 					variant={isDisabled ? "disabled" : "primary"}
 					className="mt-4"
-					onClick={() => handleFrameVisible(nextFrame)}
+					onClick={() => handleFrame(nextFrame)}
 					disabled={isDisabled}
 				>
 					{isDisabled ? "Choose a Chain" : "Next"}

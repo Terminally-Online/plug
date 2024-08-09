@@ -1,3 +1,5 @@
+import { FC } from "react"
+
 import { useSession } from "next-auth/react"
 
 import { User } from "lucide-react"
@@ -5,14 +7,13 @@ import { User } from "lucide-react"
 import { AuthButton, Frame } from "@/components"
 import { useFrame } from "@/contexts"
 
-export const AuthFrame = () => {
-	const { frameVisible } = useFrame()
+export const AuthFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame } = useFrame({ id: "global", key: "auth" })
 	const { data: session } = useSession()
-
-	const isFrame = frameVisible === "auth"
 
 	return (
 		<Frame
+			id={id}
 			icon={<User size={18} />}
 			label={session?.address ? "Account" : "Login"}
 			visible={isFrame}

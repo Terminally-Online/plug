@@ -1,17 +1,14 @@
-import { useSession } from "next-auth/react"
-
 import { User } from "lucide-react"
 
-import { AuthButton, Frame } from "@/components"
+import { Frame } from "@/components"
 import { useFrame } from "@/contexts"
 
 export const TestFrame = () => {
-	const { frameVisible } = useFrame()
-
-	const isFrame = frameVisible === "test"
+	const { id, isFrame } = useFrame({ id: "global", key: "test" })
 
 	return (
 		<Frame
+			id={id}
 			icon={<User size={18} />}
 			label="Test Frame"
 			visible={isFrame}

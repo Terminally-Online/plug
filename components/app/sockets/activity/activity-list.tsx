@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 
 import { ActivityItem } from "@/components"
 
-export const ActivityList: FC = () => {
+export const ActivityList: FC<{ id: string }> = ({ id }) => {
 	const activities = [
 		{
 			text: "Lend ETH with High APY",
@@ -213,6 +213,8 @@ export const ActivityList: FC = () => {
 				>
 					<ActivityItem
 						key={index}
+						id={id}
+						index={index}
 						text={activity.text}
 						// @ts-ignore
 						color={activity.color}

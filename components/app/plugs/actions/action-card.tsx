@@ -12,7 +12,7 @@ export const ActionCard: FC<{
 	categoryName: keyof typeof categories
 	category: (typeof categories)[keyof typeof categories]
 }> = ({ categoryName, category }) => {
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame()
 	const { id, actions, handle } = usePlugs()
 
 	const primaryActions = useMemo(() => {
@@ -64,7 +64,7 @@ export const ActionCard: FC<{
 								])
 							})
 
-							handleFrameVisible(undefined)
+							handleFrame()
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">

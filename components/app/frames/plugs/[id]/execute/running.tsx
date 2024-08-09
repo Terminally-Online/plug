@@ -6,14 +6,11 @@ import { Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
 export const RunningFrame = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame(
+		"running",
+		"-"
+	)
 	const { plug } = usePlugs()
-
-	const isFrame = frameVisible
-		? frameVisible.split("-")[0] === "running"
-		: false
-
-	const prevFrame = frameVisible ? frameVisible.split("-")[1] : undefined
 
 	const label = prevFrame
 		? prevFrame === "schedule"
@@ -24,18 +21,19 @@ export const RunningFrame = () => {
 	useEffect(() => {
 		if (isFrame) {
 			const timeout = setTimeout(
-				() => handleFrameVisible(`ran-${prevFrame}`),
+				() => handleFrame(`ran-${prevFrame}`),
 				3000
 			)
 
 			return () => clearTimeout(timeout)
 		}
-	}, [isFrame, prevFrame, handleFrameVisible])
+	}, [isFrame, prevFrame, handleFrame])
 
 	if (!plug) return null
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<LoaderCircle size={18} className="animate-spin" />}
 			label={label}

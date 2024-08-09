@@ -1,16 +1,12 @@
-"use client"
+import { FC, HTMLAttributes } from "react"
 
-import { FC, HTMLAttributes, useMemo } from "react"
-
-import { motion } from "framer-motion"
 import { FileCog } from "lucide-react"
 
-import { ActivityList, Counter, Header, StatCard } from "@/components"
-import { cn } from "@/lib/utils"
+import { ActivityList, Header } from "@/components"
 
-export const SocketActivity: FC<HTMLAttributes<HTMLDivElement>> = ({
-	...props
-}) => {
+export const SocketActivity: FC<
+	HTMLAttributes<HTMLDivElement> & { id: string }
+> = ({ id, ...props }) => {
 	return (
 		<div {...props}>
 			<Header
@@ -19,7 +15,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement>> = ({
 				label="Runs"
 			/>
 
-			<ActivityList />
+			<ActivityList id={id} />
 		</div>
 	)
 }

@@ -7,7 +7,7 @@ import { useFrame, usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
 
 export const ShareFrame = () => {
-	const { frameVisible } = useFrame()
+	const { frameKey, isFrame } = useFrame("share")
 	const { plug } = usePlugs()
 
 	const { copied, handleCopied } = useClipboard(
@@ -18,10 +18,11 @@ export const ShareFrame = () => {
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<Badge size={18} />}
 			label="Share Plug"
-			visible={frameVisible === "share"}
+			visible={isFrame}
 		>
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">

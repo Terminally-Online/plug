@@ -11,18 +11,20 @@ import { TokenFrame } from "../../frames/assets/token"
 import { TokenImage } from "./token-image"
 
 export const SocketTokenItem: FC<{
+	id: string
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["tokens"]>[number]
 	handleSelect?: (
 		token: NonNullable<
 			RouterOutputs["socket"]["balances"]["tokens"]
 		>[number]
 	) => void
-}> = ({ token }) => {
-	const { handleFrameVisible } = useFrame()
+}> = ({ id, token }) => {
+	const { handleFrame } = useFrame({
+		id,
+		key: `token/${token?.symbol ?? ""}`
+	})
 
 	const priceChange = token?.chains[0].change
-
-	const frameHandle = `token_/_/_${token?.symbol ?? ""}`
 
 	return (
 		<>
@@ -44,9 +46,7 @@ export const SocketTokenItem: FC<{
 					loading={token === undefined}
 					expanded={false}
 					onExpand={
-						token === undefined
-							? () => {}
-							: () => handleFrameVisible(frameHandle)
+						token === undefined ? () => {} : () => handleFrame()
 					}
 				>
 					{token === undefined ? (
@@ -123,7 +123,7 @@ export const SocketTokenItem: FC<{
 				</Accordion>
 			</motion.div>
 
-			<TokenFrame symbol={token?.symbol ?? ""} />
+			<TokenFrame id={id} symbol={token?.symbol ?? ""} />
 		</>
 	)
 }

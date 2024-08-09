@@ -8,6 +8,7 @@ import { useFrame } from "@/contexts"
 import { cn, useMediaQuery } from "@/lib"
 
 type Props = PropsWithChildren & {
+	id: string
 	label: string
 	visible: boolean
 	icon?: JSX.Element
@@ -17,27 +18,18 @@ type Props = PropsWithChildren & {
 } & React.HTMLAttributes<HTMLDivElement>
 
 export const Frame: FC<Props> = ({
-	children,
-	className,
+	id,
 	label,
 	visible,
 	icon,
 	handleBack,
 	hasOverlay = false,
-	hasChildrenPadding = true
+	hasChildrenPadding = true,
+	children,
+	className
 }) => {
 	const { md } = useMediaQuery()
-	const { handleFrameVisible } = useFrame()
-
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") handleFrameVisible(undefined)
-		}
-
-		if (visible) document.addEventListener("keydown", handleKeyDown)
-
-		return () => document.removeEventListener("keydown", handleKeyDown)
-	}, [visible, handleFrameVisible])
+	const { handleFrame } = useFrame({ id })
 
 	return (
 		<AnimatePresence>
@@ -58,7 +50,7 @@ export const Frame: FC<Props> = ({
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30"
 						)}
-						onClick={() => handleFrameVisible(undefined)}
+						onClick={() => handleFrame()}
 					/>
 
 					<motion.div
@@ -90,9 +82,7 @@ export const Frame: FC<Props> = ({
 								icon={icon}
 								label={label}
 								nextPadded={false}
-								nextOnClick={() =>
-									handleFrameVisible(undefined)
-								}
+								nextOnClick={() => handleFrame()}
 								nextLabel={<X size={14} />}
 							/>
 						</div>

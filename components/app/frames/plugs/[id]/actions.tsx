@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from "react"
+import { FC, useMemo } from "react"
 
 import Image from "next/image"
 
@@ -16,7 +16,7 @@ import {
 } from "@/lib"
 
 export const ActionsFrame: FC = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameKey, isFrame, frames, handleFrame } = useFrame("actions")
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
 	const allFilteredActions = useMemo(
@@ -49,17 +49,19 @@ export const ActionsFrame: FC = () => {
 		[debouncedSearch]
 	)
 
-	useEffect(() => {
-		if (frameVisible === undefined) handleDebounce("")
-	}, [frameVisible, handleDebounce])
+	// NOTE: Not sure what is going on here.
+	// useEffect(() => {
+	// 	if (frameVisible === undefined) handleDebounce("")
+	// }, [frameVisible, handleDebounce])
 
 	return (
 		<>
 			<Frame
+				frameKey={frameKey}
 				className="scrollbar-hide z-[1] h-[calc(100vh-80px)] overflow-y-auto"
 				icon={<Blocks size={18} />}
 				label="Add Action"
-				visible={frameVisible === "actions"}
+				visible={isFrame}
 			>
 				<div className="flex flex-col gap-4">
 					<Search
@@ -99,7 +101,7 @@ export const ActionsFrame: FC = () => {
 										<Button
 											className="mx-auto mt-4 w-max"
 											onClick={() =>
-												handleFrameVisible(
+												handleFrame(
 													"featureRequest-actions"
 												)
 											}
@@ -123,7 +125,7 @@ export const ActionsFrame: FC = () => {
 										<button
 											className="group flex w-full flex-row items-center gap-4"
 											onClick={() =>
-												handleFrameVisible(categoryName)
+												handleFrame(categoryName)
 											}
 										>
 											<Image
@@ -140,9 +142,7 @@ export const ActionsFrame: FC = () => {
 												variant="secondary"
 												className="ml-auto p-1"
 												onClick={() =>
-													handleFrameVisible(
-														categoryName
-													)
+													handleFrame(categoryName)
 												}
 											>
 												<ChevronRight size={14} />
@@ -166,6 +166,7 @@ export const ActionsFrame: FC = () => {
 
 				return (
 					<Frame
+						frameKey={categoryName}
 						key={categoryName}
 						className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 						icon={
@@ -178,8 +179,8 @@ export const ActionsFrame: FC = () => {
 							/>
 						}
 						label={formatTitle(categoryName)}
-						visible={frameVisible === categoryName}
-						handleBack={() => handleFrameVisible("actions")}
+						visible={frames.includes(categoryName) === true}
+						handleBack={() => handleFrame("actions")}
 						hasOverlay={true}
 					>
 						<div className="flex flex-col gap-4">
@@ -210,6 +211,7 @@ export const ActionsFrame: FC = () => {
 
 						return (
 							<Frame
+								frameKey={`${categoryName}-${actionName}-info`}
 								key={`${categoryName}-${actionName}-info`}
 								className="scrollbar-hide z-[3] max-h-[calc(100vh-80px)] overflow-y-auto"
 								icon={
@@ -223,11 +225,12 @@ export const ActionsFrame: FC = () => {
 								}
 								label={formatTitle(actionName)}
 								visible={
-									frameVisible ===
-									`${categoryName}-${actionName}`
+									frames.includes(
+										`${categoryName}-${actionName}`
+									) === true
 								}
 								handleBack={() =>
-									handleFrameVisible(
+									handleFrame(
 										debouncedSearch
 											? "actions"
 											: categoryName
@@ -315,4 +318,3 @@ export const ActionsFrame: FC = () => {
 		</>
 	)
 }
-///

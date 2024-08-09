@@ -36,7 +36,7 @@ const getProtocolFrequency = (
 
 export const ActionView = () => {
 	const { data: session } = useSession()
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame("actions")
 	const { id, plug, actions, handle } = usePlugs()
 
 	const own = plug && session && session.address === plug.userAddress
@@ -160,7 +160,7 @@ export const ActionView = () => {
 					</p>
 					<Button
 						className="mx-auto mt-4 w-max"
-						onClick={() => handleFrameVisible("actions")}
+						onClick={() => handleFrame()}
 					>
 						Add Action
 					</Button>

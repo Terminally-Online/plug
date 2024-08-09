@@ -72,8 +72,8 @@ export const ConsoleColumn: FC<{
 			>
 				{(provided, snapshot) => (
 					<div
-						className="flex h-full flex-row"
 						ref={provided.innerRef}
+						className="flex h-full flex-row"
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
@@ -81,11 +81,11 @@ export const ConsoleColumn: FC<{
 						}}
 					>
 						<div
+							ref={resizeRef}
 							className={cn(
 								"relative my-2 w-full select-none overflow-y-auto rounded-lg border-[1px] border-grayscale-100 bg-white",
 								snapshot.isDragging && "opacity-60"
 							)}
-							ref={resizeRef}
 						>
 							<div
 								className={cn(
@@ -126,19 +126,32 @@ export const ConsoleColumn: FC<{
 									<PageDiscover className="pt-4" />
 								) : column.key === "MY_PLUGS" ? (
 									<PageMine className="pt-4" column={true} />
-								) : column.key === "ASSETS" ? (
-									<SocketAssets className="px-4" />
 								) : column.key === "ACTIVITY" ? (
-									<SocketActivity className="px-4" />
+									<SocketActivity
+										id={column.id}
+										className="px-4"
+									/>
+								) : column.key === "ASSETS" ? (
+									<SocketAssets
+										id={column.id}
+										className="px-4"
+									/>
 								) : column.key === "TOKENS" ? (
 									<SocketTokenList
+										id={column.id}
 										className="px-4 pt-4"
 										expanded={true}
 									/>
 								) : column.key === "COLLECTIBLES" ? (
-									<SocketCollectionList className="px-4 pt-4" />
+									<SocketCollectionList
+										id={column.id}
+										className="px-4 pt-4"
+									/>
 								) : column.key === "POSITIONS" ? (
-									<SocketPositionList className="px-4 pt-4" />
+									<SocketPositionList
+										id={column.id}
+										className="px-4 pt-4"
+									/>
 								) : column.key === "EARNINGS" ? (
 									<SocketEarnings className="px-4 pt-4" />
 								) : column.key === "SETTINGS" ? (

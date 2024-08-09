@@ -5,13 +5,13 @@ import { signOut } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { useDisconnect, useEnsAvatar, useEnsName } from "wagmi"
 
-import { Button, Counter, DateSince, Frame, StatCard } from "@/components"
+import { Button, Counter, Frame, StatCard } from "@/components"
 import { useFrame, useSockets } from "@/contexts"
 
 import { normalize } from "viem/ens"
 
 export const AccountFrame = () => {
-	const { frameVisible } = useFrame()
+	const { id, isFrame } = useFrame({ id: "global", key: "account" })
 	const { address } = useSockets()
 
 	const { data: ensName } = useEnsName({ address: address as `0x${string}` })
@@ -29,6 +29,7 @@ export const AccountFrame = () => {
 
 	return (
 		<Frame
+			id={id}
 			className="z-[2]"
 			icon={
 				ensAvatar ? (
@@ -47,7 +48,7 @@ export const AccountFrame = () => {
 				)
 			}
 			label="Wallet"
-			visible={frameVisible === "account"}
+			visible={isFrame}
 		>
 			<div className="flex flex-col gap-2">
 				<div className="mb-4 flex flex-row items-center gap-2">
@@ -79,14 +80,6 @@ export const AccountFrame = () => {
 				<p className="flex font-bold">
 					<span className="w-full">Users Onboarded</span>
 					<Counter className="ml-auto opacity-40" count={51} />
-				</p>
-				<p className="flex font-bold">
-					<span className="w-full">User Since</span>
-					<DateSince
-						className="flex w-full flex-row items-center opacity-40"
-						date={new Date()}
-					/>
-					{/* <span className="ml-auto opacity-40">18 days</span> */}
 				</p>
 			</div>
 

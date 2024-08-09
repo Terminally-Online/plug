@@ -10,6 +10,7 @@ import { RouterOutputs } from "@/server/client"
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
+			id: string
 			expanded?: boolean
 			handleSelect?: (
 				token: NonNullable<
@@ -17,7 +18,7 @@ export const SocketTokenList: FC<
 				>[number]
 			) => void
 		}
-> = ({ expanded, handleSelect, className, ...props }) => {
+> = ({ id, expanded, handleSelect, className, ...props }) => {
 	const { tokens } = useBalances()
 
 	const visibleTokens = useMemo(() => {
@@ -47,6 +48,7 @@ export const SocketTokenList: FC<
 			{visibleTokens.map((token, index) => (
 				<SocketTokenItem
 					key={index}
+					id={id}
 					token={token}
 					handleSelect={handleSelect}
 				/>

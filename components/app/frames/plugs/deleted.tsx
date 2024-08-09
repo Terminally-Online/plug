@@ -4,17 +4,18 @@ import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
 export const DeletedFrame = () => {
-	const { frameVisible } = useFrame()
+	const { frameKey, isFrame } = useFrame("deleted")
 	const { plug, handle } = usePlugs()
 
 	if (!plug) return null
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<Trash2 size={18} />}
 			label="Plug Deleted"
-			visible={frameVisible === "deleted"}
+			visible={isFrame}
 		>
 			<p className="w-full opacity-60">
 				This content you were viewing is no longer available. It may

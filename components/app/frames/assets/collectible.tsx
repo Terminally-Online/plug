@@ -1,27 +1,27 @@
 import { FC, useEffect, useState } from "react"
 
-import Image from "next/image"
-
 import axios from "axios"
 import { ExternalLink, Send } from "lucide-react"
 
-import { Button } from "@/components/shared"
 import { useFrame } from "@/contexts"
-import { getAPIKey } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
 import { Frame } from "../base"
 
 export const CollectibleFrame: FC<{
+	id: string
 	collection: NonNullable<
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]
 	collectible?: NonNullable<
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]["collectibles"][number]
-}> = ({ collection, collectible }) => {
-	const { frameVisible } = useFrame()
+}> = ({ id, collection, collectible }) => {
+	const { isFrame } = useFrame({
+		id,
+		key: `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
+	})
 
 	const [color, setColor] = useState<string>("")
 	const [traits, setTraits] = useState<
@@ -33,10 +33,6 @@ export const CollectibleFrame: FC<{
 		  }>
 		| undefined
 	>(undefined)
-
-	const isFrame =
-		frameVisible ===
-		`${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 
 	useEffect(() => {
 		if (!collection || !collectible || !isFrame || traits) return
@@ -58,6 +54,7 @@ export const CollectibleFrame: FC<{
 
 	return (
 		<Frame
+			id={id}
 			icon={
 				<div className="relative h-10 w-10">
 					{/* <Image

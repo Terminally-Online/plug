@@ -11,7 +11,7 @@ import { categories, formatTitle } from "@/lib"
 export const ActionListItem: FC<{
 	categoryName: string
 }> = ({ categoryName }) => {
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame(categoryName)
 
 	const category = categories[categoryName]
 
@@ -20,7 +20,7 @@ export const ActionListItem: FC<{
 			<div className="flex flex-col items-center gap-2">
 				<button
 					className="group flex w-full flex-row items-center gap-4"
-					onClick={() => handleFrameVisible(categoryName)}
+					onClick={() => handleFrame()}
 				>
 					<Image
 						src={category.image}
@@ -37,7 +37,7 @@ export const ActionListItem: FC<{
 					<Button
 						variant="secondary"
 						className="ml-auto p-1 group-hover:bg-grayscale-100"
-						onClick={() => handleFrameVisible(categoryName)}
+						onClick={() => handleFrame()}
 					>
 						<ChevronRight size={14} />
 					</Button>

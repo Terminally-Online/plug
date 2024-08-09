@@ -7,14 +7,10 @@ import { useFrame, usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
 
 export const RanFrame = () => {
-	const { frameVisible, handleFrameVisible } = useFrame()
+	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame("ran", "-")
 	const { plug, chains } = usePlugs()
 
-	const isFrame = frameVisible ? frameVisible.split("-")[0] === "ran" : false
-
-	const prevFrame = frameVisible ? frameVisible.split("-")[1] : undefined
-
-	const label = frameVisible
+	const label = isFrame
 		? prevFrame === "schedule"
 			? "Intent Signed"
 			: "Transaction Ran"
@@ -24,6 +20,7 @@ export const RanFrame = () => {
 
 	return (
 		<Frame
+			frameKey={frameKey}
 			className="z-[2]"
 			icon={<CheckCircle size={18} />}
 			label={label}
@@ -93,7 +90,7 @@ export const RanFrame = () => {
 				<Button
 					variant="secondary"
 					className="mt-4 w-full"
-					onClick={() => handleFrameVisible("chain")}
+					onClick={() => handleFrame("chain")}
 				>
 					View on Explorer
 				</Button>

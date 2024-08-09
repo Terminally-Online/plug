@@ -16,7 +16,7 @@ import { useFrame, usePage, usePlugs } from "@/contexts"
 export const PagePlug = () => {
 	const { page } = usePage()
 	const { data: session } = useSession()
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame()
 	const { plug } = usePlugs(page.id)
 
 	const own =
@@ -35,7 +35,7 @@ export const PagePlug = () => {
 						className="z-[4] pt-16"
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search protocols and actions"
-						handleOnClick={() => handleFrameVisible("actions")}
+						handleOnClick={() => handleFrame("actions")}
 					/>
 				)}
 
@@ -43,14 +43,14 @@ export const PagePlug = () => {
 					<Button
 						variant="secondary"
 						className="w-max"
-						onClick={() => handleFrameVisible("socket-run")}
+						onClick={() => handleFrame("socket-run")}
 					>
 						Run
 					</Button>
 
 					<Button
 						className="w-full"
-						onClick={() => handleFrameVisible("socket-schedule")}
+						onClick={() => handleFrame("socket-schedule")}
 					>
 						Schedule
 					</Button>

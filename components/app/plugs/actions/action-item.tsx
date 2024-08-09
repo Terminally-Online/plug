@@ -24,7 +24,7 @@ export const ActionItem: FC<Props> = ({
 	actionName,
 	image = false
 }) => {
-	const { handleFrameVisible } = useFrame()
+	const { handleFrame } = useFrame(`${categoryName}-${actionName}`)
 	const { id, actions, handle } = usePlugs()
 
 	if (!id) return null
@@ -59,18 +59,13 @@ export const ActionItem: FC<Props> = ({
 							])
 						})
 
-						handleFrameVisible(undefined)
+						handleFrame()
 					}}
 				>
 					{formatTitle(actionName)}
 				</Button>
 
-				<button
-					className="ml-2"
-					onClick={() =>
-						handleFrameVisible(`${categoryName}-${actionName}`)
-					}
-				>
+				<button className="ml-2" onClick={() => handleFrame()}>
 					<Info size={14} />
 				</button>
 			</div>
