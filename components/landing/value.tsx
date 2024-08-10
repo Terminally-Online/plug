@@ -65,7 +65,7 @@ export const Value: FC = () => {
 							<span>24/7 Execution</span>
 						</div>
 					}
-					description="Plug keeps your strategies running at all times. Whether you're at dinner, asleep, or on vacation, your transactions will be executed."
+					description="Whether you're at dinner, asleep, or on vacation, your transactions will be executed."
 					{...animation}
 					className={`${animation.className} md:col-span-2 xl:col-span-1`}
 				>
@@ -321,7 +321,7 @@ export const Value: FC = () => {
 							<span>Multichain Signatures</span>
 						</div>
 					}
-					description="Declare multiple actions across multiple chains with a single gasless signature. Stop signing the same signature over and over."
+					description="Sign multiple actions across several hains with a single gasless signature. Stop signing the same signature over and over."
 					{...animation}
 				>
 					<div className="grayscale-100 ml-16 mt-16 flex w-[100%] flex-row saturate-0 filter">
@@ -436,7 +436,7 @@ export const Value: FC = () => {
 							<span>Recurring Outcomes</span>
 						</div>
 					}
-					description="With Plug your signed intents can be reused to run again when the conditions are met without needing to sign a new transaction."
+					description="Your signed intents can be reused to run again when the conditions are met without needing to sign a new transaction."
 					{...animation}
 				>
 					<div
@@ -474,7 +474,7 @@ export const Value: FC = () => {
 							<span>Atomic Constraints</span>
 						</div>
 					}
-					description="Rules of execution are deeply embedded to enable automation that only results in what you want, when you want, how you want."
+					description="Constraints are deeply embedded to enable automation that only results in what you want, when you want, how you want."
 					{...animation}
 				>
 					<svg
@@ -809,7 +809,7 @@ export const Value: FC = () => {
 							<span>Constant Simulation</span>
 						</div>
 					}
-					description="To achieve near-instant responses your transaction is constantly simulated to check the expected outcomes can be achieved."
+					description="Your transaction is constantly simulated to check if the expected outcomes can be achieved."
 					{...animation}
 				>
 					<motion.div
@@ -904,7 +904,7 @@ export const Value: FC = () => {
 							<span>Transferrable Accounts</span>
 						</>
 					}
-					description="Transfer your account to a different wallet or sell it on any major NFT marketplace. Your account is yours to do with as you please."
+					description="Transfer your account to a different wallet or sell it on any major NFT marketplace. You have full control."
 					{...animation}
 				>
 					<div className="flex w-full flex-row items-center">

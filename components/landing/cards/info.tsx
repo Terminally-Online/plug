@@ -18,7 +18,7 @@ export const InfoCard: FC<Props> = ({
 	...props
 }) => {
 	const base =
-		"relative flex flex-row items-center gap-8 rounded-xl bg-[#FBFBFB] p-8 items-end min-h-[240px]"
+		"relative flex flex-row items-center gap-8 rounded-xl bg-grayscale-0 p-8 items-end min-h-[240px]"
 
 	return (
 		<motion.div className={cn(base, className)} {...props}>
@@ -27,11 +27,13 @@ export const InfoCard: FC<Props> = ({
 			</div>
 
 			<div className="z-[10] flex flex-col gap-2">
-				<h2 className="flex flex-wrap items-center gap-4 text-lg font-bold lg:text-2xl">
+				<h2 className="flex flex-wrap items-center gap-4 text-lg font-black lg:text-2xl">
 					{text}
 				</h2>
 				{description && (
-					<p className="max-w-[640px] text-black/65">{description}</p>
+					<p className="max-w-[640px] font-bold text-black/40">
+						{description}
+					</p>
 				)}
 			</div>
 		</motion.div>

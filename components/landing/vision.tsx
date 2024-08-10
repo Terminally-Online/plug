@@ -220,17 +220,21 @@ export const Vision: FC = () => {
 						/>
 						<div className="h-[2px] bg-[#D9D9D9]" />
 						<div />
-						<p className="mx-auto mt-2 text-xs opacity-60">Sign</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
+							Sign
+						</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs opacity-60">
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
 							Simulate
 						</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs opacity-60">
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
 							Execute
 						</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs opacity-60">Pay</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
+							Pay
+						</p>
 					</div>
 				</InfoCard>
 			</div>

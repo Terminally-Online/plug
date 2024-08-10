@@ -5,7 +5,13 @@ import Link from "next/link"
 import { cn } from "@/lib"
 
 type Props = {
-	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive"
+	variant?:
+		| "primary"
+		| "secondary"
+		| "white"
+		| "disabled"
+		| "destructive"
+		| "none"
 	sizing?: "sm" | "md" | "lg"
 	href?: string
 	external?: boolean
@@ -19,7 +25,8 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 		"border-[1px] border-grayscale-0 text-black hover:border-white hover:bg-grayscale-0 items-center flex justify-center text-opacity-60 whitespace-nowrap bg-white [&.active]:bg-grayscale-0 [&.active]:text-opacity-100 [&.active]:hover:bg-grayscale-100 [&.active]:hover:border-grayscale-0",
 	white: "bg-white text-black hover:bg-opacity-80",
 	disabled: "bg-gradient-to-tr from-[#D9D9D940] to-[#D9D9D9]",
-	destructive: "bg-gradient-to-tr from-[#EF0E00] to-[#DF5000] text-white"
+	destructive: "bg-gradient-to-tr from-[#EF0E00] to-[#DF5000] text-white",
+	none: ""
 }
 
 const sizings: HTMLAttributes<HTMLButtonElement> &
@@ -41,7 +48,7 @@ export const Button: FC<Props> = ({
 	...props
 }) => {
 	const base =
-		"cursor-pointer outline-none font-bold transition-all duration-200 hover:text-opacity-100 select-none"
+		"cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
 
 	if (onClick)
 		return (

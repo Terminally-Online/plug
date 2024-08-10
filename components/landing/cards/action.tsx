@@ -107,7 +107,7 @@ export const LandingActionCard: FC<Props> = ({
 			}}
 			{...props}
 		>
-			<div className="flex flex-row gap-2 text-xs">
+			<div className="flex flex-row gap-2 text-xs font-bold">
 				<div
 					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
 					style={{ backgroundColor: tagColors[color] }}

@@ -27,10 +27,10 @@ export const CallToAction: FC<{
 							"linear-gradient(30deg, #00E100, #A3F700)"
 					}}
 				>
-					<h1 className="text-[36px] font-bold text-white lg:max-w-[90%] lg:text-[72px] 2xl:max-w-[50%]">
+					<h1 className="text-[36px] font-black text-white lg:max-w-[90%] lg:text-[72px] 2xl:max-w-[50%]">
 						{text}
 					</h1>
-					<p className="text-[18px] text-white md:max-w-[75%] lg:max-w-[60%] lg:text-[24px]">
+					<p className="text-[18px] font-bold text-white/80 md:max-w-[75%] lg:max-w-[60%] lg:text-[24px]">
 						{description}
 					</p>
 					<Button

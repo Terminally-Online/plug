@@ -9,18 +9,18 @@ import { LandingContainer } from "@/components"
 export const Examples: FC = () => (
 	<>
 		<LandingContainer className="mt-[90px] flex-col items-center gap-4">
-			<h2 className="text-center text-[28px] font-bold lg:w-[60%] lg:text-[64px] 2xl:w-[40%]">
+			<h2 className="text-center text-[42px] font-black lg:w-[60%] lg:text-[72px] 2xl:w-[40%]">
 				A simple way to plug-and-play.
 			</h2>
-			<p className="text-center text-[18px] font-light opacity-40 lg:w-[45%] lg:text-[24px] 2xl:w-[35%]">
+			<p className="text-center text-[18px] font-bold opacity-20 lg:w-[45%] lg:text-[24px] 2xl:w-[35%]">
 				Declare multi-outcome transactions with a state of the art
 				no-code builder in seconds and combine the power of top
 				protocols.
 			</p>
 		</LandingContainer>
 
-		<div className="my-[45px] border-y-[2px] border-[#D9D9D9] lg:my-[90px]">
-			<div className="grid lg:grid-cols-12 lg:grid-rows-2">
+		<div className="my-[45px] border-y-[2px] border-grayscale-0 lg:my-[90px]">
+			<div className="grid font-bold lg:grid-cols-12 lg:grid-rows-2">
 				<div className="lg:col-span-6">
 					<div className="p-4 py-8 lg:p-12 lg:pl-16 xl:pl-64 2xl:pl-80">
 						<div className="flex flex-col">
@@ -167,7 +167,7 @@ export const Examples: FC = () => (
 						</div>
 					</div>
 				</div>
-				<div className="flex border-t-[2px] border-[#D9D9D9] lg:col-span-5 lg:col-start-7 lg:row-span-2 lg:border-l-[2px] lg:border-t-[0px] 2xl:pl-48">
+				<div className="flex border-t-[2px] border-grayscale-0 lg:col-span-5 lg:col-start-7 lg:row-span-2 lg:border-l-[2px] lg:border-t-[0px] 2xl:pl-48">
 					<div className="my-auto p-4 py-8 pr-0 lg:pl-24 xl:p-16">
 						<div className="flex flex-col">
 							<div className="flex flex-row items-center gap-4">
@@ -383,7 +383,7 @@ export const Examples: FC = () => (
 						</div>
 					</div>
 				</div>
-				<div className="border-t-[2px] border-[#D9D9D9] lg:col-span-6">
+				<div className="border-t-[2px] border-grayscale-0 lg:col-span-6">
 					<div className="flex h-full items-center p-4 py-8 lg:p-12 lg:pl-16 xl:pl-64 2xl:pl-80">
 						<div className="flex flex-col">
 							<div className="flex flex-row items-center gap-4">

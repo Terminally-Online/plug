@@ -15,7 +15,7 @@ const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
 		<div className="flex flex-col gap-2 border-b-[1px] border-[#D9D9D9]/40 pb-4">
 			<button
 				onClick={() => setCollapsed(!collapsed)}
-				className="z-[30] flex w-full items-center text-[24px] font-bold"
+				className="z-[30] flex w-full items-center text-[24px] font-black"
 			>
 				{text}
 				<motion.span
@@ -28,7 +28,7 @@ const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
 				</motion.span>
 			</button>
 			<motion.p
-				className="text-black/65 opacity-40 lg:mr-16"
+				className="font-bold text-black/40 opacity-40"
 				initial={{ height: 0, opacity: 0 }}
 				animate={{
 					height: collapsed ? 0 : "auto",
@@ -45,7 +45,7 @@ const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({
 export const FrequentlyAskedQuestions: FC = () => (
 	<LandingContainer>
 		<div className="my-[90px] grid lg:grid-cols-12">
-			<h3 className="mb-8 text-[28px] font-bold lg:col-span-4 lg:col-start-2 lg:mb-0 lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
+			<h3 className="mb-8 text-[28px] font-black lg:col-span-4 lg:col-start-2 lg:mb-0 lg:w-[60%] lg:text-[64px] 2xl:w-[50%]">
 				Frequently Asked Questions
 			</h3>
 
