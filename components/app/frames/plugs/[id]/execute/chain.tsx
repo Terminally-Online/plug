@@ -10,11 +10,11 @@ import { formatTitle } from "@/lib"
 
 export const ChainFrame = () => {
 	const {
-		frameKey,
+		id,
 		isFrame,
 		prevFrame: nextFrame,
 		handleFrame
-	} = useFrame("chain", "-")
+	} = useFrame({ id: "global", key: "chain", seperator: "-" })
 	const { chains, chainsAvailable, handle } = usePlugs()
 
 	const isDisabled = chains.length === 0
@@ -30,7 +30,7 @@ export const ChainFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			icon={<Globe size={18} />}
 			label={"Choose Chain" + (chainsAvailable.length > 1 ? "s" : "")}

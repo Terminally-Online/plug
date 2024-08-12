@@ -12,7 +12,7 @@ export const ActionCard: FC<{
 	categoryName: keyof typeof categories
 	category: (typeof categories)[keyof typeof categories]
 }> = ({ categoryName, category }) => {
-	const { handleFrame } = useFrame()
+	const { handleFrame } = useFrame({ id: "global" })
 	const { id, actions, handle } = usePlugs()
 
 	const primaryActions = useMemo(() => {

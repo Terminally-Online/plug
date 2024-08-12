@@ -30,7 +30,6 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: collectibles } = api.socket.balances.collectibles.useQuery(
 		socket?.socketAddress,
 		{
-			refetchInterval: DURATION,
 			enabled: socket?.socketAddress !== undefined
 		}
 	)

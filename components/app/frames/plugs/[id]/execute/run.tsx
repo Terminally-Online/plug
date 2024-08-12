@@ -6,7 +6,11 @@ import { ActionPreview, Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
 export const RunFrame = () => {
-	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame("run", "-")
+	const { id, isFrame, prevFrame, handleFrame } = useFrame({
+		id: "global",
+		key: "run",
+		seperator: "-"
+	})
 	const { chains, chainsAvailable } = usePlugs()
 
 	const handleBack =
@@ -18,7 +22,7 @@ export const RunFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			handleBack={handleBack}
 			icon={<Eye size={18} />}

@@ -4,90 +4,15 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Activity, Book, Twitter } from "lucide-react"
+import { Book, Twitter } from "lucide-react"
 
-import { Button, Ecosystem, LandingContainer } from "@/components"
-import { cn, greenGradientStyle, routes } from "@/lib"
+import { Button, LandingContainer } from "@/components"
+import { cn, routes } from "@/lib"
+
+import { HeroShapes } from "./shapes"
 
 const EARLY_ACCESS =
 	process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
-
-const HeroShapes = () => {
-	const colors = [
-		"#00E100",
-		"#A3F700",
-		"#00E100",
-		"#A3F700",
-		"#00E100",
-		"#A3F700",
-		"#00E100",
-		"#A3F700"
-	]
-
-	const initialPositions = [
-		{ x: "-10%", y: "-10%" },
-		{ x: "110%", y: "-10%" },
-		{ x: "-10%", y: "110%" },
-		{ x: "110%", y: "110%" },
-		{ x: "50%", y: "-10%" },
-		{ x: "50%", y: "110%" },
-		{ x: "-10%", y: "50%" },
-		{ x: "110%", y: "50%" }
-	]
-
-	return (
-		<div className="absolute inset-0 bottom-0 left-0 right-0 top-0 z-0 w-screen overflow-hidden bg-plug-green">
-			<div className="absolute inset-0 blur-[120px] filter">
-				{colors.map((color, index) => (
-					<motion.div
-						key={index}
-						className="z-= absolute rounded-full"
-						style={{
-							background: color,
-							width: "130%",
-							height: "130%",
-							x: initialPositions[index].x,
-							y: initialPositions[index].y,
-							top: "-65%",
-							left: "-65%"
-						}}
-						animate={{
-							x: [
-								initialPositions[index].x,
-								...[
-									"0%",
-									"100%",
-									"50%",
-									initialPositions[index].x
-								].filter(
-									pos => pos !== initialPositions[index].x
-								)
-							],
-							y: [
-								initialPositions[index].y,
-								...[
-									"0%",
-									"100%",
-									"50%",
-									initialPositions[index].y
-								].filter(
-									pos => pos !== initialPositions[index].y
-								)
-							],
-							scale: [1, 1.1, 0.9, 1]
-						}}
-						transition={{
-							duration: 50,
-							ease: "easeInOut",
-							repeat: Infinity,
-							delay: index * 6
-						}}
-					/>
-				))}
-			</div>
-		</div>
-	)
-}
 
 export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 	const slides = useMemo(
@@ -112,21 +37,22 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 	)
 
 	const [slideIndex, setSlideIndex] = useState(0)
-
-	const slide = slides[slideIndex]
+	const [slidesChanged, setSlidesChanged] = useState(false)
 
 	useEffect(() => {
+		if (slidesChanged) return
+
 		const interval = setInterval(() => {
 			setSlideIndex(prevIndex =>
 				prevIndex === slides.length - 1 ? 0 : prevIndex + 1
 			)
-		}, 5000)
+		}, 7500)
 
 		return () => clearInterval(interval)
-	}, [slides])
+	}, [slides, slidesChanged])
 
 	return (
-		<div className="relative flex h-full min-h-screen">
+		<div className="relative flex h-full min-h-screen w-screen">
 			<HeroShapes />
 
 			<div className="z-2 relative w-full">
@@ -165,30 +91,47 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 						</a>
 					</div>
 
-					<div className="my-auto flex min-h-[640px] items-center pb-6">
+					<div className="my-auto flex min-h-[calc(100vh-180px)] items-center pb-6">
 						<AnimatePresence>
-							<div
-								key={slideIndex}
-								className="my-auto flex flex-col gap-16"
-							>
-								<motion.h1
-									className="text-[72px] font-black text-white md:max-w-[580px] md:text-[72px] lg:max-w-[800px] lg:text-[96px] xl:max-w-[1200px] xl:text-[144px]"
-									initial={{ y: 20, opacity: 0 }}
-									animate={{ y: [0, 20], opacity: [0, 1] }}
-									transition={{ duration: 0.3 }}
-								>
-									{slide.title}
-								</motion.h1>
+							{Array.from({
+								length: slides.length
+							}).map((_, index) => (
+								<>
+									{index === slideIndex && (
+										<div
+											key={index}
+											className="my-auto flex flex-col gap-16"
+										>
+											<motion.h1
+												className="text-[3.5rem] font-black text-white md:max-w-[580px] md:text-[72px] lg:max-w-[800px] lg:text-[96px] xl:max-w-[1200px] xl:text-[144px]"
+												initial={{ y: 20, opacity: 0 }}
+												animate={{
+													y: [0, 20],
+													opacity: [0, 1]
+												}}
+												transition={{ duration: 0.3 }}
+											>
+												{slides[index].title}
+											</motion.h1>
 
-								<motion.p
-									className="max-w-[440px] text-[24px] font-bold text-white/80 md:max-w-[500px] md:text-[24px]"
-									initial={{ y: -20, opacity: 0 }}
-									animate={{ y: [0, -20], opacity: [0, 1] }}
-									transition={{ duration: 0.3, delay: 0.15 }}
-								>
-									{slide.subtitle}
-								</motion.p>
-							</div>
+											<motion.p
+												className="max-w-[440px] text-[1.25rem] font-bold text-white/80 md:max-w-[500px] md:text-[24px]"
+												initial={{ y: -20, opacity: 0 }}
+												animate={{
+													y: [0, -20],
+													opacity: [0, 1]
+												}}
+												transition={{
+													duration: 0.3,
+													delay: 0.15
+												}}
+											>
+												{slides[index].subtitle}
+											</motion.p>
+										</div>
+									)}
+								</>
+							))}
 						</AnimatePresence>
 					</div>
 
@@ -204,7 +147,10 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 												? "bg-white"
 												: "bg-white/60"
 										)}
-										onClick={() => setSlideIndex(index)}
+										onClick={() => {
+											setSlidesChanged(true)
+											setSlideIndex(index)
+										}}
 									/>
 								)
 							)}

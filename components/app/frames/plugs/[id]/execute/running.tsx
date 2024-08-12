@@ -6,10 +6,11 @@ import { Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
 export const RunningFrame = () => {
-	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame(
-		"running",
-		"-"
-	)
+	const { id, isFrame, prevFrame, handleFrame } = useFrame({
+		id: "global",
+		key: "running",
+		seperator: "-"
+	})
 	const { plug } = usePlugs()
 
 	const label = prevFrame
@@ -33,7 +34,7 @@ export const RunningFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			icon={<LoaderCircle size={18} className="animate-spin" />}
 			label={label}

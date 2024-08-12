@@ -31,7 +31,7 @@ export const SocketTokenList: FC<
 
 	return (
 		<motion.div
-			className={cn("flex flex-col gap-2", className)}
+			className={cn("mb-4 flex flex-col gap-2", className)}
 			initial="hidden"
 			animate="visible"
 			variants={{

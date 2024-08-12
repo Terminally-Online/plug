@@ -1,6 +1,10 @@
+import axios from "axios"
 import { z } from "zod"
 
-import { getCollectibles, getTokens } from "@/lib"
+import { TRPCError } from "@trpc/server"
+
+import { getAPIKey, getCollectibles, getTokens } from "@/lib"
+import { getDominantColor } from "@/server/color"
 
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
@@ -18,5 +22,68 @@ export const balances = createTRPCRouter({
 			if (input === undefined) return []
 
 			return await getCollectibles(input)
+		}),
+	metadata: protectedProcedure
+		.input(
+			z.object({
+				type: z.union([
+					z.literal("ERC20"),
+					z.literal("ERC721"),
+					z.literal("ERC1155")
+				]),
+				id: z.string()
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			if (input.type === "ERC20")
+				throw new TRPCError({ code: "NOT_IMPLEMENTED" })
+
+			const metadataCache =
+				await ctx.db.openseaCollectibleMetadata.findUnique({
+					where: { collectibleId: input.id }
+				})
+
+			if (metadataCache) return metadataCache
+
+			const collectible = await ctx.db.openseaCollectible.findUnique({
+				where: { id: input.id },
+				include: { collection: true }
+			})
+
+			if (collectible === null) throw new TRPCError({ code: "NOT_FOUND" })
+
+			const url = `https://api.opensea.io/api/v2/chain/${collectible.collection.chain}/contract/${collectible.contract}/nfts/${collectible.identifier}`
+			const response = await axios.get(url, {
+				headers: {
+					Accept: "application/json",
+					"x-api-key": getAPIKey()
+				}
+			})
+
+			const traits =
+				response.status === 200 && response.data.nft.traits === null
+					? []
+					: response.data.nft.traits
+
+			const color = await getDominantColor(
+				collectible.displayImageUrl ?? collectible.collection.imageUrl
+			)
+
+			if (metadataCache !== null)
+				return await ctx.db.openseaCollectibleMetadata.update({
+					where: { collectibleId: input.id },
+					data: {
+						traits,
+						color
+					}
+				})
+
+			return await ctx.db.openseaCollectibleMetadata.create({
+				data: {
+					traits,
+					color,
+					collectibleId: input.id
+				}
+			})
 		})
 })

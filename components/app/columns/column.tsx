@@ -65,7 +65,7 @@ export const ConsoleColumn: FC<{
 	}, [isResizing, column.id, handle.columns])
 
 	return (
-		<div className={cn(column.index === 0 && "ml-2")}>
+		<div className="relative my-2 select-none">
 			<Draggable
 				draggableId={column.index.toString()}
 				index={column.index}
@@ -73,96 +73,91 @@ export const ConsoleColumn: FC<{
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
-						className="flex h-full flex-row"
+						className="relative ml-2 flex h-full w-full flex-col rounded-lg border-[1px] border-grayscale-100 bg-white"
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
 							width: `${column.width ?? DEFAULT_COLUMN_WIDTH}px`
 						}}
 					>
-						<div
+						{/* <div
 							ref={resizeRef}
 							className={cn(
 								"relative my-2 w-full select-none overflow-y-auto rounded-lg border-[1px] border-grayscale-100 bg-white",
 								snapshot.isDragging && "opacity-60"
 							)}
+						> */}
+						<div
+							className={cn(
+								"group z-[11] flex cursor-pointer flex-row items-center gap-4 rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+								snapshot.isDragging
+									? "bg-grayscale-0"
+									: "hover:bg-grayscale-0"
+							)}
+							{...provided.dragHandleProps}
 						>
-							<div
-								className={cn(
-									"group flex cursor-pointer flex-row items-center gap-4 rounded-t-lg border-b-[1px] border-grayscale-100 px-4 transition-all duration-200 ease-in-out",
-									snapshot.isDragging
-										? "bg-grayscale-0"
-										: "hover:bg-grayscale-0"
+							<Header
+								size="md"
+								icon={
+									<Grip
+										size={14}
+										className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+									/>
+								}
+								label={formatTitle(
+									column.key.replace("_", " ").toLowerCase()
 								)}
-								{...provided.dragHandleProps}
-							>
-								<Header
-									size="md"
-									icon={
-										<Grip
-											size={14}
-											className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-										/>
-									}
-									label={formatTitle(
-										column.key
-											.replace("_", " ")
-											.toLowerCase()
-									)}
-									nextPadded={false}
-									nextOnClick={() =>
-										handle.columns.remove(column.id)
-									}
-									nextLabel={<X size={14} />}
-								/>
-							</div>
+								nextPadded={false}
+								nextOnClick={() =>
+									handle.columns.remove(column.id)
+								}
+								nextLabel={<X size={14} />}
+							/>
+						</div>
+						{/* </div> */}
 
-							<div className="overflow-y-scrol">
-								{column.key === "ADD" ? (
-									<ConsoleColumnAddOptions id={column.id} />
-								) : column.key === "PLUGS" ? (
-									<Plugs className="px-4" />
-								) : column.key === "DISCOVER" ? (
-									<PageDiscover className="pt-4" />
-								) : column.key === "MY_PLUGS" ? (
-									<PageMine className="pt-4" column={true} />
-								) : column.key === "ACTIVITY" ? (
-									<SocketActivity
-										id={column.id}
-										className="px-4"
-									/>
-								) : column.key === "ASSETS" ? (
-									<SocketAssets
-										id={column.id}
-										className="px-4"
-									/>
-								) : column.key === "TOKENS" ? (
-									<SocketTokenList
-										id={column.id}
-										className="px-4 pt-4"
-										expanded={true}
-									/>
-								) : column.key === "COLLECTIBLES" ? (
-									<SocketCollectionList
-										id={column.id}
-										className="px-4 pt-4"
-									/>
-								) : column.key === "POSITIONS" ? (
-									<SocketPositionList
-										id={column.id}
-										className="px-4 pt-4"
-									/>
-								) : column.key === "EARNINGS" ? (
-									<SocketEarnings className="px-4 pt-4" />
-								) : column.key === "SETTINGS" ? (
-									<></>
-								) : (
-									<></>
-								)}
-							</div>
+						<div className="overflow-y-scroll">
+							{column.key === "ADD" ? (
+								<ConsoleColumnAddOptions id={column.id} />
+							) : column.key === "PLUGS" ? (
+								<Plugs className="px-4" />
+							) : column.key === "DISCOVER" ? (
+								<PageDiscover className="pt-4" />
+							) : column.key === "MY_PLUGS" ? (
+								<PageMine className="pt-4" column={true} />
+							) : column.key === "ACTIVITY" ? (
+								<SocketActivity
+									id={column.id}
+									className="px-4 pt-4"
+								/>
+							) : column.key === "ASSETS" ? (
+								<SocketAssets id={column.id} className="px-4" />
+							) : column.key === "TOKENS" ? (
+								<SocketTokenList
+									id={column.id}
+									className="px-4 pt-4"
+									expanded={true}
+								/>
+							) : column.key === "COLLECTIBLES" ? (
+								<SocketCollectionList
+									id={column.id}
+									className="px-4 pt-4"
+								/>
+							) : column.key === "POSITIONS" ? (
+								<SocketPositionList
+									id={column.id}
+									className="px-4 pt-4"
+								/>
+							) : column.key === "EARNINGS" ? (
+								<SocketEarnings className="px-4 pt-4" />
+							) : column.key === "SETTINGS" ? (
+								<></>
+							) : (
+								<></>
+							)}
 						</div>
 
-						<div
+						{/* <div
 							className="h-full cursor-col-resize px-2"
 							onMouseDown={e => {
 								e.preventDefault()
@@ -171,11 +166,11 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"aniamte-fade-in h-full w-[1px] bg-grayscale-100 transition-all duration-200 ease-in-out",
+									"h-full w-[1px] bg-grayscale-100",
 									snapshot.isDragging && "opacity-0"
 								)}
 							/>
-						</div>
+						</div> */}
 					</div>
 				)}
 			</Draggable>

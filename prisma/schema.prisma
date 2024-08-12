@@ -181,6 +181,27 @@ model OpenseaCollection {
     @@index([slug, chain])
 }
 
+model OpenseaCollectibleMetadata {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    traits Json[]
+    color  String?
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    collectible   OpenseaCollectible @relation(fields: [collectibleId], references: [id], onDelete: Cascade)
+    collectibleId String             @unique
+}
+
 model OpenseaCollectible {
     // ---------------------------------------------------------------------------
     // Core
@@ -205,6 +226,11 @@ model OpenseaCollectible {
     isDisabled          Boolean
     isNsfw              Boolean
     owner               String
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    metadata OpenseaCollectibleMetadata?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

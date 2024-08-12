@@ -7,7 +7,11 @@ import { useFrame, usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
 
 export const RanFrame = () => {
-	const { frameKey, isFrame, prevFrame, handleFrame } = useFrame("ran", "-")
+	const { id, isFrame, prevFrame, handleFrame } = useFrame({
+		id: "global",
+		key: "ran",
+		seperator: "-"
+	})
 	const { plug, chains } = usePlugs()
 
 	const label = isFrame
@@ -20,7 +24,7 @@ export const RanFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			icon={<CheckCircle size={18} />}
 			label={label}

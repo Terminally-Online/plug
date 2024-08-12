@@ -49,40 +49,36 @@ export const Tags: FC<{
 							tag === tagFormatted
 
 						return (
-							<>
-								<motion.div
-									key={tagFormatted}
-									layout
-									transition={{
-										type: "spring",
-										stiffness: 300,
-										damping: 30
-									}}
-									ref={tagRefs.current[index]}
+							<motion.div
+								key={tagFormatted}
+								transition={{
+									type: "spring",
+									stiffness: 300,
+									damping: 30
+								}}
+								ref={tagRefs.current[index]}
+							>
+								<Button
+									variant="secondary"
+									sizing="sm"
+									className={cn(
+										"w-max rounded-sm",
+										tagActive ? "active" : "",
+										index === 0 && "ml-4",
+										index === tags.length - 1 && "mr-[60vw]"
+									)}
+									onClick={() =>
+										handleTag(
+											tagFormatted === "all" ||
+												tagFormatted === tag
+												? ""
+												: tagFormatted
+										)
+									}
 								>
-									<Button
-										variant="secondary"
-										sizing="sm"
-										className={cn(
-											"w-max rounded-sm",
-											tagActive ? "active" : "",
-											index === 0 && "ml-4",
-											index === tags.length - 1 &&
-												"mr-[60vw]"
-										)}
-										onClick={() =>
-											handleTag(
-												tagFormatted === "all" ||
-													tagFormatted === tag
-													? ""
-													: tagFormatted
-											)
-										}
-									>
-										{tagItem}
-									</Button>
-								</motion.div>
-							</>
+									{tagItem}
+								</Button>
+							</motion.div>
 						)
 					})}
 				</motion.div>

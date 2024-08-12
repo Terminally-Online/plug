@@ -24,7 +24,14 @@ type Props = {
 
 export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 	const { data: session } = useSession()
-	const { isFrame, handleFrame } = useFrame(`${index}-${fragmentIndex}`)
+	const {
+		id: frameId,
+		isFrame,
+		handleFrame
+	} = useFrame({
+		id: "global",
+		key: `${index}-${fragmentIndex}`
+	})
 	const { id, plug, actions, fragments, dynamic, handle } = usePlugs()
 
 	const action = actions[index]
@@ -142,6 +149,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 			</button>
 
 			<Frame
+				id={frameId}
 				className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={
 					<Image

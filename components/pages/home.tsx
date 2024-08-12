@@ -13,7 +13,7 @@ export const PageHome = () => {
 				<Plugs hideEmpty={true} />
 
 				{session?.address ? (
-					<SocketAssets />
+					<SocketAssets id="global" />
 				) : (
 					<>
 						<p>Authenticate to proceed.</p>

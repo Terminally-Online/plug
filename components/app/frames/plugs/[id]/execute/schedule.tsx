@@ -23,7 +23,10 @@ const frequencies = [
 ]
 
 export const ScheduleFrame = () => {
-	const { frameKey, isFrame, handleFrame } = useFrame("schedule")
+	const { id, isFrame, handleFrame } = useFrame({
+		id: "global",
+		key: "schedule"
+	})
 	const { chainsAvailable } = usePlugs()
 
 	const [date, setDate] = useState<DateRange | undefined>({
@@ -41,7 +44,7 @@ export const ScheduleFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			handleBack={handleBack}
 			icon={<CalendarPlus size={18} />}

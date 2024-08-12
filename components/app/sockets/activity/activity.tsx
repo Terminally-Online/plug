@@ -9,12 +9,6 @@ export const SocketActivity: FC<
 > = ({ id, ...props }) => {
 	return (
 		<div {...props}>
-			<Header
-				size="md"
-				icon={<FileCog size={14} className="opacity-40" />}
-				label="Runs"
-			/>
-
 			<ActivityList id={id} />
 		</div>
 	)

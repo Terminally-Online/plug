@@ -215,6 +215,7 @@ const getTokensForChain = async (address: string, network: Network) => {
 			}
 		},
 		update: {
+			updatedAt: new Date(),
 			tokens: {
 				createMany: {
 					data: balances

@@ -2,9 +2,11 @@ import { FC, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { Counter, Frame, SocketTokenPriceChart } from "@/components"
+import { Send, X } from "lucide-react"
+
+import { Button, Counter, Frame, SocketTokenPriceChart } from "@/components"
 import { useBalances, useFrame } from "@/contexts"
-import { cn, formatTitle, getChainImage } from "@/lib"
+import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
@@ -12,7 +14,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 	id,
 	symbol
 }) => {
-	const { isFrame } = useFrame({ id, key: `token/${symbol}` })
+	const { isFrame, handleFrame } = useFrame({ id, key: `token/${symbol}` })
 	const { tokens } = useBalances()
 
 	const token = useMemo(
@@ -38,6 +40,8 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 		  }
 		| undefined
 	>()
+
+	const textColor = getTextColor(color ?? "#ffffff")
 
 	const change = useMemo(() => {
 		if (header.change && !tooltipData) return header.change
@@ -76,6 +80,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 	return (
 		<Frame
 			id={id}
+			className="overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">
 					<TokenImage
@@ -90,10 +95,27 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 			visible={isFrame}
 			hasOverlay={true}
 			hasChildrenPadding={false}
+			next={
+				<Button
+					variant="secondary"
+					sizing={"md"}
+					onClick={() => handleFrame(undefined)}
+					className={cn(
+						"ml-auto rounded-sm p-1 outline-none hover:opacity-90"
+					)}
+					style={{
+						backgroundColor: color ?? "",
+						borderColor: color ?? "",
+						color: textColor
+					}}
+				>
+					<X size={14} />
+				</Button>
+			}
 		>
-			<div className="flex flex-row px-6 text-lg font-bold">
+			<div className="flex flex-row px-6 font-bold">
 				<div className="flex flex-col items-center font-bold">
-					<p className="mr-auto flex w-max flex-row">
+					<p className="mr-auto flex w-max flex-row text-lg">
 						$
 						<Counter
 							count={tooltipData?.price || token.chains[0].price}
@@ -118,7 +140,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 								: "text-red-500"
 					)}
 				>
-					<p className="ml-auto flex w-max flex-row font-bold">
+					<p className="ml-auto flex w-max flex-row text-lg font-bold">
 						<Counter count={change || 0} decimals={2} />%
 					</p>
 					<p className="ml-auto flex flex-row items-center">
@@ -138,43 +160,73 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 				handleTooltip={setTooltipData}
 			/>
 
-			<div className="mt-4 flex flex-row items-center justify-between border-t-[1px] border-grayscale-100 px-6 py-4 font-bold">
-				<p className="mr-auto flex flex-col items-center">
-					<span className="mr-auto opacity-40">Balance</span>
-					<span
-						className="mr-auto flex h-8 flex-row items-center text-lg"
-						style={{ color: color }}
-					>
-						<TokenImage
-							logo={token.logo}
-							symbol={token.symbol}
-							size="xs"
-						/>
-						<Counter
-							className="ml-4 mr-2 w-max"
-							count={token.balance}
-							decimals={2}
-						/>
-						{token.symbol}
-					</span>
-				</p>
-				<p className="ml-auto flex flex-col items-center text-center">
-					<span className="ml-auto opacity-40">Value</span>
-					<span className="mx-auto flex h-8 w-max items-center text-lg">
-						$
-						<Counter
-							count={
-								tooltipData
-									? token.balance * tooltipData.price
-									: token.value
-							}
-							decimals={2}
-						/>
-					</span>
-				</p>
+			<div className="flex flex-row gap-2 px-6 pt-4">
+				<button
+					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+					style={{
+						backgroundColor: color ?? "",
+						color: textColor
+					}}
+				>
+					<Send size={14} className="opacity-60" />
+					Send
+				</button>
 			</div>
 
-			<div className="relative flex w-full flex-col gap-2 border-t-[1px] border-grayscale-100 px-6 pb-8 pt-4 text-lg">
+			<div className="flex flex-col px-6 pb-2 pt-4 font-bold">
+				<div className="flex flex-row items-center gap-4">
+					<p className="mr-auto opacity-40">Balance</p>
+					<div
+						className="h-[2px] w-full"
+						style={{ backgroundColor: color }}
+					/>
+					<p className="ml-auto opacity-40">Value</p>
+				</div>
+
+				<div className="mt-2 flex flex-row items-center justify-between gap-4">
+					<p className="mr-auto flex flex-col items-center">
+						<span
+							className="mr-auto flex h-8 flex-row items-center"
+							style={{ color: color }}
+						>
+							<TokenImage
+								logo={token.logo}
+								symbol={token.symbol}
+								size="xs"
+							/>
+							<Counter
+								className="ml-4 mr-2 w-max"
+								count={token.balance}
+								decimals={2}
+							/>
+							{token.symbol}
+						</span>
+					</p>
+					<p className="ml-auto flex flex-col items-center text-center">
+						<span className="mx-auto flex h-8 w-max items-center">
+							$
+							<Counter
+								count={
+									tooltipData
+										? token.balance * tooltipData.price
+										: token.value
+								}
+								decimals={2}
+							/>
+						</span>
+					</p>
+				</div>
+			</div>
+
+			<div className="flex flex-row items-center gap-4 px-6 font-bold">
+				<p className="opacity-40">Distribution</p>
+				<div
+					className="h-[2px] w-full"
+					style={{ backgroundColor: color }}
+				/>
+			</div>
+
+			<div className="relative mt-2 flex w-full flex-col gap-2 px-6 pb-4">
 				{token.chains.map((chain, index) => (
 					<div
 						key={index}
@@ -183,9 +235,9 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 						<Image
 							src={getChainImage(chain.chain)}
 							alt={chain.chain}
-							className="h-6 w-6 rounded-full"
-							width={32}
-							height={32}
+							className="h-4 w-4 rounded-full"
+							width={24}
+							height={24}
 						/>
 
 						<p className="mr-auto font-bold">

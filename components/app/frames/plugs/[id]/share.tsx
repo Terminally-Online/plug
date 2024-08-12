@@ -7,7 +7,7 @@ import { useFrame, usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
 
 export const ShareFrame = () => {
-	const { frameKey, isFrame } = useFrame("share")
+	const { id, isFrame } = useFrame({ id: "global", key: "share" })
 	const { plug } = usePlugs()
 
 	const { copied, handleCopied } = useClipboard(
@@ -18,7 +18,7 @@ export const ShareFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			icon={<Badge size={18} />}
 			label="Share Plug"

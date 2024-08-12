@@ -60,7 +60,7 @@ export const Value: FC = () => {
 			<div className="grid w-full gap-8 md:grid-cols-2 lg:grid-rows-3 xl:grid-cols-3">
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<Clock size={24} className="opacity-40" />
 							<span>24/7 Execution</span>
 						</div>
@@ -105,12 +105,12 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<ShieldPlus size={24} className="opacity-40" />
 							<span>Loss Mitigation</span>
 						</div>
 					}
-					description="Automatically protect yourself from losses in the volatile market and instantly react to every change of the ecosystem."
+					description="Automatically protect from losses in the volatile market and instantly react to every change of the ecosystem."
 					{...animation}
 				>
 					<Mitigation />
@@ -118,7 +118,7 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<CalendarClock size={24} className="opacity-40" />
 							<span>Scheduled Transactions</span>
 						</div>
@@ -316,12 +316,12 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<FileStack size={24} className="opacity-40" />
 							<span>Multichain Signatures</span>
 						</div>
 					}
-					description="Sign multiple actions across several hains with a single gasless signature. Stop signing the same signature over and over."
+					description="Sign multiple actions across chains with a single gasless signature. Stop signing the same signature over and over."
 					{...animation}
 				>
 					<div className="grayscale-100 ml-16 mt-16 flex w-[100%] flex-row saturate-0 filter">
@@ -431,7 +431,7 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<RotateCw size={24} className="opacity-40" />
 							<span>Recurring Outcomes</span>
 						</div>
@@ -469,7 +469,7 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<Ruler size={24} className="opacity-40" />
 							<span>Atomic Constraints</span>
 						</div>
@@ -801,7 +801,7 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<div className="flex flex-row gap-4">
+						<div className="flex flex-row items-center gap-4">
 							<TestTubeDiagonal
 								size={24}
 								className="opacity-40"
@@ -899,10 +899,10 @@ export const Value: FC = () => {
 
 				<InfoCard
 					text={
-						<>
+						<div className="flex flex-row items-center gap-4">
 							<Rotate3d size={24} className="opacity-40" />
 							<span>Transferrable Accounts</span>
-						</>
+						</div>
 					}
 					description="Transfer your account to a different wallet or sell it on any major NFT marketplace. You have full control."
 					{...animation}

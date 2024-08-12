@@ -88,12 +88,34 @@ export const formatTimeSince = (date: Date): string => {
 	return `${Math.floor(seconds)} second${seconds > 1 ? "s" : ""} ago`
 }
 
-// Format a date in the format of "name of the week, month, date"
-// Example: "Wed Apr 24"
 export const formatDate = (date: Date): string => {
-	const dayOfWeek = date.toLocaleString("en-US", { weekday: "short" }) // "Wed"
-	const month = date.toLocaleString("en-US", { month: "short" }) // "Apr"
-	const dayOfMonth = date.getDate() // 24
+	const dayOfWeek = date.toLocaleString("en-US", { weekday: "short" })
+	const month = date.toLocaleString("en-US", { month: "short" })
+	const dayOfMonth = date.getDate()
 
 	return `${dayOfWeek} ${month} ${dayOfMonth}`
+}
+
+export const formatLongString = (str: string, maxLength?: number) => {
+	if (maxLength === undefined) return { data: str, truncated: false }
+
+	if (str.length > maxLength) {
+		return {
+			data: str.slice(0, maxLength) + "...",
+			truncated: true
+		}
+	}
+
+	return { data: str, truncated: false }
+}
+
+export const formatTokenStandard = (tokenStandard: string) => {
+	switch (tokenStandard) {
+		case "erc721":
+			return "ERC-721"
+		case "erc1155":
+			return "ERC-1155"
+		default:
+			return tokenStandard
+	}
 }

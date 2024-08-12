@@ -15,6 +15,7 @@ type Props = PropsWithChildren & {
 	handleBack?: () => void
 	hasOverlay?: boolean
 	hasChildrenPadding?: boolean
+	next?: JSX.Element
 } & React.HTMLAttributes<HTMLDivElement>
 
 export const Frame: FC<Props> = ({
@@ -26,7 +27,8 @@ export const Frame: FC<Props> = ({
 	hasOverlay = false,
 	hasChildrenPadding = true,
 	children,
-	className
+	className,
+	next
 }) => {
 	const { md } = useMediaQuery()
 	const { handleFrame } = useFrame({ id })
@@ -48,7 +50,8 @@ export const Frame: FC<Props> = ({
 							md ? "absolute" : "fixed",
 							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
-								"bg-gradient-to-b from-black/10 to-black/30"
+								"bg-gradient-to-b from-black/10 to-black/30",
+							id !== "global" && "rounded-lg"
 						)}
 						onClick={() => handleFrame()}
 					/>
@@ -62,7 +65,8 @@ export const Frame: FC<Props> = ({
 							md ? "absolute" : "fixed",
 							"bottom-0 left-0 w-full rounded-t-lg bg-white",
 							className,
-							"z-[11]"
+							"z-[11]",
+							id !== "global" && "rounded-b-lg"
 						)}
 					>
 						<div className="flex flex-row items-center gap-2 px-6 py-4">
@@ -83,7 +87,8 @@ export const Frame: FC<Props> = ({
 								label={label}
 								nextPadded={false}
 								nextOnClick={() => handleFrame()}
-								nextLabel={<X size={14} />}
+								nextLabel={next ?? <X size={14} />}
+								nextEmpty={next !== undefined}
 							/>
 						</div>
 

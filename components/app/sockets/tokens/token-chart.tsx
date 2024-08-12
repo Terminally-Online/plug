@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
+import axios from "axios"
 import {
 	Line,
 	LineChart,
@@ -152,21 +153,22 @@ export const SocketTokenPriceChart: FC<{
 				error: "Could not load price data."
 			}
 
+			const query = period
+
 			const key = `${chain}:${contract}`
-			const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}`
+			const url = `https://coins.llama.fi/chart/${key}?span=${query.span}&period=${query.period}&searchWidth=1200`
 
 			try {
 				if (isRetry) {
 					await new Promise(resolve => setTimeout(resolve, 2000))
 				}
 
-				const response = await fetch(url)
-				if (!response.ok) {
-					throw new Error("Network response was not ok")
-				}
+				const response = await axios.get(url)
 
-				const data = await response.json()
-				const prices = data.coins[key]?.prices
+				if (response.status !== 200)
+					throw new Error("Network response was not ok")
+
+				const prices = response.data.coins[key]?.prices
 
 				if (prices === undefined) {
 					throw new Error("No price data available")
@@ -174,12 +176,12 @@ export const SocketTokenPriceChart: FC<{
 
 				setHistoricalPriceData(prevData => ({
 					...prevData,
-					[period.label]: prices
+					[query.label]: prices
 				}))
 			} catch (error) {
 				setHistoricalPriceData(prevData => ({
 					...prevData,
-					[period.label]: [failure]
+					[query.label]: [failure]
 				}))
 			} finally {
 				setIsLoading(false)
@@ -201,7 +203,7 @@ export const SocketTokenPriceChart: FC<{
 	}, [period, historicalPriceData, handleHeader, priceData])
 
 	return (
-		<div className="w-full pt-8">
+		<div className="w-full overflow-x-hidden pt-8">
 			{isLoading ? (
 				<div className="flex min-h-[240px] flex-col items-center justify-center">
 					<p className="font-bold opacity-40">
@@ -227,7 +229,7 @@ export const SocketTokenPriceChart: FC<{
 					minHeight={240}
 					height="100%"
 					width="100%"
-					style={{ marginLeft: "-15%" }}
+					style={{ marginLeft: "-16%" }}
 				>
 					<LineChart
 						data={priceData}

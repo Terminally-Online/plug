@@ -20,7 +20,7 @@ export const SocketCollectibleItem: FC<{
 	return (
 		<>
 			<div
-				className="w-full rounded-md"
+				className="z-[4] w-full rounded-md"
 				style={{
 					paddingTop: "100%",
 					backgroundImage: `url(${collectible?.displayImageUrl || collection.imageUrl})`,

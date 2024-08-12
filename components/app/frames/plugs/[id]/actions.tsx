@@ -16,7 +16,10 @@ import {
 } from "@/lib"
 
 export const ActionsFrame: FC = () => {
-	const { frameKey, isFrame, frames, handleFrame } = useFrame("actions")
+	const { id, isFrame, frames, handleFrame } = useFrame({
+		id: "global",
+		key: "actions"
+	})
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
 	const allFilteredActions = useMemo(
@@ -57,7 +60,7 @@ export const ActionsFrame: FC = () => {
 	return (
 		<>
 			<Frame
-				frameKey={frameKey}
+				id={id}
 				className="scrollbar-hide z-[1] h-[calc(100vh-80px)] overflow-y-auto"
 				icon={<Blocks size={18} />}
 				label="Add Action"
@@ -166,7 +169,7 @@ export const ActionsFrame: FC = () => {
 
 				return (
 					<Frame
-						frameKey={categoryName}
+						id={id}
 						key={categoryName}
 						className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 						icon={
@@ -179,7 +182,7 @@ export const ActionsFrame: FC = () => {
 							/>
 						}
 						label={formatTitle(categoryName)}
-						visible={frames.includes(categoryName) === true}
+						visible={frames[id] === categoryName}
 						handleBack={() => handleFrame("actions")}
 						hasOverlay={true}
 					>
@@ -211,7 +214,7 @@ export const ActionsFrame: FC = () => {
 
 						return (
 							<Frame
-								frameKey={`${categoryName}-${actionName}-info`}
+								id={id}
 								key={`${categoryName}-${actionName}-info`}
 								className="scrollbar-hide z-[3] max-h-[calc(100vh-80px)] overflow-y-auto"
 								icon={
@@ -225,9 +228,8 @@ export const ActionsFrame: FC = () => {
 								}
 								label={formatTitle(actionName)}
 								visible={
-									frames.includes(
-										`${categoryName}-${actionName}`
-									) === true
+									frames[id] ===
+									`${categoryName}-${actionName}`
 								}
 								handleBack={() =>
 									handleFrame(

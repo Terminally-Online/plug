@@ -11,7 +11,7 @@ import { categories, formatTitle } from "@/lib"
 export const ActionListItem: FC<{
 	categoryName: string
 }> = ({ categoryName }) => {
-	const { handleFrame } = useFrame(categoryName)
+	const { handleFrame } = useFrame({ id: "global", key: categoryName })
 
 	const category = categories[categoryName]
 

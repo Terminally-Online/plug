@@ -8,7 +8,7 @@ import { cardColors, useDebounce, useNavigation } from "@/lib"
 
 export const ManagePlugFrame = () => {
 	const { id, from } = useNavigation()
-	const { frameKey, isFrame } = useFrame("manage")
+	const { id: frameId, isFrame } = useFrame({ id: "global", key: "manage" })
 	const { plug, handle } = usePlugs()
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(
@@ -28,7 +28,7 @@ export const ManagePlugFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={frameId}
 			className="z-[2]"
 			icon={<Settings size={18} />}
 			label="Manage Plug"

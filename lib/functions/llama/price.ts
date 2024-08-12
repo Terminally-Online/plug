@@ -1,3 +1,5 @@
+import axios from "axios"
+
 import { db } from "@/server/db"
 
 const PRICE_CACHE_TIME = 3 * 60 * 1000
@@ -23,53 +25,58 @@ export const getPrices = async (queries: string[]) => {
 
 	const query = uncachedQueries.join(",")
 
-	const currentPricesResponse = await fetch(
-		`https://coins.llama.fi/prices/current/${query}`
+	const currentPricesResponse = await axios.get(
+		`https://coins.llama.fi/chart/${query}?span=48&period=30m&searchWidth=1200`
 	)
 
-	if (currentPricesResponse.ok === false) return cachedPrices
-	const currentPricesJson = await currentPricesResponse.json()
-	const currentPrices =
-		(currentPricesJson.coins as Record<
-			`${string}:${string}`,
-			Partial<{
-				decimals: number
-				symbol: string
-				price: number
+	if (currentPricesResponse.status !== 200) return cachedPrices
+
+	const currentPrices: Record<
+		`${string}:${string}`,
+		Partial<{
+			decimals: number
+			symbol: string
+			prices: Array<{
 				timestamp: number
-				confidence: number
-				change: number
+				price: number
 			}>
-		>) ?? {}
+			confidence: number
+		}>
+	> = currentPricesResponse.data.coins ?? {}
 
 	if (Object.keys(currentPrices).length === 0) return cachedPrices
 
-	const percentagesResponse = await fetch(
-		`https://coins.llama.fi/percentage/${query}`
-	)
-
-	let percentages: Record<string, number> = {}
-	if (percentagesResponse.ok === false) return cachedPrices
-
-	const percentagesJson = await percentagesResponse.json()
-	percentages = percentagesJson.coins ?? {}
-
 	const transformed = Object.entries(currentPrices).map(([key, price]) => {
+		const { prices, ...data } = price
+
 		const [chain, address] = key.split(":") as [string, string]
 
+		const start = prices?.[0].price
+		const end = prices?.[prices.length - 1].price
+		const change = start && end ? ((end - start) / start) * 100 : undefined
+
+		const timestamp = prices?.[prices.length - 1].timestamp
+
 		return {
-			...price,
+			...data,
 			id: key,
 			chain,
 			address,
-			change: percentages[key] as number | undefined
+			timestamp,
+			price: end,
+			change
 		}
 	})
 
-	await db.tokenPrice.deleteMany({ where: { id: { in: uncachedQueries } } })
-	await db.tokenPrice.createMany({
-		data: transformed
-	})
+	await Promise.all(
+		transformed.map(async price => {
+			await db.tokenPrice.upsert({
+				where: { id: price.id },
+				create: price,
+				update: price
+			})
+		})
+	)
 
 	return await db.tokenPrice.findMany({
 		where: { id: { in: queries } }

@@ -4,14 +4,14 @@ import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
 export const DeletedFrame = () => {
-	const { frameKey, isFrame } = useFrame("deleted")
+	const { id, isFrame } = useFrame({ id: "global", key: "deleted" })
 	const { plug, handle } = usePlugs()
 
 	if (!plug) return null
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="z-[2]"
 			icon={<Trash2 size={18} />}
 			label="Plug Deleted"

@@ -92,6 +92,16 @@ Table OpenseaCollection {
   collectibles OpenseaCollectible [not null]
 }
 
+Table OpenseaCollectibleMetadata {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  traits Json[] [not null]
+  color String
+  collectible OpenseaCollectible [not null]
+  collectibleId String [unique, not null]
+}
+
 Table OpenseaCollectible {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
@@ -109,6 +119,7 @@ Table OpenseaCollectible {
   isDisabled Boolean [not null]
   isNsfw Boolean [not null]
   owner String [not null]
+  metadata OpenseaCollectibleMetadata
   collection OpenseaCollection [not null]
   collectionSlug String [not null]
   cache OpenseaCollectibleCache [not null]
@@ -157,6 +168,8 @@ Ref: ConsoleColumn.socketId > UserSocket.id
 Ref: TokenBalance.(cacheSocketId, cacheChain) > TokenBalanceCache.(socketId, chain)
 
 Ref: TokenBalanceCache.socketId > UserSocket.id
+
+Ref: OpenseaCollectibleMetadata.collectibleId - OpenseaCollectible.id [delete: Cascade]
 
 Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
 

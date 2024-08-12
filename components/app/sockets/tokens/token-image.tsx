@@ -18,7 +18,7 @@ export const TokenImage: FC<{
 	const dimensions = {
 		blur: size === "xs" ? 2 : size === "sm" ? 3 : 4,
 		imageBlur: size === "xs" ? 4 : size === "sm" ? 6 : 12,
-		content: size === "xs" ? 1.5 : size === "sm" ? 2 : 2.5
+		content: size === "xs" ? 1 : size === "sm" ? 2 : 2.5
 	}
 
 	const color = getAssetColor(symbol)
@@ -128,8 +128,8 @@ export const TokenImage: FC<{
 							width: `${dimensions.imageBlur}rem`,
 							height: `${dimensions.imageBlur}rem`
 						}}
-						width={140}
-						height={140}
+						width={240}
+						height={240}
 					/>
 					<Image
 						ref={imgRef}
@@ -140,8 +140,8 @@ export const TokenImage: FC<{
 							width: `${dimensions.content}rem`,
 							minWidth: `${dimensions.content}rem`
 						}}
-						width={140}
-						height={140}
+						width={240}
+						height={240}
 						onError={() => setImageError(true)}
 					/>
 				</>

@@ -1,77 +1,90 @@
 import { FC, useEffect, useState } from "react"
 
-import axios from "axios"
-import { ExternalLink, Send } from "lucide-react"
+import Image from "next/image"
 
+import {
+	BookDashed,
+	BookText,
+	ChevronDown,
+	Globe,
+	Hash,
+	Instagram,
+	MessageCircle,
+	Send,
+	Ship,
+	Twitter,
+	Waves,
+	Waypoints,
+	X
+} from "lucide-react"
+import { getAddress } from "viem"
+
+import { Button } from "@/components/shared"
 import { useFrame } from "@/contexts"
-import { RouterOutputs } from "@/server/client"
+import {
+	cn,
+	formatAddress,
+	formatLongString,
+	formatTitle,
+	formatTokenStandard,
+	getChainImage,
+	getTextColor
+} from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
 
 import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
 import { Frame } from "../base"
+
+type Traits = Array<{ trait_type: string; value: string }>
 
 export const CollectibleFrame: FC<{
 	id: string
 	collection: NonNullable<
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]
-	collectible?: NonNullable<
+	collectible: NonNullable<
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]["collectibles"][number]
 }> = ({ id, collection, collectible }) => {
-	const { isFrame } = useFrame({
+	const { isFrame, handleFrame } = useFrame({
 		id,
 		key: `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 	})
 
-	const [color, setColor] = useState<string>("")
-	const [traits, setTraits] = useState<
-		| Array<{
-				trait_type: string
-				display_type: number
-				max_value: number
-				value: number
-		  }>
-		| undefined
-	>(undefined)
+	const { data: metadata } = api.socket.balances.metadata.useQuery({
+		type: "ERC721",
+		id: collectible.id
+	})
+
+	const [expanded, setExpanded] = useState(false)
+
+	const textColor = getTextColor(metadata?.color ?? "#ffffff")
+
+	const { truncated } = formatLongString(
+		collectible?.description || collection.description,
+		expanded === false ? 80 : undefined
+	)
 
 	useEffect(() => {
-		if (!collection || !collectible || !isFrame || traits) return
-
-		const getMetadata = async () => {
-			const url = `https://api.opensea.io/api/v2/chain/${collection.chain}/contract/${collectible?.contract}/nfts/${collectible?.identifier}`
-			const response = await axios.get(url, {
-				headers: {
-					Accept: "application/json",
-					"x-api-key": "47f4db9595fa4eb3bdd0be743354f94b"
-				}
-			})
-			setTraits(response.data.nft.traits)
-			console.log(response.data.nft.traits)
-		}
-
-		getMetadata()
-	}, [collection, collectible, isFrame, traits])
+		if (isFrame === false) setExpanded(false)
+	}, [isFrame])
 
 	return (
 		<Frame
 			id={id}
+			className="max-h-[85vh] overflow-y-auto overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">
-					{/* <Image
-						src={collection.imageUrl}
-						alt={collection.name}
-						className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-lg filter transition-all duration-200 ease-in-out"
-						width={140}
-						height={140}
-						// onError={() => setError(true)}
-					/> */}
 					<div
-						className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
 						style={{
 							backgroundImage: `url(${collection.imageUrl})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
-							backgroundRepeat: "no-repeat"
+							backgroundRepeat: "no-repeat",
+							width: "2rem",
+							minWidth: "2rem",
+							height: "2rem"
 						}}
 					/>
 				</div>
@@ -80,48 +93,100 @@ export const CollectibleFrame: FC<{
 			visible={isFrame}
 			hasOverlay={true}
 			hasChildrenPadding={false}
+			next={
+				<Button
+					variant="secondary"
+					sizing={"md"}
+					onClick={() => handleFrame(undefined)}
+					className={cn(
+						"ml-auto rounded-sm p-1 outline-none hover:opacity-90"
+					)}
+					style={{
+						backgroundColor: metadata?.color ?? "",
+						borderColor: metadata?.color ?? "",
+						color: textColor
+					}}
+				>
+					<X size={14} />
+				</Button>
+			}
 		>
-			<div className="flex flex-col gap-2 px-6 pb-2">
+			<div className="flex flex-col gap-2 px-6 pb-4">
 				<CollectibleImage
-					image={collectible?.displayImageUrl || collection.imageUrl}
+					video={
+						collectible?.displayAnimationUrl?.includes("mp4")
+							? collectible?.displayAnimationUrl
+							: undefined
+					}
+					image={collectible?.displayImageUrl ?? undefined}
+					fallbackImage={collection.imageUrl}
 					name={collectible?.name || collection.name}
-					handleColor={setColor}
 				/>
 
-				<div className="pb-2 pt-4">
-					<p className="flex flex-row items-center gap-2 font-bold text-black text-opacity-40">
-						#{collectible?.identifier}
+				<p className="pt-4 text-lg font-bold">{collectible?.name}</p>
+
+				<div
+					className={cn(
+						"relative flex flex-col gap-2 overflow-y-hidden transition-all duration-200 ease-in-out",
+						expanded === false
+							? "max-h-[60px]"
+							: "h-auto max-h-[1000px]"
+					)}
+				>
+					<p className="font-bold opacity-40">
+						{collectible?.description || collection.description}
 					</p>
-					<p className="text-lg font-bold">{collectible?.name}</p>
+
+					<div
+						className={cn(
+							"absolute bottom-0 left-0 right-0 top-0 h-full bg-gradient-to-b from-white/0 transition-all duration-200 ease-in-out",
+							truncated && expanded === false
+								? "to-white"
+								: "to-white/0"
+						)}
+					/>
 				</div>
+
+				{(truncated || expanded) && (
+					<button
+						className="mr-auto flex flex-row items-center gap-2 font-bold"
+						onClick={() => setExpanded(!expanded)}
+					>
+						{expanded ? "Read Less" : "Read More"}
+						<ChevronDown
+							size={18}
+							className={cn(
+								"ml-auto opacity-40 transition-all duration-200 ease-in-out",
+								expanded && "rotate-180"
+							)}
+						/>
+					</button>
+				)}
 			</div>
 
-			<div className="flex flex-row gap-2 px-6">
+			<div className="flex flex-row gap-2 px-6 pb-4">
 				<button
-					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold text-white"
-					style={{ backgroundColor: color }}
-				>
-					<ExternalLink size={14} className="opacity-60" />
-					Opensea
-				</button>
-				<button
-					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold text-white"
-					style={{ backgroundColor: color }}
+					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+					style={{
+						backgroundColor: metadata?.color ?? "",
+						color: textColor
+					}}
 				>
 					<Send size={14} className="opacity-60" />
-					Transfer
+					Send
 				</button>
 			</div>
 
-			{traits && (
-				<div className="grid grid-cols-2 gap-2 px-6 pt-4">
-					{traits.map((trait, index) => (
+			{metadata?.traits && (metadata?.traits?.length ?? 0) > 0 && (
+				<div className="flex flex-wrap gap-2 px-6 pb-4">
+					{(metadata.traits as Traits).map((trait, index) => (
 						<div
 							key={index}
-							className="flex flex-col rounded-md bg-gradient-to-tr from-grayscale-100 to-grayscale-0 px-4 py-2"
+							className="flex flex-col rounded-lg border-2 px-4 py-2"
+							style={{ borderColor: metadata?.color ?? "" }}
 						>
 							<p className="truncate overflow-ellipsis whitespace-nowrap text-sm font-bold opacity-40">
-								{trait.trait_type}
+								{formatTitle(trait.trait_type)}
 							</p>
 							<p className="flex flex-row items-center gap-2 truncate overflow-ellipsis whitespace-nowrap font-bold">
 								{trait.value}
@@ -131,10 +196,218 @@ export const CollectibleFrame: FC<{
 				</div>
 			)}
 
-			<div className="pb-4 pt-4">
-				<p className="border-t-[1px] border-grayscale-100 px-6 pt-4 opacity-60">
-					{collectible?.description || collection.description}
-				</p>
+			<div className="flex flex-col gap-2 px-6 pb-4">
+				<div>
+					<div className="flex flex-row items-center gap-4">
+						<p className="font-bold opacity-40">Details</p>
+						<div
+							className="h-[2px] w-full"
+							style={{ backgroundColor: metadata?.color ?? "" }}
+						/>
+					</div>
+
+					<div className="mt-2 w-full font-bold">
+						<p className="flex w-full flex-row items-center gap-4">
+							<BookText size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">Address</span>
+							{formatAddress(getAddress(collectible.contract))}
+						</p>
+						<p className="flex w-full flex-row items-center gap-4">
+							<Hash size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">
+								Identifier
+							</span>
+							{collectible.identifier.length > 11
+								? formatAddress(collectible.identifier)
+								: collectible.identifier}
+						</p>
+						<p className="flex w-full flex-row items-center gap-4">
+							<Waypoints size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">Chain</span>
+							<span className="flex flex-row items-center gap-4">
+								<Image
+									className="h-4 w-4"
+									src={getChainImage(collection.chain)}
+									alt={collection.chain}
+									width={24}
+									height={24}
+								/>
+								{formatTitle(collection.chain)}
+							</span>
+						</p>
+						<p className="flex w-full flex-row items-center gap-4">
+							<BookText size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">
+								Token Standard
+							</span>
+							<span className="whitespace-nowrap">
+								{formatTokenStandard(collectible.tokenStandard)}
+							</span>
+						</p>
+					</div>
+
+					{(collection.projectUrl ||
+						collection.twitterUsername ||
+						collection.telegramUrl ||
+						collection.openseaUrl ||
+						collection.discordUrl ||
+						collection.instagramUsername ||
+						collection.wikiUrl) && (
+						<>
+							<div className="mt-4 flex flex-row items-center gap-4">
+								<p className="font-bold opacity-40">Links</p>
+								<div
+									className="h-[2px] w-full"
+									style={{
+										backgroundColor: metadata?.color ?? ""
+									}}
+								/>
+							</div>
+
+							<div className="mt-2 flex flex-wrap gap-2">
+								{collection.projectUrl && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={collection.projectUrl}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Globe
+											size={14}
+											className="opacity-60"
+										/>
+										Website
+									</a>
+								)}
+
+								{collection.discordUrl && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={collection.discordUrl}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<MessageCircle
+											size={14}
+											className="opacity-60"
+										/>
+										Discord
+									</a>
+								)}
+
+								{collection.twitterUsername && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={`https://twitter.com/${collection.twitterUsername}`}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Twitter
+											size={14}
+											className="opacity-60"
+										/>
+										Twitter
+									</a>
+								)}
+
+								{collection.telegramUrl && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={collection.telegramUrl}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Globe
+											size={14}
+											className="opacity-60"
+										/>
+										Telegram
+									</a>
+								)}
+
+								{collection.instagramUsername && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={`https://instagram.com/${collection.instagramUsername}`}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Instagram
+											size={14}
+											className="opacity-60"
+										/>
+										Instagram
+									</a>
+								)}
+
+								{collection.openseaUrl && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={collection.openseaUrl}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Ship
+											size={14}
+											className="opacity-60"
+										/>
+										Opensea
+									</a>
+								)}
+
+								{collection.wikiUrl && (
+									<a
+										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+										style={{
+											backgroundColor:
+												metadata?.color ?? "",
+											color: textColor
+										}}
+										href={collection.wikiUrl}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<BookDashed
+											size={14}
+											className="opacity-60"
+										/>
+										Wiki
+									</a>
+								)}
+							</div>
+						</>
+					)}
+				</div>
 			</div>
 		</Frame>
 	)

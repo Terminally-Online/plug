@@ -65,35 +65,42 @@ export const Header: FC<Props> = ({
 				</Button>
 			)}
 
-			{icon && icon}
-			{label instanceof Object ? (
-				label
-			) : (
-				<p className={cn(base, sizes[size])}>{label}</p>
-			)}
+			{icon && <span className="z-[-1]">{icon}</span>}
 
-			{children}
-			{nextEmpty === false && nextLabel && (nextHref || nextOnClick) && (
-				<Button
-					variant="secondary"
-					sizing={size}
-					href={nextHref}
-					onClick={nextOnClick}
-					className={cn(
-						"outline-none",
-						size === "md" && nextPadded === true
-							? "rounded-sm px-2 py-1 text-xs"
-							: "rounded-sm p-1",
-						children === undefined && "ml-auto"
+			<div className="z-[1] flex w-full flex-row items-center gap-4">
+				{label instanceof Object ? (
+					label
+				) : (
+					<p className={cn(base, sizes[size])}>{label}</p>
+				)}
+
+				{children}
+				{nextEmpty === false &&
+					nextLabel &&
+					(nextHref || nextOnClick) && (
+						<Button
+							variant="secondary"
+							sizing={size}
+							href={nextHref}
+							onClick={nextOnClick}
+							className={cn(
+								"outline-none",
+								size === "md" && nextPadded === true
+									? "rounded-sm px-2 py-1 text-xs"
+									: "rounded-sm p-1",
+								children === undefined && "ml-auto"
+							)}
+						>
+							{nextLabel}
+						</Button>
 					)}
-				>
-					{nextLabel}
-				</Button>
-			)}
 
-			{nextEmpty === true && nextLabel && (nextHref || nextOnClick) && (
-				<div className="ml-auto">{nextLabel}</div>
-			)}
+				{nextEmpty === true &&
+					nextLabel &&
+					(nextHref || nextOnClick) && (
+						<div className="ml-auto">{nextLabel}</div>
+					)}
+			</div>
 		</div>
 	)
 }

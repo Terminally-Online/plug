@@ -24,7 +24,10 @@ export const ActionItem: FC<Props> = ({
 	actionName,
 	image = false
 }) => {
-	const { handleFrame } = useFrame(`${categoryName}-${actionName}`)
+	const { handleFrame } = useFrame({
+		id: "global",
+		key: `${categoryName}-${actionName}`
+	})
 	const { id, actions, handle } = usePlugs()
 
 	if (!id) return null

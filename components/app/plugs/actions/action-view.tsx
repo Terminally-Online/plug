@@ -36,7 +36,7 @@ const getProtocolFrequency = (
 
 export const ActionView = () => {
 	const { data: session } = useSession()
-	const { handleFrame } = useFrame("actions")
+	const { handleFrame } = useFrame({ id: "global", key: "actions" })
 	const { id, plug, actions, handle } = usePlugs()
 
 	const own = plug && session && session.address === plug.userAddress

@@ -78,7 +78,7 @@ export const PlugContext = createContext<{
 
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { handlePage } = usePage()
-	const { handleFrame } = useFrame("deleted")
+	const { handleFrame } = useFrame({ id: "global", key: "deleted" })
 
 	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
 	const [search, handleSearch] = useState("")

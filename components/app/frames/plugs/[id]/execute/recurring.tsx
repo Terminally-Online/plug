@@ -1,7 +1,6 @@
 import { useState } from "react"
 
 import { Clock } from "lucide-react"
-import { DateRange } from "react-day-picker"
 
 import { Button, Frame } from "@/components"
 import { useFrame } from "@/contexts"
@@ -16,7 +15,10 @@ const frequencies = [
 ]
 
 export const RecurringFrame = () => {
-	const { frameKey, isFrame, handleFrame } = useFrame("recurring")
+	const { id, isFrame, handleFrame } = useFrame({
+		id: "global",
+		key: "recurring"
+	})
 
 	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(
 		frequencies[0]
@@ -24,7 +26,7 @@ export const RecurringFrame = () => {
 
 	return (
 		<Frame
-			frameKey={frameKey}
+			id={id}
 			className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 			icon={<Clock size={18} className="opacity-60" />}
 			label="Recurring Frequency"

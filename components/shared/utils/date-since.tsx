@@ -49,11 +49,10 @@ export const DateSince: FC<
 
 	return (
 		<p className="flex w-max flex-row whitespace-nowrap" {...props}>
-			141239s ago
-			{/* <span>
+			<span>
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>
-			{timeSince.unit} ago */}
+			{timeSince.unit} ago
 		</p>
 	)
 }

@@ -16,7 +16,7 @@ import { useFrame, usePage, usePlugs } from "@/contexts"
 export const PagePlug = () => {
 	const { page } = usePage()
 	const { data: session } = useSession()
-	const { handleFrame } = useFrame()
+	const { handleFrame } = useFrame({ id: "global" })
 	const { plug } = usePlugs(page.id)
 
 	const own =

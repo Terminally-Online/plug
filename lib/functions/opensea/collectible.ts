@@ -1,12 +1,15 @@
 import axios from "axios"
 
+import { TRPCError } from "@trpc/server"
+
 import { OpenseaCollectible } from "@/lib/types"
+import { getDominantColor } from "@/server/color"
 import { db } from "@/server/db"
 
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
 const COLLECTION_CACHE_TIME = 24 * HOUR * 7
-const COLLECTIBLES_CACHE_TIME = 10 * MINUTE
+const COLLECTIBLES_CACHE_TIME = 1 * HOUR
 
 export const getAPIKey = () => {
 	const keys = process.env.OPENSEA_API_KEY?.split(",")
@@ -34,6 +37,12 @@ export const getOpenseaCollection = async (slug: string, chain: string) => {
 			}
 		}
 	)
+
+	if (response.status !== 200)
+		throw new TRPCError({
+			code: "INTERNAL_SERVER_ERROR",
+			message: "An upstream service is unavailable."
+		})
 
 	const data = response.data
 
@@ -119,75 +128,110 @@ export const getCollectiblesForChain = async (
 	limit = 200,
 	next?: string
 ) => {
+	const socket = await db.userSocket.findFirst({
+		where: { socketAddress: address }
+	})
+	if (!socket) return []
+
 	const cachedCollectibles = await db.openseaCollectibleCache.findUnique({
-		where: { socketId_chain: { socketId: address, chain } },
+		where: { socketId_chain: { socketId: socket.id, chain } },
 		include: { collectibles: { include: { collection: true } } }
 	})
 
-	const cache =
+	if (
 		cachedCollectibles &&
-		cachedCollectibles.updatedAt >
+		cachedCollectibles?.updatedAt >
 			new Date(Date.now() - COLLECTIBLES_CACHE_TIME)
+	)
+		return cachedCollectibles.collectibles
 
-	if (cache) return cachedCollectibles.collectibles
-
-	const collectibles = await getOpenseaCollectiblesForChain(
+	const newCollectibles = await getOpenseaCollectiblesForChain(
 		address,
 		chain,
 		limit,
 		next
 	)
 
-	const transformed = collectibles.map((collectible: OpenseaCollectible) => ({
-		identifier: collectible.identifier,
-		collectionSlug: collectible.collection.slug,
-		contract: collectible.contract,
-		tokenStandard: collectible.token_standard,
-		name: collectible.name,
-		description: collectible.description,
-		imageUrl: collectible.image_url,
-		displayImageUrl: collectible.display_image_url,
-		displayAnimationUrl: collectible.display_animation_url,
-		metadataUrl: collectible.metadata_url,
-		openseaUrl: collectible.opensea_url,
-		updatedAt: new Date(collectible.updated_at),
-		isDisabled: collectible.is_disabled,
-		isNsfw: collectible.is_nsfw,
-		owner: address
-	}))
-
-	const socket = await db.userSocket.findFirst({
-		where: { socketAddress: address }
+	const existingCollectibles = await db.openseaCollectible.findMany({
+		where: { owner: address, cacheChain: chain },
+		select: { id: true, identifier: true, collectionSlug: true }
 	})
 
-	if (socket === null) return []
-
-	await db.openseaCollectible.deleteMany({
-		where: { owner: address, cacheChain: chain }
-	})
-
-	const collectiblesCache = await db.openseaCollectibleCache.upsert({
-		where: { socketId_chain: { socketId: socket.id, chain } },
-		create: {
-			chain,
-			socketId: socket.id,
-			collectibles: {
-				createMany: {
-					data: transformed
-				}
+	const newCollectiblesMap = new Map(
+		newCollectibles.map(c => [
+			`${c.identifier}:${c.collection.slug}`,
+			{
+				identifier: c.identifier,
+				collectionSlug: c.collection.slug,
+				contract: c.contract,
+				tokenStandard: c.token_standard,
+				name: c.name,
+				description: c.description,
+				imageUrl: c.image_url,
+				displayImageUrl: c.display_image_url,
+				displayAnimationUrl: c.display_animation_url,
+				metadataUrl: c.metadata_url,
+				openseaUrl: c.opensea_url,
+				updatedAt: new Date(c.updated_at),
+				isDisabled: c.is_disabled,
+				isNsfw: c.is_nsfw,
+				owner: address,
+				cacheChain: chain
 			}
-		},
-		update: {
-			collectibles: {
-				createMany: {
-					data: transformed
-				}
-			}
-		},
-		include: { collectibles: { include: { collection: true } } }
+		])
+	)
+
+	const existingCollectiblesMap = new Map(
+		existingCollectibles.map(c => [
+			`${c.identifier}:${c.collectionSlug}`,
+			c
+		])
+	)
+
+	const toDelete = existingCollectibles.filter(
+		c => !newCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
+	)
+	const toCreate = Array.from(newCollectiblesMap.values()).filter(
+		c => !existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
+	)
+	const toUpdate = Array.from(newCollectiblesMap.values()).filter(c =>
+		existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
+	)
+
+	await db.$transaction(async prisma => {
+		if (toDelete.length)
+			await prisma.openseaCollectible.deleteMany({
+				where: { id: { in: toDelete.map(c => c.id) } }
+			})
+
+		if (toCreate.length)
+			await prisma.openseaCollectible.createMany({
+				data: toCreate.map(c => ({
+					...c,
+					cacheSocketId: socket.id,
+					cacheChain: chain
+				}))
+			})
+
+		for (const collectible of toUpdate) {
+			await prisma.openseaCollectible.updateMany({
+				where: {
+					identifier: collectible.identifier,
+					collectionSlug: collectible.collectionSlug,
+					cacheChain: chain,
+					owner: address
+				},
+				data: collectible
+			})
+		}
+		await prisma.openseaCollectibleCache.upsert({
+			where: { socketId_chain: { socketId: socket.id, chain } },
+			create: { chain, socketId: socket.id, updatedAt: new Date() },
+			update: { updatedAt: new Date() }
+		})
 	})
 
-	return collectiblesCache.collectibles
+	return Array.from(newCollectiblesMap.values())
 }
 
 export const getCollectibles = async (
