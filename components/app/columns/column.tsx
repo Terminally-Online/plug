@@ -274,8 +274,6 @@ export const ConsoleColumn: FC<{
 									id={column.id}
 									className="px-4 pt-4"
 								/>
-							) : column.key === VIEW_KEYS.SETTINGS ? (
-								<></>
 							) : (
 								<></>
 							)}

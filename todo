@@ -5,15 +5,12 @@ Do These:
             Notes: This is just on Optimism after they migrated everyones dead balances from the bridge. Not sure
                    if this balance is double-stored everywhere or not. Right now though, other places properly handle
                    this but Alchemy has data that incorrect and truncated.
-        ☐ Improve the onboarding / authentication flow. @started(24-08-12 13:32)
 
     Console:
         Small:
             ☐ Make resizing more performant.
                 Notes: right now it is rerendering everything on a new frame as well as posting into the database.
             ☐ Referal functionality.
-            ☐ Settings column.
-                ☐ add contact info to database.
             ☐ Show total asset value when viewing tokens.
                 Notes: This does not include collectibles.
             ☐ plugs.all is a protectedProcedure, but it should be a publicProcedure so that you can browse without connecting.
@@ -27,16 +24,19 @@ Do These:
               Notes: We should only show this text when the response has returned no results or it has errored out.
 
             ☐ Instant socket address resolution.
-                Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
+              Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
             ☐ Create Plug should open create plug flow
-                Notes: Opens to action addition menu right away, this is colorful and shows user options right away
+              Notes: Opens to action addition menu right away, this is colorful and shows user options right away
               Notes: This is complexitiy that isn't needed for MVP. We will come back to this later.
             
         Large:
             ☐ Activity
-                ☐ Add total execution count to top
+              ☐ Add total execution count to top
             ☐ Revoke all    
             ☐ Implement complete send functionality to the token page.
+
+        Extra Large:
+            ☐ Improve the onboarding / authentication flow. @started(24-08-12 13:32)
             
     App:
         ☐ On logged in homepage, when user has no plugs, show 2 curated Plugs and CTA to create a Plug @@chance @started(24-06-27 11:55)
@@ -76,6 +76,8 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✘ Settings column. @cancelled(24-08-13 16:30) @project(Do These.Console.Small)
+  ✘ add contact info to database. @cancelled(24-08-13 16:30) @project(Do These.Console.Small)
   ✔ Retrieve the relative plug from the socket based on the item in the column. @done(24-08-13 12:15) @project(Do These.Console.Medium)
   ✔ Update navigation links while in console to update the state of the column rather redirect to the app page. @started(24-08-12 13:34) @done(24-08-12 23:37) @lasted(10h3m27s) @project(Do These.Console.Medium)
   ✔ Manage pages as a "global" column state. @done(24-08-12 22:36) @project(Do These.Console.Medium)

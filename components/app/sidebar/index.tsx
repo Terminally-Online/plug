@@ -4,12 +4,19 @@ import { signOut } from "next-auth/react"
 
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
-import { Book, ClipboardCheck, Github, LogOut, Plus } from "lucide-react"
+import {
+	Bell,
+	ClipboardCheck,
+	LogOut,
+	Plus,
+	SearchIcon,
+	Settings
+} from "lucide-react"
 import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
 import { useSockets } from "@/contexts"
-import { useClipboard } from "@/lib"
+import { formatAddress, useClipboard } from "@/lib"
 
 export const ConsoleSidebar = () => {
 	const { address, ensAvatar, socket } = useSockets()
@@ -22,11 +29,11 @@ export const ConsoleSidebar = () => {
 	})
 
 	return (
-		<div className="flex h-screen min-w-20 flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
-			<div className="mb-auto flex flex-col items-center justify-center gap-4">
+		<div className="flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white p-4 pr-16">
+			<div className="mb-auto flex flex-col gap-4">
 				{address && (
 					<button
-						className="relative h-12 w-12 rounded-sm bg-grayscale-0"
+						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0"
 						onClick={() => handleCopied()}
 					>
 						<motion.div
@@ -39,8 +46,8 @@ export const ConsoleSidebar = () => {
 								<Image
 									src={ensAvatar}
 									alt="ENS Avatar"
-									width={72}
-									height={72}
+									width={16}
+									height={16}
 									className="h-full w-full rounded-sm"
 								/>
 							) : (
@@ -70,50 +77,87 @@ export const ConsoleSidebar = () => {
 					</button>
 				)}
 
-				<div className="flex w-full flex-col gap-1 text-center">
-					<p className="text-xs opacity-60">Lvl. 12</p>
-					<div className="h-[2px] w-full bg-grayscale-100">
-						<div className="h-[2px] w-[50%] bg-gradient-to-r from-plug-green to-plug-yellow" />
-					</div>
-				</div>
-
-				<Button
-					variant="primary"
-					href="https://docs.onplug.io"
-					sizing="sm"
-					className="rounded-sm p-1 outline-none"
+				<button
+					className="group flex flex-row items-center gap-4"
+					onClick={() => {}}
 				>
-					<Plus size={18} className="opacity-60" />
-				</Button>
+					<Button
+						variant="primary"
+						onClick={() => {}}
+						sizing="sm"
+						className="rounded-sm p-1 "
+					>
+						<Plus
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					<p className="whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+						New Plug
+					</p>
+				</button>
+
+				<button
+					className="group flex flex-row items-center gap-4"
+					onClick={() => {}}
+				>
+					<Button
+						variant="secondary"
+						onClick={() => {}}
+						sizing="sm"
+						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+					>
+						<SearchIcon
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+						Search
+					</p>
+				</button>
+
+				<button
+					className="group flex flex-row items-center gap-4"
+					onClick={() => {}}
+				>
+					<Button
+						variant="secondary"
+						onClick={() => {}}
+						sizing="sm"
+						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+					>
+						<Bell
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+						Activity
+					</p>
+				</button>
 			</div>
 
-			<div className="mt-auto flex flex-col items-center justify-center gap-4">
-				<Button
-					variant="secondary"
-					href="https://docs.onplug.io"
-					sizing="sm"
-					className="rounded-sm p-1 outline-none"
+			<div className="mt-auto flex flex-col gap-4">
+				<button
+					className="group flex flex-row items-center gap-4"
+					onClick={() => {}}
 				>
-					<Book size={18} className="opacity-60" />
-				</Button>
-
-				<Button
-					variant="secondary"
-					href="https://github.com/nftchance/plug"
-					sizing="sm"
-					className="rounded-sm p-1 outline-none"
-				>
-					<Github size={18} className="opacity-60" />
-				</Button>
-
-				<Button
-					variant="secondary"
-					onClick={() => disconnect()}
-					sizing="sm"
-					className="rounded-sm p-1 outline-none"
-				>
-					<LogOut size={18} className="rotate-180 opacity-60" />
-				</Button>
+					<Button
+						variant="secondary"
+						onClick={() => disconnect()}
+						sizing="sm"
+						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+					>
+						<LogOut
+							size={14}
+							className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+						Logout
+					</p>
+				</button>
 			</div>
 		</div>
 	)

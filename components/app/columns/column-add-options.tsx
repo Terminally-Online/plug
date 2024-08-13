@@ -6,13 +6,11 @@ import {
 	Coins,
 	ImageIcon,
 	Landmark,
-	LayoutPanelTop,
 	PiggyBank,
 	Settings,
 	Wallet
 } from "lucide-react"
 
-import { Header } from "@/components"
 import { useSockets } from "@/contexts"
 import { formatTitle, VIEW_KEYS } from "@/lib"
 
@@ -64,11 +62,6 @@ const options: Array<{
 		label: "EARNINGS",
 		description: "View your earnings and manage them.",
 		icon: <Landmark size={14} className="opacity-40" />
-	},
-	{
-		label: "SETTINGS",
-		description: "View your settings and manage them.",
-		icon: <Settings size={14} className="opacity-40" />
 	}
 ] as const
 
