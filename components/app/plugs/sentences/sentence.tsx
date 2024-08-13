@@ -2,8 +2,6 @@ import { FC } from "react"
 
 import Image from "next/image"
 
-import { useSession } from "next-auth/react"
-
 import { X } from "lucide-react"
 
 import { Button, Fragments } from "@/components"
@@ -11,15 +9,15 @@ import { usePlugs } from "@/contexts"
 import { categories, cn } from "@/lib"
 
 export const Sentence: FC<{
+	id: string
 	index: number
 	preview?: boolean
-}> = ({ index, preview = false }) => {
-	const { data: session } = useSession()
-	const { id, plug, actions, handle } = usePlugs()
+}> = ({ id, index, preview = false }) => {
+	const { plug, own, actions, handle } = usePlugs(id)
 
 	const { categoryName } = actions[index]
 
-	const own = plug && session && session.address === plug.userAddress
+	if (plug === undefined || actions === undefined) return null
 
 	return (
 		<>
@@ -29,10 +27,10 @@ export const Sentence: FC<{
 					preview === false && "rounded-lg bg-grayscale-0 p-4"
 				)}
 			>
-				<p className="flex w-full flex-wrap items-center gap-2">
+				<p className="flex w-full flex-wrap items-center gap-[4px]">
 					{preview === false && (
 						<Image
-							className="mr-2 h-6 w-6 rounded-md"
+							className="mr-2 h-6 w-6 rounded-sm"
 							src={categories[categoryName].image}
 							alt={`Icon for ${categoryName}`}
 							width={24}
@@ -40,7 +38,7 @@ export const Sentence: FC<{
 						/>
 					)}
 
-					<Fragments index={index} />
+					<Fragments id={id} index={index} />
 				</p>
 
 				{preview === false && own && (
@@ -49,7 +47,7 @@ export const Sentence: FC<{
 						className="mb-auto ml-4 mt-[4px] p-1"
 						onClick={() =>
 							handle.action.edit({
-								id,
+								id: plug.id,
 								actions: JSON.stringify(
 									actions.filter((_, i) => i !== index)
 								)
@@ -62,7 +60,7 @@ export const Sentence: FC<{
 			</div>
 
 			{index < actions.length - 1 && (
-				<div className="mx-auto h-4 w-[2px] bg-grayscale-100" />
+				<div className="mx-auto h-2 w-[2px] bg-grayscale-100" />
 			)}
 		</>
 	)

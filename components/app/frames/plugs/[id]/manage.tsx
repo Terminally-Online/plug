@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { FC, useEffect } from "react"
 
 import { PencilLine, Settings } from "lucide-react"
 
@@ -6,10 +6,9 @@ import { Button, Checkbox, Frame, Search } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 import { cardColors, useDebounce, useNavigation } from "@/lib"
 
-export const ManagePlugFrame = () => {
-	const { id, from } = useNavigation()
-	const { id: frameId, isFrame } = useFrame({ id: "global", key: "manage" })
-	const { plug, handle } = usePlugs()
+export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame } = useFrame({ id, key: "manage" })
+	const { plug, handle } = usePlugs(id)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(
 		plug?.name ?? "",
@@ -28,13 +27,14 @@ export const ManagePlugFrame = () => {
 
 	return (
 		<Frame
-			id={frameId}
+			id={id}
 			className="z-[2]"
 			icon={<Settings size={18} />}
 			label="Manage Plug"
 			visible={isFrame}
+			hasChildrenPadding={false}
 		>
-			<div className="flex flex-col gap-4">
+			<div className="mb-4 flex flex-col gap-4 px-6">
 				<Search
 					icon={<PencilLine size={14} />}
 					placeholder="Plug name"
@@ -92,15 +92,17 @@ export const ManagePlugFrame = () => {
 						))}
 					</div>
 				</div>
-			</div>
 
-			<Button
-				variant="destructive"
-				className="mt-[20px] w-full"
-				onClick={() => handle.plug.delete({ id, from })}
-			>
-				Delete
-			</Button>
+				<Button
+					variant="destructive"
+					className="w-full"
+					onClick={() =>
+						handle.plug.delete({ id, from: "NOT_IMPLEMENTED" })
+					}
+				>
+					Delete
+				</Button>
+			</div>
 		</Frame>
 	)
 }

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { FC, useState } from "react"
 
 import {
 	ArrowRight,
@@ -22,12 +22,12 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const ScheduleFrame = () => {
-	const { id, isFrame, handleFrame } = useFrame({
-		id: "global",
+export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame, handleFrame } = useFrame({
+		id,
 		key: "schedule"
 	})
-	const { chainsAvailable } = usePlugs()
+	const { chains } = usePlugs(id)
 
 	const [date, setDate] = useState<DateRange | undefined>({
 		from: undefined,
@@ -38,9 +38,9 @@ export const ScheduleFrame = () => {
 	)
 
 	const handleBack =
-		chainsAvailable.length === 1
-			? undefined
-			: () => handleFrame("chain-schedule")
+		// chainsAvailable.length === 1
+		// 	? undefined
+		() => handleFrame("chain-schedule")
 
 	return (
 		<Frame

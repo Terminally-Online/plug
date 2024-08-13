@@ -1,5 +1,3 @@
-import { FC } from "react"
-
 import Image from "next/image"
 
 import { useSession } from "next-auth/react"
@@ -8,20 +6,23 @@ import BlockiesSvg from "blockies-react-svg"
 import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 
 import { ActionView, Button, Container, Header } from "@/components"
-import { useFrame, usePage, usePlugs, useSockets } from "@/contexts"
+import { useFrame, usePlugs, useSockets } from "@/contexts"
 import {
 	cardColors,
 	cn,
 	formatAddress,
 	formatTimeSince,
-	formatTitle
+	formatTitle,
+	VIEW_KEYS
 } from "@/lib"
 
 const HomePageHeader = () => {
-	const { page, handlePage } = usePage()
-	const { handleFrame } = useFrame({ id: "global" })
+	const { page, handle } = useSockets()
+	const { handleFrame } = useFrame({ id: page?.id })
 	const { address, ensAvatar } = useSockets()
-	const { handle } = usePlugs()
+	const { handle: handlePlugs } = usePlugs(page?.id ?? "")
+
+	if (page === undefined) return null
 
 	return (
 		<Header
@@ -69,11 +70,16 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"text-lg font-bold transition-all duration-200 ease-in-out",
-							page.key !== "home"
+							page.key !== VIEW_KEYS.HOME
 								? "opacity-40 hover:opacity-100"
 								: ""
 						)}
-						onClick={() => handlePage({ key: "home" })}
+						onClick={() =>
+							handle.columns.navigate({
+								id: page.id,
+								key: VIEW_KEYS.HOME
+							})
+						}
 					>
 						Home
 					</button>
@@ -81,17 +87,22 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"mr-auto text-lg font-bold transition-all duration-200 ease-in-out",
-							page.key !== "activity"
+							page.key !== VIEW_KEYS.ACTIVITY
 								? "opacity-40 hover:opacity-100"
 								: ""
 						)}
-						onClick={() => handlePage({ key: "activity" })}
+						onClick={() =>
+							handle.columns.navigate({
+								id: page.id,
+								key: VIEW_KEYS.ACTIVITY
+							})
+						}
 					>
 						Activity
 					</button>
 				</>
 			}
-			nextOnClick={() => handle.plug.add("home")}
+			nextOnClick={() => handlePlugs.plug.add(page.key)}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
@@ -99,23 +110,31 @@ const HomePageHeader = () => {
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
-	const { page } = usePage()
-	const { handleFrame } = useFrame({ id: "global" })
-	const { plug, handle } = usePlugs(page.id)
+	const { page, handle } = useSockets()
+	const { handleFrame } = useFrame({ id: page?.id })
+	const { plug, handle: handlePlugs } = usePlugs(page?.id ?? "")
 
 	const own =
 		plug !== undefined && session && session.address === plug.userAddress
 
-	if (!plug) return null
+	if (!page || !plug) return null
 
 	return (
 		<div className="flex min-h-[calc(100vh-80px)] flex-col">
 			<Header
 				size="lg"
-				back={page.from ?? "mine"}
+				onBack={
+					page.from
+						? () =>
+								handle.columns.navigate({
+									id: page.id,
+									key: page.from ?? ""
+								})
+						: undefined
+				}
 				icon={
 					<div
-						className="h-6 w-6 min-w-6 rounded-md"
+						className="h-6 w-6 min-w-6 rounded-md bg-grayscale-100"
 						style={{
 							backgroundImage: cardColors[plug.color]
 						}}
@@ -150,7 +169,7 @@ const PlugHeader = () => {
 					variant="secondary"
 					className="group ml-auto p-1"
 					onClick={() =>
-						handle.plug.fork({
+						handlePlugs.plug.fork({
 							id: plug.id,
 							from: page.from ?? undefined
 						})
@@ -167,15 +186,13 @@ const PlugHeader = () => {
 					<Share size={14} />
 				</Button>
 			</div>
-
-			<ActionView />
 		</div>
 	)
 }
 
 const DynamicPageHeader = () => {
-	const { page, handlePage } = usePage()
-	const { handle } = usePlugs()
+	const { page, handle } = useSockets()
+	const { handle: handlePlugs } = usePlugs(page?.id ?? "")
 
 	return (
 		<Header
@@ -185,35 +202,40 @@ const DynamicPageHeader = () => {
 					<Button
 						variant="secondary"
 						className="rounded-sm p-1"
-						onClick={() => handlePage({ key: "home" })}
+						onClick={() =>
+							handle.columns.navigate({
+								id: page?.id,
+								key: page?.from ?? VIEW_KEYS.HOME
+							})
+						}
 					>
 						<ChevronLeft size={14} />
 					</Button>
 
 					<button
-						className={
-							"mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
+						className="mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
+						onClick={() =>
+							handle.columns.navigate({ key: VIEW_KEYS.ACTIVITY })
 						}
-						onClick={() => handlePage({ key: "activity" })}
 					>
-						{formatTitle(page.key)}
+						{formatTitle(page?.key.toLowerCase() ?? "")}
 					</button>
 				</>
 			}
-			nextOnClick={() => handle.plug.add(page.key)}
+			nextOnClick={() => handlePlugs.plug.add(page?.key ?? "")}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
 }
 
 export const PageHeader = () => {
-	const { page } = usePage()
+	const { page } = useSockets()
 
 	return (
 		<Container>
-			{["home", "activity"].includes(page.key) ? (
+			{[VIEW_KEYS.HOME, VIEW_KEYS.ACTIVITY].includes(page?.key ?? "") ? (
 				<HomePageHeader />
-			) : page.key === "plug" ? (
+			) : page?.key === VIEW_KEYS.PLUG ? (
 				<PlugHeader />
 			) : (
 				<DynamicPageHeader />

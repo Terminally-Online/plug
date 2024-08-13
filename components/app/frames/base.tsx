@@ -1,22 +1,23 @@
-import { FC, PropsWithChildren, useEffect } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
 import { Button, Header } from "@/components"
-import { useFrame } from "@/contexts"
+import { useFrame, useSockets } from "@/contexts"
 import { cn, useMediaQuery } from "@/lib"
 
-type Props = PropsWithChildren & {
-	id: string
-	label: string
-	visible: boolean
-	icon?: JSX.Element
-	handleBack?: () => void
-	hasOverlay?: boolean
-	hasChildrenPadding?: boolean
-	next?: JSX.Element
-} & React.HTMLAttributes<HTMLDivElement>
+type Props = React.HTMLAttributes<HTMLDivElement> &
+	PropsWithChildren & {
+		id?: string
+		label: string
+		visible: boolean
+		icon?: JSX.Element
+		handleBack?: () => void
+		hasOverlay?: boolean
+		hasChildrenPadding?: boolean
+		next?: JSX.Element
+	}
 
 export const Frame: FC<Props> = ({
 	id,
@@ -31,12 +32,17 @@ export const Frame: FC<Props> = ({
 	next
 }) => {
 	const { md } = useMediaQuery()
+	const { socket } = useSockets()
 	const { handleFrame } = useFrame({ id })
+
+	const page = socket?.columns.find(column => column.id === id)
+
+	if (page === undefined) return null
 
 	return (
 		<AnimatePresence>
 			{visible ? (
-				<>
+				<div>
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -51,7 +57,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30",
-							id !== "global" && "rounded-lg"
+							page.index !== -1 && "rounded-lg"
 						)}
 						onClick={() => handleFrame()}
 					/>
@@ -66,7 +72,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 w-full rounded-t-lg bg-white",
 							className,
 							"z-[11]",
-							id !== "global" && "rounded-b-lg"
+							page.index !== -1 && "rounded-b-lg"
 						)}
 					>
 						<div className="flex flex-row items-center gap-2 px-6 py-4">
@@ -74,7 +80,7 @@ export const Frame: FC<Props> = ({
 								<Button
 									variant="secondary"
 									onClick={handleBack}
-									className="mb-[20px] mr-2 h-min p-1"
+									className="mr-2 h-min rounded-sm p-1"
 								>
 									<ChevronLeft size={14} />
 								</Button>
@@ -96,7 +102,7 @@ export const Frame: FC<Props> = ({
 							{children}
 						</div>
 					</motion.div>
-				</>
+				</div>
 			) : null}
 		</AnimatePresence>
 	)

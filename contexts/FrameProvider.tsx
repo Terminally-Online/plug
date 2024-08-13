@@ -45,7 +45,7 @@ export const useFrame = ({
 	key,
 	seperator
 }: {
-	id: string
+	id?: string
 	key?: string
 	seperator?: string
 }) => {
@@ -54,10 +54,12 @@ export const useFrame = ({
 	const frame = seperator && key ? key.split(seperator)[0] : key
 	const prevFrame = seperator && key ? key.split(seperator)[1] : undefined
 
-	const isFrame = frames[id] === frame
+	const isFrame = id ? frames[id] === frame : false
 
 	const handleFrame = (key?: string) => {
 		const frameKey = key ?? frame
+
+		if (!id) return
 
 		handleFrames(prevFrames => ({
 			...prevFrames,

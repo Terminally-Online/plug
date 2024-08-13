@@ -1,3 +1,5 @@
+import { FC } from "react"
+
 import Image from "next/image"
 
 import { Badge, Link, Send, Twitter } from "lucide-react"
@@ -6,12 +8,12 @@ import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
 
-export const ShareFrame = () => {
-	const { id, isFrame } = useFrame({ id: "global", key: "share" })
-	const { plug } = usePlugs()
+export const ShareFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame } = useFrame({ id, key: "share" })
+	const { plug } = usePlugs(id)
 
 	const { copied, handleCopied } = useClipboard(
-		`${window.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`
+		`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`
 	)
 
 	if (!plug) return null

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { FC, useState } from "react"
 
 import { Pen, Sparkle } from "lucide-react"
 
@@ -6,13 +6,12 @@ import { Button, Frame, Search } from "@/components"
 import { useFrame } from "@/contexts"
 import { api } from "@/server/client"
 
-export const FeatureRequestFrame = () => {
+export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 	const {
-		id,
 		isFrame,
 		prevFrame: from,
 		handleFrame
-	} = useFrame({ id: "global", key: "freatureRequest", seperator: "-" })
+	} = useFrame({ id, key: "freatureRequest", seperator: "-" })
 
 	const [message, setMessage] = useState("")
 

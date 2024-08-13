@@ -10,9 +10,9 @@ import { StatCard } from "../../cards"
 import { Header } from "../../layout"
 import { PlugGrid } from "../../plugs"
 
-export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement>> = ({
-	...props
-}) => {
+export const SocketEarnings: FC<
+	HTMLAttributes<HTMLDivElement> & { id: string }
+> = ({ id, ...props }) => {
 	const { data: plugs } = api.plug.all.useQuery({
 		target: "mine",
 		limit: 8
@@ -79,7 +79,12 @@ export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement>> = ({
 						label="Top Performers"
 					/>
 
-					<PlugGrid className="mb-4" from={"mine"} plugs={plugs} />
+					<PlugGrid
+						id={id}
+						className="mb-4"
+						from={"mine"}
+						plugs={plugs}
+					/>
 				</>
 			)}
 		</div>

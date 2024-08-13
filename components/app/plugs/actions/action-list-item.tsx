@@ -9,9 +9,10 @@ import { useFrame } from "@/contexts"
 import { categories, formatTitle } from "@/lib"
 
 export const ActionListItem: FC<{
+	id: string
 	categoryName: string
-}> = ({ categoryName }) => {
-	const { handleFrame } = useFrame({ id: "global", key: categoryName })
+}> = ({ id, categoryName }) => {
+	const { handleFrame } = useFrame({ id, key: categoryName })
 
 	const category = categories[categoryName]
 
@@ -43,7 +44,11 @@ export const ActionListItem: FC<{
 					</Button>
 				</button>
 
-				<ActionCard categoryName={categoryName} category={category} />
+				<ActionCard
+					id={id}
+					categoryName={categoryName}
+					category={category}
+				/>
 			</div>
 		</div>
 	)

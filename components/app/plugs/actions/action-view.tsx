@@ -1,13 +1,11 @@
-import { useMemo } from "react"
+import { FC, useMemo } from "react"
 
 import Image from "next/image"
-
-import { useSession } from "next-auth/react"
 
 import { Plus } from "lucide-react"
 
 import { Button, Sentence } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { actions, categories, formatTitle, getValues } from "@/lib"
 
 const baseSuggestions = Object.entries(actions).flatMap(
@@ -34,12 +32,9 @@ const getProtocolFrequency = (
 	return protocolFrequency
 }
 
-export const ActionView = () => {
-	const { data: session } = useSession()
-	const { handleFrame } = useFrame({ id: "global", key: "actions" })
-	const { id, plug, actions, handle } = usePlugs()
-
-	const own = plug && session && session.address === plug.userAddress
+export const ActionView: FC<{ id: string }> = ({ id }) => {
+	const { handleFrame } = useFrame({ id, key: "actions" })
+	const { plug, own, actions, handle } = usePlugs(id)
 
 	const suggestions = useMemo(() => {
 		const protocolFrequency = getProtocolFrequency(actions)
@@ -47,12 +42,10 @@ export const ActionView = () => {
 			actions.map(action => `${action.categoryName}-${action.actionName}`)
 		)
 
-		// Handle case where there are no actions
 		if (actions.length === 0) {
 			return baseSuggestions.slice(0, 5)
 		}
 
-		// Get the most recent action
 		const mostRecentAction = actions[actions.length - 1]
 
 		return baseSuggestions
@@ -63,7 +56,6 @@ export const ActionView = () => {
 					)
 			)
 			.sort((a, b) => {
-				// Prioritize suggestions related to the most recent action
 				if (a.categoryName === mostRecentAction.categoryName) return -1
 				if (b.categoryName === mostRecentAction.categoryName) return 1
 				return (
@@ -74,12 +66,14 @@ export const ActionView = () => {
 			.slice(0, 3)
 	}, [actions])
 
+	if (plug === undefined) return null
+
 	return (
 		<>
 			{actions && actions.length > 0 ? (
 				<div className="mb-72 flex flex-col">
 					{actions.map((_, index) => (
-						<Sentence key={index} index={index} />
+						<Sentence id={id} key={index} index={index} />
 					))}
 
 					{own && (
@@ -94,7 +88,7 @@ export const ActionView = () => {
 										className="flex items-center gap-4 rounded-lg bg-grayscale-0 p-4 font-bold"
 										onClick={() =>
 											handle.action.edit({
-												id,
+												id: plug.id,
 												actions: JSON.stringify([
 													...actions,
 													{
@@ -127,7 +121,7 @@ export const ActionView = () => {
 											className="group p-1"
 											onClick={() =>
 												handle.action.edit({
-													id,
+													id: plug.id,
 													actions: JSON.stringify([
 														...actions,
 														{

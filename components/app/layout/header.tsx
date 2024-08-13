@@ -3,13 +3,12 @@ import { FC } from "react"
 import { ChevronLeft } from "lucide-react"
 
 import { Button } from "@/components"
-import { usePage } from "@/contexts"
 import { cn } from "@/lib/utils"
 
 type Props = {
 	variant?: "raw" | "frame"
 	size?: "md" | "lg"
-	back?: string
+	onBack?: () => void
 	icon?: JSX.Element
 	label: string | JSX.Element
 	nextPadded?: boolean
@@ -32,7 +31,7 @@ const sizes: Record<NonNullable<Props["size"]>, string> = {
 export const Header: FC<Props> = ({
 	variant = "raw",
 	size = "md",
-	back,
+	onBack,
 	icon,
 	label,
 	nextPadded = true,
@@ -43,8 +42,6 @@ export const Header: FC<Props> = ({
 	className,
 	children
 }) => {
-	const { handlePage } = usePage()
-
 	const base = "font-bold truncate"
 
 	return (
@@ -55,19 +52,19 @@ export const Header: FC<Props> = ({
 				className
 			)}
 		>
-			{back && (
+			{
 				<Button
 					variant="secondary"
-					onClick={() => handlePage({ key: back })}
+					onClick={onBack}
 					className="mr-2 rounded-[10px] p-1"
 				>
 					<ChevronLeft size={14} />
 				</Button>
-			)}
+			}
 
-			{icon && <span className="z-[-1]">{icon}</span>}
+			{icon && icon}
 
-			<div className="z-[1] flex w-full flex-row items-center gap-4">
+			<div className="z-[1] flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap">
 				{label instanceof Object ? (
 					label
 				) : (

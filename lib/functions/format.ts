@@ -35,6 +35,7 @@ export const formatBalance = (
 
 export const formatTitle = (title: string) =>
 	title
+		.replace("_", " ")
 		.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, "$1$3 $2$4")
 		.split(" ")
 		.map(word => {

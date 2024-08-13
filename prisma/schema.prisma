@@ -27,6 +27,8 @@ model ConsoleColumn {
     key   String
     index Int
     width Int?
+    item  String?
+    from  String?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

@@ -1,11 +1,13 @@
+import { FC } from "react"
+
 import Image from "next/image"
 
 import { Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories } from "@/lib/constants"
 
-export const ActionPreview = () => {
-	const { actions } = usePlugs()
+export const ActionPreview: FC<{ id: string }> = ({ id }) => {
+	const { actions } = usePlugs(id)
 
 	return (
 		<div className="mb-4 flex flex-col gap-2">
@@ -25,7 +27,7 @@ export const ActionPreview = () => {
 								height={24}
 							/>
 
-							<Sentence index={index} preview={true} />
+							<Sentence id={id} index={index} preview={true} />
 						</div>
 
 						<p className="ml-10 text-sm opacity-60">Ready</p>

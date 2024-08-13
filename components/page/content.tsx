@@ -6,23 +6,26 @@ import {
 	PageMine,
 	PagePlug
 } from "@/components"
-import { usePage } from "@/contexts"
+import { useSockets } from "@/contexts"
+import { VIEW_KEYS } from "@/lib"
 
 export const PageContent = () => {
-	const { page } = usePage()
+	const { page } = useSockets()
+
+	if (page === undefined) return null
 
 	switch (page.key) {
-		case "home":
+		case VIEW_KEYS.HOME:
 			return <PageHome />
-		case "activity":
+		case VIEW_KEYS.ACTIVITY:
 			return <PageActivity />
-		case "discover":
+		case VIEW_KEYS.DISCOVER:
 			return <PageDiscover />
-		case "mine":
+		case VIEW_KEYS.MY_PLUGS:
 			return <PageMine />
-		case "plug":
+		case VIEW_KEYS.PLUG:
 			return <PagePlug />
-		case "earnings":
+		case VIEW_KEYS.EARNINGS:
 			return <PageEarnings />
 		default:
 			return <></>

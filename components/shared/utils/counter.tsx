@@ -85,33 +85,17 @@ const formatForDisplay = (
 	return []
 }
 
-const MinusColumn = () => (
-	<span>
-		<span>-</span>
-	</span>
-)
+const MinusColumn = () => <span>-</span>
 
-const CommaColumn = () => (
-	<span>
-		<span>,</span>
-	</span>
-)
+const CommaColumn = () => <span>,</span>
 
-const DecimalColumn = () => (
-	<span>
-		<span>.</span>
-	</span>
-)
+const DecimalColumn = () => <span>.</span>
 
-const SlashColumn = () => (
-	<div>
-		<span>/</span>
-	</div>
-)
+const SlashColumn = () => <span>/</span>
 
 const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	const [y, setY] = useState(0)
-	const columnContainer = useRef<HTMLDivElement>(null)
+	const columnContainer = useRef<HTMLSpanElement>(null)
 
 	const setColumnToNumber = (number: string) => {
 		if (columnContainer.current === null) return
@@ -121,16 +105,19 @@ const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	useEffect(() => setColumnToNumber(digit), [digit])
 
 	return (
-		<div className="relative text-center" ref={columnContainer}>
-			<motion.div className="absolute bottom-0 h-[1000%]" animate={{ y }}>
+		<span className="relative text-center" ref={columnContainer}>
+			<motion.span
+				className="absolute bottom-0 h-[1000%]"
+				animate={{ y }}
+			>
 				{[9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(i => (
 					<div key={i} className="h-[10%]">
-						<span>{i}</span>
+						{i}
 					</div>
 				))}
-			</motion.div>
+			</motion.span>
 			<span className="invisible">0</span>
-		</div>
+		</span>
 	)
 }
 

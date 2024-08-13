@@ -14,15 +14,14 @@ import {
 
 import { Header } from "@/components"
 import { useSockets } from "@/contexts"
-import { formatTitle } from "@/lib"
-import { COLUMN_KEYS } from "@/server/api/routers/socket/columns"
+import { formatTitle, VIEW_KEYS } from "@/lib"
 
 type Props = {
 	id: string
 }
 
 const options: Array<{
-	label: keyof typeof COLUMN_KEYS
+	label: keyof typeof VIEW_KEYS
 	description: string
 	icon: JSX.Element
 }> = [
@@ -77,42 +76,31 @@ export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
 	const { handle } = useSockets()
 
 	return (
-		<>
-			<Header
-				size="md"
-				className="px-4"
-				icon={<LayoutPanelTop size={14} className="opacity-40" />}
-				label="Choose One"
-			/>
+		<div className="flex flex-col">
+			{options.map(option => (
+				<button
+					key={option.label}
+					className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
+					onClick={() =>
+						handle.columns.add({ key: option.label, id })
+					}
+				>
+					<div className="flex flex-row items-center gap-4">
+						{option.icon}
 
-			<div className="flex flex-col border-t-[1px] border-grayscale-100">
-				{options.map(option => (
-					<button
-						key={option.label}
-						className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
-						onClick={() =>
-							handle.columns.add({ key: option.label, id })
-						}
-					>
-						<div className="flex flex-row items-center gap-4">
-							{option.icon}
-
-							<div className="flex flex-col">
-								<p className="font-bold opacity-40">
-									{formatTitle(
-										option.label
-											.replace("_", " ")
-											.toLowerCase()
-									)}
-								</p>
-								<p className="text-sm opacity-60">
-									{option.description}
-								</p>
-							</div>
+						<div className="flex flex-col">
+							<p className="font-bold opacity-40">
+								{formatTitle(
+									option.label.replace("_", " ").toLowerCase()
+								)}
+							</p>
+							<p className="text-sm opacity-60">
+								{option.description}
+							</p>
 						</div>
-					</button>
-				))}
-			</div>
-		</>
+					</div>
+				</button>
+			))}
+		</div>
 	)
 }

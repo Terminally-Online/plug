@@ -7,17 +7,19 @@ import { motion } from "framer-motion"
 import { Workflow } from "@prisma/client"
 
 import { Button, PlugGridItem } from "@/components"
-import { usePage, usePlugs } from "@/contexts"
+import { usePlugs, useSockets } from "@/contexts"
 
-type Props = {
+type Props = React.HTMLAttributes<HTMLDivElement> & {
+	id: string
 	from: string
 	plugs: Array<Workflow> | undefined
 	count?: number
 	search?: string
 	handleReset?: () => void
-} & React.HTMLAttributes<HTMLDivElement>
+}
 
 export const PlugGrid: FC<Props> = ({
+	id,
 	from,
 	plugs,
 	count,
@@ -27,8 +29,8 @@ export const PlugGrid: FC<Props> = ({
 }) => {
 	const pathname = usePathname()
 
-	const { handlePage } = usePage()
-	const { handle } = usePlugs()
+	const { handle } = useSockets()
+	const { handle: handlePlugs } = usePlugs(id)
 
 	if (plugs === undefined) return null
 
@@ -70,7 +72,7 @@ export const PlugGrid: FC<Props> = ({
 									}
 								}}
 							>
-								<PlugGridItem from={from} plug={plug} />
+								<PlugGridItem id={id} from={from} plug={plug} />
 							</motion.div>
 						))}
 				</motion.div>
@@ -85,14 +87,16 @@ export const PlugGrid: FC<Props> = ({
 					<div className="mx-auto mt-8 flex flex-row gap-1">
 						<Button
 							variant="secondary"
-							onClick={() => handlePage({ key: "discover" })}
+							onClick={() =>
+								handle.columns.navigate({ id, key: "discover" })
+							}
 							className="w-max"
 						>
 							See Templates
 						</Button>
 						<Button
 							className="w-max"
-							onClick={() => handle.plug.add(pathname)}
+							onClick={() => handlePlugs.plug.add(pathname)}
 						>
 							Create
 						</Button>

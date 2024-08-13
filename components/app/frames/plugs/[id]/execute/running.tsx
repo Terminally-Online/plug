@@ -1,17 +1,17 @@
-import { useEffect } from "react"
+import { FC, useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
 import { Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
-export const RunningFrame = () => {
-	const { id, isFrame, prevFrame, handleFrame } = useFrame({
-		id: "global",
+export const RunningFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame, prevFrame, handleFrame } = useFrame({
+		id,
 		key: "running",
 		seperator: "-"
 	})
-	const { plug } = usePlugs()
+	const { plug } = usePlugs(id)
 
 	const label = prevFrame
 		? prevFrame === "schedule"

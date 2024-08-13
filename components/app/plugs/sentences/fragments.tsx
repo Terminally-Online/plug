@@ -4,9 +4,10 @@ import { DynamicFragment, StaticFragment } from "@/components"
 import { ACTION_REGEX, usePlugs } from "@/contexts"
 
 export const Fragments: FC<{
+	id: string
 	index: number
-}> = ({ index }) => {
-	const { fragments } = usePlugs()
+}> = ({ id, index }) => {
+	const { fragments } = usePlugs(id)
 
 	return (
 		<>
@@ -14,12 +15,14 @@ export const Fragments: FC<{
 				fragment.match(ACTION_REGEX) ? (
 					<DynamicFragment
 						key={`${index}-${fragmentIndex}`}
+						id={id}
 						index={index}
 						fragmentIndex={fragmentIndex}
 					/>
 				) : (
 					<StaticFragment
 						key={`${index}-${fragmentIndex}`}
+						id={id}
 						index={index}
 						fragmentIndex={fragmentIndex}
 					/>

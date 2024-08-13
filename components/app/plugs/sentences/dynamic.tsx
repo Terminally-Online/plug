@@ -17,22 +17,21 @@ import {
 	actions as staticActions
 } from "@/lib"
 
-type Props = {
+export const DynamicFragment: FC<{
+	id: string
 	index: number
 	fragmentIndex: number
-}
-
-export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
+}> = ({ id, index, fragmentIndex }) => {
 	const { data: session } = useSession()
 	const {
 		id: frameId,
 		isFrame,
 		handleFrame
 	} = useFrame({
-		id: "global",
+		id,
 		key: `${index}-${fragmentIndex}`
 	})
-	const { id, plug, actions, fragments, dynamic, handle } = usePlugs()
+	const { plug, actions, fragments, dynamic, handle } = usePlugs(id)
 
 	const action = actions[index]
 	const fragment = fragments[index][fragmentIndex]
@@ -49,7 +48,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 		[fragment]
 	)
 
-	const inputName = formatInputName(staticAction.inputs[parentIndex].name)
+	const inputName = formatInputName(staticAction.inputs[parentIndex]?.name)
 
 	const label = useMemo(() => {
 		const value = action.values[parentIndex]
@@ -101,7 +100,7 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 		// to update the database with a non-changing value.
 		if (hasChanged === true)
 			handle.action.edit({
-				id,
+				id: plug?.id,
 				actions: JSON.stringify(
 					actions.map((action, actionIndex) => ({
 						...action,
@@ -133,11 +132,13 @@ export const DynamicFragment: FC<Props> = ({ index, fragmentIndex }) => {
 		if (value instanceof Object) handleFrame(undefined)
 	}
 
+	if (plug === undefined || actions === undefined) return null
+
 	return (
 		<>
 			<button
 				className={cn(
-					"rounded-lg bg-gradient-to-tr px-2 py-1 font-bold text-plug-green transition-all duration-200 ease-in-out",
+					"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold text-plug-green transition-all duration-200 ease-in-out",
 					own === true ? "cursor-pointer" : "cursor-default"
 				)}
 				style={{

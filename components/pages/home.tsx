@@ -1,19 +1,22 @@
 import { useSession } from "next-auth/react"
 
 import { Button, Container, Plugs, SocketAssets } from "@/components"
-import { useFrame } from "@/contexts"
+import { useFrame, useSockets } from "@/contexts"
 
 export const PageHome = () => {
-	const { handleFrame } = useFrame({ id: "global" })
+	const { page } = useSockets()
+	const { handleFrame } = useFrame({ id: page?.id })
 	const { data: session } = useSession()
+
+	if (page === undefined) return null
 
 	return (
 		<>
 			<Container>
-				<Plugs hideEmpty={true} />
+				<Plugs id={page.id} hideEmpty={true} />
 
 				{session?.address ? (
-					<SocketAssets id="global" />
+					<SocketAssets id={page.id} />
 				) : (
 					<>
 						<p>Authenticate to proceed.</p>

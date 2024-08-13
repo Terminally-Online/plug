@@ -2,12 +2,13 @@ Do These:
     Shared:
         ☐ Native balance on optimism shows differently?
             Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
-        ☐ Improve the onboarding / authentication flow.
+            Notes: This is just on Optimism after they migrated everyones dead balances from the bridge. Not sure
+                   if this balance is double-stored everywhere or not. Right now though, other places properly handle
+                   this but Alchemy has data that incorrect and truncated.
+        ☐ Improve the onboarding / authentication flow. @started(24-08-12 13:32)
 
     Console:
         Small:
-            ☐ When you drag a column it halts as the previous state for a second before confirming.
-                Notes: I do not know what causes this.
             ☐ Make resizing more performant.
                 Notes: right now it is rerendering everything on a new frame as well as posting into the database.
             ☐ Referal functionality.
@@ -16,33 +17,26 @@ Do These:
             ☐ Show total asset value when viewing tokens.
                 Notes: This does not include collectibles.
             ☐ plugs.all is a protectedProcedure, but it should be a publicProcedure so that you can browse without connecting.
+            ☐ Make plug cards look better.
+            ☐ Re-enable the functionality of the `featureRequest` and `deleted` frames.
+              Notes: Just need to decide where to put these and then this will be pretty straightforward.
 
         Medium:
-            ☐ We should be able to have multiple frames open at once because on desktop they stay relative to their context.
-            ☐ Use historical price for the current price so that it has the appropriate change percent.
+            ☐ Add a "loading" experience once inside the app to minimize flashing as we are calculating the visual breakpoint with client-side javascript.
+            ☐ The plugs pages (discover, mine, and all) temporarily show text before the request has returned a response.
+              Notes: We should only show this text when the response has returned no results or it has errored out.
+
             ☐ Instant socket address resolution.
                 Notes: We are not going to mine for an efficient address. Instead, we will take the hash generation method and use it to automatically generate a socket address upon creation.
-            ☐ Update navigation links while in console to update the state of the column rather redirect to the app page.
-                ☐ Back button in context of the column.
-            ☐ Frames in the context of the column instead of the full page.
-            ☐ Figure out how to handle the resizing of users going from app → console → app.
             ☐ Create Plug should open create plug flow
                 Notes: Opens to action addition menu right away, this is colorful and shows user options right away
-            ☐ Level system - start with database schema that enables users to "Level Up" within Plug. 
-                Notes: Features like Bounty Board are only available to certain levels, levels might be reached from count of actions completed, etc
-            ☐ Earnings column
-                Notes: Blocked by functioning executions
-                ☐ Bar chart stacked for forks and community runs 
-                ☐ Fee claim button
-                ☐ Top performers
-            ☐ New Plug default privacy settings
+              Notes: This is complexitiy that isn't needed for MVP. We will come back to this later.
             
         Large:
             ☐ Activity
                 ☐ Add total execution count to top
-                ☐ Chart showing asset value over time  
             ☐ Revoke all    
-            ☐ Add swap/send functionality to the token page.
+            ☐ Implement complete send functionality to the token page.
             
     App:
         ☐ On logged in homepage, when user has no plugs, show 2 curated Plugs and CTA to create a Plug @@chance @started(24-06-27 11:55)
@@ -82,6 +76,33 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Retrieve the relative plug from the socket based on the item in the column. @done(24-08-13 12:15) @project(Do These.Console.Medium)
+  ✔ Update navigation links while in console to update the state of the column rather redirect to the app page. @started(24-08-12 13:34) @done(24-08-12 23:37) @lasted(10h3m27s) @project(Do These.Console.Medium)
+  ✔ Manage pages as a "global" column state. @done(24-08-12 22:36) @project(Do These.Console.Medium)
+    Notes: Right now we have two distinct systems for handling pages and columns. We should instead have everything managed in the column state since the app experience is effectively the same as having one column, but in different visual states.
+  ✔ Store "from" so that we can append a back button to the column header. @done(24-08-12 22:36) @project(Do These.Console.Medium)
+    Notes: This same logic should power the functionality of the back button in the mobile app experience.
+  ✔ Store accessible columns so that we can rebuild the state once the user has logged in. @done(24-08-12 22:36) @project(Do These.Console.Medium)
+  ✔ Some frames still use the "global" reference as their open context. @done(24-08-12 23:37) @project(Do These.Console.Medium)
+  ✘ New Plug default privacy settings @cancelled(24-08-12 22:42) @project(Do These.Console.Medium)
+  ✔ When you drag a column it halts as the previous state for a second before confirming. @done(24-08-12 22:31) @project(Do These.Console.Small)
+    Notes: I do not know what causes this.
+    Conclusion: This ended up being a bug in the TRPC/React Query library that was being caused by onMutate
+    not being called on the first render. I am not sure why onMutate does not fire until the call
+    is actually made, but we just need to handle the state locally in the ColumnRow component
+    instead and it is fixed. Still, if it errors out it will revert back to what it was before.
+  ✘ Chart showing asset value over time @cancelled(24-08-12 13:33) @project(Do These.Console.Large)
+  ✔ Earnings column @done(24-08-12 13:33) @project(Do These.Console.Medium)
+    Notes: Blocked by functioning executions
+  ✔ Bar chart stacked for forks and community runs @done(24-08-12 13:33) @project(Do These.Console.Medium)
+  ✔ Fee claim button @done(24-08-12 13:33) @project(Do These.Console.Medium)
+  ✔ Top performers @done(24-08-12 13:33) @project(Do These.Console.Medium)
+  ✘ Level system - start with database schema that enables users to "Level Up" within Plug. @cancelled(24-08-12 13:33) @project(Do These.Console.Medium)
+    Notes: Features like Bounty Board are only available to certain levels, levels might be reached from count of actions completed, etc
+  ✔ Frames in the context of the column instead of the full page. @done(24-08-12 13:33) @project(Do These.Console.Medium)
+  ✔ Figure out how to handle the resizing of users going from app → console → app. @done(24-08-12 13:33) @project(Do These.Console.Medium)
+  ✔ We should be able to have multiple frames open at once because on desktop they stay relative to their context. @done(24-08-12 13:32) @project(Do These.Console.Medium)
+  ✔ Use historical price for the current price so that it has the appropriate change percent. @done(24-08-12 13:32) @project(Do These.Console.Medium)
   ✔ Where do users initiate the transfer assets interaction flow @done(24-08-06 23:00) @project(Do These.Shared)
   ✔ Log in state is broken after having updated the base layout of everything. @done(24-08-06 22:52) @project(Do These.Shared)
   ✔ Fix hydration error @done(24-08-06 17:36) @project(Do These.Shared)

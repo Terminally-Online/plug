@@ -9,7 +9,9 @@ import {
 	useState
 } from "react"
 
-import { useFrame, usePage } from "@/contexts"
+import { useSession } from "next-auth/react"
+
+import { useFrame, useSockets } from "@/contexts"
 import { categories, actions as staticActions, tags } from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
@@ -31,15 +33,12 @@ export type Option = {
 export type Value = string | Option | undefined | null
 
 export const PlugContext = createContext<{
-	plugs?: Array<Workflow>
-	id?: string
-	plug?: Workflow
+	plugs: Array<Workflow>
 
 	search: string
 	tag: (typeof tags)[number]
 
 	handle: {
-		select: (data?: string) => void
 		search: (data: string) => void
 		tag: (data: (typeof tags)[number]) => void
 		plug: {
@@ -54,14 +53,9 @@ export const PlugContext = createContext<{
 	}
 }>({
 	plugs: [],
-	id: undefined,
-	plug: undefined,
-
 	search: "",
 	tag: tags[0],
-
 	handle: {
-		select: () => {},
 		search: () => {},
 		tag: () => {},
 		plug: {
@@ -76,24 +70,32 @@ export const PlugContext = createContext<{
 	}
 })
 
-export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
-	const { handlePage } = usePage()
-	const { handleFrame } = useFrame({ id: "global", key: "deleted" })
+// TODO: Pick back up here in the morning. We are removing the single slot id of the
+//       plug that is being selected so that we can have multiple visible and accessible
+//       throughout a set of columns. Right now, frames retrieve the single id that is
+//       stored and when a parameter is provided to the hook it selects it. Instead,
+//       we should automatically retrieve the plug based on all of the `item` values
+//       that are stored in the columns.
+// TODO: Remove search and tag from here because we may have multiple contexts open now.
 
-	const [id, handleId] = useState<ContextType<typeof PlugContext>["id"]>()
+export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
+	const { socket } = useSockets()
+
 	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
 
-	const { data: apiPlugs } = api.plug.all.useQuery({ target: "mine" })
-	const [plugs, setPlugs] =
-		useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs)
+	const ids =
+		(socket?.columns
+			.map(column => (column.item === null ? undefined : column.item))
+			.filter(column => Boolean(column)) as Array<string>) || []
 
-	const { data: apiPlug } = api.plug.get.useQuery(id!, { enabled: !!id })
+	const { data: apiPlugs } = api.plug.get.useQuery(ids, {
+		enabled: ids.length > 0 ? true : false
+	})
 
-	const plug = useMemo(
-		() => plugs && plugs.find(plug => plug.id === id),
-		[plugs, id]
-	)
+	const [plugs, setPlugs] = useState<
+		ContextType<typeof PlugContext>["plugs"]
+	>(apiPlugs || [])
 
 	const handleCreate = (
 		data: Parameters<
@@ -105,11 +107,10 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		>[0],
 		redirect = true
 	) => {
-		if (!plugs?.find(plug => plug.id === data.plug.id))
-			setPlugs(prev => spread(prev, data.plug))
-
-		if (redirect)
-			handlePage({ key: "plug", from: data.from, id: data.plug.id })
+		// if (!plugs?.find(plug => plug.id === data.plug.id))
+		// 	setPlugs(prev => spread(prev, data.plug))
+		// if (redirect)
+		// handlePage({ key: "plug", from: data.from, id: data.plug.id })
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
@@ -132,10 +133,10 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	api.plug.onDelete.useSubscription(undefined, {
 		onData: (data: Workflow) => {
 			// If the user was viewing the deleted plug, show a confirmation frame to signal that.
-			if (id === data.id) {
-				handlePage({ key: "home" })
-				handleFrame()
-			}
+			// if (id === data.id) {
+			// handlePage({ key: "home" })
+			// handleFrame()
+			// }
 
 			setPlugs(prev =>
 				prev ? prev.filter(plug => plug.id !== data.id) : []
@@ -165,8 +166,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 					)
 
 					return previous
-				},
-				onError: (_, __, context) => setPlugs(context)
+				}
+				// onError: (_, __, context) => setPlugs(context)
 			}),
 			delete: api.plug.delete.useMutation({
 				onMutate: data => {
@@ -174,11 +175,11 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 
 					setPlugs(previous.filter(plug => plug.id !== data.id))
 
-					handlePage({ key: data.from ?? "/app/plugs/" })
+					// handlePage({ key: data.from ?? "/app/plugs/" })
 
 					return previous
-				},
-				onError: (_, __, context) => setPlugs(context)
+				}
+				// onError: (_, __, context) => setPlugs(context)
 			}),
 			fork: api.plug.fork.useMutation({
 				onSuccess: data => handleCreate(data)
@@ -202,31 +203,31 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 					)
 
 					return previous
-				},
-				onError: (_, __, context) => setPlugs(context)
+				}
+				// onError: (_, __, context) => setPlugs(context)
 			})
 		}
 	}
 
 	useEffect(() => {
-		if (!apiPlug || !plugs || plugs.some(plug => plug.id === apiPlug.id))
-			return
+		if (!apiPlugs) return
 
-		setPlugs(prev => (prev ? prev.concat(apiPlug) : [apiPlug]))
-	}, [apiPlug, plugs])
+		setPlugs(prev =>
+			prev
+				? apiPlugs.map(plug => prev.find(p => p.id === plug.id) ?? plug)
+				: apiPlugs
+		)
+	}, [apiPlugs])
 
 	return (
 		<PlugContext.Provider
 			value={{
 				plugs,
-				id,
-				plug,
 
 				search,
 				tag,
 
 				handle: {
-					select: handleId,
 					search: handleSearch,
 					tag: handleTag,
 					plug: {
@@ -246,12 +247,31 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 }
 
-export const usePlugs = (id?: string) => {
+export const usePlugs = (id: string) => {
 	const context = useContext(PlugContext)
 
-	const { plug } = context
+	const { data: session } = useSession()
+	const { socket } = useSockets()
 
-	const [chains, setChains] = useState<string[]>([])
+	const { plugs } = context
+
+	// Find the plug that is being utilized within the context based on the plug
+	// id provided or the item id that is stored in the column. This way, we do not
+	// need to drill down two props every time we want to use a plug since it can
+	// be found in the context of the columns.
+	const plug = useMemo(
+		() =>
+			plugs?.find(plug => plug.id === id) ||
+			plugs?.find(
+				plug =>
+					plug.id ===
+					socket?.columns.find(column => column.id === id)?.item
+			) ||
+			undefined,
+		[plugs, id, socket]
+	)
+
+	const own = plug && session && session.address === plug.userAddress
 
 	const actions: Array<{
 		categoryName: keyof typeof categories
@@ -259,7 +279,7 @@ export const usePlugs = (id?: string) => {
 		values: Array<Value>
 	}> = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
 
-	const chainsAvailable = useMemo(() => {
+	const chains = useMemo(() => {
 		if (!actions) return []
 
 		const set = actions
@@ -293,36 +313,13 @@ export const usePlugs = (id?: string) => {
 		)
 	}, [fragments])
 
-	const handleChainSelect = (chain: string) => {
-		setChains(prev =>
-			prev.includes(chain)
-				? prev.filter(c => c !== chain)
-				: [...prev, chain]
-		)
-	}
-
-	useEffect(() => {
-		if (id) context.handle.select(id)
-	}, [id, context.handle])
-
-	// When there is only one chain available, select it by default. The user
-	// will first go to the Socket frame so we are preloading the chain.
-	useEffect(() => {
-		if (chainsAvailable.length === 1) setChains([chainsAvailable[0]])
-	}, [chainsAvailable])
-
 	return {
 		...context,
+		plug,
+		own,
 		actions,
 		chains,
-		chainsAvailable,
 		fragments,
-		dynamic,
-		handle: {
-			...context.handle,
-			chain: {
-				select: handleChainSelect
-			}
-		}
+		dynamic
 	}
 }

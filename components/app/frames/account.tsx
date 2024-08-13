@@ -11,7 +11,8 @@ import { useFrame, useSockets } from "@/contexts"
 import { normalize } from "viem/ens"
 
 export const AccountFrame = () => {
-	const { id, isFrame } = useFrame({ id: "global", key: "account" })
+	const { page } = useSockets()
+	const { isFrame } = useFrame({ id: page?.id, key: "account" })
 	const { address } = useSockets()
 
 	const { data: ensName } = useEnsName({ address: address as `0x${string}` })
@@ -25,11 +26,11 @@ export const AccountFrame = () => {
 		}
 	})
 
-	if (!address) return null
+	if (!page || !address) return null
 
 	return (
 		<Frame
-			id={id}
+			id={page.id}
 			className="z-[2]"
 			icon={
 				ensAvatar ? (

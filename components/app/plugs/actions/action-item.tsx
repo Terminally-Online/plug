@@ -13,24 +13,19 @@ import {
 	actions as staticActions
 } from "@/lib"
 
-type Props = {
+export const ActionItem: FC<{
+	id: string
 	categoryName: keyof typeof categories
 	actionName: keyof (typeof staticActions)[keyof typeof categories]
 	image?: boolean
-}
-
-export const ActionItem: FC<Props> = ({
-	categoryName,
-	actionName,
-	image = false
-}) => {
+}> = ({ id, categoryName, actionName, image = false }) => {
 	const { handleFrame } = useFrame({
-		id: "global",
+		id,
 		key: `${categoryName}-${actionName}`
 	})
-	const { id, actions, handle } = usePlugs()
+	const { plug, actions, handle } = usePlugs(id)
 
-	if (!id) return null
+	if (!plug) return null
 
 	return (
 		<>
@@ -51,7 +46,7 @@ export const ActionItem: FC<Props> = ({
 					className="w-full px-6 text-left"
 					onClick={() => {
 						handle.action.edit({
-							id,
+							id: plug.id,
 							actions: JSON.stringify([
 								...actions,
 								{

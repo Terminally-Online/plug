@@ -29,8 +29,6 @@ const DEFAULT_TRANSFER = {
 }
 
 export const TransferFrame = () => {
-	const { isFrame } = useFrame({ id: "global", key: "transfer" })
-
 	const [transfer, setTransfer] = useState<{
 		action?: "receive" | "send"
 		token?: NonNullable<typeof tokens>[number]

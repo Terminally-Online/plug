@@ -57,8 +57,8 @@ const PlugApp: AppType<{ session: Session | null }> = ({
 			</style>
 			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
 			<RootProvider session={pageProps.session}>
-				<FeatureRequestFrame />
-				<DeletedFrame />
+				{/* <FeatureRequestFrame />
+				<DeletedFrame /> */}
 
 				{getLayout(<Component {...pageProps} />)}
 			</RootProvider>

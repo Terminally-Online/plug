@@ -42,23 +42,14 @@ const subscription = (event: string) =>
 
 export const plug = createTRPCRouter({
 	get: publicProcedure
-		.input(z.string().optional())
+		.input(z.array(z.string()))
 		.query(async ({ input, ctx }) => {
-			try {
-				if (input === undefined)
-					throw new TRPCError({ code: "BAD_REQUEST" })
-
-				const plug = await ctx.db.workflow.findUnique({
-					where: {
-						id: input,
-						isPrivate: false
-					}
-				})
-
-				return plug
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+			return await ctx.db.workflow.findMany({
+				where: {
+					id: { in: input },
+					isPrivate: false
+				}
+			})
 		}),
 
 	infinite: protectedProcedure

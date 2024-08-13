@@ -11,24 +11,20 @@ import {
 	WalletProvider
 } from "@/contexts"
 
-import { PageProvider } from "./PagesProvider"
-
 export const RootProvider: FC<
 	PropsWithChildren & {
 		session: Session | null
 	}
 > = ({ session, children }) => (
 	<SessionProvider session={session}>
-		<PageProvider>
-			<FrameProvider>
-				<WalletProvider>
-					<SocketProvider>
-						<PlugProvider>
-							<BalancesProvider>{children}</BalancesProvider>
-						</PlugProvider>
-					</SocketProvider>
-				</WalletProvider>
-			</FrameProvider>
-		</PageProvider>
+		<WalletProvider>
+			<SocketProvider>
+				<FrameProvider>
+					<PlugProvider>
+						<BalancesProvider>{children}</BalancesProvider>
+					</PlugProvider>
+				</FrameProvider>
+			</SocketProvider>
+		</WalletProvider>
 	</SessionProvider>
 )

@@ -58,3 +58,9 @@ export type OpenseaCollectibleCacheModel =
 	Prisma.OpenseaCollectibleCacheGetPayload<
 		typeof openseaCollectibleCacheModel
 	>
+
+// ---------------------------------------------------------------------------
+// Plugs
+// ---------------------------------------------------------------------------
+const workflowModel = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
+export type WorkflowModel = Prisma.WorkflowGetPayload<typeof workflowModel>

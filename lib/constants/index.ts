@@ -4,6 +4,7 @@ export * from "./blockchain"
 export * from "./colors"
 export * from "./routes"
 export * from "./tokens"
+export * from "./views"
 
 export const tags = [
 	"All",

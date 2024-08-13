@@ -3,6 +3,7 @@ import {
 	FC,
 	PropsWithChildren,
 	useContext,
+	useMemo,
 	useState
 } from "react"
 
@@ -10,7 +11,7 @@ import { useSession } from "next-auth/react"
 
 import { useEnsAvatar, useEnsName } from "wagmi"
 
-import { UserSocketModel } from "@/prisma/types"
+import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
 import {
@@ -24,9 +25,16 @@ export const SocketContext = createContext<{
 	ensName: GetEnsNameReturnType | undefined
 	ensAvatar: GetEnsAvatarReturnType | undefined
 	socket: UserSocketModel | undefined
+	page: ConsoleColumnModel | undefined
 	handle: {
 		columns: {
 			add: (data: { key: string; id?: string }) => void
+			navigate: (data: {
+				id?: string
+				key: string
+				item?: string
+				from?: string
+			}) => void
 			remove: (id: string) => void
 			resize: (data: { id: string; width: number }) => void
 			move: (data: { from: number; to: number }) => void
@@ -37,9 +45,11 @@ export const SocketContext = createContext<{
 	ensName: undefined,
 	ensAvatar: undefined,
 	socket: undefined,
+	page: undefined,
 	handle: {
 		columns: {
 			add: () => {},
+			navigate: () => {},
 			remove: () => {},
 			resize: () => {},
 			move: () => {}
@@ -62,12 +72,37 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		socketData
 	)
 
+	const page = useMemo(
+		() => socket?.columns.find(column => column.index === -1),
+		[socket]
+	)
+
 	const handle = {
 		columns: {
 			add: api.socket.columns.add.useMutation({
 				// TODO: Generate and hunt uuids and create it onMutate instead
 				//       of waiting on the server.
 				onSuccess: data => setSocket(data)
+			}),
+			navigate: api.socket.columns.navigate.useMutation({
+				onMutate: data => {
+					setSocket(
+						prev =>
+							prev && {
+								...prev,
+								columns: prev.columns.map(column =>
+									column.id === data.id
+										? {
+												...column,
+												key: data.key,
+												item: data.item ?? null,
+												from: data.from ?? null
+											}
+										: column
+								)
+							}
+					)
+				}
 			}),
 			remove: api.socket.columns.remove.useMutation({
 				onMutate: data => {
@@ -78,9 +113,11 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 							...previousSocket,
 							columns: previousSocket.columns
 								.filter(column => column.id !== data)
+								.sort((a, b) => a.index - b.index)
 								.map((column, index) => ({
 									...column,
-									index
+									// Subtract 1 to account for the app column.
+									index: index - 1
 								}))
 						}
 					)
@@ -109,25 +146,7 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				onError: (_, __, context) => setSocket(context)
 			}),
 			move: api.socket.columns.move.useMutation({
-				onMutate: data => {
-					const previousSocket = socket
-
-					const columns = previousSocket?.columns ?? []
-					const [removed] = columns.splice(data.from, 1)
-					columns.splice(data.to, 0, removed)
-
-					setSocket(
-						previousSocket && {
-							...previousSocket,
-							columns: columns.map((column, index) => ({
-								...column,
-								index
-							}))
-						}
-					)
-
-					return previousSocket
-				},
+				onMutate: () => socket,
 				onError: (_, __, context) => setSocket(context)
 			})
 		}
@@ -140,9 +159,11 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				ensName,
 				ensAvatar,
 				socket,
+				page,
 				handle: {
 					columns: {
 						add: data => handle.columns.add.mutate(data),
+						navigate: data => handle.columns.navigate.mutate(data),
 						remove: data => handle.columns.remove.mutate(data),
 						resize: data => handle.columns.resize.mutate(data),
 						move: data => handle.columns.move.mutate(data)

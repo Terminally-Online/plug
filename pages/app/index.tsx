@@ -5,13 +5,19 @@ import {
 	PageContent,
 	PageHeader
 } from "@/components"
+import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
 
 const MobilePage = () => {
+	const { page } = useSockets()
+
+	if (!page) return null
+
 	return (
 		<>
 			<PageHeader />
 			<PageContent />
+			<AuthFrame id={page.id} />
 		</>
 	)
 }
@@ -28,13 +34,7 @@ const DesktopPage = () => {
 const Page = () => {
 	const { md } = useMediaQuery()
 
-	return (
-		<>
-			{md ? <DesktopPage /> : <MobilePage />}
-
-			<AuthFrame id="global" />
-		</>
-	)
+	return <>{md ? <DesktopPage /> : <MobilePage />}</>
 }
 
 export default Page

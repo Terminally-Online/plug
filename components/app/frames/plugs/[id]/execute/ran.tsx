@@ -1,3 +1,5 @@
+import { FC } from "react"
+
 import Image from "next/image"
 
 import { CheckCircle } from "lucide-react"
@@ -6,13 +8,13 @@ import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
 
-export const RanFrame = () => {
-	const { id, isFrame, prevFrame, handleFrame } = useFrame({
-		id: "global",
+export const RanFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame, prevFrame, handleFrame } = useFrame({
+		id,
 		key: "ran",
 		seperator: "-"
 	})
-	const { plug, chains } = usePlugs()
+	const { plug, chains } = usePlugs(id)
 
 	const label = isFrame
 		? prevFrame === "schedule"

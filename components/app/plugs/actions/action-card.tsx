@@ -9,11 +9,12 @@ import {
 } from "@/lib"
 
 export const ActionCard: FC<{
+	id: string
 	categoryName: keyof typeof categories
 	category: (typeof categories)[keyof typeof categories]
-}> = ({ categoryName, category }) => {
-	const { handleFrame } = useFrame({ id: "global" })
-	const { id, actions, handle } = usePlugs()
+}> = ({ id, categoryName, category }) => {
+	const { handleFrame } = useFrame({ id })
+	const { plug, actions, handle } = usePlugs(id)
 
 	const primaryActions = useMemo(() => {
 		return Object.keys(staticActions[categoryName]).reduce(
@@ -32,7 +33,7 @@ export const ActionCard: FC<{
 		)
 	}, [categoryName])
 
-	if (!id) return null
+	if (!plug) return null
 
 	return (
 		<div
@@ -50,7 +51,7 @@ export const ActionCard: FC<{
 						className="group relative z-[3] mx-auto flex cursor-pointer flex-col items-center gap-2 text-center text-white"
 						onClick={() => {
 							handle.action.edit({
-								id,
+								id: plug.id,
 								actions: JSON.stringify([
 									...actions,
 									{

@@ -15,9 +15,9 @@ import {
 	useDebounce
 } from "@/lib"
 
-export const ActionsFrame: FC = () => {
-	const { id, isFrame, frames, handleFrame } = useFrame({
-		id: "global",
+export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame, frames, handleFrame } = useFrame({
+		id,
 		key: "actions"
 	})
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
@@ -57,16 +57,19 @@ export const ActionsFrame: FC = () => {
 	// 	if (frameVisible === undefined) handleDebounce("")
 	// }, [frameVisible, handleDebounce])
 
+	if (!id) return null
+
 	return (
 		<>
 			<Frame
 				id={id}
-				className="scrollbar-hide z-[1] h-[calc(100vh-80px)] overflow-y-auto"
-				icon={<Blocks size={18} />}
+				className="scrollbar-hide z-[1] max-h-[85vh] overflow-y-auto"
+				icon={<Blocks size={18} className="opacity-60" />}
 				label="Add Action"
 				visible={isFrame}
+				hasChildrenPadding={false}
 			>
-				<div className="flex flex-col gap-4">
+				<div className="flex flex-col gap-4 px-6">
 					<Search
 						className="mb-4"
 						icon={<SearchIcon size={14} />}
@@ -84,6 +87,7 @@ export const ActionsFrame: FC = () => {
 									({ categoryName, actionName }) => (
 										<ActionItem
 											key={`${categoryName}-${actionName}`}
+											id={id}
 											categoryName={categoryName}
 											actionName={actionName}
 											image={true}
@@ -136,14 +140,14 @@ export const ActionsFrame: FC = () => {
 												alt={categoryName}
 												width={32}
 												height={32}
-												className="h-6 w-6 rounded-md"
+												className="h-6 w-6 rounded-sm"
 											/>
 											<p className="text-lg font-bold">
 												{formatTitle(categoryName)}
 											</p>
 											<Button
 												variant="secondary"
-												className="ml-auto p-1"
+												className="ml-auto rounded-sm p-1"
 												onClick={() =>
 													handleFrame(categoryName)
 												}
@@ -153,6 +157,7 @@ export const ActionsFrame: FC = () => {
 										</button>
 
 										<ActionCard
+											id={id}
 											categoryName={categoryName}
 											category={category}
 										/>
@@ -171,31 +176,35 @@ export const ActionsFrame: FC = () => {
 					<Frame
 						id={id}
 						key={categoryName}
-						className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
+						className="scrollbar-hide z-[2] max-h-[85vh] overflow-y-auto"
 						icon={
 							<Image
 								src={category.image}
 								alt={categoryName}
 								width={32}
 								height={32}
-								className="h-6 w-6 rounded-md"
+								className="h-6 w-6 rounded-sm"
 							/>
 						}
 						label={formatTitle(categoryName)}
 						visible={frames[id] === categoryName}
 						handleBack={() => handleFrame("actions")}
 						hasOverlay={true}
+						hasChildrenPadding={false}
 					>
-						<div className="flex flex-col gap-4">
+						<div className="flex flex-col gap-4 px-6">
 							<ActionCard
+								id={id}
 								categoryName={categoryName}
 								category={category}
 							/>
+
 							<div className="flex flex-col gap-2">
 								{Object.keys(staticActions[categoryName]).map(
 									actionName => (
 										<ActionItem
 											key={actionName}
+											id={id}
 											categoryName={categoryName}
 											actionName={actionName}
 										/>
@@ -239,8 +248,9 @@ export const ActionsFrame: FC = () => {
 									)
 								}
 								hasOverlay={true}
+								hasChildrenPadding={false}
 							>
-								<div className="flex flex-col gap-8">
+								<div className="flex flex-col gap-8 px-6">
 									<p className="opacity-60">{action.info}</p>
 									<div className="flex flex-col gap-2">
 										<p className="font-bold">Input Data</p>

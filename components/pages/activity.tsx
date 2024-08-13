@@ -1,15 +1,14 @@
-import { FileCog } from "lucide-react"
-
 import { Container, Header, SocketActivity } from "@/components"
+import { useSockets } from "@/contexts"
 
-export const PageActivity = () => (
-	<Container>
-		<Header
-			size="md"
-			icon={<FileCog size={14} className="opacity-40" />}
-			label="Runs"
-		/>
+export const PageActivity = () => {
+	const { page } = useSockets()
 
-		<SocketActivity id="global" />
-	</Container>
-)
+	if (page === undefined) return null
+
+	return (
+		<Container>
+			<SocketActivity id={page.id} />
+		</Container>
+	)
+}

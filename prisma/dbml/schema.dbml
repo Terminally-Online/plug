@@ -9,6 +9,8 @@ Table ConsoleColumn {
   key String [not null]
   index Int [not null]
   width Int
+  item String
+  from String
   socket UserSocket [not null]
   socketId String [not null]
 }

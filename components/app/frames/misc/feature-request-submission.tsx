@@ -1,15 +1,16 @@
+import { FC } from "react"
+
 import { CheckCircle } from "lucide-react"
 
 import { Button, Frame } from "@/components"
 import { useFrame } from "@/contexts"
 
-export const FeatureRequestFrame = () => {
+export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 	const {
-		id,
 		isFrame,
 		prevFrame: from,
 		handleFrame
-	} = useFrame({ id: "global", key: "featureRequestSubmit", seperator: "-" })
+	} = useFrame({ id, key: "featureRequestSubmit", seperator: "-" })
 
 	return (
 		<Frame

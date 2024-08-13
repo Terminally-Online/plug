@@ -1,11 +1,13 @@
+import { FC } from "react"
+
 import { Trash2 } from "lucide-react"
 
 import { Button, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
 
-export const DeletedFrame = () => {
-	const { id, isFrame } = useFrame({ id: "global", key: "deleted" })
-	const { plug, handle } = usePlugs()
+export const DeletedFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame } = useFrame({ id, key: "deleted" })
+	const { plug, handle } = usePlugs(id)
 
 	if (!plug) return null
 

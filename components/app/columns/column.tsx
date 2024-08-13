@@ -1,15 +1,17 @@
 import { FC, useEffect, useRef, useState } from "react"
 
-import { Grip, X } from "lucide-react"
+import { ChevronLeft, Cog, GitFork, Grip, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
 import {
+	Button,
 	ConsoleColumnAddOptions,
 	Header,
-	PageDiscover,
-	PageMine,
+	Plug,
 	Plugs,
+	PlugsDiscover,
+	PlugsMine,
 	SocketActivity,
 	SocketAssets,
 	SocketCollectionList,
@@ -17,8 +19,8 @@ import {
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
-import { useSockets } from "@/contexts"
-import { cn, formatTitle } from "@/lib"
+import { useFrame, usePlugs, useSockets } from "@/contexts"
+import { cardColors, cn, formatTitle, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
 
 const DEFAULT_COLUMN_WIDTH = 420
@@ -33,7 +35,9 @@ export const ConsoleColumn: FC<{
 }> = ({ column }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
+	const { handleFrame } = useFrame({ id: column.id })
 	const { handle } = useSockets()
+	const { plug } = usePlugs(column.id)
 
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -66,10 +70,7 @@ export const ConsoleColumn: FC<{
 
 	return (
 		<div className="relative my-2 select-none">
-			<Draggable
-				draggableId={column.index.toString()}
-				index={column.index}
-			>
+			<Draggable draggableId={column.id.toString()} index={column.index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
@@ -89,7 +90,7 @@ export const ConsoleColumn: FC<{
 						> */}
 						<div
 							className={cn(
-								"group z-[11] flex cursor-pointer flex-row items-center gap-4 rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+								"group z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
 								snapshot.isDragging
 									? "bg-grayscale-0"
 									: "hover:bg-grayscale-0"
@@ -98,39 +99,159 @@ export const ConsoleColumn: FC<{
 						>
 							<Header
 								size="md"
-								icon={
-									<Grip
-										size={14}
-										className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-									/>
+								label={
+									<div className="flex w-full flex-row items-center gap-4">
+										<Button
+											variant="none"
+											onClick={() => {}}
+											className="rounded-sm p-1"
+										>
+											<Grip
+												size={14}
+												className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+											/>
+										</Button>
+
+										{column.from && (
+											<Button
+												variant="secondary"
+												onClick={() =>
+													handle.columns.navigate({
+														id: column.id,
+														key: column.from!
+													})
+												}
+												className="rounded-sm p-1"
+											>
+												<ChevronLeft size={14} />
+											</Button>
+										)}
+
+										{plug && (
+											<div
+												className="h-6 w-6 min-w-6 rounded-sm bg-grayscale-100"
+												style={{
+													backgroundImage:
+														cardColors[plug.color]
+												}}
+											/>
+										)}
+
+										<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
+											<p className="overflow-hidden truncate overflow-ellipsis font-bold">
+												{formatTitle(
+													plug
+														? plug.name
+														: column.key
+																.replace(
+																	"_",
+																	" "
+																)
+																.toLowerCase()
+												)}
+											</p>
+										</div>
+
+										{plug && (
+											<div className="flex flex-row items-center justify-end gap-4">
+												<Button
+													variant="secondary"
+													className="group rounded-sm p-1"
+													onClick={
+														() => {}
+														// handleFrame("share")
+													}
+												>
+													<Share
+														size={14}
+														className="opacity-60 hover:opacity-100"
+													/>
+												</Button>
+
+												<Button
+													variant="secondary"
+													className="group rounded-sm p-1"
+													onClick={
+														() => {}
+														// handleFrame("share")
+													}
+												>
+													<GitFork
+														size={14}
+														className="opacity-60 hover:opacity-100"
+													/>
+												</Button>
+
+												<Button
+													variant="secondary"
+													className="group rounded-sm p-1"
+													onClick={() =>
+														handleFrame("manage")
+													}
+												>
+													<Cog
+														size={14}
+														className="opacity-60 hover:opacity-100"
+													/>
+												</Button>
+
+												<Button
+													variant="secondary"
+													className="group rounded-sm p-1"
+													onClick={() =>
+														handle.columns.remove(
+															column.id
+														)
+													}
+												>
+													<X
+														size={14}
+														className="opacity-60 hover:opacity-100"
+													/>
+												</Button>
+											</div>
+										)}
+									</div>
 								}
-								label={formatTitle(
-									column.key.replace("_", " ").toLowerCase()
-								)}
 								nextPadded={false}
-								nextOnClick={() =>
-									handle.columns.remove(column.id)
+								nextOnClick={
+									plug === undefined
+										? () => handle.columns.remove(column.id)
+										: undefined
 								}
 								nextLabel={<X size={14} />}
 							/>
 						</div>
 						{/* </div> */}
 
-						<div className="overflow-y-scroll">
-							{column.key === "ADD" ? (
+						<div className="h-full overflow-y-scroll">
+							{column.key === VIEW_KEYS.ADD ? (
 								<ConsoleColumnAddOptions id={column.id} />
-							) : column.key === "PLUGS" ? (
-								<Plugs className="px-4" />
-							) : column.key === "DISCOVER" ? (
-								<PageDiscover className="pt-4" />
-							) : column.key === "MY_PLUGS" ? (
-								<PageMine className="pt-4" column={true} />
-							) : column.key === "ACTIVITY" ? (
+							) : column.key === VIEW_KEYS.PLUGS ? (
+								<Plugs className="px-4" id={column.id} />
+							) : column.key === VIEW_KEYS.DISCOVER ? (
+								<PlugsDiscover
+									className="pt-4"
+									id={column.id}
+								/>
+							) : column.key === VIEW_KEYS.MY_PLUGS ? (
+								<PlugsMine
+									className="pt-4"
+									column={true}
+									id={column.id}
+								/>
+							) : column.key === VIEW_KEYS.PLUG ? (
+								<Plug
+									className="px-4 pt-4"
+									id={column.id}
+									item={column.item}
+								/>
+							) : column.key === VIEW_KEYS.ACTIVITY ? (
 								<SocketActivity
 									id={column.id}
 									className="px-4 pt-4"
 								/>
-							) : column.key === "ASSETS" ? (
+							) : column.key === VIEW_KEYS.ASSETS ? (
 								<SocketAssets id={column.id} className="px-4" />
 							) : column.key === "TOKENS" ? (
 								<SocketTokenList
@@ -138,19 +259,22 @@ export const ConsoleColumn: FC<{
 									className="px-4 pt-4"
 									expanded={true}
 								/>
-							) : column.key === "COLLECTIBLES" ? (
+							) : column.key === VIEW_KEYS.COLLECTIBLES ? (
 								<SocketCollectionList
 									id={column.id}
 									className="px-4 pt-4"
 								/>
-							) : column.key === "POSITIONS" ? (
+							) : column.key === VIEW_KEYS.POSITIONS ? (
 								<SocketPositionList
 									id={column.id}
 									className="px-4 pt-4"
 								/>
-							) : column.key === "EARNINGS" ? (
-								<SocketEarnings className="px-4 pt-4" />
-							) : column.key === "SETTINGS" ? (
+							) : column.key === VIEW_KEYS.EARNINGS ? (
+								<SocketEarnings
+									id={column.id}
+									className="px-4 pt-4"
+								/>
+							) : column.key === VIEW_KEYS.SETTINGS ? (
 								<></>
 							) : (
 								<></>

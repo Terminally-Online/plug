@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { FC, useState } from "react"
 
 import { Clock } from "lucide-react"
 
@@ -14,9 +14,9 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const RecurringFrame = () => {
-	const { id, isFrame, handleFrame } = useFrame({
-		id: "global",
+export const RecurringFrame: FC<{ id: string }> = ({ id }) => {
+	const { isFrame, handleFrame } = useFrame({
+		id,
 		key: "recurring"
 	})
 

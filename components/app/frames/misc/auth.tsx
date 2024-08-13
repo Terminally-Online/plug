@@ -8,7 +8,7 @@ import { AuthButton, Frame } from "@/components"
 import { useFrame } from "@/contexts"
 
 export const AuthFrame: FC<{ id: string }> = ({ id }) => {
-	const { isFrame } = useFrame({ id: "global", key: "auth" })
+	const { isFrame } = useFrame({ id, key: "auth" })
 	const { data: session } = useSession()
 
 	return (
