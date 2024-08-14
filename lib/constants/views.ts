@@ -11,12 +11,13 @@ export const VIEW_KEYS = {
 	COLLECTIBLES: "COLLECTIBLES",
 	POSITIONS: "POSITIONS",
 	EARNINGS: "EARNINGS",
-	SETTINGS: "SETTINGS"
+	SETTINGS: "SETTINGS",
+	SEARCH: "SEARCH"
 }
 
 export const DEFAULT_VIEWS = [
 	// Prepare the single page experience for the mobile view.
-	{ key: VIEW_KEYS.PLUGS, index: -1 },
+	{ key: VIEW_KEYS.HOME, index: -1 },
 	// Prepare the console view for the multi-column view.
 	{ key: VIEW_KEYS.PLUGS, index: 0 },
 	{ key: VIEW_KEYS.ACTIVITY, index: 1 }

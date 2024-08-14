@@ -5,11 +5,18 @@ import { motion, MotionProps } from "framer-motion"
 import { SocketCollectionItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectionList: FC<
-	HTMLAttributes<HTMLDivElement> & MotionProps & { id: string }
-> = ({ id, className, ...props }) => {
-	const { collectibles } = useBalances()
+	HTMLAttributes<HTMLDivElement> &
+		MotionProps & {
+			id: string
+			collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
+		}
+> = ({ id, collectibles, className, ...props }) => {
+	const { collectibles: apiCollectibles } = useBalances()
+
+	collectibles = collectibles ?? apiCollectibles
 
 	const visibleCollectibles = useMemo(() => {
 		if (collectibles === undefined) return Array(5).fill(undefined)

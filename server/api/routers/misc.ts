@@ -19,6 +19,40 @@ export const misc = createTRPCRouter({
 
 			return featureRequest
 		}),
+	search: protectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input, ctx }) => {
+			return {
+				plugs: await ctx.db.workflow.findMany({
+					where: {
+						name: {
+							contains: input,
+							mode: "insensitive",
+							notIn: ["Untitled Plug", ""]
+						}
+					},
+					orderBy: { updatedAt: "desc" }
+				}),
+				tokens: await ctx.db.tokenBalance.findMany({
+					where: {
+						name: {
+							contains: input,
+							mode: "insensitive",
+							not: undefined
+						}
+					}
+				}),
+				collectibles: await ctx.db.openseaCollection.findMany({
+					where: {
+						name: {
+							contains: input,
+							mode: "insensitive",
+							not: undefined
+						}
+					}
+				})
+			}
+		}),
 	extractDominantColor: protectedProcedure
 		.input(z.string())
 		.query(async ({ input }) => {

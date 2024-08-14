@@ -100,11 +100,21 @@ export const ConsoleSidebar = () => {
 
 				<button
 					className="group flex flex-row items-center gap-4"
-					onClick={() => {}}
+					onClick={() =>
+						handleSocket.columns.add({
+							key: VIEW_KEYS.SEARCH,
+							index: 0
+						})
+					}
 				>
 					<Button
 						variant="secondary"
-						onClick={() => {}}
+						onClick={() =>
+							handleSocket.columns.add({
+								key: VIEW_KEYS.SEARCH,
+								index: 0
+							})
+						}
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>

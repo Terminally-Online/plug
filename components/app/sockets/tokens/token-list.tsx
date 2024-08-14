@@ -11,6 +11,7 @@ export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
+			tokens?: RouterOutputs["socket"]["balances"]["tokens"]
 			expanded?: boolean
 			handleSelect?: (
 				token: NonNullable<
@@ -18,8 +19,10 @@ export const SocketTokenList: FC<
 				>[number]
 			) => void
 		}
-> = ({ id, expanded, handleSelect, className, ...props }) => {
-	const { tokens } = useBalances()
+> = ({ id, tokens, expanded, handleSelect, className, ...props }) => {
+	const { tokens: apiTokens } = useBalances()
+
+	tokens = tokens ?? apiTokens
 
 	const visibleTokens = useMemo(() => {
 		if (tokens === undefined) return Array(5).fill(undefined)
