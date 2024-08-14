@@ -1,3 +1,4 @@
+import { count } from "console"
 import { z } from "zod"
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
@@ -22,6 +23,7 @@ export const misc = createTRPCRouter({
 	search: protectedProcedure
 		.input(z.string().optional())
 		.query(async ({ input, ctx }) => {
+			// TODO: Handle private plugs and exclude them while combining the self-results.
 			const plugs = await ctx.db.workflow.findMany({
 				where: {
 					name: {
@@ -35,24 +37,49 @@ export const misc = createTRPCRouter({
 
 			const collectibles = await ctx.db.openseaCollection.findMany({
 				where: {
-					OR: [
+					AND: [
+						{
+							OR: [
+								{
+									collectibles: {
+										some: {
+											cacheSocketId: ctx.session.address,
+											OR: [
+												{
+													name: {
+														contains: input,
+														mode: "insensitive"
+													}
+												},
+												{
+													description: {
+														contains: input,
+														mode: "insensitive"
+													}
+												},
+												{
+													cacheChain: {
+														contains: input,
+														mode: "insensitive"
+													}
+												}
+											]
+										}
+									}
+								},
+								{
+									name: {
+										contains: input,
+										mode: "insensitive"
+									}
+								}
+							]
+						},
 						{
 							collectibles: {
 								some: {
-									cacheSocketId: ctx.session.address,
-									name: {
-										contains: input,
-										mode: "insensitive",
-										not: undefined
-									}
+									cacheSocketId: ctx.session.address
 								}
-							}
-						},
-						{
-							name: {
-								contains: input,
-								mode: "insensitive",
-								not: undefined
 							}
 						}
 					]
@@ -61,13 +88,27 @@ export const misc = createTRPCRouter({
 					collectibles: {
 						where: {
 							cacheSocketId: ctx.session.address,
-							name: {
-								contains: input,
-								mode: "insensitive",
-								not: undefined
-							}
-						},
-						orderBy: { updatedAt: "desc" }
+							OR: [
+								{
+									name: {
+										contains: input,
+										mode: "insensitive"
+									}
+								},
+								{
+									description: {
+										contains: input,
+										mode: "insensitive"
+									}
+								},
+								{
+									cacheChain: {
+										contains: input,
+										mode: "insensitive"
+									}
+								}
+							]
+						}
 					}
 				},
 				orderBy: { createdAt: "desc" }

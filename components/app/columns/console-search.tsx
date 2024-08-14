@@ -106,7 +106,7 @@ export const ConsoleSearch: FC<
 							<p className="flex flex-row items-center gap-2 font-bold">
 								<ImageIcon size={14} className="opacity-40" />
 								<span>Collectibles</span>
-								{results.collectibles.length > 5 && (
+								{results.collectibles.length > 10 && (
 									<Button
 										variant="secondary"
 										sizing="sm"
@@ -137,7 +137,7 @@ export const ConsoleSearch: FC<
 								collectibles={
 									expanded.includes("collectibles")
 										? results.collectibles
-										: results.collectibles.slice(0, 5)
+										: results.collectibles.slice(0, 10)
 								}
 							/>
 						</div>
