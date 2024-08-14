@@ -9,11 +9,11 @@ import {
 	Globe,
 	Hash,
 	Instagram,
+	MapIcon,
 	MessageCircle,
 	Send,
 	Ship,
 	Twitter,
-	Waves,
 	Waypoints,
 	X
 } from "lucide-react"
@@ -28,7 +28,6 @@ import {
 	formatTitle,
 	formatTokenStandard,
 	getBlockExplorerAddress,
-	getBlockExplorerUrl,
 	getChainId,
 	getChainImage,
 	getTextColor
@@ -274,8 +273,8 @@ export const CollectibleFrame: FC<{
 								target="_blank"
 								rel="noreferrer"
 							>
-								<Globe size={14} className="opacity-60" />
-								Etherscan
+								<MapIcon size={14} className="opacity-60" />
+								Explorer
 							</a>
 
 							{collection.projectUrl && (
