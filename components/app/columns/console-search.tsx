@@ -8,7 +8,7 @@ import { api } from "@/server/client"
 
 import { Search } from "../inputs"
 import { PlugGrid } from "../plugs"
-import { SocketCollectionList } from "../sockets"
+import { SocketCollectionList, SocketTokenList } from "../sockets"
 
 export const ConsoleSearch: FC<
 	HTMLAttributes<HTMLDivElement> & { id: string }
@@ -29,7 +29,10 @@ export const ConsoleSearch: FC<
 		results.collectibles.length === 0
 
 	return (
-		<div className={cn("flex h-full flex-col", className)} {...props}>
+		<div
+			className={cn("flex h-full flex-col overflow-x-hidden", className)}
+			{...props}
+		>
 			<Search
 				className="mb-4"
 				icon={<SearchIcon size={14} className="opacity-60" />}
@@ -101,6 +104,45 @@ export const ConsoleSearch: FC<
 						</div>
 					)}
 
+					{results.tokens.length > 0 && (
+						<div className="flex flex-col gap-2">
+							<p className="flex flex-row items-center gap-2 font-bold">
+								<ImageIcon size={14} className="opacity-40" />
+								<span>Tokens</span>
+								{results.tokens.length > 10 && (
+									<Button
+										variant="secondary"
+										sizing="sm"
+										className="ml-auto rounded-sm p-1 px-2"
+										onClick={() =>
+											setExpanded(prev =>
+												prev.includes("tokens") ===
+												false
+													? [...prev, "tokens"]
+													: prev.filter(
+															key =>
+																key !== "tokens"
+														)
+											)
+										}
+									>
+										{expanded.includes("tokens")
+											? "Collapse"
+											: "See All"}
+									</Button>
+								)}
+							</p>
+							<SocketTokenList
+								id={id}
+								tokens={
+									expanded.includes("tokens")
+										? results.tokens
+										: results.tokens.slice(0, 10)
+								}
+							/>
+						</div>
+					)}
+
 					{results.collectibles.length > 0 && (
 						<div className="flex flex-col gap-2">
 							<p className="flex flex-row items-center gap-2 font-bold">
@@ -144,10 +186,6 @@ export const ConsoleSearch: FC<
 					)}
 				</div>
 			)}
-
-			{/* {results && results.tokens.length > 0 && (
-				<SocketTokenList id={id} tokens={results.tokens} />
-			)} */}
 		</div>
 	)
 }

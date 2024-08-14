@@ -228,7 +228,9 @@ const getTokensForChain = async (address: string, network: Network) => {
 	return tokenBalancesCache.tokens
 }
 
-const aggregateTokensByChain = async (balances: Array<TokenBalanceModel>) => {
+export const aggregateTokensByChain = async (
+	balances: Array<TokenBalanceModel>
+) => {
 	const groupedTokens = balances.reduce(
 		(acc, token) => {
 			if (
