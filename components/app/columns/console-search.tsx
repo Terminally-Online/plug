@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/shared"
-import { cn, useDebounce, VIEW_KEYS } from "@/lib"
+import { cn, greenGradientStyle, useDebounce, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
 import { Search } from "../inputs"
@@ -32,6 +32,7 @@ export const ConsoleSearch: FC<
 	)
 
 	const emptyResults =
+		search !== "" &&
 		results &&
 		results.plugs.length === 0 &&
 		results.tokens.length === 0 &&
@@ -51,7 +52,7 @@ export const ConsoleSearch: FC<
 				clear={true}
 			/>
 
-			{enabled === false && (
+			{search === "" && debounced === "" && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center font-bold opacity-40">
@@ -73,9 +74,19 @@ export const ConsoleSearch: FC<
 			)}
 
 			{emptyResults && (
-				<div className="my-auto flex flex-col items-center">
-					<p className="font-bold">No results.</p>
-					<p className="mb-4 max-w-[320px] text-center font-bold opacity-40">
+				<div className="my-auto flex flex-col items-center text-center">
+					<p className="font-bold">
+						No results for '
+						<span
+							style={{
+								...greenGradientStyle
+							}}
+						>
+							{search}
+						</span>
+						'.
+					</p>
+					<p className="mb-4 max-w-[320px] font-bold opacity-40">
 						Your search returned no results.
 					</p>
 					<Button onClick={() => handleSearch("")}>Reset</Button>
@@ -83,9 +94,9 @@ export const ConsoleSearch: FC<
 			)}
 
 			{results && (
-				<div className="flex flex-col gap-4">
+				<div className="flex flex-col">
 					{results.plugs.length > 0 && (
-						<div className="flex flex-col gap-2">
+						<div className="mb-4 flex flex-col gap-2">
 							<p className="flex flex-row items-center gap-2 font-bold">
 								<Plug size={14} className="opacity-40" />
 								<span>Plugs</span>

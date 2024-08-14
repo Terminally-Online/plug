@@ -5,12 +5,11 @@ import { signOut } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
 import {
-	Bell,
+	Activity,
 	ClipboardCheck,
 	LogOut,
 	Plus,
-	SearchIcon,
-	Settings
+	SearchIcon
 } from "lucide-react"
 import { useDisconnect } from "wagmi"
 
@@ -148,7 +147,7 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<Bell
+						<Activity
 							size={14}
 							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 						/>
