@@ -19,8 +19,8 @@ import { usePlugs, useSockets } from "@/contexts"
 import { useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
-	const { address, ensAvatar, socket } = useSockets()
-	const { handle } = usePlugs("NOT_IMPLEMENTED")
+	const { address, ensAvatar, socket, handle: handleSocket } = useSockets()
+	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	const { disconnect } = useDisconnect({
@@ -80,11 +80,11 @@ export const ConsoleSidebar = () => {
 
 				<button
 					className="group flex flex-row items-center gap-4"
-					onClick={() => handle.plug.add()}
+					onClick={() => handlePlugs.plug.add()}
 				>
 					<Button
 						variant="primary"
-						onClick={() => handle.plug.add()}
+						onClick={() => handlePlugs.plug.add()}
 						sizing="sm"
 						className="rounded-sm p-1 "
 					>
@@ -120,11 +120,21 @@ export const ConsoleSidebar = () => {
 
 				<button
 					className="group flex flex-row items-center gap-4"
-					onClick={() => {}}
+					onClick={() =>
+						handleSocket.columns.add({
+							key: VIEW_KEYS.ACTIVITY,
+							index: 0
+						})
+					}
 				>
 					<Button
 						variant="secondary"
-						onClick={() => {}}
+						onClick={() =>
+							handleSocket.columns.add({
+								key: VIEW_KEYS.ACTIVITY,
+								index: 0
+							})
+						}
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
