@@ -27,6 +27,9 @@ import {
 	formatLongString,
 	formatTitle,
 	formatTokenStandard,
+	getBlockExplorerAddress,
+	getBlockExplorerUrl,
+	getChainId,
 	getChainImage,
 	getTextColor
 } from "@/lib"
@@ -246,167 +249,157 @@ export const CollectibleFrame: FC<{
 						</p>
 					</div>
 
-					{(collection.projectUrl ||
-						collection.twitterUsername ||
-						collection.telegramUrl ||
-						collection.openseaUrl ||
-						collection.discordUrl ||
-						collection.instagramUsername ||
-						collection.wikiUrl) && (
-						<>
-							<div className="mt-4 flex flex-row items-center gap-4">
-								<p className="font-bold opacity-40">Links</p>
-								<div
-									className="h-[2px] w-full"
+					<>
+						<div className="mt-4 flex flex-row items-center gap-4">
+							<p className="font-bold opacity-40">Links</p>
+							<div
+								className="h-[2px] w-full"
+								style={{
+									backgroundColor: metadata?.color ?? ""
+								}}
+							/>
+						</div>
+
+						<div className="mt-2 flex flex-wrap gap-2">
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={getBlockExplorerAddress(
+									getChainId(collectible.cacheChain),
+									collectible.contract
+								)}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Globe size={14} className="opacity-60" />
+								Etherscan
+							</a>
+
+							{collection.projectUrl && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 									style={{
-										backgroundColor: metadata?.color ?? ""
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
 									}}
-								/>
-							</div>
+									href={collection.projectUrl}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Globe size={14} className="opacity-60" />
+									Website
+								</a>
+							)}
 
-							<div className="mt-2 flex flex-wrap gap-2">
-								{collection.projectUrl && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={collection.projectUrl}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<Globe
-											size={14}
-											className="opacity-60"
-										/>
-										Website
-									</a>
-								)}
+							{collection.discordUrl && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={collection.discordUrl}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<MessageCircle
+										size={14}
+										className="opacity-60"
+									/>
+									Discord
+								</a>
+							)}
 
-								{collection.discordUrl && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={collection.discordUrl}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<MessageCircle
-											size={14}
-											className="opacity-60"
-										/>
-										Discord
-									</a>
-								)}
+							{collection.twitterUsername && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={`https://twitter.com/${collection.twitterUsername}`}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Twitter size={14} className="opacity-60" />
+									Twitter
+								</a>
+							)}
 
-								{collection.twitterUsername && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={`https://twitter.com/${collection.twitterUsername}`}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<Twitter
-											size={14}
-											className="opacity-60"
-										/>
-										Twitter
-									</a>
-								)}
+							{collection.telegramUrl && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={collection.telegramUrl}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Globe size={14} className="opacity-60" />
+									Telegram
+								</a>
+							)}
 
-								{collection.telegramUrl && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={collection.telegramUrl}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<Globe
-											size={14}
-											className="opacity-60"
-										/>
-										Telegram
-									</a>
-								)}
+							{collection.instagramUsername && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={`https://instagram.com/${collection.instagramUsername}`}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Instagram
+										size={14}
+										className="opacity-60"
+									/>
+									Instagram
+								</a>
+							)}
 
-								{collection.instagramUsername && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={`https://instagram.com/${collection.instagramUsername}`}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<Instagram
-											size={14}
-											className="opacity-60"
-										/>
-										Instagram
-									</a>
-								)}
+							{collection.openseaUrl && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={collection.openseaUrl}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Ship size={14} className="opacity-60" />
+									Opensea
+								</a>
+							)}
 
-								{collection.openseaUrl && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={collection.openseaUrl}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<Ship
-											size={14}
-											className="opacity-60"
-										/>
-										Opensea
-									</a>
-								)}
-
-								{collection.wikiUrl && (
-									<a
-										className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-										style={{
-											backgroundColor:
-												metadata?.color ?? "",
-											color: textColor
-										}}
-										href={collection.wikiUrl}
-										target="_blank"
-										rel="noreferrer"
-									>
-										<BookDashed
-											size={14}
-											className="opacity-60"
-										/>
-										Wiki
-									</a>
-								)}
-							</div>
-						</>
-					)}
+							{collection.wikiUrl && (
+								<a
+									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+									style={{
+										backgroundColor: metadata?.color ?? "",
+										color: textColor
+									}}
+									href={collection.wikiUrl}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<BookDashed
+										size={14}
+										className="opacity-60"
+									/>
+									Wiki
+								</a>
+							)}
+						</div>
+					</>
 				</div>
 			</div>
 		</Frame>
