@@ -28,7 +28,12 @@ export const SocketContext = createContext<{
 	page: ConsoleColumnModel | undefined
 	handle: {
 		columns: {
-			add: (data: { key: string; id?: string }) => void
+			add: (data: {
+				key: string
+				id?: string
+				index?: number
+				item?: string
+			}) => void
 			navigate: (data: {
 				id?: string
 				key: string

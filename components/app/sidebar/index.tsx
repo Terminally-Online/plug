@@ -15,11 +15,12 @@ import {
 import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
-import { useSockets } from "@/contexts"
-import { formatAddress, useClipboard } from "@/lib"
+import { usePlugs, useSockets } from "@/contexts"
+import { useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
 	const { address, ensAvatar, socket } = useSockets()
+	const { handle } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	const { disconnect } = useDisconnect({
@@ -79,11 +80,11 @@ export const ConsoleSidebar = () => {
 
 				<button
 					className="group flex flex-row items-center gap-4"
-					onClick={() => {}}
+					onClick={() => handle.plug.add()}
 				>
 					<Button
 						variant="primary"
-						onClick={() => {}}
+						onClick={() => handle.plug.add()}
 						sizing="sm"
 						className="rounded-sm p-1 "
 					>

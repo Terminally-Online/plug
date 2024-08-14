@@ -32,7 +32,6 @@ export const Plug: FC<
 		<div {...props}>
 			<ActionView id={id} />
 
-			{/* TODO: Make this fixed again once we have everything fully functional. */}
 			<div className="absolute bottom-0 left-0 z-[2] mb-4 flex w-full flex-col gap-2 overflow-y-visible">
 				<div className="pointer-events-none absolute bottom-[100px] left-0 right-0 top-0 z-[-1] bg-gradient-to-t from-white to-white/0" />
 				<div className="absolute -bottom-4 left-0 right-0 z-[-1] h-[100px] bg-white" />

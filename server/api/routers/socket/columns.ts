@@ -8,7 +8,14 @@ import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
 export const columns = createTRPCRouter({
 	add: protectedProcedure
-		.input(z.object({ key: z.string(), id: z.string().optional() }))
+		.input(
+			z.object({
+				key: z.string(),
+				id: z.string().optional(),
+				index: z.number().optional(),
+				item: z.string().optional()
+			})
+		)
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
 				if (Object.values(VIEW_KEYS).includes(input.key) === false)
@@ -17,9 +24,42 @@ export const columns = createTRPCRouter({
 						message: "Invalid column key."
 					})
 
+				if (input.id && input.index)
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: "Cannot set both id and index."
+					})
+
 				const columns = await tx.consoleColumn.findMany({
 					where: { socketId: ctx.session.address }
 				})
+
+				if (input.index !== undefined)
+					return await tx.userSocket.update({
+						where: { id: ctx.session.address },
+						data: {
+							columns: {
+								updateMany: {
+									where: {
+										index: {
+											gte: input.index
+										}
+									},
+									data: {
+										index: {
+											increment: 1
+										}
+									}
+								},
+								create: {
+									key: input.key,
+									index: input.index,
+									item: input.item
+								}
+							}
+						},
+						include: { columns: { orderBy: { index: "asc" } } }
+					})
 
 				if (input.id === undefined)
 					return await tx.userSocket.update({

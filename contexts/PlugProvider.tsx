@@ -12,7 +12,12 @@ import {
 import { useSession } from "next-auth/react"
 
 import { useFrame, useSockets } from "@/contexts"
-import { categories, actions as staticActions, tags } from "@/lib/constants"
+import {
+	categories,
+	actions as staticActions,
+	tags,
+	VIEW_KEYS
+} from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
@@ -79,7 +84,7 @@ export const PlugContext = createContext<{
 // TODO: Remove search and tag from here because we may have multiple contexts open now.
 
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
-	const { socket } = useSockets()
+	const { socket, handle: handleSocket } = useSockets()
 
 	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
@@ -107,10 +112,15 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		>[0],
 		redirect = true
 	) => {
-		// if (!plugs?.find(plug => plug.id === data.plug.id))
-		// 	setPlugs(prev => spread(prev, data.plug))
-		// if (redirect)
-		// handlePage({ key: "plug", from: data.from, id: data.plug.id })
+		if (!plugs?.find(plug => plug.id === data.plug.id))
+			setPlugs(prev => spread(prev, data.plug))
+
+		if (redirect)
+			handleSocket.columns.add({
+				key: VIEW_KEYS.PLUG,
+				index: 0,
+				item: data.plug.id
+			})
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
