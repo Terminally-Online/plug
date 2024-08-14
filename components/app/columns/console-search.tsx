@@ -1,6 +1,12 @@
 import { FC, HTMLAttributes, useState } from "react"
 
-import { ChevronDown, ImageIcon, Plug, SearchIcon } from "lucide-react"
+import {
+	ChevronDown,
+	ImageIcon,
+	LoaderCircle,
+	Plug,
+	SearchIcon
+} from "lucide-react"
 
 import { Button } from "@/components/shared"
 import { cn, useDebounce, VIEW_KEYS } from "@/lib"
@@ -18,9 +24,12 @@ export const ConsoleSearch: FC<
 
 	const enabled = debounced !== ""
 
-	const { data: results } = api.misc.search.useQuery(debounced, {
-		enabled
-	})
+	const { data: results, isInitialLoading } = api.misc.search.useQuery(
+		debounced,
+		{
+			enabled
+		}
+	)
 
 	const emptyResults =
 		results &&
@@ -48,6 +57,17 @@ export const ConsoleSearch: FC<
 					<p className="mb-4 max-w-[320px] text-center font-bold opacity-40">
 						Here you can search for everything from plugs, tokens,
 						collectibles, and more.
+					</p>
+				</div>
+			)}
+
+			{isInitialLoading && (
+				<div className="my-auto flex flex-col items-center">
+					<p className="font-bold">
+						<LoaderCircle
+							size={24}
+							className="animate-spin opacity-60"
+						/>
 					</p>
 				</div>
 			)}
