@@ -22,17 +22,59 @@ export const misc = createTRPCRouter({
 	search: protectedProcedure
 		.input(z.string().optional())
 		.query(async ({ input, ctx }) => {
-			return {
-				plugs: await ctx.db.workflow.findMany({
-					where: {
-						name: {
-							contains: input,
-							mode: "insensitive",
-							notIn: ["Untitled Plug", ""]
+			const plugs = await ctx.db.workflow.findMany({
+				where: {
+					name: {
+						contains: input,
+						mode: "insensitive",
+						notIn: ["Untitled Plug", ""]
+					}
+				},
+				orderBy: { updatedAt: "desc" }
+			})
+
+			const collectibles = await ctx.db.openseaCollection.findMany({
+				where: {
+					OR: [
+						{
+							collectibles: {
+								some: {
+									cacheSocketId: ctx.session.address,
+									name: {
+										contains: input,
+										mode: "insensitive",
+										not: undefined
+									}
+								}
+							}
+						},
+						{
+							name: {
+								contains: input,
+								mode: "insensitive",
+								not: undefined
+							}
 						}
-					},
-					orderBy: { updatedAt: "desc" }
-				}),
+					]
+				},
+				include: {
+					collectibles: {
+						where: {
+							cacheSocketId: ctx.session.address,
+							name: {
+								contains: input,
+								mode: "insensitive",
+								not: undefined
+							}
+						},
+						orderBy: { updatedAt: "desc" }
+					}
+				},
+				orderBy: { createdAt: "desc" }
+			})
+
+			return {
+				plugs,
 				tokens: await ctx.db.tokenBalance.findMany({
 					where: {
 						name: {
@@ -42,15 +84,7 @@ export const misc = createTRPCRouter({
 						}
 					}
 				}),
-				collectibles: await ctx.db.openseaCollection.findMany({
-					where: {
-						name: {
-							contains: input,
-							mode: "insensitive",
-							not: undefined
-						}
-					}
-				})
+				collectibles
 			}
 		}),
 	extractDominantColor: protectedProcedure
