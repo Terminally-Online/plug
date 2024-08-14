@@ -76,7 +76,7 @@ export const ConsoleSearch: FC<
 			{emptyResults && (
 				<div className="my-auto flex flex-col items-center text-center">
 					<p className="font-bold">
-						No results for '
+						No results for &lsquo;
 						<span
 							style={{
 								...greenGradientStyle
@@ -84,7 +84,7 @@ export const ConsoleSearch: FC<
 						>
 							{search}
 						</span>
-						'.
+						&rsquo;.
 					</p>
 					<p className="mb-4 max-w-[320px] font-bold opacity-40">
 						Your search returned no results.
