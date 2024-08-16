@@ -3,22 +3,15 @@ import Image from "next/image"
 import { signOut } from "next-auth/react"
 
 import BlockiesSvg from "blockies-react-svg"
-import { useDisconnect, useEnsAvatar, useEnsName } from "wagmi"
+import { useDisconnect } from "wagmi"
 
 import { Button, Counter, Frame, StatCard } from "@/components"
 import { useFrame, useSockets } from "@/contexts"
 
-import { normalize } from "viem/ens"
-
 export const AccountFrame = () => {
 	const { page } = useSockets()
 	const { isFrame } = useFrame({ id: page?.id, key: "account" })
-	const { address } = useSockets()
-
-	const { data: ensName } = useEnsName({ address: address as `0x${string}` })
-	const { data: ensAvatar } = useEnsAvatar({
-		name: normalize(ensName ?? "") || undefined
-	})
+	const { address, avatar } = useSockets()
 
 	const { disconnect } = useDisconnect({
 		mutation: {
@@ -33,9 +26,9 @@ export const AccountFrame = () => {
 			id={page.id}
 			className="z-[2]"
 			icon={
-				ensAvatar ? (
+				avatar ? (
 					<Image
-						src={ensAvatar}
+						src={avatar}
 						alt="ENS Avatar"
 						width={24}
 						height={24}

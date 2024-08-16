@@ -19,7 +19,7 @@ import {
 const HomePageHeader = () => {
 	const { page, handle } = useSockets()
 	const { handleFrame } = useFrame({ id: page?.id })
-	const { address, ensAvatar } = useSockets()
+	const { address, avatar } = useSockets()
 	const { handle: handlePlugs } = usePlugs(page?.id ?? "")
 
 	if (page === undefined) return null
@@ -34,9 +34,9 @@ const HomePageHeader = () => {
 							className="flex flex-row items-center gap-2"
 							onClick={() => handleFrame("auth")}
 						>
-							{ensAvatar ? (
+							{avatar ? (
 								<Image
-									src={ensAvatar}
+									src={avatar}
 									alt="ENS Avatar"
 									width={24}
 									height={24}

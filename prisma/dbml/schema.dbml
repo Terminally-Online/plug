@@ -20,6 +20,8 @@ Table UserSocket {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   socketAddress String [not null]
+  ensName String
+  ensAvatar String
   columns ConsoleColumn [not null]
   tokens TokenBalanceCache [not null]
   collectibles OpenseaCollectibleCache [not null]

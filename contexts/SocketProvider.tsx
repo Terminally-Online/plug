@@ -22,8 +22,8 @@ import {
 
 export const SocketContext = createContext<{
 	address: string | undefined
-	ensName: GetEnsNameReturnType | undefined
-	ensAvatar: GetEnsAvatarReturnType | undefined
+	name: GetEnsNameReturnType | undefined
+	avatar: GetEnsAvatarReturnType | undefined
 	socket: UserSocketModel | undefined
 	page: ConsoleColumnModel | undefined
 	handle: {
@@ -47,8 +47,8 @@ export const SocketContext = createContext<{
 	}
 }>({
 	address: undefined,
-	ensName: undefined,
-	ensAvatar: undefined,
+	name: undefined,
+	avatar: undefined,
 	socket: undefined,
 	page: undefined,
 	handle: {
@@ -64,13 +64,17 @@ export const SocketContext = createContext<{
 
 export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: session } = useSession()
-	const { data: socketData } = api.socket.get.useQuery()
 
 	const { data: ensName } = useEnsName({
 		address: session?.address as `0x${string}`
 	})
 	const { data: ensAvatar } = useEnsAvatar({
 		name: normalize(ensName ?? "") || undefined
+	})
+
+	const { data: socketData } = api.socket.get.useQuery({
+		name: ensName,
+		avatar: ensAvatar
 	})
 
 	const [socket, setSocket] = useState<UserSocketModel | undefined>(
@@ -161,8 +165,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		<SocketContext.Provider
 			value={{
 				address: session?.address,
-				ensName,
-				ensAvatar,
+				name: socket?.ensName || ensName || undefined,
+				avatar: socket?.ensAvatar || ensAvatar || undefined,
 				socket,
 				page,
 				handle: {

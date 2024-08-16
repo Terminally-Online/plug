@@ -7,7 +7,6 @@ import { signOut } from "next-auth/react"
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
 import {
-	Activity,
 	ClipboardCheck,
 	LogOut,
 	PanelRightOpen,
@@ -22,7 +21,7 @@ import { usePlugs, useSockets } from "@/contexts"
 import { cn, useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
-	const { address, ensAvatar, socket, handle: handleSocket } = useSockets()
+	const { address, avatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
@@ -48,9 +47,9 @@ export const ConsoleSidebar = () => {
 							exit={{ opacity: 0 }}
 							transition={{ duration: 0.2 }}
 						>
-							{ensAvatar ? (
+							{avatar ? (
 								<Image
-									src={ensAvatar}
+									src={avatar}
 									alt="ENS Avatar"
 									width={16}
 									height={16}
