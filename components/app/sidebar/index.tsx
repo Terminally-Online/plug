@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import Image from "next/image"
 
 import { signOut } from "next-auth/react"
@@ -8,19 +10,23 @@ import {
 	Activity,
 	ClipboardCheck,
 	LogOut,
+	PanelRightOpen,
 	Plus,
-	SearchIcon
+	SearchIcon,
+	Zap
 } from "lucide-react"
 import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
 import { usePlugs, useSockets } from "@/contexts"
-import { useClipboard, VIEW_KEYS } from "@/lib"
+import { cn, useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
 	const { address, ensAvatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
+
+	const [expanded, setExpanded] = useState(false)
 
 	const { disconnect } = useDisconnect({
 		mutation: {
@@ -29,11 +35,11 @@ export const ConsoleSidebar = () => {
 	})
 
 	return (
-		<div className="flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white p-4 pr-16">
-			<div className="mb-auto flex flex-col gap-4">
+		<div className="flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
+			<div className={cn("flex w-full flex-col gap-4 px-4")}>
 				{address && (
 					<button
-						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0"
+						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
 						onClick={() => handleCopied()}
 					>
 						<motion.div
@@ -78,12 +84,12 @@ export const ConsoleSidebar = () => {
 				)}
 
 				<button
-					className="group flex flex-row items-center gap-4"
+					className="group flex flex-row items-center gap-4 px-2"
 					onClick={() => handlePlugs.plug.add()}
 				>
 					<Button
 						variant="primary"
-						onClick={() => handlePlugs.plug.add()}
+						onClick={() => (expanded ? handlePlugs.plug.add() : {})}
 						sizing="sm"
 						className="rounded-sm p-1 "
 					>
@@ -92,13 +98,15 @@ export const ConsoleSidebar = () => {
 							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 						/>
 					</Button>
-					<p className="whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-						New Plug
-					</p>
+					{expanded && (
+						<p className="whitespace-nowrap opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							New Plug
+						</p>
+					)}
 				</button>
 
 				<button
-					className="group flex flex-row items-center gap-4"
+					className="group flex flex-row items-center gap-4 px-2"
 					onClick={() =>
 						handleSocket.columns.add({
 							key: VIEW_KEYS.SEARCH,
@@ -109,10 +117,12 @@ export const ConsoleSidebar = () => {
 					<Button
 						variant="secondary"
 						onClick={() =>
-							handleSocket.columns.add({
-								key: VIEW_KEYS.SEARCH,
-								index: 0
-							})
+							expanded
+								? handleSocket.columns.add({
+										key: VIEW_KEYS.SEARCH,
+										index: 0
+									})
+								: {}
 						}
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
@@ -122,16 +132,18 @@ export const ConsoleSidebar = () => {
 							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 						/>
 					</Button>
-					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-						Search
-					</p>
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Search
+						</p>
+					)}
 				</button>
 
 				<button
-					className="group flex flex-row items-center gap-4"
+					className="group flex flex-row items-center gap-4 px-2"
 					onClick={() =>
 						handleSocket.columns.add({
-							key: VIEW_KEYS.ACTIVITY,
+							key: VIEW_KEYS.ALERTS,
 							index: 0
 						})
 					}
@@ -139,33 +151,59 @@ export const ConsoleSidebar = () => {
 					<Button
 						variant="secondary"
 						onClick={() =>
-							handleSocket.columns.add({
-								key: VIEW_KEYS.ACTIVITY,
-								index: 0
-							})
+							expanded
+								? handleSocket.columns.add({
+										key: VIEW_KEYS.ALERTS,
+										index: 0
+									})
+								: {}
 						}
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<Activity
+						<Zap
 							size={14}
 							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 						/>
 					</Button>
-					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-						Activity
-					</p>
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Alerts
+						</p>
+					)}
 				</button>
 			</div>
 
-			<div className="mt-auto flex flex-col gap-4">
+			<div className="mt-auto flex w-full flex-col items-start gap-4">
 				<button
-					className="group flex flex-row items-center gap-4"
-					onClick={() => {}}
+					className="group flex flex-row items-center gap-4 px-6"
+					onClick={() => setExpanded(!expanded)}
 				>
 					<Button
 						variant="secondary"
-						onClick={() => disconnect()}
+						onClick={() => (expanded ? setExpanded(!expanded) : {})}
+						sizing="sm"
+						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+					>
+						<PanelRightOpen
+							size={14}
+							className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					{expanded && (
+						<p className="whitespace-nowrap pr-16 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Collapse Sidebar
+						</p>
+					)}
+				</button>
+				<div className="h-[1px] w-full bg-grayscale-100" />
+				<button
+					className="group flex flex-row items-center gap-4 px-6"
+					onClick={() => disconnect()}
+				>
+					<Button
+						variant="secondary"
+						onClick={() => (expanded ? disconnect() : {})}
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
@@ -174,9 +212,11 @@ export const ConsoleSidebar = () => {
 							className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 						/>
 					</Button>
-					<p className="font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-						Logout
-					</p>
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Logout
+						</p>
+					)}
 				</button>
 			</div>
 		</div>

@@ -23,6 +23,7 @@ import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cardColors, cn, formatTitle, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
 
+import { ConsoleAlerts } from "./column-alerts"
 import { ConsoleSearch } from "./console-search"
 
 const DEFAULT_COLUMN_WIDTH = 420
@@ -233,6 +234,11 @@ export const ConsoleColumn: FC<{
 								<ConsoleSearch
 									className="px-4 pt-4"
 									id={column.id}
+								/>
+							) : column.key === VIEW_KEYS.ALERTS ? (
+								<ConsoleAlerts
+									id={column.id}
+									className="px-4 pt-4"
 								/>
 							) : column.key === VIEW_KEYS.PLUGS ? (
 								<Plugs className="px-4" id={column.id} />

@@ -55,7 +55,7 @@ export const ConsoleSearch: FC<
 			{search === "" && debounced === "" && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
-					<p className="mb-4 max-w-[320px] text-center font-bold opacity-40">
+					<p className="mb-4 max-w-[320px] text-center opacity-60">
 						Here you can search for everything from plugs, tokens,
 						collectibles, and more.
 					</p>
@@ -86,7 +86,7 @@ export const ConsoleSearch: FC<
 						</span>
 						&rsquo;.
 					</p>
-					<p className="mb-4 max-w-[320px] font-bold opacity-40">
+					<p className="mb-4 max-w-[320px] opacity-60">
 						Your search returned no results.
 					</p>
 					<Button onClick={() => handleSearch("")}>Reset</Button>
