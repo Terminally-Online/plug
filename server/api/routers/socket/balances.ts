@@ -4,6 +4,7 @@ import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 
 import { getAPIKey, getCollectibles, getTokens } from "@/lib"
+import { getPositions } from "@/lib/functions/zerion"
 import { getDominantColor } from "@/server/color"
 
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
@@ -22,6 +23,14 @@ export const balances = createTRPCRouter({
 			if (input === undefined) return []
 
 			return await getCollectibles(input)
+		}),
+	positions: protectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input }) => {
+			if (input === undefined)
+				throw new TRPCError({ code: "BAD_REQUEST" })
+
+			return await getPositions(input)
 		}),
 	metadata: protectedProcedure
 		.input(

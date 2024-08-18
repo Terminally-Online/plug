@@ -36,6 +36,57 @@ export type TokenBalanceCacheModel = Prisma.TokenBalanceCacheGetPayload<
 >
 
 // ---------------------------------------------------------------------------
+// Positions
+// ---------------------------------------------------------------------------
+const fungibleModel = Prisma.validator<Prisma.FungibleDefaultArgs>()({
+	include: {
+		implementations: {
+			select: {
+				chain: true,
+				contract: true,
+				decimals: true
+			}
+		}
+	}
+})
+export type FungibleModel = Prisma.FungibleGetPayload<typeof fungibleModel>
+
+const positionModel = Prisma.validator<Prisma.PositionDefaultArgs>()({
+	omit: {
+		fungibleName: true,
+		fungibleSymbol: true,
+		protocolName: true,
+		createdAt: true,
+		updatedAt: true,
+		cacheId: true
+	},
+	include: {
+		fungible: {
+			include: {
+				implementations: {
+					select: {
+						chain: true,
+						contract: true,
+						decimals: true
+					}
+				}
+			}
+		},
+		protocol: {
+			omit: { createdAt: true, updatedAt: true }
+		}
+	}
+})
+export type PositionModel = Prisma.PositionGetPayload<typeof positionModel>
+
+const positionCacheModel = Prisma.validator<Prisma.PositionCacheDefaultArgs>()(
+	{}
+)
+export type PositionCacheModel = Prisma.PositionCacheGetPayload<
+	typeof positionCacheModel
+>
+
+// ---------------------------------------------------------------------------
 // Collectibles
 // ---------------------------------------------------------------------------
 const openseaCollectionModel =

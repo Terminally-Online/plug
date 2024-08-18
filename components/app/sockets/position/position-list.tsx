@@ -1,25 +1,44 @@
-import { FC, HTMLAttributes } from "react"
+import {
+	FC,
+	HTMLAttributes,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState
+} from "react"
 
+import Image from "next/image"
+
+import axios from "axios"
+
+import { Accordion, Counter } from "@/components/shared"
+import { useBalances, useSockets } from "@/contexts"
 import { cn } from "@/lib"
 
-export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement>> = ({
-	className,
-	...props
-}) => {
+import { SocketPositionItem } from "./position-item"
+
+export const SocketPositionList: FC<
+	HTMLAttributes<HTMLDivElement> & { id: string }
+> = ({ id, className, ...props }) => {
+	const { positions } = useBalances()
+
+	const { defi } = positions || {}
+
+	if (positions === undefined) return null
+
 	return (
 		<div
 			className={cn("flex min-h-[calc(100vh-200px)]", className)}
 			{...props}
 		>
-			<div className="mx-auto my-auto flex h-full max-w-[80%] flex-col gap-2 text-center">
-				<p className="text-lg font-bold">
-					Position indexing is coming soon.
-				</p>
-				<p className="opacity-60">
-					In a few days you will be able to see all of your DeFi
-					positions here and manage them with a single unified
-					interface.
-				</p>
+			<div className="mx-auto flex w-full flex-col gap-2">
+				{Object.keys(positions.defi).map((protocol: string) => (
+					<SocketPositionItem
+						key={protocol}
+						id={id}
+						position={positions.defi[protocol]}
+					/>
+				))}
 			</div>
 		</div>
 	)

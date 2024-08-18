@@ -11,9 +11,14 @@ export const BalancesContext = createContext<{
 	collectibles:
 		| RouterOutputs["socket"]["balances"]["collectibles"]
 		| undefined
+	positions: RouterOutputs["socket"]["balances"]["positions"] | undefined
 }>({
 	tokens: [],
-	collectibles: []
+	collectibles: [],
+	positions: {
+		tokens: [],
+		defi: {}
+	}
 })
 
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -34,11 +39,21 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 		}
 	)
 
+	const { data: positions } = api.socket.balances.positions.useQuery(
+		socket?.socketAddress,
+		{
+			enabled: socket?.socketAddress !== undefined
+		}
+	)
+
+	console.log(positions)
+
 	return (
 		<BalancesContext.Provider
 			value={{
 				tokens,
-				collectibles
+				collectibles,
+				positions
 			}}
 		>
 			{children}

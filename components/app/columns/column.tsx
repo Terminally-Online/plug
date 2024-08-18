@@ -78,15 +78,6 @@ export const ConsoleColumn: FC<{
 		}
 	}, [isResizing, handleWidth])
 
-	// useEffect(() => {
-	// 	if (width === debouncedWidth) return
-
-	// 	handle.columns.resize({
-	// 		id: id,
-	// 		width: Number(debouncedWidth)
-	// 	})
-	// }, [width, debouncedWidth, id, handle.columns])
-
 	return (
 		<div className="relative select-none">
 			<Draggable draggableId={column.id.toString()} index={column.index}>

@@ -3,7 +3,6 @@ import axios from "axios"
 import { TRPCError } from "@trpc/server"
 
 import { OpenseaCollectible } from "@/lib/types"
-import { getDominantColor } from "@/server/color"
 import { db } from "@/server/db"
 
 const MINUTE = 60 * 1000

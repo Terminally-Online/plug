@@ -1,6 +1,6 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["fullTextSearch"]
+    previewFeatures = ["fullTextSearch", "omitApi"]
 }
 
 generator dbml {
@@ -59,6 +59,7 @@ model UserSocket {
     columns      ConsoleColumn[]
     tokens       TokenBalanceCache[]
     collectibles OpenseaCollectibleCache[]
+    positions    PositionCache[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -140,6 +141,120 @@ model TokenBalanceCache {
     // Identification
     // ---------------------------------------------------------------------------
     @@id([socketId, chain])
+}
+
+model Protocol {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    name String @id
+    icon String
+    url  String
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    positions Position[]
+}
+
+model Implementation {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    chain    String
+    contract String
+    decimals Int
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    fungible       Fungible @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol])
+    fungibleName   String
+    fungibleSymbol String
+
+    @@id([chain, contract])
+}
+
+model Fungible {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    name     String
+    symbol   String
+    icon     String
+    verified Boolean
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    implementations Implementation[]
+    positions       Position[]
+
+    @@id([name, symbol])
+}
+
+model Position {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    chain   String
+    type    String
+    balance Float
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    fungible       Fungible      @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol])
+    fungibleName   String
+    fungibleSymbol String
+    protocol       Protocol?     @relation(fields: [protocolName], references: [name])
+    protocolName   String?
+    cache          PositionCache @relation(fields: [cacheId], references: [socketId])
+    cacheId        String
+}
+
+model PositionCache {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    positions Position[]
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socketId String     @id
 }
 
 model OpenseaCollection {

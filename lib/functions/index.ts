@@ -1,6 +1,7 @@
 export * from "./alchemy"
 export * from "./llama"
 export * from "./opensea"
+export * from "./zerion"
 
 export * from "./api"
 export * from "./blockchain"
