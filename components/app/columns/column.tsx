@@ -29,7 +29,7 @@ import { ConsoleSearch } from "./console-search"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
-const MAX_COLUMN_WIDTH = 920
+const MAX_COLUMN_WIDTH = 620
 
 const getBoundedWidth = (width: number) =>
 	Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
