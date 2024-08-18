@@ -1,4 +1,5 @@
 export const VIEW_KEYS = {
+	AUTHENTICATE: "AUTHENTICATE",
 	HOME: "HOME",
 	ADD: "ADD",
 	PLUGS: "PLUGS",

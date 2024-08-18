@@ -24,6 +24,7 @@ import { cardColors, cn, formatTitle, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
 
 import { ConsoleAlerts } from "./column-alerts"
+import { ConsoleAuthenticate } from "./column-authenticate"
 import { ConsoleSearch } from "./console-search"
 
 const DEFAULT_COLUMN_WIDTH = 420
@@ -72,227 +73,241 @@ export const ConsoleColumn: FC<{
 	}, [isResizing, column.id, handle.columns])
 
 	return (
-		<div className="relative my-2 select-none">
+		<div className="relative select-none">
 			<Draggable draggableId={column.id.toString()} index={column.index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
-						className="relative ml-2 flex h-full w-full flex-col rounded-lg border-[1px] border-grayscale-100 bg-white"
+						className="relative flex h-full w-full flex-row rounded-lg"
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
 							width: `${column.width ?? DEFAULT_COLUMN_WIDTH}px`
 						}}
 					>
-						{/* <div
+						<div
 							ref={resizeRef}
 							className={cn(
 								"relative my-2 w-full select-none overflow-y-auto rounded-lg border-[1px] border-grayscale-100 bg-white",
 								snapshot.isDragging && "opacity-60"
 							)}
-						> */}
-						<div
-							className={cn(
-								"group z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
-								snapshot.isDragging
-									? "bg-grayscale-0"
-									: "hover:bg-grayscale-0"
-							)}
-							{...provided.dragHandleProps}
 						>
-							<Header
-								size="md"
-								label={
-									<div className="flex w-full flex-row items-center gap-4">
-										<Button
-											variant="none"
-											onClick={() => {}}
-											className="rounded-sm p-1"
-										>
-											<Grip
-												size={14}
-												className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-											/>
-										</Button>
-
-										{column.from && (
+							<div
+								className={cn(
+									"group z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+									snapshot.isDragging
+										? "bg-grayscale-0"
+										: "hover:bg-grayscale-0"
+								)}
+								{...provided.dragHandleProps}
+							>
+								<Header
+									size="md"
+									label={
+										<div className="flex w-full flex-row items-center gap-4">
 											<Button
-												variant="secondary"
-												onClick={() =>
-													handle.columns.navigate({
-														id: column.id,
-														key: column.from!
-													})
-												}
+												variant="none"
+												onClick={() => {}}
 												className="rounded-sm p-1"
 											>
-												<ChevronLeft size={14} />
+												<Grip
+													size={14}
+													className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+												/>
 											</Button>
-										)}
 
-										{plug && (
-											<div
-												className="h-6 w-6 min-w-6 rounded-sm bg-grayscale-100"
-												style={{
-													backgroundImage:
-														cardColors[plug.color]
-												}}
-											/>
-										)}
-
-										<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-											<p className="overflow-hidden truncate overflow-ellipsis font-bold">
-												{formatTitle(
-													plug
-														? plug.name
-														: column.key
-																.replace(
-																	"_",
-																	" "
-																)
-																.toLowerCase()
-												)}
-											</p>
-										</div>
-
-										{plug && (
-											<div className="flex flex-row items-center justify-end gap-4">
+											{column.from && (
 												<Button
 													variant="secondary"
-													className="group rounded-sm p-1"
-													onClick={
-														() => {}
-														// handleFrame("share")
-													}
-												>
-													<Share
-														size={14}
-														className="opacity-60 hover:opacity-100"
-													/>
-												</Button>
-
-												<Button
-													variant="secondary"
-													className="group rounded-sm p-1"
-													onClick={
-														() => {}
-														// handleFrame("share")
-													}
-												>
-													<GitFork
-														size={14}
-														className="opacity-60 hover:opacity-100"
-													/>
-												</Button>
-
-												<Button
-													variant="secondary"
-													className="group rounded-sm p-1"
 													onClick={() =>
-														handleFrame("manage")
-													}
-												>
-													<Cog
-														size={14}
-														className="opacity-60 hover:opacity-100"
-													/>
-												</Button>
-
-												<Button
-													variant="secondary"
-													className="group rounded-sm p-1"
-													onClick={() =>
-														handle.columns.remove(
-															column.id
+														handle.columns.navigate(
+															{
+																id: column.id,
+																key: column.from!
+															}
 														)
 													}
+													className="rounded-sm p-1"
 												>
-													<X
-														size={14}
-														className="opacity-60 hover:opacity-100"
-													/>
+													<ChevronLeft size={14} />
 												</Button>
+											)}
+
+											{plug && (
+												<div
+													className="h-6 w-6 min-w-6 rounded-sm bg-grayscale-100"
+													style={{
+														backgroundImage:
+															cardColors[
+																plug.color
+															]
+													}}
+												/>
+											)}
+
+											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
+												<p className="overflow-hidden truncate overflow-ellipsis font-bold">
+													{formatTitle(
+														plug
+															? plug.name
+															: column.key
+																	.replace(
+																		"_",
+																		" "
+																	)
+																	.toLowerCase()
+													)}
+												</p>
 											</div>
-										)}
-									</div>
-								}
-								nextPadded={false}
-								nextOnClick={
-									plug === undefined
-										? () => handle.columns.remove(column.id)
-										: undefined
-								}
-								nextLabel={<X size={14} />}
-							/>
-						</div>
-						{/* </div> */}
 
-						<div className="h-full overflow-y-scroll">
-							{column.key === VIEW_KEYS.ADD ? (
-								<ConsoleColumnAddOptions id={column.id} />
-							) : column.key === VIEW_KEYS.SEARCH ? (
-								<ConsoleSearch
-									className="px-4 pt-4"
-									id={column.id}
+											{plug && (
+												<div className="flex flex-row items-center justify-end gap-4">
+													<Button
+														variant="secondary"
+														className="group rounded-sm p-1"
+														onClick={
+															() => {}
+															// handleFrame("share")
+														}
+													>
+														<Share
+															size={14}
+															className="opacity-60 hover:opacity-100"
+														/>
+													</Button>
+
+													<Button
+														variant="secondary"
+														className="group rounded-sm p-1"
+														onClick={
+															() => {}
+															// handleFrame("share")
+														}
+													>
+														<GitFork
+															size={14}
+															className="opacity-60 hover:opacity-100"
+														/>
+													</Button>
+
+													<Button
+														variant="secondary"
+														className="group rounded-sm p-1"
+														onClick={() =>
+															handleFrame(
+																"manage"
+															)
+														}
+													>
+														<Cog
+															size={14}
+															className="opacity-60 hover:opacity-100"
+														/>
+													</Button>
+
+													<Button
+														variant="secondary"
+														className="group rounded-sm p-1"
+														onClick={() =>
+															handle.columns.remove(
+																column.id
+															)
+														}
+													>
+														<X
+															size={14}
+															className="opacity-60 hover:opacity-100"
+														/>
+													</Button>
+												</div>
+											)}
+										</div>
+									}
+									nextPadded={false}
+									nextOnClick={
+										plug === undefined
+											? () =>
+													handle.columns.remove(
+														column.id
+													)
+											: undefined
+									}
+									nextLabel={<X size={14} />}
 								/>
-							) : column.key === VIEW_KEYS.ALERTS ? (
-								<ConsoleAlerts
-									id={column.id}
-									className="px-4 pt-4"
-								/>
-							) : column.key === VIEW_KEYS.PLUGS ? (
-								<Plugs className="px-4" id={column.id} />
-							) : column.key === VIEW_KEYS.DISCOVER ? (
-								<PlugsDiscover
-									className="pt-4"
-									id={column.id}
-								/>
-							) : column.key === VIEW_KEYS.MY_PLUGS ? (
-								<PlugsMine
-									className="pt-4"
-									column={true}
-									id={column.id}
-								/>
-							) : column.key === VIEW_KEYS.PLUG ? (
-								<Plug
-									className="px-4 pt-4"
-									id={column.id}
-									item={column.item}
-								/>
-							) : column.key === VIEW_KEYS.ACTIVITY ? (
-								<SocketActivity
-									id={column.id}
-									className="px-4 pt-4"
-								/>
-							) : column.key === VIEW_KEYS.ASSETS ? (
-								<SocketAssets id={column.id} className="px-4" />
-							) : column.key === "TOKENS" ? (
-								<SocketTokenList
-									id={column.id}
-									className="px-4 pt-4"
-									expanded={true}
-								/>
-							) : column.key === VIEW_KEYS.COLLECTIBLES ? (
-								<SocketCollectionList
-									id={column.id}
-									className="px-4 pt-4"
-								/>
-							) : column.key === VIEW_KEYS.POSITIONS ? (
-								<SocketPositionList
-									id={column.id}
-									className="px-4 pt-4"
-								/>
-							) : column.key === VIEW_KEYS.EARNINGS ? (
-								<SocketEarnings
-									id={column.id}
-									className="px-4 pt-4"
-								/>
-							) : (
-								<></>
-							)}
+							</div>
+
+							<div className="h-full overflow-y-scroll">
+								{column.key === VIEW_KEYS.AUTHENTICATE ? (
+									<ConsoleAuthenticate />
+								) : column.key === VIEW_KEYS.ADD ? (
+									<ConsoleColumnAddOptions id={column.id} />
+								) : column.key === VIEW_KEYS.SEARCH ? (
+									<ConsoleSearch
+										className="px-4 pt-4"
+										id={column.id}
+									/>
+								) : column.key === VIEW_KEYS.ALERTS ? (
+									<ConsoleAlerts
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : column.key === VIEW_KEYS.PLUGS ? (
+									<Plugs className="px-4" id={column.id} />
+								) : column.key === VIEW_KEYS.DISCOVER ? (
+									<PlugsDiscover
+										className="pt-4"
+										id={column.id}
+									/>
+								) : column.key === VIEW_KEYS.MY_PLUGS ? (
+									<PlugsMine
+										className="pt-4"
+										column={true}
+										id={column.id}
+									/>
+								) : column.key === VIEW_KEYS.PLUG ? (
+									<Plug
+										className="px-4 pt-4"
+										id={column.id}
+										item={column.item}
+									/>
+								) : column.key === VIEW_KEYS.ACTIVITY ? (
+									<SocketActivity
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : column.key === VIEW_KEYS.ASSETS ? (
+									<SocketAssets
+										id={column.id}
+										className="px-4"
+									/>
+								) : column.key === "TOKENS" ? (
+									<SocketTokenList
+										id={column.id}
+										className="px-4 pt-4"
+										expanded={true}
+									/>
+								) : column.key === VIEW_KEYS.COLLECTIBLES ? (
+									<SocketCollectionList
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : column.key === VIEW_KEYS.POSITIONS ? (
+									<SocketPositionList
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : column.key === VIEW_KEYS.EARNINGS ? (
+									<SocketEarnings
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : (
+									<></>
+								)}
+							</div>
 						</div>
 
-						{/* <div
+						<div
 							className="h-full cursor-col-resize px-2"
 							onMouseDown={e => {
 								e.preventDefault()
@@ -305,7 +320,7 @@ export const ConsoleColumn: FC<{
 									snapshot.isDragging && "opacity-0"
 								)}
 							/>
-						</div> */}
+						</div>
 					</div>
 				)}
 			</Draggable>

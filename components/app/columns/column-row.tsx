@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn, ConsoleColumnAdd } from "@/components"
 import { useSockets } from "@/contexts"
+import { VIEW_KEYS } from "@/lib"
 
 // This component has a bunch of hacky workarounds to make it work due to the
 // complexities of TRPC combined with commonly requested animation frames. The
@@ -30,7 +31,11 @@ import { useSockets } from "@/contexts"
 export const ConsoleColumnRow = () => {
 	const { socket, handle } = useSockets()
 
-	const [columns, setColumns] = useState<any[]>(socket?.columns || [])
+	const [columns, setColumns] = useState<any[]>(
+		socket?.columns || [
+			{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }
+		]
+	)
 
 	const onDragEnd = (result: DropResult) => {
 		if (!result.destination) return
@@ -72,8 +77,6 @@ export const ConsoleColumnRow = () => {
 
 		setColumns(socket?.columns)
 	}, [socket])
-
-	if (socket === undefined) return null
 
 	return (
 		<div className="flex h-screen flex-row overflow-x-auto overflow-y-hidden">

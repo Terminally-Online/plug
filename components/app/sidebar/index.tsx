@@ -29,12 +29,12 @@ export const ConsoleSidebar = () => {
 
 	const { disconnect } = useDisconnect({
 		mutation: {
-			onSuccess: () => signOut({ callbackUrl: "/" })
+			onSuccess: () => signOut()
 		}
 	})
 
 	return (
-		<div className="flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
+		<div className="mr-2 flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
 			<div className={cn("flex w-full flex-col gap-4 px-4")}>
 				{address && (
 					<button
@@ -195,28 +195,32 @@ export const ConsoleSidebar = () => {
 						</p>
 					)}
 				</button>
-				<div className="h-[1px] w-full bg-grayscale-100" />
-				<button
-					className="group flex flex-row items-center gap-4 px-6"
-					onClick={() => disconnect()}
-				>
-					<Button
-						variant="secondary"
-						onClick={() => (expanded ? disconnect() : {})}
-						sizing="sm"
-						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
-					>
-						<LogOut
-							size={14}
-							className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
-					</Button>
-					{expanded && (
-						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-							Logout
-						</p>
-					)}
-				</button>
+				{address && (
+					<>
+						<div className="h-[1px] w-full bg-grayscale-100" />
+						<button
+							className="group flex flex-row items-center gap-4 px-6"
+							onClick={() => disconnect()}
+						>
+							<Button
+								variant="secondary"
+								onClick={() => (expanded ? disconnect() : {})}
+								sizing="sm"
+								className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+							>
+								<LogOut
+									size={14}
+									className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+								/>
+							</Button>
+							{expanded && (
+								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+									Logout
+								</p>
+							)}
+						</button>
+					</>
+				)}
 			</div>
 		</div>
 	)

@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useMemo, useState } from "react"
 
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
@@ -15,7 +15,7 @@ export const getStatusIcon = (status: string) => {
 				<div className="relative h-10 w-10 min-w-10">
 					<div className="absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-plug-green blur-2xl filter" />
 					<CheckCircle
-						className="absolute top-1/2 h-4 w-4 -translate-y-1/2 text-center text-plug-green"
+						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green"
 						size={16}
 					/>
 				</div>
@@ -25,7 +25,7 @@ export const getStatusIcon = (status: string) => {
 				<div className="relative h-10 w-10 min-w-10">
 					<div className="absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-plug-red blur-2xl filter" />
 					<XCircle
-						className="absolute top-1/2 h-4 w-4 -translate-y-1/2 text-center text-plug-red"
+						className="absolute top-1/2 h-4 w-6 -translate-y-1/2 text-center text-plug-red"
 						size={16}
 					/>
 				</div>
@@ -35,7 +35,7 @@ export const getStatusIcon = (status: string) => {
 				<div className="relative h-10 w-10 min-w-10">
 					<div className="absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full bg-yellow-400 blur-2xl filter" />
 					<AlertCircle
-						className="absolute top-1/2 h-4 w-4 -translate-y-1/2 text-center text-yellow-400"
+						className="absolute top-1/2 h-4 w-6 -translate-y-1/2 text-center text-yellow-400"
 						size={16}
 					/>
 				</div>
@@ -55,25 +55,24 @@ export const ActivityItem: FC<{
 		id,
 		key: `activity-${index}`
 	})
-
 	const icon = getStatusIcon(status)
 	const pastDate = new Date(Date.now() - 60000 * 0.2)
 
 	return (
 		<>
 			<Accordion onExpand={() => handleFrame()}>
-				<div className="flex w-full flex-row">
+				<div className="flex flex-row">
 					{icon}
-
-					<div className="flex w-full flex-col">
+					<div className="flex w-full flex-col overflow-hidden">
 						<div className="flex flex-row items-center justify-between gap-2 font-bold">
-							<p className="truncate overflow-ellipsis whitespace-nowrap">
+							<p className="mr-2 truncate overflow-ellipsis whitespace-nowrap">
 								{text}
 							</p>
-							<DateSince date={pastDate} />
+							<div className="flex-shrink-0">
+								<DateSince date={pastDate} />
+							</div>
 						</div>
-
-						<div className="flex w-full flex-row items-center justify-between text-right text-sm font-bold text-black text-opacity-40">
+						<div className="flex w-full flex-row items-center justify-between text-sm font-bold text-black text-opacity-40">
 							<p>{formatTitle(status)}</p>
 							<p>
 								<Counter
@@ -84,7 +83,6 @@ export const ActivityItem: FC<{
 					</div>
 				</div>
 			</Accordion>
-
 			<ActivityFrame
 				id={id}
 				activity={{ id: index.toString(), name: text, status }}
