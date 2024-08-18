@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useMemo, useRef, useState } from "react"
 
 import { ChevronLeft, Cog, GitFork, Grip, Share, X } from "lucide-react"
 
@@ -20,7 +20,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { cardColors, cn, formatTitle, VIEW_KEYS } from "@/lib"
+import { cardColors, cn, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
 
 import { ConsoleAlerts } from "./column-alerts"
@@ -43,18 +43,24 @@ export const ConsoleColumn: FC<{
 	const { handle } = useSockets()
 	const { plug } = usePlugs(column.id)
 
+	const id = useMemo(() => column.id, [column])
+
+	const [width, debouncedWidth, handleWidth] = useDebounce(
+		(column.width ?? DEFAULT_COLUMN_WIDTH).toString(),
+		100,
+		() => handle.columns.resize({ id, width: Number(debouncedWidth) })
+	)
 	const [isResizing, setIsResizing] = useState(false)
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			handle.columns.resize({
-				id: column.id,
-				width: getBoundedWidth(
+			handleWidth(
+				getBoundedWidth(
 					e.clientX - resizeRef.current.getBoundingClientRect().left
-				)
-			})
+				).toString()
+			)
 		}
 
 		const handleMouseUp = () => {
@@ -70,7 +76,16 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [isResizing, column.id, handle.columns])
+	}, [isResizing, handleWidth])
+
+	// useEffect(() => {
+	// 	if (width === debouncedWidth) return
+
+	// 	handle.columns.resize({
+	// 		id: id,
+	// 		width: Number(debouncedWidth)
+	// 	})
+	// }, [width, debouncedWidth, id, handle.columns])
 
 	return (
 		<div className="relative select-none">
@@ -82,7 +97,7 @@ export const ConsoleColumn: FC<{
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
-							width: `${column.width ?? DEFAULT_COLUMN_WIDTH}px`
+							width: `${width}px`
 						}}
 					>
 						<div

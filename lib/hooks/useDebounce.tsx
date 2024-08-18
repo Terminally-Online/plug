@@ -4,7 +4,8 @@ import { usePathname } from "next/navigation"
 
 export const useDebounce = (
 	initial: string,
-	delay = 250
+	delay = 250,
+	callback = () => {}
 ): [
 	string,
 	string,
@@ -21,10 +22,12 @@ export const useDebounce = (
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			setDebounced(value)
+
+			callback()
 		}, delay)
 
 		return () => clearTimeout(timeout)
-	}, [value, delay])
+	}, [value, delay, callback])
 
 	useEffect(() => {
 		if (!pathname) return
