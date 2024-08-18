@@ -204,6 +204,12 @@ export const getCollectiblesForChain = async (
 				where: { id: { in: toDelete.map(c => c.id) } }
 			})
 
+		await prisma.openseaCollectibleCache.upsert({
+			where: { socketId_chain: { socketId: socket.id, chain } },
+			create: { chain, socketId: socket.id, updatedAt: new Date() },
+			update: { updatedAt: new Date() }
+		})
+
 		if (toCreate.length)
 			await prisma.openseaCollectible.createMany({
 				data: toCreate.map(c => ({
@@ -224,11 +230,6 @@ export const getCollectiblesForChain = async (
 				data: collectible
 			})
 		}
-		await prisma.openseaCollectibleCache.upsert({
-			where: { socketId_chain: { socketId: socket.id, chain } },
-			create: { chain, socketId: socket.id, updatedAt: new Date() },
-			update: { updatedAt: new Date() }
-		})
 	})
 
 	return Array.from(newCollectiblesMap.values())
