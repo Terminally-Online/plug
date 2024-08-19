@@ -5,6 +5,7 @@ import { motion, MotionProps } from "framer-motion"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
 
+import { PositionFrame } from "../../frames/assets/position"
 import { SocketPositionItem } from "./position-item"
 
 export const SocketPositionList: FC<
@@ -24,28 +25,40 @@ export const SocketPositionList: FC<
 	if (positions === undefined) return null
 
 	return (
-		<motion.div
-			className={cn("flex flex-col gap-2", className)}
-			initial="hidden"
-			animate="visible"
-			variants={{
-				hidden: { opacity: 0 },
-				visible: {
-					opacity: 1,
-					transition: {
-						staggerChildren: 0.05
+		<>
+			<motion.div
+				className={cn("flex flex-col gap-2", className)}
+				initial="hidden"
+				animate="visible"
+				variants={{
+					hidden: { opacity: 0 },
+					visible: {
+						opacity: 1,
+						transition: {
+							staggerChildren: 0.05
+						}
 					}
-				}
-			}}
-			{...(props as MotionProps)}
-		>
-			{visibilePositions.map((protocol: string) => (
-				<SocketPositionItem
-					key={protocol}
-					id={id}
-					position={positions.defi[protocol]}
-				/>
-			))}
-		</motion.div>
+				}}
+				{...(props as MotionProps)}
+			>
+				{visibilePositions.map((protocol: string) => (
+					<SocketPositionItem
+						key={protocol}
+						id={id}
+						position={positions.defi[protocol]}
+					/>
+				))}
+			</motion.div>
+
+			{Object.keys(positions.defi).map(protocolName => {
+				return (
+					<PositionFrame
+						key={protocolName}
+						id={id}
+						protocol={positions.defi[protocolName]}
+					/>
+				)
+			})}
+		</>
 	)
 }

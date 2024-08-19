@@ -6,8 +6,7 @@
 		"target": "ES2019",
 		"lib": ["ES2019", "DOM"],
 		"isolatedModules": false,
-		"noEmit": false,
-		"noErrorTruncation": true
+		"noEmit": false
 	},
 	"include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"]
 }

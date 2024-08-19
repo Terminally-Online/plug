@@ -14,12 +14,10 @@ import {
 	Send,
 	Ship,
 	Twitter,
-	Waypoints,
-	X
+	Waypoints
 } from "lucide-react"
 import { getAddress } from "viem"
 
-import { Button } from "@/components/shared"
 import { useFrame } from "@/contexts"
 import {
 	cn,
@@ -48,7 +46,7 @@ export const CollectibleFrame: FC<{
 		RouterOutputs["socket"]["balances"]["collectibles"]
 	>[number]["collectibles"][number]
 }> = ({ id, collection, collectible }) => {
-	const { isFrame, handleFrame } = useFrame({
+	const { isFrame } = useFrame({
 		id,
 		key: `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 	})
@@ -93,25 +91,8 @@ export const CollectibleFrame: FC<{
 			}
 			label={collection.name}
 			visible={isFrame}
-			hasOverlay={true}
 			hasChildrenPadding={false}
-			next={
-				<Button
-					variant="secondary"
-					sizing={"md"}
-					onClick={() => handleFrame(undefined)}
-					className={cn(
-						"ml-auto rounded-sm p-1 outline-none hover:opacity-90"
-					)}
-					style={{
-						backgroundColor: metadata?.color ?? "",
-						borderColor: metadata?.color ?? "",
-						color: textColor
-					}}
-				>
-					<X size={14} />
-				</Button>
-			}
+			hasOverlay
 		>
 			<div className="flex flex-col gap-2 px-6 pb-4">
 				<CollectibleImage

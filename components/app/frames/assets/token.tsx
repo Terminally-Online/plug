@@ -2,9 +2,9 @@ import { FC, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { Send, X } from "lucide-react"
+import { Send } from "lucide-react"
 
-import { Button, Counter, Frame, SocketTokenPriceChart } from "@/components"
+import { Counter, Frame, SocketTokenPriceChart } from "@/components"
 import { useBalances, useFrame } from "@/contexts"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
 
@@ -93,25 +93,8 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 			}
 			label=""
 			visible={isFrame}
-			hasOverlay={true}
 			hasChildrenPadding={false}
-			next={
-				<Button
-					variant="secondary"
-					sizing={"md"}
-					onClick={() => handleFrame(undefined)}
-					className={cn(
-						"ml-auto rounded-sm p-1 outline-none hover:opacity-90"
-					)}
-					style={{
-						backgroundColor: color ?? "",
-						borderColor: color ?? "",
-						color: textColor
-					}}
-				>
-					<X size={14} />
-				</Button>
-			}
+			hasOverlay
 		>
 			<div className="flex flex-row px-6 font-bold">
 				<div className="flex flex-col items-center font-bold">

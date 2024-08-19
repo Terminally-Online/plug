@@ -152,7 +152,7 @@ export const ConsoleColumn: FC<{
 											)}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-												<p className="overflow-hidden truncate overflow-ellipsis font-bold">
+												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
 													{formatTitle(
 														plug
 															? plug.name

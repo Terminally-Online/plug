@@ -76,7 +76,7 @@ export const PlugsDiscover: FC<
 				{!search && !tag && curatedPlugs && curatedPlugs.length > 0 && (
 					<>
 						<Header
-							size="md"
+							size="sm"
 							icon={<Gem size={14} className="opacity-40" />}
 							label="Curated"
 						/>
@@ -90,7 +90,7 @@ export const PlugsDiscover: FC<
 				)}
 
 				<Header
-					size="md"
+					size="sm"
 					icon={<Earth size={14} className="opacity-40" />}
 					label="Community"
 				/>

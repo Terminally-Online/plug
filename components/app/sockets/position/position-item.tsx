@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 
 import { Accordion } from "@/components/shared"
+import { useFrame } from "@/contexts"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
@@ -12,7 +13,10 @@ export const SocketPositionItem: FC<{
 	id: string
 	position: RouterOutputs["socket"]["balances"]["positions"]["defi"][string]
 }> = ({ id, position }) => {
-	const [expanded, setExpanded] = useState(false)
+	const { handleFrame } = useFrame({
+		id,
+		key: `position-${position.name}`
+	})
 
 	return (
 		<motion.div
@@ -30,8 +34,7 @@ export const SocketPositionItem: FC<{
 			}}
 		>
 			<Accordion
-				expanded={expanded}
-				onExpand={() => setExpanded(!expanded)}
+				onExpand={() => handleFrame()}
 				accordion={
 					<>
 						{position.positions.map(position => (
