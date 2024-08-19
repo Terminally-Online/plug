@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 type Props = {
 	variant?: "raw" | "frame"
-	size?: "md" | "lg"
+	size?: "sm" | "md" | "lg"
 	onBack?: () => void
 	icon?: JSX.Element
 	label: string | JSX.Element
@@ -24,6 +24,7 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 }
 
 const sizes: Record<NonNullable<Props["size"]>, string> = {
+	sm: "",
 	md: "text-lg",
 	lg: "text-xl"
 }

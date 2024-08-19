@@ -1,5 +1,3 @@
-"use client"
-
 import { FC, HTMLAttributes, useState } from "react"
 
 import { CircleDollarSign, ImageIcon } from "lucide-react"
@@ -23,7 +21,7 @@ export const SocketAssets: FC<
 	return (
 		<div {...props}>
 			<Header
-				size="md"
+				size="sm"
 				icon={<CircleDollarSign size={14} className="opacity-40" />}
 				label="Tokens"
 				nextLabel={
@@ -38,7 +36,7 @@ export const SocketAssets: FC<
 			<SocketTokenList id={id} expanded={tokensExpanded} />
 
 			<Header
-				size="md"
+				size="sm"
 				icon={<CircleDollarSign size={14} className="opacity-40" />}
 				label="Positions"
 				nextLabel={
@@ -53,7 +51,7 @@ export const SocketAssets: FC<
 			<SocketPositionList id={id} expanded={positionsExpanded} />
 
 			<Header
-				size="md"
+				size="sm"
 				icon={<ImageIcon size={14} className="opacity-40" />}
 				label="Collectibles"
 			/>
