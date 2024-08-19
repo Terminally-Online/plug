@@ -93,10 +93,7 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className={cn(
-								"relative my-2 w-full select-none overflow-y-hidden rounded-lg border-[1px] border-grayscale-100 bg-white",
-								snapshot.isDragging && "opacity-60"
-							)}
+							className="relative my-2 w-full select-none overflow-y-hidden rounded-lg border-[1px] border-grayscale-100 bg-white"
 						>
 							<div
 								className={cn(
