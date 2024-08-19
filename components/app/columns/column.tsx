@@ -100,7 +100,7 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"group z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging
 										? "bg-grayscale-0"
 										: "hover:bg-grayscale-0"
