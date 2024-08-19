@@ -259,12 +259,7 @@ export const getPositions = async (
 	)
 		return findPositions(socket.id, chains, types)
 
-	try {
-		await getFungiblePositions(socket.id, socket.socketAddress, chains)
-	} catch (error) {
-		console.error(error)
-		throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
-	}
+	await getFungiblePositions(socket.id, socket.socketAddress, chains)
 
 	return findPositions(socket.id, chains, types)
 }
