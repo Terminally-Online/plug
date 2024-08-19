@@ -94,13 +94,13 @@ export const ConsoleColumn: FC<{
 						<div
 							ref={resizeRef}
 							className={cn(
-								"relative my-2 w-full select-none overflow-y-auto rounded-lg border-[1px] border-grayscale-100 bg-white",
+								"relative my-2 w-full select-none overflow-y-hidden rounded-lg border-[1px] border-grayscale-100 bg-white",
 								snapshot.isDragging && "opacity-60"
 							)}
 						>
 							<div
 								className={cn(
-									"group relative z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging
 										? "bg-grayscale-0"
 										: "hover:bg-grayscale-0"
