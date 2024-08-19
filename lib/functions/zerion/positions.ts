@@ -112,9 +112,13 @@ const findPositions = async (
 	)
 }
 
-const getFungiblePositions = async (address: string, chains: string[]) => {
+const getFungiblePositions = async (
+	socketId: string,
+	socketAddress: string,
+	chains: string[]
+) => {
 	const response = await axios.get(
-		`https://api.zerion.io/v1/wallets/${address}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
+		`https://api.zerion.io/v1/wallets/${socketAddress}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
 			headers: {
 				accept: "application/json",
@@ -126,110 +130,103 @@ const getFungiblePositions = async (address: string, chains: string[]) => {
 	if (response.status !== 200)
 		throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	await db.positionCache.upsert({
-		where: { socketId: address },
-		create: {
-			socketId: address
-		},
-		update: {
-			updatedAt: new Date()
+	await db.protocol.createMany({
+		data: response.data.data
+			.map((position: any) => ({
+				name: position.attributes?.application_metadata?.name ?? "",
+				icon: position.attributes?.application_metadata?.icon.url ?? "",
+				url: position.attributes?.application_metadata?.url ?? ""
+			}))
+			.filter((protocol: { name: string }) => protocol.name !== ""),
+		skipDuplicates: true
+	})
+
+	const fungibleData = response.data.data.map((position: any) => {
+		const implementations =
+			position.attributes.fungible_info.implementations
+				.filter(
+					(implementation: {
+						chain_id: string
+						address: string
+						decimals: number
+					}) => chains.includes(implementation.chain_id)
+				)
+				.map(
+					(implementation: {
+						chain_id: string
+						address: string
+						decimals: number
+					}) => ({
+						chain: implementation.chain_id,
+						contract: implementation.address || nativeTokenAddress,
+						decimals: implementation.decimals
+					})
+				)
+
+		return {
+			name: position.attributes.fungible_info.name,
+			symbol: position.attributes.fungible_info.symbol,
+			icon: position.attributes.fungible_info.icon?.url ?? "",
+			verified: position.attributes.fungible_info.flags.verified,
+			implementations: implementations
 		}
 	})
 
-	await Promise.all(
-		response.data.data.map(async (position: any) => {
-			const implementations =
-				position.attributes.fungible_info.implementations
-					.filter(
-						(implementation: {
-							chain_id: string
-							address: string
-							decimals: number
-						}) => chains.includes(implementation.chain_id)
-					)
-					.map(
-						(implementation: {
-							chain_id: string
-							address: string
-							decimals: number
-						}) => ({
-							where: {
-								chain_contract: {
-									chain: implementation.chain_id,
-									contract:
-										implementation.address ||
-										nativeTokenAddress
-								}
-							},
-							create: {
-								chain: implementation.chain_id,
-								contract:
-									implementation.address ||
-									nativeTokenAddress,
-								decimals: implementation.decimals
-							}
-						})
-					)
+	await db.fungible.createMany({
+		data: fungibleData.map((fungible: any) => ({
+			...fungible,
+			implementations: undefined
+		})),
+		skipDuplicates: true
+	})
 
-			const fungible = await db.fungible.upsert({
-				where: {
-					name_symbol: {
-						name: position.attributes.fungible_info.name,
-						symbol: position.attributes.fungible_info.symbol
-					}
-				},
-				create: {
-					name: position.attributes.fungible_info.name,
-					symbol: position.attributes.fungible_info.symbol,
-					icon: position.attributes.fungible_info.icon?.url ?? "",
-					verified: position.attributes.fungible_info.flags.verified,
-					implementations: {
-						connectOrCreate: implementations
-					}
-				},
-				update: {
-					implementations: {
-						connectOrCreate: implementations
-					}
-				}
-			})
+	await db.implementation.createMany({
+		data: fungibleData.map((fungible: any) => ({
+			chain: fungible.implementations[0].chain,
+			contract: fungible.implementations[0].contract,
+			decimals: fungible.implementations[0].decimals,
+			fungibleName: fungible.name,
+			fungibleSymbol: fungible.symbol
+		})),
+		skipDuplicates: true
+	})
 
-			if (position.attributes?.application_metadata) {
-				await db.protocol.upsert({
-					where: {
-						name: position.attributes.application_metadata.name
-					},
+	await db.positionCache.upsert({
+		where: { socketId },
+		create: {
+			socketId
+		},
+		update: {
+			updatedAt: new Date(),
+			positions: {
+				upsert: response.data.data.map((position: any) => ({
+					where: { id: position.id },
 					create: {
-						name: position.attributes.application_metadata.name,
-						icon:
-							position.attributes.application_metadata.icon
-								?.url ?? "",
-						url: position.attributes.application_metadata?.url ?? ""
+						id: position.id,
+						chain: position.relationships.chain.data.id,
+						type: position.attributes.position_type,
+						balance: position.attributes.quantity.float,
+						protocolName:
+							position.attributes?.application_metadata?.name ??
+							undefined,
+						fungibleName: position.attributes.fungible_info.name,
+						fungibleSymbol: position.attributes.fungible_info.symbol
 					},
-					update: {}
-				})
-			}
-
-			await db.position.upsert({
-				where: { id: position.id },
-				create: {
-					id: position.id,
-					chain: position.relationships.chain.data.id,
-					type: position.attributes.position_type,
-					balance: position.attributes.quantity.float,
-					protocolName:
-						position.attributes?.application_metadata?.name ??
-						undefined,
-					fungibleName: fungible.name,
-					fungibleSymbol: fungible.symbol,
-					cacheId: address
-				},
-				update: {
-					balance: position.attributes.quantity.float
+					update: {
+						balance: position.attributes.quantity.float
+					}
+				})),
+				deleteMany: {
+					cacheId: socketId,
+					id: {
+						notIn: response.data.data.map(
+							(position: { id: string }) => position.id
+						)
+					}
 				}
-			})
-		})
-	)
+			}
+		}
+	})
 }
 
 const getNonFungiblePositions = async (address: string, chains: string[]) => {
@@ -242,7 +239,7 @@ export const getPositions = async (
 	types = ["wallet", "deposit", "loan", "reward"]
 ): Promise<PositionsResponse> => {
 	const socket = await db.userSocket.findFirst({
-		where: { socketAddress: address }
+		where: { id: address }
 	})
 
 	if (!socket)
@@ -262,8 +259,12 @@ export const getPositions = async (
 	)
 		return findPositions(socket.id, chains, types)
 
-	await getFungiblePositions(socket.id, chains)
-	await getNonFungiblePositions(socket.id, chains)
+	try {
+		await getFungiblePositions(socket.id, socket.socketAddress, chains)
+	} catch (error) {
+		console.error(error)
+		throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+	}
 
 	return findPositions(socket.id, chains, types)
 }

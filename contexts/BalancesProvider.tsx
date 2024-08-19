@@ -22,7 +22,7 @@ export const BalancesContext = createContext<{
 })
 
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
-	const { socket } = useSockets()
+	const { address, socket } = useSockets()
 
 	const { data: tokens } = api.socket.balances.tokens.useQuery(
 		socket?.socketAddress,
@@ -40,13 +40,12 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 
 	const { data: positions } = api.socket.balances.positions.useQuery(
-		socket?.socketAddress,
+		address,
 		{
-			enabled: socket?.socketAddress !== undefined
+			enabled: address !== undefined,
+			onSuccess: data => console.log("positions", data)
 		}
 	)
-
-	console.log(positions)
 
 	return (
 		<BalancesContext.Provider

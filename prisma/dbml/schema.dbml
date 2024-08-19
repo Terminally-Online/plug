@@ -237,13 +237,13 @@ Ref: TokenBalance.(cacheSocketId, cacheChain) > TokenBalanceCache.(socketId, cha
 
 Ref: TokenBalanceCache.socketId > UserSocket.id
 
-Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol)
+Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 
-Ref: Position.(fungibleName, fungibleSymbol) > Fungible.(name, symbol)
+Ref: Position.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 
-Ref: Position.protocolName > Protocol.name
+Ref: Position.protocolName > Protocol.name [delete: Cascade]
 
-Ref: Position.cacheId > PositionCache.socketId
+Ref: Position.cacheId > PositionCache.socketId [delete: Cascade]
 
 Ref: PositionCache.socketId > UserSocket.id
 

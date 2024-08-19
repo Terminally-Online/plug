@@ -180,7 +180,7 @@ model Implementation {
     // ---------------------------------------------------------------------------
     // One-to-many
     // ---------------------------------------------------------------------------
-    fungible       Fungible @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol])
+    fungible       Fungible @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol], onDelete: Cascade)
     fungibleName   String
     fungibleSymbol String
 
@@ -229,12 +229,12 @@ model Position {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    fungible       Fungible      @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol])
+    fungible       Fungible      @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol], onDelete: Cascade)
     fungibleName   String
     fungibleSymbol String
-    protocol       Protocol?     @relation(fields: [protocolName], references: [name])
+    protocol       Protocol?     @relation(fields: [protocolName], references: [name], onDelete: Cascade)
     protocolName   String?
-    cache          PositionCache @relation(fields: [cacheId], references: [socketId])
+    cache          PositionCache @relation(fields: [cacheId], references: [socketId], onDelete: Cascade)
     cacheId        String
 }
 
