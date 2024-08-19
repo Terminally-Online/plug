@@ -130,107 +130,115 @@ const getFungiblePositions = async (
 	if (response.status !== 200)
 		throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	await db.protocol.createMany({
-		data: response.data.data
-			.map((position: any) => ({
-				name: position.attributes?.application_metadata?.name ?? "",
-				icon: position.attributes?.application_metadata?.icon.url ?? "",
-				url: position.attributes?.application_metadata?.url ?? ""
-			}))
-			.filter((protocol: { name: string }) => protocol.name !== ""),
-		skipDuplicates: true
-	})
+	await db.$transaction(async tx => {
+		await tx.protocol.createMany({
+			data: response.data.data
+				.map((position: any) => ({
+					name: position.attributes?.application_metadata?.name ?? "",
+					icon:
+						position.attributes?.application_metadata?.icon.url ??
+						"",
+					url: position.attributes?.application_metadata?.url ?? ""
+				}))
+				.filter((protocol: { name: string }) => protocol.name !== ""),
+			skipDuplicates: true
+		})
 
-	const fungibleData = response.data.data.map((position: any) => {
-		const implementations =
-			position.attributes.fungible_info.implementations
-				.filter(
-					(implementation: {
-						chain_id: string
-						address: string
-						decimals: number
-					}) => chains.includes(implementation.chain_id)
-				)
-				.map(
-					(implementation: {
-						chain_id: string
-						address: string
-						decimals: number
-					}) => ({
-						chain: implementation.chain_id,
-						contract: implementation.address || nativeTokenAddress,
-						decimals: implementation.decimals
-					})
-				)
+		const fungibleData = response.data.data.map((position: any) => {
+			const implementations =
+				position.attributes.fungible_info.implementations
+					.filter(
+						(implementation: {
+							chain_id: string
+							address: string
+							decimals: number
+						}) => chains.includes(implementation.chain_id)
+					)
+					.map(
+						(implementation: {
+							chain_id: string
+							address: string
+							decimals: number
+						}) => ({
+							chain: implementation.chain_id,
+							contract:
+								implementation.address || nativeTokenAddress,
+							decimals: implementation.decimals
+						})
+					)
 
-		return {
-			name: position.attributes.fungible_info.name,
-			symbol: position.attributes.fungible_info.symbol,
-			icon: position.attributes.fungible_info.icon?.url ?? "",
-			verified: position.attributes.fungible_info.flags.verified,
-			implementations: implementations
-		}
-	})
+			return {
+				name: position.attributes.fungible_info.name,
+				symbol: position.attributes.fungible_info.symbol,
+				icon: position.attributes.fungible_info.icon?.url ?? "",
+				verified: position.attributes.fungible_info.flags.verified,
+				implementations: implementations
+			}
+		})
 
-	await db.fungible.createMany({
-		data: fungibleData.map((fungible: any) => ({
-			...fungible,
-			implementations: undefined
-		})),
-		skipDuplicates: true
-	})
+		await tx.fungible.createMany({
+			data: fungibleData.map((fungible: any) => ({
+				...fungible,
+				implementations: undefined
+			})),
+			skipDuplicates: true
+		})
 
-	await db.implementation.createMany({
-		data: fungibleData.map((fungible: any) => ({
-			chain: fungible.implementations[0].chain,
-			contract: fungible.implementations[0].contract,
-			decimals: fungible.implementations[0].decimals,
-			fungibleName: fungible.name,
-			fungibleSymbol: fungible.symbol
-		})),
-		skipDuplicates: true
-	})
+		await tx.implementation.createMany({
+			data: fungibleData.map((fungible: any) => ({
+				chain: fungible.implementations[0].chain,
+				contract: fungible.implementations[0].contract,
+				decimals: fungible.implementations[0].decimals,
+				fungibleName: fungible.name,
+				fungibleSymbol: fungible.symbol
+			})),
+			skipDuplicates: true
+		})
 
-	await db.positionCache.upsert({
-		where: { socketId },
-		create: {
-			socketId
-		},
-		update: {
-			updatedAt: new Date(),
-			positions: {
-				upsert: response.data.data.map((position: any) => ({
-					where: { id: position.id },
-					create: {
-						id: position.id,
-						chain: position.relationships.chain.data.id,
-						type: position.attributes.position_type,
-						balance: position.attributes.quantity.float,
-						protocolName:
-							position.attributes?.application_metadata?.name ??
-							undefined,
-						fungibleName: position.attributes.fungible_info.name,
-						fungibleSymbol: position.attributes.fungible_info.symbol
-					},
-					update: {
-						balance: position.attributes.quantity.float
-					}
-				})),
-				deleteMany: {
-					cacheId: socketId,
-					id: {
-						notIn: response.data.data.map(
-							(position: { id: string }) => position.id
-						)
+		await tx.positionCache.upsert({
+			where: { socketId },
+			create: {
+				socketId
+			},
+			update: {}
+		})
+
+		await tx.positionCache.update({
+			where: { socketId },
+			data: {
+				updatedAt: new Date(),
+				positions: {
+					upsert: response.data.data.map((position: any) => ({
+						where: { id: position.id },
+						create: {
+							id: position.id,
+							chain: position.relationships.chain.data.id,
+							type: position.attributes.position_type,
+							balance: position.attributes.quantity.float,
+							protocolName:
+								position.attributes?.application_metadata
+									?.name ?? undefined,
+							fungibleName:
+								position.attributes.fungible_info.name,
+							fungibleSymbol:
+								position.attributes.fungible_info.symbol
+						},
+						update: {
+							balance: position.attributes.quantity.float
+						}
+					})),
+					deleteMany: {
+						cacheId: socketId,
+						id: {
+							notIn: response.data.data.map(
+								(position: { id: string }) => position.id
+							)
+						}
 					}
 				}
 			}
-		}
+		})
 	})
-}
-
-const getNonFungiblePositions = async (address: string, chains: string[]) => {
-	// TODO: Retrieve from here to get the full set of NFTs held instead of the safe OpenSea list.
 }
 
 export const getPositions = async (

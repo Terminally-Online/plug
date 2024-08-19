@@ -42,8 +42,7 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: positions } = api.socket.balances.positions.useQuery(
 		address,
 		{
-			enabled: address !== undefined,
-			onSuccess: data => console.log("positions", data)
+			enabled: address !== undefined
 		}
 	)
 
