@@ -9,7 +9,7 @@ venv/
 
 # CSV files / Large files
 *.csv
-*.txt
+query.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
