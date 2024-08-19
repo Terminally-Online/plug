@@ -7,11 +7,9 @@ import { useSockets } from "./SocketProvider"
 const DURATION = 5 * 60 * 1000
 
 export const BalancesContext = createContext<{
-	tokens: RouterOutputs["socket"]["balances"]["tokens"] | undefined
-	collectibles:
-		| RouterOutputs["socket"]["balances"]["collectibles"]
-		| undefined
-	positions: RouterOutputs["socket"]["balances"]["positions"] | undefined
+	tokens: RouterOutputs["socket"]["balances"]["tokens"]
+	collectibles: RouterOutputs["socket"]["balances"]["collectibles"]
+	positions: RouterOutputs["socket"]["balances"]["positions"]
 }>({
 	tokens: [],
 	collectibles: [],
@@ -49,9 +47,12 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<BalancesContext.Provider
 			value={{
-				tokens,
-				collectibles,
-				positions
+				tokens: tokens ?? [],
+				collectibles: collectibles ?? [],
+				positions: positions ?? {
+					tokens: [],
+					defi: {}
+				}
 			}}
 		>
 			{children}

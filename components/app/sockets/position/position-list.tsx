@@ -1,45 +1,51 @@
-import {
-	FC,
-	HTMLAttributes,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState
-} from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
-import Image from "next/image"
+import { motion, MotionProps } from "framer-motion"
 
-import axios from "axios"
-
-import { Accordion, Counter } from "@/components/shared"
-import { useBalances, useSockets } from "@/contexts"
+import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
 
 import { SocketPositionItem } from "./position-item"
 
 export const SocketPositionList: FC<
-	HTMLAttributes<HTMLDivElement> & { id: string }
-> = ({ id, className, ...props }) => {
+	HTMLAttributes<HTMLDivElement> &
+		MotionProps & { id: string; expanded?: boolean }
+> = ({ id, expanded, className, ...props }) => {
 	const { positions } = useBalances()
 
-	const { defi } = positions || {}
+	const visibilePositions = useMemo(() => {
+		if (positions === undefined) return Array(3).fill(undefined)
+
+		if (expanded) return Object.keys(positions.defi)
+
+		return Object.keys(positions.defi).slice(0, 3)
+	}, [expanded, positions])
 
 	if (positions === undefined) return null
 
 	return (
-		<div
-			className={cn("flex min-h-[calc(100vh-200px)]", className)}
-			{...props}
+		<motion.div
+			className={cn("flex flex-col gap-2", className)}
+			initial="hidden"
+			animate="visible"
+			variants={{
+				hidden: { opacity: 0 },
+				visible: {
+					opacity: 1,
+					transition: {
+						staggerChildren: 0.05
+					}
+				}
+			}}
+			{...(props as MotionProps)}
 		>
-			<div className="mx-auto flex w-full flex-col gap-2">
-				{Object.keys(positions.defi).map((protocol: string) => (
-					<SocketPositionItem
-						key={protocol}
-						id={id}
-						position={positions.defi[protocol]}
-					/>
-				))}
-			</div>
-		</div>
+			{visibilePositions.map((protocol: string) => (
+				<SocketPositionItem
+					key={protocol}
+					id={id}
+					position={positions.defi[protocol]}
+				/>
+			))}
+		</motion.div>
 	)
 }
