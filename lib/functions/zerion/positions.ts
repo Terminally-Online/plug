@@ -257,9 +257,9 @@ export const getPositions = async (
 		cachedPositions &&
 		cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME)
 	)
-		return findPositions(socket.id, chains, types)
+		return await findPositions(socket.id, chains, types)
 
 	await getFungiblePositions(socket.id, socket.socketAddress, chains)
 
-	return findPositions(socket.id, chains, types)
+	return await findPositions(socket.id, chains, types)
 }
