@@ -39,7 +39,7 @@ With this in your toolbox, you can run a correlation analysis on a set of protoc
 
 ```ml
 correlation
-├─ "python correlation/query.py uniswap aave [protocol] [protocol]" — "Generate SQL query for correlation analysis"
+├─ "python correlation/query.py --chains ethereum base --protocols uniswap aave --protocols aero" — "Generate SQL query for correlation analysis"
 ├─ "flipside" — "Take the generated query and run it on Flipside."
 ├─ "csv" — "Download the data from Flipside and save it to a CSV named 'actions' in the correlation directory."
 └─ "python correlation/correlate.py" — "Run the analysis and generate a correlation matrix."
