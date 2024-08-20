@@ -83,13 +83,10 @@ def main():
         sys.exit(1)
 
     chain_protocols = dict(zip(args.chains, args.protocols))
-    
-    # Create abbreviations
     chain_abbr = create_unique_abbreviations(chain_protocols.keys())
     all_protocols = sorted(set(protocol for protocols in chain_protocols.values() for protocol in protocols))
     protocol_abbr = create_unique_abbreviations(all_protocols)
 
-    # Generate column labels and full names mapping
     labels = []
     full_names = {}
     for chain in chain_protocols.keys():
@@ -99,23 +96,16 @@ def main():
             labels.append(abbr)
             full_names[abbr] = full_name
 
-    # Read and process data
     df = parse_csv_data(args.input)
-    
-    # Remove zero-value columns
     df_non_zero = remove_zero_columns(df)
-
-    # Update labels to match non-zero columns
     non_zero_indices = [i for i, col in enumerate(df.columns) if col in df_non_zero.columns]
     labels = [labels[i] for i in non_zero_indices]
 
-    # Print information about removed columns
     removed_columns = set(df.columns) - set(df_non_zero.columns)
     if removed_columns:
         print(f"Removed {len(removed_columns)} columns with all zero values:")
         print(", ".join(map(str, removed_columns)))
 
-    # Generate and plot the correlation matrix
     z = sort_correlation_matrix(df_non_zero)
     plot_correlation(z, f"Protocol Correlation Matrix ({len(df_non_zero.columns)} active protocols)", labels, full_names)
 
