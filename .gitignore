@@ -10,6 +10,7 @@ venv/
 # CSV files / Large files
 *.csv
 query.txt
+correlation/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

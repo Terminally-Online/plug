@@ -37,18 +37,20 @@ Correlation analysis is a statistical method used to evaluate the strength and d
 
 With this in your toolbox, you can run a correlation analysis on a set of protocols only by knowing the name found in the deployed onchain contracts.
 
+![Correlation matrix](./examples/correlation-matrix.png)
 
-correlation
 1. Generate SQL query for correlation analysis
-```bash 
+
+```bash
 python correlation/query.py --chains ethereum base --protocols uniswap aave --protocols aero
 ```
+
 2. Take the generated query and run it on Flipside.
 3. Download the data from Flipside and save it to a CSV named 'actions' in the correlation directory.
 4. Run the analysis and generate a correlation matrix.
+
 ```bash
 python correlation/correlate.py
 ```
-
 
 By default, no CSV is shipped with this repository because it is way too large for GitHub. To run this yourself you must retrieve the data you want to use from [Flipside](https://flipsidecrypto.xyz/).

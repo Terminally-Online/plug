@@ -44,7 +44,7 @@ def sort_correlation_matrix(data):
     sorted_columns = column_sums.sort_values(ascending=False).index
     return corr.loc[sorted_columns, sorted_columns]
 
-def plot_correlation(corr_matrix, title, labels, full_names):
+def plot_correlation(corr_matrix, title, labels, full_names, output_file):
     fig, ax = plt.subplots(figsize=(max(12, len(corr_matrix) * 0.8), max(10, len(corr_matrix) * 0.7)))
     
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
@@ -67,6 +67,10 @@ def plot_correlation(corr_matrix, title, labels, full_names):
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=8)
     
     plt.tight_layout()
+    
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"Correlation matrix image saved as {output_file}")
+    
     plt.show()
 
 def main():
@@ -75,6 +79,7 @@ def main():
     parser.add_argument('--protocols', nargs='+', action='append', required=True, 
                         help='List of protocols for each chain. Use multiple times, once for each chain.')
     parser.add_argument('--input', default="correlation/actions.csv", help='Input CSV file (default: correlation/actions.csv)')
+    parser.add_argument('--output', default="correlation/matrix.png", help='Output image file (default: correlation_matrix.png)')
 
     args = parser.parse_args()
 
@@ -83,6 +88,7 @@ def main():
         sys.exit(1)
 
     chain_protocols = dict(zip(args.chains, args.protocols))
+    
     chain_abbr = create_unique_abbreviations(chain_protocols.keys())
     all_protocols = sorted(set(protocol for protocols in chain_protocols.values() for protocol in protocols))
     protocol_abbr = create_unique_abbreviations(all_protocols)
@@ -100,14 +106,9 @@ def main():
     df_non_zero = remove_zero_columns(df)
     non_zero_indices = [i for i, col in enumerate(df.columns) if col in df_non_zero.columns]
     labels = [labels[i] for i in non_zero_indices]
-
     removed_columns = set(df.columns) - set(df_non_zero.columns)
-    if removed_columns:
-        print(f"Removed {len(removed_columns)} columns with all zero values:")
-        print(", ".join(map(str, removed_columns)))
-
     z = sort_correlation_matrix(df_non_zero)
-    plot_correlation(z, f"Protocol Correlation Matrix ({len(df_non_zero.columns)} active protocols)", labels, full_names)
+    plot_correlation(z, f"Protocol Correlation Matrix ({len(df_non_zero.columns)} active protocols)", labels, full_names, args.output)
 
 if __name__ == '__main__':
     main()
