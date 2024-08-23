@@ -5,7 +5,24 @@ import { WagmiProvider } from "wagmi"
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
 
-import { base, mainnet, optimism } from "viem/chains"
+import {
+	arbitrum,
+	avalanche,
+	base,
+	blast,
+	bsc,
+	celo,
+	gnosis,
+	linea,
+	mainnet,
+	mantle,
+	mode,
+	optimism,
+	polygon,
+	scroll,
+	zkSync,
+	zora
+} from "viem/chains"
 
 const projectId =
 	process.env.NEXT_PUBLIC_WALLETCONNECT_ID ||
@@ -18,7 +35,23 @@ const metadata = {
 	icons: ["https://onplug.io/favicon.ico"]
 }
 
-const chains = [mainnet, base, optimism] as const
+const chains = [
+	mainnet,
+	base,
+	optimism,
+	arbitrum,
+	avalanche,
+	blast,
+	bsc,
+	celo,
+	gnosis,
+	polygon,
+	scroll,
+	mantle,
+	mode,
+	zora,
+	zkSync
+] as const
 
 const config = defaultWagmiConfig({
 	chains,

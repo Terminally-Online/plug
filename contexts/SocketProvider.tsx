@@ -14,6 +14,7 @@ import { useEnsAvatar, useEnsName } from "wagmi"
 import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
+import { mainnet } from "viem/chains"
 import {
 	GetEnsAvatarReturnType,
 	GetEnsNameReturnType,
@@ -66,9 +67,11 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: session } = useSession()
 
 	const { data: ensName } = useEnsName({
+		chainId: mainnet.id,
 		address: session?.address as `0x${string}`
 	})
 	const { data: ensAvatar } = useEnsAvatar({
+		chainId: mainnet.id,
 		name: normalize(ensName ?? "") || undefined
 	})
 
