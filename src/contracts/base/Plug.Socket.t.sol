@@ -20,11 +20,11 @@ contract PlugSocketTest is Test {
     }
 
     function test_name() public {
-        assertEq(socket.name(), "Plug Vault Socket");
+        assertEq(socket.name(), "Plug Socket");
     }
 
     function test_symbol() public {
-        assertEq(socket.symbol(), "PVS");
+        assertEq(socket.symbol(), "PS");
     }
 
     function testRevert_Initialize_Again() public {

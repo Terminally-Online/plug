@@ -11,15 +11,13 @@ interface PlugFactoryInterface {
      * @return $alreadyDeployed Whether or not the Socket was already deployed.
      * @return $socket The address of the deployed Socket.
      */
-    function deploy(
-        bytes calldata $salt
-    )
+    function deploy(bytes calldata $salt)
         external
         payable
         returns (bool $alreadyDeployed, address $socket);
 
     /**
-     * @notice Predict the address of a new Plug Vault.
+     * @notice Predict the address of a new Plug Socket.
      * @param $salt The salt of the vault.
      * @return $vault The predicted address of the vault.
      */

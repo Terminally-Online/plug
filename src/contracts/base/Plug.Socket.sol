@@ -38,7 +38,7 @@ contract PlugSocket is
     LibBitmap.Bitmap private nonces;
 
     /*
-    * @notice The constructor for the Plug Vault Socket will
+    * @notice The constructor for the Plug Socket will
     *         initialize to address(1) when not deployed through
     *         a Socket factory.
     */
@@ -104,9 +104,7 @@ contract PlugSocket is
     /**
      * See {PlugSocketInterface-plug}.
      */
-    function plug(
-        PlugTypesLib.Plugs calldata $plugs
-    )
+    function plug(PlugTypesLib.Plugs calldata $plugs)
         external
         payable
         virtual
@@ -118,10 +116,28 @@ contract PlugSocket is
     }
 
     /**
+     * @notice Enable specific addresses to build the final route of the Plug.
+     * @param $oneClickers The address of the one clicker.
+     * @param $allowance The allowance of the one clicker.
+     */
+    function oneClick(
+        address[] calldata $oneClickers,
+        bool[] calldata $allowance
+    )
+        public
+        virtual
+        onlyOwner
+    {
+        for (uint256 i; i < $oneClickers.length; i++) {
+            oneClickersToAllowed[$oneClickers[i]] = $allowance[i];
+        }
+    }
+
+    /**
      * See { PlugSocket-name }
      */
     function name() public pure override returns (string memory $name) {
-        $name = "Plug Vault Socket";
+        $name = "Plug Socket";
     }
 
     /**
@@ -205,9 +221,7 @@ contract PlugSocket is
      * @param $input The LivePlugs object that contains the Plugs object as well as
      *               the signature defining the permission to execute the bundle.
      */
-    function _enforceSignature(
-        PlugTypesLib.LivePlugs calldata $input
-    )
+    function _enforceSignature(PlugTypesLib.LivePlugs calldata $input)
         internal
         virtual
         returns (bool $allowed)

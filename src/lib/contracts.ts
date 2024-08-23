@@ -598,6 +598,24 @@ export const contracts = [
             },
             {
                 "type": "function",
+                "name": "oneClick",
+                "inputs": [
+                    {
+                        "name": "$oneClickers",
+                        "type": "address[]",
+                        "internalType": "address[]"
+                    },
+                    {
+                        "name": "$allowance",
+                        "type": "bool[]",
+                        "internalType": "bool[]"
+                    }
+                ],
+                "outputs": [],
+                "stateMutability": "nonpayable"
+            },
+            {
+                "type": "function",
                 "name": "oneClickersToAllowed",
                 "inputs": [
                     {

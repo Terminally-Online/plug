@@ -551,9 +551,7 @@ abstract contract TestPlug is TestPlus {
         $plugs = createPlugs(address(socket), $plugsArray, abi.encode($expiration, $solver));
     }
 
-    function createPlugs(
-        PlugTypesLib.Plug[] memory $plugsArray
-    )
+    function createPlugs(PlugTypesLib.Plug[] memory $plugsArray)
         internal
         view
         returns (PlugTypesLib.Plugs memory $plugs)
@@ -575,9 +573,7 @@ abstract contract TestPlug is TestPlus {
         $livePlugs = PlugTypesLib.LivePlugs({ plugs: $plugs, signature: signature });
     }
 
-    function createLivePlugs(
-        PlugTypesLib.Plugs memory $plugs
-    )
+    function createLivePlugs(PlugTypesLib.Plugs memory $plugs)
         internal
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
@@ -585,9 +581,7 @@ abstract contract TestPlug is TestPlus {
         $livePlugs = createLivePlugs(socket, $plugs);
     }
 
-    function createLivePlugs(
-        PlugTypesLib.Plug[] memory $plugsArray
-    )
+    function createLivePlugs(PlugTypesLib.Plug[] memory $plugsArray)
         internal
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)

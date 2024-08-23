@@ -457,6 +457,16 @@ export const plugSocketAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '$oneClickers', internalType: 'address[]', type: 'address[]' },
+      { name: '$allowance', internalType: 'bool[]', type: 'bool[]' },
+    ],
+    name: 'oneClick',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'oneClicker', internalType: 'address', type: 'address' }],
     name: 'oneClickersToAllowed',
     outputs: [{ name: 'allowed', internalType: 'bool', type: 'bool' }],
@@ -1250,6 +1260,14 @@ export const useWritePlugSocketInitialize =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugSocketAbi}__ and `functionName` set to `"oneClick"`
+ */
+export const useWritePlugSocketOneClick = /*#__PURE__*/ createUseWriteContract({
+  abi: plugSocketAbi,
+  functionName: 'oneClick',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugSocketAbi}__ and `functionName` set to `"plug"`
  */
 export const useWritePlugSocketPlug = /*#__PURE__*/ createUseWriteContract({
@@ -1325,6 +1343,15 @@ export const useSimulatePlugSocketInitialize =
   /*#__PURE__*/ createUseSimulateContract({
     abi: plugSocketAbi,
     functionName: 'initialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugSocketAbi}__ and `functionName` set to `"oneClick"`
+ */
+export const useSimulatePlugSocketOneClick =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: plugSocketAbi,
+    functionName: 'oneClick',
   })
 
 /**
