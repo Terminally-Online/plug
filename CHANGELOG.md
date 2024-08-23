@@ -1,43 +1,31 @@
 # @nftchance/plug-core
 
+## 0.3.1
+
+### Patch Changes
+
+-   ee54d0f: feat: enable users to control one clickers
+
 ## 0.3.0
 
 ### Minor Changes
 
 -   86dae2d: feat: deprecate vault as execution entry points and upgrade to router instances
--   77d2f5e: feat: unify conditions and executions to single form Plugs
 -   53d6f52: feat: simplify sdk and deprecate custom type acceptance
 -   142f8cf: feat: flatten architecture
--   3d0a306: feat: revocation in core with batch functionality
 
 ### Patch Changes
 
--   87e5577: feat: cooldown fuse
--   404352a: feat: multichain signatures
--   b5dd31d: feat: create2 deployment for every piece
--   cd3b065: feat: upgradeable vaults and runtime deployment
--   6bb4ef1: feat: one clicker functionality
 -   b9eede4: chore: update to support abitypes breaking changes
--   155712a: feat: balance based fuses
--   3ecf701: feat: rate limit fuse
 -   3350d4f: fix: out of form error in PlugTypes
 -   dd48d07: feat: vault deployment without explicitly provided salt
 -   3350d4f: feat: improved automatic mining and etching
 -   f252b33: chore: update protocol types to current version
--   e2f49e8: chore: use custom errors
--   5809baa: feat: update treasury to contain a built in swapper
 -   3350d4f: feat: automatic deployment script generation
 -   a36fa68: chore: deprecate the use of submodules as dependencies
 -   3350d4f: feat: include generated contracts in package
--   e2f49e8: chore: threshold fuses improvement using custom errors
--   77d2f5e: fix: solady import containing /src
--   d4e10f3: feat: tradable vaults with a non-fungible representation
--   6bb4ef1: feat: massive simplification of order building that stems from api router & solver
--   247c581: feat: merkle tree signatures
--   4e7132a: feat: fraxlend apy fuse
 -   3350d4f: feat: automatic wagmi hook generation
 -   b37be3a: feat: add BaseFee fuse for gas fee control
--   e2f49e8: fix: plug library circular dependencies
 
 ## 0.2.6
 
