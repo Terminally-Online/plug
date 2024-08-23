@@ -20,7 +20,9 @@ contract PlugFactory is PlugFactoryInterface {
     /**
      * See { PlugFactoryInterface.deploy }
      */
-    function deploy(bytes calldata $salt)
+    function deploy(
+        bytes calldata $salt
+    )
         public
         payable
         virtual
@@ -71,7 +73,9 @@ contract PlugFactory is PlugFactoryInterface {
     /**
      * See { PlugFactoryInterface.initCodeHash }
      */
-    function initCodeHash(address $implementation)
+    function initCodeHash(
+        address $implementation
+    )
         public
         view
         virtual

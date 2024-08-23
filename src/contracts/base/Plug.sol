@@ -26,7 +26,9 @@ contract Plug is PlugInterface {
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+    function plug(
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
         public
         payable
         virtual
@@ -40,7 +42,9 @@ contract Plug is PlugInterface {
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
+    function plug(
+        PlugTypesLib.LivePlugs[] calldata $livePlugs
+    )
         public
         payable
         virtual
@@ -78,7 +82,9 @@ contract Plug is PlugInterface {
      * @param $livePlugs The signed bundle of Plugs being executed.
      * @return $socket The Socket to use.
      */
-    function _socket(PlugTypesLib.LivePlugs calldata $livePlugs)
+    function _socket(
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
         internal
         virtual
         returns (PlugSocketInterface $socket)

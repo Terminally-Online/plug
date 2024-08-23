@@ -264,7 +264,9 @@ abstract contract PlugTypes {
      * @param $input The EIP712Domain data to encode.
      * @return $typeHash The packet hash of the encoded EIP712Domain data.
      */
-    function getEIP712DomainHash(PlugTypesLib.EIP712Domain memory $input)
+    function getEIP712DomainHash(
+        PlugTypesLib.EIP712Domain memory $input
+    )
         public
         pure
         virtual
@@ -287,7 +289,9 @@ abstract contract PlugTypes {
      * @param $input The Plug data to encode.
      * @return $typeHash The packet hash of the encoded Plug data.
      */
-    function getPlugHash(PlugTypesLib.Plug memory $input)
+    function getPlugHash(
+        PlugTypesLib.Plug memory $input
+    )
         public
         pure
         virtual
@@ -304,7 +308,9 @@ abstract contract PlugTypes {
      * @param $input The Plugs data to encode.
      * @return $typeHash The packet hash of the encoded Plugs data.
      */
-    function getPlugsHash(PlugTypesLib.Plugs memory $input)
+    function getPlugsHash(
+        PlugTypesLib.Plugs memory $input
+    )
         public
         pure
         virtual
@@ -327,7 +333,9 @@ abstract contract PlugTypes {
      * @param $input The Plug[] data to encode.
      * @return $typeHash The packet hash of the encoded Plug[] data.
      */
-    function getPlugArrayHash(PlugTypesLib.Plug[] memory $input)
+    function getPlugArrayHash(
+        PlugTypesLib.Plug[] memory $input
+    )
         public
         pure
         virtual
@@ -353,7 +361,9 @@ abstract contract PlugTypes {
      * @param $input The LivePlugs data to encode.
      * @return $typeHash The packet hash of the encoded LivePlugs data.
      */
-    function getLivePlugsHash(PlugTypesLib.LivePlugs memory $input)
+    function getLivePlugsHash(
+        PlugTypesLib.LivePlugs memory $input
+    )
         public
         pure
         virtual
@@ -370,7 +380,9 @@ abstract contract PlugTypes {
      * @param $input The Plugs data to encode.
      * @return $digest The digest hash of the encoded Plugs data.
      */
-    function getPlugsDigest(PlugTypesLib.Plugs memory $input)
+    function getPlugsDigest(
+        PlugTypesLib.Plugs memory $input
+    )
         public
         view
         virtual
@@ -384,7 +396,9 @@ abstract contract PlugTypes {
      * @param $input The LivePlugs data to encode.
      * @return $signer The signer of the LivePlugs data.
      */
-    function getLivePlugsSigner(PlugTypesLib.LivePlugs memory $input)
+    function getLivePlugsSigner(
+        PlugTypesLib.LivePlugs memory $input
+    )
         public
         view
         virtual
