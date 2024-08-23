@@ -15,6 +15,24 @@ Table ConsoleColumn {
   socketId String [not null]
 }
 
+Table FarcasterUserAddress {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  farcasterUsers FarcasterUser [not null]
+}
+
+Table FarcasterUser {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  socket UserSocket
+  socketId String [unique]
+  addresses FarcasterUserAddress [not null]
+  followers FarcasterUser [not null]
+  following FarcasterUser [not null]
+}
+
 Table UserSocket {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
@@ -22,6 +40,7 @@ Table UserSocket {
   socketAddress String [not null]
   ensName String
   ensAvatar String
+  farcasterUser FarcasterUser
   columns ConsoleColumn [not null]
   tokens TokenBalanceCache [not null]
   collectibles OpenseaCollectibleCache [not null]
@@ -231,7 +250,19 @@ Table FeatureRequest {
   message String
 }
 
+Table FarcasterAddresses {
+  farcasterusersId String [ref: > FarcasterUser.id]
+  addressesId String [ref: > FarcasterUserAddress.id]
+}
+
+Table FarcasterFollows {
+  followersId String [ref: > FarcasterUser.id]
+  followingId String [ref: > FarcasterUser.id]
+}
+
 Ref: ConsoleColumn.socketId > UserSocket.id
+
+Ref: FarcasterUser.socketId - UserSocket.id [delete: Cascade]
 
 Ref: TokenBalance.(cacheSocketId, cacheChain) > TokenBalanceCache.(socketId, chain)
 

@@ -37,6 +37,42 @@ model ConsoleColumn {
     socketId String
 }
 
+model FarcasterUserAddress {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Many-to-many
+    // ---------------------------------------------------------------------------
+    farcasterUsers FarcasterUser[] @relation("FarcasterAddresses")
+}
+
+model FarcasterUser {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    socket   UserSocket? @relation(fields: [socketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    socketId String?     @unique
+
+    // ---------------------------------------------------------------------------
+    // Many-to-many
+    // ---------------------------------------------------------------------------
+    addresses FarcasterUserAddress[] @relation("FarcasterAddresses")
+    followers FarcasterUser[]        @relation("FarcasterFollows")
+    following FarcasterUser[]        @relation("FarcasterFollows")
+}
+
 model UserSocket {
     id String @id @default(uuid())
 
@@ -52,6 +88,11 @@ model UserSocket {
     socketAddress String
     ensName       String?
     ensAvatar     String?
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    farcasterUser FarcasterUser?
 
     // ---------------------------------------------------------------------------
     // One-to-many 
