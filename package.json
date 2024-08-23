@@ -7,7 +7,7 @@
     "build": "pnpm build:ts && pnpm build:contracts",
     "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
     "build:artifacts": "pnpm tsx src/lib/functions/artifacts.ts",
-    "build:contracts": "pnpm plug generate && forge fmt && pnpm build:artifacts && npx wagmi generate",
+    "build:contracts": "forge fmt && pnpm build:artifacts && npx wagmi generate",
     "build:etcher": "pnpm tsx src/lib/functions/etcher.ts",
     "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
     "build:format": "pnpm prettier --write .",
@@ -20,7 +20,7 @@
     "build:ts": "pnpm tsup && pnpm build:format",
     "build:lint": "tsc",
     "dev": "npm-run-all -p dev:*",
-    "dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge test -vvv && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
+    "dev:contracts": "nodemon --watch \"src/contracts/**\" --ext \"sol\" --exec \"forge build && forge test -vvv && forge coverage --report lcov && genhtml -o report lcov.info --branch-coverage\"",
     "dev:package": "pnpm tsup --watch"
   },
   "devDependencies": {
@@ -81,10 +81,6 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "default": "./dist/core/index.js"
-    },
     "./lib": {
       "types": "./dist/lib/index.d.ts",
       "default": "./dist/lib/index.js"
@@ -96,7 +92,6 @@
     "./addresses.json": "./src/lib/addresses.json"
   },
   "files": [
-    "/core",
     "/lib",
     "/dist",
     "/src",

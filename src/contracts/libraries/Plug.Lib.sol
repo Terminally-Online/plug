@@ -12,30 +12,25 @@ library PlugLib {
         address indexed previousOwner, address indexed newOwner, bytes32 imageHash
     );
 
-    event PlugsRevocationUpdated(bytes32 indexed $plugsHash, bool indexed $revoked);
     event PlugsExecuted(bytes32 indexed $plugsHash, PlugTypesLib.Result[] $results);
 
     error NotImplemented();
 
-    error ImplementationAlreadyInitialized(uint16 $version);
-    error ImplementationInvalid(uint16 $version);
-
-    error TradingAlreadyInitialized();
-
     error SocketAddressInvalid(address $intended, address $socket);
     error SocketAddressEmpty(address $socket);
 
+    error SaltInvalid(address $implementation, address $admin);
+    error NonceInvalid();
     error CallerInvalid(address $expected, address $reality);
-
     error SenderInvalid(address $reality);
     error RouterInvalid(address $reality);
     error SignatureInvalid();
     error SolverInvalid(address $expected, address $reality);
+    error SolverExpired();
     error TypeInvalid(uint8 $reality);
     error ValueInvalid(address $recipient, uint256 $expected, uint256 $reality);
 
     error PlugFailed();
-    error PlugsRevoked();
 
     error CompensationFailed(address $recipient, uint256 $value);
 

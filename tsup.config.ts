@@ -4,7 +4,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig(
 	getConfig({
-		entry: ['src/index.ts', 'src/core/index.ts', 'src/lib/index.ts'],
+		entry: ['src/index.ts', 'src/lib/index.ts'],
 		external: [...Object.keys(dependencies)]
 	})
 )

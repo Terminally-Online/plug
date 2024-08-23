@@ -4,13 +4,6 @@ pragma solidity 0.8.23;
 
 interface PlugFactoryInterface {
     /**
-     * @notice Initialize this implementation of the factory.
-     * @param $owner The address of the owner.
-     * @param $baseURI The base URI of the factory.
-     */
-    function initialize(address $owner, string memory $baseURI, address $implementation) external;
-
-    /**
      * @notice Deploy a new Socket and initialize it.
      * @dev This version is used to interface with directly enabling the ability
      *      to deploy multiple Sockets at once from a single Plug bundle.
@@ -19,8 +12,7 @@ interface PlugFactoryInterface {
      * @return $socket The address of the deployed Socket.
      */
     function deploy(
-        bytes32 $salt,
-        address $router
+        bytes calldata $salt
     )
         external
         payable

@@ -16,7 +16,7 @@ import { ECDSA } from "solady/utils/ECDSA.sol";
 import { Plug } from "../../base/Plug.sol";
 import { PlugFactory } from "../../base/Plug.Factory.sol";
 import { PlugTreasury } from "../../base/Plug.Treasury.sol";
-import { PlugVaultSocket } from "../../sockets/Plug.Vault.Socket.sol";
+import { PlugSocket } from "../../base/Plug.Socket.sol";
 
 import { PlugMockERC20 } from "../../mocks/Plug.Mock.ERC20.sol";
 import { PlugMockERC721 } from "../../mocks/Plug.Mock.ERC721.sol";
@@ -399,8 +399,6 @@ abstract contract TestPlus {
 abstract contract TestPlug is TestPlus {
     Vm private constant vm = Vm(_VM_ADDRESS);
 
-    PlugVaultSocket internal vaultImplementation;
-
     PlugMockERC20 internal mockERC20;
     PlugMockERC721 internal mockERC721;
     PlugMockERC1155 internal mockERC1155;
@@ -408,14 +406,18 @@ abstract contract TestPlug is TestPlus {
     Plug internal plug;
     PlugFactory internal factory;
     PlugTreasury internal treasury;
-    PlugVaultSocket internal vault;
+
+    PlugSocket internal socketImplementation;
+    PlugSocket internal socket;
+
     PlugMockEcho internal mock;
 
     address internal factoryOwner;
-    string internal baseURI = "https://api.onplug.io/metadata/";
 
     address internal signer;
     uint256 internal signerPrivateKey = 0x12345;
+    address internal oneClicker;
+    uint256 internal oneClickerPrivateKey = 0xa12345;
 
     uint8 internal PLUG_CONDITION = 1;
     uint8 internal PLUG_EXECUTION = 2;
@@ -429,8 +431,7 @@ abstract contract TestPlug is TestPlus {
     function setUpPlug() internal {
         factoryOwner = _randomNonZeroAddress();
         signer = vm.addr(signerPrivateKey);
-
-        vaultImplementation = new PlugVaultSocket();
+        oneClicker = vm.addr(oneClickerPrivateKey);
 
         mockERC20 = new PlugMockERC20();
         mockERC721 = new PlugMockERC721();
@@ -439,7 +440,9 @@ abstract contract TestPlug is TestPlus {
         plug = deployPlug();
         factory = deployFactory();
         treasury = deployTreasury();
-        vault = deployVault();
+
+        socketImplementation = new PlugSocket();
+        socket = deployVault();
 
         mock = new PlugMockEcho();
     }
@@ -452,7 +455,6 @@ abstract contract TestPlug is TestPlus {
     function deployFactory() internal virtual returns (PlugFactory $factory) {
         vm.etch(PlugEtcherLib.PLUG_FACTORY_ADDRESS, address(new PlugFactory()).code);
         $factory = PlugFactory(payable(PlugEtcherLib.PLUG_FACTORY_ADDRESS));
-        $factory.initialize(factoryOwner, baseURI, address(vaultImplementation));
     }
 
     function deployTreasury() internal virtual returns (PlugTreasury $treasury) {
@@ -461,10 +463,10 @@ abstract contract TestPlug is TestPlus {
         $treasury.initialize(factoryOwner);
     }
 
-    function deployVault() internal virtual returns (PlugVaultSocket $vault) {
+    function deployVault() internal virtual returns (PlugSocket $vault) {
         (, address vaultAddress) =
-            factory.deploy(bytes32(abi.encodePacked(signer, uint96(0))), address(plug));
-        $vault = PlugVaultSocket(payable(vaultAddress));
+            factory.deploy(abi.encode(uint96(0), signer, oneClicker, address(socketImplementation)));
+        $vault = PlugSocket(payable(vaultAddress));
     }
 
     function createPlug(
@@ -515,13 +517,13 @@ abstract contract TestPlug is TestPlus {
         bytes memory $solver
     )
         internal
-        view
+        pure
         returns (PlugTypesLib.Plugs memory $plugs)
     {
         $plugs = PlugTypesLib.Plugs({
             socket: address($socket),
             plugs: $plugsArray,
-            salt: bytes32(block.timestamp),
+            salt: bytes(""),
             solver: $solver
         });
     }
@@ -534,69 +536,68 @@ abstract contract TestPlug is TestPlus {
         view
         returns (PlugTypesLib.Plugs memory $plugs)
     {
-        $plugs = createPlugs(address(vault), $plugsArray, $solver);
+        $plugs = createPlugs(address(socket), $plugsArray, $solver);
     }
 
     function createPlugs(
         PlugTypesLib.Plug[] memory $plugsArray,
-        uint96 $maxPriorityFeePerGas,
-        uint96 $maxFeePerGas,
+        uint48 $expiration,
         address $solver
     )
         internal
         view
         returns (PlugTypesLib.Plugs memory $plugs)
     {
-        $plugs = createPlugs(
-            address(vault), $plugsArray, abi.encode($maxPriorityFeePerGas, $maxFeePerGas, $solver)
-        );
+        $plugs = createPlugs(address(socket), $plugsArray, abi.encode($expiration, $solver));
     }
 
-    function createPlugs(PlugTypesLib.Plug[] memory $plugsArray)
+    function createPlugs(
+        PlugTypesLib.Plug[] memory $plugsArray
+    )
         internal
         view
         returns (PlugTypesLib.Plugs memory $plugs)
     {
-        $plugs = createPlugs(address(vault), $plugsArray, bytes(""));
+        $plugs = createPlugs(address(socket), $plugsArray, bytes(""));
     }
 
     function createLivePlugs(
-        PlugVaultSocket $socket,
+        PlugSocket $socket,
         PlugTypesLib.Plugs memory $plugs
     )
         internal
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
     {
-        bytes32 plugsHash = $socket.getPlugsHash($plugs);
-
-        $livePlugs = PlugTypesLib.LivePlugs({
-            plugs: $plugs,
-            signature: pack(sign(plugsHash, address($socket), signerPrivateKey, false))
-        });
+        bytes32 digest = $socket.getPlugsDigest($plugs);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        $livePlugs = PlugTypesLib.LivePlugs({ plugs: $plugs, signature: signature });
     }
 
-    function createLivePlugs(PlugTypesLib.Plugs memory $plugs)
+    function createLivePlugs(
+        PlugTypesLib.Plugs memory $plugs
+    )
         internal
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
     {
-        $livePlugs = createLivePlugs(vault, $plugs);
+        $livePlugs = createLivePlugs(socket, $plugs);
     }
 
-    function createLivePlugs(PlugTypesLib.Plug[] memory $plugsArray)
+    function createLivePlugs(
+        PlugTypesLib.Plug[] memory $plugsArray
+    )
         internal
         view
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
     {
         PlugTypesLib.Plugs memory plugs = createPlugs($plugsArray);
-        $livePlugs = createLivePlugs(vault, plugs);
+        $livePlugs = createLivePlugs(socket, plugs);
     }
 
     function createLivePlugs(
         PlugTypesLib.Plug[] memory $plugsArray,
-        uint96 $maxPriorityFeePerGas,
-        uint96 $maxFeePerGas,
         address $solver
     )
         internal
@@ -604,71 +605,8 @@ abstract contract TestPlug is TestPlus {
         returns (PlugTypesLib.LivePlugs memory $livePlugs)
     {
         PlugTypesLib.Plugs memory plugs =
-            createPlugs($plugsArray, $maxPriorityFeePerGas, $maxFeePerGas, $solver);
-        $livePlugs = createLivePlugs(vault, plugs);
-    }
-
-    function getExpectedImageHash(
-        address user,
-        uint8 weight,
-        uint16 threshold,
-        uint32 checkpoint
-    )
-        internal
-        pure
-        returns (bytes32 $imageHash)
-    {
-        $imageHash = keccak256(
-            abi.encodePacked(
-                keccak256(
-                    abi.encodePacked(
-                        abi.decode(abi.encodePacked(uint96(weight), user), (bytes32)),
-                        uint256(threshold)
-                    )
-                ),
-                uint256(checkpoint)
-            )
-        );
-    }
-
-    function sign(
-        bytes32 $hash,
-        address $socket,
-        uint256 $userKey,
-        bool $isSign
-    )
-        internal
-        view
-        returns (bytes memory $signature)
-    {
-        bytes32 subdigest = keccak256(abi.encodePacked("\x19\x01", block.chainid, $socket, $hash));
-
-        subdigest = $isSign ? ECDSA.toEthSignedMessageHash(subdigest) : subdigest;
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign($userKey, subdigest);
-        $signature = abi.encodePacked(r, s, v, uint8($isSign ? 2 : 1));
-    }
-
-    function pack(
-        bytes memory $signature,
-        uint8 $weight,
-        uint16 $threshold,
-        uint32 $checkpoint
-    )
-        internal
-        pure
-        returns (bytes memory $packedSignature)
-    {
-        /// @dev Flag for legacy signature
-        uint8 legacySignatureFlag = uint8(0);
-
-        /// @dev Pack the signature w/ flag, weight, threshold, checkpoint
-        $packedSignature =
-            abi.encodePacked($threshold, $checkpoint, legacySignatureFlag, $weight, $signature);
-    }
-
-    function pack(bytes memory $signature) internal pure returns (bytes memory $packedSignature) {
-        $packedSignature = pack($signature, 1, 1, 1);
+            createPlugs($plugsArray, uint48(block.timestamp + 3 minutes), $solver);
+        $livePlugs = createLivePlugs(socket, plugs);
     }
 }
 

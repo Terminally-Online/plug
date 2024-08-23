@@ -26,7 +26,9 @@ contract Plug is PlugInterface {
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
+    function plug(
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
         public
         payable
         virtual
@@ -34,13 +36,15 @@ contract Plug is PlugInterface {
     {
         /// @dev Pass down the signature components and execute
         ///      the bundle from within the Socket that was declared.
-        $results = _socket($livePlugs).plug($livePlugs, msg.sender, gasleft());
+        $results = _socket($livePlugs).plug($livePlugs, msg.sender);
     }
 
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
+    function plug(
+        PlugTypesLib.LivePlugs[] calldata $livePlugs
+    )
         public
         payable
         virtual
@@ -78,7 +82,9 @@ contract Plug is PlugInterface {
      * @param $livePlugs The signed bundle of Plugs being executed.
      * @return $socket The Socket to use.
      */
-    function _socket(PlugTypesLib.LivePlugs calldata $livePlugs)
+    function _socket(
+        PlugTypesLib.LivePlugs calldata $livePlugs
+    )
         internal
         virtual
         returns (PlugSocketInterface $socket)
@@ -89,7 +95,7 @@ contract Plug is PlugInterface {
         /// @dev If the Socket has not yet been deployed, deploy it.
         if (socketAddress.code.length == 0) {
             /// @dev Call the factory that will handle the intent based deployment.
-            (, address $socketAddress) = factory.deploy($livePlugs.plugs.salt, address(this));
+            (, address $socketAddress) = factory.deploy($livePlugs.plugs.salt);
 
             /// @dev Confirm the Socket was deployed to the right address.
             if (socketAddress != $socketAddress) {

@@ -192,5 +192,4 @@ lcov.info
 
 ./core
 ./contracts
-/core/**
 /lib/**

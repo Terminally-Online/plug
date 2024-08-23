@@ -10,9 +10,9 @@ import {
     PlugEtcherLib,
     PlugFactory,
     Plug,
-    PlugVaultSocket,
     PlugMockEcho
 } from "../abstracts/test/Plug.Test.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 
 contract PlugTest is Test {
     event EchoInvoked(address $sender, string $message);
@@ -32,177 +32,112 @@ contract PlugTest is Test {
     function test_PlugEmptyEcho_TypeRecovery() public {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray);
-
-        plug.plug(livePlugs);
-    }
-
-    function test_PlugEmptyEcho_SignerSolver() public {
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray);
-
-        vm.expectEmit(address(mock));
-        emit EchoInvoked(address(vault), "Hello World");
-        plug.plug(livePlugs);
-    }
-
-    function testRevert_PlugEmptyEcho_SignerSolver_InvalidRouter() public {
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray);
-
-        plug = new Plug();
-        vm.expectRevert(abi.encodeWithSelector(PlugLib.RouterInvalid.selector, address(plug)));
-        plug.plug(livePlugs);
-    }
-
-    function testRevert_PlugEmptyEcho_SignerSolver_InvalidSignature() public {
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
-        PlugTypesLib.LivePlugs memory livePlugs = PlugTypesLib.LivePlugs({
-            plugs: plugs,
-            signature: pack(
-                sign(
-                    vault.getPlugsHash(plugs),
-                    address(vault),
-                    /// @dev Invalid signer private key.
-                    0xabc1234,
-                    false
-                )
-            )
-        });
-
-        vm.expectRevert(PlugLib.SignatureInvalid.selector);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
         plug.plug(livePlugs);
     }
 
-    function test_PlugEmptyEcho_ExternalSolver_NotCompensated() public {
-        address solver = _randomNonZeroAddress();
-        vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 100 ether);
-        uint256 preBalance = address(solver).balance;
-
+    function test_PlugEmptyEcho_Solver() public {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, 0, 0, solver);
-
-        vm.prank(solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray);
         vm.expectEmit(address(mock));
-        emit EchoInvoked(address(vault), "Hello World");
-        plug.plug(livePlugs);
-        assertEq(preBalance, address(solver).balance);
-    }
-
-    function testRevert_PlugEmptyEcho_ExternalSolver_NotCompensated_Revocation() public {
-        address solver = _randomNonZeroAddress();
-        vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 100 ether);
-
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray, 0, 0, solver);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
-
-        bytes32 plugsHash = vault.getPlugsHash(plugs);
-
-        vm.prank(vault.owner());
-        vm.expectEmit(address(vault));
-        emit PlugLib.PlugsRevocationUpdated(plugsHash, true);
-        vault.revoke(plugsHash, true);
-
-        vm.expectRevert(PlugLib.PlugsRevoked.selector);
+        emit EchoInvoked(address(socket), "Hello World");
         plug.plug(livePlugs);
     }
 
-    function test_PlugRevocation_Solved_And_Revoked() public {
+    function test_PlugEmptyEcho_Solver_TreasuryPayment() public {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 100 ether);
-
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray, 0, 0, solver);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
-
-        bytes32 plugsHash = vault.getPlugsHash(plugs);
-
-        PlugTypesLib.Plug[] memory revocationPlugsArray = new PlugTypesLib.Plug[](1);
-
-        bytes4 revokeSelector = bytes4(keccak256("revoke(bytes32,bool)"));
-        revocationPlugsArray[0] = createPlug(
-            address(vault),
-            PLUG_NO_VALUE,
-            abi.encodeWithSelector(revokeSelector, plugsHash, true),
-            PLUG_EXECUTION
-        );
-        PlugTypesLib.Plugs memory revocationPlugs = createPlugs(revocationPlugsArray, 0, 0, solver);
-        PlugTypesLib.LivePlugs memory revocationLivePlugs = createLivePlugs(revocationPlugs);
-
-        vm.prank(solver);
-        vm.expectEmit(address(vault));
-        emit PlugLib.PlugsRevocationUpdated(plugsHash, true);
-        plug.plug(revocationLivePlugs);
-
-        vm.prank(solver);
-        vm.expectRevert(PlugLib.PlugsRevoked.selector);
-        plug.plug(livePlugs);
-    }
-
-    function test_PlugEmptyEcho_ExternalSolver_Compensated() public {
-        address solver = _randomNonZeroAddress();
-        vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 100 ether);
-        uint256 preBalance = address(vault).balance;
-
+        vm.deal(address(socket), 100 ether);
+        uint256 preBalance = address(treasury).balance;
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
         plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, 0.2 ether, 1, solver);
-
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, solver);
         vm.prank(solver);
         vm.expectEmit(address(mock));
-        emit EchoInvoked(address(vault), "Hello World");
+        emit EchoInvoked(address(socket), "Hello World");
         plug.plug(livePlugs);
-        assertTrue(preBalance - 1 ether > address(vault).balance);
+        assertTrue(address(treasury).balance > preBalance);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalSolver_CompensationFailure() public {
+    function testRevert_PlugEmptyEcho_Solver_TreasuryPaymentFailure() public {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 0);
-
+        vm.deal(address(socket), 0);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
         plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, 0.2 ether, 24, solver);
-
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, solver);
         vm.prank(solver);
         vm.expectRevert(
             abi.encodeWithSelector(
                 PlugLib.ValueInvalid.selector,
                 PlugEtcherLib.PLUG_TREASURY_ADDRESS,
                 PLUG_VALUE,
-                address(vault).balance
+                address(socket).balance
             )
         );
         plug.plug(livePlugs);
     }
 
-    function testRevert_PlugEmptyEcho_ExternalSolver_Invalid() public {
+    function test_PlugEmptyEcho_Solver_InvalidNonce() public {
         address solver = _randomNonZeroAddress();
         vm.deal(solver, 100 ether);
-        vm.deal(address(vault), 100 ether);
-
+        vm.deal(address(socket), 100 ether);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
         plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
-        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, 0, 0, solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugsArray, solver);
+        vm.prank(solver);
+        vm.expectEmit(address(mock));
+        emit EchoInvoked(address(socket), "Hello World");
+        plug.plug(livePlugs);
+        vm.expectRevert(PlugLib.NonceInvalid.selector);
+        plug.plug(livePlugs);
+    }
 
+    function testRevert_PlugEmptyEcho_Solver_InvalidSignature() public {
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
+        bytes32 digest = socket.getPlugsDigest(plugs);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0x123456, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+        PlugTypesLib.LivePlugs memory livePlugs =
+            PlugTypesLib.LivePlugs({ plugs: plugs, signature: signature });
+        vm.expectRevert(PlugLib.SignatureInvalid.selector);
+        plug.plug(livePlugs);
+    }
+
+    function testRevert_PlugEmptyEcho_Solver_Invalid() public {
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
+        vm.deal(address(socket), 100 ether);
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
+        PlugTypesLib.Plugs memory plugs =
+            createPlugs(plugsArray, uint48(block.timestamp + 3 minutes), solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
         vm.expectRevert(
             abi.encodeWithSelector(PlugLib.SolverInvalid.selector, address(solver), address(this))
         );
+        plug.plug(livePlugs);
+    }
+
+    function testRevert_PlugEmptyEcho_Solver_Expired() public {
+        address solver = _randomNonZeroAddress();
+        vm.deal(solver, 100 ether);
+        vm.deal(address(socket), 100 ether);
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        PlugTypesLib.Plugs memory plugs =
+            createPlugs(plugsArray, uint48(block.timestamp - 1 minutes), solver);
+        PlugTypesLib.LivePlugs memory livePlugs = createLivePlugs(plugs);
+        vm.prank(solver);
+        vm.expectRevert(PlugLib.SolverExpired.selector);
         plug.plug(livePlugs);
     }
 }
