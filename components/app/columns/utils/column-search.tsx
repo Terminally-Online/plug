@@ -12,9 +12,9 @@ import { Button } from "@/components/shared"
 import { cn, greenGradientStyle, useDebounce, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-import { Search } from "../inputs"
-import { PlugGrid } from "../plugs"
-import { SocketCollectionList, SocketTokenList } from "../sockets"
+import { Search } from "../../inputs"
+import { PlugGrid } from "../../plugs"
+import { SocketCollectionList, SocketTokenList } from "../../sockets"
 
 export const ConsoleSearch: FC<
 	HTMLAttributes<HTMLDivElement> & { id: string }

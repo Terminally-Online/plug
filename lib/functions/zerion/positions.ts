@@ -211,7 +211,7 @@ const getFungiblePositions = async (
 					upsert: response.data.data.map((position: any) => ({
 						where: { id: position.id },
 						create: {
-							id: position.id,
+							id: `${socketId}-${position.id}`,
 							chain: position.relationships.chain.data.id,
 							type: position.attributes.position_type,
 							balance: position.attributes.quantity.float,

@@ -62,8 +62,7 @@ model FarcasterUser {
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket? @relation(fields: [socketId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    socketId String?     @unique
+    identity SocketIdentity?
 
     // ---------------------------------------------------------------------------
     // Many-to-many
@@ -73,9 +72,7 @@ model FarcasterUser {
     following FarcasterUser[]        @relation("FarcasterFollows")
 }
 
-model UserSocket {
-    id String @id @default(uuid())
-
+model ENS {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
@@ -85,14 +82,51 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    socketAddress String
-    ensName       String?
-    ensAvatar     String?
+    name   String  @id @unique
+    avatar String?
 
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    farcasterUser FarcasterUser?
+    identity SocketIdentity?
+}
+
+model SocketIdentity {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    socket      UserSocket     @relation(fields: [socketId], references: [id])
+    socketId    String         @id @unique
+    farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
+    farcasterId String?        @unique
+    ens         ENS?           @relation(fields: [ensName], references: [name], onDelete: SetNull)
+    ensName     String?        @unique
+}
+
+model UserSocket {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    admin         Boolean @default(false)
+    socketAddress String
+
+    // ---------------------------------------------------------------------------
+    // One-to-one
+    // ---------------------------------------------------------------------------
+    identity SocketIdentity?
 
     // ---------------------------------------------------------------------------
     // One-to-many 
@@ -376,7 +410,7 @@ model OpenseaCollectible {
     identifier          String
     contract            String
     tokenStandard       String
-    name                String
+    name                String?
     description         String?
     imageUrl            String?
     displayImageUrl     String?

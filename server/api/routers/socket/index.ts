@@ -1,8 +1,15 @@
 import { z } from "zod"
 
+import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 
-import { DEFAULT_VIEWS, getFarcasterFollowing, VIEW_KEYS } from "@/lib"
+import {
+	DEFAULT_VIEWS,
+	getFarcasterFollowing,
+	SOCKET_BASE_INCLUDE,
+	SOCKET_BASE_QUERY,
+	VIEW_KEYS
+} from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 import { balances } from "./balances"
@@ -32,15 +39,67 @@ export const socket = createTRPCRouter({
 							data: DEFAULT_VIEWS
 						}
 					},
-					ensName: input.name,
-					ensAvatar: input.avatar
+					identity: {
+						connectOrCreate: {
+							where: { socketId: ctx.session.address },
+							create: {
+								ens: input.name
+									? {
+											connectOrCreate: {
+												where: { name: input.name },
+												create: {
+													name: input.name,
+													avatar: input.avatar
+												}
+											}
+										}
+									: undefined
+							}
+						}
+					}
 				},
 				update: {
-					ensName: input.name,
-					ensAvatar: input.avatar
+					identity: {
+						upsert: {
+							where: { socketId: ctx.session.address },
+							create: {},
+							update: {}
+						}
+					}
 				},
 				select: { columns: true }
 			})
+
+			if (input.name)
+				await ctx.db.eNS.upsert({
+					where: { name: input.name },
+					create: {
+						name: input.name,
+						avatar: input.avatar ? input.avatar : undefined,
+						identity: {
+							connectOrCreate: {
+								where: { socketId: ctx.session.address },
+								create: {
+									socketId: ctx.session.address
+								}
+							}
+						}
+					},
+					update: {
+						avatar: input.avatar ? input.avatar : undefined,
+						identity: {
+							connectOrCreate: {
+								where: { socketId: ctx.session.address },
+								create: {
+									socketId: ctx.session.address
+								}
+							}
+						}
+					}
+				})
+
+			// NOTE: This is not awaited because we will just do this as a background task.
+			await getFarcasterFollowing(ctx.session.address)
 
 			// NOTE: Make sure the socket always has the global home column that is
 			//       denoted by the -1 index as the column view should never show it.
@@ -56,13 +115,10 @@ export const socket = createTRPCRouter({
 
 			const socket = await ctx.db.userSocket.findFirst({
 				where: { id: ctx.session.address },
-				include: { columns: true }
+				...SOCKET_BASE_QUERY
 			})
 
 			if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-			// NOTE: This is not awaited because we will just do this as a background task.
-			getFarcasterFollowing(ctx.session.address)
 
 			return socket
 		}),

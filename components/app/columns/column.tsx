@@ -6,7 +6,12 @@ import { Draggable } from "@hello-pangea/dnd"
 
 import {
 	Button,
+	ColumnProfile,
+	ConsoleAdmin,
+	ConsoleAlerts,
+	ConsoleAuthenticate,
 	ConsoleColumnAddOptions,
+	ConsoleSearch,
 	Header,
 	Plug,
 	Plugs,
@@ -22,10 +27,6 @@ import {
 import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cardColors, cn, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
-
-import { ConsoleAlerts } from "./column-alerts"
-import { ConsoleAuthenticate } from "./column-authenticate"
-import { ConsoleSearch } from "./console-search"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
@@ -304,6 +305,13 @@ export const ConsoleColumn: FC<{
 										id={column.id}
 										className="px-4 pt-4"
 									/>
+								) : column.key === VIEW_KEYS.ADMIN ? (
+									<ConsoleAdmin
+										id={column.id}
+										className="px-4 pt-4"
+									/>
+								) : column.key === VIEW_KEYS.PROFILE ? (
+									<ColumnProfile className="px-4 py-4" />
 								) : (
 									<></>
 								)}

@@ -1,4 +1,5 @@
 export const VIEW_KEYS = {
+	// Public access panels
 	AUTHENTICATE: "AUTHENTICATE",
 	HOME: "HOME",
 	ADD: "ADD",
@@ -14,7 +15,10 @@ export const VIEW_KEYS = {
 	POSITIONS: "POSITIONS",
 	EARNINGS: "EARNINGS",
 	SETTINGS: "SETTINGS",
-	SEARCH: "SEARCH"
+	SEARCH: "SEARCH",
+	// Admin panels
+	ADMIN: "ADMIN",
+	PROFILE: "PROFILE"
 }
 
 export const DEFAULT_VIEWS = [

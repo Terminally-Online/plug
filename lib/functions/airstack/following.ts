@@ -24,13 +24,13 @@ export const getFarcasterFollowing = async (address: string) => {
 
 	const socket = await db.userSocket.findUnique({
 		where: { id: address },
-		select: { farcasterUser: true }
+		select: { identity: { select: { farcaster: true } } }
 	})
 
 	const cache =
 		socket &&
-		socket.farcasterUser &&
-		socket.farcasterUser.updatedAt >
+		socket.identity?.farcaster &&
+		socket.identity?.farcaster?.updatedAt >
 			new Date(Date.now() - FARCASTER_CACHE_TIME)
 
 	if (cache) return
@@ -42,36 +42,36 @@ export const getFarcasterFollowing = async (address: string) => {
 	}
 
 	const query = `
-            query GetFarcasterFollowing($cursor: String) {
-                SocialFollowings(
-                    input: {
-                        filter: {
-                            dappName: { _eq: farcaster }
-                            identity: { _eq: "0x62180042606624f02D8A130dA8A3171e9b33894d" }
-                        }
-                        blockchain: ALL
-                        limit: 200
-                        cursor: $cursor
-                    }
-                ) {
-                    Following {
-                        followingAddress {
-                            identity
-                            addresses
-                        }
-                        followerAddress {
-                            identity
-                            addresses
-                        }
-                        followingProfileId
-                    }
-                    pageInfo {
-                        hasNextPage
-                        nextCursor
-                    }
-                }
-            }
-        `
+	        query GetFarcasterFollowing($cursor: String) {
+	            SocialFollowings(
+	                input: {
+	                    filter: {
+	                        dappName: { _eq: farcaster }
+	                        identity: { _eq: "0x62180042606624f02D8A130dA8A3171e9b33894d" }
+	                    }
+	                    blockchain: ALL
+	                    limit: 200
+	                    cursor: $cursor
+	                }
+	            ) {
+	                Following {
+	                    followingAddress {
+	                        identity
+	                        addresses
+	                    }
+	                    followerAddress {
+	                        identity
+	                        addresses
+	                    }
+	                    followingProfileId
+	                }
+	                pageInfo {
+	                    hasNextPage
+	                    nextCursor
+	                }
+	            }
+	        }
+	    `
 
 	let hasNextPage = true
 	let cursor: string | null = null
@@ -132,17 +132,25 @@ export const getFarcasterFollowing = async (address: string) => {
 		where: { id: followerAddress.identity },
 		create: {
 			id: followerAddress.identity,
-			socketId: address,
-			addresses,
-			following
-		},
-		update: {
-			socketId: address,
 			addresses,
 			following,
+			identity: {
+				connectOrCreate: {
+					where: { socketId: address },
+					create: { socketId: address }
+				}
+			}
+		},
+		update: {
+			addresses,
+			following,
+			identity: {
+				connectOrCreate: {
+					where: { socketId: address },
+					create: { socketId: address }
+				}
+			},
 			updatedAt: new Date()
 		}
 	})
-
-	console.log(allFollowing)
 }

@@ -135,27 +135,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				},
 				onError: (_, __, context) => setSocket(context)
 			}),
-			resize: api.socket.columns.resize.useMutation({
-				// onMutate: data => {
-				// 	const previousSocket = socket
-				// 	setSocket(
-				// 		previousSocket && {
-				// 			...previousSocket,
-				// 			columns: previousSocket.columns.map(column =>
-				// 				column.id === data.id
-				// 					? { ...column, width: data.width }
-				// 					: column
-				// 			)
-				// 		}
-				// 	)
-				// 	return previousSocket
-				// },
-				// onError: (_, __, context) => setSocket(context)
-			}),
-			move: api.socket.columns.move.useMutation({
-				onMutate: () => socket,
-				onError: (_, __, context) => setSocket(context)
-			})
+			resize: api.socket.columns.resize.useMutation(),
+			move: api.socket.columns.move.useMutation()
 		}
 	}
 
@@ -163,8 +144,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		<SocketContext.Provider
 			value={{
 				address: session?.address,
-				name: socket?.ensName || ensName || undefined,
-				avatar: socket?.ensAvatar || ensAvatar || undefined,
+				name: socket?.identity?.ens?.name || ensName || undefined,
+				avatar: socket?.identity?.ens?.avatar || ensAvatar || undefined,
 				socket,
 				page,
 				handle: {

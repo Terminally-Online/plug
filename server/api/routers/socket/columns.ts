@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { VIEW_KEYS } from "@/lib"
+import { SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
 
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
@@ -58,7 +58,7 @@ export const columns = createTRPCRouter({
 								}
 							}
 						},
-						include: { columns: { orderBy: { index: "asc" } } }
+						...SOCKET_BASE_QUERY
 					})
 
 				if (input.id === undefined)
@@ -76,7 +76,7 @@ export const columns = createTRPCRouter({
 								}
 							}
 						},
-						include: { columns: { orderBy: { index: "asc" } } }
+						...SOCKET_BASE_QUERY
 					})
 
 				return await tx.userSocket.update({
@@ -91,7 +91,7 @@ export const columns = createTRPCRouter({
 							}
 						}
 					},
-					include: { columns: { orderBy: { index: "asc" } } }
+					...SOCKET_BASE_QUERY
 				})
 			})
 		}),
@@ -121,7 +121,8 @@ export const columns = createTRPCRouter({
 							}
 						}
 					}
-				}
+				},
+				...SOCKET_BASE_QUERY
 			})
 		}),
 	remove: protectedProcedure
@@ -142,7 +143,7 @@ export const columns = createTRPCRouter({
 							}
 						}
 					},
-					include: { columns: { orderBy: { index: "asc" } } }
+					...SOCKET_BASE_QUERY
 				})
 			})
 		}),
@@ -164,7 +165,7 @@ export const columns = createTRPCRouter({
 						}
 					}
 				},
-				include: { columns: { orderBy: { index: "asc" } } }
+				...SOCKET_BASE_QUERY
 			})
 		}),
 	move: protectedProcedure
@@ -200,7 +201,7 @@ export const columns = createTRPCRouter({
 							}
 						}
 					},
-					include: { columns: { orderBy: { index: "asc" } } }
+					...SOCKET_BASE_QUERY
 				})
 			})
 		})

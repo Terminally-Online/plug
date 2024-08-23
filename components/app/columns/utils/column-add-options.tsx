@@ -8,6 +8,8 @@ import {
 	Landmark,
 	PiggyBank,
 	Settings,
+	ShieldAlert,
+	User,
 	Wallet
 } from "lucide-react"
 
@@ -18,11 +20,13 @@ type Props = {
 	id: string
 }
 
-const options: Array<{
+type Options = Array<{
 	label: keyof typeof VIEW_KEYS
 	description: string
 	icon: JSX.Element
-}> = [
+}>
+
+const OPTIONS: Options  = [
 	{
 		label: "DISCOVER",
 		description: "Discover curated and community Plugs.",
@@ -65,12 +69,29 @@ const options: Array<{
 	}
 ] as const
 
+const ADMIN_OPTIONS: Options = [
+	{
+		label: "ADMIN",
+		description: "View and manage the admin panel.",
+		icon: <ShieldAlert size={14} className="opacity-40" />
+	},
+	{
+		label: "PROFILE",
+		description: "View your profile.",
+		icon: <User size={14} className="opacity-40" />
+	}
+] as const
+
 export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
-	const { handle } = useSockets()
+	const { socket, handle } = useSockets()
+
+	const isAdmin = socket?.admin ?? false
+
+	const adminOptions = isAdmin ? ADMIN_OPTIONS : []
 
 	return (
 		<div className="flex flex-col">
-			{options.map(option => (
+			{[...OPTIONS, ...adminOptions].map(option => (
 				<button
 					key={option.label}
 					className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
