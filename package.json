@@ -1,6 +1,6 @@
 {
   "name": "@nftchance/plug-core",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "license": "BUSL-1.1",
   "scripts": {
     "prebuild": "pnpm build:lint && rm -rf ./dist",
