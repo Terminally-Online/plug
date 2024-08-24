@@ -119,39 +119,12 @@ type ZerionPositionsResponse = {
 	}>
 }
 
-type PositionsResponse = {
-	tokens: FungibleModel[]
-	defi: {
-		[key: string]: {
-			name: string
-			icon: string
-			url: string
-			positions: PositionModel[]
-			assets: FungibleModel[]
-		}
-	}
-}
-
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
 const POSITIONS_CACHE_TIME = 12 * HOUR
 
 const getAPIKey = () => {
 	return `Basic ${process.env.ZERION_API_KEY}`
-}
-
-const getIsExcluded = (token: AlchemyTokenBalance) => {
-	const IsMissingName = token.name === undefined
-
-	const isProhibitedName = prohibitedNameInclusions.some(inclusion =>
-		token.name?.toLowerCase().includes(inclusion)
-	)
-
-	const isProhibitedSymbol = prohibitedSymbolInclusions.some(inclusion =>
-		token.symbol?.toLowerCase().includes(inclusion)
-	)
-
-	return !(IsMissingName || isProhibitedName || isProhibitedSymbol)
 }
 
 const findPositions = async (socketId: string) => {
