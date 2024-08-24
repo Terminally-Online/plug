@@ -40,6 +40,52 @@ const periods = [
 	}
 ]
 
+const Dot: FC<{
+	length: number
+	color: string
+	cx?: number
+	cy?: number
+	index?: number
+}> = ({ length, color, cx, cy, index }) => {
+	if (index === length - 1) {
+		return (
+			<g>
+				<circle cx={cx} cy={cy} r={12} fill={color}>
+					<animate
+						attributeName="r"
+						values="8;5;8"
+						dur="1s"
+						repeatCount="indefinite"
+						keyTimes="0;0.5;1"
+						keySplines="0.1 0.8 0.2 1; 0.1 0.8 0.2 1"
+						calcMode="spline"
+						begin="0s;animate2.end+1s"
+					/>
+					<animate
+						id="animate2"
+						attributeName="opacity"
+						values="0;0.5;0"
+						dur="1s"
+						repeatCount="indefinite"
+						keyTimes="0;0.5;1"
+						keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+						calcMode="spline"
+					/>
+				</circle>
+				<circle cx={cx} cy={cy} r={5} fill={color} />
+			</g>
+		)
+	}
+
+	return null
+}
+
+const ActiveDot: FC<{
+	color: string
+	cx?: number
+	cy?: number
+}> = ({ color, cx, cy }) => <circle cx={cx} cy={cy} r={5} fill={color} />
+
 export const SocketTokenPriceChart: FC<{
 	enabled: boolean
 	chain: string
@@ -77,49 +123,6 @@ export const SocketTokenPriceChart: FC<{
 		return [min * 0.98, max * 1.02]
 	}, [period, historicalPriceData])
 
-	const Dot: FC<{
-		cx?: number
-		cy?: number
-		index?: number
-	}> = ({ cx, cy, index }) => {
-		if (priceData && index === priceData.length - 1) {
-			return (
-				<g>
-					<circle cx={cx} cy={cy} r={12} fill={color}>
-						<animate
-							attributeName="r"
-							values="8;5;8"
-							dur="1s"
-							repeatCount="indefinite"
-							keyTimes="0;0.5;1"
-							keySplines="0.1 0.8 0.2 1; 0.1 0.8 0.2 1"
-							calcMode="spline"
-							begin="0s;animate2.end+1s"
-						/>
-						<animate
-							id="animate2"
-							attributeName="opacity"
-							values="0;0.5;0"
-							dur="1s"
-							repeatCount="indefinite"
-							keyTimes="0;0.5;1"
-							keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
-							calcMode="spline"
-						/>
-					</circle>
-					<circle cx={cx} cy={cy} r={5} fill={color} />
-				</g>
-			)
-		}
-
-		return null
-	}
-
-	const ActiveDot: FC<{
-		cx?: number
-		cy?: number
-	}> = ({ cx, cy }) => <circle cx={cx} cy={cy} r={5} fill={color} />
-
 	const handleMouseMove = (e: any) => {
 		if (e.activePayload && e.activePayload.length) {
 			handleTooltip({
@@ -129,57 +132,53 @@ export const SocketTokenPriceChart: FC<{
 		}
 	}
 
-	const handleMouseLeave = () => {
-		handleTooltip(undefined)
-	}
+	useEffect(() => {
+		const fetchHistoricalPriceData = async () => {
+			if (!enabled) return
 
-	const fetchHistoricalPriceData = useCallback(async () => {
-		if (!enabled) return
+			setIsLoading(true)
 
-		setIsLoading(true)
+			const failure = {
+				timestamp: new Date().toISOString(),
+				price: 0,
+				error: "Could not load price data."
+			}
 
-		const failure = {
-			timestamp: new Date().toISOString(),
-			price: 0,
-			error: "Could not load price data."
+			await Promise.allSettled(
+				periods.map(async period => {
+					const key = `${chain}:${contract}`
+					const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}&searchWidth=1200`
+
+					try {
+						const response = await axios.get(url)
+
+						if (response.status !== 200)
+							throw new Error("Network response was not ok")
+
+						const prices = response.data.coins[key]?.prices
+
+						if (prices === undefined) {
+							throw new Error("No price data available")
+						}
+
+						setHistoricalPriceData(prevData => ({
+							...prevData,
+							[period.label]: prices
+						}))
+					} catch (error) {
+						setHistoricalPriceData(prevData => ({
+							...prevData,
+							[period.label]: [failure]
+						}))
+					}
+				})
+			)
+
+			setIsLoading(false)
 		}
 
-		await Promise.allSettled(
-			periods.map(async period => {
-				const key = `${chain}:${contract}`
-				const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}&searchWidth=1200`
-
-				try {
-					const response = await axios.get(url)
-
-					if (response.status !== 200)
-						throw new Error("Network response was not ok")
-
-					const prices = response.data.coins[key]?.prices
-
-					if (prices === undefined) {
-						throw new Error("No price data available")
-					}
-
-					setHistoricalPriceData(prevData => ({
-						...prevData,
-						[period.label]: prices
-					}))
-				} catch (error) {
-					setHistoricalPriceData(prevData => ({
-						...prevData,
-						[period.label]: [failure]
-					}))
-				}
-			})
-		)
-
-		setIsLoading(false)
-	}, [enabled, chain, contract])
-
-	useEffect(() => {
 		fetchHistoricalPriceData()
-	}, [period, fetchHistoricalPriceData])
+	}, [enabled, chain, contract])
 
 	useEffect(() => {
 		const start = priceData?.[0]?.price
@@ -213,7 +212,7 @@ export const SocketTokenPriceChart: FC<{
 					<LineChart
 						data={priceData}
 						onMouseMove={handleMouseMove}
-						onMouseLeave={handleMouseLeave}
+						onMouseLeave={() => handleTooltip(undefined)}
 					>
 						<Line
 							type="monotone"
@@ -221,8 +220,13 @@ export const SocketTokenPriceChart: FC<{
 							stroke={color}
 							strokeWidth={4}
 							strokeLinecap="round"
-							dot={<Dot />}
-							activeDot={<ActiveDot />}
+							dot={
+								<Dot
+									length={priceData ? priceData.length : 0}
+									color={color}
+								/>
+							}
+							activeDot={<ActiveDot color={color} />}
 							isAnimationActive={false}
 						/>
 						<XAxis
