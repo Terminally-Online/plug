@@ -6,14 +6,17 @@ import { SearchIcon } from "lucide-react"
 import { Search, SocketCollectionItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
+			collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
 		}
-> = ({ id, className, ...props }) => {
-	const { collectibles } = useBalances()
+> = ({ id, collectibles, className, ...props }) => {
+	const { collectibles: apiCollectibles } = useBalances()
+	collectibles = collectibles ?? apiCollectibles
 
 	const [search, handleSearch] = useState("")
 

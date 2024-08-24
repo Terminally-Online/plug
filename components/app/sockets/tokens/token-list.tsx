@@ -6,16 +6,19 @@ import { SearchIcon } from "lucide-react"
 import { Button, Search, SocketTokenItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn, greenGradientStyle } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
 			expanded?: boolean
+			tokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
 		}
-> = ({ id, expanded, className, ...props }) => {
+> = ({ id, expanded, tokens, className, ...props }) => {
 	const { positions } = useBalances()
-	const { tokens } = positions
+	const { tokens: apiTokens } = positions
+	tokens = tokens ?? apiTokens
 
 	const [search, handleSearch] = useState("")
 
