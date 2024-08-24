@@ -5,24 +5,16 @@ import { motion, MotionProps } from "framer-motion"
 import { SocketTokenItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
-			tokens?: RouterOutputs["socket"]["balances"]["tokens"]
 			expanded?: boolean
-			handleSelect?: (
-				token: NonNullable<
-					RouterOutputs["socket"]["balances"]["tokens"]
-				>[number]
-			) => void
 		}
-> = ({ id, tokens, expanded, handleSelect, className, ...props }) => {
-	const { tokens: apiTokens } = useBalances()
-
-	tokens = tokens ?? apiTokens
+> = ({ id, expanded, className, ...props }) => {
+	const { positions } = useBalances()
+	const { tokens } = positions
 
 	const visibleTokens = useMemo(() => {
 		if (tokens === undefined) return Array(5).fill(undefined)
@@ -49,12 +41,7 @@ export const SocketTokenList: FC<
 			{...(props as MotionProps)}
 		>
 			{visibleTokens.map((token, index) => (
-				<SocketTokenItem
-					key={index}
-					id={id}
-					token={token}
-					handleSelect={handleSelect}
-				/>
+				<SocketTokenItem key={index} id={id} token={token} />
 			))}
 		</motion.div>
 	)

@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 
 import { motion } from "framer-motion"
 
@@ -12,19 +12,14 @@ import { TokenImage } from "./token-image"
 
 export const SocketTokenItem: FC<{
 	id: string
-	token?: NonNullable<RouterOutputs["socket"]["balances"]["tokens"]>[number]
-	handleSelect?: (
-		token: NonNullable<
-			RouterOutputs["socket"]["balances"]["tokens"]
-		>[number]
-	) => void
+	token?: NonNullable<
+		RouterOutputs["socket"]["balances"]["positions"]
+	>["tokens"][number]
 }> = ({ id, token }) => {
 	const { handleFrame } = useFrame({
 		id,
 		key: `token/${token?.symbol ?? ""}`
 	})
-
-	const priceChange = token?.chains[0].change
 
 	return (
 		<>
@@ -57,15 +52,15 @@ export const SocketTokenItem: FC<{
 					) : (
 						<div className="flex flex-row items-center gap-4">
 							<TokenImage
-								logo={token.logo}
-								symbol={token.symbol}
+								logo={token?.icon ?? ""}
+								symbol={token?.symbol}
 							/>
 
 							<div className="flex w-full flex-col items-center tabular-nums">
 								<div className="flex w-full flex-row font-bold">
-									<p>{token.name}</p>
+									<p>{token?.name}</p>
 									<p className="ml-auto flex flex-row items-center">
-										{token.value ? (
+										{token.value && (
 											<>
 												$
 												<Counter
@@ -73,8 +68,6 @@ export const SocketTokenItem: FC<{
 													decimals={2}
 												/>
 											</>
-										) : (
-											"-"
 										)}
 									</p>
 								</div>
@@ -82,7 +75,9 @@ export const SocketTokenItem: FC<{
 								<div className="flex w-full flex-row font-bold">
 									<p className="flex flex-row items-center gap-2">
 										<SocketTokenPercentages
-											chains={token.chains}
+											implementations={
+												token.implementations
+											}
 										/>
 										<span className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
 											<Counter count={token.balance} />
@@ -95,18 +90,18 @@ export const SocketTokenItem: FC<{
 									<p
 										className={cn(
 											"ml-auto text-sm",
-											priceChange === undefined
+											token.change === undefined
 												? "opacity-60"
-												: priceChange > 0
+												: token.change > 0
 													? "text-plug-green"
 													: "text-red-500"
 										)}
 									>
 										<span className="ml-auto flex flex-row items-center">
-											{priceChange !== undefined ? (
+											{token.change !== undefined ? (
 												<>
 													<Counter
-														count={priceChange}
+														count={token.change}
 														decimals={2}
 													/>
 													%
@@ -123,7 +118,7 @@ export const SocketTokenItem: FC<{
 				</Accordion>
 			</motion.div>
 
-			<TokenFrame id={id} symbol={token?.symbol ?? ""} />
+			{token && <TokenFrame id={id} symbol={token.symbol} />}
 		</>
 	)
 }

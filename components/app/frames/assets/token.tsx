@@ -15,7 +15,8 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 	symbol
 }) => {
 	const { isFrame, handleFrame } = useFrame({ id, key: `token/${symbol}` })
-	const { tokens } = useBalances()
+	const { positions } = useBalances()
+	const { tokens } = positions
 
 	const token = useMemo(
 		() =>
@@ -44,6 +45,8 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 	const textColor = getTextColor(color ?? "#ffffff")
 
 	const change = useMemo(() => {
+		if (!token) return undefined
+
 		if (header.change && !tooltipData) return header.change
 
 		if (tooltipData) {
@@ -53,7 +56,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 			return percentageChange * 100
 		}
 
-		return token?.chains[0].change
+		return token.change
 	}, [header, tooltipData, token])
 
 	const formatTimestamp = (timestamp: number) => {
@@ -84,7 +87,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 			icon={
 				<div className="relative h-10 w-10">
 					<TokenImage
-						logo={token.logo}
+						logo={token?.icon ?? ""}
 						symbol={token.symbol}
 						size="sm"
 						handleColor={setColor}
@@ -98,10 +101,16 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 		>
 			<div className="flex flex-row px-6 font-bold">
 				<div className="flex flex-col items-center font-bold">
-					<p className="mr-auto flex w-max flex-row text-lg">
+					<p
+						className={cn(
+							"mr-auto flex w-max flex-row text-lg",
+							(tooltipData || token.price) === undefined &&
+								"opacity-0"
+						)}
+					>
 						$
 						<Counter
-							count={tooltipData?.price || token.chains[0].price}
+							count={tooltipData?.price || token.price || 0}
 						/>
 					</p>
 					<p
@@ -136,8 +145,8 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 
 			<SocketTokenPriceChart
 				enabled={isFrame}
-				chain={token.chains[0].chain}
-				contract={token.chains[0].contract}
+				chain={token.implementations[0].chain}
+				contract={token.implementations[0].contract}
 				color={color}
 				handleHeader={setHeader}
 				handleTooltip={setTooltipData}
@@ -173,31 +182,32 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 							style={{ color: color }}
 						>
 							<TokenImage
-								logo={token.logo}
+								logo={token?.icon ?? ""}
 								symbol={token.symbol}
 								size="xs"
 							/>
 							<Counter
 								className="ml-4 mr-2 w-max"
 								count={token.balance}
-								decimals={2}
 							/>
 							{token.symbol}
 						</span>
 					</p>
-					<p className="ml-auto flex flex-col items-center text-center">
-						<span className="mx-auto flex h-8 w-max items-center">
-							$
-							<Counter
-								count={
-									tooltipData
-										? token.balance * tooltipData.price
-										: token.value
-								}
-								decimals={2}
-							/>
-						</span>
-					</p>
+					{token.value && (
+						<p className="ml-auto flex flex-col items-center text-center">
+							<span className="mx-auto flex h-8 w-max items-center">
+								$
+								<Counter
+									count={
+										tooltipData
+											? token.balance * tooltipData.price
+											: token.value
+									}
+									decimals={2}
+								/>
+							</span>
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -210,30 +220,32 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 			</div>
 
 			<div className="relative mt-2 flex w-full flex-col gap-2 px-6 pb-4">
-				{token.chains.map((chain, index) => (
+				{token.implementations.map((implementation, index) => (
 					<div
 						key={index}
 						className="flex flex-row items-center gap-4"
 					>
 						<Image
-							src={getChainImage(chain.chain)}
-							alt={chain.chain}
+							src={getChainImage(implementation.chain)}
+							alt={implementation.chain}
 							className="h-4 w-4 rounded-full"
 							width={24}
 							height={24}
 						/>
 
 						<p className="mr-auto font-bold">
-							{formatTitle(chain.chain)}
+							{formatTitle(implementation.chain)}
 						</p>
 
 						<p className="flex flex-col font-bold opacity-60">
-							<Counter count={isFrame ? chain.balance : 0} />
+							<Counter
+								count={isFrame ? implementation.balance : 0}
+							/>
 						</p>
 
-						<p className="flex min-w-[72px] flex-row items-center text-right font-bold">
+						{/* <p className="flex min-w-[72px] flex-row items-center text-right font-bold">
 							<Counter count={isFrame ? chain.percentage : 0} />%
-						</p>
+						</p> */}
 					</div>
 				))}
 			</div>

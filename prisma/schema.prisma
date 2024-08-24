@@ -132,8 +132,8 @@ model UserSocket {
     // One-to-many 
     // ---------------------------------------------------------------------------
     columns      ConsoleColumn[]
-    tokens       TokenBalanceCache[]
     collectibles OpenseaCollectibleCache[]
+    balances     ImplementationBalance[]
     positions    PositionCache[]
 
     // ---------------------------------------------------------------------------
@@ -163,61 +163,6 @@ model TokenPrice {
     confidence Float?
 }
 
-model TokenBalance {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    contract String
-    balance  Float?
-    name     String?
-    symbol   String?
-    decimals Int?
-    logo     String?
-
-    // ---------------------------------------------------------------------------
-    // Many-to-one
-    // ---------------------------------------------------------------------------
-    cache         TokenBalanceCache @relation(fields: [cacheSocketId, cacheChain], references: [socketId, chain])
-    cacheSocketId String
-    cacheChain    String
-}
-
-model TokenBalanceCache {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    chain String
-
-    // ---------------------------------------------------------------------------
-    // One-to-many 
-    // ---------------------------------------------------------------------------
-    tokens TokenBalance[]
-
-    // ---------------------------------------------------------------------------
-    // Many-to-one
-    // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id])
-    socketId String
-
-    // ---------------------------------------------------------------------------
-    // Identification
-    // ---------------------------------------------------------------------------
-    @@id([socketId, chain])
-}
-
 model Protocol {
     // ---------------------------------------------------------------------------
     // Core
@@ -236,6 +181,30 @@ model Protocol {
     // Many-to-one
     // ---------------------------------------------------------------------------
     positions Position[]
+}
+
+model ImplementationBalance {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    balance Float
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    implementation         Implementation @relation(fields: [implementationChain, implementationContract], references: [chain, contract])
+    implementationChain    String
+    implementationContract String
+    socket                 UserSocket     @relation(fields: [socketId], references: [id])
+    socketId               String
+
+    @@id([socketId, implementationChain, implementationContract])
 }
 
 model Implementation {
@@ -259,6 +228,11 @@ model Implementation {
     fungibleName   String
     fungibleSymbol String
 
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    balances ImplementationBalance[]
+
     @@id([chain, contract])
 }
 
@@ -274,7 +248,7 @@ model Fungible {
     // ---------------------------------------------------------------------------
     name     String
     symbol   String
-    icon     String
+    icon     String?
     verified Boolean
 
     // ---------------------------------------------------------------------------
@@ -299,7 +273,7 @@ model Position {
     // ---------------------------------------------------------------------------
     chain   String
     type    String
-    balance Float
+    balance Float?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

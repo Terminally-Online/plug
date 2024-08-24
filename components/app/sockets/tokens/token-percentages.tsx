@@ -27,27 +27,26 @@ const getChainColor = (chain: string) => {
 }
 
 export const SocketTokenPercentages: FC<{
-	chains: NonNullable<
-		ReturnType<typeof useBalances>["tokens"]
-	>[number]["chains"]
-}> = ({ chains }) => {
+	implementations: NonNullable<
+		ReturnType<typeof useBalances>["positions"]["tokens"]
+	>[number]["implementations"]
+}> = ({ implementations }) => {
 	let accumulatedPercentage = 0
 
 	return (
 		<svg width={size} height={size} viewBox={`0 0 ${viewbox} ${viewbox}`}>
 			<g transform={`translate(${viewbox / 2},${viewbox / 2})`}>
-				{chains.map((chain, index) => {
-					const dashArray = getDashArray(chain.percentage)
+				{implementations.map((implementation, index) => {
+					const dashArray = getDashArray(implementation.percentage)
 					const rotation = (accumulatedPercentage / 100) * 360
-
-					accumulatedPercentage += chain.percentage
+					accumulatedPercentage += implementation.percentage
 
 					return (
 						<circle
 							key={index}
 							r={radius}
 							fill="transparent"
-							stroke={getChainColor(chain.chain)}
+							stroke={getChainColor(implementation.chain)}
 							strokeWidth="20"
 							strokeDasharray={dashArray}
 							transform={`rotate(${-90 + rotation})`}

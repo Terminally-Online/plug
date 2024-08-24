@@ -24,29 +24,28 @@ export type TokenPriceModel = Prisma.TokenPriceGetPayload<
 	typeof tokenPriceModel
 >
 
-const tokenBalanceModel = Prisma.validator<Prisma.TokenBalanceCreateArgs>()({})
-export type TokenBalanceModel = Prisma.TokenBalanceGetPayload<
-	typeof tokenBalanceModel
->
-
-const tokenBalanceCacheModel =
-	Prisma.validator<Prisma.TokenBalanceCacheDefaultArgs>()({
-		include: { tokens: true }
-	})
-export type TokenBalanceCacheModel = Prisma.TokenBalanceCacheGetPayload<
-	typeof tokenBalanceCacheModel
->
-
 // ---------------------------------------------------------------------------
 // Positions
 // ---------------------------------------------------------------------------
 const fungibleModel = Prisma.validator<Prisma.FungibleDefaultArgs>()({
-	include: {
+	select: {
+		name: true,
+		symbol: true,
+		icon: true,
+		verified: true,
 		implementations: {
-			select: {
-				chain: true,
-				contract: true,
-				decimals: true
+			omit: {
+				createdAt: true,
+				updatedAt: true,
+				fungibleName: true,
+				fungibleSymbol: true
+			},
+			include: {
+				balances: {
+					select: {
+						balance: true
+					}
+				}
 			}
 		}
 	}
