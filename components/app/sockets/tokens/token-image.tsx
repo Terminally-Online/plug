@@ -46,8 +46,7 @@ export const TokenImage: FC<{
 			const data = imageData.data
 
 			const colorCounts: Record<string, number> = {}
-			let maxCount = 0
-			let dominantColor = ""
+			const dominantColors: Array<{ color: string; count: number }> = []
 
 			for (let i = 0; i < data.length; i += 4) {
 				const r = data[i]
@@ -60,14 +59,37 @@ export const TokenImage: FC<{
 				} else {
 					colorCounts[rgb] = 1
 				}
-
-				if (colorCounts[rgb] > maxCount) {
-					maxCount = colorCounts[rgb]
-					dominantColor = `rgb(${rgb})`
-				}
 			}
 
-			return dominantColor
+			for (const [rgb, count] of Object.entries(colorCounts)) {
+				dominantColors.push({ color: `rgb(${rgb})`, count })
+			}
+
+			dominantColors.sort((a, b) => b.count - a.count)
+
+			const isReadable = (color: string) => {
+				const rgb = color.match(/\d+/g)
+				if (!rgb) return false
+				const [r, g, b] = rgb.map(Number)
+				const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+				return luminance < 0.7
+			}
+
+			const readableColors = dominantColors.filter(({ color }) =>
+				isReadable(color)
+			)
+
+			if (readableColors.length > 0) {
+				const nonBlackColor = readableColors.find(({ color }) => {
+					const [r, g, b] = color.match(/\d+/g)!.map(Number)
+					return r > 20 || g > 20 || b > 20
+				})
+				return nonBlackColor
+					? nonBlackColor.color
+					: readableColors[0].color
+			}
+
+			return color
 		}
 
 		const img = imgRef.current
