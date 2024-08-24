@@ -79,6 +79,7 @@ export const getPrices = async (queries: string[]) => {
 	)
 
 	return await db.tokenPrice.findMany({
-		where: { id: { in: queries } }
+		where: { id: { in: queries } },
+		select: { id: true, price: true, change: true }
 	})
 }
