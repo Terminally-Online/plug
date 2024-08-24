@@ -13,7 +13,8 @@ import { useBalances } from "@/contexts"
 export const SocketAssets: FC<
 	HTMLAttributes<HTMLDivElement> & { id: string }
 > = ({ id, ...props }) => {
-	const { tokens, positions } = useBalances()
+	const { positions } = useBalances()
+	const { tokens } = positions
 
 	const [tokensExpanded, setTokensExpanded] = useState(false)
 	const [positionsExpanded, setPositionsExpanded] = useState(false)

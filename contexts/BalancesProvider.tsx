@@ -4,7 +4,7 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { useSockets } from "./SocketProvider"
 
-const DURATION = 5 * 60 * 1000
+const REFETCH_INTERVAL = 5 * 60 * 1000
 
 export const BalancesContext = createContext<{
 	collectibles: RouterOutputs["socket"]["balances"]["collectibles"]
@@ -30,7 +30,8 @@ export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { data: positions } = api.socket.balances.positions.useQuery(
 		address,
 		{
-			enabled: address !== undefined
+			enabled: address !== undefined,
+			refetchInterval: REFETCH_INTERVAL
 		}
 	)
 
