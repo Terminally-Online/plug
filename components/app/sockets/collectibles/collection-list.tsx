@@ -67,7 +67,6 @@ export const SocketCollectionList: FC<
 						}
 					}
 				}}
-				{...(props as MotionProps)}
 			>
 				{visibleCollectibles.map((collection, index) => (
 					<SocketCollectionItem
