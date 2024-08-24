@@ -1,6 +1,5 @@
 import { z } from "zod"
 
-import { aggregateTokensByChain } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { getDominantColor } from "@/server/color"
 
@@ -33,33 +32,33 @@ export const misc = createTRPCRouter({
 				orderBy: { updatedAt: "desc" }
 			})
 
-			const balances = await ctx.db.tokenBalance.findMany({
-				where: {
-					AND: [
-						{
-							OR: [
-								{
-									name: {
-										contains: input,
-										mode: "insensitive"
-									}
-								},
-								{
-									symbol: {
-										contains: input,
-										mode: "insensitive"
-									}
-								}
-							]
-						},
-						{
-							cacheSocketId: ctx.session.address
-						}
-					]
-				}
-			})
+			// const balances = await ctx.db.tokenBalance.findMany({
+			// 	where: {
+			// 		AND: [
+			// 			{
+			// 				OR: [
+			// 					{
+			// 						name: {
+			// 							contains: input,
+			// 							mode: "insensitive"
+			// 						}
+			// 					},
+			// 					{
+			// 						symbol: {
+			// 							contains: input,
+			// 							mode: "insensitive"
+			// 						}
+			// 					}
+			// 				]
+			// 			},
+			// 			{
+			// 				cacheSocketId: ctx.session.address
+			// 			}
+			// 		]
+			// 	}
+			// })
 
-			const tokens = await aggregateTokensByChain(balances)
+			// const tokens = await aggregateTokensByChain(balances)
 
 			const collectibles = await ctx.db.openseaCollection.findMany({
 				where: {
@@ -142,7 +141,7 @@ export const misc = createTRPCRouter({
 
 			return {
 				plugs,
-				tokens,
+				tokens: [],
 				collectibles
 			}
 		}),
