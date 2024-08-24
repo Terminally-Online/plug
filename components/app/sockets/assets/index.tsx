@@ -41,7 +41,7 @@ export const SocketAssets: FC<
 				icon={<CircleDollarSign size={14} className="opacity-40" />}
 				label="Positions"
 				nextLabel={
-					Object.keys(positions.defi).length < 3
+					positions.protocols.length < 3
 						? undefined
 						: positionsExpanded
 							? "Collapse"
