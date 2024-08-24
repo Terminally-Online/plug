@@ -101,17 +101,19 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 		>
 			<div className="flex flex-row px-6 font-bold">
 				<div className="flex flex-col items-center font-bold">
-					<p
-						className={cn(
-							"mr-auto flex w-max flex-row text-lg",
-							(tooltipData || token.price) === undefined &&
-								"opacity-0"
+					<p className="mr-auto flex w-max flex-row text-lg">
+						{tooltipData || token.price ? (
+							<>
+								$
+								<Counter
+									count={
+										tooltipData?.price || token.price || 0
+									}
+								/>
+							</>
+						) : (
+							<>-</>
 						)}
-					>
-						$
-						<Counter
-							count={tooltipData?.price || token.price || 0}
-						/>
 					</p>
 					<p
 						className="mr-auto"
@@ -243,9 +245,12 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({
 							/>
 						</p>
 
-						{/* <p className="flex min-w-[72px] flex-row items-center text-right font-bold">
-							<Counter count={isFrame ? chain.percentage : 0} />%
-						</p> */}
+						<p className="flex min-w-[72px] flex-row items-center text-right font-bold">
+							<Counter
+								count={isFrame ? implementation.percentage : 0}
+							/>
+							%
+						</p>
 					</div>
 				))}
 			</div>
