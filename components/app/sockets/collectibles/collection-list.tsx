@@ -1,52 +1,83 @@
-import { FC, HTMLAttributes, useMemo } from "react"
+import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { motion, MotionProps } from "framer-motion"
+import { SearchIcon } from "lucide-react"
 
-import { SocketCollectionItem } from "@/components"
+import { Search, SocketCollectionItem } from "@/components"
 import { useBalances } from "@/contexts"
 import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
-			collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
 		}
-> = ({ id, collectibles, className, ...props }) => {
-	const { collectibles: apiCollectibles } = useBalances()
+> = ({ id, className, ...props }) => {
+	const { collectibles } = useBalances()
 
-	collectibles = collectibles ?? apiCollectibles
+	const [search, handleSearch] = useState("")
 
 	const visibleCollectibles = useMemo(() => {
 		if (collectibles === undefined) return Array(5).fill(undefined)
 
-		return collectibles
-	}, [, collectibles])
+		const filteredCollectibles = collectibles.filter(
+			collectible =>
+				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
+				collectible.description
+					.toLowerCase()
+					.includes(search.toLowerCase()) ||
+				collectible.collection
+					.toLowerCase()
+					.includes(search.toLowerCase()) ||
+				collectible.collectibles.some(
+					collectionCollectible =>
+						(collectionCollectible.name ?? "")
+							.toLowerCase()
+							.includes(search.toLowerCase()) ||
+						(collectionCollectible.description ?? "")
+							.toLowerCase()
+							.includes(search.toLowerCase())
+				)
+		)
+
+		return filteredCollectibles
+	}, [search, collectibles])
 
 	return (
-		<motion.div
-			className={cn("mb-4 flex flex-col gap-2", className)}
-			initial="hidden"
-			animate="visible"
-			variants={{
-				hidden: { opacity: 0 },
-				visible: {
-					opacity: 1,
-					transition: {
-						staggerChildren: 0.05
+		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+			<Search
+				className="mb-2"
+				icon={<SearchIcon size={14} className="opacity-40" />}
+				placeholder="Search collectibles"
+				search={search}
+				handleSearch={handleSearch}
+				clear
+			/>
+
+			<motion.div
+				className="flex flex-col gap-2"
+				initial="hidden"
+				animate="visible"
+				variants={{
+					hidden: { opacity: 0 },
+					visible: {
+						opacity: 1,
+						transition: {
+							staggerChildren: 0.05
+						}
 					}
-				}
-			}}
-			{...(props as MotionProps)}
-		>
-			{visibleCollectibles.map((collection, index) => (
-				<SocketCollectionItem
-					key={index}
-					id={id}
-					collection={collection}
-				/>
-			))}
-		</motion.div>
+				}}
+				{...(props as MotionProps)}
+			>
+				{visibleCollectibles.map((collection, index) => (
+					<SocketCollectionItem
+						key={index}
+						id={id}
+						collection={collection}
+						searched={search !== ""}
+					/>
+				))}
+			</motion.div>
+		</div>
 	)
 }

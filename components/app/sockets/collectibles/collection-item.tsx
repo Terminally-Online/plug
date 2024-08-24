@@ -18,8 +18,9 @@ export const SocketCollectionItem: FC<{
 				RouterOutputs["socket"]["balances"]["collectibles"]
 		  >[number]
 		| undefined
-}> = ({ id, collection }) => {
-	const [expanded, setExpanded] = useState(false)
+	searched?: boolean
+}> = ({ id, collection, searched = false }) => {
+	const [expanded, setExpanded] = useState(searched)
 	const [error, setError] = useState(false)
 
 	if (error) return <></>
@@ -43,9 +44,9 @@ export const SocketCollectionItem: FC<{
 				<Accordion
 					loading={collection === undefined}
 					className="text-left"
-					expanded={expanded}
+					expanded={expanded || searched}
 					onExpand={
-						collection === undefined
+						collection === undefined || searched
 							? () => {}
 							: () => setExpanded(!expanded)
 					}
