@@ -29,61 +29,61 @@ const DEFAULT_TRANSFER = {
 }
 
 export const TransferFrame = () => {
-	const [transfer, setTransfer] = useState<{
-		action?: "receive" | "send"
-		token?: NonNullable<typeof tokens>[number]
-		chain?: NonNullable<typeof tokens>[number]["chains"][0]
-		amount?: string | undefined
-		to?: string
-	}>(DEFAULT_TRANSFER)
+	// const [transfer, setTransfer] = useState<{
+	// 	action?: "receive" | "send"
+	// 	token?: NonNullable<typeof tokens>[number]
+	// 	chain?: NonNullable<typeof tokens>[number]["chains"][0]
+	// 	amount?: string | undefined
+	// 	to?: string
+	// }>(DEFAULT_TRANSFER)
 	const [advanced, setAdvanced] = useState(false)
 
 	const { address } = useAccount()
 	const { socket } = useSockets()
 
-	const fromAddress =
-		(transfer.action !== undefined
-			? // Depositing tokens from wallet into Socket.
-				transfer.action === "receive"
-				? address
-				: // Withdrawing tokens from Socket into wallet.
-					socket?.socketAddress
-			: "") || ""
+	// const fromAddress =
+	// 	(transfer.action !== undefined
+	// 		? // Depositing tokens from wallet into Socket.
+	// 			transfer.action === "receive"
+	// 			? address
+	// 			: // Withdrawing tokens from Socket into wallet.
+	// 				socket?.socketAddress
+	// 		: "") || ""
 
-	const { tokens } = useBalances()
+	// const { tokens } = useBalances()
 
 	// NOTE: This is not used currently, but it will be for the transaction functionality so leaving it here until then.
-	const toAddress =
-		(transfer.to !== undefined
-			? transfer.to
-			: fromAddress === socket?.socketAddress
-				? address
-				: socket?.socketAddress) || ""
+	// const toAddress =
+	// 	(transfer.to !== undefined
+	// 		? transfer.to
+	// 		: fromAddress === socket?.socketAddress
+	// 			? address
+	// 			: socket?.socketAddress) || ""
 
-	const { data: ensAddress } = useEnsAddress({
-		name: transfer.to ?? zeroAddress
-	})
-	const { data: ensAvatar } = useEnsAvatar({
-		name: transfer.to ?? zeroAddress
-	})
+	// const { data: ensAddress } = useEnsAddress({
+	// 	name: transfer.to ?? zeroAddress
+	// })
+	// const { data: ensAvatar } = useEnsAvatar({
+	// 	name: transfer.to ?? zeroAddress
+	// })
 
-	const transferValid = useMemo(() => {
-		if (transfer.amount === undefined || transfer.amount === "0")
-			return [false, "Enter Amount"]
-		if (isNaN(Number(transfer.amount))) return [false, "Invalid Amount"]
-		if (transfer.to !== undefined && transfer.to !== "") {
-			if (transfer.to.startsWith("0x")) {
-				if (!isAddress(transfer.to)) return [false, "Invalid Address"]
-			} else {
-				if (!ensAddress === undefined || ensAddress === null)
-					return [false, "Invalid ENS"]
-			}
-		}
-		if (Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0))
-			return [false, "Insufficient Balance"]
+	// const transferValid = useMemo(() => {
+	// 	if (transfer.amount === undefined || transfer.amount === "0")
+	// 		return [false, "Enter Amount"]
+	// 	if (isNaN(Number(transfer.amount))) return [false, "Invalid Amount"]
+	// 	if (transfer.to !== undefined && transfer.to !== "") {
+	// 		if (transfer.to.startsWith("0x")) {
+	// 			if (!isAddress(transfer.to)) return [false, "Invalid Address"]
+	// 		} else {
+	// 			if (!ensAddress === undefined || ensAddress === null)
+	// 				return [false, "Invalid ENS"]
+	// 		}
+	// 	}
+	// 	if (Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0))
+	// 		return [false, "Insufficient Balance"]
 
-		return [true, transfer.action === "send" ? "Withdraw" : "Deposit"]
-	}, [ensAddress, transfer])
+	// 	return [true, transfer.action === "send" ? "Withdraw" : "Deposit"]
+	// }, [ensAddress, transfer])
 
 	// useEffect(() => {
 	// 	if (transferVisible === false) setTransfer(DEFAULT_TRANSFER)
