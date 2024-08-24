@@ -133,62 +133,49 @@ export const SocketTokenPriceChart: FC<{
 		handleTooltip(undefined)
 	}
 
-	const handleRetry = () => {
-		setHistoricalPriceData(prevData => ({
-			...prevData,
-			[period.label]: undefined
-		}))
-		fetchHistoricalPriceData(true)
-	}
+	const fetchHistoricalPriceData = useCallback(async () => {
+		if (!enabled) return
 
-	const fetchHistoricalPriceData = useCallback(
-		async (isRetry = false) => {
-			if (!enabled) return
+		setIsLoading(true)
 
-			setIsLoading(true)
+		const failure = {
+			timestamp: new Date().toISOString(),
+			price: 0,
+			error: "Could not load price data."
+		}
 
-			const failure = {
-				timestamp: new Date().toISOString(),
-				price: 0,
-				error: "Could not load price data."
-			}
+		await Promise.allSettled(
+			periods.map(async period => {
+				const key = `${chain}:${contract}`
+				const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}&searchWidth=1200`
 
-			const query = period
+				try {
+					const response = await axios.get(url)
 
-			const key = `${chain}:${contract}`
-			const url = `https://coins.llama.fi/chart/${key}?span=${query.span}&period=${query.period}&searchWidth=1200`
+					if (response.status !== 200)
+						throw new Error("Network response was not ok")
 
-			try {
-				if (isRetry) {
-					await new Promise(resolve => setTimeout(resolve, 2000))
+					const prices = response.data.coins[key]?.prices
+
+					if (prices === undefined) {
+						throw new Error("No price data available")
+					}
+
+					setHistoricalPriceData(prevData => ({
+						...prevData,
+						[period.label]: prices
+					}))
+				} catch (error) {
+					setHistoricalPriceData(prevData => ({
+						...prevData,
+						[period.label]: [failure]
+					}))
 				}
+			})
+		)
 
-				const response = await axios.get(url)
-
-				if (response.status !== 200)
-					throw new Error("Network response was not ok")
-
-				const prices = response.data.coins[key]?.prices
-
-				if (prices === undefined) {
-					throw new Error("No price data available")
-				}
-
-				setHistoricalPriceData(prevData => ({
-					...prevData,
-					[query.label]: prices
-				}))
-			} catch (error) {
-				setHistoricalPriceData(prevData => ({
-					...prevData,
-					[query.label]: [failure]
-				}))
-			} finally {
-				setIsLoading(false)
-			}
-		},
-		[enabled, period, chain, contract]
-	)
+		setIsLoading(false)
+	}, [enabled, chain, contract])
 
 	useEffect(() => {
 		fetchHistoricalPriceData()
@@ -215,14 +202,6 @@ export const SocketTokenPriceChart: FC<{
 					<p className="font-bold opacity-40">
 						{priceData?.[0]?.error}
 					</p>
-
-					<Button
-						onClick={handleRetry}
-						variant="secondary"
-						sizing="md"
-					>
-						Retry
-					</Button>
 				</div>
 			) : (
 				<ResponsiveContainer
