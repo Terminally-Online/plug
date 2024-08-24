@@ -287,7 +287,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === "TOKENS" ? (
 									<SocketTokenList
 										id={column.id}
-										className="mb-4 px-4 pt-4"
+										className="px-4 pt-4"
 										expanded={true}
 									/>
 								) : column.key === VIEW_KEYS.COLLECTIBLES ? (

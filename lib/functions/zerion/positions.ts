@@ -418,9 +418,16 @@ const getFungiblePositions = async (
 			create: {
 				socketId
 			},
-			update: {}
+			update: {
+				updatedAt: new Date()
+			}
 		})
 
+		// Delete all the implementation balances for the Socket.
+		// TODO: This is not the ideal way to do this because we end up writing
+		//       a lot of data to the database that was likely already there.
+		//       We should really only be deleting the ones that the user no
+		//       longer has.
 		await tx.implementationBalance.deleteMany({
 			where: { socketId }
 		})
@@ -466,8 +473,6 @@ const getFungiblePositions = async (
 				})
 			})
 		)
-
-		// TODO: Need to delete the positions that are no longer in the list.
 
 		// Update all of the positions into the cache.
 		// await tx.positionCache.update({

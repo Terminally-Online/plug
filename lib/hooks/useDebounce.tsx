@@ -23,7 +23,7 @@ export const useDebounce = (
 		const timeout = setTimeout(() => {
 			setDebounced(value)
 
-			callback()
+			if (callback) callback()
 		}, delay)
 
 		return () => clearTimeout(timeout)
