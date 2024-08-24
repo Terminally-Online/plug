@@ -177,10 +177,56 @@ const findPositions = async (socketId: string) => {
 		}
 	})
 
+	const protocols = await db.protocol.findMany({
+		where: {
+			positions: { some: { cacheId: socketId } }
+		},
+		omit: { createdAt: true, updatedAt: true },
+		include: {
+			positions: {
+				where: { cacheId: socketId },
+				omit: {
+					id: true,
+					createdAt: true,
+					updatedAt: true,
+					cacheId: true,
+					fungibleName: true,
+					fungibleSymbol: true
+				},
+				include: {
+					fungible: {
+						omit: { createdAt: true, updatedAt: true },
+						include: {
+							implementations: {
+								omit: {
+									createdAt: true,
+									updatedAt: true,
+									fungibleName: true,
+									fungibleSymbol: true
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	})
+
+	console.log(JSON.stringify(protocols, null, 2))
+
 	const prices = await getPrices(
-		tokens.map(
-			token =>
-				`${token.implementations[0].chain}:${token.implementations[0].contract}`
+		[
+			...tokens.map(
+				token =>
+					`${token.implementations[0].chain}:${token.implementations[0].contract}`
+			)
+		].concat(
+			protocols.flatMap(protocol =>
+				protocol.positions.map(
+					position =>
+						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
+				)
+			)
 		)
 	)
 
@@ -229,90 +275,29 @@ const findPositions = async (socketId: string) => {
 				}
 			})
 			.sort((a, b) => (b.value || 0) - (a.value || 0)),
-		defi: {}
+		protocols: protocols.map(protocol => {
+			return {
+				...protocol,
+				positions: protocol.positions.map(position => {
+					const { fungible, balance } = position
+
+					const { price, change } =
+						prices.find(
+							price =>
+								price.id ===
+								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
+						) || {}
+
+					return {
+						...position,
+						price,
+						change,
+						value: price && balance ? balance * price : undefined
+					}
+				})
+			}
+		})
 	}
-
-	// const positions = await db.position.findMany({
-	// 	where: { cacheId: socketId, type: { in: types } },
-	// 	omit: {
-	// 		fungibleName: true,
-	// 		fungibleSymbol: true,
-	// 		protocolName: true,
-	// 		createdAt: true,
-	// 		updatedAt: true,
-	// 		cacheId: true
-	// 	},
-	// 	include: {
-	// 		fungible: {
-	// 			omit: { createdAt: true, updatedAt: true },
-	// 			include: {
-	// 				implementations: {
-	// 					where: { chain: { in: chains } },
-	// 					select: {
-	// 						chain: true,
-	// 						contract: true,
-	// 						decimals: true,
-	// 						balances: {
-	// 							where: { socketId }
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		},
-	// 		protocol: {
-	// 			omit: { createdAt: true, updatedAt: true }
-	// 		}
-	// 	}
-	// })
-
-	// return positions.reduce(
-	// 	(acc, position) => {
-	// 		const { type } = position
-	// 		const _type = type === "wallet" ? "tokens" : "defi"
-
-	// 		if (_type === "tokens") {
-	// 			acc[_type].push(position)
-	// 		} else if (_type === "defi") {
-	// 			const protocolName = position.protocol?.name
-
-	// 			if (protocolName === undefined) return acc
-
-	// 			if (acc.defi[protocolName] === undefined) {
-	// 				acc.defi[protocolName] = {
-	// 					name: "",
-	// 					icon: "",
-	// 					url: "",
-	// 					positions: [],
-	// 					assets: []
-	// 				}
-	// 			}
-
-	// 			if (
-	// 				acc.defi[protocolName].name === "" &&
-	// 				position.protocol?.name
-	// 			) {
-	// 				acc.defi[protocolName].name = position.protocol?.name
-	// 				acc.defi[protocolName].icon = position.protocol?.icon
-	// 				acc.defi[protocolName].url = position.protocol?.url
-	// 			}
-
-	// 			acc.defi[protocolName].positions.push(position)
-
-	// 			if (
-	// 				acc.defi[protocolName].assets.find(
-	// 					asset => asset.name === position.fungible.name
-	// 				) === undefined
-	// 			)
-	// 				acc.defi[protocolName].assets.push(position.fungible)
-	// 		}
-
-	// 		return acc
-	// 	},
-	// 	{
-	// 		tokens: [],
-	// 		defi: {}
-	// 	} as PositionsResponse
-	// )
 }
 
 const getFungiblePositions = async (
@@ -474,42 +459,48 @@ const getFungiblePositions = async (
 			})
 		)
 
-		// Update all of the positions into the cache.
-		// await tx.positionCache.update({
-		// 	where: { socketId },
-		// 	data: {
-		// 		updatedAt: new Date(),
-		// 		positions: {
-		// 			upsert: positions.map(position => {
-		// 				const { attributes, relationships } = position
+		const defi = positions.filter(
+			position => position.attributes.position_type !== "wallet"
+		)
 
-		// 				return {
-		// 					where: { id: position.id },
-		// 					create: {
-		// 						id: `${socketId}-${position.id}`,
-		// 						chain: relationships.chain.data.id,
-		// 						type: attributes.position_type,
-		// 						balance: attributes.quantity.float,
-		// 						protocolName:
-		// 							attributes?.application_metadata?.name ??
-		// 							undefined,
-		// 						fungibleName: attributes.fungible_info.name,
-		// 						fungibleSymbol: attributes.fungible_info.symbol
-		// 					},
-		// 					update: {
-		// 						balance: attributes.quantity.float
-		// 					}
-		// 				}
-		// 			}),
-		// 			deleteMany: {
-		// 				cacheId: socketId,
-		// 				id: {
-		// 					notIn: positions.map(position => position.id)
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// })
+		// Update all of the positions into the cache.
+		await tx.positionCache.update({
+			where: { socketId },
+			data: {
+				updatedAt: new Date(),
+				positions: {
+					upsert: defi.map(position => {
+						const { attributes, relationships } = position
+
+						return {
+							where: { id: `${socketId}-${position.id}` },
+							create: {
+								id: `${socketId}-${position.id}`,
+								chain: relationships.chain.data.id,
+								type: attributes.position_type,
+								balance: attributes.quantity.float,
+								protocolName:
+									attributes?.application_metadata?.name ??
+									undefined,
+								fungibleName: attributes.fungible_info.name,
+								fungibleSymbol: attributes.fungible_info.symbol
+							},
+							update: {
+								balance: attributes.quantity.float
+							}
+						}
+					}),
+					deleteMany: {
+						cacheId: socketId,
+						id: {
+							notIn: defi.map(
+								position => `${socketId}-${position.id}`
+							)
+						}
+					}
+				}
+			}
+		})
 	})
 }
 
@@ -524,7 +515,7 @@ export const getPositions = async (
 	if (!socket)
 		return {
 			tokens: [],
-			defi: {}
+			protocols: []
 		}
 
 	const cachedPositions = await db.positionCache.findUnique({

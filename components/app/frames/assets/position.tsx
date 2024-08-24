@@ -6,14 +6,14 @@ import { ExternalLink } from "lucide-react"
 
 import { Counter } from "@/components/shared"
 import { useFrame } from "@/contexts"
-import { formatTitle } from "@/lib"
+import { cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { Frame } from "../base"
 
 export const PositionFrame: FC<{
 	id: string
-	protocol: RouterOutputs["socket"]["balances"]["positions"]["defi"][string]
+	protocol: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
 }> = ({ id, protocol }) => {
 	const { isFrame } = useFrame({
 		id,
@@ -25,7 +25,7 @@ export const PositionFrame: FC<{
 		const grouped: Record<
 			string,
 			Array<
-				RouterOutputs["socket"]["balances"]["positions"]["defi"][string]["positions"][number]
+				RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]["positions"][number]
 			>
 		> = {}
 
@@ -50,9 +50,9 @@ export const PositionFrame: FC<{
 						src={protocol.icon}
 						alt={protocol.name}
 						style={{
-							width: `4rem`,
-							minWidth: `4rem`,
-							height: `4rem`
+							width: `2rem`,
+							minWidth: `2rem`,
+							height: `2rem`
 						}}
 						width={240}
 						height={240}
@@ -93,7 +93,7 @@ export const PositionFrame: FC<{
 									<div className="flex flex-row items-center gap-4">
 										<Image
 											className="h-8 w-8 rounded-full"
-											src={position.fungible.icon}
+											src={position.fungible.icon ?? ""}
 											alt=""
 											width={48}
 											height={48}
@@ -101,13 +101,53 @@ export const PositionFrame: FC<{
 										<div className="flex w-full flex-col gap-0">
 											<div className="flex flex-row items-center justify-between gap-2">
 												<p>{position.fungible.name}</p>
+												<p className="flex flex-row">
+													$
+													<Counter
+														count={
+															position.value ?? 0
+														}
+													/>
+												</p>
 											</div>
 
-											<div className="flex flex-row items-center justify-between gap-2 text-black/40">
+											<div className="flex flex-row items-center justify-between gap-2 text-sm text-black/40">
 												<p>
 													<Counter
-														count={position.balance}
+														count={
+															position.balance ??
+															0
+														}
 													/>
+												</p>
+												<p
+													className={cn(
+														"ml-auto text-sm",
+														position.change ===
+															undefined
+															? "opacity-60"
+															: position.change >
+																  0
+																? "text-plug-green"
+																: "text-red-500"
+													)}
+												>
+													<span className="ml-auto flex flex-row items-center">
+														{position.change !==
+														undefined ? (
+															<>
+																<Counter
+																	count={
+																		position.change
+																	}
+																	decimals={2}
+																/>
+																%
+															</>
+														) : (
+															"-"
+														)}
+													</span>
 												</p>
 											</div>
 										</div>

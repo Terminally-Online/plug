@@ -3,20 +3,13 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { getAPIKey, getCollectibles, getTokens } from "@/lib"
+import { getAPIKey, getCollectibles } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"
 import { getDominantColor } from "@/server/color"
 
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	tokens: protectedProcedure
-		.input(z.string().optional())
-		.query(async ({ input }) => {
-			if (input === undefined) return []
-
-			return await getTokens(input)
-		}),
 	collectibles: protectedProcedure
 		.input(z.string().optional())
 		.query(async ({ input }) => {

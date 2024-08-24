@@ -108,7 +108,7 @@ const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 		<span className="relative text-center" ref={columnContainer}>
 			<motion.span
 				className="absolute bottom-0 h-[1000%]"
-				animate={{ y }}
+				whileInView={{ y }}
 			>
 				{[9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(i => (
 					<div key={i} className="h-[10%]">
