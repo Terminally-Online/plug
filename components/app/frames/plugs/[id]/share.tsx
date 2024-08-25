@@ -12,30 +12,17 @@ export const ShareFrame: FC<{ id: string }> = ({ id }) => {
 	const { isFrame } = useFrame({ id, key: "share" })
 	const { plug } = usePlugs(id)
 
-	const { copied, handleCopied } = useClipboard(
-		`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`
-	)
+	const { copied, handleCopied } = useClipboard(`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`)
 
 	if (!plug) return null
 
 	return (
-		<Frame
-			id={id}
-			className="z-[2]"
-			icon={<Badge size={18} />}
-			label="Share Plug"
-			visible={isFrame}
-		>
+		<Frame id={id} className="z-[2]" icon={<Badge size={18} />} label="Share Plug" visible={isFrame}>
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">
 					<Link size={14} />
 					<p className="font-bold">Direct Link</p>
-					<Button
-						variant="secondary"
-						sizing="sm"
-						className="ml-auto"
-						onClick={handleCopied}
-					>
+					<Button variant="secondary" sizing="sm" className="ml-auto" onClick={handleCopied}>
 						{copied ? "Copied" : "Copy"}
 					</Button>
 				</div>
@@ -71,12 +58,7 @@ export const ShareFrame: FC<{ id: string }> = ({ id }) => {
 				</div>
 
 				<div className="flex flex-row items-center gap-2">
-					<Image
-						src="/icons/farcaster.svg"
-						alt="Farcaster"
-						width={14}
-						height={14}
-					/>
+					<Image src="/icons/farcaster.svg" alt="Farcaster" width={14} height={14} />
 					<p className="font-bold">Warpcast</p>
 					<a
 						className="ml-auto"

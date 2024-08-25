@@ -5,22 +5,14 @@ import { version } from "../../package.json"
 const outputString = `   ◍ Plug PostgreSQL Database ${version}`
 const envString = `- Environments: .env`
 
-function startDatabase(
-	containerName: string,
-	databaseName: string,
-	databasePassword: string,
-	port: string
-) {
+function startDatabase(containerName: string, databaseName: string, databasePassword: string, port: string) {
 	exec(
 		`docker start ${containerName} || docker run --name ${containerName} -e POSTGRES_PASSWORD=${databasePassword} -p ${port}:${
 			parseInt(port) - 2
 		} -d ${databaseName}`,
 		err => {
 			if (err) {
-				console.error(
-					"Error starting the PostgreSQL container in Docker:",
-					err
-				)
+				console.error("Error starting the PostgreSQL container in Docker:", err)
 
 				return
 			}

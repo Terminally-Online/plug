@@ -1,17 +1,6 @@
 import { FC } from "react"
 
-import {
-	Activity,
-	Cable,
-	Coins,
-	ImageIcon,
-	Landmark,
-	PiggyBank,
-	Settings,
-	ShieldAlert,
-	User,
-	Wallet
-} from "lucide-react"
+import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, Settings, ShieldAlert, User, Wallet } from "lucide-react"
 
 import { useSockets } from "@/contexts"
 import { formatTitle, VIEW_KEYS } from "@/lib"
@@ -26,7 +15,7 @@ type Options = Array<{
 	icon: JSX.Element
 }>
 
-const OPTIONS: Options  = [
+const OPTIONS: Options = [
 	{
 		label: "DISCOVER",
 		description: "Discover curated and community Plugs.",
@@ -95,22 +84,14 @@ export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
 				<button
 					key={option.label}
 					className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
-					onClick={() =>
-						handle.columns.add({ key: option.label, id })
-					}
+					onClick={() => handle.columns.add({ key: option.label, id })}
 				>
 					<div className="flex flex-row items-center gap-4">
 						{option.icon}
 
 						<div className="flex flex-col">
-							<p className="font-bold opacity-40">
-								{formatTitle(
-									option.label.replace("_", " ").toLowerCase()
-								)}
-							</p>
-							<p className="text-sm opacity-60">
-								{option.description}
-							</p>
+							<p className="font-bold opacity-40">{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
+							<p className="text-sm opacity-60">{option.description}</p>
 						</div>
 					</div>
 				</button>

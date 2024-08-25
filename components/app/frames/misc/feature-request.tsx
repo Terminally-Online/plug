@@ -7,11 +7,7 @@ import { useFrame } from "@/contexts"
 import { api } from "@/server/client"
 
 export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
-	const {
-		isFrame,
-		prevFrame: from,
-		handleFrame
-	} = useFrame({ id, key: "freatureRequest", seperator: "-" })
+	const { isFrame, prevFrame: from, handleFrame } = useFrame({ id, key: "freatureRequest", seperator: "-" })
 
 	const [message, setMessage] = useState("")
 
@@ -33,8 +29,7 @@ export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 		>
 			<div className="flex flex-col items-center gap-2">
 				<p className="mb-4 w-full opacity-60">
-					Have a piece of feedback or feature request to submit? Feel
-					free to share more details about your request.
+					Have a piece of feedback or feature request to submit? Feel free to share more details about your request.
 				</p>
 
 				<p className="flex w-full font-bold">Message</p>
@@ -50,15 +45,12 @@ export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 
 				{message && message.length > 360 && (
 					<p className="w-full text-sm opacity-60">
-						Woah! You wrote us an essay. Thank you. Your time and
-						effort is very much appreciated.
+						Woah! You wrote us an essay. Thank you. Your time and effort is very much appreciated.
 					</p>
 				)}
 
 				<Button
-					variant={
-						message && message.length > 4 ? "primary" : "disabled"
-					}
+					variant={message && message.length > 4 ? "primary" : "disabled"}
 					className="mt-4 w-full"
 					onClick={() =>
 						handleFeatureRequest.mutate({
@@ -68,9 +60,7 @@ export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 					}
 					disabled={!message || message.length < 4}
 				>
-					{message && message.length > 4
-						? "Submit Request"
-						: "Write Feedback"}
+					{message && message.length > 4 ? "Submit Request" : "Write Feedback"}
 				</Button>
 			</div>
 		</Frame>

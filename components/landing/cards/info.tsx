@@ -10,31 +10,16 @@ type Props = PropsWithChildren & {
 } & React.HTMLProps<HTMLDivElement> &
 	MotionProps
 
-export const InfoCard: FC<Props> = ({
-	children,
-	text,
-	description,
-	className,
-	...props
-}) => {
-	const base =
-		"relative flex flex-row items-center gap-8 rounded-xl bg-grayscale-0 p-8 items-end min-h-[240px]"
+export const InfoCard: FC<Props> = ({ children, text, description, className, ...props }) => {
+	const base = "relative flex flex-row items-center gap-8 rounded-xl bg-grayscale-0 p-8 items-end min-h-[240px]"
 
 	return (
 		<motion.div className={cn(base, className)} {...props}>
-			<div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden rounded-xl">
-				{children}
-			</div>
+			<div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden rounded-xl">{children}</div>
 
 			<div className="z-[10] flex flex-col gap-2">
-				<h2 className="flex flex-wrap items-center gap-4 text-lg font-black lg:text-2xl">
-					{text}
-				</h2>
-				{description && (
-					<p className="max-w-[640px] font-bold text-black/40">
-						{description}
-					</p>
-				)}
+				<h2 className="flex flex-wrap items-center gap-4 text-lg font-black lg:text-2xl">{text}</h2>
+				{description && <p className="max-w-[640px] font-bold text-black/40">{description}</p>}
 			</div>
 		</motion.div>
 	)

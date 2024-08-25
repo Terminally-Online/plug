@@ -8,8 +8,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { events } from "./plug"
 
 const getTags = (actions: string) => {
-	const parsed: Array<{ categoryName: string; actionName: string }> =
-		JSON.parse(actions)
+	const parsed: Array<{ categoryName: string; actionName: string }> = JSON.parse(actions)
 
 	return Array.from(
 		new Set(
@@ -31,8 +30,7 @@ export const action = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
-				if (input.id === undefined)
-					throw new TRPCError({ code: "BAD_REQUEST" })
+				if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
 				const editingPlug = await ctx.db.workflow.findUniqueOrThrow({
 					where: {
@@ -40,8 +38,7 @@ export const action = createTRPCRouter({
 					}
 				})
 
-				if (editingPlug.userAddress !== ctx.session.address)
-					throw new TRPCError({ code: "UNAUTHORIZED" })
+				if (editingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
 
 				const tags = getTags(input.actions)
 

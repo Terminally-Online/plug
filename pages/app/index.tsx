@@ -1,10 +1,4 @@
-import {
-	AuthFrame,
-	ConsoleColumnRow,
-	ConsoleSidebar,
-	PageContent,
-	PageHeader
-} from "@/components"
+import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
 import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
 

@@ -1,12 +1,7 @@
 import { FC, useMemo } from "react"
 
 import { useFrame, usePlugs } from "@/contexts"
-import {
-	categories,
-	formatTitle,
-	getValues,
-	actions as staticActions
-} from "@/lib"
+import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
 
 export const ActionCard: FC<{
 	id: string
@@ -19,17 +14,13 @@ export const ActionCard: FC<{
 	const primaryActions = useMemo(() => {
 		return Object.keys(staticActions[categoryName]).reduce(
 			(acc, actionName) => {
-				const { primary, ...action } =
-					staticActions[categoryName][actionName]
+				const { primary, ...action } = staticActions[categoryName][actionName]
 
 				if (primary) acc[actionName] = action
 
 				return acc
 			},
-			{} as Record<
-				string,
-				(typeof staticActions)[typeof categoryName][string]
-			>
+			{} as Record<string, (typeof staticActions)[typeof categoryName][string]>
 		)
 	}, [categoryName])
 
@@ -57,10 +48,7 @@ export const ActionCard: FC<{
 									{
 										categoryName,
 										actionName,
-										values: getValues(
-											categoryName,
-											actionName
-										)
+										values: getValues(categoryName, actionName)
 									}
 								])
 							})
@@ -71,9 +59,7 @@ export const ActionCard: FC<{
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">
 							{Icon && <Icon size={24} />}
 						</div>
-						<p className="max-w-[120px] text-sm font-bold">
-							{formatTitle(actionName)}
-						</p>
+						<p className="max-w-[120px] text-sm font-bold">{formatTitle(actionName)}</p>
 					</button>
 				)
 			})}

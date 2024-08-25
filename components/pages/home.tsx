@@ -20,9 +20,7 @@ export const PageHome = () => {
 				) : (
 					<>
 						<p>Authenticate to proceed.</p>
-						<Button onClick={() => handleFrame("auth")}>
-							Authenticate
-						</Button>
+						<Button onClick={() => handleFrame("auth")}>Authenticate</Button>
 					</>
 				)}
 			</Container>

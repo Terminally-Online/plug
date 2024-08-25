@@ -27,9 +27,7 @@ const getChainColor = (chain: string) => {
 }
 
 export const SocketTokenPercentages: FC<{
-	implementations: NonNullable<
-		ReturnType<typeof useBalances>["positions"]["tokens"]
-	>[number]["implementations"]
+	implementations: NonNullable<ReturnType<typeof useBalances>["positions"]["tokens"]>[number]["implementations"]
 }> = ({ implementations }) => {
 	let accumulatedPercentage = 0
 

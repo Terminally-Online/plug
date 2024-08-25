@@ -6,13 +6,7 @@ import { cn } from "@/lib/utils"
 
 type Props = { expanded: boolean } & React.HTMLAttributes<HTMLSpanElement>
 
-export const AccordionContent: FC<Props> = ({
-	expanded,
-	className,
-	style,
-	children,
-	...props
-}) => {
+export const AccordionContent: FC<Props> = ({ expanded, className, style, children, ...props }) => {
 	const ref = useRef<HTMLDivElement>(null)
 
 	const isClient = useClient()

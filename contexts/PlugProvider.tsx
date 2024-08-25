@@ -1,28 +1,13 @@
-import {
-	ContextType,
-	createContext,
-	FC,
-	PropsWithChildren,
-	useContext,
-	useEffect,
-	useMemo,
-	useState
-} from "react"
+import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
 
 import { useFrame, useSockets } from "@/contexts"
-import {
-	categories,
-	actions as staticActions,
-	tags,
-	VIEW_KEYS
-} from "@/lib/constants"
+import { categories, actions as staticActions, tags, VIEW_KEYS } from "@/lib/constants"
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
-const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) =>
-	!plugs ? [plug] : [plug, ...plugs]
+const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 
 export const ACTION_REGEX = /({\d+(?:=>\d+)?})/g
 
@@ -98,22 +83,13 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		enabled: ids.length > 0 ? true : false
 	})
 
-	const [plugs, setPlugs] = useState<
-		ContextType<typeof PlugContext>["plugs"]
-	>(apiPlugs || [])
+	const [plugs, setPlugs] = useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs || [])
 
 	const handleCreate = (
-		data: Parameters<
-			NonNullable<
-				NonNullable<
-					Parameters<typeof api.plug.add.useMutation>[0]
-				>["onSuccess"]
-			>
-		>[0],
+		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plug.add.useMutation>[0]>["onSuccess"]>>[0],
 		redirect = true
 	) => {
-		if (!plugs?.find(plug => plug.id === data.plug.id))
-			setPlugs(prev => spread(prev, data.plug))
+		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
 
 		if (redirect)
 			handleSocket.columns.add({
@@ -129,15 +105,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	api.plug.onEdit.useSubscription(undefined, {
 		onData: data =>
-			setPlugs(prev =>
-				prev
-					? prev.map(p =>
-							p.id === data.id && p.updatedAt < data.updatedAt
-								? { ...p, ...data }
-								: p
-						)
-					: [data]
-			)
+			setPlugs(prev => (prev ? prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)) : [data]))
 	})
 
 	api.plug.onDelete.useSubscription(undefined, {
@@ -148,9 +116,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			// handleFrame()
 			// }
 
-			setPlugs(prev =>
-				prev ? prev.filter(plug => plug.id !== data.id) : []
-			)
+			setPlugs(prev => (prev ? prev.filter(plug => plug.id !== data.id) : []))
 		}
 	})
 
@@ -222,11 +188,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	useEffect(() => {
 		if (!apiPlugs) return
 
-		setPlugs(prev =>
-			prev
-				? apiPlugs.map(plug => prev.find(p => p.id === plug.id) ?? plug)
-				: apiPlugs
-		)
+		setPlugs(prev => (prev ? apiPlugs.map(plug => prev.find(p => p.id === plug.id) ?? plug) : apiPlugs))
 	}, [apiPlugs])
 
 	return (
@@ -272,11 +234,7 @@ export const usePlugs = (id: string) => {
 	const plug = useMemo(
 		() =>
 			plugs?.find(plug => plug.id === id) ||
-			plugs?.find(
-				plug =>
-					plug.id ===
-					socket?.columns.find(column => column.id === id)?.item
-			) ||
+			plugs?.find(plug => plug.id === socket?.columns.find(column => column.id === id)?.item) ||
 			undefined,
 		[plugs, id, socket]
 	)
@@ -308,19 +266,14 @@ export const usePlugs = (id: string) => {
 	// regex shape that enables the f-string like syntax.
 	const fragments = useMemo(() => {
 		return actions.map(action => {
-			const staticAction =
-				staticActions[action.categoryName][action.actionName]
+			const staticAction = staticActions[action.categoryName][action.actionName]
 
-			return staticAction
-				? (staticAction["sentence"].split(ACTION_REGEX) as string[])
-				: []
+			return staticAction ? (staticAction["sentence"].split(ACTION_REGEX) as string[]) : []
 		})
 	}, [actions])
 
 	const dynamic = useMemo(() => {
-		return fragments.map(sentence =>
-			sentence.filter(fragment => fragment.match(ACTION_REGEX))
-		)
+		return fragments.map(sentence => sentence.filter(fragment => fragment.match(ACTION_REGEX)))
 	}, [fragments])
 
 	return {

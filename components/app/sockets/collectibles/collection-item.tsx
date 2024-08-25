@@ -13,11 +13,7 @@ import { SocketCollectibleGrid } from "./collectible-grid"
 
 export const SocketCollectionItem: FC<{
 	id: string
-	collection:
-		| NonNullable<
-				RouterOutputs["socket"]["balances"]["collectibles"]
-		  >[number]
-		| undefined
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number] | undefined
 	searched?: boolean
 }> = ({ id, collection, searched = false }) => {
 	const [expanded, setExpanded] = useState(searched)
@@ -45,19 +41,8 @@ export const SocketCollectionItem: FC<{
 					loading={collection === undefined}
 					className="text-left"
 					expanded={expanded || searched}
-					onExpand={
-						collection === undefined || searched
-							? () => {}
-							: () => setExpanded(!expanded)
-					}
-					accordion={
-						collection && (
-							<SocketCollectibleGrid
-								id={id}
-								collection={collection}
-							/>
-						)
-					}
+					onExpand={collection === undefined || searched ? () => {} : () => setExpanded(!expanded)}
+					accordion={collection && <SocketCollectibleGrid id={id} collection={collection} />}
 				>
 					{collection === undefined ? (
 						<div className="invisible">
@@ -87,9 +72,7 @@ export const SocketCollectionItem: FC<{
 							</div>
 
 							<div className="flex w-min flex-col truncate overflow-ellipsis">
-								<p className="truncate font-bold">
-									{collection.name}
-								</p>
+								<p className="truncate font-bold">{collection.name}</p>
 								<div className="flex w-max flex-row items-center gap-2">
 									<Image
 										src={getChainImage(collection.chain)}
@@ -100,8 +83,7 @@ export const SocketCollectionItem: FC<{
 									/>
 									<p className="text-sm font-bold opacity-40">
 										{collection.collectibles.length} Token
-										{collection.collectibles.length > 1 &&
-											"s"}
+										{collection.collectibles.length > 1 && "s"}
 									</p>
 								</div>
 							</div>
@@ -112,12 +94,7 @@ export const SocketCollectionItem: FC<{
 
 			{collection &&
 				collection.collectibles.map(collectible => (
-					<CollectibleFrame
-						key={collectible.identifier}
-						id={id}
-						collection={collection}
-						collectible={collectible}
-					/>
+					<CollectibleFrame key={collectible.identifier} id={id} collection={collection} collectible={collectible} />
 				))}
 		</>
 	)

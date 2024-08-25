@@ -28,10 +28,7 @@ export const getFarcasterFollowing = async (address: string) => {
 	})
 
 	const cache =
-		socket &&
-		socket.identity?.farcaster &&
-		socket.identity?.farcaster?.updatedAt >
-			new Date(Date.now() - FARCASTER_CACHE_TIME)
+		socket && socket.identity?.farcaster && socket.identity?.farcaster?.updatedAt > new Date(Date.now() - FARCASTER_CACHE_TIME)
 
 	if (cache) return
 
@@ -79,11 +76,7 @@ export const getFarcasterFollowing = async (address: string) => {
 
 	while (hasNextPage) {
 		const variables: { cursor: string | null } = { cursor }
-		const response = await axios.post(
-			endpoint,
-			{ query, variables },
-			{ headers }
-		)
+		const response = await axios.post(endpoint, { query, variables }, { headers })
 
 		if (response.data.errors) {
 			console.error("GraphQL Errors:", response.data.errors)
@@ -117,12 +110,10 @@ export const getFarcasterFollowing = async (address: string) => {
 			create: {
 				id: following.followingAddress.identity,
 				addresses: {
-					connectOrCreate: following.followingAddress.addresses.map(
-						address => ({
-							where: { id: address },
-							create: { id: address }
-						})
-					)
+					connectOrCreate: following.followingAddress.addresses.map(address => ({
+						where: { id: address },
+						create: { id: address }
+					}))
 				}
 			}
 		}))

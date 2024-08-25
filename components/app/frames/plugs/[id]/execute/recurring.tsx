@@ -20,9 +20,7 @@ export const RecurringFrame: FC<{ id: string }> = ({ id }) => {
 		key: "recurring"
 	})
 
-	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(
-		frequencies[0]
-	)
+	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(frequencies[0])
 
 	return (
 		<Frame

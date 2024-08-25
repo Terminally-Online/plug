@@ -12,95 +12,22 @@ export const Fees = () => {
 			xmlns="http://www.w3.org/2000/svg"
 			className="mx-auto ml-[-10%] mt-[-25%] w-[120%]"
 		>
-			<rect
-				x="291"
-				y="181"
-				width="60"
-				height="60"
-				rx="30"
-				fill="url(#pattern0_1460_13409)"
-			/>
+			<rect x="291" y="181" width="60" height="60" rx="30" fill="url(#pattern0_1460_13409)" />
 			<line x1="417" y1="211.5" x2="351" y2="211.5" stroke="#D9D9D9" />
-			<line
-				x1="552.721"
-				y1="88.4278"
-				x2="506.052"
-				y2="135.097"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="266.721"
-				y1="59.4278"
-				x2="220.052"
-				y2="106.097"
-				stroke="#D9D9D9"
-			/>
+			<line x1="552.721" y1="88.4278" x2="506.052" y2="135.097" stroke="#D9D9D9" />
+			<line x1="266.721" y1="59.4278" x2="220.052" y2="106.097" stroke="#D9D9D9" />
 			<line x1="511" y1="211.5" x2="445" y2="211.5" stroke="#D9D9D9" />
 			<line x1="431.5" y1="131" x2="431.5" y2="197" stroke="#D9D9D9" />
-			<line
-				x1="617.65"
-				y1="135.361"
-				x2="570.981"
-				y2="88.6916"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="331.65"
-				y1="106.361"
-				x2="284.981"
-				y2="59.6916"
-				stroke="#D9D9D9"
-			/>
+			<line x1="617.65" y1="135.361" x2="570.981" y2="88.6916" stroke="#D9D9D9" />
+			<line x1="331.65" y1="106.361" x2="284.981" y2="59.6916" stroke="#D9D9D9" />
 			<line x1="430.5" y1="287" x2="430.5" y2="221" stroke="#D9D9D9" />
-			<line
-				x1="507.049"
-				y1="25.3449"
-				x2="553.718"
-				y2="72.014"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="486.316"
-				y1="268.022"
-				x2="439.647"
-				y2="221.353"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="375.346"
-				y1="267.315"
-				x2="422.015"
-				y2="220.646"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="481.998"
-				y1="78.2322"
-				x2="547.998"
-				y2="78.2322"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="487.023"
-				y1="155.052"
-				x2="440.354"
-				y2="201.721"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="561.381"
-				y1="157.614"
-				x2="561.381"
-				y2="91.6143"
-				stroke="#D9D9D9"
-			/>
-			<line
-				x1="275.381"
-				y1="128.614"
-				x2="275.381"
-				y2="62.6143"
-				stroke="#D9D9D9"
-			/>
+			<line x1="507.049" y1="25.3449" x2="553.718" y2="72.014" stroke="#D9D9D9" />
+			<line x1="486.316" y1="268.022" x2="439.647" y2="221.353" stroke="#D9D9D9" />
+			<line x1="375.346" y1="267.315" x2="422.015" y2="220.646" stroke="#D9D9D9" />
+			<line x1="481.998" y1="78.2322" x2="547.998" y2="78.2322" stroke="#D9D9D9" />
+			<line x1="487.023" y1="155.052" x2="440.354" y2="201.721" stroke="#D9D9D9" />
+			<line x1="561.381" y1="157.614" x2="561.381" y2="91.6143" stroke="#D9D9D9" />
+			<line x1="275.381" y1="128.614" x2="275.381" y2="62.6143" stroke="#D9D9D9" />
 			<line x1="355" y1="50.502" x2="289" y2="50.5019" stroke="#D9D9D9" />
 
 			<circle cx="431" cy="211" r="14" fill="#D9D9D9" />
@@ -390,105 +317,21 @@ export const Fees = () => {
 					repeatType: "reverse"
 				}}
 			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 225.701 211)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(0.707107 0.707107 0.707107 -0.707107 90.334 88.0742)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 131.701 211)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(1.31134e-07 1 1 -1.31134e-07 211.701 131)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 24.6973 135.007)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(-2.18557e-07 -1 -1 2.18557e-07 211.701 287)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(-0.707107 0.707107 0.707107 0.707107 136.006 25.6985)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 156.031 267.669)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 267.67 267.669)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(1 -1.88879e-07 -1.88879e-07 -1 67 277.999)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(-1 2.76301e-07 2.76301e-07 1 160.703 78.7322)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(0.707107 0.707107 0.707107 -0.707107 156.031 154.698)"
-				stroke="#D9D9D9"
-			/>
-			<line
-				y1="-0.5"
-				x2="66"
-				y2="-0.5"
-				transform="matrix(-2.34154e-07 -1 -1 2.34154e-07 80.8203 157.614)"
-				stroke="#D9D9D9"
-			/>
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 225.701 211)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 0.707107 0.707107 -0.707107 90.334 88.0742)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 131.701 211)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1.31134e-07 1 1 -1.31134e-07 211.701 131)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 24.6973 135.007)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-2.18557e-07 -1 -1 2.18557e-07 211.701 287)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-0.707107 0.707107 0.707107 0.707107 136.006 25.6985)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 156.031 267.669)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 267.67 267.669)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.88879e-07 -1.88879e-07 -1 67 277.999)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-1 2.76301e-07 2.76301e-07 1 160.703 78.7322)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 0.707107 0.707107 -0.707107 156.031 154.698)" stroke="#D9D9D9" />
+			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-2.34154e-07 -1 -1 2.34154e-07 80.8203 157.614)" stroke="#D9D9D9" />
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 197.701 225)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 197.701 225)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -507,13 +350,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 101.066 78.4385)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 101.066 78.4385)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -532,13 +369,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 103.701 225)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 103.701 225)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -557,13 +388,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 165.533 144.906)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 165.533 144.906)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -582,13 +407,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(4.37114e-08 1 1 -4.37114e-08 197.701 103)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(4.37114e-08 1 1 -4.37114e-08 197.701 103)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -607,13 +426,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 14.7988 164.706)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 14.7988 164.706)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -632,13 +445,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-1.31134e-07 -1 -1 1.31134e-07 225.701 315)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-1.31134e-07 -1 -1 1.31134e-07 225.701 315)" fill="#D9D9D9" />
 
 			<motion.circle
 				cx="14"
@@ -658,13 +465,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-0.707107 0.707107 0.707107 0.707107 144.906 -5)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 0.707107 0.707107 0.707107 144.906 -5)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -683,13 +484,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 146.133 298)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 146.133 298)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -708,13 +503,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 298.002 277.567)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 298.002 277.567)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -733,13 +522,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(1 -6.2438e-08 -6.2438e-08 -1 39 292)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(1 -6.2438e-08 -6.2438e-08 -1 39 292)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -758,13 +541,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-1 1.49861e-07 1.49861e-07 1 187.701 63.7314)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-1 1.49861e-07 1.49861e-07 1 187.701 63.7314)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -783,13 +560,7 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle
-				cx="14"
-				cy="14"
-				r="14"
-				transform="matrix(-1.49861e-07 -1 -1 1.49861e-07 94.8184 185.613)"
-				fill="#D9D9D9"
-			/>
+			<circle cx="14" cy="14" r="14" transform="matrix(-1.49861e-07 -1 -1 1.49861e-07 94.8184 185.613)" fill="#D9D9D9" />
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -819,12 +590,7 @@ export const Fees = () => {
 					<stop offset="100%" stop-color="#A3F700" />
 				</linearGradient>
 
-				<pattern
-					id="pattern0_1460_13409"
-					patternContentUnits="objectBoundingBox"
-					width="1"
-					height="1"
-				>
+				<pattern id="pattern0_1460_13409" patternContentUnits="objectBoundingBox" width="1" height="1">
 					{createElement("use", {
 						href: "#image0_1460_13409",
 						xlinkHref: "#image0_1460_13409",

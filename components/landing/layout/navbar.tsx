@@ -17,23 +17,12 @@ export const Navbar: FC = () => (
 			<Image src="/black-logo.svg" alt="Logo" width={64} height={32} />
 		</Link>
 		<a href={routes.documentation} target="_blank" rel="noreferrer">
-			<Book
-				size={18}
-				className="opacity-60 transition-opacity duration-200 hover:opacity-100"
-			/>
+			<Book size={18} className="opacity-60 transition-opacity duration-200 hover:opacity-100" />
 		</a>
 		<a href={routes.status} target="_blank" rel="noreferrer">
-			<Activity
-				size={18}
-				className="opacity-60 transition-opacity duration-200 hover:opacity-100"
-			/>
+			<Activity size={18} className="opacity-60 transition-opacity duration-200 hover:opacity-100" />
 		</a>
-		<a
-			href={routes.twitter}
-			target="_blank"
-			rel="noreferrer"
-			className="ml-auto"
-		>
+		<a href={routes.twitter} target="_blank" rel="noreferrer" className="ml-auto">
 			<Image
 				src={twitter}
 				alt="Twitter"

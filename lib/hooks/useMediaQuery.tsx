@@ -15,13 +15,7 @@ type BreakpointState = {
 }
 
 export const useMediaQuery = () => {
-	const mediaQueries = useMemo(
-		() =>
-			Object.entries(BREAKPOINTS).map(
-				([key, value]) => [key, `(min-width: ${value}px)`] as const
-			),
-		[]
-	)
+	const mediaQueries = useMemo(() => Object.entries(BREAKPOINTS).map(([key, value]) => [key, `(min-width: ${value}px)`] as const), [])
 
 	const [state, setState] = useState<BreakpointState>(
 		() =>
@@ -35,9 +29,7 @@ export const useMediaQuery = () => {
 	)
 
 	useEffect(() => {
-		const mediaQueryLists = mediaQueries.map(([_, query]) =>
-			window.matchMedia(query)
-		)
+		const mediaQueryLists = mediaQueries.map(([_, query]) => window.matchMedia(query))
 
 		const handleChange = () => {
 			const newState = mediaQueryLists.reduce(

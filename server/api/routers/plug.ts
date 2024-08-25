@@ -5,11 +5,7 @@ import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
 import { colors } from "@/lib"
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure
-} from "@/server/api/trpc"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
 
 import { action } from "./action"
 
@@ -41,16 +37,14 @@ const subscription = (event: string) =>
 	})
 
 export const plug = createTRPCRouter({
-	get: publicProcedure
-		.input(z.array(z.string()))
-		.query(async ({ input, ctx }) => {
-			return await ctx.db.workflow.findMany({
-				where: {
-					id: { in: input },
-					isPrivate: false
-				}
-			})
-		}),
+	get: publicProcedure.input(z.array(z.string())).query(async ({ input, ctx }) => {
+		return await ctx.db.workflow.findMany({
+			where: {
+				id: { in: input },
+				isPrivate: false
+			}
+		})
+	}),
 
 	infinite: protectedProcedure
 		.input(
@@ -138,11 +132,7 @@ export const plug = createTRPCRouter({
 	all: protectedProcedure
 		.input(
 			z.object({
-				target: z.union([
-					z.literal("mine"),
-					z.literal("others"),
-					z.literal("curated")
-				]),
+				target: z.union([z.literal("mine"), z.literal("others"), z.literal("curated")]),
 				search: z.string().optional(),
 				tag: z.string().optional(),
 				limit: z.number().optional()
@@ -192,57 +182,48 @@ export const plug = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-	add: protectedProcedure
-		.input(z.string().optional())
-		.mutation(async ({ input, ctx }) => {
-			try {
-				const plug = await ctx.db.workflow.create({
-					data: {
-						name: "Untitled Plug",
-						userAddress: ctx.session.address,
-						color: Object.keys(colors)[
-							Math.floor(
-								Math.random() * Object.keys(colors).length
-							)
-						] as keyof typeof colors
-					}
-				})
+	add: protectedProcedure.input(z.string().optional()).mutation(async ({ input, ctx }) => {
+		try {
+			const plug = await ctx.db.workflow.create({
+				data: {
+					name: "Untitled Plug",
+					userAddress: ctx.session.address,
+					color: Object.keys(colors)[Math.floor(Math.random() * Object.keys(colors).length)] as keyof typeof colors
+				}
+			})
 
-				ctx.emitter.emit(events.add, plug)
+			ctx.emitter.emit(events.add, plug)
 
-				return { plug, from: input }
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
-		}),
-	fork: protectedProcedure
-		.input(z.object({ id: z.string(), from: z.string().optional() }))
-		.mutation(async ({ input, ctx }) => {
-			try {
-				const forking = await ctx.db.workflow.findUnique({
-					where: { id: input.id }
-				})
+			return { plug, from: input }
+		} catch (error) {
+			throw new TRPCError({ code: "BAD_REQUEST" })
+		}
+	}),
+	fork: protectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
+		try {
+			const forking = await ctx.db.workflow.findUnique({
+				where: { id: input.id }
+			})
 
-				if (forking == null)
-					throw new TRPCError({ code: "BAD_REQUEST" })
+			if (forking == null) throw new TRPCError({ code: "BAD_REQUEST" })
 
-				const { id, ...forkingData } = forking
+			const { id, ...forkingData } = forking
 
-				const plug = await ctx.db.workflow.create({
-					data: {
-						...forkingData,
-						name: forking.name,
-						userAddress: ctx.session.address
-					}
-				})
+			const plug = await ctx.db.workflow.create({
+				data: {
+					...forkingData,
+					name: forking.name,
+					userAddress: ctx.session.address
+				}
+			})
 
-				ctx.emitter.emit(events.add, plug)
+			ctx.emitter.emit(events.add, plug)
 
-				return { plug, from: input.from }
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
-		}),
+			return { plug, from: input.from }
+		} catch (error) {
+			throw new TRPCError({ code: "BAD_REQUEST" })
+		}
+	}),
 	edit: protectedProcedure
 		.input(
 			z.object({
@@ -254,8 +235,7 @@ export const plug = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			try {
-				if (input.id === undefined)
-					throw new TRPCError({ code: "BAD_REQUEST" })
+				if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
 				const { id, ...data } = input
 
@@ -265,8 +245,7 @@ export const plug = createTRPCRouter({
 					}
 				})
 
-				if (editingPlug.userAddress !== ctx.session.address)
-					throw new TRPCError({ code: "UNAUTHORIZED" })
+				if (editingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
 
 				const plug = await ctx.db.workflow.update({
 					where: {
@@ -282,32 +261,29 @@ export const plug = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-	delete: protectedProcedure
-		.input(z.object({ id: z.string(), from: z.string().optional() }))
-		.mutation(async ({ input, ctx }) => {
-			try {
-				const deletingPlug = await ctx.db.workflow.findUniqueOrThrow({
-					where: {
-						id: input.id
-					}
-				})
+	delete: protectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
+		try {
+			const deletingPlug = await ctx.db.workflow.findUniqueOrThrow({
+				where: {
+					id: input.id
+				}
+			})
 
-				if (deletingPlug.userAddress !== ctx.session.address)
-					throw new TRPCError({ code: "UNAUTHORIZED" })
+			if (deletingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
 
-				const plug = await ctx.db.workflow.delete({
-					where: {
-						id: input.id
-					}
-				})
+			const plug = await ctx.db.workflow.delete({
+				where: {
+					id: input.id
+				}
+			})
 
-				ctx.emitter.emit(events.delete, plug)
+			ctx.emitter.emit(events.delete, plug)
 
-				return { plug, from: input.from }
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
-		}),
+			return { plug, from: input.from }
+		} catch (error) {
+			throw new TRPCError({ code: "BAD_REQUEST" })
+		}
+	}),
 
 	// below are subscriptions
 	onAdd: subscription(events.add), // sends message to subscribers
@@ -319,8 +295,7 @@ export const plug = createTRPCRouter({
 		.subscription(async ({ input, ctx }) => {
 			// subscription logic
 			try {
-				if (input === undefined)
-					throw new TRPCError({ code: "BAD_REQUEST" })
+				if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
 				return observable<number>(emit => {
 					// in memory state manager, this gives us a constant stream

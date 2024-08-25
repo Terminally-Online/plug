@@ -1,30 +1,20 @@
 import { chains, nativeTokenAddress, tokens } from "../constants"
 
 export const getBlockExplorerUrl = (chainId: number) => {
-	return chains.find(chain => chain.id === chainId)?.blockExplorers.default
-		.url
+	return chains.find(chain => chain.id === chainId)?.blockExplorers.default.url
 }
 
-export const getBlockExplorerAddress = (
-	chainId: number,
-	address: string | undefined
-) => {
+export const getBlockExplorerAddress = (chainId: number, address: string | undefined) => {
 	if (!address) return ""
 	return `${getBlockExplorerUrl(chainId)}/address/${address}`
 }
 
-export const getBlockExplorerTransaction = (
-	chainId: number,
-	tx: string | undefined
-) => {
+export const getBlockExplorerTransaction = (chainId: number, tx: string | undefined) => {
 	if (!tx) return ""
 	return `${getBlockExplorerUrl(chainId)}/tx/${tx}`
 }
 
-export const getBlockExplorerBlock = (
-	chainId: number,
-	block: string | undefined
-) => {
+export const getBlockExplorerBlock = (chainId: number, block: string | undefined) => {
 	if (!block) return ""
 	return `${getBlockExplorerUrl(chainId)}/block/${block}`
 }
@@ -67,9 +57,7 @@ export const getNativeAssetImage = (chainId: number) => {
 	const nativeAddress = nativeTokenAddress
 
 	const nativeImage = tokens.find(
-		token =>
-			token.address.toLowerCase() === nativeAddress.toLowerCase() &&
-			token.chainId === chainId
+		token => token.address.toLowerCase() === nativeAddress.toLowerCase() && token.chainId === chainId
 	)?.logoURI
 
 	if (nativeImage) return nativeImage

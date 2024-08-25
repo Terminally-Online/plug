@@ -1,10 +1,4 @@
-import {
-	FC,
-	HTMLAttributes,
-	PropsWithChildren,
-	useCallback,
-	useEffect
-} from "react"
+import { FC, HTMLAttributes, PropsWithChildren, useCallback, useEffect } from "react"
 
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react"
 
@@ -21,9 +15,12 @@ export type ButtonProps = {
 	redirect?: boolean
 }
 
-export const AuthButton: FC<
-	HTMLAttributes<HTMLButtonElement> & PropsWithChildren<ButtonProps>
-> = ({ callbackUrl = "/app/", redirect = true, className, ...props }) => {
+export const AuthButton: FC<HTMLAttributes<HTMLButtonElement> & PropsWithChildren<ButtonProps>> = ({
+	callbackUrl = "/app/",
+	redirect = true,
+	className,
+	...props
+}) => {
 	const { open } = useWeb3Modal()
 
 	const { address, isConnected } = useAccount()
@@ -68,15 +65,7 @@ export const AuthButton: FC<
 		} catch (e) {
 			console.error(e)
 		}
-	}, [
-		redirect,
-		address,
-		chainId,
-		isConnected,
-		open,
-		signMessageAsync,
-		callbackUrl
-	])
+	}, [redirect, address, chainId, isConnected, open, signMessageAsync, callbackUrl])
 
 	useEffect(() => {
 		if (isConnected === false || isLoading || isError) return
@@ -87,25 +76,12 @@ export const AuthButton: FC<
 	return (
 		<>
 			{session?.address ? (
-				<Button
-					variant="destructive"
-					className={cn(className ? className : "w-full")}
-					onClick={() => disconnect()}
-					{...props}
-				>
+				<Button variant="destructive" className={cn(className ? className : "w-full")} onClick={() => disconnect()} {...props}>
 					Logout
 				</Button>
 			) : (
-				<Button
-					className={cn(className ? className : "w-full")}
-					onClick={handleLogin}
-					{...props}
-				>
-					{isConnected
-						? isLoading
-							? "Signing Message..."
-							: "Sign Message"
-						: "Connect Wallet"}
+				<Button className={cn(className ? className : "w-full")} onClick={handleLogin} {...props}>
+					{isConnected ? (isLoading ? "Signing Message..." : "Sign Message") : "Connect Wallet"}
 				</Button>
 			)}
 		</>

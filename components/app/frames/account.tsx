@@ -27,18 +27,9 @@ export const AccountFrame = () => {
 			className="z-[2]"
 			icon={
 				avatar ? (
-					<Image
-						src={avatar}
-						alt="ENS Avatar"
-						width={24}
-						height={24}
-						className="h-6 w-6 rounded-sm"
-					/>
+					<Image src={avatar} alt="ENS Avatar" width={24} height={24} className="h-6 w-6 rounded-sm" />
 				) : (
-					<BlockiesSvg
-						className="h-6 w-6 rounded-sm"
-						address={address}
-					/>
+					<BlockiesSvg className="h-6 w-6 rounded-sm" address={address} />
 				)
 			}
 			label="Wallet"
@@ -55,10 +46,7 @@ export const AccountFrame = () => {
 					</StatCard>
 
 					<StatCard>
-						<Counter
-							className="mr-auto w-max text-2xl font-bold"
-							count={321}
-						/>
+						<Counter className="mr-auto w-max text-2xl font-bold" count={321} />
 						<p className="font-bold opacity-40">Points Earned</p>
 					</StatCard>
 				</div>
@@ -78,19 +66,10 @@ export const AccountFrame = () => {
 			</div>
 
 			<div className="mt-4 flex flex-row gap-2">
-				<Button
-					variant="destructive"
-					className="w-max"
-					onClick={() => disconnect()}
-				>
+				<Button variant="destructive" className="w-max" onClick={() => disconnect()}>
 					Logout
 				</Button>
-				<Button
-					variant="disabled"
-					className="w-full"
-					onClick={() => {}}
-					disabled
-				>
+				<Button variant="disabled" className="w-full" onClick={() => {}} disabled>
 					Claim Earnings
 				</Button>
 			</div>

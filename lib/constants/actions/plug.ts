@@ -1,12 +1,4 @@
-import {
-	ClockIcon,
-	FuelIcon,
-	GemIcon,
-	HashIcon,
-	InfinityIcon,
-	SnowflakeIcon,
-	Tally5Icon
-} from "lucide-react"
+import { ClockIcon, FuelIcon, GemIcon, HashIcon, InfinityIcon, SnowflakeIcon, Tally5Icon } from "lucide-react"
 import { parseAbi, zeroAddress } from "viem"
 
 import { abis } from "../abis"

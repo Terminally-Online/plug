@@ -1,12 +1,6 @@
 import { FC, useState } from "react"
 
-import {
-	ArrowRight,
-	CalendarPlus,
-	ChevronLeft,
-	ChevronRight,
-	Clock
-} from "lucide-react"
+import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 import { DateRange, DayPicker } from "react-day-picker"
 
 import { Button, Dropdown, Frame } from "@/components"
@@ -33,9 +27,7 @@ export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
 		from: undefined,
 		to: undefined
 	})
-	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(
-		frequencies[0]
-	)
+	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(frequencies[0])
 
 	const handleBack =
 		// chainsAvailable.length === 1
@@ -61,9 +53,7 @@ export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
 								background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 							}}
 						>
-							{formatDate(
-								date && date.from ? date.from : new Date()
-							)}
+							{formatDate(date && date.from ? date.from : new Date())}
 						</div>
 					)}
 
@@ -91,15 +81,11 @@ export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
 					disabled={{
 						before: new Date()
 					}}
-					className={cn(
-						"select-none",
-						date && (date.from || date.to) && "mt-4"
-					)}
+					className={cn("select-none", date && (date.from || date.to) && "mt-4")}
 					classNames={{
 						months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
 						month: "space-y-4",
-						caption:
-							"flex justify-center pt-1 relative items-center",
+						caption: "flex justify-center pt-1 relative items-center",
 						caption_label: "text-sm font-bold opacity-40",
 						nav: "space-x-1 flex items-center",
 						nav_button: cn(
@@ -111,8 +97,7 @@ export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
 						nav_button_next: "absolute right-1",
 						table: "w-full border-collapse space-y-1",
 						head_row: "flex justify-between",
-						head_cell:
-							"rounded-md my-2 w-9 font-bold text-[0.8rem] opacity-40",
+						head_cell: "rounded-md my-2 w-9 font-bold text-[0.8rem] opacity-40",
 						row: "flex w-full mt-2 justify-between",
 						cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
 						day: cn(
@@ -125,8 +110,7 @@ export const ScheduleFrame: FC<{ id: string }> = ({ id }) => {
 							"bg-gradient-to-tr from-plug-green to-plug-yellow text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
 						day_today: "bg-accent text-accent-foreground",
 						day_disabled: "text-black/40",
-						day_range_middle:
-							"aria-selected:bg-accent aria-selected:text-primary-foreground",
+						day_range_middle: "aria-selected:bg-accent aria-selected:text-primary-foreground",
 						day_hidden: "invisible"
 					}}
 					components={{

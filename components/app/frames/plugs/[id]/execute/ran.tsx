@@ -16,22 +16,12 @@ export const RanFrame: FC<{ id: string }> = ({ id }) => {
 	})
 	const { plug, chains } = usePlugs(id)
 
-	const label = isFrame
-		? prevFrame === "schedule"
-			? "Intent Signed"
-			: "Transaction Ran"
-		: ""
+	const label = isFrame ? (prevFrame === "schedule" ? "Intent Signed" : "Transaction Ran") : ""
 
 	if (!plug) return null
 
 	return (
-		<Frame
-			id={id}
-			className="z-[2]"
-			icon={<CheckCircle size={18} />}
-			label={label}
-			visible={isFrame}
-		>
+		<Frame id={id} className="z-[2]" icon={<CheckCircle size={18} />} label={label} visible={isFrame}>
 			<div className="flex flex-col gap-2">
 				<p>
 					<span className="opacity-60">Your</span>
@@ -56,10 +46,7 @@ export const RanFrame: FC<{ id: string }> = ({ id }) => {
 					<span className="flex flex-row gap-2">
 						<span>
 							<div className="rounded-full bg-plug-green/10 p-1">
-								<CheckCircle
-									className="text-plug-green"
-									size={16}
-								/>
+								<CheckCircle className="text-plug-green" size={16} />
 							</div>
 						</span>
 						Success
@@ -67,9 +54,7 @@ export const RanFrame: FC<{ id: string }> = ({ id }) => {
 				</p>
 
 				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">
-						{prevFrame === "schedule" ? "Signed For" : "Ran on"}
-					</span>
+					<span className="mr-auto opacity-60">{prevFrame === "schedule" ? "Signed For" : "Ran on"}</span>
 
 					{chains.map(chain => (
 						<Image
@@ -93,11 +78,7 @@ export const RanFrame: FC<{ id: string }> = ({ id }) => {
 					</p>
 				)}
 
-				<Button
-					variant="secondary"
-					className="mt-4 w-full"
-					onClick={() => handleFrame("chain")}
-				>
+				<Button variant="secondary" className="mt-4 w-full" onClick={() => handleFrame("chain")}>
 					View on Explorer
 				</Button>
 			</div>

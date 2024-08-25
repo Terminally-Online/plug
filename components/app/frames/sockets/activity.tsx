@@ -20,11 +20,7 @@ export const ActivityFrame: FC<{
 	return (
 		<Frame
 			id={id}
-			icon={
-				<div className="relative h-10 w-10">
-					{getStatusIcon(activity.status)}
-				</div>
-			}
+			icon={<div className="relative h-10 w-10">{getStatusIcon(activity.status)}</div>}
 			label={activity.name}
 			visible={isFrame}
 			hasOverlay={true}
@@ -33,13 +29,7 @@ export const ActivityFrame: FC<{
 			<div className="relative flex w-full flex-col gap-2 px-6 pb-4 text-left">
 				<div className="flex flex-col gap-2 text-black text-opacity-40">
 					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/aave.png"
-							alt="Aave"
-							width={32}
-							height={32}
-							className="h-6 w-6"
-						/>
+						<Image src="/protocols/aave.png" alt="Aave" width={32} height={32} className="h-6 w-6" />
 						<p className="font-bold">
 							<span
 								style={{
@@ -82,13 +72,7 @@ export const ActivityFrame: FC<{
 						</p>
 					</div>
 					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/uniswap.png"
-							alt="Uniswap"
-							width={32}
-							height={32}
-							className="h-6 w-6"
-						/>
+						<Image src="/protocols/uniswap.png" alt="Uniswap" width={32} height={32} className="h-6 w-6" />
 						<p className="font-bold">
 							Swap{" "}
 							<span
@@ -131,13 +115,7 @@ export const ActivityFrame: FC<{
 						</p>
 					</div>
 					<div className="flex items-center gap-4">
-						<Image
-							src="/protocols/aave.png"
-							alt="Aave"
-							width={32}
-							height={32}
-							className="h-6 w-6"
-						/>
+						<Image src="/protocols/aave.png" alt="Aave" width={32} height={32} className="h-6 w-6" />
 						<p className="font-bold">
 							Increase collateral in{" "}
 							<span
@@ -176,25 +154,13 @@ export const ActivityFrame: FC<{
 					<p className="mt-4 flex font-bold">
 						<span className="mr-auto opacity-40">Run On</span>
 
-						<Image
-							className="ml-[-20px] h-6 w-6"
-							src={`/blockchain/ethereum.png`}
-							alt={"Ethereum"}
-							width={24}
-							height={24}
-						/>
+						<Image className="ml-[-20px] h-6 w-6" src={`/blockchain/ethereum.png`} alt={"Ethereum"} width={24} height={24} />
 					</p>
 					<p className="flex">
-						<span className="mr-auto font-bold opacity-40">
-							Total
-						</span>
+						<span className="mr-auto font-bold opacity-40">Total</span>
 						<div className="flex flex-row gap-2">
 							<span className="flex flex-row items-center gap-2 opacity-60">
-								<Counter
-									count={isFrame ? 0.00135 : 0}
-									decimals={5}
-								/>{" "}
-								ETH
+								<Counter count={isFrame ? 0.00135 : 0} decimals={5} /> ETH
 							</span>
 							<span className="flex flex-row font-bold">
 								$

@@ -172,12 +172,7 @@ export const ActivityList: FC<{ id: string }> = ({ id }) => {
 	]
 
 	if (activities.length === 0) {
-		return (
-			<p className="">
-				Pending and completed Plug runs in your Socket will appear
-				here...
-			</p>
-		)
+		return <p className="">Pending and completed Plug runs in your Socket will appear here...</p>
 	}
 
 	return (

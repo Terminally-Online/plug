@@ -7,11 +7,7 @@ import { cn } from "@/lib/utils"
 
 const isDate = (input: string) => input.includes("/")
 
-const formatForDisplay = (
-	input: number | string,
-	formatDecimals: boolean,
-	decimals?: number
-) => {
+const formatForDisplay = (input: number | string, formatDecimals: boolean, decimals?: number) => {
 	if (typeof input === "number") {
 		const absCount = Math.abs(input)
 		let formattedNumber: string[]
@@ -38,27 +34,19 @@ const formatForDisplay = (
 					}
 
 					// Calculate how many decimal places to keep
-					decimalPlacesToKeep = Math.max(
-						3,
-						significantDigitIndex - decimalIndex + 2
-					)
+					decimalPlacesToKeep = Math.max(3, significantDigitIndex - decimalIndex + 2)
 				}
 
 				// Round to the calculated number of decimal places
 				const rounded = Number(absCount.toFixed(decimalPlacesToKeep))
 
 				// Format the number, ensuring at least 2 decimal places or the targetDecimals
-				let formatted = rounded.toFixed(
-					Math.max(2, decimalPlacesToKeep)
-				)
+				let formatted = rounded.toFixed(Math.max(2, decimalPlacesToKeep))
 
 				// Trim trailing zeros, but keep at least 2 decimal places or the targetDecimals
 				if (decimals === undefined) {
 					formatted = formatted.replace(/\.?0+$/, "")
-					if (
-						formatted.includes(".") &&
-						formatted.split(".")[1].length < 2
-					) {
+					if (formatted.includes(".") && formatted.split(".")[1].length < 2) {
 						formatted += "0"
 					}
 				}
@@ -106,10 +94,7 @@ const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 
 	return (
 		<span className="relative text-center" ref={columnContainer}>
-			<motion.span
-				className="absolute bottom-0 h-[1000%]"
-				whileInView={{ y }}
-			>
+			<motion.span className="absolute bottom-0 h-[1000%]" whileInView={{ y }}>
 				{[9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(i => (
 					<div key={i} className="h-[10%]">
 						{i}
@@ -135,13 +120,7 @@ export const Counter: FC<
 	if (!isClient) return null
 
 	return (
-		<span
-			className={cn(
-				"relative flex w-full flex-row-reverse overflow-hidden",
-				className
-			)}
-			{...props}
-		>
+		<span className={cn("relative flex w-full flex-row-reverse overflow-hidden", className)} {...props}>
 			{numArray.map((number, index) =>
 				number === "." ? (
 					<DecimalColumn key={index} />

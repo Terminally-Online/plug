@@ -10,19 +10,12 @@ type Props = PropsWithChildren & {
 	description: string
 } & MotionProps
 
-export const StepCard: FC<Props> = ({
-	children,
-	index,
-	title,
-	description,
-	...props
-}) => {
+export const StepCard: FC<Props> = ({ children, index, title, description, ...props }) => {
 	return (
 		<motion.div
 			className="relative flex flex-row items-center gap-8 rounded-lg bg-gradient-to-r from-[#d9d9d9]/0 to-[#D9D9D9]/20 px-[20px] py-[30px] lg:py-[60px] xl:px-[30px]"
 			style={{
-				background:
-					"linear-gradient(30deg, rgba(217,217,217,.1), rgba(217,217,217,.1), rgba(217,217,217,.4))"
+				background: "linear-gradient(30deg, rgba(217,217,217,.1), rgba(217,217,217,.1), rgba(217,217,217,.4))"
 			}}
 			{...props}
 		>
@@ -50,9 +43,7 @@ export const StepCard: FC<Props> = ({
 						<span className="opacity-40">{children}</span>
 						{title}
 					</h2>
-					<p className="text-black/65 sm:max-w-[380px] lg:max-w-[240px]">
-						{description}
-					</p>
+					<p className="text-black/65 sm:max-w-[380px] lg:max-w-[240px]">{description}</p>
 				</div>
 			</div>
 		</motion.div>

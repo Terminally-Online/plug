@@ -11,10 +11,7 @@ import uniswap from "./uniswap"
 
 type Options = Array<
 	| Array<{ label: string; value: string } | undefined>
-	| Record<
-			string | `0x${string}`,
-			Array<{ label: string; value: string } | undefined>
-	  >
+	| Record<string | `0x${string}`, Array<{ label: string; value: string } | undefined>>
 	| undefined
 >
 

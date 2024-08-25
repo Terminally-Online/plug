@@ -24,9 +24,7 @@ import {
 	zora
 } from "viem/chains"
 
-const projectId =
-	process.env.NEXT_PUBLIC_WALLETCONNECT_ID ||
-	"b17c8bdfe7719b0f3551627ff43a0af1"
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1"
 
 const metadata = {
 	name: "Plug",

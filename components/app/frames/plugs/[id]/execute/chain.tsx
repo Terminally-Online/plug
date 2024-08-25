@@ -9,11 +9,7 @@ import { useFrame, usePlugs } from "@/contexts"
 import { categories, formatTitle } from "@/lib"
 
 export const ChainFrame: FC<{ id: string }> = ({ id }) => {
-	const {
-		isFrame,
-		prevFrame: nextFrame,
-		handleFrame
-	} = useFrame({ id, key: "chain", seperator: "-" })
+	const { isFrame, prevFrame: nextFrame, handleFrame } = useFrame({ id, key: "chain", seperator: "-" })
 	const { chains, actions, handle } = usePlugs(id)
 
 	const isDisabled = chains.length === 0

@@ -66,15 +66,10 @@ export const Vision: FC = () => {
 								className="mr-0 flex w-[460px] items-center gap-6 rounded-lg bg-white px-6 py-2 md:w-[640px] md:gap-12"
 							>
 								<div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00E100]/10">
-									<Check
-										size={18}
-										className="text-[#00E100]"
-									/>
+									<Check size={18} className="text-[#00E100]" />
 								</div>
 								<h3 className="flex flex-col gap-1">
-									<span className="font-bold md:text-xl">
-										{action[0]}
-									</span>
+									<span className="font-bold md:text-xl">{action[0]}</span>
 									<div className="flex w-full flex-row items-center gap-2 md:text-lg">
 										<Image
 											src={`/wallets/${action[1]}.png`}
@@ -83,14 +78,10 @@ export const Vision: FC = () => {
 											height={18}
 											className="h-4 w-4 rounded-full"
 										/>
-										<span className="opacity-40">
-											{action[1]}.eth
-										</span>
+										<span className="opacity-40">{action[1]}.eth</span>
 									</div>
 								</h3>
-								<h4 className="mb-auto ml-auto opacity-40">
-									{Math.floor(index ** 1.2) + 1} hrs. ago
-								</h4>
+								<h4 className="mb-auto ml-auto opacity-40">{Math.floor(index ** 1.2) + 1} hrs. ago</h4>
 							</motion.div>
 						))}
 					</motion.div>
@@ -158,10 +149,7 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: [
-									"linear-gradient(30deg, #00E100, #A3F700)",
-									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
-								]
+								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
 							}}
 							transition={{
 								duration: 1,
@@ -174,10 +162,7 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: [
-									"linear-gradient(30deg, #00E100, #A3F700)",
-									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
-								]
+								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
 							}}
 							transition={{
 								duration: 1,
@@ -190,10 +175,7 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: [
-									"linear-gradient(30deg, #00E100, #A3F700)",
-									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
-								]
+								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
 							}}
 							transition={{
 								duration: 1,
@@ -206,10 +188,7 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: [
-									"linear-gradient(30deg, #00E100, #A3F700)",
-									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
-								]
+								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
 							}}
 							transition={{
 								duration: 1,
@@ -220,21 +199,13 @@ export const Vision: FC = () => {
 						/>
 						<div className="h-[2px] bg-[#D9D9D9]" />
 						<div />
-						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
-							Sign
-						</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">Sign</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
-							Simulate
-						</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">Simulate</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
-							Execute
-						</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">Execute</p>
 						<div />
-						<p className="mx-auto mt-2 text-xs font-bold opacity-40">
-							Pay
-						</p>
+						<p className="mx-auto mt-2 text-xs font-bold opacity-40">Pay</p>
 					</div>
 				</InfoCard>
 			</div>

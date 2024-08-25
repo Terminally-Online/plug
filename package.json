@@ -12,6 +12,7 @@
 		"dev": "run-p dev:*",
 		"build": "run-s build:*",
 		"build:lint": "next lint",
+		"build:format": "prettier --config .prettierrc '**/*.{ts,tsx}' --write",
 		"build:prisma": "pnpm prisma:generate",
 		"build:next": "next build",
 		"prisma:generate": "pnpm prisma generate",

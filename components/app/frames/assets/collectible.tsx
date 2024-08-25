@@ -39,12 +39,8 @@ type Traits = Array<{ trait_type: string; value: string }>
 
 export const CollectibleFrame: FC<{
 	id: string
-	collection: NonNullable<
-		RouterOutputs["socket"]["balances"]["collectibles"]
-	>[number]
-	collectible: NonNullable<
-		RouterOutputs["socket"]["balances"]["collectibles"]
-	>[number]["collectibles"][number]
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ id, collection, collectible }) => {
 	const { isFrame } = useFrame({
 		id,
@@ -60,10 +56,7 @@ export const CollectibleFrame: FC<{
 
 	const textColor = getTextColor(metadata?.color ?? "#ffffff")
 
-	const { truncated } = formatLongString(
-		collectible?.description || collection.description,
-		expanded === false ? 80 : undefined
-	)
+	const { truncated } = formatLongString(collectible?.description || collection.description, expanded === false ? 80 : undefined)
 
 	useEffect(() => {
 		if (isFrame === false) setExpanded(false)
@@ -96,11 +89,7 @@ export const CollectibleFrame: FC<{
 		>
 			<div className="flex flex-col gap-2 px-6 pb-4">
 				<CollectibleImage
-					video={
-						collectible?.displayAnimationUrl?.includes("mp4")
-							? collectible?.displayAnimationUrl
-							: undefined
-					}
+					video={collectible?.displayAnimationUrl?.includes("mp4") ? collectible?.displayAnimationUrl : undefined}
 					image={collectible?.displayImageUrl ?? undefined}
 					fallbackImage={collection.imageUrl}
 					name={collectible?.name || collection.name}
@@ -111,37 +100,25 @@ export const CollectibleFrame: FC<{
 				<div
 					className={cn(
 						"relative flex flex-col gap-2 overflow-y-hidden transition-all duration-200 ease-in-out",
-						expanded === false
-							? "max-h-[60px]"
-							: "h-auto max-h-[1000px]"
+						expanded === false ? "max-h-[60px]" : "h-auto max-h-[1000px]"
 					)}
 				>
-					<p className="font-bold opacity-40">
-						{collectible?.description || collection.description}
-					</p>
+					<p className="font-bold opacity-40">{collectible?.description || collection.description}</p>
 
 					<div
 						className={cn(
 							"absolute bottom-0 left-0 right-0 top-0 h-full bg-gradient-to-b from-white/0 transition-all duration-200 ease-in-out",
-							truncated && expanded === false
-								? "to-white"
-								: "to-white/0"
+							truncated && expanded === false ? "to-white" : "to-white/0"
 						)}
 					/>
 				</div>
 
 				{(truncated || expanded) && (
-					<button
-						className="mr-auto flex flex-row items-center gap-2 font-bold"
-						onClick={() => setExpanded(!expanded)}
-					>
+					<button className="mr-auto flex flex-row items-center gap-2 font-bold" onClick={() => setExpanded(!expanded)}>
 						{expanded ? "Read Less" : "Read More"}
 						<ChevronDown
 							size={18}
-							className={cn(
-								"ml-auto opacity-40 transition-all duration-200 ease-in-out",
-								expanded && "rotate-180"
-							)}
+							className={cn("ml-auto opacity-40 transition-all duration-200 ease-in-out", expanded && "rotate-180")}
 						/>
 					</button>
 				)}
@@ -183,10 +160,7 @@ export const CollectibleFrame: FC<{
 				<div>
 					<div className="flex flex-row items-center gap-4">
 						<p className="font-bold opacity-40">Details</p>
-						<div
-							className="h-[2px] w-full"
-							style={{ backgroundColor: metadata?.color ?? "" }}
-						/>
+						<div className="h-[2px] w-full" style={{ backgroundColor: metadata?.color ?? "" }} />
 					</div>
 
 					<div className="mt-2 w-full font-bold">
@@ -197,12 +171,8 @@ export const CollectibleFrame: FC<{
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<Hash size={18} className="opacity-20" />
-							<span className="mr-auto opacity-40">
-								Identifier
-							</span>
-							{collectible.identifier.length > 11
-								? formatAddress(collectible.identifier)
-								: collectible.identifier}
+							<span className="mr-auto opacity-40">Identifier</span>
+							{collectible.identifier.length > 11 ? formatAddress(collectible.identifier) : collectible.identifier}
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
@@ -220,12 +190,8 @@ export const CollectibleFrame: FC<{
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<BookText size={18} className="opacity-20" />
-							<span className="mr-auto opacity-40">
-								Token Standard
-							</span>
-							<span className="whitespace-nowrap">
-								{formatTokenStandard(collectible.tokenStandard)}
-							</span>
+							<span className="mr-auto opacity-40">Token Standard</span>
+							<span className="whitespace-nowrap">{formatTokenStandard(collectible.tokenStandard)}</span>
 						</p>
 					</div>
 
@@ -247,10 +213,7 @@ export const CollectibleFrame: FC<{
 									backgroundColor: metadata?.color ?? "",
 									color: textColor
 								}}
-								href={getBlockExplorerAddress(
-									getChainId(collectible.cacheChain),
-									collectible.contract
-								)}
+								href={getBlockExplorerAddress(getChainId(collectible.cacheChain), collectible.contract)}
 								target="_blank"
 								rel="noreferrer"
 							>
@@ -285,10 +248,7 @@ export const CollectibleFrame: FC<{
 									target="_blank"
 									rel="noreferrer"
 								>
-									<MessageCircle
-										size={14}
-										className="opacity-60"
-									/>
+									<MessageCircle size={14} className="opacity-60" />
 									Discord
 								</a>
 							)}
@@ -336,10 +296,7 @@ export const CollectibleFrame: FC<{
 									target="_blank"
 									rel="noreferrer"
 								>
-									<Instagram
-										size={14}
-										className="opacity-60"
-									/>
+									<Instagram size={14} className="opacity-60" />
 									Instagram
 								</a>
 							)}
@@ -371,10 +328,7 @@ export const CollectibleFrame: FC<{
 									target="_blank"
 									rel="noreferrer"
 								>
-									<BookDashed
-										size={14}
-										className="opacity-60"
-									/>
+									<BookDashed size={14} className="opacity-60" />
 									Wiki
 								</a>
 							)}

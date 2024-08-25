@@ -11,16 +11,14 @@ import { cn, routes } from "@/lib"
 
 import { HeroShapes } from "./shapes"
 
-const EARLY_ACCESS =
-	process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
+const EARLY_ACCESS = process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
 
 export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 	const slides = useMemo(
 		() => [
 			{
 				title: "Less Clicks. More Crypto.",
-				subtitle:
-					"Plug-and-play protocols with constraint driven transactions and watch everything happen like magic."
+				subtitle: "Plug-and-play protocols with constraint driven transactions and watch everything happen like magic."
 			},
 			{
 				title: "Less Worrying. More Certainty.",
@@ -43,9 +41,7 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 		if (slidesChanged) return
 
 		const interval = setInterval(() => {
-			setSlideIndex(prevIndex =>
-				prevIndex === slides.length - 1 ? 0 : prevIndex + 1
-			)
+			setSlideIndex(prevIndex => (prevIndex === slides.length - 1 ? 0 : prevIndex + 1))
 		}, 7500)
 
 		return () => clearInterval(interval)
@@ -59,35 +55,15 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 				<LandingContainer className="flex h-full flex-col py-8 text-white">
 					<div className="flex flex-row items-center gap-4">
 						<Link href={routes.index}>
-							<Image
-								src="/white-icon.svg"
-								alt="Logo"
-								width={24}
-								height={24}
-							/>
+							<Image src="/white-icon.svg" alt="Logo" width={24} height={24} />
 						</Link>
 
-						<a
-							href={routes.documentation}
-							target="_blank"
-							rel="noreferrer"
-							className="ml-auto"
-						>
-							<Book
-								size={18}
-								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
-							/>
+						<a href={routes.documentation} target="_blank" rel="noreferrer" className="ml-auto">
+							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 						</a>
 
-						<a
-							href={routes.twitter}
-							target="_blank"
-							rel="noreferrer"
-						>
-							<Twitter
-								size={18}
-								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
-							/>
+						<a href={routes.twitter} target="_blank" rel="noreferrer">
+							<Twitter size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 						</a>
 					</div>
 
@@ -98,10 +74,7 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 							}).map((_, index) => (
 								<>
 									{index === slideIndex && (
-										<div
-											key={index}
-											className="my-auto flex flex-col gap-16"
-										>
+										<div key={index} className="my-auto flex flex-col gap-16">
 											<motion.h1
 												className="text-[3.5rem] font-black text-white md:max-w-[580px] md:text-[72px] lg:max-w-[800px] lg:text-[96px] xl:max-w-[1200px] xl:text-[144px]"
 												initial={{ y: 20, opacity: 0 }}
@@ -137,23 +110,19 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 
 					<div className="flex flex-col gap-8 font-bold">
 						<div className="mx-auto flex flex-row gap-4">
-							{Array.from({ length: slides.length }).map(
-								(_, index) => (
-									<button
-										key={index}
-										className={cn(
-											"h-2 w-2 rounded-full transition-all duration-200 ease-in-out hover:bg-white",
-											index === slideIndex
-												? "bg-white"
-												: "bg-white/60"
-										)}
-										onClick={() => {
-											setSlidesChanged(true)
-											setSlideIndex(index)
-										}}
-									/>
-								)
-							)}
+							{Array.from({ length: slides.length }).map((_, index) => (
+								<button
+									key={index}
+									className={cn(
+										"h-2 w-2 rounded-full transition-all duration-200 ease-in-out hover:bg-white",
+										index === slideIndex ? "bg-white" : "bg-white/60"
+									)}
+									onClick={() => {
+										setSlidesChanged(true)
+										setSlideIndex(index)
+									}}
+								/>
+							))}
 						</div>
 
 						<div className="flex flex-row gap-2">
@@ -166,15 +135,9 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 							<Button
 								variant="none"
 								className="w-full rounded-md border-[1px] border-white bg-white px-8 py-3 text-center font-black text-black"
-								href={
-									EARLY_ACCESS
-										? routes.earlyAccess
-										: routes.app
-								}
+								href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
 							>
-								{EARLY_ACCESS
-									? "Get Early Access"
-									: "Enter App"}
+								{EARLY_ACCESS ? "Get Early Access" : "Enter App"}
 							</Button>
 						</div>
 					</div>

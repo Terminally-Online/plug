@@ -20,22 +20,16 @@ export const getOpenseaCollection = async (slug: string, chain: string) => {
 		where: { slug }
 	})
 
-	const cache =
-		cachedCollection &&
-		cachedCollection.updatedAt >
-			new Date(Date.now() - COLLECTION_CACHE_TIME)
+	const cache = cachedCollection && cachedCollection.updatedAt > new Date(Date.now() - COLLECTION_CACHE_TIME)
 
 	if (cache) return cachedCollection
 
-	const response = await axios.get(
-		`https://api.opensea.io/api/v2/collections/${slug}`,
-		{
-			headers: {
-				Accept: "application/json",
-				"x-api-key": getAPIKey()
-			}
+	const response = await axios.get(`https://api.opensea.io/api/v2/collections/${slug}`, {
+		headers: {
+			Accept: "application/json",
+			"x-api-key": getAPIKey()
 		}
-	)
+	})
 
 	if (response.status !== 200)
 		throw new TRPCError({
@@ -101,32 +95,16 @@ export const getOpenseaCollectiblesForChain = async (
 	const responseCollectibles = await Promise.all(
 		response.data.nfts.map(async (collectible: OpenseaCollectible) => ({
 			...collectible,
-			collection: await getOpenseaCollection(
-				collectible.collection as unknown as string,
-				chain
-			)
+			collection: await getOpenseaCollection(collectible.collection as unknown as string, chain)
 		}))
 	)
 
 	collectibles = [...collectibles, ...responseCollectibles]
 
-	return response.data.next
-		? getOpenseaCollectiblesForChain(
-				address,
-				chain,
-				limit,
-				response.data.next,
-				collectibles
-			)
-		: collectibles
+	return response.data.next ? getOpenseaCollectiblesForChain(address, chain, limit, response.data.next, collectibles) : collectibles
 }
 
-export const getCollectiblesForChain = async (
-	address: string,
-	chain: string,
-	limit = 200,
-	next?: string
-) => {
+export const getCollectiblesForChain = async (address: string, chain: string, limit = 200, next?: string) => {
 	const socket = await db.userSocket.findFirst({
 		where: { socketAddress: address }
 	})
@@ -137,19 +115,10 @@ export const getCollectiblesForChain = async (
 		include: { collectibles: { include: { collection: true } } }
 	})
 
-	if (
-		cachedCollectibles &&
-		cachedCollectibles?.updatedAt >
-			new Date(Date.now() - COLLECTIBLES_CACHE_TIME)
-	)
+	if (cachedCollectibles && cachedCollectibles?.updatedAt > new Date(Date.now() - COLLECTIBLES_CACHE_TIME))
 		return cachedCollectibles.collectibles
 
-	const newCollectibles = await getOpenseaCollectiblesForChain(
-		address,
-		chain,
-		limit,
-		next
-	)
+	const newCollectibles = await getOpenseaCollectiblesForChain(address, chain, limit, next)
 
 	const existingCollectibles = await db.openseaCollectible.findMany({
 		where: { owner: address, cacheChain: chain },
@@ -180,22 +149,13 @@ export const getCollectiblesForChain = async (
 		])
 	)
 
-	const existingCollectiblesMap = new Map(
-		existingCollectibles.map(c => [
-			`${c.identifier}:${c.collectionSlug}`,
-			c
-		])
-	)
+	const existingCollectiblesMap = new Map(existingCollectibles.map(c => [`${c.identifier}:${c.collectionSlug}`, c]))
 
-	const toDelete = existingCollectibles.filter(
-		c => !newCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
-	)
+	const toDelete = existingCollectibles.filter(c => !newCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`))
 	const toCreate = Array.from(newCollectiblesMap.values()).filter(
 		c => !existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
 	)
-	const toUpdate = Array.from(newCollectiblesMap.values()).filter(c =>
-		existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
-	)
+	const toUpdate = Array.from(newCollectiblesMap.values()).filter(c => existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`))
 
 	await db.$transaction(async prisma => {
 		if (toDelete.length)
@@ -234,19 +194,14 @@ export const getCollectiblesForChain = async (
 	return Array.from(newCollectiblesMap.values())
 }
 
-export const getCollectibles = async (
-	address: string,
-	chains = ["ethereum", "optimism", "base"]
-) => {
+export const getCollectibles = async (address: string, chains = ["ethereum", "optimism", "base"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { socketAddress: address }
 	})
 
 	if (socket === null) return []
 
-	await Promise.all(
-		chains.map(async chain => await getCollectiblesForChain(address, chain))
-	)
+	await Promise.all(chains.map(async chain => await getCollectiblesForChain(address, chain)))
 
 	return await db.openseaCollection.findMany({
 		where: { collectibles: { some: { cacheSocketId: socket.id } } },

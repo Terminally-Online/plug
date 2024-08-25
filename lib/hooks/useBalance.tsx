@@ -45,8 +45,7 @@ export const useBalance = ({
 	})
 
 	const metadata = useMemo(() => {
-		const [name, symbol, decimals, balance] =
-			(isAddress(typedAddress) && data) || []
+		const [name, symbol, decimals, balance] = (isAddress(typedAddress) && data) || []
 
 		if (tokenAddress === undefined) return undefined
 
@@ -60,12 +59,7 @@ export const useBalance = ({
 			if (found) logoURI = found.logoURI
 		}
 
-		if (
-			name?.result === undefined ||
-			symbol?.result === undefined ||
-			decimals?.result === undefined ||
-			balance?.result === undefined
-		)
+		if (name?.result === undefined || symbol?.result === undefined || decimals?.result === undefined || balance?.result === undefined)
 			return undefined
 
 		return {

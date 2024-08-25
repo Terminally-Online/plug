@@ -1,11 +1,4 @@
-import {
-	AmbulanceIcon,
-	CircleParkingIcon,
-	CoinsIcon,
-	GaugeIcon,
-	HandCoinsIcon,
-	SquarePercentIcon
-} from "lucide-react"
+import { AmbulanceIcon, CircleParkingIcon, CoinsIcon, GaugeIcon, HandCoinsIcon, SquarePercentIcon } from "lucide-react"
 import { parseAbi, zeroAddress } from "viem"
 
 import { abis } from "../abis"

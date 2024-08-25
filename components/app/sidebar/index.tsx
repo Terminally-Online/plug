@@ -6,14 +6,7 @@ import { signOut } from "next-auth/react"
 
 import BlockiesSvg from "blockies-react-svg"
 import { AnimatePresence, motion } from "framer-motion"
-import {
-	ClipboardCheck,
-	LogOut,
-	PanelRightOpen,
-	Plus,
-	SearchIcon,
-	Zap
-} from "lucide-react"
+import { ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
 import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
@@ -41,25 +34,11 @@ export const ConsoleSidebar = () => {
 						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
 						onClick={() => handleCopied()}
 					>
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.2 }}
-						>
+						<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
 							{avatar ? (
-								<Image
-									src={avatar}
-									alt="ENS Avatar"
-									width={16}
-									height={16}
-									className="h-full w-full rounded-sm"
-								/>
+								<Image src={avatar} alt="ENS Avatar" width={16} height={16} className="h-full w-full rounded-sm" />
 							) : (
-								<BlockiesSvg
-									className="h-full w-full rounded-sm"
-									address={address}
-								/>
+								<BlockiesSvg className="h-full w-full rounded-sm" address={address} />
 							)}
 						</motion.div>
 
@@ -72,30 +51,21 @@ export const ConsoleSidebar = () => {
 									exit={{ opacity: 0 }}
 									transition={{ duration: 0.2 }}
 								>
-									<ClipboardCheck
-										size={14}
-										className="opacity-40"
-									/>
+									<ClipboardCheck size={14} className="opacity-40" />
 								</motion.div>
 							)}
 						</AnimatePresence>
 					</button>
 				)}
 
-				<button
-					className="group flex flex-row items-center gap-4 px-2"
-					onClick={() => handlePlugs.plug.add()}
-				>
+				<button className="group flex flex-row items-center gap-4 px-2" onClick={() => handlePlugs.plug.add()}>
 					<Button
 						variant="primary"
 						onClick={() => (expanded ? handlePlugs.plug.add() : {})}
 						sizing="sm"
 						className="rounded-sm p-1 "
 					>
-						<Plus
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
+						<Plus size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
 					</Button>
 					{expanded && (
 						<p className="whitespace-nowrap opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
@@ -126,16 +96,9 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<SearchIcon
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
+						<SearchIcon size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
 					</Button>
-					{expanded && (
-						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-							Search
-						</p>
-					)}
+					{expanded && <p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Search</p>}
 				</button>
 
 				<button
@@ -160,24 +123,14 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<Zap
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
+						<Zap size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
 					</Button>
-					{expanded && (
-						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-							Alerts
-						</p>
-					)}
+					{expanded && <p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Alerts</p>}
 				</button>
 			</div>
 
 			<div className="mt-auto flex w-full flex-col items-start gap-4">
-				<button
-					className="group flex flex-row items-center gap-4 px-6"
-					onClick={() => setExpanded(!expanded)}
-				>
+				<button className="group flex flex-row items-center gap-4 px-6" onClick={() => setExpanded(!expanded)}>
 					<Button
 						variant="secondary"
 						onClick={() => (expanded ? setExpanded(!expanded) : {})}
@@ -198,10 +151,7 @@ export const ConsoleSidebar = () => {
 				{address && (
 					<>
 						<div className="h-[1px] w-full bg-grayscale-100" />
-						<button
-							className="group flex flex-row items-center gap-4 px-6"
-							onClick={() => disconnect()}
-						>
+						<button className="group flex flex-row items-center gap-4 px-6" onClick={() => disconnect()}>
 							<Button
 								variant="secondary"
 								onClick={() => (expanded ? disconnect() : {})}
@@ -214,9 +164,7 @@ export const ConsoleSidebar = () => {
 								/>
 							</Button>
 							{expanded && (
-								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-									Logout
-								</p>
+								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Logout</p>
 							)}
 						</button>
 					</>

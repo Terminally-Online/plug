@@ -1,13 +1,4 @@
-import {
-	createContext,
-	Dispatch,
-	FC,
-	PropsWithChildren,
-	SetStateAction,
-	useContext,
-	useEffect,
-	useState
-} from "react"
+import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useContext, useEffect, useState } from "react"
 
 import { useRouter } from "next/router"
 
@@ -40,15 +31,7 @@ export const FrameProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 }
 
-export const useFrame = ({
-	id,
-	key,
-	seperator
-}: {
-	id?: string
-	key?: string
-	seperator?: string
-}) => {
+export const useFrame = ({ id, key, seperator }: { id?: string; key?: string; seperator?: string }) => {
 	const { frames, handleFrames } = useContext(FrameContext)
 
 	const frame = seperator && key ? key.split(seperator)[0] : key

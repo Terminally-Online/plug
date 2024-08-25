@@ -6,18 +6,7 @@ export * from "./routes"
 export * from "./tokens"
 export * from "./views"
 
-export const tags = [
-	"All",
-	"DeFi",
-	"NFT",
-	"Consumer",
-	"Degen",
-	"MEV",
-	"Social",
-	"Trading",
-	"Lending",
-	"Borrowing"
-] as const
+export const tags = ["All", "DeFi", "NFT", "Consumer", "Degen", "MEV", "Social", "Trading", "Lending", "Borrowing"] as const
 
 export const greenGradientStyle = {
 	background: "linear-gradient(30deg, #00E100, #A3F700)",

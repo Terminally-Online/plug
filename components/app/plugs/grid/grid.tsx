@@ -18,15 +18,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
 	handleReset?: () => void
 }
 
-export const PlugGrid: FC<Props> = ({
-	id,
-	from,
-	plugs,
-	count,
-	search,
-	handleReset,
-	...props
-}) => {
+export const PlugGrid: FC<Props> = ({ id, from, plugs, count, search, handleReset, ...props }) => {
 	const pathname = usePathname()
 
 	const { handle } = useSockets()
@@ -54,50 +46,38 @@ export const PlugGrid: FC<Props> = ({
 						}
 					}}
 				>
-					{plugs
-						.slice(0, count || plugs.length)
-						.map((plug, index) => (
-							<motion.div
-								key={`${plug.id}-${index}`}
-								variants={{
-									hidden: { opacity: 0, y: 10 },
-									visible: {
-										opacity: 1,
-										y: 0,
-										transition: {
-											type: "spring",
-											stiffness: 100,
-											damping: 10
-										}
+					{plugs.slice(0, count || plugs.length).map((plug, index) => (
+						<motion.div
+							key={`${plug.id}-${index}`}
+							variants={{
+								hidden: { opacity: 0, y: 10 },
+								visible: {
+									opacity: 1,
+									y: 0,
+									transition: {
+										type: "spring",
+										stiffness: 100,
+										damping: 10
 									}
-								}}
-							>
-								<PlugGridItem id={id} from={from} plug={plug} />
-							</motion.div>
-						))}
+								}
+							}}
+						>
+							<PlugGridItem id={id} from={from} plug={plug} />
+						</motion.div>
+					))}
 				</motion.div>
 			) : search === "" ? (
 				<div className="my-64 flex flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
 					<p className="mx-auto max-w-[320px] opacity-60">
-						Create your first Plug from scratch or discover one of
-						the existing curated and community Plugs now.
+						Create your first Plug from scratch or discover one of the existing curated and community Plugs now.
 					</p>
 
 					<div className="mx-auto mt-8 flex flex-row gap-1">
-						<Button
-							variant="secondary"
-							onClick={() =>
-								handle.columns.navigate({ id, key: "discover" })
-							}
-							className="w-max"
-						>
+						<Button variant="secondary" onClick={() => handle.columns.navigate({ id, key: "discover" })} className="w-max">
 							See Templates
 						</Button>
-						<Button
-							className="w-max"
-							onClick={() => handlePlugs.plug.add(pathname)}
-						>
+						<Button className="w-max" onClick={() => handlePlugs.plug.add(pathname)}>
 							Create
 						</Button>
 					</div>
@@ -106,17 +86,12 @@ export const PlugGrid: FC<Props> = ({
 				<div className="mx-auto my-44 flex h-full max-w-[80%] flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
 					<p className="mx-auto max-w-[320px] opacity-60">
-						We looked through all of the results but could not find
-						any matches. Reset your filter or try a different
-						search.
+						We looked through all of the results but could not find any matches. Reset your filter or try a different search.
 					</p>
 
 					{handleReset && (
 						<div className="mx-auto mt-4 flex flex-row gap-1">
-							<Button
-								className="w-max"
-								onClick={() => handleReset()}
-							>
+							<Button className="w-max" onClick={() => handleReset()}>
 								Reset Filters
 							</Button>
 						</div>

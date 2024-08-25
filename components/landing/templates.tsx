@@ -18,12 +18,9 @@ export const Templates: FC = () => {
 
 	return (
 		<LandingContainer className="my-[90px] flex-col items-center gap-4">
-			<h2 className="text-center text-[42px] font-black lg:max-w-[960px] lg:text-[72px]">
-				Start today with best-practice templates
-			</h2>
+			<h2 className="text-center text-[42px] font-black lg:max-w-[960px] lg:text-[72px]">Start today with best-practice templates</h2>
 			<p className="text-center text-[18px] font-bold opacity-20 lg:max-w-[720px] lg:text-[24px]">
-				In just a few minutes, you can deploy a strategy that has been
-				battle-tested by the Plug team and industry experts, the
+				In just a few minutes, you can deploy a strategy that has been battle-tested by the Plug team and industry experts, the
 				opportunities are waiting for you.
 			</p>
 
@@ -38,11 +35,7 @@ export const Templates: FC = () => {
 						<LandingActionCard
 							key={index}
 							size="lg"
-							color={
-								Object.keys(colors)[
-									index % Object.keys(colors).length
-								] as keyof typeof colors
-							}
+							color={Object.keys(colors)[index % Object.keys(colors).length] as keyof typeof colors}
 							glow={false}
 							title={template}
 							initial={{ opacity: 0, y: 20 }}

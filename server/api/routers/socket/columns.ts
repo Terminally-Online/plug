@@ -105,8 +105,7 @@ export const columns = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			if (input.id === undefined)
-				throw new TRPCError({ code: "BAD_REQUEST" })
+			if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
 			return await ctx.db.userSocket.update({
 				where: { id: ctx.session.address },
@@ -125,28 +124,26 @@ export const columns = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
-	remove: protectedProcedure
-		.input(z.string())
-		.mutation(async ({ input, ctx }) => {
-			return await ctx.db.$transaction(async tx => {
-				const column = await tx.consoleColumn.delete({
-					where: { id: input, socketId: ctx.session.address }
-				})
-
-				return await tx.userSocket.update({
-					where: { id: ctx.session.address },
-					data: {
-						columns: {
-							updateMany: {
-								where: { index: { gt: column.index } },
-								data: { index: { decrement: 1 } }
-							}
-						}
-					},
-					...SOCKET_BASE_QUERY
-				})
+	remove: protectedProcedure.input(z.string()).mutation(async ({ input, ctx }) => {
+		return await ctx.db.$transaction(async tx => {
+			const column = await tx.consoleColumn.delete({
+				where: { id: input, socketId: ctx.session.address }
 			})
-		}),
+
+			return await tx.userSocket.update({
+				where: { id: ctx.session.address },
+				data: {
+					columns: {
+						updateMany: {
+							where: { index: { gt: column.index } },
+							data: { index: { decrement: 1 } }
+						}
+					}
+				},
+				...SOCKET_BASE_QUERY
+			})
+		})
+	}),
 	resize: protectedProcedure
 		.input(
 			z.object({

@@ -3,19 +3,7 @@ import { FC } from "react"
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import {
-	CalendarClock,
-	Check,
-	Clock,
-	FileStack,
-	HandCoins,
-	Rotate3d,
-	RotateCw,
-	Ruler,
-	ShieldPlus,
-	TestTubeDiagonal,
-	X
-} from "lucide-react"
+import { CalendarClock, Check, Clock, FileStack, HandCoins, Rotate3d, RotateCw, Ruler, ShieldPlus, TestTubeDiagonal, X } from "lucide-react"
 
 import { Container, Fees, InfoCard, Mitigation } from "@/components"
 
@@ -41,11 +29,7 @@ export const Value: FC = () => {
 							"linear-gradient(30deg, rgba(0,239,53,1), rgba(147,233,0,1))",
 							"linear-gradient(30deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))"
 						]
-					: [
-							"rgba(217,217,217,0)",
-							"rgba(217,217,217,0.4)",
-							"rgba(217,217,217,0)"
-						]
+					: ["rgba(217,217,217,0)", "rgba(217,217,217,0.4)", "rgba(217,217,217,0)"]
 		},
 		transition: {
 			duration: 0.25,
@@ -69,27 +53,17 @@ export const Value: FC = () => {
 					{...animation}
 					className={`${animation.className} md:col-span-2 xl:col-span-1`}
 				>
-					<div
-						className="mx-8 grid h-44 gap-[2px] 2xl:h-48"
-						style={{ gridTemplateColumns: "repeat(14, 1fr)" }}
-					>
+					<div className="mx-8 grid h-44 gap-[2px] 2xl:h-48" style={{ gridTemplateColumns: "repeat(14, 1fr)" }}>
 						{Array.from({ length: 14 }).map((_, index) => (
 							<motion.div
 								key={index}
 								className="mt-auto w-full origin-bottom rounded-lg"
 								style={{
-									background:
-										index === 13
-											? "linear-gradient(30deg, #00E100, #A3F700)"
-											: "#D9D9D9"
+									background: index === 13 ? "linear-gradient(30deg, #00E100, #A3F700)" : "#D9D9D9"
 								}}
 								initial={{ height: 10 }}
 								animate={{
-									height: [
-										10,
-										25 * 2 ** (0.04 * (index / 2) * 8) +
-											Math.random() * 40
-									]
+									height: [10, 25 * 2 ** (0.04 * (index / 2) * 8) + Math.random() * 40]
 								}}
 								transition={{
 									duration: 0.25,
@@ -130,184 +104,94 @@ export const Value: FC = () => {
 						<div className="h-10 border-b-[1px] border-r-[1px]" />
 						<div className="border-b-[1px] border-r-[1px]" />
 						<div className="border-b-[1px] border-r-[1px]" />
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(0)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(0)}>
 							1
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(0.25)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(0.25)}>
 							2
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(0.5)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(0.5)}>
 							3
 						</motion.div>
-						<motion.div
-							className="border-b-[1px]"
-							{...getDayAnimation(0.75)}
-						>
+						<motion.div className="border-b-[1px]" {...getDayAnimation(0.75)}>
 							4
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(1)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(1)}>
 							5
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(1.25)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(1.25)}>
 							6
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(1.5, true)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(1.5, true)}>
 							7
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(1.75)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(1.75)}>
 							8
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(2)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(2)}>
 							9
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(2.25, true)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(2.25, true)}>
 							10
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-[#D9D9D9]"
-							{...getDayAnimation(2.5)}
-						>
+						<motion.div className="border-b-[1px] border-[#D9D9D9]" {...getDayAnimation(2.5)}>
 							11
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(2.75)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(2.75)}>
 							12
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(3)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(3)}>
 							13
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(3.25, true)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(3.25, true)}>
 							14
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(3.5)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(3.5)}>
 							15
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(3.75)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(3.75)}>
 							16
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(4)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(4)}>
 							17
 						</motion.div>
-						<motion.div
-							className="border-b-[1px]"
-							{...getDayAnimation(4.25)}
-						>
+						<motion.div className="border-b-[1px]" {...getDayAnimation(4.25)}>
 							18
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(4.5)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(4.5)}>
 							19
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(4.75)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(4.75)}>
 							20
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px] border-[#D9D9D9]"
-							{...getDayAnimation(5, true)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px] border-[#D9D9D9]" {...getDayAnimation(5, true)}>
 							21
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(5.25)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(5.25)}>
 							22
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(5.5)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(5.5)}>
 							23
 						</motion.div>
-						<motion.div
-							className="border-b-[1px] border-r-[1px]"
-							{...getDayAnimation(5.75, true)}
-						>
+						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(5.75, true)}>
 							24
 						</motion.div>
-						<motion.div
-							className="border-b-[1px]"
-							{...getDayAnimation(6)}
-						>
+						<motion.div className="border-b-[1px]" {...getDayAnimation(6)}>
 							25
 						</motion.div>
-						<motion.div
-							className="h-10 border-r-[1px]"
-							{...getDayAnimation(6.25)}
-						>
+						<motion.div className="h-10 border-r-[1px]" {...getDayAnimation(6.25)}>
 							26
 						</motion.div>
-						<motion.div
-							className="border-r-[1px]"
-							{...getDayAnimation(6.5)}
-						>
+						<motion.div className="border-r-[1px]" {...getDayAnimation(6.5)}>
 							27
 						</motion.div>
-						<motion.div
-							className="border-r-[1px]"
-							{...getDayAnimation(6.75, true)}
-						>
+						<motion.div className="border-r-[1px]" {...getDayAnimation(6.75, true)}>
 							28
 						</motion.div>
-						<motion.div
-							className="border-r-[1px]"
-							{...getDayAnimation(7)}
-						>
+						<motion.div className="border-r-[1px]" {...getDayAnimation(7)}>
 							29
 						</motion.div>
-						<motion.div
-							className="border-r-[1px]"
-							{...getDayAnimation(7.25)}
-						>
+						<motion.div className="border-r-[1px]" {...getDayAnimation(7.25)}>
 							30
 						</motion.div>
 						<div className="border-r-[1px]" />
@@ -334,12 +218,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/ethereum.png"
-								alt="Ethereum"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/ethereum.png" alt="Ethereum" width={120} height={120} />
 						</motion.div>
 						<motion.div
 							whileInView={{ x: [-10, -30] }}
@@ -351,12 +230,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/base.png"
-								alt="Base"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/base.png" alt="Base" width={120} height={120} />
 						</motion.div>
 						<motion.div
 							whileInView={{ x: [-30, -50] }}
@@ -368,12 +242,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/optimism.png"
-								alt="Optimism"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/optimism.png" alt="Optimism" width={120} height={120} />
 						</motion.div>
 						<motion.div
 							whileInView={{ x: [-50, -80] }}
@@ -385,12 +254,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/bera.png"
-								alt="Bera"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/bera.png" alt="Bera" width={120} height={120} />
 						</motion.div>
 						<motion.div
 							whileInView={{ x: [-80, -110] }}
@@ -402,12 +266,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/arbitrum.png"
-								alt="Arbitrum"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/arbitrum.png" alt="Arbitrum" width={120} height={120} />
 						</motion.div>
 						<motion.div
 							whileInView={{ x: [-110, -140] }}
@@ -419,12 +278,7 @@ export const Value: FC = () => {
 								repeatDelay: 2
 							}}
 						>
-							<Image
-								src="/blockchain/polygon.png"
-								alt="Polygon"
-								width={120}
-								height={120}
-							/>
+							<Image src="/blockchain/polygon.png" alt="Polygon" width={120} height={120} />
 						</motion.div>
 					</div>
 				</InfoCard>
@@ -444,10 +298,7 @@ export const Value: FC = () => {
 						style={{ gridTemplateColumns: "repeat(28, 1fr)" }}
 					>
 						{Array.from({ length: 28 * 7 }).map((_, index) => {
-							const background =
-								Math.random() < 0.5
-									? "#D9D9D9"
-									: "linear-gradient(30deg, #00E100, #A3F700)"
+							const background = Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #00E100, #A3F700)"
 							return (
 								<motion.div
 									key={index}
@@ -488,18 +339,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#00E100", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -511,15 +352,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -532,18 +365,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#00E100", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -555,15 +378,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -576,18 +391,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#00E100", "#D9D9D9", "#00E100", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -599,15 +404,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -620,18 +417,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -643,15 +430,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -667,15 +446,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#00E100", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -691,18 +462,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -717,15 +478,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#00E100", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -741,18 +494,8 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
-								strokeDashoffset: [
-									0, -4, -8, -12, -16, -20, -24, -28
-								]
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
+								strokeDashoffset: [0, -4, -8, -12, -16, -20, -24, -28]
 							}}
 							transition={{
 								duration: 2,
@@ -767,15 +510,7 @@ export const Value: FC = () => {
 							strokeWidth="2"
 							strokeDasharray="4 4"
 							animate={{
-								stroke: [
-									"#D9D9D9",
-									"#00E100",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9",
-									"#FF0000",
-									"#D9D9D9"
-								],
+								stroke: ["#D9D9D9", "#00E100", "#D9D9D9", "#FF0000", "#D9D9D9", "#FF0000", "#D9D9D9"],
 								strokeDashoffset: [0, 4, 8, 12, 16, 20, 24, 28]
 							}}
 							transition={{
@@ -802,10 +537,7 @@ export const Value: FC = () => {
 				<InfoCard
 					text={
 						<div className="flex flex-row items-center gap-4">
-							<TestTubeDiagonal
-								size={24}
-								className="opacity-40"
-							/>
+							<TestTubeDiagonal size={24} className="opacity-40" />
 							<span>Constant Simulation</span>
 						</div>
 					}
@@ -829,10 +561,7 @@ export const Value: FC = () => {
 						<motion.div
 							className="relative flex h-8 w-8 items-center justify-center rounded-full"
 							animate={{
-								background: [
-									"rgba(0,239,53,0.1)",
-									"rgba(255,81,84,0.1)"
-								]
+								background: ["rgba(0,239,53,0.1)", "rgba(255,81,84,0.1)"]
 							}}
 							transition={{
 								duration: 0.25,
@@ -877,9 +606,7 @@ export const Value: FC = () => {
 							</motion.span>
 						</motion.div>
 						<h3 className="flex flex-col gap-1">
-							<span className="text-xl font-bold">
-								Bid in Nouns Auction
-							</span>
+							<span className="text-xl font-bold">Bid in Nouns Auction</span>
 							<div className="flex w-full flex-row items-center gap-2 text-lg">
 								<Image
 									src={`/wallets/madison.png`}
@@ -891,9 +618,7 @@ export const Value: FC = () => {
 								<span className="opacity-40">madison.eth</span>
 							</div>
 						</h3>
-						<h4 className="mb-auto ml-auto opacity-40">
-							{Math.floor(Math.random() ** 1.2) + 1} secs. ago
-						</h4>
+						<h4 className="mb-auto ml-auto opacity-40">{Math.floor(Math.random() ** 1.2) + 1} secs. ago</h4>
 					</motion.div>
 				</InfoCard>
 
@@ -931,12 +656,7 @@ export const Value: FC = () => {
 										repeatDelay: 3.75
 									}}
 								>
-									<Image
-										src="/wallets/nftchance.png"
-										alt="NFT Chance"
-										width={120}
-										height={120}
-									/>
+									<Image src="/wallets/nftchance.png" alt="NFT Chance" width={120} height={120} />
 								</motion.div>
 								<motion.div
 									className="absolute bottom-0 left-[3px] right-0 top-[3px] h-[120px] w-[120px]"
@@ -949,24 +669,15 @@ export const Value: FC = () => {
 										repeatDelay: 3.75
 									}}
 								>
-									<Image
-										src="/wallets/deeze.png"
-										alt="Deeze"
-										width={120}
-										height={120}
-									/>
+									<Image src="/wallets/deeze.png" alt="Deeze" width={120} height={120} />
 								</motion.div>
 							</motion.div>
 						</motion.div>
-						<div
-							className="relative mt-4"
-							style={{ width: "calc(100% - 130px)" }}
-						>
+						<div className="relative mt-4" style={{ width: "calc(100% - 130px)" }}>
 							<motion.div
 								className="absolute bottom-0 left-0 right-0 top-0 h-[2px]"
 								style={{
-									background:
-										"linear-gradient(90deg, #00E100 25%, #A3F700 50%, transparent 50%)",
+									background: "linear-gradient(90deg, #00E100 25%, #A3F700 50%, transparent 50%)",
 									backgroundRepeat: "repeat",
 									backgroundSize: "4px 6px"
 								}}
@@ -974,8 +685,7 @@ export const Value: FC = () => {
 							<motion.div
 								className="absolute top-[-5px] h-3 w-3 rounded-full"
 								style={{
-									background:
-										"linear-gradient(30deg, #00E100, #A3F700)"
+									background: "linear-gradient(30deg, #00E100, #A3F700)"
 								}}
 								animate={{
 									left: ["97%", "0%"]
@@ -1013,12 +723,7 @@ export const Value: FC = () => {
 										repeatDelay: 3.75
 									}}
 								>
-									<Image
-										src="/wallets/danner.png"
-										alt="NFT Chance"
-										width={120}
-										height={120}
-									/>
+									<Image src="/wallets/danner.png" alt="NFT Chance" width={120} height={120} />
 								</motion.div>
 								<motion.div
 									className="absolute bottom-0 left-[3px] right-0 top-[3px] h-[120px] w-[120px]"
@@ -1031,12 +736,7 @@ export const Value: FC = () => {
 										repeatDelay: 3.75
 									}}
 								>
-									<Image
-										src="/wallets/blob.png"
-										alt="Blob"
-										width={120}
-										height={120}
-									/>
+									<Image src="/wallets/blob.png" alt="Blob" width={120} height={120} />
 								</motion.div>
 							</motion.div>
 						</motion.div>

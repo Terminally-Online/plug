@@ -6,12 +6,7 @@ export const useDebounce = (
 	initial: string,
 	delay = 250,
 	callback = () => {}
-): [
-	string,
-	string,
-	(value: string) => void,
-	React.MutableRefObject<string>
-] => {
+): [string, string, (value: string) => void, React.MutableRefObject<string>] => {
 	const pathname = usePathname()
 
 	const valueRef = useRef<string>(initial)

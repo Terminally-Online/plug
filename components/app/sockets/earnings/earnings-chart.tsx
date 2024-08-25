@@ -17,13 +17,10 @@ export const SocketEarningsChart = () => {
 
 	const [start, end] = useMemo(
 		() => [
-			new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString(
-				"en-US",
-				{
-					month: "numeric",
-					day: "numeric"
-				}
-			),
+			new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
+				month: "numeric",
+				day: "numeric"
+			}),
 			new Date().toLocaleDateString("en-US", {
 				month: "numeric",
 				day: "numeric"
@@ -42,11 +39,7 @@ export const SocketEarningsChart = () => {
 							padded={index !== 0}
 							forks={day[1]}
 							runs={day[0]}
-							active={
-								index === active ||
-								(active === undefined &&
-									index === earnings.length - 1)
-							}
+							active={index === active || (active === undefined && index === earnings.length - 1)}
 							onMouseEnter={() => setActive(index)}
 							onMouseLeave={() => setActive(undefined)}
 						/>

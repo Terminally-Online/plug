@@ -64,15 +64,9 @@ export const Search: FC<Props> = ({
 					"flex w-full cursor-pointer items-center gap-4 bg-grayscale-0 p-4 px-6",
 					textArea ? "rounded-lg" : "rounded-[16px]"
 				)}
-				onClick={
-					handleOnClick
-						? () => handleOnClick()
-						: () => ref.current?.focus()
-				}
+				onClick={handleOnClick ? () => handleOnClick() : () => ref.current?.focus()}
 			>
-				<div className={cn("w-max", textArea && "mb-auto mt-1")}>
-					{icon}
-				</div>
+				<div className={cn("w-max", textArea && "mb-auto mt-1")}>{icon}</div>
 				{textArea === false ? (
 					<input
 						ref={ref as RefObject<HTMLInputElement>}
@@ -80,9 +74,7 @@ export const Search: FC<Props> = ({
 						placeholder={placeholder}
 						className="w-full cursor-pointer bg-transparent outline-none"
 						value={search}
-						onChange={e =>
-							handleSearch ? handleSearch(e.target.value) : null
-						}
+						onChange={e => (handleSearch ? handleSearch(e.target.value) : null)}
 					/>
 				) : (
 					<textarea

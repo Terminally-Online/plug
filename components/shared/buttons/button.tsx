@@ -5,13 +5,7 @@ import Link from "next/link"
 import { cn } from "@/lib"
 
 type Props = {
-	variant?:
-		| "primary"
-		| "secondary"
-		| "white"
-		| "disabled"
-		| "destructive"
-		| "none"
+	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive" | "none"
 	sizing?: "sm" | "md" | "lg"
 	href?: string
 	external?: boolean
@@ -29,8 +23,7 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 	none: ""
 }
 
-const sizings: HTMLAttributes<HTMLButtonElement> &
-	Record<NonNullable<Props["sizing"]>, string> = {
+const sizings: HTMLAttributes<HTMLButtonElement> & Record<NonNullable<Props["sizing"]>, string> = {
 	sm: "py-[8px] px-[24px] text-xs rounded-sm before:rounded-sm",
 	md: "py-[10px] px-[32px] text-sm rounded-md before:rounded-md",
 	lg: "py-[12px] px-[40px] rounded-lg before:rounded-lg"
@@ -47,8 +40,7 @@ export const Button: FC<Props> = ({
 	disabled = false,
 	...props
 }) => {
-	const base =
-		"cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
+	const base = "cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
 
 	if (onClick)
 		return (
@@ -56,12 +48,7 @@ export const Button: FC<Props> = ({
 				{...props}
 				type="button"
 				onClick={disabled ? undefined : onClick}
-				className={cn(
-					variants[variant],
-					sizings[sizing],
-					base,
-					className
-				)}
+				className={cn(variants[variant], sizings[sizing], base, className)}
 				disabled={disabled}
 			>
 				{children}
@@ -74,26 +61,13 @@ export const Button: FC<Props> = ({
 
 	if (external)
 		return (
-			<a
-				href={href}
-				target="_blank"
-				rel="noreferrer"
-				className={cn(
-					variants[variant],
-					sizings[sizing],
-					base,
-					className
-				)}
-			>
+			<a href={href} target="_blank" rel="noreferrer" className={cn(variants[variant], sizings[sizing], base, className)}>
 				{children}
 			</a>
 		)
 
 	return (
-		<Link
-			href={href}
-			className={cn(variants[variant], sizings[sizing], base, className)}
-		>
+		<Link href={href} className={cn(variants[variant], sizings[sizing], base, className)}>
 			{children}
 		</Link>
 	)

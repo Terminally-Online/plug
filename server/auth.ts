@@ -1,10 +1,6 @@
 import { type GetServerSidePropsContext } from "next"
 
-import {
-	type DefaultSession,
-	getServerSession,
-	type NextAuthOptions
-} from "next-auth"
+import { type DefaultSession, getServerSession, type NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { getCsrfToken } from "next-auth/react"
 
@@ -41,9 +37,7 @@ const authOptions: NextAuthOptions = {
 			},
 			async authorize(credentials, req) {
 				try {
-					const siwe = new SiweMessage(
-						JSON.parse(credentials?.message || "{}")
-					)
+					const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"))
 					const nextAuthUrl = new URL(`${getBaseUrl()}/api/auth`)
 
 					const result = await siwe.verify({
@@ -81,9 +75,6 @@ const authOptions: NextAuthOptions = {
 	secret: process.env.NEXT_AUTH_SECRET
 }
 
-export const getServerAuthSession = (ctx: {
-	req: GetServerSidePropsContext["req"]
-	res: GetServerSidePropsContext["res"]
-}) => {
+export const getServerAuthSession = (ctx: { req: GetServerSidePropsContext["req"]; res: GetServerSidePropsContext["res"] }) => {
 	return getServerSession(ctx.req, ctx.res, authOptions)
 }

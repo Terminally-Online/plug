@@ -9,18 +9,9 @@ import { Container, Header, PlugGrid, Search, Tags } from "@/components"
 import { useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsDiscover: FC<
-	HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }
-> = ({ id, column = false, ...props }) => {
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({ id, column = false, ...props }) => {
 	const { scrollYProgress } = useScroll()
-	const {
-		search,
-		debouncedSearch,
-		tag,
-		handleSearch,
-		handleTag,
-		handleReset
-	} = useSearch()
+	const { search, debouncedSearch, tag, handleSearch, handleTag, handleReset } = useSearch()
 
 	const [communityPlugs, setCommunityPlugs] = useState<{
 		count?: number
@@ -75,25 +66,12 @@ export const PlugsDiscover: FC<
 			<Container column={column}>
 				{!search && !tag && curatedPlugs && curatedPlugs.length > 0 && (
 					<>
-						<Header
-							size="sm"
-							icon={<Gem size={14} className="opacity-40" />}
-							label="Curated"
-						/>
-						<PlugGrid
-							id={id}
-							from={VIEW_KEYS.DISCOVER}
-							count={4}
-							plugs={curatedPlugs}
-						/>
+						<Header size="sm" icon={<Gem size={14} className="opacity-40" />} label="Curated" />
+						<PlugGrid id={id} from={VIEW_KEYS.DISCOVER} count={4} plugs={curatedPlugs} />
 					</>
 				)}
 
-				<Header
-					size="sm"
-					icon={<Earth size={14} className="opacity-40" />}
-					label="Community"
-				/>
+				<Header size="sm" icon={<Earth size={14} className="opacity-40" />} label="Community" />
 				<PlugGrid
 					id={id}
 					className="mb-4"

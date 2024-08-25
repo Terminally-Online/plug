@@ -5,24 +5,18 @@ import { SOCKET_BASE_QUERY } from "@/lib"
 const consoleColumnModel = Prisma.validator<Prisma.ConsoleColumnDefaultArgs>()({
 	omit: { createdAt: true, updatedAt: true, socketId: true }
 })
-export type ConsoleColumnModel = Prisma.ConsoleColumnGetPayload<
-	typeof consoleColumnModel
->
+export type ConsoleColumnModel = Prisma.ConsoleColumnGetPayload<typeof consoleColumnModel>
 
 const userSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
 	...SOCKET_BASE_QUERY
 })
-export type UserSocketModel = Prisma.UserSocketGetPayload<
-	typeof userSocketModel
->
+export type UserSocketModel = Prisma.UserSocketGetPayload<typeof userSocketModel>
 
 // ---------------------------------------------------------------------------
 // Tokens
 // ---------------------------------------------------------------------------
 const tokenPriceModel = Prisma.validator<Prisma.TokenPriceCreateArgs>()({})
-export type TokenPriceModel = Prisma.TokenPriceGetPayload<
-	typeof tokenPriceModel
->
+export type TokenPriceModel = Prisma.TokenPriceGetPayload<typeof tokenPriceModel>
 
 // ---------------------------------------------------------------------------
 // Positions
@@ -80,36 +74,22 @@ const positionModel = Prisma.validator<Prisma.PositionDefaultArgs>()({
 })
 export type PositionModel = Prisma.PositionGetPayload<typeof positionModel>
 
-const positionCacheModel = Prisma.validator<Prisma.PositionCacheDefaultArgs>()(
-	{}
-)
-export type PositionCacheModel = Prisma.PositionCacheGetPayload<
-	typeof positionCacheModel
->
+const positionCacheModel = Prisma.validator<Prisma.PositionCacheDefaultArgs>()({})
+export type PositionCacheModel = Prisma.PositionCacheGetPayload<typeof positionCacheModel>
 
 // ---------------------------------------------------------------------------
 // Collectibles
 // ---------------------------------------------------------------------------
-const openseaCollectionModel =
-	Prisma.validator<Prisma.OpenseaCollectionDefaultArgs>()({})
-export type OpenseaCollectionModel = Prisma.OpenseaCollectionGetPayload<
-	typeof openseaCollectionModel
->
-const openseaCollectibleModel =
-	Prisma.validator<Prisma.OpenseaCollectibleDefaultArgs>()({
-		include: { collection: true }
-	})
-export type OpenseaCollectibleModel = Prisma.OpenseaCollectibleGetPayload<
-	typeof openseaCollectibleModel
->
-const openseaCollectibleCacheModel =
-	Prisma.validator<Prisma.OpenseaCollectibleCacheDefaultArgs>()({
-		include: { collectibles: { include: { collection: true } } }
-	})
-export type OpenseaCollectibleCacheModel =
-	Prisma.OpenseaCollectibleCacheGetPayload<
-		typeof openseaCollectibleCacheModel
-	>
+const openseaCollectionModel = Prisma.validator<Prisma.OpenseaCollectionDefaultArgs>()({})
+export type OpenseaCollectionModel = Prisma.OpenseaCollectionGetPayload<typeof openseaCollectionModel>
+const openseaCollectibleModel = Prisma.validator<Prisma.OpenseaCollectibleDefaultArgs>()({
+	include: { collection: true }
+})
+export type OpenseaCollectibleModel = Prisma.OpenseaCollectibleGetPayload<typeof openseaCollectibleModel>
+const openseaCollectibleCacheModel = Prisma.validator<Prisma.OpenseaCollectibleCacheDefaultArgs>()({
+	include: { collectibles: { include: { collection: true } } }
+})
+export type OpenseaCollectibleCacheModel = Prisma.OpenseaCollectibleCacheGetPayload<typeof openseaCollectibleCacheModel>
 
 // ---------------------------------------------------------------------------
 // Plugs

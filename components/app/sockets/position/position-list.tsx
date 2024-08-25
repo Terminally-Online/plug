@@ -10,10 +10,12 @@ import { PositionFrame } from "../../frames/assets/position"
 import { Search } from "../../inputs"
 import { SocketPositionItem } from "./position-item"
 
-export const SocketPositionList: FC<
-	HTMLAttributes<HTMLDivElement> &
-		MotionProps & { id: string; expanded?: boolean }
-> = ({ id, expanded, className, ...props }) => {
+export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & MotionProps & { id: string; expanded?: boolean }> = ({
+	id,
+	expanded,
+	className,
+	...props
+}) => {
 	const { positions } = useBalances()
 	const { protocols } = positions
 
@@ -27,16 +29,10 @@ export const SocketPositionList: FC<
 				protocol.name.toLowerCase().includes(search.toLowerCase()) ||
 				protocol.positions.some(
 					position =>
-						position.fungible.name
-							.toLowerCase()
-							.includes(search.toLowerCase()) ||
-						position.fungible.symbol
-							.toLowerCase()
-							.includes(search.toLowerCase()) ||
+						position.fungible.name.toLowerCase().includes(search.toLowerCase()) ||
+						position.fungible.symbol.toLowerCase().includes(search.toLowerCase()) ||
 						position.fungible.implementations.some(implementation =>
-							implementation.contract
-								.toLowerCase()
-								.includes(search.toLowerCase())
+							implementation.contract.toLowerCase().includes(search.toLowerCase())
 						)
 				)
 		)
@@ -75,11 +71,7 @@ export const SocketPositionList: FC<
 				{...(props as MotionProps)}
 			>
 				{visibilePositions.map((protocol, index) => (
-					<SocketPositionItem
-						key={index}
-						id={id}
-						protocol={protocol}
-					/>
+					<SocketPositionItem key={index} id={id} protocol={protocol} />
 				))}
 			</motion.div>
 

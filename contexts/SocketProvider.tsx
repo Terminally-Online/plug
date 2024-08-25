@@ -1,11 +1,4 @@
-import {
-	createContext,
-	FC,
-	PropsWithChildren,
-	useContext,
-	useMemo,
-	useState
-} from "react"
+import { createContext, FC, PropsWithChildren, useContext, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
 
@@ -15,11 +8,7 @@ import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
 import { mainnet } from "viem/chains"
-import {
-	GetEnsAvatarReturnType,
-	GetEnsNameReturnType,
-	normalize
-} from "viem/ens"
+import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
 
 export const SocketContext = createContext<{
 	address: string | undefined
@@ -29,18 +18,8 @@ export const SocketContext = createContext<{
 	page: ConsoleColumnModel | undefined
 	handle: {
 		columns: {
-			add: (data: {
-				key: string
-				id?: string
-				index?: number
-				item?: string
-			}) => void
-			navigate: (data: {
-				id?: string
-				key: string
-				item?: string
-				from?: string
-			}) => void
+			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
+			navigate: (data: { id?: string; key: string; item?: string; from?: string }) => void
 			remove: (id: string) => void
 			resize: (data: { id: string; width: number }) => void
 			move: (data: { from: number; to: number }) => void
@@ -80,14 +59,9 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		avatar: ensAvatar
 	})
 
-	const [socket, setSocket] = useState<UserSocketModel | undefined>(
-		socketData
-	)
+	const [socket, setSocket] = useState<UserSocketModel | undefined>(socketData)
 
-	const page = useMemo(
-		() => socket?.columns.find(column => column.index === -1),
-		[socket]
-	)
+	const page = useMemo(() => socket?.columns.find(column => column.index === -1), [socket])
 
 	const handle = {
 		columns: {

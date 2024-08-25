@@ -46,19 +46,9 @@ export const Header: FC<Props> = ({
 	const base = "font-bold truncate"
 
 	return (
-		<div
-			className={cn(
-				"flex w-full select-none flex-row items-center gap-4",
-				variants[variant],
-				className
-			)}
-		>
+		<div className={cn("flex w-full select-none flex-row items-center gap-4", variants[variant], className)}>
 			{
-				<Button
-					variant="secondary"
-					onClick={onBack}
-					className="mr-2 rounded-[10px] p-1"
-				>
+				<Button variant="secondary" onClick={onBack} className="mr-2 rounded-[10px] p-1">
 					<ChevronLeft size={14} />
 				</Button>
 			}
@@ -66,38 +56,26 @@ export const Header: FC<Props> = ({
 			{icon && icon}
 
 			<div className="z-[1] flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap">
-				{label instanceof Object ? (
-					label
-				) : (
-					<p className={cn(base, sizes[size])}>{label}</p>
-				)}
+				{label instanceof Object ? label : <p className={cn(base, sizes[size])}>{label}</p>}
 
 				{children}
-				{nextEmpty === false &&
-					nextLabel &&
-					(nextHref || nextOnClick) && (
-						<Button
-							variant="secondary"
-							sizing={size}
-							href={nextHref}
-							onClick={nextOnClick}
-							className={cn(
-								"outline-none",
-								size === "md" && nextPadded === true
-									? "rounded-sm px-2 py-1 text-xs"
-									: "rounded-sm p-1",
-								children === undefined && "ml-auto"
-							)}
-						>
-							{nextLabel}
-						</Button>
-					)}
+				{nextEmpty === false && nextLabel && (nextHref || nextOnClick) && (
+					<Button
+						variant="secondary"
+						sizing={size}
+						href={nextHref}
+						onClick={nextOnClick}
+						className={cn(
+							"outline-none",
+							size === "md" && nextPadded === true ? "rounded-sm px-2 py-1 text-xs" : "rounded-sm p-1",
+							children === undefined && "ml-auto"
+						)}
+					>
+						{nextLabel}
+					</Button>
+				)}
 
-				{nextEmpty === true &&
-					nextLabel &&
-					(nextHref || nextOnClick) && (
-						<div className="ml-auto">{nextLabel}</div>
-					)}
+				{nextEmpty === true && nextLabel && (nextHref || nextOnClick) && <div className="ml-auto">{nextLabel}</div>}
 			</div>
 		</div>
 	)

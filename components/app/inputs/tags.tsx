@@ -14,9 +14,7 @@ export const Tags: FC<{
 
 	useEffect(() => {
 		if (scrollContainerRef.current && tagRefs.current) {
-			const activeIndex = tags.findIndex(
-				tagItem => tagItem.toLowerCase() === (tag || "all")
-			)
+			const activeIndex = tags.findIndex(tagItem => tagItem.toLowerCase() === (tag || "all"))
 
 			if (tagRefs.current[activeIndex].current) {
 				const activeTag = tagRefs.current[activeIndex].current!
@@ -33,20 +31,11 @@ export const Tags: FC<{
 
 	return (
 		<div className="relative mb-4 mt-2">
-			<div
-				className="scrollbar-hide overflow-x-auto"
-				ref={scrollContainerRef}
-			>
-				<motion.div
-					className="flex flex-row gap-2"
-					initial={false}
-					transition={{ type: "spring", stiffness: 300, damping: 30 }}
-				>
+			<div className="scrollbar-hide overflow-x-auto" ref={scrollContainerRef}>
+				<motion.div className="flex flex-row gap-2" initial={false} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
 					{tags.map((tagItem, index) => {
 						const tagFormatted = tagItem.toLowerCase()
-						const tagActive =
-							(tag === "" && tagFormatted === "all") ||
-							tag === tagFormatted
+						const tagActive = (tag === "" && tagFormatted === "all") || tag === tagFormatted
 
 						return (
 							<motion.div
@@ -67,14 +56,7 @@ export const Tags: FC<{
 										index === 0 && "ml-4",
 										index === tags.length - 1 && "mr-[60vw]"
 									)}
-									onClick={() =>
-										handleTag(
-											tagFormatted === "all" ||
-												tagFormatted === tag
-												? ""
-												: tagFormatted
-										)
-									}
+									onClick={() => handleTag(tagFormatted === "all" || tagFormatted === tag ? "" : tagFormatted)}
 								>
 									{tagItem}
 								</Button>

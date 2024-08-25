@@ -6,12 +6,7 @@ import { Info } from "lucide-react"
 
 import { Button } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"
-import {
-	categories,
-	formatTitle,
-	getValues,
-	actions as staticActions
-} from "@/lib"
+import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
 
 export const ActionItem: FC<{
 	id: string

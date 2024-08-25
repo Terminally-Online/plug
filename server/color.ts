@@ -7,9 +7,7 @@ export const getDominantColor = async (input: string) => {
 		const buffer = Buffer.from(arrayBuffer)
 
 		const image = sharp(buffer)
-		const { dominant } = await image
-			.resize(50, 50, { fit: "inside" })
-			.stats()
+		const { dominant } = await image.resize(50, 50, { fit: "inside" }).stats()
 
 		return `rgb(${dominant.r}, ${dominant.g}, ${dominant.b})`
 	} catch (error) {

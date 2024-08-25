@@ -7,9 +7,7 @@ import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const Plugs: FC<
-	HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }
-> = ({ id, hideEmpty = false, ...props }) => {
+export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }> = ({ id, hideEmpty = false, ...props }) => {
 	const { page, handle } = useSockets()
 
 	const { data: discoveryPlugs } = api.plug.all.useQuery({
@@ -26,8 +24,7 @@ export const Plugs: FC<
 
 	return (
 		<div {...props}>
-			{(!hideEmpty ||
-				(hideEmpty && (discoveryPlugs?.length ?? 0) > 0)) && (
+			{(!hideEmpty || (hideEmpty && (discoveryPlugs?.length ?? 0) > 0)) && (
 				<>
 					<Header
 						size="md"
@@ -42,11 +39,7 @@ export const Plugs: FC<
 						nextLabel="See All"
 					/>
 
-					<PlugGrid
-						id={id}
-						from={VIEW_KEYS.HOME}
-						plugs={discoveryPlugs}
-					/>
+					<PlugGrid id={id} from={VIEW_KEYS.HOME} plugs={discoveryPlugs} />
 				</>
 			)}
 

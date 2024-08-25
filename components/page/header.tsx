@@ -7,14 +7,7 @@ import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 
 import { ActionView, Button, Container, Header } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
-import {
-	cardColors,
-	cn,
-	formatAddress,
-	formatTimeSince,
-	formatTitle,
-	VIEW_KEYS
-} from "@/lib"
+import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, VIEW_KEYS } from "@/lib"
 
 const HomePageHeader = () => {
 	const { page, handle } = useSockets()
@@ -30,49 +23,28 @@ const HomePageHeader = () => {
 			label={
 				<>
 					{address ? (
-						<button
-							className="flex flex-row items-center gap-2"
-							onClick={() => handleFrame("auth")}
-						>
+						<button className="flex flex-row items-center gap-2" onClick={() => handleFrame("auth")}>
 							{avatar ? (
-								<Image
-									src={avatar}
-									alt="ENS Avatar"
-									width={24}
-									height={24}
-									className="h-6 w-6 rounded-sm"
-								/>
+								<Image src={avatar} alt="ENS Avatar" width={24} height={24} className="h-6 w-6 rounded-sm" />
 							) : (
-								<BlockiesSvg
-									className="h-6 w-6 rounded-sm"
-									address={address}
-								/>
+								<BlockiesSvg className="h-6 w-6 rounded-sm" address={address} />
 							)}
 						</button>
 					) : (
 						<div
 							className="flex h-6 w-6 flex-row items-center justify-center rounded-sm"
 							style={{
-								backgroundImage:
-									"linear-gradient(30deg, #00E100, #A3F700)"
+								backgroundImage: "linear-gradient(30deg, #00E100, #A3F700)"
 							}}
 						>
-							<Image
-								src="/white-icon.svg"
-								alt="Logo"
-								width={662}
-								height={616}
-								className="h-3 w-auto"
-							/>
+							<Image src="/white-icon.svg" alt="Logo" width={662} height={616} className="h-3 w-auto" />
 						</div>
 					)}
 
 					<button
 						className={cn(
 							"text-lg font-bold transition-all duration-200 ease-in-out",
-							page.key !== VIEW_KEYS.HOME
-								? "opacity-40 hover:opacity-100"
-								: ""
+							page.key !== VIEW_KEYS.HOME ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
 							handle.columns.navigate({
@@ -87,9 +59,7 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"mr-auto text-lg font-bold transition-all duration-200 ease-in-out",
-							page.key !== VIEW_KEYS.ACTIVITY
-								? "opacity-40 hover:opacity-100"
-								: ""
+							page.key !== VIEW_KEYS.ACTIVITY ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
 							handle.columns.navigate({
@@ -114,8 +84,7 @@ const PlugHeader = () => {
 	const { handleFrame } = useFrame({ id: page?.id })
 	const { plug, handle: handlePlugs } = usePlugs(page?.id ?? "")
 
-	const own =
-		plug !== undefined && session && session.address === plug.userAddress
+	const own = plug !== undefined && session && session.address === plug.userAddress
 
 	if (!page || !plug) return null
 
@@ -147,13 +116,8 @@ const PlugHeader = () => {
 						<Ellipsis size={14} />
 					) : (
 						<div className="flex flex-row items-center gap-2">
-							<BlockiesSvg
-								address={plug.userAddress}
-								className="h-5 w-5 rounded-md"
-							/>
-							<p className="text-sm font-bold opacity-40">
-								{formatAddress(plug.userAddress)}
-							</p>
+							<BlockiesSvg address={plug.userAddress} className="h-5 w-5 rounded-md" />
+							<p className="text-sm font-bold opacity-40">{formatAddress(plug.userAddress)}</p>
 						</div>
 					)
 				}
@@ -161,9 +125,7 @@ const PlugHeader = () => {
 			/>
 
 			<div className="mb-4 flex flex-row items-center gap-4">
-				<div className="font-bold opacity-40">
-					Last updated {formatTimeSince(plug.updatedAt)}
-				</div>
+				<div className="font-bold opacity-40">Last updated {formatTimeSince(plug.updatedAt)}</div>
 
 				<Button
 					variant="secondary"
@@ -178,11 +140,7 @@ const PlugHeader = () => {
 					<GitFork size={14} />
 				</Button>
 
-				<Button
-					variant="secondary"
-					className="group p-1"
-					onClick={() => handleFrame("share")}
-				>
+				<Button variant="secondary" className="group p-1" onClick={() => handleFrame("share")}>
 					<Share size={14} />
 				</Button>
 			</div>
@@ -214,9 +172,7 @@ const DynamicPageHeader = () => {
 
 					<button
 						className="mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
-						onClick={() =>
-							handle.columns.navigate({ key: VIEW_KEYS.ACTIVITY })
-						}
+						onClick={() => handle.columns.navigate({ key: VIEW_KEYS.ACTIVITY })}
 					>
 						{formatTitle(page?.key.toLowerCase() ?? "")}
 					</button>

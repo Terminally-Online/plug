@@ -20,20 +20,14 @@ export const BalancesContext = createContext<{
 export const BalancesProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { address, socket } = useSockets()
 
-	const { data: collectibles } = api.socket.balances.collectibles.useQuery(
-		socket?.socketAddress,
-		{
-			enabled: socket?.socketAddress !== undefined
-		}
-	)
+	const { data: collectibles } = api.socket.balances.collectibles.useQuery(socket?.socketAddress, {
+		enabled: socket?.socketAddress !== undefined
+	})
 
-	const { data: positions } = api.socket.balances.positions.useQuery(
-		address,
-		{
-			enabled: address !== undefined,
-			refetchInterval: REFETCH_INTERVAL
-		}
-	)
+	const { data: positions } = api.socket.balances.positions.useQuery(address, {
+		enabled: address !== undefined,
+		refetchInterval: REFETCH_INTERVAL
+	})
 
 	return (
 		<BalancesContext.Provider

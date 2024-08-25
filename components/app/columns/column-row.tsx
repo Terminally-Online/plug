@@ -31,11 +31,7 @@ import { VIEW_KEYS } from "@/lib"
 export const ConsoleColumnRow = () => {
 	const { socket, handle } = useSockets()
 
-	const [columns, setColumns] = useState<any[]>(
-		socket?.columns || [
-			{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }
-		]
-	)
+	const [columns, setColumns] = useState<any[]>(socket?.columns || [{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }])
 
 	const onDragEnd = (result: DropResult) => {
 		if (!result.destination) return
@@ -50,10 +46,7 @@ export const ConsoleColumnRow = () => {
 			to: result.destination.index
 		})
 
-		const reorderedColumns =
-			columns
-				?.sort((a, b) => a.index - b.index)
-				.slice(1, columns.length) ?? []
+		const reorderedColumns = columns?.sort((a, b) => a.index - b.index).slice(1, columns.length) ?? []
 
 		const [removed] = reorderedColumns.splice(result.source.index, 1)
 		reorderedColumns.splice(result.destination.index, 0, removed)
@@ -83,20 +76,13 @@ export const ConsoleColumnRow = () => {
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (
-						<div
-							ref={provided.innerRef}
-							className="flex flex-row"
-							{...provided.droppableProps}
-						>
+						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
 							<AnimatePresence>
 								{columns
 									.filter(column => column.index !== -1)
 									.sort((a, b) => a.index - b.index)
 									.map(column => (
-										<ConsoleColumn
-											key={column.id}
-											column={column}
-										/>
+										<ConsoleColumn key={column.id} column={column} />
 									))}
 							</AnimatePresence>
 							{provided.placeholder}

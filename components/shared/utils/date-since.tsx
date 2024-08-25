@@ -34,9 +34,7 @@ const getTimeSince = (date: Date) => {
 	return { interval: Math.floor(seconds), unit: "s" }
 }
 
-export const DateSince: FC<
-	{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLParagraphElement>
-> = ({ date, ...props }) => {
+export const DateSince: FC<{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLParagraphElement>> = ({ date, ...props }) => {
 	const [timeSince, setTimeSince] = useState(getTimeSince(date))
 
 	useEffect(() => {

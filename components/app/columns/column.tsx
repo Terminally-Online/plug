@@ -32,8 +32,7 @@ const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
 const MAX_COLUMN_WIDTH = 620
 
-const getBoundedWidth = (width: number) =>
-	Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
+const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
 export const ConsoleColumn: FC<{
 	column: ConsoleColumnModel
@@ -46,10 +45,8 @@ export const ConsoleColumn: FC<{
 
 	const id = useMemo(() => column.id, [column])
 
-	const [width, debouncedWidth, handleWidth] = useDebounce(
-		(column.width ?? DEFAULT_COLUMN_WIDTH).toString(),
-		100,
-		() => handle.columns.resize({ id, width: Number(debouncedWidth) })
+	const [width, debouncedWidth, handleWidth] = useDebounce((column.width ?? DEFAULT_COLUMN_WIDTH).toString(), 100, () =>
+		handle.columns.resize({ id, width: Number(debouncedWidth) })
 	)
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -57,11 +54,7 @@ export const ConsoleColumn: FC<{
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			handleWidth(
-				getBoundedWidth(
-					e.clientX - resizeRef.current.getBoundingClientRect().left
-				).toString()
-			)
+			handleWidth(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left).toString())
 		}
 
 		const handleMouseUp = () => {
@@ -99,9 +92,7 @@ export const ConsoleColumn: FC<{
 							<div
 								className={cn(
 									"group relative z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
-									snapshot.isDragging
-										? "bg-grayscale-0"
-										: "hover:bg-grayscale-0"
+									snapshot.isDragging ? "bg-grayscale-0" : "hover:bg-grayscale-0"
 								)}
 								{...provided.dragHandleProps}
 							>
@@ -109,11 +100,7 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											<Button
-												variant="none"
-												onClick={() => {}}
-												className="rounded-sm p-1"
-											>
+											<Button variant="none" onClick={() => {}} className="rounded-sm p-1">
 												<Grip
 													size={14}
 													className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -124,12 +111,10 @@ export const ConsoleColumn: FC<{
 												<Button
 													variant="secondary"
 													onClick={() =>
-														handle.columns.navigate(
-															{
-																id: column.id,
-																key: column.from!
-															}
-														)
+														handle.columns.navigate({
+															id: column.id,
+															key: column.from!
+														})
 													}
 													className="rounded-sm p-1"
 												>
@@ -141,26 +126,14 @@ export const ConsoleColumn: FC<{
 												<div
 													className="h-6 w-6 min-w-6 rounded-sm bg-grayscale-100"
 													style={{
-														backgroundImage:
-															cardColors[
-																plug.color
-															]
+														backgroundImage: cardColors[plug.color]
 													}}
 												/>
 											)}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
-													{formatTitle(
-														plug
-															? plug.name
-															: column.key
-																	.replace(
-																		"_",
-																		" "
-																	)
-																	.toLowerCase()
-													)}
+													{formatTitle(plug ? plug.name : column.key.replace("_", " ").toLowerCase())}
 												</p>
 											</div>
 
@@ -174,10 +147,7 @@ export const ConsoleColumn: FC<{
 															// handleFrame("share")
 														}
 													>
-														<Share
-															size={14}
-															className="opacity-60 hover:opacity-100"
-														/>
+														<Share size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
 
 													<Button
@@ -188,54 +158,30 @@ export const ConsoleColumn: FC<{
 															// handleFrame("share")
 														}
 													>
-														<GitFork
-															size={14}
-															className="opacity-60 hover:opacity-100"
-														/>
+														<GitFork size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
 
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() =>
-															handleFrame(
-																"manage"
-															)
-														}
+														onClick={() => handleFrame("manage")}
 													>
-														<Cog
-															size={14}
-															className="opacity-60 hover:opacity-100"
-														/>
+														<Cog size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
 
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() =>
-															handle.columns.remove(
-																column.id
-															)
-														}
+														onClick={() => handle.columns.remove(column.id)}
 													>
-														<X
-															size={14}
-															className="opacity-60 hover:opacity-100"
-														/>
+														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
 												</div>
 											)}
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={
-										plug === undefined
-											? () =>
-													handle.columns.remove(
-														column.id
-													)
-											: undefined
-									}
+									nextOnClick={plug === undefined ? () => handle.columns.remove(column.id) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
@@ -246,70 +192,31 @@ export const ConsoleColumn: FC<{
 								) : column.key === VIEW_KEYS.ADD ? (
 									<ConsoleColumnAddOptions id={column.id} />
 								) : column.key === VIEW_KEYS.SEARCH ? (
-									<ConsoleSearch
-										className="px-4 pt-4"
-										id={column.id}
-									/>
+									<ConsoleSearch className="px-4 pt-4" id={column.id} />
 								) : column.key === VIEW_KEYS.ALERTS ? (
-									<ConsoleAlerts
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<ConsoleAlerts id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.PLUGS ? (
 									<Plugs className="px-4" id={column.id} />
 								) : column.key === VIEW_KEYS.DISCOVER ? (
-									<PlugsDiscover
-										className="pt-4"
-										id={column.id}
-									/>
+									<PlugsDiscover className="pt-4" id={column.id} />
 								) : column.key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine
-										className="pt-4"
-										column={true}
-										id={column.id}
-									/>
+									<PlugsMine className="pt-4" column={true} id={column.id} />
 								) : column.key === VIEW_KEYS.PLUG ? (
-									<Plug
-										className="px-4 pt-4"
-										id={column.id}
-										item={column.item}
-									/>
+									<Plug className="px-4 pt-4" id={column.id} item={column.item} />
 								) : column.key === VIEW_KEYS.ACTIVITY ? (
-									<SocketActivity
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<SocketActivity id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.ASSETS ? (
-									<SocketAssets
-										id={column.id}
-										className="px-4"
-									/>
+									<SocketAssets id={column.id} className="px-4" />
 								) : column.key === "TOKENS" ? (
-									<SocketTokenList
-										id={column.id}
-										className="px-4 pt-4"
-										expanded={true}
-									/>
+									<SocketTokenList id={column.id} className="px-4 pt-4" expanded={true} />
 								) : column.key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<SocketCollectionList id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.POSITIONS ? (
-									<SocketPositionList
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<SocketPositionList id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.EARNINGS ? (
-									<SocketEarnings
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<SocketEarnings id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.ADMIN ? (
-									<ConsoleAdmin
-										id={column.id}
-										className="px-4 pt-4"
-									/>
+									<ConsoleAdmin id={column.id} className="px-4 pt-4" />
 								) : column.key === VIEW_KEYS.PROFILE ? (
 									<ColumnProfile className="px-4 py-4" />
 								) : (
@@ -325,12 +232,7 @@ export const ConsoleColumn: FC<{
 								setIsResizing(true)
 							}}
 						>
-							<div
-								className={cn(
-									"h-full w-[1px] bg-grayscale-100",
-									snapshot.isDragging && "opacity-0"
-								)}
-							/>
+							<div className={cn("h-full w-[1px] bg-grayscale-100", snapshot.isDragging && "opacity-0")} />
 						</div>
 					</div>
 				)}

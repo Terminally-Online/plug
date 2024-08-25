@@ -50,8 +50,7 @@ export const useTokens = ({
 	})
 
 	const metadata = useMemo(() => {
-		const [name, symbol, decimals, balance] =
-			(isAddress(query) && data) || []
+		const [name, symbol, decimals, balance] = (isAddress(query) && data) || []
 
 		if (query === undefined) return undefined
 
@@ -65,12 +64,7 @@ export const useTokens = ({
 			if (found) logoURI = found.logoURI
 		}
 
-		if (
-			name?.result === undefined ||
-			symbol?.result === undefined ||
-			decimals?.result === undefined ||
-			balance?.result === undefined
-		)
+		if (name?.result === undefined || symbol?.result === undefined || decimals?.result === undefined || balance?.result === undefined)
 			return undefined
 
 		return {
@@ -84,10 +78,7 @@ export const useTokens = ({
 		}
 	}, [chainId, query, data])
 
-	const all = useMemo(
-		() => tokens.filter(token => token.chainId === chainId),
-		[chainId]
-	)
+	const all = useMemo(() => tokens.filter(token => token.chainId === chainId), [chainId])
 
 	const filtered = useMemo(() => {
 		const staticTokens = all
@@ -100,10 +91,7 @@ export const useTokens = ({
 					return false
 				}
 
-				return (
-					token.name.toLowerCase().includes(query.toLowerCase()) ||
-					token.symbol.toLowerCase().includes(query.toLowerCase())
-				)
+				return token.name.toLowerCase().includes(query.toLowerCase()) || token.symbol.toLowerCase().includes(query.toLowerCase())
 			})
 			.sort((a, b) => {
 				const distanceA = getLevenshteinDistance(a.symbol, query)

@@ -8,11 +8,7 @@ const getRandomDelay = (min = 0, max = 2) => {
 	return Math.random() * (max - min) + min
 }
 
-const Line: FC<{ size: number; index: number; imagePath: string }> = ({
-	size,
-	index,
-	imagePath
-}) => {
+const Line: FC<{ size: number; index: number; imagePath: string }> = ({ size, index, imagePath }) => {
 	const active = true
 
 	const transition = useMemo(
@@ -34,24 +30,14 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 				transform: `rotate(${index * 15}deg) translateX(-1px)`
 			}}
 			animate={{
-				borderColor: active
-					? ["#D9D9D9", "#00E100", "#00E100", "#00E100", "#D9D9D9"]
-					: "#D9D9D9"
+				borderColor: active ? ["#D9D9D9", "#00E100", "#00E100", "#00E100", "#D9D9D9"] : "#D9D9D9"
 			}}
 			transition={transition}
 		>
 			<motion.div
 				className="absolute left-[50%] top-[-32px] z-[10] flex h-16 w-16 translate-x-[-50%] transform items-center justify-center rounded-lg border-[2px] border-dashed bg-white"
 				animate={{
-					borderColor: active
-						? [
-								"#D9D9D9",
-								"#D9D9D9",
-								"#00E100",
-								"#D9D9D9",
-								"#D9D9D9"
-							]
-						: "#D9D9D9"
+					borderColor: active ? ["#D9D9D9", "#D9D9D9", "#00E100", "#D9D9D9", "#D9D9D9"] : "#D9D9D9"
 				}}
 				transition={transition}
 			>
@@ -66,11 +52,7 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 					}}
 					className="relative p-4"
 				>
-					<motion.div
-						initial={{ opacity: 0 }}
-						whileInView={{ opacity: 1 }}
-						transition={{ duration: 1 }}
-					>
+					<motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 1 }}>
 						<Image
 							src={imagePath}
 							alt="Logo for the ecosystem"
@@ -79,13 +61,7 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({
 							className="absolute left-0 top-0 blur-sm filter"
 						/>
 
-						<Image
-							src={imagePath}
-							alt="Logo for the ecosystem"
-							width={64}
-							height={32}
-							className="absolute left-0 top-0"
-						/>
+						<Image src={imagePath} alt="Logo for the ecosystem" width={64} height={32} className="absolute left-0 top-0" />
 					</motion.div>
 				</motion.div>
 			</motion.div>
@@ -133,12 +109,7 @@ const Lines: FC<{ size: number }> = ({ size = 900 }) => {
 	return (
 		<>
 			{Array.from({ length: 24 }).map((_, index) => (
-				<Line
-					key={index}
-					size={size}
-					index={index}
-					imagePath={`/protocols/${protocols[index]}`}
-				/>
+				<Line key={index} size={size} index={index} imagePath={`/protocols/${protocols[index]}`} />
 			))}
 		</>
 	)
@@ -196,13 +167,7 @@ export const Ecosystem: FC = () => {
 							delay: 1.5
 						}}
 					>
-						<Image
-							src="/black-icon.svg"
-							alt="Logo"
-							width={64}
-							height={32}
-							className="p-4"
-						/>
+						<Image src="/black-icon.svg" alt="Logo" width={64} height={32} className="p-4" />
 					</motion.div>
 				</motion.div>
 			</motion.div>

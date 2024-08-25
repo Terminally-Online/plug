@@ -1,11 +1,4 @@
-import {
-	PageActivity,
-	PageDiscover,
-	PageEarnings,
-	PageHome,
-	PageMine,
-	PagePlug
-} from "@/components"
+import { PageActivity, PageDiscover, PageEarnings, PageHome, PageMine, PagePlug } from "@/components"
 import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 

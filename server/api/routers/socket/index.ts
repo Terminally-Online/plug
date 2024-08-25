@@ -3,13 +3,7 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 
-import {
-	DEFAULT_VIEWS,
-	getFarcasterFollowing,
-	SOCKET_BASE_INCLUDE,
-	SOCKET_BASE_QUERY,
-	VIEW_KEYS
-} from "@/lib"
+import { DEFAULT_VIEWS, getFarcasterFollowing, SOCKET_BASE_INCLUDE, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 import { balances } from "./balances"

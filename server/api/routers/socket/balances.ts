@@ -10,40 +10,29 @@ import { getDominantColor } from "@/server/color"
 import { createTRPCRouter, protectedProcedure } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	collectibles: protectedProcedure
-		.input(z.string().optional())
-		.query(async ({ input }) => {
-			if (input === undefined) return []
+	collectibles: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
+		if (input === undefined) return []
 
-			return await getCollectibles(input)
-		}),
-	positions: protectedProcedure
-		.input(z.string().optional())
-		.query(async ({ input }) => {
-			if (input === undefined)
-				throw new TRPCError({ code: "BAD_REQUEST" })
+		return await getCollectibles(input)
+	}),
+	positions: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
+		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-			return await getPositions(input)
-		}),
+		return await getPositions(input)
+	}),
 	metadata: protectedProcedure
 		.input(
 			z.object({
-				type: z.union([
-					z.literal("ERC20"),
-					z.literal("ERC721"),
-					z.literal("ERC1155")
-				]),
+				type: z.union([z.literal("ERC20"), z.literal("ERC721"), z.literal("ERC1155")]),
 				id: z.string()
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			if (input.type === "ERC20")
-				throw new TRPCError({ code: "NOT_IMPLEMENTED" })
+			if (input.type === "ERC20") throw new TRPCError({ code: "NOT_IMPLEMENTED" })
 
-			const metadataCache =
-				await ctx.db.openseaCollectibleMetadata.findUnique({
-					where: { collectibleId: input.id }
-				})
+			const metadataCache = await ctx.db.openseaCollectibleMetadata.findUnique({
+				where: { collectibleId: input.id }
+			})
 
 			if (metadataCache) return metadataCache
 
@@ -62,14 +51,9 @@ export const balances = createTRPCRouter({
 				}
 			})
 
-			const traits =
-				response.status === 200 && response.data.nft.traits === null
-					? []
-					: response.data.nft.traits
+			const traits = response.status === 200 && response.data.nft.traits === null ? [] : response.data.nft.traits
 
-			const color = await getDominantColor(
-				collectible.displayImageUrl ?? collectible.collection.imageUrl
-			)
+			const color = await getDominantColor(collectible.displayImageUrl ?? collectible.collection.imageUrl)
 
 			if (metadataCache !== null)
 				return await ctx.db.openseaCollectibleMetadata.update({

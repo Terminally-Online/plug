@@ -28,11 +28,7 @@ export const RunFrame: FC<{ id: string }> = ({ id }) => {
 			className="z-[2]"
 			handleBack={handleBack}
 			icon={<Eye size={18} />}
-			label={
-				prevFrame === "schedule"
-					? "Intent Preview"
-					: "Transaction Preview"
-			}
+			label={prevFrame === "schedule" ? "Intent Preview" : "Transaction Preview"}
 			visible={isFrame}
 			hasOverlay={true}
 		>
@@ -62,13 +58,8 @@ export const RunFrame: FC<{ id: string }> = ({ id }) => {
 					</span>
 				</p>
 
-				<Button
-					className="mt-4 w-full"
-					onClick={() => handleFrame(`running-${prevFrame}`)}
-				>
-					{prevFrame === "schedule"
-						? "Sign Intent"
-						: "Submit Transaction"}
+				<Button className="mt-4 w-full" onClick={() => handleFrame(`running-${prevFrame}`)}>
+					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
 				</Button>
 			</div>
 		</Frame>

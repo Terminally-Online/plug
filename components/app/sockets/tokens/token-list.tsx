@@ -29,11 +29,7 @@ export const SocketTokenList: FC<
 			token =>
 				token.name.toLowerCase().includes(search.toLowerCase()) ||
 				token.symbol.toLowerCase().includes(search.toLowerCase()) ||
-				token.implementations.some(implementation =>
-					implementation.contract
-						.toLowerCase()
-						.includes(search.toLowerCase())
-				)
+				token.implementations.some(implementation => implementation.contract.toLowerCase().includes(search.toLowerCase()))
 		)
 
 		if (expanded) return filteredTokens
@@ -42,11 +38,7 @@ export const SocketTokenList: FC<
 	}, [expanded, tokens, search])
 
 	const isEmptySearch = useMemo(
-		() =>
-			search !== "" &&
-			tokens &&
-			tokens.length !== 0 &&
-			visibleTokens.length === 0,
+		() => search !== "" && tokens && tokens.length !== 0 && visibleTokens.length === 0,
 		[search, tokens, visibleTokens]
 	)
 
@@ -93,9 +85,7 @@ export const SocketTokenList: FC<
 						</span>
 						&rsquo;.
 					</p>
-					<p className="mb-4 max-w-[320px] opacity-60">
-						Your search returned no results.
-					</p>
+					<p className="mb-4 max-w-[320px] opacity-60">Your search returned no results.</p>
 					<Button sizing="sm" onClick={() => handleSearch("")}>
 						Reset
 					</Button>

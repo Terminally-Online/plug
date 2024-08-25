@@ -26,20 +26,12 @@ export const SocketCollectionList: FC<
 		const filteredCollectibles = collectibles.filter(
 			collectible =>
 				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.description
-					.toLowerCase()
-					.includes(search.toLowerCase()) ||
-				collectible.collection
-					.toLowerCase()
-					.includes(search.toLowerCase()) ||
+				collectible.description.toLowerCase().includes(search.toLowerCase()) ||
+				collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.collectibles.some(
 					collectionCollectible =>
-						(collectionCollectible.name ?? "")
-							.toLowerCase()
-							.includes(search.toLowerCase()) ||
-						(collectionCollectible.description ?? "")
-							.toLowerCase()
-							.includes(search.toLowerCase())
+						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
+						(collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
 				)
 		)
 
@@ -72,12 +64,7 @@ export const SocketCollectionList: FC<
 				}}
 			>
 				{visibleCollectibles.map((collection, index) => (
-					<SocketCollectionItem
-						key={index}
-						id={id}
-						collection={collection}
-						searched={search !== ""}
-					/>
+					<SocketCollectionItem key={index} id={id} collection={collection} searched={search !== ""} />
 				))}
 			</motion.div>
 		</div>

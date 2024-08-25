@@ -50,9 +50,7 @@ export const SocketTabs: FC<{
 						onClick={() => onSelect(index)}
 						className={cn(
 							"flex cursor-pointer flex-row items-center gap-2 border-none bg-transparent font-bold outline-none transition-all duration-200 ease-in-out",
-							selected === index
-								? "opacity-100"
-								: "opacity-40 hover:opacity-80",
+							selected === index ? "opacity-100" : "opacity-40 hover:opacity-80",
 							index === 0 && "mr-auto"
 						)}
 					>

@@ -26,9 +26,7 @@ export const PlugGridItem: FC<Props> = ({ id, from, plug }) => {
 				backgroundImage
 			}}
 		>
-			<span className="font-bold">
-				{plug.name === "" ? "Untitled Plug" : plug.name}
-			</span>
+			<span className="font-bold">{plug.name === "" ? "Untitled Plug" : plug.name}</span>
 		</button>
 	)
 }

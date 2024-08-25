@@ -13,18 +13,11 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 	})
 	const { plug } = usePlugs(id)
 
-	const label = prevFrame
-		? prevFrame === "schedule"
-			? "Signing Intent"
-			: "Transaction Running"
-		: ""
+	const label = prevFrame ? (prevFrame === "schedule" ? "Signing Intent" : "Transaction Running") : ""
 
 	useEffect(() => {
 		if (isFrame) {
-			const timeout = setTimeout(
-				() => handleFrame(`ran-${prevFrame}`),
-				3000
-			)
+			const timeout = setTimeout(() => handleFrame(`ran-${prevFrame}`), 3000)
 
 			return () => clearTimeout(timeout)
 		}
@@ -33,13 +26,7 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 	if (!plug) return null
 
 	return (
-		<Frame
-			id={id}
-			className="z-[2]"
-			icon={<LoaderCircle size={18} className="animate-spin" />}
-			label={label}
-			visible={isFrame}
-		>
+		<Frame id={id} className="z-[2]" icon={<LoaderCircle size={18} className="animate-spin" />} label={label} visible={isFrame}>
 			<div className="flex flex-col gap-8">
 				{prevFrame === "run" ? (
 					<p className="leading-6">
@@ -52,16 +39,12 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 						>
 							{plug.name}
 						</span>{" "}
-						<span className="opacity-60">
-							is currently running.
-						</span>
+						<span className="opacity-60">is currently running.</span>
 					</p>
 				) : (
 					<>
 						<p className="leading-6">
-							<span className="opacity-60">
-								Go ahead and schedule the execution of
-							</span>{" "}
+							<span className="opacity-60">Go ahead and schedule the execution of</span>{" "}
 							<span
 								className="rounded-lg bg-gradient-to-tr px-2 py-1 font-bold text-plug-green"
 								style={{
@@ -70,9 +53,7 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 							>
 								{plug.name}
 							</span>{" "}
-							<span className="opacity-60">
-								by signing the intent in your wallet now.
-							</span>
+							<span className="opacity-60">by signing the intent in your wallet now.</span>
 						</p>
 					</>
 				)}

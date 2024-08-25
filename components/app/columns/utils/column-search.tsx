@@ -1,12 +1,6 @@
 import { FC, HTMLAttributes, useState } from "react"
 
-import {
-	ChevronDown,
-	ImageIcon,
-	LoaderCircle,
-	Plug,
-	SearchIcon
-} from "lucide-react"
+import { ChevronDown, ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/shared"
 import { cn, greenGradientStyle, useDebounce, VIEW_KEYS } from "@/lib"
@@ -16,33 +10,21 @@ import { Search } from "../../inputs"
 import { PlugGrid } from "../../plugs"
 import { SocketCollectionList, SocketTokenList } from "../../sockets"
 
-export const ConsoleSearch: FC<
-	HTMLAttributes<HTMLDivElement> & { id: string }
-> = ({ id, className, ...props }) => {
+export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const [search, debounced, handleSearch] = useDebounce("", 500)
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
 	const enabled = debounced !== ""
 
-	const { data: results, isInitialLoading } = api.misc.search.useQuery(
-		debounced,
-		{
-			enabled
-		}
-	)
+	const { data: results, isInitialLoading } = api.misc.search.useQuery(debounced, {
+		enabled
+	})
 
 	const emptyResults =
-		search !== "" &&
-		results &&
-		results.plugs.length === 0 &&
-		results.tokens.length === 0 &&
-		results.collectibles.length === 0
+		search !== "" && results && results.plugs.length === 0 && results.tokens.length === 0 && results.collectibles.length === 0
 
 	return (
-		<div
-			className={cn("flex h-full flex-col overflow-x-hidden", className)}
-			{...props}
-		>
+		<div className={cn("flex h-full flex-col overflow-x-hidden", className)} {...props}>
 			<Search
 				className="mb-4"
 				icon={<SearchIcon size={14} className="opacity-60" />}
@@ -56,8 +38,7 @@ export const ConsoleSearch: FC<
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center opacity-60">
-						Here you can search for everything from plugs, tokens,
-						collectibles, and more.
+						Here you can search for everything from plugs, tokens, collectibles, and more.
 					</p>
 				</div>
 			)}
@@ -65,10 +46,7 @@ export const ConsoleSearch: FC<
 			{isInitialLoading && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">
-						<LoaderCircle
-							size={24}
-							className="animate-spin opacity-60"
-						/>
+						<LoaderCircle size={24} className="animate-spin opacity-60" />
 					</p>
 				</div>
 			)}
@@ -86,9 +64,7 @@ export const ConsoleSearch: FC<
 						</span>
 						&rsquo;.
 					</p>
-					<p className="mb-4 max-w-[320px] opacity-60">
-						Your search returned no results.
-					</p>
+					<p className="mb-4 max-w-[320px] opacity-60">Your search returned no results.</p>
 					<Button sizing="sm" onClick={() => handleSearch("")}>
 						Reset
 					</Button>
@@ -109,18 +85,11 @@ export const ConsoleSearch: FC<
 										className="ml-auto rounded-sm p-1 px-2"
 										onClick={() =>
 											setExpanded(prev =>
-												prev.includes("plugs") === false
-													? [...prev, "plugs"]
-													: prev.filter(
-															key =>
-																key !== "plugs"
-														)
+												prev.includes("plugs") === false ? [...prev, "plugs"] : prev.filter(key => key !== "plugs")
 											)
 										}
 									>
-										{expanded.includes("plugs")
-											? "Collapse"
-											: "See All"}
+										{expanded.includes("plugs") ? "Collapse" : "See All"}
 									</Button>
 								)}
 							</p>
@@ -128,11 +97,7 @@ export const ConsoleSearch: FC<
 							<PlugGrid
 								id={id}
 								from={VIEW_KEYS.SEARCH}
-								plugs={
-									expanded.includes("plugs")
-										? results.plugs
-										: results.plugs.slice(0, 6)
-								}
+								plugs={expanded.includes("plugs") ? results.plugs : results.plugs.slice(0, 6)}
 							/>
 						</div>
 					)}
@@ -149,30 +114,17 @@ export const ConsoleSearch: FC<
 										className="ml-auto rounded-sm p-1 px-2"
 										onClick={() =>
 											setExpanded(prev =>
-												prev.includes("tokens") ===
-												false
+												prev.includes("tokens") === false
 													? [...prev, "tokens"]
-													: prev.filter(
-															key =>
-																key !== "tokens"
-														)
+													: prev.filter(key => key !== "tokens")
 											)
 										}
 									>
-										{expanded.includes("tokens")
-											? "Collapse"
-											: "See All"}
+										{expanded.includes("tokens") ? "Collapse" : "See All"}
 									</Button>
 								)}
 							</p>
-							<SocketTokenList
-								id={id}
-								tokens={
-									expanded.includes("tokens")
-										? results.tokens
-										: results.tokens.slice(0, 10)
-								}
-							/>
+							<SocketTokenList id={id} tokens={expanded.includes("tokens") ? results.tokens : results.tokens.slice(0, 10)} />
 						</div>
 					)}
 
@@ -188,32 +140,20 @@ export const ConsoleSearch: FC<
 										className="ml-auto rounded-sm p-1 px-2"
 										onClick={() =>
 											setExpanded(prev =>
-												prev.includes(
-													"collectibles"
-												) === false
+												prev.includes("collectibles") === false
 													? [...prev, "collectibles"]
-													: prev.filter(
-															key =>
-																key !==
-																"collectibles"
-														)
+													: prev.filter(key => key !== "collectibles")
 											)
 										}
 									>
-										{expanded.includes("collectibles")
-											? "Collapse"
-											: "See All"}
+										{expanded.includes("collectibles") ? "Collapse" : "See All"}
 									</Button>
 								)}
 							</p>
 
 							<SocketCollectionList
 								id={id}
-								collectibles={
-									expanded.includes("collectibles")
-										? results.collectibles
-										: results.collectibles.slice(0, 10)
-								}
+								collectibles={expanded.includes("collectibles") ? results.collectibles : results.collectibles.slice(0, 10)}
 							/>
 						</div>
 					)}

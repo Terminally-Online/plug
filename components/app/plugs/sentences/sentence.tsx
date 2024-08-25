@@ -21,12 +21,7 @@ export const Sentence: FC<{
 
 	return (
 		<>
-			<div
-				className={cn(
-					"flex flex-row items-center font-bold",
-					preview === false && "rounded-lg bg-grayscale-0 p-4"
-				)}
-			>
+			<div className={cn("flex flex-row items-center font-bold", preview === false && "rounded-lg bg-grayscale-0 p-4")}>
 				<p className="flex w-full flex-wrap items-center gap-[4px]">
 					{preview === false && (
 						<Image
@@ -48,9 +43,7 @@ export const Sentence: FC<{
 						onClick={() =>
 							handle.action.edit({
 								id: plug.id,
-								actions: JSON.stringify(
-									actions.filter((_, i) => i !== index)
-								)
+								actions: JSON.stringify(actions.filter((_, i) => i !== index))
 							})
 						}
 					>
@@ -59,9 +52,7 @@ export const Sentence: FC<{
 				)}
 			</div>
 
-			{index < actions.length - 1 && (
-				<div className="mx-auto h-2 w-[2px] bg-grayscale-100" />
-			)}
+			{index < actions.length - 1 && <div className="mx-auto h-2 w-[2px] bg-grayscale-100" />}
 		</>
 	)
 }

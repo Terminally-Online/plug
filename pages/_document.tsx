@@ -5,29 +5,11 @@ export default function Document() {
 		<Html lang="en">
 			<Head>
 				{/* Favicon */}
-				<link
-					rel="apple-touch-icon"
-					sizes="180x180"
-					href="/apple-touch-icon.png?v=2"
-				/>
-				<link
-					rel="icon"
-					type="image/png"
-					sizes="32x32"
-					href="/favicon-32x32.png?v=2"
-				/>
-				<link
-					rel="icon"
-					type="image/png"
-					sizes="16x16"
-					href="/favicon-16x16.png?v=2"
-				/>
+				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+				<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
 				<link rel="manifest" href="/site.webmanifest?v=2" />
-				<link
-					rel="mask-icon"
-					href="/safari-pinned-tab.svg?v=2"
-					color="#00ef35"
-				/>
+				<link rel="mask-icon" href="/safari-pinned-tab.svg?v=2" color="#00ef35" />
 				<link rel="shortcut icon" href="/favicon.ico?v=2" />
 				<meta name="msapplication-TileColor" content="#00ef35" />
 				<meta name="theme-color" content="#ffffff" />
@@ -43,10 +25,7 @@ export default function Document() {
 				<meta property="og:title" content="Plug" />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content="https://onplug.io" />
-				<meta
-					property="og:image"
-					content="https://onplug.io/opengraph.png"
-				/>
+				<meta property="og:image" content="https://onplug.io/opengraph.png" />
 				<meta
 					property="og:description"
 					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
@@ -61,10 +40,7 @@ export default function Document() {
 					name="twitter:description"
 					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
 				/>
-				<meta
-					name="twitter:image"
-					content="https://onplug.io/opengraph.png"
-				/>
+				<meta name="twitter:image" content="https://onplug.io/opengraph.png" />
 			</Head>
 
 			<body>

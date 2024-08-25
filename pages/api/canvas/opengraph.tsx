@@ -7,9 +7,7 @@ export const config = {
 }
 
 export default async function handler(req: NextRequest) {
-	const fontData = await fetch(
-		new URL("../../../assets/Satoshi-Regular.ttf", import.meta.url)
-	).then(res => res.arrayBuffer())
+	const fontData = await fetch(new URL("../../../assets/Satoshi-Regular.ttf", import.meta.url)).then(res => res.arrayBuffer())
 
 	try {
 		const { searchParams } = req.nextUrl
@@ -32,9 +30,7 @@ export default async function handler(req: NextRequest) {
 		}
 
 		const nameLength = 60
-		const cleanedName =
-			name.slice(0, nameLength).trim() +
-			`${name.length > nameLength ? "..." : ""}`
+		const cleanedName = name.slice(0, nameLength).trim() + `${name.length > nameLength ? "..." : ""}`
 
 		return new ImageResponse(
 			(

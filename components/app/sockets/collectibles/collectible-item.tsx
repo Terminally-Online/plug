@@ -5,12 +5,8 @@ import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectibleItem: FC<{
 	id: string
-	collection: NonNullable<
-		RouterOutputs["socket"]["balances"]["collectibles"]
-	>[number]
-	collectible?: NonNullable<
-		RouterOutputs["socket"]["balances"]["collectibles"]
-	>[number]["collectibles"][number]
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ id, collection, collectible }) => {
 	const { handleFrame } = useFrame({
 		id,

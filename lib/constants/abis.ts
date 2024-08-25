@@ -5,9 +5,7 @@ export const categories: Record<
 		gradientFrom: string
 		gradientTo: string
 		chains: Array<"ethereum" | "optimism" | "base" | "arbitrum">
-		tags: Array<
-			"defi" | "nft" | "consumer" | "degen" | "mev" | "social" | "trading"
-		>
+		tags: Array<"defi" | "nft" | "consumer" | "degen" | "mev" | "social" | "trading">
 	}
 > = {
 	plug: {
@@ -103,66 +101,47 @@ export const categories: Record<
 
 export const abis: Record<string, Record<string, string>> = {
 	plug: {
-		baseFee:
-			"function encode(uint8 $lessThanOrGreaterThan, uint256 $threshold) public pure returns (bytes memory $data)",
-		blockNumber:
-			"function encode(uint8 $lessThanOrGreaterThan, uint256 $block) public pure returns (bytes memory $data)",
-		timestamp:
-			"function encode(uint8 $beforeOrAfter, uint256 $timestamp) public pure returns (bytes memory $data)",
+		baseFee: "function encode(uint8 $lessThanOrGreaterThan, uint256 $threshold) public pure returns (bytes memory $data)",
+		blockNumber: "function encode(uint8 $lessThanOrGreaterThan, uint256 $block) public pure returns (bytes memory $data)",
+		timestamp: "function encode(uint8 $beforeOrAfter, uint256 $timestamp) public pure returns (bytes memory $data)",
 		tokenBalance:
 			"function encode(address $holder, address $asset, uint8 $lessThanOrGreaterThan, uint256 $amount) public pure returns (bytes memory $data)",
-		rateLimit:
-			"function encode(uint128 $numberOf, uint32 $frequency, uint32 $duration)",
-		limitedCalls:
-			"function encode(uint256 $count) public pure returns (bytes memory $terms)",
-		cooldown:
-			"function encode(uint256 $duration) public pure returns (bytes memory $terms)"
+		rateLimit: "function encode(uint128 $numberOf, uint32 $frequency, uint32 $duration)",
+		limitedCalls: "function encode(uint256 $count) public pure returns (bytes memory $terms)",
+		cooldown: "function encode(uint256 $duration) public pure returns (bytes memory $terms)"
 	},
 	nouns: {
 		bid: "function encode(uint256 $bid) public pure returns (bytes memory $live)",
-		isTokenId:
-			"function encode(uint256 $id) public pure returns (bytes memory $data)",
-		hasTrait:
-			"function encode(bytes32 $traitType, bytes32 $trait) public pure returns (bytes memory)"
+		isTokenId: "function encode(uint256 $id) public pure returns (bytes memory $data)",
+		hasTrait: "function encode(bytes32 $traitType, bytes32 $trait) public pure returns (bytes memory)"
 	},
 	fraxlend: {
 		rate: "function encode(uint8 $borrowOrLend, address $pool, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		utilizationRate:
 			"function encode(address $pool, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		health: "function encode(address $pool, uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
-		addCollateral:
-			"function encode(address $pool, uint256 $collateral) public pure returns (bytes memory $data)",
+		addCollateral: "function encode(address $pool, uint256 $collateral) public pure returns (bytes memory $data)",
 		borrow: "function encode(uint256 $amount, address $pool, uint256 $collateral) public pure returns (bytes memory $data)",
 		repay: "function encode(address $pool, uint256 $amount) public pure returns (bytes memory $data)",
-		closePosition:
-			"function encode(address $pool) public pure returns (bytes memory $data)",
-		lendFrax:
-			"function encode(uint256 $amount, address $pool) public pure returns (bytes memory $data)",
-		withdrawFrax:
-			"function encode(uint256 $amount, address $pool) public pure returns (bytes memory $data)"
+		closePosition: "function encode(address $pool) public pure returns (bytes memory $data)",
+		lendFrax: "function encode(uint256 $amount, address $pool) public pure returns (bytes memory $data)",
+		withdrawFrax: "function encode(uint256 $amount, address $pool) public pure returns (bytes memory $data)"
 	},
 	aave: {
 		health: "function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
-		borrowRate:
-			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
+		borrowRate: "function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		depositRate:
 			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
-		deposit:
-			"function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)",
-		loanHealth:
-			"function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
-		rewardClaim:
-			"function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)"
+		deposit: "function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)",
+		loanHealth: "function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
+		rewardClaim: "function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)"
 	},
 	uniswap: {
-		swapExactETH:
-			"function encode(uint256 $amount, uint256 $amount, address $token) public pure returns (bytes memory $data)",
-		swapExactTokens:
-			"function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)",
+		swapExactETH: "function encode(uint256 $amount, uint256 $amount, address $token) public pure returns (bytes memory $data)",
+		swapExactTokens: "function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)",
 		swapExactTokensForTokens:
 			"function encode(uint256 $amount, address $token, uint256 $amount, address $token) public pure returns (bytes memory $data)",
-		swapTokensForExactETH:
-			"function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)"
+		swapTokensForExactETH: "function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)"
 	}
 	// chainlink: {
 	// 	functionName:

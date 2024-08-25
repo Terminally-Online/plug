@@ -30,12 +30,7 @@ const prohibitedNameInclusions = [
 	".events"
 ]
 
-const prohibitedSymbolInclusions = [
-	...prohibitedNameInclusions,
-	"claim",
-	"airdrop",
-	"visit"
-]
+const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
 
 type ZerionPositionsResponse = {
 	links: {
@@ -215,16 +210,10 @@ const findPositions = async (socketId: string) => {
 	console.log(JSON.stringify(protocols, null, 2))
 
 	const prices = await getPrices(
-		[
-			...tokens.map(
-				token =>
-					`${token.implementations[0].chain}:${token.implementations[0].contract}`
-			)
-		].concat(
+		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
 			protocols.flatMap(protocol =>
 				protocol.positions.map(
-					position =>
-						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
+					position => `${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
 				)
 			)
 		)
@@ -244,11 +233,7 @@ const findPositions = async (socketId: string) => {
 
 				const implementations = token.implementations
 					.map(implementation => {
-						const implementationBalance =
-							implementation.balances.reduce(
-								(acc, balance) => acc + balance.balance,
-								0
-							)
+						const implementationBalance = implementation.balances.reduce((acc, balance) => acc + balance.balance, 0)
 
 						return {
 							...implementation,
@@ -259,11 +244,7 @@ const findPositions = async (socketId: string) => {
 					.sort((a, b) => b.percentage - a.percentage)
 
 				const { price, change } =
-					prices.find(
-						price =>
-							price.id ===
-							`${token.implementations[0].chain}:${token.implementations[0].contract}`
-					) || {}
+					prices.find(price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`) || {}
 
 				return {
 					...token,
@@ -282,11 +263,8 @@ const findPositions = async (socketId: string) => {
 					const { fungible, balance } = position
 
 					const { price, change } =
-						prices.find(
-							price =>
-								price.id ===
-								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
-						) || {}
+						prices.find(price => price.id === `${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`) ||
+						{}
 
 					return {
 						...position,
@@ -300,11 +278,7 @@ const findPositions = async (socketId: string) => {
 	}
 }
 
-const getFungiblePositions = async (
-	socketId: string,
-	socketAddress: string,
-	chains: string[]
-) => {
+const getFungiblePositions = async (socketId: string, socketAddress: string, chains: string[]) => {
 	const response = await axios.get(
 		`https://api.zerion.io/v1/wallets/${socketAddress}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
@@ -315,8 +289,7 @@ const getFungiblePositions = async (
 		}
 	)
 
-	if (response.status !== 200)
-		throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 	const data: ZerionPositionsResponse = response.data
 
@@ -344,9 +317,7 @@ const getFungiblePositions = async (
 
 			// Only save records for chains that we support.
 			const implementations = attributes.fungible_info.implementations
-				.filter(implementation =>
-					chains.includes(implementation.chain_id)
-				)
+				.filter(implementation => chains.includes(implementation.chain_id))
 				.map(implementation => ({
 					chain: implementation.chain_id,
 					contract: implementation.address || nativeTokenAddress,
@@ -356,9 +327,7 @@ const getFungiblePositions = async (
 			// If Zerion does not have an icon for the fungible, try to find a static token.
 			let icon = attributes.fungible_info.icon?.url
 			if (icon === undefined) {
-				const staticToken = tokens.find(
-					t => t.symbol === attributes.fungible_info.symbol
-				)
+				const staticToken = tokens.find(t => t.symbol === attributes.fungible_info.symbol)
 
 				if (staticToken !== undefined) icon = staticToken.logoURI
 			}
@@ -426,13 +395,9 @@ const getFungiblePositions = async (
 
 				const implementationChain = relationships.chain.data.id
 				const implementationContract =
-					attributes.fungible_info.implementations.find(
-						implementation =>
-							implementation.chain_id ===
-							relationships.chain.data.id
-					)?.address ||
-					(attributes.fungible_info.name === "Ethereum" &&
-						nativeTokenAddress) ||
+					attributes.fungible_info.implementations.find(implementation => implementation.chain_id === relationships.chain.data.id)
+						?.address ||
+					(attributes.fungible_info.name === "Ethereum" && nativeTokenAddress) ||
 					undefined
 				const balance = attributes.quantity.float
 
@@ -459,9 +424,7 @@ const getFungiblePositions = async (
 			})
 		)
 
-		const defi = positions.filter(
-			position => position.attributes.position_type !== "wallet"
-		)
+		const defi = positions.filter(position => position.attributes.position_type !== "wallet")
 
 		// Update all of the positions into the cache.
 		await tx.positionCache.update({
@@ -479,9 +442,7 @@ const getFungiblePositions = async (
 								chain: relationships.chain.data.id,
 								type: attributes.position_type,
 								balance: attributes.quantity.float,
-								protocolName:
-									attributes?.application_metadata?.name ??
-									undefined,
+								protocolName: attributes?.application_metadata?.name ?? undefined,
 								fungibleName: attributes.fungible_info.name,
 								fungibleSymbol: attributes.fungible_info.symbol
 							},
@@ -493,9 +454,7 @@ const getFungiblePositions = async (
 					deleteMany: {
 						cacheId: socketId,
 						id: {
-							notIn: defi.map(
-								position => `${socketId}-${position.id}`
-							)
+							notIn: defi.map(position => `${socketId}-${position.id}`)
 						}
 					}
 				}
@@ -504,10 +463,7 @@ const getFungiblePositions = async (
 	})
 }
 
-export const getPositions = async (
-	address: string,
-	chains = ["ethereum", "optimism", "base"]
-) => {
+export const getPositions = async (address: string, chains = ["ethereum", "optimism", "base"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})
@@ -523,11 +479,7 @@ export const getPositions = async (
 		select: { updatedAt: true }
 	})
 
-	if (
-		cachedPositions &&
-		cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME)
-	)
-		return await findPositions(socket.id)
+	if (cachedPositions && cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME)) return await findPositions(socket.id)
 
 	await getFungiblePositions(socket.id, socket.socketAddress, chains)
 

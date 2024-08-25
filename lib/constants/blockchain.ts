@@ -1,13 +1,6 @@
 import { formatChainName } from "@/lib/functions/format"
 
-import {
-	base,
-	baseSepolia,
-	mainnet,
-	optimism,
-	optimismSepolia,
-	sepolia
-} from "wagmi/chains"
+import { base, baseSepolia, mainnet, optimism, optimismSepolia, sepolia } from "wagmi/chains"
 
 export const mainnets = [mainnet, base, optimism].map(chain => ({
 	...chain,
