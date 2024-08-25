@@ -48,28 +48,28 @@ export const SocketTokenItem: FC<{
 							<div className="flex w-full flex-col items-center tabular-nums">
 								<div className="flex w-full flex-row font-bold">
 									<p>{token?.name}</p>
-									<p className="ml-auto flex flex-row items-center">
+									<div className="ml-auto flex flex-row items-center">
 										{token.value && (
 											<>
 												$
 												<Counter count={token.value} decimals={2} />
 											</>
 										)}
-									</p>
+									</div>
 								</div>
 
 								<div className="flex w-full flex-row font-bold">
-									<p className="flex flex-row items-center gap-2">
+									<div className="flex flex-row items-center gap-2">
 										<SocketTokenPercentages implementations={token.implementations} />
-										<span className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
+										<div className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
 											<Counter count={token.balance} />
-											<span className="w-max whitespace-nowrap">{token.symbol.toUpperCase()}</span>
-										</span>
-									</p>
+											<p className="w-max whitespace-nowrap">{token.symbol.toUpperCase()}</p>
+										</div>
+									</div>
 
-									<p
+									<div
 										className={cn(
-											"ml-auto text-sm",
+											"ml-auto flex flex-row items-center text-sm",
 											token.change === undefined
 												? "opacity-60"
 												: token.change > 0
@@ -77,7 +77,7 @@ export const SocketTokenItem: FC<{
 													: "text-red-500"
 										)}
 									>
-										<span className="ml-auto flex flex-row items-center">
+										<>
 											{token.change !== undefined ? (
 												<>
 													<Counter count={token.change} decimals={2} />%
@@ -85,8 +85,8 @@ export const SocketTokenItem: FC<{
 											) : (
 												"-"
 											)}
-										</span>
-									</p>
+										</>
+									</div>
 								</div>
 							</div>
 						</div>

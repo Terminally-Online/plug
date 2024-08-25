@@ -178,7 +178,7 @@ export const SocketTokenPriceChart: FC<{
 		}
 
 		fetchHistoricalPriceData()
-	}, [enabled, keys, historicalPriceData])
+	}, [enabled, keys, queriedKeys, historicalPriceData])
 
 	useEffect(() => {
 		if (!priceData) return
@@ -190,7 +190,7 @@ export const SocketTokenPriceChart: FC<{
 		})
 
 		handleHeader({ title: period.title, change })
-	}, [period, historicalPriceData, handleHeader, priceData])
+	}, [period, historicalPriceData, priceData, handleHeader])
 
 	return (
 		<div className="w-full overflow-x-hidden pt-8">
@@ -213,7 +213,7 @@ export const SocketTokenPriceChart: FC<{
 								keys.map(key => {
 									if (!priceData[key]) return null
 
-									const data = priceData[key]?.prices
+									const data = priceData[key].prices
 									const color = colors[key]
 
 									return (

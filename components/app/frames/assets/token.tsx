@@ -86,16 +86,16 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 		>
 			<div className="flex flex-row px-6 font-bold">
 				<div className="flex flex-col items-center font-bold">
-					<p className="mr-auto flex w-max flex-row text-lg">
+					<div className="mr-auto flex w-max flex-row text-lg">
 						{tooltipData || token.price ? (
 							<>
-								$
+								<p>$</p>
 								<Counter count={tooltipData?.price || token.price || 0} />
 							</>
 						) : (
 							<>-</>
 						)}
-					</p>
+					</div>
 					<p
 						className="mr-auto"
 						style={{
@@ -111,9 +111,10 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 						change === undefined ? "opacity-60" : change > 0 ? "text-plug-green" : "text-red-500"
 					)}
 				>
-					<p className="ml-auto flex w-max flex-row text-lg font-bold">
-						<Counter count={change || 0} decimals={2} />%
-					</p>
+					<div className="ml-auto flex w-max flex-row text-lg font-bold">
+						<Counter count={change || 0} decimals={2} />
+						<p>%</p>
+					</div>
 					<p className="ml-auto flex flex-row items-center">
 						{tooltipData ? formatTimestamp(Number(tooltipData.timestamp)) : (header.title ?? "Today")}
 					</p>
@@ -151,20 +152,16 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 				</div>
 
 				<div className="mt-2 flex flex-row items-center justify-between gap-4">
-					<p className="mr-auto flex flex-col items-center">
-						<span className="mr-auto flex h-8 flex-row items-center" style={{ color: color }}>
-							<TokenImage logo={token?.icon ?? ""} symbol={token.symbol} size="xs" />
-							<Counter className="ml-4 mr-2 w-max" count={token.balance} />
-							{token.symbol}
-						</span>
-					</p>
+					<div className="mr-auto flex h-8 items-center" style={{ color: color }}>
+						<TokenImage logo={token?.icon ?? ""} symbol={token.symbol} size="xs" />
+						<Counter className="ml-4 mr-2 w-max" count={token.balance} />
+						<p>{token.symbol}</p>
+					</div>
 					{token.value && (
-						<p className="ml-auto flex flex-col items-center text-center">
-							<span className="mx-auto flex h-8 w-max items-center">
-								$
-								<Counter count={tooltipData ? token.balance * tooltipData.price : token.value} decimals={2} />
-							</span>
-						</p>
+						<div className="ml-auto flex h-8 items-center text-center">
+							<p>$</p>
+							<Counter count={tooltipData ? token.balance * tooltipData.price : token.value} decimals={2} />
+						</div>
 					)}
 				</div>
 			</div>
@@ -187,13 +184,13 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 
 						<p className="mr-auto font-bold">{formatTitle(implementation.chain)}</p>
 
-						<p className="flex flex-col font-bold opacity-60">
+						<div className="flex flex-col font-bold opacity-60">
 							<Counter count={isFrame ? implementation.balance : 0} />
-						</p>
+						</div>
 
-						<p className="flex min-w-[72px] flex-row items-center text-right font-bold">
+						<div className="flex min-w-[72px] flex-row items-center text-right font-bold">
 							<Counter count={isFrame ? implementation.percentage : 0} />%
-						</p>
+						</div>
 					</div>
 				))}
 			</div>

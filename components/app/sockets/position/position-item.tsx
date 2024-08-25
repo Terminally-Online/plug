@@ -19,12 +19,8 @@ export const SocketPositionItem: FC<{
 	})
 
 	const change =
-		protocol.positions.reduce(
-			(acc, position) => acc + (position.change ?? 0),
-			0
-		) /
-		protocol.positions.filter(position => position.change !== undefined)
-			.length
+		protocol.positions.reduce((acc, position) => acc + (position.change ?? 0), 0) /
+		protocol.positions.filter(position => position.change !== undefined).length
 
 	return (
 		<motion.div
@@ -45,25 +41,16 @@ export const SocketPositionItem: FC<{
 				onExpand={() => handleFrame()}
 				accordion={
 					<>
-						{protocol.positions.map(position => (
-							<div key={position.id} className="relative">
+						{protocol.positions.map((position, index) => (
+							<div key={index} className="relative">
 								<div className="flex flex-row items-center gap-2">
-									<Image
-										src={position.fungible.icon ?? ""}
-										alt=""
-										width={24}
-										height={24}
-									/>
+									<Image src={position.fungible.icon ?? ""} alt="" width={24} height={24} />
 									<div className="flex flex-col font-bold">
 										<div className="flex w-full flex-row items-center justify-between gap-2">
 											<p>{position.fungible.name}</p>
-											<p className="ml-auto w-full text-right">
-												{position.balance}
-											</p>
+											<p className="ml-auto w-full text-right">{position.balance}</p>
 										</div>
-										<p className="mr-auto font-bold opacity-40">
-											{position.type}
-										</p>
+										<p className="mr-auto font-bold opacity-40">{position.type}</p>
 									</div>
 								</div>
 							</div>
@@ -94,45 +81,29 @@ export const SocketPositionItem: FC<{
 					<div className="relative flex w-full flex-col">
 						<div className="flex w-full flex-row justify-between">
 							<p className="mr-auto font-bold">{protocol.name}</p>
-							<p className="ml-auto flex flex-row font-bold">
-								$
-								<Counter
-									count={protocol.positions.reduce(
-										(acc, position) =>
-											acc + (position.value ?? 0),
-										0
-									)}
-								/>
-							</p>
+							<div className="ml-auto flex flex-row font-bold">
+								<p>$</p>
+								<Counter count={protocol.positions.reduce((acc, position) => acc + (position.value ?? 0), 0)} />
+							</div>
 						</div>
 						<div className="flex w-full flex-row items-center gap-2 text-sm font-bold ">
-							<p className="opacity-40">
-								{protocol.positions.length} Positions
-							</p>
-							<p
+							<p className="opacity-40">{protocol.positions.length} Positions</p>
+							<div
 								className={cn(
-									"ml-auto text-sm",
-									change === undefined
-										? "opacity-60"
-										: change > 0
-											? "text-plug-green"
-											: "text-red-500"
+									"ml-auto flex flex-row items-center text-sm",
+									change === undefined ? "opacity-60" : change > 0 ? "text-plug-green" : "text-red-500"
 								)}
 							>
-								<span className="ml-auto flex flex-row items-center">
+								<>
 									{change !== undefined ? (
 										<>
-											<Counter
-												count={change}
-												decimals={2}
-											/>
-											%
+											<Counter count={change} decimals={2} />%
 										</>
 									) : (
 										"-"
 									)}
-								</span>
-							</p>
+								</>
+							</div>
 						</div>
 					</div>
 				</div>

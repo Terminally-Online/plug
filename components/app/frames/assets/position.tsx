@@ -2,9 +2,9 @@ import { FC, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { ExternalLink, Eye, EyeOff } from "lucide-react"
+import { ExternalLink, EyeOff } from "lucide-react"
 
-import { Button, Counter } from "@/components/shared"
+import { Counter } from "@/components/shared"
 import { useFrame } from "@/contexts"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
@@ -159,10 +159,10 @@ export const PositionFrame: FC<{
 												<div className="flex w-full flex-col gap-0">
 													<div className="flex flex-row items-center justify-between gap-2">
 														<p>{position.fungible.name}</p>
-														<p className="flex flex-row">
-															$
+														<div className="flex flex-row">
+															<p>$</p>
 															<Counter count={position.value ?? 0} />
-														</p>
+														</div>
 													</div>
 
 													<div className="relative flex flex-row items-center justify-between gap-2 text-sm text-black/40">
@@ -173,12 +173,12 @@ export const PositionFrame: FC<{
 															width={24}
 															height={24}
 														/>
-														<p>
+														<div>
 															<Counter count={position.balance ?? 0} />
-														</p>
-														<p
+														</div>
+														<div
 															className={cn(
-																"ml-auto text-sm",
+																"ml-auto flex flex-row items-center text-sm",
 																position.change === undefined
 																	? "opacity-60"
 																	: position.change > 0
@@ -186,16 +186,17 @@ export const PositionFrame: FC<{
 																		: "text-red-500"
 															)}
 														>
-															<span className="ml-auto flex flex-row items-center">
+															<>
 																{position.change !== undefined ? (
 																	<>
-																		<Counter count={position.change} decimals={2} />%
+																		<Counter count={position.change} decimals={2} />
+																		<p>%</p>
 																	</>
 																) : (
 																	"-"
 																)}
-															</span>
-														</p>
+															</>
+														</div>
 													</div>
 												</div>
 											</div>
