@@ -4,23 +4,11 @@
 	"semi": false,
 	"singleQuote": false,
 	"trailingComma": "none",
-	"printWidth": 80,
+	"printWidth": 140,
 	"arrowParens": "avoid",
 	"endOfLine": "auto",
-	"plugins": [
-		"@trivago/prettier-plugin-sort-imports",
-		"prettier-plugin-tailwindcss"
-	],
-	"importOrder": [
-		"^react$",
-		"^next$",
-		"^next/(.*)$",
-		"next-auth",
-		"<THIRD_PARTY_MODULES>",
-		"^@[a-zA-Z]",
-		"^@/(.*)$",
-		"./(.*)$"
-	],
+	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+	"importOrder": ["^react$", "^next$", "^next/(.*)$", "next-auth", "<THIRD_PARTY_MODULES>", "^@[a-zA-Z]", "^@/(.*)$", "./(.*)$"],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true,
 	"importOrderGroupNamespaceSpecifiers": true,

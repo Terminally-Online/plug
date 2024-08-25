@@ -12,9 +12,7 @@ import { TokenImage } from "./token-image"
 
 export const SocketTokenItem: FC<{
 	id: string
-	token?: NonNullable<
-		RouterOutputs["socket"]["balances"]["positions"]
-	>["tokens"][number]
+	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ id, token }) => {
 	const { handleFrame } = useFrame({
 		id,
@@ -37,13 +35,7 @@ export const SocketTokenItem: FC<{
 					}
 				}}
 			>
-				<Accordion
-					loading={token === undefined}
-					expanded={false}
-					onExpand={
-						token === undefined ? () => {} : () => handleFrame()
-					}
-				>
+				<Accordion loading={token === undefined} expanded={false} onExpand={token === undefined ? () => {} : () => handleFrame()}>
 					{token === undefined ? (
 						<div className="invisible">
 							<p>.</p>
@@ -51,10 +43,7 @@ export const SocketTokenItem: FC<{
 						</div>
 					) : (
 						<div className="flex flex-row items-center gap-4">
-							<TokenImage
-								logo={token?.icon ?? ""}
-								symbol={token?.symbol}
-							/>
+							<TokenImage logo={token?.icon ?? ""} symbol={token?.symbol} />
 
 							<div className="flex w-full flex-col items-center tabular-nums">
 								<div className="flex w-full flex-row font-bold">
@@ -63,10 +52,7 @@ export const SocketTokenItem: FC<{
 										{token.value && (
 											<>
 												$
-												<Counter
-													count={token.value}
-													decimals={2}
-												/>
+												<Counter count={token.value} decimals={2} />
 											</>
 										)}
 									</p>
@@ -74,16 +60,10 @@ export const SocketTokenItem: FC<{
 
 								<div className="flex w-full flex-row font-bold">
 									<p className="flex flex-row items-center gap-2">
-										<SocketTokenPercentages
-											implementations={
-												token.implementations
-											}
-										/>
+										<SocketTokenPercentages implementations={token.implementations} />
 										<span className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
 											<Counter count={token.balance} />
-											<span className="w-max whitespace-nowrap">
-												{token.symbol.toUpperCase()}
-											</span>
+											<span className="w-max whitespace-nowrap">{token.symbol.toUpperCase()}</span>
 										</span>
 									</p>
 
@@ -100,11 +80,7 @@ export const SocketTokenItem: FC<{
 										<span className="ml-auto flex flex-row items-center">
 											{token.change !== undefined ? (
 												<>
-													<Counter
-														count={token.change}
-														decimals={2}
-													/>
-													%
+													<Counter count={token.change} decimals={2} />%
 												</>
 											) : (
 												"-"

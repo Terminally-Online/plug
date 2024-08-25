@@ -74,9 +74,9 @@ export const SocketPositionList: FC<
 				}}
 				{...(props as MotionProps)}
 			>
-				{visibilePositions.map(protocol => (
+				{visibilePositions.map((protocol, index) => (
 					<SocketPositionItem
-						key={protocol}
+						key={index}
 						id={id}
 						protocol={protocol}
 					/>

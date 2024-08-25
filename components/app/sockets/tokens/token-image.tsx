@@ -8,8 +8,9 @@ export const TokenImage: FC<{
 	logo?: string
 	symbol?: string
 	size?: "xs" | "sm" | "md"
+	blur?: boolean
 	handleColor?: (color: string) => void
-}> = ({ logo = "", symbol = "", size = "md", handleColor }) => {
+}> = ({ logo = "", symbol = "", size = "md", blur = true, handleColor }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	const imgRef = useRef<HTMLImageElement>(null)
 
@@ -37,12 +38,7 @@ export const TokenImage: FC<{
 			canvas.height = img.naturalHeight
 			ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight)
 
-			const imageData = ctx.getImageData(
-				0,
-				0,
-				canvas.width,
-				canvas.height
-			)
+			const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 			const data = imageData.data
 
 			const colorCounts: Record<string, number> = {}
@@ -75,18 +71,14 @@ export const TokenImage: FC<{
 				return luminance < 0.7
 			}
 
-			const readableColors = dominantColors.filter(({ color }) =>
-				isReadable(color)
-			)
+			const readableColors = dominantColors.filter(({ color }) => isReadable(color))
 
 			if (readableColors.length > 0) {
 				const nonBlackColor = readableColors.find(({ color }) => {
 					const [r, g, b] = color.match(/\d+/g)!.map(Number)
 					return r > 20 || g > 20 || b > 20
 				})
-				return nonBlackColor
-					? nonBlackColor.color
-					: readableColors[0].color
+				return nonBlackColor ? nonBlackColor.color : readableColors[0].color
 			}
 
 			return color
@@ -118,14 +110,16 @@ export const TokenImage: FC<{
 
 			{logo === "" || imageError ? (
 				<>
-					<div
-						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
-						style={{
-							backgroundColor: getAssetColor(symbol),
-							width: `${dimensions.blur}rem`,
-							height: `${dimensions.blur}rem`
-						}}
-					/>
+					{blur && (
+						<div
+							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							style={{
+								backgroundColor: getAssetColor(symbol),
+								width: `${dimensions.blur}rem`,
+								height: `${dimensions.blur}rem`
+							}}
+						/>
+					)}
 					<div
 						className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 animate-fade-in items-center justify-center rounded-full"
 						style={{
@@ -135,24 +129,24 @@ export const TokenImage: FC<{
 							minWidth: `${dimensions.content}rem`
 						}}
 					>
-						<span className="font-bold text-white">
-							{symbol.slice(0, 1).toUpperCase()}
-						</span>
+						<span className="font-bold text-white">{symbol.slice(0, 1).toUpperCase()}</span>
 					</div>
 				</>
 			) : (
 				<>
-					<Image
-						src={logo}
-						alt={symbol}
-						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
-						style={{
-							width: `${dimensions.imageBlur}rem`,
-							height: `${dimensions.imageBlur}rem`
-						}}
-						width={240}
-						height={240}
-					/>
+					{blur && (
+						<Image
+							src={logo}
+							alt={symbol}
+							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							style={{
+								width: `${dimensions.imageBlur}rem`,
+								height: `${dimensions.imageBlur}rem`
+							}}
+							width={240}
+							height={240}
+						/>
+					)}
 					<Image
 						ref={imgRef}
 						src={logo}

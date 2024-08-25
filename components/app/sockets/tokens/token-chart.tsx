@@ -1,14 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import axios from "axios"
-import {
-	Line,
-	LineChart,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis
-} from "recharts"
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 import { Button } from "@/components/shared"
 import { cn } from "@/lib"
@@ -88,22 +81,26 @@ const ActiveDot: FC<{
 
 export const SocketTokenPriceChart: FC<{
 	enabled: boolean
-	chain: string
-	contract: string
-	color: string
-	handleHeader: (data: { title: string; change?: number }) => void
-	handleTooltip: (data?: {
-		timestamp: string
-		price: number
-		start: number
-	}) => void
-}> = ({ enabled, chain, contract, color, handleHeader, handleTooltip }) => {
+	keys: Array<string>
+	colors: Record<string, string>
+	handleHeader?: (data: { title: string; change?: Array<number> }) => void
+	handleTooltip?: (data?: { timestamp: string; price: number; start: Array<number> }) => void
+}> = ({ enabled, keys, colors, handleHeader = () => {}, handleTooltip = () => {} }) => {
 	const [isLoading, setIsLoading] = useState(false)
+	const [queriedKeys, setQueriedKeys] = useState("")
 	const [historicalPriceData, setHistoricalPriceData] = useState<
 		Record<
 			string,
-			| Array<{ timestamp: string; price: number; error?: string }>
-			| undefined
+			Record<
+				string,
+				{
+					prices: Array<{
+						timestamp: string
+						price: number
+						error?: string
+					}>
+				}
+			>
 		>
 	>({})
 	const [period, setPeriod] = useState(periods[0])
@@ -113,30 +110,38 @@ export const SocketTokenPriceChart: FC<{
 	const domain = useMemo(() => {
 		const periodData = historicalPriceData[period.label]
 
-		if (periodData === undefined || periodData[0]?.error) return [0, 1]
+		if (!periodData || Object.keys(periodData).length === 0) return [0, 1]
 
-		if (!periodData || periodData.length === 0) return [0, 1]
+		const allPrices = Object.values(periodData).flatMap(token => token.prices.map(price => price.price))
 
-		const min = Math.min(...periodData.map(price => price.price))
-		const max = Math.max(...periodData.map(price => price.price))
+		if (allPrices.length === 0) return [0, 1]
+
+		const min = Math.min(...allPrices)
+		const max = Math.max(...allPrices)
 
 		return [min * 0.98, max * 1.02]
 	}, [period, historicalPriceData])
 
-	const handleMouseMove = (e: any) => {
-		if (e.activePayload && e.activePayload.length) {
-			handleTooltip({
-				...e.activePayload[0].payload,
-				start: priceData && priceData[0].price
-			})
-		}
-	}
+	const handleMouseMove = useCallback(
+		(e: any) => {
+			const start = priceData && Object.values(priceData).map(token => token.prices[0].price)
+
+			if (e.activePayload && e.activePayload.length) {
+				handleTooltip({
+					...e.activePayload[0].payload,
+					start
+				})
+			}
+		},
+		[priceData, handleTooltip]
+	)
 
 	useEffect(() => {
 		const fetchHistoricalPriceData = async () => {
-			if (!enabled) return
+			if (!enabled || keys.join(",") === queriedKeys) return
 
 			setIsLoading(true)
+			setQueriedKeys(keys.join(","))
 
 			const failure = {
 				timestamp: new Date().toISOString(),
@@ -146,30 +151,25 @@ export const SocketTokenPriceChart: FC<{
 
 			await Promise.allSettled(
 				periods.map(async period => {
-					const key = `${chain}:${contract}`
-					const url = `https://coins.llama.fi/chart/${key}?span=${period.span}&period=${period.period}&searchWidth=1200`
+					const url = `https://coins.llama.fi/chart/${keys.join(",")}?span=${period.span}&period=${period.period}&searchWidth=1200`
 
 					try {
 						const response = await axios.get(url)
 
-						if (response.status !== 200)
-							throw new Error("Network response was not ok")
+						if (response.status !== 200) throw new Error("Network response was not ok")
 
-						const prices = response.data.coins[key]?.prices
-
-						if (prices === undefined) {
-							throw new Error("No price data available")
-						}
+						const prices = response.data?.coins ?? {}
 
 						setHistoricalPriceData(prevData => ({
 							...prevData,
 							[period.label]: prices
 						}))
 					} catch (error) {
-						setHistoricalPriceData(prevData => ({
-							...prevData,
-							[period.label]: [failure]
-						}))
+						console.error(error)
+						// setHistoricalPriceData(prevData => ({
+						// 	...prevData,
+						// 	[period.label]: [failure]
+						// }))
 					}
 				})
 			)
@@ -178,12 +178,16 @@ export const SocketTokenPriceChart: FC<{
 		}
 
 		fetchHistoricalPriceData()
-	}, [enabled, chain, contract])
+	}, [enabled, keys, historicalPriceData])
 
 	useEffect(() => {
-		const start = priceData?.[0]?.price
-		const end = priceData?.[priceData.length - 1]?.price
-		const change = start && end ? ((end - start) / start) * 100 : undefined
+		if (!priceData) return
+
+		const change = Object.values(priceData).map(token => {
+			const start = token.prices[0].price
+			const end = token.prices[token.prices.length - 1].price
+			return ((end - start) / start) * 100
+		})
 
 		handleHeader({ title: period.title, change })
 	}, [period, historicalPriceData, handleHeader, priceData])
@@ -192,59 +196,49 @@ export const SocketTokenPriceChart: FC<{
 		<div className="w-full overflow-x-hidden pt-8">
 			{isLoading ? (
 				<div className="flex min-h-[240px] flex-col items-center justify-center">
-					<p className="font-bold opacity-40">
-						Loading price data...
-					</p>
-				</div>
-			) : priceData?.[0]?.error ? (
-				<div className="flex min-h-[240px] flex-col items-center justify-center gap-2">
-					<p className="font-bold opacity-40">
-						{priceData?.[0]?.error}
-					</p>
+					<p className="font-bold opacity-40">Loading price data...</p>
 				</div>
 			) : (
-				<ResponsiveContainer
-					minHeight={240}
-					height="100%"
-					width="100%"
-					style={{ marginLeft: "-16%" }}
-				>
-					<LineChart
-						data={priceData}
-						onMouseMove={handleMouseMove}
-						onMouseLeave={() => handleTooltip(undefined)}
-					>
-						<Line
-							type="monotone"
-							dataKey="price"
-							stroke={color}
-							strokeWidth={4}
-							strokeLinecap="round"
-							dot={
-								<Dot
-									length={priceData ? priceData.length : 0}
-									color={color}
-								/>
-							}
-							activeDot={<ActiveDot color={color} />}
-							isAnimationActive={false}
-						/>
-						<XAxis
-							dataKey="timestamp"
-							axisLine={false}
-							tickLine={false}
-							tick={false}
-							padding={{ right: 20 }}
-						/>
-						<YAxis
-							domain={domain}
-							axisLine={false}
-							tickLine={false}
-							tick={false}
-						/>
-						<Tooltip content={<></>} cursor={<></>} />
-					</LineChart>
-				</ResponsiveContainer>
+				// : priceData?.[0]?.error ? (
+				// <div className="flex min-h-[240px] flex-col items-center justify-center gap-2">
+				// 	<p className="font-bold opacity-40">
+				// 		{priceData?.[0]?.error}
+				// 	</p>
+				// </div>
+				// )
+				<>
+					<ResponsiveContainer minHeight={240} height="100%" width="100%" style={{ marginLeft: "-16%" }}>
+						<LineChart onMouseMove={handleMouseMove} onMouseLeave={() => handleTooltip(undefined)}>
+							{priceData &&
+								keys.map(key => {
+									if (!priceData[key]) return null
+
+									const data = priceData[key]?.prices
+									const color = colors[key]
+
+									return (
+										<Line
+											data={data}
+											type="monotone"
+											dataKey="price"
+											stroke={color}
+											strokeWidth={4}
+											strokeLinecap="round"
+											name={key}
+											key={key}
+											dot={<Dot length={data ? data.length : 0} color={color} />}
+											activeDot={<ActiveDot color={color} />}
+											isAnimationActive={false}
+										/>
+									)
+								})}
+
+							<XAxis dataKey="timestamp" axisLine={false} tickLine={false} tick={false} padding={{ right: 20 }} />
+							<YAxis dataKey="price" domain={domain} axisLine={false} tickLine={false} tick={false} />
+							<Tooltip content={<></>} cursor={<></>} />
+						</LineChart>
+					</ResponsiveContainer>
+				</>
 			)}
 
 			<div className="mt-4 flex flex-row justify-center gap-2">
@@ -252,18 +246,13 @@ export const SocketTokenPriceChart: FC<{
 					<Button
 						key={p.label}
 						variant="secondary"
-						className={cn(
-							"rounded-sm p-1 px-2",
-							period.label === p.label && "active"
-						)}
+						className={cn("rounded-sm p-1 px-2", period.label === p.label && "active")}
 						onClick={() => setPeriod(p)}
 					>
 						<span
 							className={cn(
 								"text-black transition-all duration-200 ease-in-out",
-								period.label === p.label
-									? "text-opacity-100"
-									: "text-opacity-40"
+								period.label === p.label ? "text-opacity-100" : "text-opacity-40"
 							)}
 						>
 							{p.label.toUpperCase()}
