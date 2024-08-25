@@ -11,7 +11,7 @@ import { api } from "@/server/client"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({ id, column = false, ...props }) => {
 	const { scrollYProgress } = useScroll()
-	const { search, debouncedSearch, tag, handleSearch, handleTag, handleReset } = useSearch()
+	const { search, tag, handleSearch, handleTag, handleReset } = useSearch()
 
 	const [communityPlugs, setCommunityPlugs] = useState<{
 		count?: number
@@ -24,7 +24,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; co
 	})
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
-			search: debouncedSearch,
+			search,
 			tag,
 			limit: 20
 		},

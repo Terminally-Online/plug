@@ -1,9 +1,9 @@
 import { FC, HTMLAttributes, useState } from "react"
 
-import { ChevronDown, ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
+import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/shared"
-import { cn, greenGradientStyle, useDebounce, VIEW_KEYS } from "@/lib"
+import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
 import { Search } from "../../inputs"
@@ -11,12 +11,12 @@ import { PlugGrid } from "../../plugs"
 import { SocketCollectionList, SocketTokenList } from "../../sockets"
 
 export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
-	const [search, debounced, handleSearch] = useDebounce("", 500)
+	const [search, setSearch] = useState("")
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
-	const enabled = debounced !== ""
+	const enabled = search !== ""
 
-	const { data: results, isInitialLoading } = api.misc.search.useQuery(debounced, {
+	const { data: results, isInitialLoading } = api.misc.search.useQuery(search, {
 		enabled
 	})
 
@@ -30,11 +30,11 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 				icon={<SearchIcon size={14} className="opacity-60" />}
 				placeholder="Search protocols, actions, or assets"
 				search={search}
-				handleSearch={handleSearch}
+				handleSearch={setSearch}
 				clear={true}
 			/>
 
-			{search === "" && debounced === "" && (
+			{search === "" && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center opacity-60">
@@ -65,7 +65,7 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 						&rsquo;.
 					</p>
 					<p className="mb-4 max-w-[320px] opacity-60">Your search returned no results.</p>
-					<Button sizing="sm" onClick={() => handleSearch("")}>
+					<Button sizing="sm" onClick={() => setSearch("")}>
 						Reset
 					</Button>
 				</div>

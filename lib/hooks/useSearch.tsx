@@ -1,9 +1,7 @@
 import { useState } from "react"
 
-import { useDebounce } from "@/lib"
-
 export const useSearch = () => {
-	const [search, debouncedSearch, handleSearch] = useDebounce("")
+	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState("")
 
 	const handleReset = () => {
@@ -13,7 +11,6 @@ export const useSearch = () => {
 
 	return {
 		search,
-		debouncedSearch,
 		handleSearch,
 		tag,
 		handleTag,
