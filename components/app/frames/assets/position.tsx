@@ -48,7 +48,7 @@ export const PositionFrame: FC<{
 	}, [positions])
 
 	const keys = useMemo(() => {
-		return protocol.positions
+		return positions
 			.map(position => {
 				const contract =
 					position.fungible.implementations.find(implementation => implementation.chain === position.chain)?.contract ?? ""
@@ -130,17 +130,20 @@ export const PositionFrame: FC<{
 														logo={position.fungible.icon ?? ""}
 														symbol={position.fungible.symbol}
 														blur={false}
-														handleColor={color =>
-															setColors(prev =>
-																prev
-																	? {
-																			...prev,
-																			[key]: color
-																		}
-																	: {
-																			[key]: color
-																		}
-															)
+														handleColor={
+															Object.keys(colors).includes(key)
+																? undefined
+																: color =>
+																		setColors(prev =>
+																			prev
+																				? {
+																						...prev,
+																						[key]: color
+																					}
+																				: {
+																						[key]: color
+																					}
+																		)
 														}
 													/>
 

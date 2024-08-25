@@ -14,6 +14,7 @@ export const TokenImage: FC<{
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	const imgRef = useRef<HTMLImageElement>(null)
 
+	const [imageColor, setImageColor] = useState<string | undefined>(undefined)
 	const [imageError, setImageError] = useState(false)
 
 	const dimensions = {
@@ -22,12 +23,12 @@ export const TokenImage: FC<{
 		content: size === "xs" ? 1 : size === "sm" ? 2 : 2.5
 	}
 
-	const color = getAssetColor(symbol)
-
 	useEffect(() => {
-		if (!handleColor) return
+		if (imageColor) return
 
-		const getAverageColor = () => {
+		const color = getAssetColor(symbol)
+
+		const getImageColor = () => {
 			const canvas = canvasRef.current
 			const img = imgRef.current
 			const ctx = canvas?.getContext("2d")
@@ -87,16 +88,19 @@ export const TokenImage: FC<{
 		const img = imgRef.current
 
 		if (!img) {
-			handleColor(color)
+			setImageColor(color)
 			return
 		}
 
-		if (img.complete) {
-			handleColor(getAverageColor())
-		} else {
-			img.onload = () => handleColor?.(getAverageColor())
-		}
-	}, [logo, symbol, color, handleColor])
+		if (img.complete) setImageColor(getImageColor())
+		else img.onload = () => setImageColor(getImageColor())
+	}, [logo, symbol, imageColor])
+
+	useEffect(() => {
+		if (!handleColor || !imageColor) return
+
+		handleColor(imageColor)
+	}, [imageColor, handleColor])
 
 	return (
 		<div
