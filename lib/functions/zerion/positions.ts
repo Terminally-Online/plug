@@ -4,7 +4,6 @@ import { TRPCError } from "@trpc/server"
 
 import { nativeTokenAddress } from "@/lib/constants"
 import { tokens } from "@/lib/constants"
-import { FungibleModel, PositionModel } from "@/prisma/types"
 import { db } from "@/server/db"
 
 import { getPrices } from "../llama"
@@ -206,8 +205,6 @@ const findPositions = async (socketId: string) => {
 			}
 		}
 	})
-
-	console.log(JSON.stringify(protocols, null, 2))
 
 	const prices = await getPrices(
 		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
