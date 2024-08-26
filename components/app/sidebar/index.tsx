@@ -13,8 +13,6 @@ import { Button } from "@/components"
 import { usePlugs, useSockets } from "@/contexts"
 import { cn, useClipboard, VIEW_KEYS } from "@/lib"
 
-let rerenders = 0
-
 export const ConsoleSidebar = () => {
 	const { address, avatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
@@ -28,13 +26,9 @@ export const ConsoleSidebar = () => {
 		}
 	})
 
-	rerenders++
-
 	return (
 		<div className="mr-2 flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
 			<div className={cn("flex w-full flex-col gap-4 px-4")}>
-				<p>{rerenders}</p>
-
 				{address && (
 					<button
 						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
