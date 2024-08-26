@@ -212,7 +212,7 @@ export const ConsoleColumn: FC<{
 								) : key === "TOKENS" ? (
 									<SocketTokenList id={id} className="px-4 pt-4" expanded={true} />
 								) : key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList id={id} className="px-4 pt-4" />
+									<SocketCollectionList id={id} className="px-4 pt-4" expanded={true} />
 								) : key === VIEW_KEYS.POSITIONS ? (
 									<SocketPositionList id={id} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.EARNINGS ? (

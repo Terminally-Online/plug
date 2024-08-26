@@ -120,7 +120,14 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 									</Button>
 								)}
 							</p>
-							<SocketTokenList id={id} tokens={expanded.includes("tokens") ? results.tokens : results.tokens.slice(0, 10)} />
+							<SocketTokenList
+								id={id}
+								className="mb-4"
+								tokens={results.tokens}
+								expanded={expanded.includes("tokens")}
+								count={5}
+								column={false}
+							/>
 						</div>
 					)}
 
@@ -149,8 +156,11 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 
 							<SocketCollectionList
 								id={id}
-								collectibles={expanded.includes("collectibles") ? results.collectibles : results.collectibles.slice(0, 5)}
-								hasSearch={false}
+								className="mb-4"
+								collectibles={results.collectibles}
+								expanded={expanded.includes("collectibles")}
+								count={5}
+								column={false}
 							/>
 						</div>
 					)}

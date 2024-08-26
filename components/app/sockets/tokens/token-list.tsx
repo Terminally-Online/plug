@@ -12,10 +12,12 @@ export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps & {
 			id: string
-			expanded?: boolean
 			tokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
+			expanded?: boolean
+			count?: number
+			column?: boolean
 		}
-> = ({ id, expanded, tokens, className, ...props }) => {
+> = ({ id, tokens, expanded, count = 5, column = true, className, ...props }) => {
 	const { positions } = useBalances()
 	const { tokens: apiTokens } = positions
 	tokens = tokens ?? apiTokens
@@ -34,8 +36,8 @@ export const SocketTokenList: FC<
 
 		if (expanded) return filteredTokens
 
-		return filteredTokens.slice(0, 5)
-	}, [expanded, tokens, search])
+		return filteredTokens.slice(0, count)
+	}, [tokens, expanded, count, search])
 
 	const isEmptySearch = useMemo(
 		() => search !== "" && tokens && tokens.length !== 0 && visibleTokens.length === 0,
@@ -44,14 +46,16 @@ export const SocketTokenList: FC<
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Search
-				className="mb-2"
-				icon={<SearchIcon size={14} className="opacity-40" />}
-				placeholder="Search tokens"
-				search={search}
-				handleSearch={handleSearch}
-				clear
-			/>
+			{column && (
+				<Search
+					className="mb-2"
+					icon={<SearchIcon size={14} className="opacity-40" />}
+					placeholder="Search tokens"
+					search={search}
+					handleSearch={handleSearch}
+					clear
+				/>
+			)}
 
 			<motion.div
 				className="flex flex-col gap-2"

@@ -121,7 +121,7 @@ const getAPIKey = () => {
 	return `Basic ${process.env.ZERION_API_KEY}`
 }
 
-const findPositions = async (socketId: string) => {
+const findPositions = async (socketId: string, search: string = "") => {
 	const tokens = await db.fungible.findMany({
 		where: {
 			AND: [
@@ -143,7 +143,23 @@ const findPositions = async (socketId: string) => {
 							contains: inclusion
 						}
 					}
-				}))
+				})),
+				{
+					OR: [
+						{
+							name: {
+								contains: search,
+								mode: "insensitive"
+							}
+						},
+						{
+							symbol: {
+								contains: search,
+								mode: "insensitive"
+							}
+						}
+					]
+				}
 			]
 		},
 		select: {
@@ -460,7 +476,7 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 	})
 }
 
-export const getPositions = async (address: string, chains = ["ethereum", "optimism", "base"]) => {
+export const getPositions = async (address: string, search?: string, chains = ["ethereum", "optimism", "base"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})
@@ -476,9 +492,10 @@ export const getPositions = async (address: string, chains = ["ethereum", "optim
 		select: { updatedAt: true }
 	})
 
-	if (cachedPositions && cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME)) return await findPositions(socket.id)
+	if (cachedPositions && cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
+		return await findPositions(socket.id, search)
 
 	await getFungiblePositions(socket.id, socket.socketAddress, chains)
 
-	return await findPositions(socket.id)
+	return await findPositions(socket.id, search)
 }

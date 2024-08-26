@@ -61,8 +61,6 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	const page = useMemo(() => socket?.columns.find(column => column.index === -1), [socket])
 
-	const resizeColumn = api.socket.columns.resize.useMutation()
-
 	const handle = {
 		columns: {
 			add: api.socket.columns.add.useMutation({
