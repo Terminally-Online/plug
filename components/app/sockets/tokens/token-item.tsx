@@ -1,10 +1,10 @@
-import { FC, useMemo } from "react"
+import { FC } from "react"
 
 import { motion } from "framer-motion"
 
 import { Accordion, Counter, SocketTokenPercentages } from "@/components"
 import { useFrame } from "@/contexts"
-import { cn } from "@/lib"
+import { cn, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { TokenFrame } from "../../frames/assets/token"
@@ -43,7 +43,13 @@ export const SocketTokenItem: FC<{
 						</div>
 					) : (
 						<div className="flex flex-row items-center gap-4">
-							<TokenImage logo={token?.icon ?? ""} symbol={token?.symbol} />
+							<TokenImage
+								logo={
+									token?.icon ||
+									`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+								}
+								symbol={token?.symbol}
+							/>
 
 							<div className="flex w-full flex-col items-center tabular-nums">
 								<div className="flex w-full flex-row font-bold">

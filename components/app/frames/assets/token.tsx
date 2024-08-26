@@ -2,11 +2,11 @@ import { FC, useMemo, useState } from "react"
 
 import Image from "next/image"
 
-import { Send } from "lucide-react"
+import { MapIcon, Send } from "lucide-react"
 
 import { Counter, Frame, SocketTokenPriceChart } from "@/components"
 import { useBalances, useFrame } from "@/contexts"
-import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
+import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
@@ -76,7 +76,15 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 			className="overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">
-					<TokenImage logo={token?.icon ?? ""} symbol={token.symbol} size="sm" handleColor={setColor} />
+					<TokenImage
+						logo={
+							token?.icon ||
+							`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+						}
+						symbol={token.symbol}
+						size="sm"
+						handleColor={setColor}
+					/>
 				</div>
 			}
 			label=""
@@ -153,7 +161,14 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 
 				<div className="mt-2 flex flex-row items-center justify-between gap-4">
 					<div className="mr-auto flex h-8 items-center" style={{ color: color }}>
-						<TokenImage logo={token?.icon ?? ""} symbol={token.symbol} size="xs" />
+						<TokenImage
+							logo={
+								token?.icon ||
+								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+							}
+							symbol={token.symbol}
+							size="xs"
+						/>
 						<Counter className="ml-4 mr-2 w-max" count={token.balance} />
 						<p>{token.symbol}</p>
 					</div>
@@ -191,6 +206,41 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 						<div className="flex min-w-[72px] flex-row items-center text-right font-bold">
 							<Counter count={isFrame ? implementation.percentage : 0} />%
 						</div>
+					</div>
+				))}
+			</div>
+
+			<div className="flex flex-row items-center gap-4 px-6 font-bold">
+				<p className="opacity-40">Links</p>
+				<div className="h-[2px] w-full" style={{ backgroundColor: color }} />
+			</div>
+
+			<div className="relative mt-2 flex w-full flex-wrap gap-2 px-6 pb-4">
+				{token.implementations.map((implementation, index) => (
+					<div key={index} className="flex flex-row items-center gap-4">
+						<a
+							className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+							style={{
+								backgroundColor: color ?? "",
+								color: textColor
+							}}
+							href={getBlockExplorerAddress(getChainId(implementation.chain), implementation.contract)}
+							target="_blank"
+							rel="noreferrer"
+						>
+							{token.implementations.length > 1 ? (
+								<Image
+									src={getChainImage(implementation.chain)}
+									alt={implementation.chain}
+									className="h-4 w-4 rounded-full"
+									width={24}
+									height={24}
+								/>
+							) : (
+								<MapIcon size={14} className="opacity-60" />
+							)}
+							Explorer
+						</a>
 					</div>
 				))}
 			</div>

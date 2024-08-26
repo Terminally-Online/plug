@@ -1,4 +1,4 @@
-import { chains, nativeTokenAddress, tokens } from "../constants"
+import { chains } from "../constants"
 
 export const getBlockExplorerUrl = (chainId: number) => {
 	return chains.find(chain => chain.id === chainId)?.blockExplorers.default.url
@@ -51,18 +51,6 @@ export const getChainImage = (chainId: number | string) => {
 		default:
 			return "/blockchain/ethereum.png"
 	}
-}
-
-export const getNativeAssetImage = (chainId: number) => {
-	const nativeAddress = nativeTokenAddress
-
-	const nativeImage = tokens.find(
-		token => token.address.toLowerCase() === nativeAddress.toLowerCase() && token.chainId === chainId
-	)?.logoURI
-
-	if (nativeImage) return nativeImage
-
-	return `https://assets.smold.app/api/token/1/${nativeAddress}/logo-128.png`
 }
 
 export const getAssetColor = (symbol: string) => {

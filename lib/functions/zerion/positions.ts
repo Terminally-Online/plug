@@ -2,10 +2,10 @@ import axios from "axios"
 
 import { TRPCError } from "@trpc/server"
 
-import { nativeTokenAddress } from "@/lib/constants"
-import { tokens } from "@/lib/constants"
+import { NATIVE_TOKEN_ADDRESS, TOKENS } from "@/lib/constants"
 import { db } from "@/server/db"
 
+import { getChainId } from "../blockchain"
 import { getPrices } from "../llama"
 
 const prohibitedNameInclusions = [
@@ -333,16 +333,20 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 				.filter(implementation => chains.includes(implementation.chain_id))
 				.map(implementation => ({
 					chain: implementation.chain_id,
-					contract: implementation.address || nativeTokenAddress,
+					contract: implementation.address || NATIVE_TOKEN_ADDRESS,
 					decimals: implementation.decimals
 				}))
 
 			// If Zerion does not have an icon for the fungible, try to find a static token.
 			let icon = attributes.fungible_info.icon?.url
 			if (icon === undefined) {
-				const staticToken = tokens.find(t => t.symbol === attributes.fungible_info.symbol)
-
+				const staticToken = TOKENS.find(t => t.symbol === attributes.fungible_info.symbol)
 				if (staticToken !== undefined) icon = staticToken.logoURI
+			}
+			// If we could not find it as a static token, try to find it from the llamas.
+			if (icon === undefined) {
+				const implementation = implementations.sort((a, b) => getChainId(b.chain) - getChainId(a.chain))[0]
+				icon = `https://token-icons.llamao.fi/icons/tokens/${getChainId(implementation.chain)}/${implementation.contract}?h=240&w=240`
 			}
 
 			return {
@@ -410,7 +414,7 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 				const implementationContract =
 					attributes.fungible_info.implementations.find(implementation => implementation.chain_id === relationships.chain.data.id)
 						?.address ||
-					(attributes.fungible_info.name === "Ethereum" && nativeTokenAddress) ||
+					(attributes.fungible_info.name === "Ethereum" && NATIVE_TOKEN_ADDRESS) ||
 					undefined
 				const balance = attributes.quantity.float
 

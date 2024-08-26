@@ -6,6 +6,7 @@
 	"scripts": {
 		"predev:db": "tsx ./lib/scripts/db.ts",
 		"predev:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
+		"predev:tokens": "pnpm tsx ./lib/scripts/token-list.ts",
 		"dev:wss": "tsx watch ./server/ws.dev.ts --tsconfig tsconfig.server.json",
 		"dev:next": "next dev",
 		"predev": "run-s predev:*",
