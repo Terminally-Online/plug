@@ -13,8 +13,9 @@ export const SocketCollectionList: FC<
 		MotionProps & {
 			id: string
 			collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
+			hasSearch?: boolean
 		}
-> = ({ id, collectibles, className, ...props }) => {
+> = ({ id, collectibles, hasSearch = true, className, ...props }) => {
 	const { collectibles: apiCollectibles } = useBalances()
 	collectibles = collectibles ?? apiCollectibles
 
@@ -40,14 +41,16 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Search
-				className="mb-2"
-				icon={<SearchIcon size={14} className="opacity-40" />}
-				placeholder="Search collectibles"
-				search={search}
-				handleSearch={handleSearch}
-				clear
-			/>
+			{hasSearch && (
+				<Search
+					className="mb-2"
+					icon={<SearchIcon size={14} className="opacity-40" />}
+					placeholder="Search collectibles"
+					search={search}
+					handleSearch={handleSearch}
+					clear
+				/>
+			)}
 
 			<motion.div
 				className="flex flex-col gap-2"

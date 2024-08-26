@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { usePathname } from "next/navigation"
 
 export const useDebounce = (
 	initial: string,
 	delay = 250,
-	callback = () => {}
+	callback = (data: string) => {}
 ): [string, string, (value: string) => void, React.MutableRefObject<string>] => {
 	const pathname = usePathname()
 
@@ -14,15 +14,16 @@ export const useDebounce = (
 	const [value, setValue] = useState<string>(initial)
 	const [debounced, setDebounced] = useState<typeof value>(value)
 
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			setDebounced(value)
+	const debouncedCallback = useCallback(() => {
+		setDebounced(value)
+		if (callback) callback(value)
+	}, [value, callback])
 
-			if (callback) callback()
-		}, delay)
+	useEffect(() => {
+		const timeout = setTimeout(debouncedCallback, delay)
 
 		return () => clearTimeout(timeout)
-	}, [value, delay, callback])
+	}, [value, delay, debouncedCallback])
 
 	useEffect(() => {
 		if (!pathname) return

@@ -27,6 +27,7 @@ import {
 import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cardColors, cn, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
 import { ConsoleColumnModel } from "@/prisma/types"
+import { api } from "@/server/client"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
@@ -38,15 +39,16 @@ export const ConsoleColumn: FC<{
 	column: ConsoleColumnModel
 }> = ({ column }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
+	const resize = api.socket.columns.resize.useMutation()
 
-	const { handleFrame } = useFrame({ id: column.id })
+	const { id, key, index, item, from, width: columnWidth } = column
+
+	const { handleFrame } = useFrame({ id })
 	const { handle } = useSockets()
-	const { plug } = usePlugs(column.id)
+	const { plug } = usePlugs(id)
 
-	const id = useMemo(() => column.id, [column])
-
-	const [width, debouncedWidth, handleWidth] = useDebounce((column.width ?? DEFAULT_COLUMN_WIDTH).toString(), 100, () =>
-		handle.columns.resize({ id, width: Number(debouncedWidth) })
+	const [width, _, handleWidth] = useDebounce((columnWidth ?? DEFAULT_COLUMN_WIDTH).toString(), 100, data =>
+		resize.mutate({ id, width: Number(data) })
 	)
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -74,7 +76,7 @@ export const ConsoleColumn: FC<{
 
 	return (
 		<div className="relative select-none">
-			<Draggable draggableId={column.id.toString()} index={column.index}>
+			<Draggable draggableId={id.toString()} index={index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
@@ -107,13 +109,13 @@ export const ConsoleColumn: FC<{
 												/>
 											</Button>
 
-											{column.from && (
+											{from && (
 												<Button
 													variant="secondary"
 													onClick={() =>
 														handle.columns.navigate({
-															id: column.id,
-															key: column.from!
+															id,
+															key: from!
 														})
 													}
 													className="rounded-sm p-1"
@@ -133,7 +135,7 @@ export const ConsoleColumn: FC<{
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
-													{formatTitle(plug ? plug.name : column.key.replace("_", " ").toLowerCase())}
+													{formatTitle(plug ? plug.name : key.replace("_", " ").toLowerCase())}
 												</p>
 											</div>
 
@@ -172,7 +174,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => handle.columns.remove(column.id)}
+														onClick={() => handle.columns.remove(id)}
 													>
 														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -181,43 +183,43 @@ export const ConsoleColumn: FC<{
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => handle.columns.remove(column.id) : undefined}
+									nextOnClick={plug === undefined ? () => handle.columns.remove(id) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
 
 							<div className="h-full overflow-y-scroll">
-								{column.key === VIEW_KEYS.AUTHENTICATE ? (
+								{key === VIEW_KEYS.AUTHENTICATE ? (
 									<ConsoleAuthenticate />
-								) : column.key === VIEW_KEYS.ADD ? (
-									<ConsoleColumnAddOptions id={column.id} />
-								) : column.key === VIEW_KEYS.SEARCH ? (
-									<ConsoleSearch className="px-4 pt-4" id={column.id} />
-								) : column.key === VIEW_KEYS.ALERTS ? (
-									<ConsoleAlerts id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.PLUGS ? (
-									<Plugs className="px-4" id={column.id} />
-								) : column.key === VIEW_KEYS.DISCOVER ? (
-									<PlugsDiscover className="pt-4" id={column.id} />
-								) : column.key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine className="pt-4" column={true} id={column.id} />
-								) : column.key === VIEW_KEYS.PLUG ? (
-									<Plug className="px-4 pt-4" id={column.id} item={column.item} />
-								) : column.key === VIEW_KEYS.ACTIVITY ? (
-									<SocketActivity id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.ASSETS ? (
-									<SocketAssets id={column.id} className="px-4" />
-								) : column.key === "TOKENS" ? (
-									<SocketTokenList id={column.id} className="px-4 pt-4" expanded={true} />
-								) : column.key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.POSITIONS ? (
-									<SocketPositionList id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.EARNINGS ? (
-									<SocketEarnings id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.ADMIN ? (
-									<ConsoleAdmin id={column.id} className="px-4 pt-4" />
-								) : column.key === VIEW_KEYS.PROFILE ? (
+								) : key === VIEW_KEYS.ADD ? (
+									<ConsoleColumnAddOptions id={id} />
+								) : key === VIEW_KEYS.SEARCH ? (
+									<ConsoleSearch className="px-4 pt-4" id={id} />
+								) : key === VIEW_KEYS.ALERTS ? (
+									<ConsoleAlerts id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.PLUGS ? (
+									<Plugs className="px-4" id={id} />
+								) : key === VIEW_KEYS.DISCOVER ? (
+									<PlugsDiscover className="pt-4" id={id} />
+								) : key === VIEW_KEYS.MY_PLUGS ? (
+									<PlugsMine className="pt-4" column={true} id={id} />
+								) : key === VIEW_KEYS.PLUG ? (
+									<Plug className="px-4 pt-4" id={id} item={item} />
+								) : key === VIEW_KEYS.ACTIVITY ? (
+									<SocketActivity id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.ASSETS ? (
+									<SocketAssets id={id} className="px-4" />
+								) : key === "TOKENS" ? (
+									<SocketTokenList id={id} className="px-4 pt-4" expanded={true} />
+								) : key === VIEW_KEYS.COLLECTIBLES ? (
+									<SocketCollectionList id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.POSITIONS ? (
+									<SocketPositionList id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.EARNINGS ? (
+									<SocketEarnings id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.ADMIN ? (
+									<ConsoleAdmin id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.PROFILE ? (
 									<ColumnProfile className="px-4 py-4" />
 								) : (
 									<></>

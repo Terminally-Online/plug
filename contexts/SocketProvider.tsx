@@ -21,7 +21,6 @@ export const SocketContext = createContext<{
 			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
 			navigate: (data: { id?: string; key: string; item?: string; from?: string }) => void
 			remove: (id: string) => void
-			resize: (data: { id: string; width: number }) => void
 			move: (data: { from: number; to: number }) => void
 		}
 	}
@@ -36,7 +35,6 @@ export const SocketContext = createContext<{
 			add: () => {},
 			navigate: () => {},
 			remove: () => {},
-			resize: () => {},
 			move: () => {}
 		}
 	}
@@ -63,11 +61,11 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	const page = useMemo(() => socket?.columns.find(column => column.index === -1), [socket])
 
+	const resizeColumn = api.socket.columns.resize.useMutation()
+
 	const handle = {
 		columns: {
 			add: api.socket.columns.add.useMutation({
-				// TODO: Generate and hunt uuids and create it onMutate instead
-				//       of waiting on the server.
 				onSuccess: data => setSocket(data)
 			}),
 			navigate: api.socket.columns.navigate.useMutation({
@@ -112,7 +110,6 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				},
 				onError: (_, __, context) => setSocket(context)
 			}),
-			resize: api.socket.columns.resize.useMutation(),
 			move: api.socket.columns.move.useMutation()
 		}
 	}
@@ -130,7 +127,6 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 						add: data => handle.columns.add.mutate(data),
 						navigate: data => handle.columns.navigate.mutate(data),
 						remove: data => handle.columns.remove.mutate(data),
-						resize: data => handle.columns.resize.mutate(data),
 						move: data => handle.columns.move.mutate(data)
 					}
 				}

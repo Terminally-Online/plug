@@ -2,13 +2,9 @@ import { FC, HTMLAttributes, useState } from "react"
 
 import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
-import { Button } from "@/components/shared"
+import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
-
-import { Search } from "../../inputs"
-import { PlugGrid } from "../../plugs"
-import { SocketCollectionList, SocketTokenList } from "../../sockets"
 
 export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const [search, setSearch] = useState("")
@@ -153,7 +149,8 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 
 							<SocketCollectionList
 								id={id}
-								collectibles={expanded.includes("collectibles") ? results.collectibles : results.collectibles.slice(0, 10)}
+								collectibles={expanded.includes("collectibles") ? results.collectibles : results.collectibles.slice(0, 5)}
+								hasSearch={false}
 							/>
 						</div>
 					)}
