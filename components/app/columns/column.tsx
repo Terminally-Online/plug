@@ -39,7 +39,7 @@ export const ConsoleColumn: FC<{
 	column: ConsoleColumnModel
 }> = ({ column }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
-	const resize = api.socket.columns.resize.useMutation()
+	const { mutate } = api.socket.columns.resize.useMutation()
 
 	const { id, key, index, item, from, width: apiColumnWidth } = column
 
@@ -49,8 +49,8 @@ export const ConsoleColumn: FC<{
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
-	const [width, _, handleWidth] = useDebounce(columnWidth.toString(), 250, data =>
-		isResizing ? resize.mutate({ id, width: Number(data) }) : undefined
+	const [width, _, handleWidth] = useDebounce(columnWidth.toString(), 100, data =>
+		isResizing ? mutate({ id, width: Number(data) }) : undefined
 	)
 
 	useEffect(() => {
