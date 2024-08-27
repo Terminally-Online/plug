@@ -41,16 +41,17 @@ export const ConsoleColumn: FC<{
 	const resizeRef = useRef<HTMLDivElement>(null)
 	const resize = api.socket.columns.resize.useMutation()
 
-	const { id, key, index, item, from, width: columnWidth } = column
+	const { id, key, index, item, from, width: apiColumnWidth } = column
 
 	const { handleFrame } = useFrame({ id })
 	const { handle } = useSockets()
 	const { plug } = usePlugs(id)
 
-	const [width, _, handleWidth] = useDebounce((columnWidth ?? DEFAULT_COLUMN_WIDTH).toString(), 100, data =>
-		resize.mutate({ id, width: Number(data) })
-	)
+	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
+	const [width, _, handleWidth] = useDebounce(columnWidth.toString(), 250, data =>
+		isResizing ? resize.mutate({ id, width: Number(data) }) : undefined
+	)
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
