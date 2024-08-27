@@ -3,19 +3,17 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 import { motion, MotionProps } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
-import { useBalances } from "@/contexts"
+import { useBalances, useSockets } from "@/contexts"
 import { cn } from "@/lib"
 
 import { PositionFrame } from "../../frames/assets/position"
 import { Search } from "../../inputs"
 import { SocketPositionItem } from "./position-item"
 
-export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & MotionProps & { id: string; expanded?: boolean }> = ({
-	id,
-	expanded,
-	className,
-	...props
-}) => {
+export const SocketPositionList: FC<
+	HTMLAttributes<HTMLDivElement> & MotionProps & { id: string; expanded?: boolean }
+> = ({ id, expanded, className, ...props }) => {
+	const { anonymous } = useSockets()
 	const { positions } = useBalances()
 	const { protocols } = positions
 
@@ -46,38 +44,51 @@ export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & MotionProps
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Search
-				className="mb-2"
-				icon={<SearchIcon size={14} className="opacity-40" />}
-				placeholder="Search positions"
-				search={search}
-				handleSearch={handleSearch}
-				clear
-			/>
+			{anonymous && (
+				<div className="flex h-full flex-col items-center justify-center text-center font-bold">
+					<p>You are anonymous.</p>
+					<p className="max-w-[320px] opacity-40">
+						To view the collectibles you are holding you must authenticate a wallet.
+					</p>
+				</div>
+			)}
 
-			<motion.div
-				className="flex flex-col gap-2"
-				initial="hidden"
-				animate="visible"
-				variants={{
-					hidden: { opacity: 0 },
-					visible: {
-						opacity: 1,
-						transition: {
-							staggerChildren: 0.05
-						}
-					}
-				}}
-				{...(props as MotionProps)}
-			>
-				{visibilePositions.map((protocol, index) => (
-					<SocketPositionItem key={index} id={id} protocol={protocol} />
-				))}
-			</motion.div>
+			{anonymous === false && (
+				<>
+					<Search
+						className="mb-2"
+						icon={<SearchIcon size={14} className="opacity-40" />}
+						placeholder="Search positions"
+						search={search}
+						handleSearch={handleSearch}
+						clear
+					/>
 
-			{visibilePositions.map((protocol, index) => {
-				return <PositionFrame key={index} id={id} protocol={protocol} />
-			})}
+					<motion.div
+						className="flex flex-col gap-2"
+						initial="hidden"
+						animate="visible"
+						variants={{
+							hidden: { opacity: 0 },
+							visible: {
+								opacity: 1,
+								transition: {
+									staggerChildren: 0.05
+								}
+							}
+						}}
+						{...(props as MotionProps)}
+					>
+						{visibilePositions.map((protocol, index) => (
+							<SocketPositionItem key={index} id={id} protocol={protocol} />
+						))}
+					</motion.div>
+
+					{visibilePositions.map((protocol, index) => {
+						return <PositionFrame key={index} id={id} protocol={protocol} />
+					})}
+				</>
+			)}
 		</div>
 	)
 }

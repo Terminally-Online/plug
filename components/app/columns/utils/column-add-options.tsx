@@ -1,6 +1,17 @@
 import { FC } from "react"
 
-import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, Settings, ShieldAlert, User, Wallet } from "lucide-react"
+import {
+	Activity,
+	Cable,
+	Coins,
+	ImageIcon,
+	Landmark,
+	PiggyBank,
+	Settings,
+	ShieldAlert,
+	User,
+	Wallet
+} from "lucide-react"
 
 import { useSockets } from "@/contexts"
 import { formatTitle, VIEW_KEYS } from "@/lib"
@@ -15,7 +26,7 @@ type Options = Array<{
 	icon: JSX.Element
 }>
 
-const OPTIONS: Options = [
+const ANONYMOUS_OPTIONS: Options = [
 	{
 		label: "DISCOVER",
 		description: "Discover curated and community Plugs.",
@@ -25,7 +36,11 @@ const OPTIONS: Options = [
 		label: "MY_PLUGS",
 		description: "Create, edit, and run your Plugs.",
 		icon: <Cable size={14} className="opacity-40" />
-	},
+	}
+]
+
+const OPTIONS: Options = [
+	...ANONYMOUS_OPTIONS,
 	{
 		label: "ACTIVITY",
 		description: "View the simulations and runs of your Plugs.",
@@ -59,6 +74,7 @@ const OPTIONS: Options = [
 ] as const
 
 const ADMIN_OPTIONS: Options = [
+	...ANONYMOUS_OPTIONS,
 	{
 		label: "ADMIN",
 		description: "View and manage the admin panel.",
@@ -72,15 +88,15 @@ const ADMIN_OPTIONS: Options = [
 ] as const
 
 export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
-	const { socket, handle } = useSockets()
+	const { anonymous, socket, handle } = useSockets()
 
 	const isAdmin = socket?.admin ?? false
 
-	const adminOptions = isAdmin ? ADMIN_OPTIONS : []
+	const options = isAdmin ? ADMIN_OPTIONS : anonymous ? ANONYMOUS_OPTIONS : []
 
 	return (
-		<div className="flex flex-col">
-			{[...OPTIONS, ...adminOptions].map(option => (
+		<div className="flex h-full flex-col">
+			{options.map(option => (
 				<button
 					key={option.label}
 					className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
@@ -90,12 +106,18 @@ export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
 						{option.icon}
 
 						<div className="flex flex-col">
-							<p className="font-bold opacity-40">{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
-							<p className="text-sm opacity-60">{option.description}</p>
+							<p className="font-bold">{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
+							<p className="text-sm font-bold opacity-40">{option.description}</p>
 						</div>
 					</div>
 				</button>
 			))}
+
+			{anonymous && (
+				<p className="max-w-[380px] p-4 text-sm font-bold opacity-40">
+					Several options are unavailble because you are using an anonymous account.
+				</p>
+			)}
 		</div>
 	)
 }

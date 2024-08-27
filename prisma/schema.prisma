@@ -302,7 +302,7 @@ model PositionCache {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String     @id
 }
 
@@ -405,7 +405,7 @@ model OpenseaCollectible {
     // ---------------------------------------------------------------------------
     collection     OpenseaCollection       @relation(fields: [collectionSlug], references: [slug])
     collectionSlug String
-    cache          OpenseaCollectibleCache @relation(fields: [cacheSocketId, cacheChain], references: [socketId, chain])
+    cache          OpenseaCollectibleCache @relation(fields: [cacheSocketId, cacheChain], references: [socketId, chain], onDelete: Cascade)
     cacheSocketId  String
     cacheChain     String
 }
@@ -430,7 +430,7 @@ model OpenseaCollectibleCache {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String
 
     // ---------------------------------------------------------------------------

@@ -23,7 +23,8 @@ export const VIEW_KEYS = {
 
 export const DEFAULT_ANONYMOUS_VIEWS = [
 	{ key: VIEW_KEYS.HOME, index: -1 },
-	{ key: VIEW_KEYS.DISCOVER, index: 0 }
+	{ key: VIEW_KEYS.DISCOVER, index: 0 },
+	{ key: VIEW_KEYS.MY_PLUGS, index: 1 }
 ]
 
 export const DEFAULT_VIEWS = [

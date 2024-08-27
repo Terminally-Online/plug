@@ -136,7 +136,9 @@ export const ConsoleColumn: FC<{
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
-													{formatTitle(plug ? plug.name : key.replace("_", " ").toLowerCase())}
+													{formatTitle(
+														plug ? plug.name : key.replace("_", " ").toLowerCase()
+													)}
 												</p>
 											</div>
 
@@ -235,7 +237,9 @@ export const ConsoleColumn: FC<{
 								setIsResizing(true)
 							}}
 						>
-							<div className={cn("h-full w-[1px] bg-grayscale-100", snapshot.isDragging && "opacity-0")} />
+							<div
+								className={cn("h-full w-[1px] bg-grayscale-100", snapshot.isDragging && "opacity-0")}
+							/>
 						</div>
 					</div>
 				)}

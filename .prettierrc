@@ -4,7 +4,7 @@
 	"semi": false,
 	"singleQuote": false,
 	"trailingComma": "none",
-	"printWidth": 140,
+	"printWidth": 120,
 	"arrowParens": "avoid",
 	"endOfLine": "auto",
 	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],

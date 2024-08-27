@@ -581,13 +581,13 @@ export const Fees = () => {
 
 			<defs>
 				<linearGradient id="gray-gradient" x1="0" x2="1" y1="1" y2="0">
-					<stop offset="0%" stop-color="#D9D9D9" />
-					<stop offset="100%" stop-color="#D9D9D9" />
+					<stop offset="0%" stopColor="#D9D9D9" />
+					<stop offset="100%" stopColor="#D9D9D9" />
 				</linearGradient>
 
 				<linearGradient id="green-gradient" x1="0" x2="1" y1="1" y2="0">
-					<stop offset="0%" stop-color="#00E100" />
-					<stop offset="100%" stop-color="#A3F700" />
+					<stop offset="0%" stopColor="#00E100" />
+					<stop offset="100%" stopColor="#A3F700" />
 				</linearGradient>
 
 				<pattern id="pattern0_1460_13409" patternContentUnits="objectBoundingBox" width="1" height="1">

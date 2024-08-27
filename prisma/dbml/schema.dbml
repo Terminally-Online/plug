@@ -285,12 +285,12 @@ Ref: Position.protocolName > Protocol.name [delete: Cascade]
 
 Ref: Position.cacheId > PositionCache.socketId [delete: Cascade]
 
-Ref: PositionCache.socketId > UserSocket.id
+Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
 
 Ref: OpenseaCollectibleMetadata.collectibleId - OpenseaCollectible.id [delete: Cascade]
 
 Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
 
-Ref: OpenseaCollectible.(cacheSocketId, cacheChain) > OpenseaCollectibleCache.(socketId, chain)
+Ref: OpenseaCollectible.(cacheSocketId, cacheChain) > OpenseaCollectibleCache.(socketId, chain) [delete: Cascade]
 
-Ref: OpenseaCollectibleCache.socketId > UserSocket.id
+Ref: OpenseaCollectibleCache.socketId > UserSocket.id [delete: Cascade]

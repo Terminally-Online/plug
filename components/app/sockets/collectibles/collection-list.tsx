@@ -4,7 +4,7 @@ import { motion, MotionProps } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
 import { Search, SocketCollectionItem } from "@/components"
-import { useBalances } from "@/contexts"
+import { useBalances, useSockets } from "@/contexts"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
@@ -18,6 +18,7 @@ export const SocketCollectionList: FC<
 			column?: boolean
 		}
 > = ({ id, collectibles, expanded, count = 5, column = true, className, ...props }) => {
+	const { anonymous } = useSockets()
 	const { collectibles: apiCollectibles } = useBalances()
 	collectibles = collectibles ?? apiCollectibles
 
@@ -45,7 +46,14 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{column && (
+			{anonymous && (
+				<div className="flex h-full flex-col items-center justify-center text-center font-bold">
+					<p>You are anonymous.</p>
+					<p className="max-w-[320px] opacity-40">To view the collectibles you are holding you must authenticate a wallet.</p>
+				</div>
+			)}
+
+			{anonymous === false && column && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}

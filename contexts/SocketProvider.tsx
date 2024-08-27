@@ -16,6 +16,7 @@ export const SocketContext = createContext<{
 	avatar: GetEnsAvatarReturnType | undefined
 	socket: UserSocketModel | undefined
 	page: ConsoleColumnModel | undefined
+	anonymous: boolean
 	handle: {
 		columns: {
 			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
@@ -30,6 +31,7 @@ export const SocketContext = createContext<{
 	avatar: undefined,
 	socket: undefined,
 	page: undefined,
+	anonymous: false,
 	handle: {
 		columns: {
 			add: () => {},
@@ -56,6 +58,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		name: ensName,
 		avatar: ensAvatar
 	})
+
+	const anonymous = !socketData || socketData.id.startsWith("anonymous")
 
 	const [socket, setSocket] = useState<UserSocketModel | undefined>(socketData)
 
@@ -120,6 +124,7 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				avatar: socket?.identity?.ens?.avatar || ensAvatar || undefined,
 				socket,
 				page,
+				anonymous,
 				handle: {
 					columns: {
 						add: data => handle.columns.add.mutate(data),
