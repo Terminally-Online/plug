@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { signOut } from "next-auth/react"
 
-import BlockiesSvg from "blockies-react-svg"
+import Avatar from "boring-avatars"
 import { AnimatePresence, motion } from "framer-motion"
 import { ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
 import { useDisconnect } from "wagmi"
@@ -36,9 +36,11 @@ export const ConsoleSidebar = () => {
 					>
 						<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
 							{avatar ? (
-								<Image src={avatar} alt="ENS Avatar" width={16} height={16} className="h-full w-full rounded-sm" />
+								<Image src={avatar} alt="ENS Avatar" width={64} height={64} className="h-full w-full rounded-sm" />
 							) : (
-								<BlockiesSvg className="h-full w-full rounded-sm" address={address} />
+								<div className="overflow-hidden rounded-sm">
+									<Avatar name={address} variant="beam" size={"100%"} square colors={["#00E100", "#A3F700"]} />
+								</div>
 							)}
 						</motion.div>
 

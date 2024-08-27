@@ -41,6 +41,7 @@
 		"abitype": "^1.0.2",
 		"axios": "^1.7.4",
 		"blockies-react-svg": "^0.0.13",
+		"boring-avatars": "^1.10.2",
 		"classnames": "^2.5.1",
 		"clsx": "^2.1.1",
 		"cross-env": "^7.0.3",
