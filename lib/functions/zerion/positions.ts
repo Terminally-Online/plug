@@ -3,6 +3,7 @@ import axios from "axios"
 import { TRPCError } from "@trpc/server"
 
 import { NATIVE_TOKEN_ADDRESS, TOKENS } from "@/lib/constants"
+import { ZerionPositions } from "@/lib/types"
 import { db } from "@/server/db"
 
 import { getChainId } from "../blockchain"
@@ -30,88 +31,6 @@ const prohibitedNameInclusions = [
 ]
 
 const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
-
-type ZerionPositionsResponse = {
-	links: {
-		self: string
-	}
-	data: Array<{
-		type: string
-		id: string
-		attributes: {
-			parent: null
-			protocol: string | null
-			name: string
-			position_type: string
-			quantity: {
-				int: string
-				decimals: number
-				float: number
-				numeric: string
-			}
-			value: number
-			price: number
-			changes: {
-				absolute_1d: number
-				percent_1d: number
-			}
-			fungible_info: {
-				name: string
-				symbol: string
-				icon: {
-					url: string
-				}
-				flags: {
-					verified: boolean
-				}
-				implementations: Array<{
-					chain_id: string
-					address: string
-					decimals: number
-				}>
-			}
-			flags: {
-				displayable: boolean
-				is_trash: boolean
-			}
-			updated_at: string
-			updated_at_block: number | null
-			application_metadata?: {
-				name: string
-				icon: {
-					url: string
-				}
-				url: string
-			}
-		}
-		relationships: {
-			chain: {
-				links: {
-					related: string
-				}
-				data: {
-					type: string
-					id: string
-				}
-			}
-			fungible: {
-				links: {
-					related: string
-				}
-				data: {
-					type: string
-					id: string
-				}
-			}
-			dapp?: {
-				data: {
-					type: string
-					id: string
-				}
-			}
-		}
-	}>
-}
 
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
@@ -304,7 +223,7 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	const data: ZerionPositionsResponse = response.data
+	const data: ZerionPositions = response.data
 
 	await db.$transaction(async tx => {
 		const positions = data.data
