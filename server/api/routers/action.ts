@@ -3,7 +3,7 @@ import { z } from "zod"
 import { TRPCError } from "@trpc/server"
 
 import { categories } from "@/lib"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { events } from "./plug"
 
@@ -21,7 +21,7 @@ const getTags = (actions: string) => {
 }
 
 export const action = createTRPCRouter({
-	edit: protectedProcedure
+	edit: anonymousProtectedProcedure
 		.input(
 			z.object({
 				id: z.string().optional(),
@@ -32,18 +32,10 @@ export const action = createTRPCRouter({
 			try {
 				if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-				const editingPlug = await ctx.db.workflow.findUniqueOrThrow({
-					where: {
-						id: input.id
-					}
-				})
-
-				if (editingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
-
 				const tags = getTags(input.actions)
 
 				const plug = await ctx.db.workflow.update({
-					where: { id: input.id },
+					where: { id: input.id, userAddress: ctx.session.address },
 					data: {
 						actions: input.actions,
 						tags,

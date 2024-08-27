@@ -9,16 +9,18 @@ export const RootProvider: FC<
 	PropsWithChildren & {
 		session: Session | null
 	}
-> = ({ session, children }) => (
-	<SessionProvider session={session}>
-		<WalletProvider>
-			<SocketProvider>
-				<FrameProvider>
-					<PlugProvider>
-						<BalancesProvider>{children}</BalancesProvider>
-					</PlugProvider>
-				</FrameProvider>
-			</SocketProvider>
-		</WalletProvider>
-	</SessionProvider>
-)
+> = ({ session, children }) => {
+	return (
+		<SessionProvider session={session}>
+			<WalletProvider>
+				<SocketProvider>
+					<FrameProvider>
+						<PlugProvider>
+							<BalancesProvider>{children}</BalancesProvider>
+						</PlugProvider>
+					</FrameProvider>
+				</SocketProvider>
+			</WalletProvider>
+		</SessionProvider>
+	)
+}

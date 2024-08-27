@@ -14,6 +14,7 @@ declare module "next-auth" {
 			id: string
 			name: string
 			image: string
+			anonymous: boolean
 		}
 		address: string
 	}
@@ -36,23 +37,29 @@ const authOptions: NextAuthOptions = {
 				}
 			},
 			async authorize(credentials, req) {
+				if (!credentials || credentials.message === "0x0" || credentials.signature === "0x0") {
+					const unixTimestamp = Math.floor(Date.now() / 1000)
+					const uuid = crypto.randomUUID()
+
+					return {
+						id: `anonymous-${unixTimestamp}-${uuid}`
+					}
+				}
+
 				try {
-					const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"))
+					const siwe = new SiweMessage(JSON.parse(credentials.message))
 					const nextAuthUrl = new URL(`${getBaseUrl()}/api/auth`)
 
 					const result = await siwe.verify({
-						signature: credentials?.signature || "",
+						signature: credentials.signature,
 						domain: nextAuthUrl.host,
 						nonce: await getCsrfToken({
 							req: { headers: req.headers }
 						})
 					})
 
-					if (result.success) {
-						return {
-							id: siwe.address
-						}
-					}
+					if (result.success) return { id: siwe.address }
+
 					return null
 				} catch (e) {
 					return null
@@ -62,10 +69,25 @@ const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async session({ session, token }: { session: any; token: any }) {
-			session.address = token.sub
-			session.user.id = token.sub
-			session.user.name = token.sub
-			session.user.image = `https://avatar.vercel.sh/${token.sub}.png`
+			if (token.sub.startsWith("anonymous")) {
+				// Create a hot id for the user that is uniquely identifying to the time it was created.
+				session.address = token.sub
+				session.user = {
+					id: "anonymous",
+					name: "Anonymous User",
+					image: `https://avatar.vercel.sh/anonymous.png`,
+					anonymous: true
+				}
+			} else {
+				session.address = token.sub
+				session.user = {
+					id: token.sub,
+					name: token.sub,
+					image: `https://avatar.vercel.sh/${token.sub}.png`,
+					anonymous: false
+				}
+			}
+
 			return session
 		}
 	},

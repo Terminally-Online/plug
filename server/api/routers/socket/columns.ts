@@ -4,10 +4,10 @@ import { TRPCError } from "@trpc/server"
 
 import { SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
 
-import { createTRPCRouter, protectedProcedure } from "../../trpc"
+import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const columns = createTRPCRouter({
-	add: protectedProcedure
+	add: anonymousProtectedProcedure
 		.input(
 			z.object({
 				key: z.string(),
@@ -95,7 +95,7 @@ export const columns = createTRPCRouter({
 				})
 			})
 		}),
-	navigate: protectedProcedure
+	navigate: anonymousProtectedProcedure
 		.input(
 			z.object({
 				id: z.string().optional(),
@@ -124,7 +124,7 @@ export const columns = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
-	remove: protectedProcedure.input(z.string()).mutation(async ({ input, ctx }) => {
+	remove: anonymousProtectedProcedure.input(z.string()).mutation(async ({ input, ctx }) => {
 		return await ctx.db.$transaction(async tx => {
 			const column = await tx.consoleColumn.delete({
 				where: { id: input, socketId: ctx.session.address }
@@ -144,7 +144,7 @@ export const columns = createTRPCRouter({
 			})
 		})
 	}),
-	resize: protectedProcedure
+	resize: anonymousProtectedProcedure
 		.input(
 			z.object({
 				id: z.string(),
@@ -165,7 +165,7 @@ export const columns = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
-	move: protectedProcedure
+	move: anonymousProtectedProcedure
 		.input(
 			z.object({
 				from: z.number(),

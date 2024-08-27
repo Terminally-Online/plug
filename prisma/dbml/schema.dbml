@@ -265,9 +265,9 @@ Table FarcasterFollows {
   followingId String [ref: > FarcasterUser.id]
 }
 
-Ref: ConsoleColumn.socketId > UserSocket.id
+Ref: ConsoleColumn.socketId > UserSocket.id [delete: Cascade]
 
-Ref: SocketIdentity.socketId - UserSocket.id
+Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 

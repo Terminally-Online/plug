@@ -1,3 +1,7 @@
+import { FC, useEffect, useRef, useState } from "react"
+
+import { signIn, signOut, useSession } from "next-auth/react"
+
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
 import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
@@ -26,7 +30,19 @@ const DesktopPage = () => {
 }
 
 const Page = () => {
+	const { data: session } = useSession()
+
 	const { md } = useMediaQuery()
+
+	useEffect(() => {
+		if (session !== null) return
+
+		signIn("credentials", {
+			message: "0x0",
+			signature: "0x0",
+			redirect: false
+		})
+	}, [session])
 
 	return <>{md ? <DesktopPage /> : <MobilePage />}</>
 }

@@ -33,7 +33,7 @@ model ConsoleColumn {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String
 }
 
@@ -101,7 +101,7 @@ model SocketIdentity {
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    socket      UserSocket     @relation(fields: [socketId], references: [id])
+    socket      UserSocket     @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId    String         @id @unique
     farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
     farcasterId String?        @unique

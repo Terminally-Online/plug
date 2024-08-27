@@ -1,11 +1,11 @@
 import { z } from "zod"
 
 import { getPositions } from "@/lib"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { getDominantColor } from "@/server/color"
 
 export const misc = createTRPCRouter({
-	featureRequest: protectedProcedure
+	featureRequest: anonymousProtectedProcedure
 		.input(z.object({ context: z.string(), message: z.string().optional() }))
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.featureRequest.create({
@@ -16,7 +16,7 @@ export const misc = createTRPCRouter({
 				}
 			})
 		}),
-	search: protectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
+	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
 		// TODO: Handle private plugs and exclude them while combining the self-results.
 		const plugs = await ctx.db.workflow.findMany({
 			where: {
@@ -29,86 +29,88 @@ export const misc = createTRPCRouter({
 			orderBy: { updatedAt: "desc" }
 		})
 
-		const { tokens } = await getPositions(ctx.session.address, input)
+		const { tokens } = ctx.session.user.anonymous ? { tokens: [] } : await getPositions(ctx.session.address, input)
 
-		const collectibles = await ctx.db.openseaCollection.findMany({
-			where: {
-				AND: [
-					{
-						OR: [
+		const collectibles = ctx.session.user.anonymous
+			? { collectibles: [] }
+			: await ctx.db.openseaCollection.findMany({
+					where: {
+						AND: [
+							{
+								OR: [
+									{
+										collectibles: {
+											some: {
+												cacheSocketId: ctx.session.address,
+												OR: [
+													{
+														name: {
+															contains: input,
+															mode: "insensitive"
+														}
+													},
+													{
+														description: {
+															contains: input,
+															mode: "insensitive"
+														}
+													},
+													{
+														cacheChain: {
+															contains: input,
+															mode: "insensitive"
+														}
+													}
+												]
+											}
+										}
+									},
+									{
+										name: {
+											contains: input,
+											mode: "insensitive"
+										}
+									}
+								]
+							},
 							{
 								collectibles: {
 									some: {
-										cacheSocketId: ctx.session.address,
-										OR: [
-											{
-												name: {
-													contains: input,
-													mode: "insensitive"
-												}
-											},
-											{
-												description: {
-													contains: input,
-													mode: "insensitive"
-												}
-											},
-											{
-												cacheChain: {
-													contains: input,
-													mode: "insensitive"
-												}
-											}
-										]
+										cacheSocketId: ctx.session.address
 									}
-								}
-							},
-							{
-								name: {
-									contains: input,
-									mode: "insensitive"
 								}
 							}
 						]
 					},
-					{
+					include: {
 						collectibles: {
-							some: {
-								cacheSocketId: ctx.session.address
+							where: {
+								cacheSocketId: ctx.session.address,
+								OR: [
+									{
+										name: {
+											contains: input,
+											mode: "insensitive"
+										}
+									},
+									{
+										description: {
+											contains: input,
+											mode: "insensitive"
+										}
+									},
+									{
+										cacheChain: {
+											contains: input,
+											mode: "insensitive"
+										}
+									}
+								]
 							}
 						}
-					}
-				]
-			},
-			include: {
-				collectibles: {
-					where: {
-						cacheSocketId: ctx.session.address,
-						OR: [
-							{
-								name: {
-									contains: input,
-									mode: "insensitive"
-								}
-							},
-							{
-								description: {
-									contains: input,
-									mode: "insensitive"
-								}
-							},
-							{
-								cacheChain: {
-									contains: input,
-									mode: "insensitive"
-								}
-							}
-						]
-					}
-				}
-			},
-			orderBy: { createdAt: "desc" }
-		})
+					},
+					orderBy: { createdAt: "desc" }
+				})
 
 		return {
 			plugs,
@@ -116,7 +118,5 @@ export const misc = createTRPCRouter({
 			collectibles
 		}
 	}),
-	extractDominantColor: protectedProcedure.input(z.string()).query(async ({ input }) => {
-		return await getDominantColor(input)
-	})
+	extractDominantColor: anonymousProtectedProcedure.input(z.string()).query(async ({ input }) => await getDominantColor(input))
 })

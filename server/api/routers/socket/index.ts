@@ -1,19 +1,17 @@
 import { z } from "zod"
 
-import { Prisma } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 
-import { DEFAULT_VIEWS, getFarcasterFollowing, SOCKET_BASE_INCLUDE, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_VIEWS, getFarcasterFollowing, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
 import { columns } from "./columns"
-import { graph } from "./graph"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 export const socket = createTRPCRouter({
-	get: protectedProcedure
+	get: anonymousProtectedProcedure
 		.input(
 			z.object({
 				name: z.string().nullish(),
@@ -30,7 +28,7 @@ export const socket = createTRPCRouter({
 					socketAddress: TEMPORARY_ADDRESS,
 					columns: {
 						createMany: {
-							data: DEFAULT_VIEWS
+							data: ctx.session.user.anonymous ? DEFAULT_ANONYMOUS_VIEWS : DEFAULT_VIEWS
 						}
 					},
 					identity: {
@@ -92,8 +90,7 @@ export const socket = createTRPCRouter({
 					}
 				})
 
-			// NOTE: This is not awaited because we will just do this as a background task.
-			await getFarcasterFollowing(ctx.session.address)
+			if (ctx.session.user.anonymous === false) await getFarcasterFollowing(ctx.session.address)
 
 			// NOTE: Make sure the socket always has the global home column that is
 			//       denoted by the -1 index as the column view should never show it.
@@ -117,6 +114,5 @@ export const socket = createTRPCRouter({
 			return socket
 		}),
 	balances,
-	columns,
-	graph
+	columns
 })

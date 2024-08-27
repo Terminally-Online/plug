@@ -43,10 +43,8 @@ function getEndingLink(ctx: NextPageContext | undefined) {
 }
 
 export const createLinks = (ctx: NextPageContext | undefined) => [
-	// loggerLink({
-	// 	enabled: opts =>
-	// 		process.env.NODE_ENV === "development" ||
-	// 		(opts.direction === "down" && opts.result instanceof Error)
-	// }),
+	loggerLink({
+		enabled: opts => process.env.NODE_ENV === "development" || (opts.direction === "down" && opts.result instanceof Error)
+	}),
 	getEndingLink(ctx)
 ]

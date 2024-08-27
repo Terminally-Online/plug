@@ -4,7 +4,6 @@ import { getCsrfToken } from "next-auth/react"
 
 import { SiweMessage } from "siwe"
 
-// https://next-auth.js.org/configuration/providers/oauth
 const authOptions: NextAuthOptions = {
 	providers: [
 		CredentialsProvider({
@@ -22,6 +21,15 @@ const authOptions: NextAuthOptions = {
 				}
 			},
 			async authorize(credentials, req) {
+				if (!credentials || credentials.message === "0x0" || credentials.signature === "0x0") {
+					const unixTimestamp = Math.floor(Date.now() / 1000)
+					const uuid = crypto.randomUUID()
+
+					return {
+						id: `anonymous-${unixTimestamp}-${uuid}`
+					}
+				}
+
 				try {
 					const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"))
 					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
@@ -34,11 +42,8 @@ const authOptions: NextAuthOptions = {
 						})
 					})
 
-					if (result.success) {
-						return {
-							id: siwe.address
-						}
-					}
+					if (result.success) return { id: siwe.address }
+
 					return null
 				} catch (e) {
 					return null
@@ -48,9 +53,25 @@ const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async session({ session, token }: { session: any; token: any }) {
-			session.address = token.sub
-			session.user.name = token.sub
-			session.user.image = `https://avatar.vercel.sh/${token.sub}.png`
+			if (token.sub.startsWith("anonymous")) {
+				// Create a hot id for the user that is uniquely identifying to the time it was created.
+				session.address = token.sub
+				session.user = {
+					id: "anonymous",
+					name: "Anonymous User",
+					image: `https://avatar.vercel.sh/anonymous.png`,
+					anonymous: true
+				}
+			} else if (token.sub) {
+				session.address = token.sub
+				session.user = {
+					id: token.sub,
+					name: token.sub,
+					image: `https://avatar.vercel.sh/${token.sub}.png`,
+					anonymous: false
+				}
+			}
+
 			return session
 		}
 	},
@@ -64,13 +85,9 @@ const authOptions: NextAuthOptions = {
 // https://next-auth.js.org/configuration/options
 export default async function auth(req: any, res: any) {
 	const providers = authOptions.providers
-
 	const isDefaultSigninPage = req.method === "GET" && req.query.nextauth.includes("signin")
 
-	// Hide Sign-In with Ethereum from default sign page
-	if (isDefaultSigninPage) {
-		providers.pop()
-	}
+	if (isDefaultSigninPage) providers.pop()
 
 	return await NextAuth(req, res, {
 		...authOptions,

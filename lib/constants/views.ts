@@ -21,10 +21,13 @@ export const VIEW_KEYS = {
 	PROFILE: "PROFILE"
 }
 
-export const DEFAULT_VIEWS = [
-	// Prepare the single page experience for the mobile view.
+export const DEFAULT_ANONYMOUS_VIEWS = [
 	{ key: VIEW_KEYS.HOME, index: -1 },
-	// Prepare the console view for the multi-column view.
+	{ key: VIEW_KEYS.DISCOVER, index: 0 }
+]
+
+export const DEFAULT_VIEWS = [
+	{ key: VIEW_KEYS.HOME, index: -1 },
 	{ key: VIEW_KEYS.PLUGS, index: 0 },
 	{ key: VIEW_KEYS.ACTIVITY, index: 1 }
 ]

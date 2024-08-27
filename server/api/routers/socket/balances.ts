@@ -7,20 +7,18 @@ import { getAPIKey, getCollectibles } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"
 import { getDominantColor } from "@/server/color"
 
-import { createTRPCRouter, protectedProcedure } from "../../trpc"
+import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "../../trpc"
 
 export const balances = createTRPCRouter({
 	collectibles: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
-		if (input === undefined) return []
-
+		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 		return await getCollectibles(input)
 	}),
 	positions: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
 		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
-
 		return await getPositions(input)
 	}),
-	metadata: protectedProcedure
+	metadata: anonymousProtectedProcedure
 		.input(
 			z.object({
 				type: z.union([z.literal("ERC20"), z.literal("ERC721"), z.literal("ERC1155")]),
@@ -51,8 +49,9 @@ export const balances = createTRPCRouter({
 				}
 			})
 
-			const traits = response.status === 200 && response.data.nft.traits === null ? [] : response.data.nft.traits
+			if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
+			const traits = response.data.nft.traits === null ? [] : response.data.nft.traits
 			const color = await getDominantColor(collectible.displayImageUrl ?? collectible.collection.imageUrl)
 
 			if (metadataCache !== null)

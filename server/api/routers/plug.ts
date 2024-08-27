@@ -5,7 +5,7 @@ import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
 import { colors } from "@/lib"
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 
 import { action } from "./action"
 
@@ -16,16 +16,12 @@ export const events = {
 	add: "add-plug",
 	rename: "rename-plug",
 	edit: "edit-plug",
-	delete: "delete-plug",
-	view: "view-plug"
+	delete: "delete-plug"
 } as const
 
-const views: Record<string, number> = {}
-
 const subscription = (event: string) =>
-	protectedProcedure.subscription(async ({ ctx }) => {
+	anonymousProtectedProcedure.subscription(async ({ ctx }) => {
 		return observable<Workflow>(emit => {
-			// Only send events to the user that created the Plug.
 			const handleSubscription = (data: Workflow) => {
 				emit.next(data)
 			}
@@ -45,8 +41,7 @@ export const plug = createTRPCRouter({
 			}
 		})
 	}),
-
-	infinite: protectedProcedure
+	infinite: anonymousProtectedProcedure
 		.input(
 			z.object({
 				mine: z.boolean().optional(),
@@ -129,7 +124,7 @@ export const plug = createTRPCRouter({
 			}
 		}),
 
-	all: protectedProcedure
+	all: anonymousProtectedProcedure
 		.input(
 			z.object({
 				target: z.union([z.literal("mine"), z.literal("others"), z.literal("curated")]),
@@ -139,7 +134,6 @@ export const plug = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			// .query = GET
 			try {
 				if (input.target === "mine")
 					return await ctx.db.workflow.findMany({
@@ -182,7 +176,7 @@ export const plug = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-	add: protectedProcedure.input(z.string().optional()).mutation(async ({ input, ctx }) => {
+	add: anonymousProtectedProcedure.input(z.string().optional()).mutation(async ({ input, ctx }) => {
 		try {
 			const plug = await ctx.db.workflow.create({
 				data: {
@@ -199,7 +193,7 @@ export const plug = createTRPCRouter({
 			throw new TRPCError({ code: "BAD_REQUEST" })
 		}
 	}),
-	fork: protectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
+	fork: anonymousProtectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
 		try {
 			const forking = await ctx.db.workflow.findUnique({
 				where: { id: input.id }
@@ -224,7 +218,7 @@ export const plug = createTRPCRouter({
 			throw new TRPCError({ code: "BAD_REQUEST" })
 		}
 	}),
-	edit: protectedProcedure
+	edit: anonymousProtectedProcedure
 		.input(
 			z.object({
 				id: z.string().optional(),
@@ -239,17 +233,10 @@ export const plug = createTRPCRouter({
 
 				const { id, ...data } = input
 
-				const editingPlug = await ctx.db.workflow.findUniqueOrThrow({
-					where: {
-						id
-					}
-				})
-
-				if (editingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
-
 				const plug = await ctx.db.workflow.update({
 					where: {
-						id
+						id,
+						userAddress: ctx.session.address
 					},
 					data
 				})
@@ -261,63 +248,26 @@ export const plug = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-	delete: protectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
-		try {
-			const deletingPlug = await ctx.db.workflow.findUniqueOrThrow({
-				where: {
-					id: input.id
-				}
-			})
-
-			if (deletingPlug.userAddress !== ctx.session.address) throw new TRPCError({ code: "UNAUTHORIZED" })
-
-			const plug = await ctx.db.workflow.delete({
-				where: {
-					id: input.id
-				}
-			})
-
-			ctx.emitter.emit(events.delete, plug)
-
-			return { plug, from: input.from }
-		} catch (error) {
-			throw new TRPCError({ code: "BAD_REQUEST" })
-		}
-	}),
-
-	// below are subscriptions
-	onAdd: subscription(events.add), // sends message to subscribers
-	onEdit: subscription(events.edit),
-	onDelete: subscription(events.delete),
-
-	onView: protectedProcedure // when subscription is opened, user is logged in
-		.input(z.string().optional())
-		.subscription(async ({ input, ctx }) => {
-			// subscription logic
+	delete: anonymousProtectedProcedure
+		.input(z.object({ id: z.string(), from: z.string().optional() }))
+		.mutation(async ({ input, ctx }) => {
 			try {
-				if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
-
-				return observable<number>(emit => {
-					// in memory state manager, this gives us a constant stream
-					const handleSubscription = () => {
-						// define
-						emit.next(views[input])
-					}
-
-					views[input] = (views[input] ?? 0) + 1 // increment
-					ctx.emitter.on(events.view, handleSubscription) // call handleSubscription
-					ctx.emitter.emit(events.view) // show results from handleSubscription
-
-					return () => {
-						views[input] = views[input] - 1 // decrement
-						ctx.emitter.emit(events.view)
-						ctx.emitter.off(events.view, handleSubscription) //
+				const plug = await ctx.db.workflow.delete({
+					where: {
+						id: input.id,
+						userAddress: ctx.session.address
 					}
 				})
+
+				ctx.emitter.emit(events.delete, plug)
+
+				return { plug, from: input.from }
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-
+	onAdd: subscription(events.add),
+	onEdit: subscription(events.edit),
+	onDelete: subscription(events.delete),
 	action
 })
