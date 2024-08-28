@@ -124,8 +124,7 @@ export const socket = createTRPCRouter({
 								{
 									id: {
 										contains: input.search,
-										mode: "insensitive",
-										not: ctx.session.address
+										mode: "insensitive"
 									}
 								},
 								{
@@ -150,6 +149,11 @@ export const socket = createTRPCRouter({
 									contains: "anonymous",
 									mode: "insensitive"
 								}
+							}
+						},
+						{
+							NOT: {
+								id: ctx.session.address
 							}
 						}
 					]
