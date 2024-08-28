@@ -6,7 +6,7 @@ import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from 
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
+export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const [search, setSearch] = useState("")
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
@@ -17,7 +17,11 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 	})
 
 	const emptyResults =
-		search !== "" && results && results.plugs.length === 0 && results.tokens.length === 0 && results.collectibles.length === 0
+		search !== "" &&
+		results &&
+		results.plugs.length === 0 &&
+		results.tokens.length === 0 &&
+		results.collectibles.length === 0
 
 	return (
 		<div className={cn("flex h-full flex-col overflow-x-hidden", className)} {...props}>
@@ -81,7 +85,9 @@ export const ConsoleSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 										className="ml-auto rounded-sm p-1 px-2"
 										onClick={() =>
 											setExpanded(prev =>
-												prev.includes("plugs") === false ? [...prev, "plugs"] : prev.filter(key => key !== "plugs")
+												prev.includes("plugs") === false
+													? [...prev, "plugs"]
+													: prev.filter(key => key !== "plugs")
 											)
 										}
 									>

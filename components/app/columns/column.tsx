@@ -1,17 +1,21 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
+import Image from "next/image"
+
+import BoringAvatar from "boring-avatars"
 import { ChevronLeft, Cog, GitFork, Grip, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
 import {
 	Button,
+	ColumnAddOptions,
+	ColumnAlerts,
+	ColumnAuthenticate,
 	ColumnProfile,
+	ColumnSearch,
+	ColumnViewAs,
 	ConsoleAdmin,
-	ConsoleAlerts,
-	ConsoleAuthenticate,
-	ConsoleColumnAddOptions,
-	ConsoleSearch,
 	Header,
 	Plug,
 	Plugs,
@@ -44,7 +48,7 @@ export const ConsoleColumn: FC<{
 	const { id, key, index, item, from, width: apiColumnWidth } = column
 
 	const { handleFrame } = useFrame({ id })
-	const { handle } = useSockets()
+	const { socket, handle } = useSockets()
 	const { plug } = usePlugs(id)
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
@@ -134,6 +138,27 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
+											{socket && column.viewAs && (
+												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
+													{column.viewAs.identity?.ens?.avatar ? (
+														<Image
+															src={column.viewAs.identity.ens.avatar}
+															alt="ENS Avatar"
+															width={240}
+															height={240}
+														/>
+													) : (
+														<BoringAvatar
+															variant="beam"
+															name={column.viewAs?.id ?? socket.id}
+															size={"100%"}
+															colors={["#00E100", "#A3F700"]}
+															square
+														/>
+													)}
+												</div>
+											)}
+
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
 													{formatTitle(
@@ -193,13 +218,15 @@ export const ConsoleColumn: FC<{
 
 							<div className="h-full overflow-y-scroll">
 								{key === VIEW_KEYS.AUTHENTICATE ? (
-									<ConsoleAuthenticate />
+									<ColumnAuthenticate />
 								) : key === VIEW_KEYS.ADD ? (
-									<ConsoleColumnAddOptions id={id} />
+									<ColumnAddOptions id={id} />
 								) : key === VIEW_KEYS.SEARCH ? (
-									<ConsoleSearch className="px-4 pt-4" id={id} />
+									<ColumnSearch className="px-4 pt-4" id={id} />
 								) : key === VIEW_KEYS.ALERTS ? (
-									<ConsoleAlerts id={id} className="px-4 pt-4" />
+									<ColumnAlerts id={id} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.VIEW_AS ? (
+									<ColumnViewAs />
 								) : key === VIEW_KEYS.PLUGS ? (
 									<Plugs className="px-4" id={id} />
 								) : key === VIEW_KEYS.DISCOVER ? (

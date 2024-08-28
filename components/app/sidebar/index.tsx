@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react"
 
 import Avatar from "boring-avatars"
 import { AnimatePresence, motion } from "framer-motion"
-import { ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
+import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
 import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
@@ -34,12 +34,29 @@ export const ConsoleSidebar = () => {
 						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
 						onClick={() => handleCopied()}
 					>
-						<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.2 }}
+						>
 							{avatar ? (
-								<Image src={avatar} alt="ENS Avatar" width={64} height={64} className="h-full w-full rounded-sm" />
+								<Image
+									src={avatar}
+									alt="ENS Avatar"
+									width={64}
+									height={64}
+									className="h-full w-full rounded-sm"
+								/>
 							) : (
 								<div className="overflow-hidden rounded-sm">
-									<Avatar name={address} variant="beam" size={"100%"} square colors={["#00E100", "#A3F700"]} />
+									<Avatar
+										name={address}
+										variant="beam"
+										size={"100%"}
+										colors={["#00E100", "#A3F700"]}
+										square
+									/>
 								</div>
 							)}
 						</motion.div>
@@ -67,7 +84,10 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 "
 					>
-						<Plus size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
+						<Plus
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
 					</Button>
 					{expanded && (
 						<p className="whitespace-nowrap opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
@@ -98,9 +118,16 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<SearchIcon size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
+						<SearchIcon
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
 					</Button>
-					{expanded && <p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Search</p>}
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Search
+						</p>
+					)}
 				</div>
 
 				<div
@@ -125,9 +152,50 @@ export const ConsoleSidebar = () => {
 						sizing="sm"
 						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
 					>
-						<Zap size={14} className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100" />
+						<BookUser
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
 					</Button>
-					{expanded && <p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Alerts</p>}
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Alerts
+						</p>
+					)}
+				</div>
+
+				<div
+					className="group flex flex-row items-center gap-4 px-2"
+					onClick={() =>
+						handleSocket.columns.add({
+							key: VIEW_KEYS.ALERTS,
+							index: 0
+						})
+					}
+				>
+					<Button
+						variant="secondary"
+						onClick={() =>
+							expanded
+								? handleSocket.columns.add({
+										key: VIEW_KEYS.ALERTS,
+										index: 0
+									})
+								: {}
+						}
+						sizing="sm"
+						className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+					>
+						<Zap
+							size={14}
+							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+						/>
+					</Button>
+					{expanded && (
+						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+							Alerts
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -167,7 +235,9 @@ export const ConsoleSidebar = () => {
 								/>
 							</Button>
 							{expanded && (
-								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">Logout</p>
+								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+									Logout
+								</p>
 							)}
 						</div>
 					</>

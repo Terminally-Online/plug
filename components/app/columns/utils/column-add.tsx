@@ -5,7 +5,7 @@ import { Plus } from "lucide-react"
 import { Button } from "@/components"
 import { useSockets } from "@/contexts"
 
-export const ConsoleColumnAdd = () => {
+export const ColumnAdd = () => {
 	const { socket, handle } = useSockets()
 
 	const isAdding = useMemo(() => {

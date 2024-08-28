@@ -32,7 +32,7 @@ export const misc = createTRPCRouter({
 		const { tokens } = ctx.session.user.anonymous ? { tokens: [] } : await getPositions(ctx.session.address, input)
 
 		const collectibles = ctx.session.user.anonymous
-			? { collectibles: [] }
+			? []
 			: await ctx.db.openseaCollection.findMany({
 					where: {
 						AND: [
@@ -118,5 +118,7 @@ export const misc = createTRPCRouter({
 			collectibles
 		}
 	}),
-	extractDominantColor: anonymousProtectedProcedure.input(z.string()).query(async ({ input }) => await getDominantColor(input))
+	extractDominantColor: anonymousProtectedProcedure
+		.input(z.string())
+		.query(async ({ input }) => await getDominantColor(input))
 })

@@ -3,7 +3,10 @@ import { Prisma } from "@prisma/client"
 import { SOCKET_BASE_QUERY } from "@/lib"
 
 const consoleColumnModel = Prisma.validator<Prisma.ConsoleColumnDefaultArgs>()({
-	omit: { createdAt: true, updatedAt: true, socketId: true }
+	include: {
+		viewAs: { include: { identity: { include: { ens: true } } } }
+	},
+	omit: { createdAt: true, updatedAt: true, socketId: true, viewAsId: true }
 })
 export type ConsoleColumnModel = Prisma.ConsoleColumnGetPayload<typeof consoleColumnModel>
 
@@ -11,6 +14,11 @@ const userSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
 	...SOCKET_BASE_QUERY
 })
 export type UserSocketModel = Prisma.UserSocketGetPayload<typeof userSocketModel>
+
+const minimalUserSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
+	include: { identity: { include: { ens: true } } }
+})
+export type MinimalUserSocketModel = Prisma.UserSocketGetPayload<typeof minimalUserSocketModel>
 
 // ---------------------------------------------------------------------------
 // Tokens

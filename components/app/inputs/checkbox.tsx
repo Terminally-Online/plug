@@ -15,15 +15,19 @@ export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false })
 	<button
 		className={cn(
 			"h-min w-min rounded-[6px] p-[2px]",
-			disabled === false ? "cursor-pointer bg-gradient-to-tr from-[#00E100] to-[#A3F700]" : "cursor-not-allowed bg-grayscale-100"
+			disabled === false
+				? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow"
+				: "cursor-not-allowed bg-grayscale-100"
 		)}
 		onClick={() => disabled === false && handleChange(!checked)}
 	>
 		<motion.div
-			className="rounded-[4px] p-[2px]"
+			className="rounded-[4px]"
 			initial={{ background: "#FFFFFF " }}
 			animate={{
-				background: checked ? "linear-gradient(to top right, #00E100, #A3F700)" : "linear-gradient(to top right, #FFFFFF, #FFFFFF)"
+				background: checked
+					? "linear-gradient(to top right, #00E100, #A3F700)"
+					: "linear-gradient(to top right, #FFFFFF, #FFFFFF)"
 			}}
 			transition={{ duration: 0.2, ease: "easeInOut" }}
 		>

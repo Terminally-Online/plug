@@ -113,6 +113,52 @@ export const socket = createTRPCRouter({
 
 			return socket
 		}),
+	search: anonymousProtectedProcedure
+		.input(z.object({ search: z.string(), limit: z.number().optional().default(5) }))
+		.query(async ({ input, ctx }) => {
+			return await ctx.db.userSocket.findMany({
+				where: {
+					AND: [
+						{
+							OR: [
+								{
+									id: {
+										contains: input.search,
+										mode: "insensitive",
+										not: ctx.session.address
+									}
+								},
+								{
+									socketAddress: {
+										contains: input.search,
+										mode: "insensitive"
+									}
+								},
+								{
+									identity: {
+										ensName: {
+											contains: input.search,
+											mode: "insensitive"
+										}
+									}
+								}
+							]
+						},
+						{
+							NOT: {
+								id: {
+									contains: "anonymous",
+									mode: "insensitive"
+								}
+							}
+						}
+					]
+				},
+				orderBy: { updatedAt: "desc" },
+				take: input.limit,
+				...SOCKET_BASE_QUERY
+			})
+		}),
 	balances,
 	columns
 })

@@ -201,5 +201,28 @@ export const columns = createTRPCRouter({
 					...SOCKET_BASE_QUERY
 				})
 			})
+		}),
+	as: anonymousProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				as: z.string()
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			console.log("in as on the server router")
+
+			return await ctx.db.userSocket.update({
+				where: { id: ctx.session.address },
+				data: {
+					columns: {
+						update: {
+							where: { id: input.id },
+							data: { viewAsId: input.as === ctx.session.address ? null : input.as }
+						}
+					}
+				},
+				...SOCKET_BASE_QUERY
+			})
 		})
 })

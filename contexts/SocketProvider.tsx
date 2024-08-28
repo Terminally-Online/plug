@@ -23,6 +23,7 @@ export const SocketContext = createContext<{
 			navigate: (data: { id?: string; key: string; item?: string; from?: string }) => void
 			remove: (id: string) => void
 			move: (data: { from: number; to: number }) => void
+			as: (data: { id: string; as: string }) => void
 		}
 	}
 }>({
@@ -37,7 +38,8 @@ export const SocketContext = createContext<{
 			add: () => {},
 			navigate: () => {},
 			remove: () => {},
-			move: () => {}
+			move: () => {},
+			as: () => {}
 		}
 	}
 })
@@ -112,7 +114,10 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				},
 				onError: (_, __, context) => setSocket(context)
 			}),
-			move: api.socket.columns.move.useMutation()
+			move: api.socket.columns.move.useMutation(),
+			as: api.socket.columns.as.useMutation({
+				onSuccess: data => setSocket(data)
+			})
 		}
 	}
 
@@ -130,7 +135,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 						add: data => handle.columns.add.mutate(data),
 						navigate: data => handle.columns.navigate.mutate(data),
 						remove: data => handle.columns.remove.mutate(data),
-						move: data => handle.columns.move.mutate(data)
+						move: data => handle.columns.move.mutate(data),
+						as: data => handle.columns.as.mutate(data)
 					}
 				}
 			}}

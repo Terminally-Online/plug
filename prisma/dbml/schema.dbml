@@ -13,6 +13,8 @@ Table ConsoleColumn {
   from String
   socket UserSocket [not null]
   socketId String [not null]
+  viewAs UserSocket
+  viewAsId String
 }
 
 Table FarcasterUserAddress {
@@ -59,6 +61,7 @@ Table UserSocket {
   socketAddress String [not null]
   identity SocketIdentity
   columns ConsoleColumn [not null]
+  viewedAs ConsoleColumn [not null]
   collectibles OpenseaCollectibleCache [not null]
   balances ImplementationBalance [not null]
   positions PositionCache [not null]
@@ -266,6 +269,8 @@ Table FarcasterFollows {
 }
 
 Ref: ConsoleColumn.socketId > UserSocket.id [delete: Cascade]
+
+Ref: ConsoleColumn.viewAsId > UserSocket.id [delete: Cascade]
 
 Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 

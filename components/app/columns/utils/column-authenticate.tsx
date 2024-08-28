@@ -2,9 +2,9 @@ import { useAccount, useSignMessage } from "wagmi"
 
 import { AuthButton } from "@/components/shared"
 
-export const ConsoleAuthenticate = () => {
+export const ColumnAuthenticate = () => {
 	const { isConnected, isConnecting } = useAccount()
-	const { signMessageAsync, isLoading: isSigning } = useSignMessage()
+	const { isLoading: isSigning } = useSignMessage()
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center px-4 text-center">
@@ -30,8 +30,8 @@ export const ConsoleAuthenticate = () => {
 				<div className="flex flex-col gap-2">
 					<p className="font-bold">Sign the message to confirm.</p>
 					<p className="max-w-[320px] text-sm opacity-40">
-						We ask you to sign a message to prove the ownership of the wallet you are connected so that no one else can
-						impersonate you.
+						We ask you to sign a message to prove the ownership of the wallet you are connected so that no
+						one else can impersonate you.
 					</p>
 				</div>
 			)}

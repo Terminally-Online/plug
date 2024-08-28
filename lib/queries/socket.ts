@@ -1,7 +1,10 @@
 export const SOCKET_BASE_INCLUDE = {
 	columns: {
 		orderBy: { index: "asc" },
-		omit: { createdAt: true, updatedAt: true, socketId: true }
+		include: {
+			viewAs: { include: { identity: { include: { ens: true } } } }
+		},
+		omit: { createdAt: true, updatedAt: true, socketId: true, viewAsId: true }
 	},
 	identity: {
 		include: {

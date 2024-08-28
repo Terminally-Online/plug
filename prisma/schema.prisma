@@ -33,8 +33,10 @@ model ConsoleColumn {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+    socket   UserSocket  @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String
+    viewAs   UserSocket? @relation(fields: [viewAsId], references: [id], onDelete: SetNull, name: "viewAs")
+    viewAsId String?
 }
 
 model FarcasterUserAddress {
@@ -132,6 +134,7 @@ model UserSocket {
     // One-to-many 
     // ---------------------------------------------------------------------------
     columns      ConsoleColumn[]
+    viewedAs     ConsoleColumn[]           @relation("viewAs")
     collectibles OpenseaCollectibleCache[]
     balances     ImplementationBalance[]
     positions    PositionCache[]

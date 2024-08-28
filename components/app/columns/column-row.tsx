@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion"
 
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
-import { ConsoleColumn, ConsoleColumnAdd } from "@/components"
+import { ColumnAdd, ConsoleColumn } from "@/components"
 import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 
@@ -31,7 +31,9 @@ import { VIEW_KEYS } from "@/lib"
 export const ConsoleColumnRow = () => {
 	const { socket, handle } = useSockets()
 
-	const [columns, setColumns] = useState<any[]>(socket?.columns || [{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }])
+	const [columns, setColumns] = useState<any[]>(
+		socket?.columns || [{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }]
+	)
 
 	const onDragEnd = (result: DropResult) => {
 		if (!result.destination) return
@@ -91,7 +93,7 @@ export const ConsoleColumnRow = () => {
 				</Droppable>
 			</DragDropContext>
 
-			<ConsoleColumnAdd />
+			<ColumnAdd />
 		</div>
 	)
 }

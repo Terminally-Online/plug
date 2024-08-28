@@ -3,6 +3,7 @@ import { FC } from "react"
 import {
 	Activity,
 	Cable,
+	CircleFadingPlus,
 	Coins,
 	ImageIcon,
 	Landmark,
@@ -36,6 +37,11 @@ const ANONYMOUS_OPTIONS: Options = [
 		label: "MY_PLUGS",
 		description: "Create, edit, and run your Plugs.",
 		icon: <Cable size={14} className="opacity-40" />
+	},
+	{
+		label: "VIEW_AS",
+		description: "Update columns to context as another user.",
+		icon: <CircleFadingPlus size={14} className="opacity-40" />
 	}
 ]
 
@@ -87,12 +93,12 @@ const ADMIN_OPTIONS: Options = [
 	}
 ] as const
 
-export const ConsoleColumnAddOptions: FC<Props> = ({ id }) => {
+export const ColumnAddOptions: FC<Props> = ({ id }) => {
 	const { anonymous, socket, handle } = useSockets()
 
 	const isAdmin = socket?.admin ?? false
 
-	const options = isAdmin ? ADMIN_OPTIONS : anonymous ? ANONYMOUS_OPTIONS : []
+	const options = isAdmin ? ADMIN_OPTIONS : anonymous ? ANONYMOUS_OPTIONS : OPTIONS
 
 	return (
 		<div className="flex h-full flex-col">
