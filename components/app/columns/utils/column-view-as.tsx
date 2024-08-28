@@ -13,7 +13,7 @@ import { api } from "@/server/client"
 
 import { Search } from "../../inputs"
 
-const EXCLUDED_KEYS = [VIEW_KEYS.HOME, VIEW_KEYS.VIEW_AS, VIEW_KEYS.ADD]
+const EXCLUDED_KEYS = [VIEW_KEYS.HOME, VIEW_KEYS.VIEW_AS, VIEW_KEYS.ADD, VIEW_KEYS.PLUG]
 
 export const ColumnViewAs = () => {
 	const { socket, handle } = useSockets()

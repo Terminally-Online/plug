@@ -77,7 +77,10 @@ export const ConsoleSidebar = () => {
 					</button>
 				)}
 
-				<div className="group flex flex-row items-center gap-4 px-2" onClick={() => handlePlugs.plug.add()}>
+				<div
+					className="group flex cursor-pointer flex-row items-center gap-4 px-2"
+					onClick={() => handlePlugs.plug.add()}
+				>
 					<Button
 						variant="primary"
 						onClick={() => (expanded ? handlePlugs.plug.add() : {})}
@@ -97,7 +100,7 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<div
-					className="group flex flex-row items-center gap-4 px-2"
+					className="group flex cursor-pointer flex-row items-center gap-4 px-2"
 					onClick={() =>
 						handleSocket.columns.add({
 							key: VIEW_KEYS.SEARCH,
@@ -131,10 +134,10 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<div
-					className="group flex flex-row items-center gap-4 px-2"
+					className="group flex cursor-pointer flex-row items-center gap-4 px-2"
 					onClick={() =>
 						handleSocket.columns.add({
-							key: VIEW_KEYS.ALERTS,
+							key: VIEW_KEYS.VIEW_AS,
 							index: 0
 						})
 					}
@@ -144,7 +147,7 @@ export const ConsoleSidebar = () => {
 						onClick={() =>
 							expanded
 								? handleSocket.columns.add({
-										key: VIEW_KEYS.ALERTS,
+										key: VIEW_KEYS.VIEW_AS,
 										index: 0
 									})
 								: {}
@@ -159,13 +162,13 @@ export const ConsoleSidebar = () => {
 					</Button>
 					{expanded && (
 						<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-							Alerts
+							View As
 						</p>
 					)}
 				</div>
 
 				<div
-					className="group flex flex-row items-center gap-4 px-2"
+					className="group flex cursor-pointer flex-row items-center gap-4 px-2"
 					onClick={() =>
 						handleSocket.columns.add({
 							key: VIEW_KEYS.ALERTS,
@@ -200,7 +203,10 @@ export const ConsoleSidebar = () => {
 			</div>
 
 			<div className="mt-auto flex w-full flex-col items-start gap-4">
-				<div className="group flex flex-row items-center gap-4 px-6" onClick={() => setExpanded(!expanded)}>
+				<div
+					className="group flex cursor-pointer flex-row items-center gap-4 px-6"
+					onClick={() => setExpanded(!expanded)}
+				>
 					<Button
 						variant="secondary"
 						onClick={() => (expanded ? setExpanded(!expanded) : {})}
@@ -222,7 +228,10 @@ export const ConsoleSidebar = () => {
 				{address && (
 					<>
 						<div className="h-[1px] w-full bg-grayscale-100" />
-						<div className="group flex flex-row items-center gap-4 px-6" onClick={() => disconnect()}>
+						<div
+							className="group flex cursor-pointer flex-row items-center gap-4 px-6"
+							onClick={() => disconnect()}
+						>
 							<Button
 								variant="secondary"
 								onClick={() => (expanded ? disconnect() : {})}

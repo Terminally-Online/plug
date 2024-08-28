@@ -210,8 +210,6 @@ export const columns = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			console.log("in as on the server router")
-
 			return await ctx.db.userSocket.update({
 				where: { id: ctx.session.address },
 				data: {
