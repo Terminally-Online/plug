@@ -37,11 +37,6 @@ const ANONYMOUS_OPTIONS: Options = [
 		label: "MY_PLUGS",
 		description: "Create, edit, and run your Plugs.",
 		icon: <Cable size={14} className="opacity-40" />
-	},
-	{
-		label: "VIEW_AS",
-		description: "Update columns to context as another user.",
-		icon: <CircleFadingPlus size={14} className="opacity-40" />
 	}
 ]
 
