@@ -53,6 +53,19 @@ export const getChainImage = (chainId: number | string) => {
 	}
 }
 
+export const getChainColor = (chain: string) => {
+	switch (chain) {
+		case "ethereum":
+			return "#393939"
+		case "optimism":
+			return "#FF0420"
+		case "base":
+			return "#0052FF"
+		default:
+			return "#393939"
+	}
+}
+
 export const getAssetColor = (symbol: string) => {
 	const colors = [
 		"#f87171",

@@ -2,13 +2,13 @@ import { FC, HTMLAttributes } from "react"
 
 import { Trophy } from "lucide-react"
 
-import { Button, Counter, Header, PlugGrid, SocketEarningsChart, StatCard } from "@/components"
+import { Button, Callout, Counter, Header, PlugGrid, SocketEarningsChart, StatCard } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
 
 export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
-	const { anonymous } = useSockets()
+	const { isAnonymous: anonymous } = useSockets()
 
 	const { data: plugs } = api.plug.all.useQuery({
 		target: "mine",
@@ -17,14 +17,7 @@ export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement> & { id: string }>
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{anonymous && (
-				<div className="flex h-full flex-col items-center justify-center text-center font-bold">
-					<p>You are anonymous.</p>
-					<p className="max-w-[320px] opacity-40">
-						To view the collectibles you are holding you must authenticate a wallet.
-					</p>
-				</div>
-			)}
+			<Callout.Anonymous viewing="earnings" />
 
 			{anonymous === false && (
 				<>

@@ -5,14 +5,14 @@ import Image from "next/image"
 import { MapIcon, Send } from "lucide-react"
 
 import { Counter, Frame, SocketTokenPriceChart } from "@/components"
-import { useBalances, useFrame } from "@/contexts"
+import { useFrame, useSockets } from "@/contexts"
 import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
 export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) => {
 	const { isFrame } = useFrame({ id, key: `token/${symbol}` })
-	const { positions } = useBalances()
+	const { positions } = useSockets()
 	const { tokens } = positions
 
 	const token = useMemo(() => tokens && tokens.find(token => token.symbol === symbol && token.name), [tokens, symbol])
@@ -175,7 +175,10 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 					{token.value && (
 						<div className="ml-auto flex h-8 items-center text-center">
 							<p>$</p>
-							<Counter count={tooltipData ? token.balance * tooltipData.price : token.value} decimals={2} />
+							<Counter
+								count={tooltipData ? token.balance * tooltipData.price : token.value}
+								decimals={2}
+							/>
 						</div>
 					)}
 				</div>

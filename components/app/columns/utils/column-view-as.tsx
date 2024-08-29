@@ -8,7 +8,7 @@ import { CheckCheck, SearchIcon } from "lucide-react"
 import { Accordion } from "@/components/shared"
 import { useSockets } from "@/contexts"
 import { formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { UserSocketModel } from "@/prisma/types"
+import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
 import { Search } from "../../inputs"
@@ -22,7 +22,7 @@ export const ColumnViewAs = () => {
 	const [search, debouncedSearch, setSearch] = useDebounce("")
 	const [as, setAs] = useState<UserSocketModel | undefined>(socket)
 	const [columns, setColumns] = useState<
-		Array<{ column: UserSocketModel["columns"][number]; as: UserSocketModel }> | undefined
+		Array<{ column: UserSocketModel["columns"][number]; as: MinimalUserSocketModel | null }> | undefined
 	>(undefined)
 
 	const options = socket && sockets ? [socket, ...sockets] : sockets
@@ -39,9 +39,9 @@ export const ColumnViewAs = () => {
 	)
 
 	useEffect(() => {
-		if (!socket || columns !== undefined) return
-		setColumns(socket.columns.map(column => ({ column, as: socket })))
-	}, [socket, columns])
+		if (!socket) return
+		setColumns(socket.columns.map(column => ({ column, as: column.viewAs })))
+	}, [socket])
 
 	return (
 		<div className="flex h-full flex-col py-4">
@@ -60,7 +60,7 @@ export const ColumnViewAs = () => {
 						{options.map(option => (
 							<Accordion
 								key={option.id}
-								onExpand={() => setAs(prev => (prev && prev.id === option.id ? undefined : option))}
+								onExpand={() => setAs(prev => (prev && prev.id === option.id ? socket : option))}
 							>
 								<div className="flex flex-row items-center gap-4 whitespace-nowrap">
 									<div className="relative h-8 w-8 min-w-8 rounded-sm">
@@ -145,7 +145,7 @@ export const ColumnViewAs = () => {
 												prev &&
 												prev.map(prevColumn => ({
 													...prevColumn,
-													as: prevColumn.column.id === column.column.id ? as : prevColumn.as
+													as: prevColumn.column.id === column.column.id ? null : prevColumn.as
 												}))
 										)
 									}}

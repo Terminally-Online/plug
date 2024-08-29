@@ -14,6 +14,7 @@
 		"jsx": "preserve",
 		"incremental": true,
 		"downlevelIteration": true,
+		"noErrorTruncation": false,
 		"plugins": [
 			{
 				"name": "next"

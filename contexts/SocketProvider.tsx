@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
-import { api } from "@/server/client"
+import { api, RouterOutputs } from "@/server/client"
 
 import { mainnet } from "viem/chains"
 import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
@@ -15,8 +15,10 @@ export const SocketContext = createContext<{
 	name: GetEnsNameReturnType | undefined
 	avatar: GetEnsAvatarReturnType | undefined
 	socket: UserSocketModel | undefined
+	collectibles: RouterOutputs["socket"]["balances"]["collectibles"]
+	positions: RouterOutputs["socket"]["balances"]["positions"]
 	page: ConsoleColumnModel | undefined
-	anonymous: boolean
+	isAnonymous: boolean
 	handle: {
 		columns: {
 			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
@@ -31,8 +33,13 @@ export const SocketContext = createContext<{
 	name: undefined,
 	avatar: undefined,
 	socket: undefined,
+	collectibles: [],
+	positions: {
+		tokens: [],
+		protocols: []
+	},
 	page: undefined,
-	anonymous: false,
+	isAnonymous: false,
 	handle: {
 		columns: {
 			add: () => {},
@@ -61,7 +68,23 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		avatar: ensAvatar
 	})
 
-	const anonymous = !socketData || socketData.id.startsWith("anonymous")
+	const isAnonymous = !socketData || socketData.id.startsWith("anonymous")
+	const enabled =
+		socketData !== undefined &&
+		socketData.socketAddress !== undefined &&
+		socketData.id.startsWith("anonymous") === false
+
+	const { data: collectibles = [] } = api.socket.balances.collectibles.useQuery(socketData?.socketAddress, {
+		enabled
+	})
+
+	const { data: positions = { tokens: [], protocols: [] } } = api.socket.balances.positions.useQuery(
+		socketData?.socketAddress,
+		{
+			enabled,
+			refetchInterval: 5 * 60 * 1000
+		}
+	)
 
 	const [socket, setSocket] = useState<UserSocketModel | undefined>(socketData)
 
@@ -128,8 +151,10 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				name: socket?.identity?.ens?.name || ensName || undefined,
 				avatar: socket?.identity?.ens?.avatar || ensAvatar || undefined,
 				socket,
+				collectibles,
+				positions,
 				page,
-				anonymous,
+				isAnonymous,
 				handle: {
 					columns: {
 						add: data => handle.columns.add.mutate(data),

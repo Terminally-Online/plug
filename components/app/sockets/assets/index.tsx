@@ -1,29 +1,20 @@
 import { FC, HTMLAttributes, useState } from "react"
 
+import exp from "constants"
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
-import { Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
-import { useBalances, useSockets } from "@/contexts"
+import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
+import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
 
 export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
-	const { anonymous } = useSockets()
-	const { positions } = useBalances()
-	const { tokens } = positions
+	const { isAnonymous: anonymous, positions } = useSockets()
 
-	const [tokensExpanded, setTokensExpanded] = useState(false)
-	const [positionsExpanded, setPositionsExpanded] = useState(false)
+	const [expanded, setExpanded] = useState<Array<string>>([])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{anonymous && (
-				<div className="flex h-full flex-col items-center justify-center text-center font-bold">
-					<p>You are anonymous.</p>
-					<p className="max-w-[320px] opacity-40">
-						To view the collectibles you are holding you must authenticate a wallet.
-					</p>
-				</div>
-			)}
+			<Callout.Anonymous viewing="assets" />
 
 			{anonymous === false && (
 				<>
@@ -31,21 +22,41 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 						size="sm"
 						icon={<CircleDollarSign size={14} className="opacity-40" />}
 						label="Tokens"
-						nextLabel={tokens.length < 5 ? undefined : tokensExpanded ? "Collapse" : "See All"}
-						nextOnClick={() => setTokensExpanded(!tokensExpanded)}
+						nextLabel={
+							positions.tokens.length < 5
+								? undefined
+								: expanded.includes("tokens")
+									? "Collapse"
+									: "See All"
+						}
+						nextOnClick={() =>
+							setExpanded(prev =>
+								prev.includes("tokens") ? prev.filter(key => key !== "tokens") : [...prev, "tokens"]
+							)
+						}
 					/>
-					<SocketTokenList id={id} expanded={tokensExpanded} />
+					<SocketTokenList id={id} expanded={expanded.includes("tokens")} />
 
 					<Header
 						size="sm"
 						icon={<CircleDollarSign size={14} className="opacity-40" />}
 						label="Positions"
 						nextLabel={
-							positions.protocols.length < 3 ? undefined : positionsExpanded ? "Collapse" : "See All"
+							positions.protocols.length < 3
+								? undefined
+								: expanded.includes("positions")
+									? "Collapse"
+									: "See All"
 						}
-						nextOnClick={() => setPositionsExpanded(!positionsExpanded)}
+						nextOnClick={() =>
+							setExpanded(prev =>
+								prev.includes("positions")
+									? prev.filter(key => key !== "positions")
+									: [...prev, "positions"]
+							)
+						}
 					/>
-					<SocketPositionList id={id} expanded={positionsExpanded} />
+					<SocketPositionList id={id} expanded={expanded.includes("positions")} />
 
 					<Header size="sm" icon={<ImageIcon size={14} className="opacity-40" />} label="Collectibles" />
 					<SocketCollectionList id={id} />

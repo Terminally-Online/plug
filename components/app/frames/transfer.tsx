@@ -3,12 +3,22 @@ import { useMemo, useState } from "react"
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import { ArrowLeftRight, ArrowRight, ChevronDown, ChevronRight, Globe, ReceiptText, SquareArrowDownRight, User, Wallet } from "lucide-react"
+import {
+	ArrowLeftRight,
+	ArrowRight,
+	ChevronDown,
+	ChevronRight,
+	Globe,
+	ReceiptText,
+	SquareArrowDownRight,
+	User,
+	Wallet
+} from "lucide-react"
 import { isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
 import { Button, Frame, Search, SocketTokenList } from "@/components"
-import { useBalances, useFrame, useSockets } from "@/contexts"
+import { useFrame, useSockets } from "@/contexts"
 import { formatTitle, getChainImage } from "@/lib"
 
 const DEFAULT_TRANSFER = {

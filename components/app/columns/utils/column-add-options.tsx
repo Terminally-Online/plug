@@ -1,25 +1,10 @@
-import { FC } from "react"
+import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
-import {
-	Activity,
-	Cable,
-	CircleFadingPlus,
-	Coins,
-	ImageIcon,
-	Landmark,
-	PiggyBank,
-	Settings,
-	ShieldAlert,
-	User,
-	Wallet
-} from "lucide-react"
+import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, User, Wallet } from "lucide-react"
 
+import { Accordion } from "@/components/shared"
 import { useSockets } from "@/contexts"
-import { formatTitle, VIEW_KEYS } from "@/lib"
-
-type Props = {
-	id: string
-}
+import { cn, formatTitle, VIEW_KEYS } from "@/lib"
 
 type Options = Array<{
 	label: keyof typeof VIEW_KEYS
@@ -88,37 +73,31 @@ const ADMIN_OPTIONS: Options = [
 	}
 ] as const
 
-export const ColumnAddOptions: FC<Props> = ({ id }) => {
-	const { anonymous, socket, handle } = useSockets()
+export const ColumnAddOptions: FC<
+	HTMLAttributes<HTMLDivElement> &
+		PropsWithChildren<{
+			id: string
+		}>
+> = ({ id, className, ...props }) => {
+	const { socket, handle } = useSockets()
 
 	const isAdmin = socket?.admin ?? false
-
-	const options = isAdmin ? ADMIN_OPTIONS : anonymous ? ANONYMOUS_OPTIONS : OPTIONS
+	const options = isAdmin ? ADMIN_OPTIONS : OPTIONS
 
 	return (
-		<div className="flex h-full flex-col">
+		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
 			{options.map(option => (
-				<button
-					key={option.label}
-					className="cursor-pointer border-b-[1px] border-grayscale-100 px-4 py-2 text-left transition-all duration-200 ease-in-out hover:bg-grayscale-0"
-					onClick={() => handle.columns.add({ key: option.label, id })}
-				>
-					<div className="flex flex-row items-center gap-4">
-						{option.icon}
+				<Accordion key={option.label} onExpand={() => handle.columns.add({ key: option.label, id })}>
+					<div className="flex flex-row items-center gap-2">
+						<div className="flex h-6 w-6 min-w-6 items-center justify-center">{option.icon}</div>
 
-						<div className="flex flex-col">
-							<p className="font-bold">{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
-							<p className="text-sm font-bold opacity-40">{option.description}</p>
+						<div className="flex flex-col items-start font-bold">
+							<p>{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
+							<p className="text-sm opacity-40">{option.description}</p>
 						</div>
 					</div>
-				</button>
+				</Accordion>
 			))}
-
-			{anonymous && (
-				<p className="max-w-[380px] p-4 text-sm font-bold opacity-40">
-					Several options are unavailble because you are using an anonymous account.
-				</p>
-			)}
 		</div>
 	)
 }

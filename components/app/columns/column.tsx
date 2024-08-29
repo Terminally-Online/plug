@@ -220,11 +220,11 @@ export const ConsoleColumn: FC<{
 								{key === VIEW_KEYS.AUTHENTICATE ? (
 									<ColumnAuthenticate />
 								) : key === VIEW_KEYS.ADD ? (
-									<ColumnAddOptions id={id} />
+									<ColumnAddOptions className="px-4 pt-4" id={id} />
 								) : key === VIEW_KEYS.SEARCH ? (
 									<ColumnSearch className="px-4 pt-4" id={id} />
 								) : key === VIEW_KEYS.ALERTS ? (
-									<ColumnAlerts id={id} className="px-4 pt-4" />
+									<ColumnAlerts className="px-4 pt-4" id={id} />
 								) : key === VIEW_KEYS.VIEW_AS ? (
 									<ColumnViewAs />
 								) : key === VIEW_KEYS.PLUGS ? (
@@ -238,7 +238,7 @@ export const ConsoleColumn: FC<{
 								) : key === VIEW_KEYS.ACTIVITY ? (
 									<SocketActivity id={id} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ASSETS ? (
-									<SocketAssets id={id} className="px-4" />
+									<SocketAssets id={id} className="px-4 pt-4" />
 								) : key === "TOKENS" ? (
 									<SocketTokenList id={id} className="px-4 pt-4" expanded={true} />
 								) : key === VIEW_KEYS.COLLECTIBLES ? (

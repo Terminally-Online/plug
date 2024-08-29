@@ -1,39 +1,27 @@
-import type { FC } from "react"
+import { FC } from "react"
 
-import { useBalances } from "@/contexts"
+import { useSockets } from "@/contexts"
+import { getChainColor } from "@/lib"
 
-const size = 14
-const radius = 50
-const circumference = 2 * Math.PI * radius
-const viewbox = 120
-
-const getDashArray = (percentage: number) => {
-	const filledLength = (percentage / 100) * circumference
-	const emptyLength = circumference - filledLength
-	return `${filledLength} ${emptyLength}`
-}
-
-const getChainColor = (chain: string) => {
-	switch (chain) {
-		case "ethereum":
-			return "#393939"
-		case "optimism":
-			return "#FF0420"
-		case "base":
-			return "#0052FF"
-		default:
-			return "#393939"
-	}
-}
+const SIZE = 14
+const RADIUS = 50
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+const VIEWBOX = 120
 
 export const SocketTokenPercentages: FC<{
-	implementations: NonNullable<ReturnType<typeof useBalances>["positions"]["tokens"]>[number]["implementations"]
+	implementations: NonNullable<ReturnType<typeof useSockets>["positions"]["tokens"]>[number]["implementations"]
 }> = ({ implementations }) => {
 	let accumulatedPercentage = 0
 
+	const getDashArray = (percentage: number) => {
+		const filledLength = (percentage / 100) * CIRCUMFERENCE
+		const emptyLength = CIRCUMFERENCE - filledLength
+		return `${filledLength} ${emptyLength}`
+	}
+
 	return (
-		<svg width={size} height={size} viewBox={`0 0 ${viewbox} ${viewbox}`}>
-			<g transform={`translate(${viewbox / 2},${viewbox / 2})`}>
+		<svg width={SIZE} height={SIZE} viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
+			<g transform={`translate(${VIEWBOX / 2},${VIEWBOX / 2})`}>
 				{implementations.map((implementation, index) => {
 					const dashArray = getDashArray(implementation.percentage)
 					const rotation = (accumulatedPercentage / 100) * 360
@@ -42,7 +30,7 @@ export const SocketTokenPercentages: FC<{
 					return (
 						<circle
 							key={index}
-							r={radius}
+							r={RADIUS}
 							fill="transparent"
 							stroke={getChainColor(implementation.chain)}
 							strokeWidth="20"

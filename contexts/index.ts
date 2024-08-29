@@ -1,4 +1,3 @@
-export * from "@/contexts/BalancesProvider"
 export * from "@/contexts/DomainProvider"
 export * from "@/contexts/FrameProvider"
 export * from "@/contexts/PlugProvider"

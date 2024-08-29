@@ -1,30 +1,28 @@
 import { FC, HTMLAttributes, useMemo, useState } from "react"
 
-import { motion, MotionProps } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
-import { Search, SocketCollectionItem } from "@/components"
-import { useBalances, useSockets } from "@/contexts"
+import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
+import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectionList: FC<
-	HTMLAttributes<HTMLDivElement> &
-		MotionProps & {
-			id: string
-			collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
-			expanded?: boolean
-			count?: number
-			column?: boolean
-		}
+	HTMLAttributes<HTMLDivElement> & {
+		id: string
+		collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
+		expanded?: boolean
+		count?: number
+		column?: boolean
+	}
 > = ({ id, collectibles, expanded, count = 5, column = true, className, ...props }) => {
-	const { anonymous } = useSockets()
-	const { collectibles: apiCollectibles } = useBalances()
+	const { isAnonymous: anonymous } = useSockets()
+	const { collectibles: apiCollectibles } = useSockets()
 	collectibles = collectibles ?? apiCollectibles
 
 	const [search, handleSearch] = useState("")
 
-	const visibleCollectibles = useMemo(() => {
+	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
 		if (collectibles === undefined) return Array(5).fill(undefined)
 
 		const filteredCollectibles = collectibles.filter(
@@ -46,12 +44,7 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{anonymous && (
-				<div className="flex h-full flex-col items-center justify-center text-center font-bold">
-					<p>You are anonymous.</p>
-					<p className="max-w-[320px] opacity-40">To view the collectibles you are holding you must authenticate a wallet.</p>
-				</div>
-			)}
+			<Callout.Anonymous viewing="collectibles" />
 
 			{anonymous === false && column && (
 				<Search
@@ -64,24 +57,32 @@ export const SocketCollectionList: FC<
 				/>
 			)}
 
-			<motion.div
-				className="flex flex-col gap-2"
-				initial="hidden"
-				animate="visible"
-				variants={{
-					hidden: { opacity: 0 },
-					visible: {
-						opacity: 1,
-						transition: {
-							staggerChildren: 0.05
-						}
-					}
-				}}
-			>
+			<Callout.EmptySearch
+				isEmpty={search !== "" && visibleCollectibles.length === 0}
+				search={search}
+				handleSearch={handleSearch}
+			/>
+
+			<Animate.List>
 				{visibleCollectibles.map((collection, index) => (
-					<SocketCollectionItem key={index} id={id} collection={collection} searched={search !== ""} />
+					<Animate.ListItem key={index}>
+						<SocketCollectionItem id={id} collection={collection} searched={search !== ""} />
+					</Animate.ListItem>
 				))}
-			</motion.div>
+			</Animate.List>
+
+			{visibleCollectibles.map(
+				(collection, index) =>
+					collection &&
+					collection.collectibles.map(collectible => (
+						<CollectibleFrame
+							key={`${index}-${collectible.identifier}`}
+							id={id}
+							collection={collection}
+							collectible={collectible}
+						/>
+					))
+			)}
 		</div>
 	)
 }
