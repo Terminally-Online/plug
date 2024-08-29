@@ -27,8 +27,9 @@ export const ColumnViewAs = () => {
 
 	const options = socket && sockets ? [socket, ...sockets] : sockets
 
-	// NOTE: This is a kind of hacky way to prevent flashing when searching for sockets. This way,
-	//       we update the local state when the search hits instead of showing a loading state.
+	// NOTE: This is a kind of hacky way to prevent flashing when searching for sockets.
+	//       This way, we update the local state when the search hits instead of showing a
+	//       loading state.
 	api.socket.search.useQuery(
 		{
 			search: debouncedSearch
