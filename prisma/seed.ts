@@ -14,7 +14,8 @@ const seedSockets = async () => {
 		data: DEFAULT_SOCKETS.map(id => ({
 			id,
 			socketAddress: id
-		}))
+		})),
+		skipDuplicates: true
 	})
 }
 
