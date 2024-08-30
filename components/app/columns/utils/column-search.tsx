@@ -132,7 +132,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 								tokens={results.tokens}
 								expanded={expanded.includes("tokens")}
 								count={5}
-								column={false}
+								isColumn={false}
 							/>
 						</div>
 					)}
@@ -166,7 +166,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 								collectibles={results.collectibles}
 								expanded={expanded.includes("collectibles")}
 								count={5}
-								column={false}
+								isColumn={false}
 							/>
 						</div>
 					)}
