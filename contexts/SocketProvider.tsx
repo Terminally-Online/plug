@@ -10,6 +10,8 @@ import { api, RouterOutputs } from "@/server/client"
 import { mainnet } from "viem/chains"
 import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
 
+const TIME = 5 * 60 * 1000
+
 export const SocketContext = createContext<{
 	address: string | undefined
 	name: GetEnsNameReturnType | undefined
@@ -75,14 +77,16 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		socketData.id.startsWith("anonymous") === false
 
 	const { data: collectibles = [] } = api.socket.balances.collectibles.useQuery(socketData?.socketAddress, {
-		enabled
+		enabled,
+		staleTime: TIME,
+		refetchInterval: TIME
 	})
-
 	const { data: positions = { tokens: [], protocols: [] } } = api.socket.balances.positions.useQuery(
 		socketData?.socketAddress,
 		{
 			enabled,
-			refetchInterval: 5 * 60 * 1000
+			staleTime: TIME,
+			refetchInterval: TIME
 		}
 	)
 
@@ -171,4 +175,35 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 }
 
-export const useSockets = () => useContext(SocketContext)
+export const useSockets = (id?: string) => {
+	const { socket, collectibles, positions, ...context } = useContext(SocketContext)
+	const { id: socketId, columns } = socket ?? {}
+
+	const column = useMemo(() => (columns ? columns.find(column => column.id === id) : undefined), [columns, id])
+	const isExternal = useMemo(() => {
+		return column !== undefined && column.viewAs !== null && column.viewAs.id !== socketId
+	}, [column, socketId])
+	const socketAddress = useMemo(() => {
+		return column?.viewAs?.socketAddress
+	}, [column])
+
+	const { data: columnCollectibles = undefined } = api.socket.balances.collectibles.useQuery(socketAddress, {
+		enabled: isExternal,
+		staleTime: TIME,
+		refetchInterval: TIME
+	})
+	const { data: columnPositions = undefined } = api.socket.balances.positions.useQuery(socketAddress, {
+		enabled: isExternal,
+		staleTime: TIME,
+		refetchInterval: TIME
+	})
+
+	return {
+		...context,
+		socket,
+		column,
+		isExternal,
+		collectibles: columnCollectibles ?? collectibles,
+		positions: columnPositions ?? positions
+	}
+}

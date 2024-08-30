@@ -119,8 +119,8 @@ export const TokenImage: FC<{
 							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							style={{
 								backgroundColor: getAssetColor(symbol),
-								width: `${dimensions.blur}rem`,
-								height: `${dimensions.blur}rem`
+								height: `${dimensions.blur}rem`,
+								width: `${dimensions.blur}rem`
 							}}
 						/>
 					)}
@@ -128,8 +128,8 @@ export const TokenImage: FC<{
 						className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 animate-fade-in items-center justify-center rounded-full"
 						style={{
 							backgroundColor: getAssetColor(symbol),
-							width: `${dimensions.content}rem`,
 							height: `${dimensions.content}rem`,
+							width: `${dimensions.content}rem`,
 							minWidth: `${dimensions.content}rem`
 						}}
 					>
@@ -157,6 +157,7 @@ export const TokenImage: FC<{
 						alt={symbol}
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
 						style={{
+							height: `${dimensions.content}rem`,
 							width: `${dimensions.content}rem`,
 							minWidth: `${dimensions.content}rem`
 						}}

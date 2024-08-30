@@ -40,7 +40,8 @@ export const Button: FC<Props> = ({
 	disabled = false,
 	...props
 }) => {
-	const base = "cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
+	const base =
+		"relative cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
 
 	if (onClick)
 		return (
@@ -61,15 +62,22 @@ export const Button: FC<Props> = ({
 
 	if (external)
 		return (
-			<a href={href} target="_blank" rel="noreferrer" className={cn(variants[variant], sizings[sizing], base, className)}>
+			<a
+				href={href}
+				target="_blank"
+				rel="noreferrer"
+				className={cn(variants[variant], sizings[sizing], base, className)}
+			>
 				{children}
 			</a>
 		)
 
 	return (
-		<Link href={href} className={cn(variants[variant], sizings[sizing], base, className)}>
-			{children}
-		</Link>
+		<>
+			<Link href={href} className={cn(variants[variant], sizings[sizing], base, className)}>
+				{children}
+			</Link>
+		</>
 	)
 }
 

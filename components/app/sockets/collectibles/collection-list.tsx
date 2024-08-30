@@ -5,7 +5,7 @@ import { SearchIcon } from "lucide-react"
 import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { api, RouterOutputs } from "@/server/client"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -13,17 +13,20 @@ export const SocketCollectionList: FC<
 		collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
 		expanded?: boolean
 		count?: number
-		column?: boolean
+		isColumn?: boolean
 	}
-> = ({ id, collectibles, expanded, count = 5, column = true, className, ...props }) => {
-	const { isAnonymous: anonymous } = useSockets()
-	const { collectibles: apiCollectibles } = useSockets()
-	collectibles = collectibles ?? apiCollectibles
+> = ({ id, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { isAnonymous, isExternal, column, collectibles: apiCollectibles } = useSockets(id)
+	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs?.socketAddress, {
+		enabled: isExternal
+	})
+
+	collectibles = collectibles ?? columnCollectibles ?? apiCollectibles
 
 	const [search, handleSearch] = useState("")
 
 	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
-		if (collectibles === undefined) return Array(5).fill(undefined)
+		if (collectibles === undefined || (search === "" && collectibles.length === 0)) return Array(5).fill(undefined)
 
 		const filteredCollectibles = collectibles.filter(
 			collectible =>
@@ -43,10 +46,8 @@ export const SocketCollectionList: FC<
 	}, [collectibles, expanded, count, search])
 
 	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Callout.Anonymous viewing="collectibles" />
-
-			{anonymous === false && column && (
+		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+			{(isAnonymous === false || isExternal) && isColumn && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}
@@ -70,6 +71,13 @@ export const SocketCollectionList: FC<
 					</Animate.ListItem>
 				))}
 			</Animate.List>
+
+			<Callout.Anonymous id={id} viewing="collectibles" isAbsolute={true} />
+			<Callout.EmptyAssets
+				isEmpty={!isAnonymous && search === "" && collectibles.length === 0}
+				isViewing="collectibles"
+				isReceivable={false}
+			/>
 
 			{visibleCollectibles.map(
 				(collection, index) =>

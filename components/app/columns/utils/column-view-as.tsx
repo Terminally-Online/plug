@@ -59,10 +59,7 @@ export const ColumnViewAs = () => {
 				{socket && options && options.length > 0 && (
 					<div className="flex flex-col gap-2">
 						{options.map(option => (
-							<Accordion
-								key={option.id}
-								onExpand={() => setAs(prev => (prev && prev.id === option.id ? socket : option))}
-							>
+							<Accordion key={option.id} onExpand={() => setAs(option)}>
 								<div className="flex flex-row items-center gap-4 whitespace-nowrap">
 									<div className="relative h-8 w-8 min-w-8 rounded-sm">
 										{option.identity?.ens?.avatar ? (
@@ -139,17 +136,7 @@ export const ColumnViewAs = () => {
 							.map(column => (
 								<Accordion
 									key={column.column.id}
-									onExpand={() => {
-										handle.columns.as({ id: column.column.id, as: as.id })
-										setColumns(
-											prev =>
-												prev &&
-												prev.map(prevColumn => ({
-													...prevColumn,
-													as: prevColumn.column.id === column.column.id ? null : prevColumn.as
-												}))
-										)
-									}}
+									onExpand={() => handle.columns.as({ id: column.column.id, as: as.id })}
 								>
 									<div className="flex flex-row items-center justify-between gap-4">
 										<p className="font-bold">{formatTitle(column.column.key.toLowerCase())}</p>

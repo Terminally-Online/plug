@@ -44,11 +44,6 @@ const findPositions = async (socketId: string, search: string = "") => {
 	const tokens = await db.fungible.findMany({
 		where: {
 			AND: [
-				{
-					implementations: {
-						some: { balances: { some: { socketId } } }
-					}
-				},
 				...prohibitedNameInclusions.map(inclusion => ({
 					NOT: {
 						name: {
@@ -78,6 +73,11 @@ const findPositions = async (socketId: string, search: string = "") => {
 							}
 						}
 					]
+				},
+				{
+					implementations: {
+						some: { balances: { some: { socketId, balance: { gt: 0 } } } }
+					}
 				}
 			]
 		},
@@ -87,7 +87,7 @@ const findPositions = async (socketId: string, search: string = "") => {
 			icon: true,
 			verified: true,
 			implementations: {
-				where: { balances: { some: { balance: { gt: 0 } } } },
+				where: { balances: { some: { socketId, balance: { gt: 0 } } } },
 				omit: {
 					createdAt: true,
 					updatedAt: true,
@@ -145,7 +145,8 @@ const findPositions = async (socketId: string, search: string = "") => {
 		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
 			protocols.flatMap(protocol =>
 				protocol.positions.map(
-					position => `${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
+					position =>
+						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
 				)
 			)
 		)
@@ -165,7 +166,10 @@ const findPositions = async (socketId: string, search: string = "") => {
 
 				const implementations = token.implementations
 					.map(implementation => {
-						const implementationBalance = implementation.balances.reduce((acc, balance) => acc + balance.balance, 0)
+						const implementationBalance = implementation.balances.reduce(
+							(acc, balance) => acc + balance.balance,
+							0
+						)
 
 						return {
 							...implementation,
@@ -176,7 +180,9 @@ const findPositions = async (socketId: string, search: string = "") => {
 					.sort((a, b) => b.percentage - a.percentage)
 
 				const { price, change } =
-					prices.find(price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`) || {}
+					prices.find(
+						price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`
+					) || {}
 
 				return {
 					...token,
@@ -195,8 +201,11 @@ const findPositions = async (socketId: string, search: string = "") => {
 					const { fungible, balance } = position
 
 					const { price, change } =
-						prices.find(price => price.id === `${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`) ||
-						{}
+						prices.find(
+							price =>
+								price.id ===
+								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
+						) || {}
 
 					return {
 						...position,
@@ -331,8 +340,9 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 
 				const implementationChain = relationships.chain.data.id
 				const implementationContract =
-					attributes.fungible_info.implementations.find(implementation => implementation.chain_id === relationships.chain.data.id)
-						?.address ||
+					attributes.fungible_info.implementations.find(
+						implementation => implementation.chain_id === relationships.chain.data.id
+					)?.address ||
 					(attributes.fungible_info.name === "Ethereum" && NATIVE_TOKEN_ADDRESS) ||
 					undefined
 				const balance = attributes.quantity.float

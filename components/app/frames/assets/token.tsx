@@ -12,7 +12,7 @@ import { TokenImage } from "../../sockets/tokens/token-image"
 
 export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) => {
 	const { isFrame } = useFrame({ id, key: `token/${symbol}` })
-	const { positions } = useSockets()
+	const { positions } = useSockets(id)
 	const { tokens } = positions
 
 	const token = useMemo(() => tokens && tokens.find(token => token.symbol === symbol && token.name), [tokens, symbol])

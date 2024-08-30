@@ -1,24 +1,21 @@
 import { FC, HTMLAttributes, useMemo, useState } from "react"
 
-import { motion, MotionProps } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
 import { Animate, Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
 
-export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & { id: string; expanded?: boolean }> = ({
-	id,
-	expanded,
-	className,
-	...props
-}) => {
-	const { isAnonymous: anonymous, positions } = useSockets()
+export const SocketPositionList: FC<
+	HTMLAttributes<HTMLDivElement> & { id: string; expanded?: boolean; isColumn?: boolean }
+> = ({ id, expanded, isColumn = true, className, ...props }) => {
+	const { isAnonymous, isExternal, positions } = useSockets(id)
 	const { protocols } = positions
 
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
+		if (search === "" && protocols.length === 0) return Array(5).fill(undefined)
 		if (protocols === undefined) return Array(3).fill(undefined)
 
 		const filteredProtocols = protocols.filter(
@@ -42,10 +39,8 @@ export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & { id: strin
 	if (positions === undefined) return null
 
 	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Callout.Anonymous viewing="positions" />
-
-			{anonymous === false && (
+		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+			{(isAnonymous === false || isExternal) && isColumn && protocols.length > 0 && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}
@@ -70,9 +65,18 @@ export const SocketPositionList: FC<HTMLAttributes<HTMLDivElement> & { id: strin
 				))}
 			</Animate.List>
 
-			{visibilePositions.map((protocol, index) => {
-				return <PositionFrame key={index} id={id} protocol={protocol} />
-			})}
+			<Callout.Anonymous id={id} viewing="positions" isAbsolute={true} />
+			<Callout.EmptyAssets
+				isEmpty={!isAnonymous && search === "" && protocols.length === 0}
+				isViewing="positions"
+				isReceivable={false}
+			/>
+
+			{visibilePositions
+				.filter(protocol => Boolean(protocol))
+				.map((protocol, index) => {
+					return <PositionFrame key={index} id={id} protocol={protocol} />
+				})}
 		</div>
 	)
 }

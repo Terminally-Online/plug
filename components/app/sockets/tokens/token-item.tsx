@@ -15,11 +15,7 @@ export const SocketTokenItem: FC<{
 	})
 
 	return (
-		<Accordion
-			loading={token === undefined}
-			expanded={false}
-			onExpand={token === undefined ? () => {} : () => handleFrame()}
-		>
+		<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => handleFrame()}>
 			{token === undefined ? (
 				<div className="invisible">
 					<p>.</p>
@@ -48,12 +44,12 @@ export const SocketTokenItem: FC<{
 							</div>
 						</div>
 
-						<div className="flex w-full flex-row font-bold">
-							<div className="flex flex-row items-center gap-2">
+						<div className="flex w-full flex-row gap-4 font-bold">
+							<div className="flex flex-row items-center gap-2 truncate overflow-ellipsis">
 								<SocketTokenPercentages implementations={token.implementations} />
-								<div className="flex w-max flex-row items-center gap-1 text-sm opacity-40">
+								<div className="flex flex-row items-center gap-1 truncate text-sm opacity-40">
 									<Counter count={token.balance} />
-									<p className="w-max whitespace-nowrap">{token.symbol.toUpperCase()}</p>
+									<p className="whitespace-nowrap">{token.symbol.toUpperCase()}</p>
 								</div>
 							</div>
 

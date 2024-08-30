@@ -11,10 +11,11 @@ const consoleColumnModel = Prisma.validator<Prisma.ConsoleColumnDefaultArgs>()({
 						ens: {
 							omit: { createdAt: true, updatedAt: true }
 						}
-					}
+					},
+					omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true, ensName: true }
 				}
 			},
-			omit: { createdAt: true, updatedAt: true }
+			omit: { createdAt: true, updatedAt: true, admin: true }
 		}
 	},
 	omit: { createdAt: true, updatedAt: true, socketId: true, viewAsId: true }
@@ -33,10 +34,11 @@ const minimalUserSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()(
 				ens: {
 					omit: { createdAt: true, updatedAt: true }
 				}
-			}
+			},
+			omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true, ensName: true }
 		}
 	},
-	omit: { createdAt: true, updatedAt: true }
+	omit: { createdAt: true, updatedAt: true, admin: true }
 })
 export type MinimalUserSocketModel = Prisma.UserSocketGetPayload<typeof minimalUserSocketModel>
 

@@ -9,10 +9,11 @@ export const SOCKET_BASE_INCLUDE = {
 							ens: {
 								omit: { createdAt: true, updatedAt: true }
 							}
-						}
+						},
+						omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true, ensName: true }
 					}
 				},
-				omit: { createdAt: true, updatedAt: true }
+				omit: { createdAt: true, updatedAt: true, admin: true }
 			}
 		},
 		omit: { createdAt: true, updatedAt: true, socketId: true, viewAsId: true }

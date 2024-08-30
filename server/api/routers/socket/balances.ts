@@ -7,16 +7,21 @@ import { getAPIKey, getCollectibles } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"
 import { getDominantColor } from "@/server/color"
 
-import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "../../trpc"
+import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	collectibles: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
+	collectibles: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input }) => {
 		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 		return await getCollectibles(input)
 	}),
-	positions: protectedProcedure.input(z.string().optional()).query(async ({ input }) => {
-		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
-		return await getPositions(input)
+	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input }) => {
+		try {
+			if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
+			return await getPositions(input)
+		} catch (error) {
+			console.error(error)
+			throw new TRPCError({ code: "BAD_REQUEST" })
+		}
 	}),
 	metadata: anonymousProtectedProcedure
 		.input(
