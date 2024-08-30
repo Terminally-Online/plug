@@ -14,8 +14,8 @@ export const LandingFooter: FC = () => (
 			<div className="grid grid-cols-1 font-bold text-black/40 lg:grid-cols-12">
 				<div className="mb-8 lg:col-span-4 lg:mb-0">
 					<p className="lg:max-w-[320px]">
-						Automate your transactions on every popular Ethereum based blockchain so that you can log off and have everything
-						run without you doing a thing.
+						Automate your transactions on every popular Ethereum based blockchain so that you can log off
+						and have everything run without you doing a thing.
 					</p>
 				</div>
 				<div className="mb-2 flex flex-col gap-2 lg:col-span-2">
@@ -49,7 +49,12 @@ export const LandingFooter: FC = () => (
 					<a href={routes.comingSoon} className="transition-opacity duration-200 hover:opacity-100">
 						hello@onplug.io
 					</a>
-					<a href={routes.twitter} target="_blank" rel="noreferrer" className="transition-opacity duration-200 hover:opacity-100">
+					<a
+						href={routes.twitter}
+						target="_blank"
+						rel="noreferrer"
+						className="transition-opacity duration-200 hover:opacity-100"
+					>
 						Twitter
 					</a>
 					<Link href={routes.comingSoon} className="transition-opacity duration-200 hover:opacity-100">

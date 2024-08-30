@@ -76,7 +76,12 @@ export const AuthButton: FC<HTMLAttributes<HTMLButtonElement> & PropsWithChildre
 	return (
 		<>
 			{session?.address ? (
-				<Button variant="destructive" className={cn(className ? className : "w-full")} onClick={() => disconnect()} {...props}>
+				<Button
+					variant="destructive"
+					className={cn(className ? className : "w-full")}
+					onClick={() => disconnect()}
+					{...props}
+				>
 					Logout
 				</Button>
 			) : (

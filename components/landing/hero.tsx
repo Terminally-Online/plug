@@ -18,7 +18,8 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 		() => [
 			{
 				title: "Less Clicks. More Crypto.",
-				subtitle: "Plug-and-play protocols with constraint driven transactions and watch everything happen like magic."
+				subtitle:
+					"Plug-and-play protocols with constraint driven transactions and watch everything happen like magic."
 			},
 			{
 				title: "Less Worrying. More Certainty.",
@@ -63,7 +64,10 @@ export const Hero: FC<{ handleExpand: () => void }> = ({ handleExpand }) => {
 						</a>
 
 						<a href={routes.twitter} target="_blank" rel="noreferrer">
-							<Twitter size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
+							<Twitter
+								size={18}
+								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
+							/>
 						</a>
 					</div>
 

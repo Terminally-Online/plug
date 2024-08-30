@@ -19,8 +19,16 @@ type Props = {
 export const Dropdown: FC<Props> = ({ icon, placeholder, value, handleClick, className, children }) => {
 	return (
 		<>
-			<button className={cn("flex flex-col gap-2", className)} onClick={() => (handleClick ? handleClick() : undefined)}>
-				<div className={cn("flex w-full cursor-pointer flex-row items-center gap-4 bg-grayscale-0 p-4 px-6", "rounded-full")}>
+			<button
+				className={cn("flex flex-col gap-2", className)}
+				onClick={() => (handleClick ? handleClick() : undefined)}
+			>
+				<div
+					className={cn(
+						"flex w-full cursor-pointer flex-row items-center gap-4 bg-grayscale-0 p-4 px-6",
+						"rounded-full"
+					)}
+				>
 					{icon}
 
 					<p className="flex gap-2">

@@ -78,8 +78,13 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 								<>
 									<div className="mx-auto my-64 flex h-full max-w-[80%] flex-col gap-2 text-center">
 										<p className="text-lg font-bold">No matching actions.</p>
-										<p className="opacity-60">Search for another action or protocol or request a new integration.</p>
-										<Button className="mx-auto mt-4 w-max" onClick={() => handleFrame("featureRequest-actions")}>
+										<p className="opacity-60">
+											Search for another action or protocol or request a new integration.
+										</p>
+										<Button
+											className="mx-auto mt-4 w-max"
+											onClick={() => handleFrame("featureRequest-actions")}
+										>
 											Request Integration
 										</Button>
 									</div>
@@ -131,7 +136,15 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 						id={id}
 						key={categoryName}
 						className="scrollbar-hide z-[2] max-h-[85vh] overflow-y-auto"
-						icon={<Image src={category.image} alt={categoryName} width={32} height={32} className="h-6 w-6 rounded-sm" />}
+						icon={
+							<Image
+								src={category.image}
+								alt={categoryName}
+								width={32}
+								height={32}
+								className="h-6 w-6 rounded-sm"
+							/>
+						}
 						label={formatTitle(categoryName)}
 						visible={frames[id] === categoryName}
 						handleBack={() => handleFrame("actions")}
@@ -143,7 +156,12 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 
 							<div className="flex flex-col gap-2">
 								{Object.keys(staticActions[categoryName]).map(actionName => (
-									<ActionItem key={actionName} id={id} categoryName={categoryName} actionName={actionName} />
+									<ActionItem
+										key={actionName}
+										id={id}
+										categoryName={categoryName}
+										actionName={actionName}
+									/>
 								))}
 							</div>
 						</div>

@@ -149,7 +149,10 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
+								backgroundImage: [
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
+								]
 							}}
 							transition={{
 								duration: 1,
@@ -162,7 +165,10 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
+								backgroundImage: [
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
+								]
 							}}
 							transition={{
 								duration: 1,
@@ -175,7 +181,10 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
+								backgroundImage: [
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
+								]
 							}}
 							transition={{
 								duration: 1,
@@ -188,7 +197,10 @@ export const Vision: FC = () => {
 						<motion.div
 							className="h-4 w-full rounded-full"
 							animate={{
-								backgroundImage: ["linear-gradient(30deg, #00E100, #A3F700)", "linear-gradient(30deg, #D9D9D9, #D9D9D9)"]
+								backgroundImage: [
+									"linear-gradient(30deg, #00E100, #A3F700)",
+									"linear-gradient(30deg, #D9D9D9, #D9D9D9)"
+								]
 							}}
 							transition={{
 								duration: 1,

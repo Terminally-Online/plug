@@ -29,7 +29,8 @@ export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 		>
 			<div className="flex flex-col items-center gap-2">
 				<p className="mb-4 w-full opacity-60">
-					Have a piece of feedback or feature request to submit? Feel free to share more details about your request.
+					Have a piece of feedback or feature request to submit? Feel free to share more details about your
+					request.
 				</p>
 
 				<p className="flex w-full font-bold">Message</p>

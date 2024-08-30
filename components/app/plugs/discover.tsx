@@ -9,7 +9,11 @@ import { Container, Header, PlugGrid, Search, Tags } from "@/components"
 import { useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({ id, column = false, ...props }) => {
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({
+	id,
+	column = false,
+	...props
+}) => {
 	const { scrollYProgress } = useScroll()
 	const { search, tag, handleSearch, handleTag, handleReset } = useSearch()
 

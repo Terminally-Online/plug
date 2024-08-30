@@ -10,7 +10,8 @@ export const formatNumber = (value: number) => {
 
 export const formatFloat = (value: number) => parseFloat(formatNumber(value).toString())
 
-export const formatChainName = (name: string) => name.replace("Mainnet", "").replace("Testnet", "").replace("OP", "Optimism")
+export const formatChainName = (name: string) =>
+	name.replace("Mainnet", "").replace("Testnet", "").replace("OP", "Optimism")
 
 export const formatAddress = (address: string) => {
 	return `${address.slice(0, 6)}...${address.slice(-4)}`

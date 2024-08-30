@@ -21,7 +21,12 @@ export const Sentence: FC<{
 
 	return (
 		<>
-			<div className={cn("flex flex-row items-center font-bold", preview === false && "rounded-lg bg-grayscale-0 p-4")}>
+			<div
+				className={cn(
+					"flex flex-row items-center font-bold",
+					preview === false && "rounded-lg bg-grayscale-0 p-4"
+				)}
+			>
 				<p className="flex w-full flex-wrap items-center gap-[4px]">
 					{preview === false && (
 						<Image

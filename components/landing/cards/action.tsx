@@ -20,7 +20,16 @@ const sizes: Record<NonNullable<Props["size"]>, string> = {
 	lg: "text-md lg:text-xl font-bold min-h-[140px] lg:min-h-[200px]"
 }
 
-export const LandingActionCard: FC<Props> = ({ size = "md", color = "blue", glow = false, title, forks, runs, className, ...props }) => {
+export const LandingActionCard: FC<Props> = ({
+	size = "md",
+	color = "blue",
+	glow = false,
+	title,
+	forks,
+	runs,
+	className,
+	...props
+}) => {
 	const base = `rounded-lg p-4 text-white text-left flex flex-col justify-end`
 
 	const ref = useRef<HTMLButtonElement>(null)
@@ -83,11 +92,17 @@ export const LandingActionCard: FC<Props> = ({ size = "md", color = "blue", glow
 			{...props}
 		>
 			<div className="flex flex-row gap-2 text-xs font-bold">
-				<div className="flex flex-row items-center gap-1 rounded-full px-2 py-1" style={{ backgroundColor: tagColors[color] }}>
+				<div
+					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
+					style={{ backgroundColor: tagColors[color] }}
+				>
 					<GitFork size={16} className="opacity-40" />
 					<motion.span className="tabular-nums">{forksRounded}</motion.span> Forks
 				</div>
-				<div className="flex flex-row items-center gap-1 rounded-full px-2 py-1" style={{ backgroundColor: tagColors[color] }}>
+				<div
+					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
+					style={{ backgroundColor: tagColors[color] }}
+				>
 					<Zap size={16} className="opacity-40" />
 					<motion.span className="tabular-nums">{runsRounded}</motion.span> Runs
 				</div>

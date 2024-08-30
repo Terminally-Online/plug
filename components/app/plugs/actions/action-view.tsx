@@ -79,7 +79,10 @@ export const ActionView: FC<{ id: string }> = ({ id }) => {
 													...actions,
 													{
 														...suggestion,
-														values: getValues(suggestion.categoryName, suggestion.actionName)
+														values: getValues(
+															suggestion.categoryName,
+															suggestion.actionName
+														)
 													}
 												])
 											})
@@ -105,7 +108,10 @@ export const ActionView: FC<{ id: string }> = ({ id }) => {
 														...actions,
 														{
 															...suggestion,
-															values: getValues(suggestion.categoryName, suggestion.actionName)
+															values: getValues(
+																suggestion.categoryName,
+																suggestion.actionName
+															)
 														}
 													])
 												})
@@ -123,7 +129,8 @@ export const ActionView: FC<{ id: string }> = ({ id }) => {
 				<div className="mx-auto my-auto flex h-full max-w-[80%] flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No actions have been added yet.</p>
 					<p className="opacity-60">
-						Create a Plug to actions that you want to do on a regular basis and when all the conditions have been met.
+						Create a Plug to actions that you want to do on a regular basis and when all the conditions have
+						been met.
 					</p>
 					<Button className="mx-auto mt-4 w-max" onClick={() => handleFrame()}>
 						Add Action

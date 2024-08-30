@@ -10,7 +10,10 @@ const FrequentlyAskedQuestion: FC<{ text: string; description: string }> = ({ te
 
 	return (
 		<div className="flex flex-col gap-2 border-b-[1px] border-[#D9D9D9]/40 pb-4">
-			<button onClick={() => setCollapsed(!collapsed)} className="z-[30] flex w-full items-center text-[24px] font-black">
+			<button
+				onClick={() => setCollapsed(!collapsed)}
+				className="z-[30] flex w-full items-center text-[24px] font-black"
+			>
 				{text}
 				<motion.span
 					className="ml-auto transform rounded-full bg-[#FBFBFB] p-1 transition-transform"

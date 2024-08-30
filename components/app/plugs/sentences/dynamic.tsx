@@ -135,7 +135,15 @@ export const DynamicFragment: FC<{
 			<Frame
 				id={frameId}
 				className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
-				icon={<Image src={category.image} alt={action.categoryName} width={24} height={24} className="rounded-md" />}
+				icon={
+					<Image
+						src={category.image}
+						alt={action.categoryName}
+						width={24}
+						height={24}
+						className="rounded-md"
+					/>
+				}
 				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
 				visible={isFrame}
 			>
@@ -159,7 +167,15 @@ export const DynamicFragment: FC<{
 									onClick={() => handleValue(option)}
 								>
 									<div className="flex flex-row items-center gap-4">
-										{option.imagePath && <Image src={option.imagePath} alt="" width={64} height={64} className="w-6" />}
+										{option.imagePath && (
+											<Image
+												src={option.imagePath}
+												alt=""
+												width={64}
+												height={64}
+												className="w-6"
+											/>
+										)}
 										{formatTitle(option.label)}
 									</div>
 

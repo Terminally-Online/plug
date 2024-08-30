@@ -33,11 +33,15 @@ export const HeroShapes = () => {
 						animate={{
 							x: [
 								initialPositions[index].x,
-								...["0%", "100%", "50%", initialPositions[index].x].filter(pos => pos !== initialPositions[index].x)
+								...["0%", "100%", "50%", initialPositions[index].x].filter(
+									pos => pos !== initialPositions[index].x
+								)
 							],
 							y: [
 								initialPositions[index].y,
-								...["0%", "100%", "50%", initialPositions[index].y].filter(pos => pos !== initialPositions[index].y)
+								...["0%", "100%", "50%", initialPositions[index].y].filter(
+									pos => pos !== initialPositions[index].y
+								)
 							],
 							scale: [1, 1.1, 0.9, 1]
 						}}

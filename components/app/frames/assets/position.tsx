@@ -51,7 +51,8 @@ export const PositionFrame: FC<{
 		return positions
 			.map(position => {
 				const contract =
-					position.fungible.implementations.find(implementation => implementation.chain === position.chain)?.contract ?? ""
+					position.fungible.implementations.find(implementation => implementation.chain === position.chain)
+						?.contract ?? ""
 
 				return {
 					chain: position.chain,
@@ -155,7 +156,9 @@ export const PositionFrame: FC<{
 																: "hover:bg-white/20"
 														)}
 													>
-														{excludedKeys.includes(key) && <EyeOff size={14} className="opacity-40" />}
+														{excludedKeys.includes(key) && (
+															<EyeOff size={14} className="opacity-40" />
+														)}
 													</div>
 												</button>
 

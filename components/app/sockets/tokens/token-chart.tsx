@@ -233,7 +233,13 @@ export const SocketTokenPriceChart: FC<{
 									)
 								})}
 
-							<XAxis dataKey="timestamp" axisLine={false} tickLine={false} tick={false} padding={{ right: 20 }} />
+							<XAxis
+								dataKey="timestamp"
+								axisLine={false}
+								tickLine={false}
+								tick={false}
+								padding={{ right: 20 }}
+							/>
 							<YAxis dataKey="price" domain={domain} axisLine={false} tickLine={false} tick={false} />
 							<Tooltip content={<></>} cursor={<></>} />
 						</LineChart>

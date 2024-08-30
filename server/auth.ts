@@ -97,6 +97,9 @@ const authOptions: NextAuthOptions = {
 	secret: process.env.NEXT_AUTH_SECRET
 }
 
-export const getServerAuthSession = (ctx: { req: GetServerSidePropsContext["req"]; res: GetServerSidePropsContext["res"] }) => {
+export const getServerAuthSession = (ctx: {
+	req: GetServerSidePropsContext["req"]
+	res: GetServerSidePropsContext["res"]
+}) => {
 	return getServerSession(ctx.req, ctx.res, authOptions)
 }

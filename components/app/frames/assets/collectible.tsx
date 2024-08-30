@@ -56,7 +56,10 @@ export const CollectibleFrame: FC<{
 
 	const textColor = getTextColor(metadata?.color ?? "#ffffff")
 
-	const { truncated } = formatLongString(collectible?.description || collection.description, expanded === false ? 80 : undefined)
+	const { truncated } = formatLongString(
+		collectible?.description || collection.description,
+		expanded === false ? 80 : undefined
+	)
 
 	useEffect(() => {
 		if (isFrame === false) setExpanded(false)
@@ -89,7 +92,9 @@ export const CollectibleFrame: FC<{
 		>
 			<div className="flex flex-col gap-2 px-6 pb-4">
 				<CollectibleImage
-					video={collectible?.displayAnimationUrl?.includes("mp4") ? collectible?.displayAnimationUrl : undefined}
+					video={
+						collectible?.displayAnimationUrl?.includes("mp4") ? collectible?.displayAnimationUrl : undefined
+					}
 					image={collectible?.displayImageUrl ?? undefined}
 					fallbackImage={collection.imageUrl}
 					name={collectible?.name || collection.name}
@@ -114,11 +119,17 @@ export const CollectibleFrame: FC<{
 				</div>
 
 				{(truncated || expanded) && (
-					<button className="mr-auto flex flex-row items-center gap-2 font-bold" onClick={() => setExpanded(!expanded)}>
+					<button
+						className="mr-auto flex flex-row items-center gap-2 font-bold"
+						onClick={() => setExpanded(!expanded)}
+					>
 						{expanded ? "Read Less" : "Read More"}
 						<ChevronDown
 							size={18}
-							className={cn("ml-auto opacity-40 transition-all duration-200 ease-in-out", expanded && "rotate-180")}
+							className={cn(
+								"ml-auto opacity-40 transition-all duration-200 ease-in-out",
+								expanded && "rotate-180"
+							)}
 						/>
 					</button>
 				)}
@@ -172,7 +183,9 @@ export const CollectibleFrame: FC<{
 						<p className="flex w-full flex-row items-center gap-4">
 							<Hash size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Identifier</span>
-							{collectible.identifier.length > 11 ? formatAddress(collectible.identifier) : collectible.identifier}
+							{collectible.identifier.length > 11
+								? formatAddress(collectible.identifier)
+								: collectible.identifier}
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />

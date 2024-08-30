@@ -75,7 +75,9 @@ export const Header: FC<Props> = ({
 					</Button>
 				)}
 
-				{nextEmpty === true && nextLabel && (nextHref || nextOnClick) && <div className="ml-auto">{nextLabel}</div>}
+				{nextEmpty === true && nextLabel && (nextHref || nextOnClick) && (
+					<div className="ml-auto">{nextLabel}</div>
+				)}
 			</div>
 		</div>
 	)

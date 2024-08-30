@@ -63,7 +63,11 @@ export const DomainProvider: FC<PropsWithChildren> = ({ children }) => {
 		}))
 	}, [chainId])
 
-	return <DomainContext.Provider value={{ accessible, chainId, domain, handleDomain }}>{children}</DomainContext.Provider>
+	return (
+		<DomainContext.Provider value={{ accessible, chainId, domain, handleDomain }}>
+			{children}
+		</DomainContext.Provider>
+	)
 }
 
 export const useDomain = () => useContext(DomainContext)

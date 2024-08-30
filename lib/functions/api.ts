@@ -16,7 +16,10 @@ export const isConnected = async (ctx: any, callback: () => any) => {
 	return callback()
 }
 
-export const getValues = (categoryName: keyof typeof categories, actionName: keyof (typeof actions)[keyof typeof categories]) => {
+export const getValues = (
+	categoryName: keyof typeof categories,
+	actionName: keyof (typeof actions)[keyof typeof categories]
+) => {
 	const staticAction = actions[categoryName][actionName]
 
 	const fragments = staticAction ? (staticAction["sentence"].split(ACTION_REGEX) as string[]) : []

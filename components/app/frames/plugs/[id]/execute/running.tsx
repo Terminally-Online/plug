@@ -26,7 +26,13 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 	if (!plug) return null
 
 	return (
-		<Frame id={id} className="z-[2]" icon={<LoaderCircle size={18} className="animate-spin" />} label={label} visible={isFrame}>
+		<Frame
+			id={id}
+			className="z-[2]"
+			icon={<LoaderCircle size={18} className="animate-spin" />}
+			label={label}
+			visible={isFrame}
+		>
 			<div className="flex flex-col gap-8">
 				{prevFrame === "run" ? (
 					<p className="leading-6">

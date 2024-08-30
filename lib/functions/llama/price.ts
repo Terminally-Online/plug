@@ -21,7 +21,9 @@ export const getPrices = async (queries: string[]) => {
 
 	const query = uncachedQueries.join(",")
 
-	const currentPricesResponse = await axios.get(`https://coins.llama.fi/chart/${query}?span=48&period=30m&searchWidth=1200`)
+	const currentPricesResponse = await axios.get(
+		`https://coins.llama.fi/chart/${query}?span=48&period=30m&searchWidth=1200`
+	)
 
 	if (currentPricesResponse.status !== 200) return cachedPrices
 

@@ -105,7 +105,11 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	api.plug.onEdit.useSubscription(undefined, {
 		onData: data =>
-			setPlugs(prev => (prev ? prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)) : [data]))
+			setPlugs(prev =>
+				prev
+					? prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p))
+					: [data]
+			)
 	})
 
 	api.plug.onDelete.useSubscription(undefined, {

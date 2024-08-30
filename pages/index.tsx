@@ -1,4 +1,13 @@
-import { CallToAction, Examples, FrequentlyAskedQuestions, Hero, LandingFooter, Templates, Value, Vision } from "@/components"
+import {
+	CallToAction,
+	Examples,
+	FrequentlyAskedQuestions,
+	Hero,
+	LandingFooter,
+	Templates,
+	Value,
+	Vision
+} from "@/components"
 
 const Page = () => {
 	const handleScroll = () => {

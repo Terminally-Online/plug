@@ -182,7 +182,9 @@ export const plug = createTRPCRouter({
 				data: {
 					name: "Untitled Plug",
 					userAddress: ctx.session.address,
-					color: Object.keys(colors)[Math.floor(Math.random() * Object.keys(colors).length)] as keyof typeof colors
+					color: Object.keys(colors)[
+						Math.floor(Math.random() * Object.keys(colors).length)
+					] as keyof typeof colors
 				}
 			})
 
@@ -193,31 +195,33 @@ export const plug = createTRPCRouter({
 			throw new TRPCError({ code: "BAD_REQUEST" })
 		}
 	}),
-	fork: anonymousProtectedProcedure.input(z.object({ id: z.string(), from: z.string().optional() })).mutation(async ({ input, ctx }) => {
-		try {
-			const forking = await ctx.db.workflow.findUnique({
-				where: { id: input.id }
-			})
+	fork: anonymousProtectedProcedure
+		.input(z.object({ id: z.string(), from: z.string().optional() }))
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const forking = await ctx.db.workflow.findUnique({
+					where: { id: input.id }
+				})
 
-			if (forking == null) throw new TRPCError({ code: "BAD_REQUEST" })
+				if (forking == null) throw new TRPCError({ code: "BAD_REQUEST" })
 
-			const { id, ...forkingData } = forking
+				const { id, ...forkingData } = forking
 
-			const plug = await ctx.db.workflow.create({
-				data: {
-					...forkingData,
-					name: forking.name,
-					userAddress: ctx.session.address
-				}
-			})
+				const plug = await ctx.db.workflow.create({
+					data: {
+						...forkingData,
+						name: forking.name,
+						userAddress: ctx.session.address
+					}
+				})
 
-			ctx.emitter.emit(events.add, plug)
+				ctx.emitter.emit(events.add, plug)
 
-			return { plug, from: input.from }
-		} catch (error) {
-			throw new TRPCError({ code: "BAD_REQUEST" })
-		}
-	}),
+				return { plug, from: input.from }
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
 	edit: anonymousProtectedProcedure
 		.input(
 			z.object({

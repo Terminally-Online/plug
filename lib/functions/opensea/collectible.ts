@@ -101,7 +101,9 @@ export const getOpenseaCollectiblesForChain = async (
 
 	collectibles = [...collectibles, ...responseCollectibles]
 
-	return response.data.next ? getOpenseaCollectiblesForChain(address, chain, limit, response.data.next, collectibles) : collectibles
+	return response.data.next
+		? getOpenseaCollectiblesForChain(address, chain, limit, response.data.next, collectibles)
+		: collectibles
 }
 
 export const getCollectiblesForChain = async (address: string, chain: string, limit = 200, next?: string) => {
@@ -155,7 +157,9 @@ export const getCollectiblesForChain = async (address: string, chain: string, li
 	const toCreate = Array.from(newCollectiblesMap.values()).filter(
 		c => !existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
 	)
-	const toUpdate = Array.from(newCollectiblesMap.values()).filter(c => existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`))
+	const toUpdate = Array.from(newCollectiblesMap.values()).filter(c =>
+		existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)
+	)
 
 	await db.$transaction(async prisma => {
 		if (toDelete.length)

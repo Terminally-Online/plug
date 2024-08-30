@@ -154,7 +154,13 @@ export const ActivityFrame: FC<{
 					<p className="mt-4 flex font-bold">
 						<span className="mr-auto opacity-40">Run On</span>
 
-						<Image className="ml-[-20px] h-6 w-6" src={`/blockchain/ethereum.png`} alt={"Ethereum"} width={24} height={24} />
+						<Image
+							className="ml-[-20px] h-6 w-6"
+							src={`/blockchain/ethereum.png`}
+							alt={"Ethereum"}
+							width={24}
+							height={24}
+						/>
 					</p>
 					<p className="flex">
 						<span className="mr-auto font-bold opacity-40">Total</span>

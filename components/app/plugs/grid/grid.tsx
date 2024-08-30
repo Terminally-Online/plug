@@ -70,11 +70,16 @@ export const PlugGrid: FC<Props> = ({ id, from, plugs, count, search, handleRese
 				<div className="my-64 flex flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
 					<p className="mx-auto max-w-[320px] opacity-60">
-						Create your first Plug from scratch or discover one of the existing curated and community Plugs now.
+						Create your first Plug from scratch or discover one of the existing curated and community Plugs
+						now.
 					</p>
 
 					<div className="mx-auto mt-8 flex flex-row gap-1">
-						<Button variant="secondary" onClick={() => handle.columns.navigate({ id, key: "discover" })} className="w-max">
+						<Button
+							variant="secondary"
+							onClick={() => handle.columns.navigate({ id, key: "discover" })}
+							className="w-max"
+						>
 							See Templates
 						</Button>
 						<Button className="w-max" onClick={() => handlePlugs.plug.add(pathname)}>
@@ -86,7 +91,8 @@ export const PlugGrid: FC<Props> = ({ id, from, plugs, count, search, handleRese
 				<div className="mx-auto my-44 flex h-full max-w-[80%] flex-col gap-2 text-center">
 					<p className="text-lg font-bold">No Plugs found.</p>
 					<p className="mx-auto max-w-[320px] opacity-60">
-						We looked through all of the results but could not find any matches. Reset your filter or try a different search.
+						We looked through all of the results but could not find any matches. Reset your filter or try a
+						different search.
 					</p>
 
 					{handleReset && (

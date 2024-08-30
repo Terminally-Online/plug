@@ -23,9 +23,21 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 	if (!plug) return null
 
 	return (
-		<Frame id={id} className="z-[2]" icon={<Settings size={18} />} label="Manage Plug" visible={isFrame} hasChildrenPadding={false}>
+		<Frame
+			id={id}
+			className="z-[2]"
+			icon={<Settings size={18} />}
+			label="Manage Plug"
+			visible={isFrame}
+			hasChildrenPadding={false}
+		>
 			<div className="mb-4 flex flex-col gap-4 px-6">
-				<Search icon={<PencilLine size={14} />} placeholder="Plug name" search={name} handleSearch={handleName} />
+				<Search
+					icon={<PencilLine size={14} />}
+					placeholder="Plug name"
+					search={name}
+					handleSearch={handleName}
+				/>
 
 				<div className="flex flex-row items-center gap-2">
 					<p className="mr-auto font-bold">Private</p>
@@ -50,7 +62,10 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 								key={color}
 								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[2px]"
 								style={{
-									borderColor: plug.color === color ? cardColors[color as keyof typeof cardColors] : "transparent"
+									borderColor:
+										plug.color === color
+											? cardColors[color as keyof typeof cardColors]
+											: "transparent"
 								}}
 								onClick={() =>
 									handle.plug.edit({
@@ -70,7 +85,11 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 					</div>
 				</div>
 
-				<Button variant="destructive" className="w-full" onClick={() => handle.plug.delete({ id, from: "NOT_IMPLEMENTED" })}>
+				<Button
+					variant="destructive"
+					className="w-full"
+					onClick={() => handle.plug.delete({ id, from: "NOT_IMPLEMENTED" })}
+				>
 					Delete
 				</Button>
 			</div>

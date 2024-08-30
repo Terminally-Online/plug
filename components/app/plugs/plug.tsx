@@ -4,11 +4,24 @@ import { useSession } from "next-auth/react"
 
 import { SearchIcon } from "lucide-react"
 
-import { ActionsFrame, ActionView, Button, Container, ExecuteFrame, ManagePlugFrame, Search, ShareFrame } from "@/components"
+import {
+	ActionsFrame,
+	ActionView,
+	Button,
+	Container,
+	ExecuteFrame,
+	ManagePlugFrame,
+	Search,
+	ShareFrame
+} from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cn } from "@/lib"
 
-export const Plug: FC<HTMLAttributes<HTMLDivElement> & { id: string; item: string | null }> = ({ id, item, ...props }) => {
+export const Plug: FC<HTMLAttributes<HTMLDivElement> & { id: string; item: string | null }> = ({
+	id,
+	item,
+	...props
+}) => {
 	const { data: session } = useSession()
 	const { socket } = useSockets()
 	const { handleFrame } = useFrame({ id: id })
@@ -26,7 +39,12 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { id: string; item: strin
 
 			<div className="absolute bottom-0 left-0 z-[2] mb-4 flex w-full flex-col gap-2 overflow-y-visible">
 				<div className="pointer-events-none absolute bottom-[100px] left-0 right-0 top-0 z-[-1] bg-gradient-to-t from-white to-white/0" />
-				<div className={cn("absolute -bottom-4 left-0 right-0 z-[-1] h-[100px] bg-white", page.index !== -1 && "rounded-b-lg")} />
+				<div
+					className={cn(
+						"absolute -bottom-4 left-0 right-0 z-[-1] h-[100px] bg-white",
+						page.index !== -1 && "rounded-b-lg"
+					)}
+				/>
 
 				{own && (
 					<Search

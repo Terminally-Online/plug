@@ -7,7 +7,11 @@ import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }> = ({ id, hideEmpty = false, ...props }) => {
+export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }> = ({
+	id,
+	hideEmpty = false,
+	...props
+}) => {
 	const { page, handle } = useSockets()
 
 	const { data: discoveryPlugs } = api.plug.all.useQuery({

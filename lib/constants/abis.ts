@@ -101,8 +101,10 @@ export const categories: Record<
 
 export const abis: Record<string, Record<string, string>> = {
 	plug: {
-		baseFee: "function encode(uint8 $lessThanOrGreaterThan, uint256 $threshold) public pure returns (bytes memory $data)",
-		blockNumber: "function encode(uint8 $lessThanOrGreaterThan, uint256 $block) public pure returns (bytes memory $data)",
+		baseFee:
+			"function encode(uint8 $lessThanOrGreaterThan, uint256 $threshold) public pure returns (bytes memory $data)",
+		blockNumber:
+			"function encode(uint8 $lessThanOrGreaterThan, uint256 $block) public pure returns (bytes memory $data)",
 		timestamp: "function encode(uint8 $beforeOrAfter, uint256 $timestamp) public pure returns (bytes memory $data)",
 		tokenBalance:
 			"function encode(address $holder, address $asset, uint8 $lessThanOrGreaterThan, uint256 $amount) public pure returns (bytes memory $data)",
@@ -129,19 +131,24 @@ export const abis: Record<string, Record<string, string>> = {
 	},
 	aave: {
 		health: "function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
-		borrowRate: "function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
+		borrowRate:
+			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		depositRate:
 			"function encode(address $asset, uint8 $lessThanOrGreaterThan, uint256 $rate) public pure returns (bytes memory $data)",
 		deposit: "function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)",
-		loanHealth: "function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
+		loanHealth:
+			"function encode(uint8 $lessThanOrGreaterThan, uint256 $health) public pure returns (bytes memory $data)",
 		rewardClaim: "function encode(uint256 $amount, address $asset) public pure returns (bytes memory $data)"
 	},
 	uniswap: {
-		swapExactETH: "function encode(uint256 $amount, uint256 $amount, address $token) public pure returns (bytes memory $data)",
-		swapExactTokens: "function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)",
+		swapExactETH:
+			"function encode(uint256 $amount, uint256 $amount, address $token) public pure returns (bytes memory $data)",
+		swapExactTokens:
+			"function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)",
 		swapExactTokensForTokens:
 			"function encode(uint256 $amount, address $token, uint256 $amount, address $token) public pure returns (bytes memory $data)",
-		swapTokensForExactETH: "function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)"
+		swapTokensForExactETH:
+			"function encode(uint256 $amount, address $token, uint256 $amount) public pure returns (bytes memory $data)"
 	}
 	// chainlink: {
 	// 	functionName:

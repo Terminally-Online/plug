@@ -317,21 +317,105 @@ export const Fees = () => {
 					repeatType: "reverse"
 				}}
 			/>
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 225.701 211)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 0.707107 0.707107 -0.707107 90.334 88.0742)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 131.701 211)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1.31134e-07 1 1 -1.31134e-07 211.701 131)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 24.6973 135.007)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-2.18557e-07 -1 -1 2.18557e-07 211.701 287)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-0.707107 0.707107 0.707107 0.707107 136.006 25.6985)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 156.031 267.669)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 267.67 267.669)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(1 -1.88879e-07 -1.88879e-07 -1 67 277.999)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-1 2.76301e-07 2.76301e-07 1 160.703 78.7322)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(0.707107 0.707107 0.707107 -0.707107 156.031 154.698)" stroke="#D9D9D9" />
-			<line y1="-0.5" x2="66" y2="-0.5" transform="matrix(-2.34154e-07 -1 -1 2.34154e-07 80.8203 157.614)" stroke="#D9D9D9" />
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 225.701 211)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(0.707107 0.707107 0.707107 -0.707107 90.334 88.0742)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(1 -1.74846e-07 -1.74846e-07 -1 131.701 211)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(1.31134e-07 1 1 -1.31134e-07 211.701 131)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 24.6973 135.007)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(-2.18557e-07 -1 -1 2.18557e-07 211.701 287)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(-0.707107 0.707107 0.707107 0.707107 136.006 25.6985)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 156.031 267.669)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 267.67 267.669)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(1 -1.88879e-07 -1.88879e-07 -1 67 277.999)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(-1 2.76301e-07 2.76301e-07 1 160.703 78.7322)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(0.707107 0.707107 0.707107 -0.707107 156.031 154.698)"
+				stroke="#D9D9D9"
+			/>
+			<line
+				y1="-0.5"
+				x2="66"
+				y2="-0.5"
+				transform="matrix(-2.34154e-07 -1 -1 2.34154e-07 80.8203 157.614)"
+				stroke="#D9D9D9"
+			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 197.701 225)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 197.701 225)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -350,7 +434,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 101.066 78.4385)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 101.066 78.4385)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -369,7 +459,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 103.701 225)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(1 -8.74228e-08 -8.74228e-08 -1 103.701 225)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -388,7 +484,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 165.533 144.906)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 165.533 144.906)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -407,7 +509,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(4.37114e-08 1 1 -4.37114e-08 197.701 103)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(4.37114e-08 1 1 -4.37114e-08 197.701 103)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -426,7 +534,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 14.7988 164.706)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 14.7988 164.706)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -445,7 +559,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-1.31134e-07 -1 -1 1.31134e-07 225.701 315)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-1.31134e-07 -1 -1 1.31134e-07 225.701 315)"
+				fill="#D9D9D9"
+			/>
 
 			<motion.circle
 				cx="14"
@@ -465,7 +585,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 0.707107 0.707107 0.707107 144.906 -5)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-0.707107 0.707107 0.707107 0.707107 144.906 -5)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -484,7 +610,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 146.133 298)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(0.707107 -0.707107 -0.707107 -0.707107 146.133 298)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -503,7 +635,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 298.002 277.567)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 298.002 277.567)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -541,7 +679,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-1 1.49861e-07 1.49861e-07 1 187.701 63.7314)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-1 1.49861e-07 1.49861e-07 1 187.701 63.7314)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"
@@ -560,7 +704,13 @@ export const Fees = () => {
 				}}
 			/>
 
-			<circle cx="14" cy="14" r="14" transform="matrix(-1.49861e-07 -1 -1 1.49861e-07 94.8184 185.613)" fill="#D9D9D9" />
+			<circle
+				cx="14"
+				cy="14"
+				r="14"
+				transform="matrix(-1.49861e-07 -1 -1 1.49861e-07 94.8184 185.613)"
+				fill="#D9D9D9"
+			/>
 			<motion.circle
 				cx="14"
 				cy="14"

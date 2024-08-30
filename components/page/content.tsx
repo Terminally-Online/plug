@@ -1,4 +1,4 @@
-import { PageActivity, PageDiscover, PageEarnings, PageHome, PageMine, PagePlug } from "@/components"
+import { PageActivity, PageDiscover, PageHome, PageMine, PagePlug } from "@/components"
 import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 
@@ -19,7 +19,7 @@ export const PageContent = () => {
 		case VIEW_KEYS.PLUG:
 			return <PagePlug />
 		case VIEW_KEYS.EARNINGS:
-			return <PageEarnings />
+			return <></>
 		default:
 			return <></>
 	}

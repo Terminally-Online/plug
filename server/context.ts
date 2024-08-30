@@ -8,7 +8,9 @@ import { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http"
 
 import { db } from "@/server/db"
 
-export const createContext = async (opts: NodeHTTPCreateContextFnOptions<IncomingMessage, ws> | CreateNextContextOptions) => ({
+export const createContext = async (
+	opts: NodeHTTPCreateContextFnOptions<IncomingMessage, ws> | CreateNextContextOptions
+) => ({
 	session: await getSession(opts),
 	db
 })

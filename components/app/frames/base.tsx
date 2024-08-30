@@ -55,7 +55,8 @@ export const Frame: FC<Props> = ({
 						className={cn(
 							md ? "absolute" : "fixed",
 							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
-							(handleBack === undefined || hasOverlay === true) && "bg-gradient-to-b from-black/10 to-black/30",
+							(handleBack === undefined || hasOverlay === true) &&
+								"bg-gradient-to-b from-black/10 to-black/30",
 							page.index !== -1 && "rounded-lg"
 						)}
 						onClick={() => handleFrame()}

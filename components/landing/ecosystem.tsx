@@ -61,7 +61,13 @@ const Line: FC<{ size: number; index: number; imagePath: string }> = ({ size, in
 							className="absolute left-0 top-0 blur-sm filter"
 						/>
 
-						<Image src={imagePath} alt="Logo for the ecosystem" width={64} height={32} className="absolute left-0 top-0" />
+						<Image
+							src={imagePath}
+							alt="Logo for the ecosystem"
+							width={64}
+							height={32}
+							className="absolute left-0 top-0"
+						/>
 					</motion.div>
 				</motion.div>
 			</motion.div>

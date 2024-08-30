@@ -17,7 +17,7 @@ export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement> & { id: string }>
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Callout.Anonymous viewing="earnings" />
+			<Callout.Anonymous id={id} viewing="earnings" />
 
 			{anonymous === false && (
 				<>

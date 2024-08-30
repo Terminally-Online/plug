@@ -25,7 +25,13 @@ const HomePageHeader = () => {
 					{address ? (
 						<button className="flex flex-row items-center gap-2" onClick={() => handleFrame("auth")}>
 							{avatar ? (
-								<Image src={avatar} alt="ENS Avatar" width={24} height={24} className="h-6 w-6 rounded-sm" />
+								<Image
+									src={avatar}
+									alt="ENS Avatar"
+									width={24}
+									height={24}
+									className="h-6 w-6 rounded-sm"
+								/>
 							) : (
 								<BlockiesSvg className="h-6 w-6 rounded-sm" address={address} />
 							)}

@@ -3,7 +3,19 @@ import { FC } from "react"
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import { CalendarClock, Check, Clock, FileStack, HandCoins, Rotate3d, RotateCw, Ruler, ShieldPlus, TestTubeDiagonal, X } from "lucide-react"
+import {
+	CalendarClock,
+	Check,
+	Clock,
+	FileStack,
+	HandCoins,
+	Rotate3d,
+	RotateCw,
+	Ruler,
+	ShieldPlus,
+	TestTubeDiagonal,
+	X
+} from "lucide-react"
 
 import { Container, Fees, InfoCard, Mitigation } from "@/components"
 
@@ -53,7 +65,10 @@ export const Value: FC = () => {
 					{...animation}
 					className={`${animation.className} md:col-span-2 xl:col-span-1`}
 				>
-					<div className="mx-8 grid h-44 gap-[2px] 2xl:h-48" style={{ gridTemplateColumns: "repeat(14, 1fr)" }}>
+					<div
+						className="mx-8 grid h-44 gap-[2px] 2xl:h-48"
+						style={{ gridTemplateColumns: "repeat(14, 1fr)" }}
+					>
 						{Array.from({ length: 14 }).map((_, index) => (
 							<motion.div
 								key={index}
@@ -164,7 +179,10 @@ export const Value: FC = () => {
 						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(4.75)}>
 							20
 						</motion.div>
-						<motion.div className="border-b-[1px] border-r-[1px] border-[#D9D9D9]" {...getDayAnimation(5, true)}>
+						<motion.div
+							className="border-b-[1px] border-r-[1px] border-[#D9D9D9]"
+							{...getDayAnimation(5, true)}
+						>
 							21
 						</motion.div>
 						<motion.div className="border-b-[1px] border-r-[1px]" {...getDayAnimation(5.25)}>
@@ -298,7 +316,8 @@ export const Value: FC = () => {
 						style={{ gridTemplateColumns: "repeat(28, 1fr)" }}
 					>
 						{Array.from({ length: 28 * 7 }).map((_, index) => {
-							const background = Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #00E100, #A3F700)"
+							const background =
+								Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #00E100, #A3F700)"
 							return (
 								<motion.div
 									key={index}
