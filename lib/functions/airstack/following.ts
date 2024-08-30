@@ -19,6 +19,14 @@ type Following = {
 	followingProfileId: string
 }
 
+/**
+ * Retrieves the Farcaster users that the provided address is following.
+ * @param address The address of the user to retrieve the following for.
+ * @deprecated This function is deprecated and should no longer be used due to the erosion
+ *             of Airstack's API being gated behind Moxie protocol. One must acquire a
+ *             Moxie Pass, then buy their shitcoin, then hope that they don't change the
+ *             setup of the plans again. Under no circumstances should anyone use this.
+ */
 export const getFarcasterFollowing = async (address: string) => {
 	if (!address) return
 
@@ -28,7 +36,9 @@ export const getFarcasterFollowing = async (address: string) => {
 	})
 
 	const cache =
-		socket && socket.identity?.farcaster && socket.identity?.farcaster?.updatedAt > new Date(Date.now() - FARCASTER_CACHE_TIME)
+		socket &&
+		socket.identity?.farcaster &&
+		socket.identity?.farcaster?.updatedAt > new Date(Date.now() - FARCASTER_CACHE_TIME)
 
 	if (cache) return
 

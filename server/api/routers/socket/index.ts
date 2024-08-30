@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_VIEWS, getFarcasterFollowing, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
+import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_VIEWS, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
@@ -89,8 +89,6 @@ export const socket = createTRPCRouter({
 						}
 					}
 				})
-
-			if (ctx.session.user.anonymous === false) await getFarcasterFollowing(ctx.session.address)
 
 			// NOTE: Make sure the socket always has the global home column that is
 			//       denoted by the -1 index as the column view should never show it.
