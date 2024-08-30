@@ -107,7 +107,7 @@ export const ColumnViewAs = () => {
 										<p className="font-bold">
 											{option.id === socket.id
 												? "Yourself"
-												: (option.identity?.ens?.name ?? option.id)}
+												: (option.identity?.ens?.name ?? formatAddress(option.id))}
 										</p>
 										<p className="text-sm font-bold opacity-40">
 											{option.socketAddress ? formatAddress(option.socketAddress) : "Anonymous"}

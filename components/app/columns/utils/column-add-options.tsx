@@ -89,9 +89,9 @@ export const ColumnAddOptions: FC<
 			{options.map(option => (
 				<Accordion key={option.label} onExpand={() => handle.columns.add({ key: option.label, id })}>
 					<div className="flex flex-row items-center gap-2">
-						<div className="flex h-6 w-6 min-w-6 items-center justify-center">{option.icon}</div>
+						<div className="flex h-10 w-10 min-w-10 items-center justify-center">{option.icon}</div>
 
-						<div className="flex flex-col items-start font-bold">
+						<div className="flex flex-col items-start text-left font-bold">
 							<p>{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
 							<p className="text-sm opacity-40">{option.description}</p>
 						</div>
