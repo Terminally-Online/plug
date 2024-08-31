@@ -11,13 +11,48 @@ head:
       content:
 ---
 
-# Integrations
+<style>
+    .integrations {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
 
-<span style="color: rgba(0,0,0,0.6)">With the large catalog of protocol integrations you have a wide range of options and control. By surfacing all the primary actions of each protocol you can have all your onchain activity in one place. If there's an integration or chain you'd like to see that we do not have yet, please [reach out](https://twitter.com/onplug_io)!</span>
+    .integration {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 6px;
+        transition: background 0.2s;
+    }
+
+    .integration:hover {
+        background: rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+    }
+
+    .integration > img {
+        width: 25%;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    .integration > p {
+        margin: 0;
+        font-weight: 700 !important;
+    }
+
+    .integration > p:nth-of-type(2) {
+        opacity: 0.6;
+        font-size: 12px;
+        font-weight: 400 !important;
+    }
+</style>
 
 <script setup>
-    // TODO: Add Enso Finance integrations to this list.
-
     const protocolList = ['aave','aerodrome','alchemix','balancer','chainlink','compound','convex','curve','eigen-layer','ens','ethena','frax-lend','gearbox','hop','lido','maker','nouns','paraswap','rocket-pool','sushiswap','synthetix','uniswap','wasabi','yearn','zora']
 
     const bigList = ["ens"]
@@ -39,6 +74,10 @@ head:
             )
             .join(" ")
 </script>
+
+# Integrations
+
+<span style="color: rgba(0,0,0,0.6)">With the large catalog of protocol integrations you have a wide range of options and control. By surfacing all the primary actions of each protocol you can have all your onchain activity in one place. If there's an integration or chain you'd like to see that we do not have yet, please [reach out](https://twitter.com/onplug_io)!</span>
 
 ## Chains
 
