@@ -5,7 +5,7 @@
     "generate": "rm -rf ./generated/ && pnpm plug docs",
     "dev": "pnpm generate && vitepress dev",
     "build": "pnpm generate && vitepress build",
-    "preview": "vitepress preview"
+    "preview": "pnpm build && vitepress preview"
   },
   "dependencies": {
     "@nftchance/plug-types": "^0.10.2",
