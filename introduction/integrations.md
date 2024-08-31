@@ -53,6 +53,9 @@ head:
 </style>
 
 <script setup>
+    import { defineClientComponent } from 'vitepress'
+    const ClientOnly = defineClientComponent(() => import('vitepress/client'))
+
     const protocolList = ['aave','aerodrome','alchemix','balancer','chainlink','compound','convex','curve','eigen-layer','ens','ethena','frax-lend','gearbox','hop','lido','maker','nouns','paraswap','rocket-pool','sushiswap','synthetix','uniswap','wasabi','yearn','zora']
 
     const bigList = ["ens"]
@@ -83,22 +86,26 @@ head:
 
 With support for all the major Ethereum based chains you can use your money wherever. Plug can easily be deployed on any Ethereum based blockchain.
 
-<div className="integrations">
-    <div v-for="item in chainList" :key="item" className="integration">
-        <img :src="toChainImagePath(item)" :alt="toTitleCase(item)">
-        <p>{{ toTitleCase(item) }}</p>
-        <p>Coming Soon</p>
+<ClientOnly>
+    <div className="integrations">
+        <div v-for="item in chainList" :key="item" className="integration">
+            <img :src="toChainImagePath(item)" :alt="toTitleCase(item)">
+            <p>{{ toTitleCase(item) }}</p>
+            <p>Coming Soon</p>
+        </div>
     </div>
-</div>
+</ClientOnly>
 
 ## Protocols
 
 Plug is a generalized framework and protocol that builds on top of existing protocols: it essentially integrates with everything in the Ethereum ecosystem. If you'd like Plug to integrate a protocol, please [reach out](https://twitter.com/onplug_io).
 
-<div className="integrations">
-    <div v-for="item in protocolList" :key="item" className="integration">
-        <img :src="toProtocolImagePath(item)" :alt="toTitleCase(item)">
-        <p>{{ toTitleCase(item) }}</p>
-        <p>Coming Soon</p>
+<ClientOnly>
+    <div className="integrations">
+        <div v-for="item in protocolList" :key="item" className="integration">
+            <img :src="toProtocolImagePath(item)" :alt="toTitleCase(item)">
+            <p>{{ toTitleCase(item) }}</p>
+            <p>Coming Soon</p>
+        </div>
     </div>
-</div>
+</ClientOnly>
