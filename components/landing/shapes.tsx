@@ -1,53 +1,49 @@
 import { motion } from "framer-motion"
 
-export const HeroShapes = () => {
-	const colors = ["#00E100", "#A3F700", "#00E100", "#A3F700", "#00E100", "#A3F700", "#00E100", "#A3F700"]
+import { cn } from "@/lib"
 
-	const initialPositions = [
-		{ x: "-10%", y: "-10%" },
-		{ x: "110%", y: "-10%" },
-		{ x: "-10%", y: "110%" },
-		{ x: "110%", y: "110%" },
-		{ x: "50%", y: "-10%" },
-		{ x: "50%", y: "110%" },
-		{ x: "-10%", y: "50%" },
-		{ x: "110%", y: "50%" }
+export const HeroShapes = () => {
+	const gradients = [
+		"linear-gradient(45deg, #00E100, #A3F700)",
+		"linear-gradient(135deg, #A3F700, #00E100)",
+		"linear-gradient(225deg, #00E100, #A3F700)",
+		"linear-gradient(315deg, #A3F700, #00E100)",
+		"linear-gradient(90deg, #00E100, #A3F700)",
+		"linear-gradient(270deg, #A3F700, #00E100)",
+		"linear-gradient(0deg, #00E100, #A3F700)",
+		"linear-gradient(180deg, #A3F700, #00E100)"
+	]
+
+	const positions = [
+		{ top: "0%", left: "0%" },
+		{ top: "0%", right: "0%" },
+		{ bottom: "0%", left: "0%" },
+		{ bottom: "0%", right: "0%" },
+		{ top: "0%", left: "50%", transform: "translateX(-50%)" },
+		{ bottom: "0%", left: "50%", transform: "translateX(-50%)" },
+		{ top: "50%", left: "0%", transform: "translateY(-50%)" },
+		{ top: "50%", right: "0%", transform: "translateY(-50%)" }
 	]
 
 	return (
 		<div className="absolute inset-0 bottom-0 left-0 right-0 top-0 z-0 w-screen overflow-hidden bg-plug-green">
-			<div className="absolute inset-0 blur-[120px] filter">
-				{colors.map((color, index) => (
+			<div className="absolute inset-0 blur-[40px] filter">
+				{gradients.map((gradient, index) => (
 					<motion.div
 						key={index}
-						className="z-= absolute rounded-full"
+						className={cn("absolute rounded-full", `z-${index}`)}
 						style={{
-							background: color,
-							width: "130%",
-							height: "130%",
-							x: initialPositions[index].x,
-							y: initialPositions[index].y,
-							top: "-65%",
-							left: "-65%"
+							background: gradient,
+							width: "80%",
+							height: "80%",
+							...positions[index]
 						}}
 						animate={{
-							x: [
-								initialPositions[index].x,
-								...["0%", "100%", "50%", initialPositions[index].x].filter(
-									pos => pos !== initialPositions[index].x
-								)
-							],
-							y: [
-								initialPositions[index].y,
-								...["0%", "100%", "50%", initialPositions[index].y].filter(
-									pos => pos !== initialPositions[index].y
-								)
-							],
-							scale: [1, 1.1, 0.9, 1]
+							rotate: [0, 360]
 						}}
 						transition={{
-							duration: 50,
-							ease: "easeInOut",
+							duration: 30,
+							ease: "linear",
 							repeat: Infinity,
 							delay: index * 6
 						}}
