@@ -7,8 +7,8 @@ const Page = () => (
 		<Light />
 		<Vision />
 		<CallToAction
-			text="Level up your onchain activity."
-			description="As soon as all of the constraints on your intent are met and expected outcomes can be delivered your transaction will automatically run without you doing a thing."
+			text="Operate at a level your friends only dream of."
+			description="With best in class execution and access to top strategies your capital can work harder than ever before. Compose top protocols and automate your portfolio's growth."
 			button="Get Started"
 		/>
 		<LandingFooter />

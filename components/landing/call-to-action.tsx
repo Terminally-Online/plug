@@ -23,9 +23,9 @@ export const CallToAction: FC<{
 			<div className="relative flex flex-col justify-center overflow-hidden p-8 lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]">
 				<HeroShapes />
 
-				<div className="z-[2] flex flex-col gap-16">
+				<div className="z-[2] my-[40px] flex flex-col gap-16">
 					<motion.h1
-						className="max-w-[60%] text-[3.5rem] font-black leading-tight text-white md:text-[72px] lg:text-[96px]"
+						className="max-w-[75%] text-[3.5rem] font-black leading-tight text-white md:text-[72px] lg:text-[96px]"
 						initial={{ y: 20, opacity: 0 }}
 						whileInView={{
 							y: [0, 20],
@@ -52,11 +52,11 @@ export const CallToAction: FC<{
 					</motion.p>
 
 					<Button
-						variant="white"
+						variant="none"
+						className="w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white"
 						href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
-						className="mt-[30px] w-max"
 					>
-						{button}
+						Enter App
 					</Button>
 				</div>
 			</div>
