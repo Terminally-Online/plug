@@ -51,14 +51,14 @@ export const Blob: FC<
 		<motion.div
 			id="blob"
 			className={cn(
-				"absolute z-[-1] rounded-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[60px] filter",
+				"absolute z-[-2] rounded-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[120px] filter",
 				className
 			)}
 			style={{
-				width: `${width}px`,
-				height: `${height}px`,
-				top: `${top}px`,
-				left: `${left}px`,
+				width: width.includes("%") ? `${width}` : `${width}px`,
+				height: height.includes("%") ? `${height}` : `${height}px`,
+				top: top.includes("%") ? `${top}` : `${top}px`,
+				left: left.includes("%") ? `${left}` : `${left}px`,
 				x: springX,
 				y: springY
 			}}

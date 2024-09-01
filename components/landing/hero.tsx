@@ -52,7 +52,7 @@ const variants = {
 		const previousGrowth = index > 0 ? variants.supernaturalTrader(index - 1) : baseGrowth
 		const smoothedGrowth = previousGrowth * (1 - smoothingFactor) + baseGrowth * smoothingFactor
 
-		const noise = Math.random() * 0.5 - 0.25 // Minimal noise
+		const noise = Math.random() * 0.5 - 0.25
 		return Math.min(100, Math.max(0, smoothedGrowth + noise))
 	}
 }

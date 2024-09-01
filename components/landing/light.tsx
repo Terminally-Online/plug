@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 
 import Image from "next/image"
+import Link from "next/link"
 
 import { motion } from "framer-motion"
 
 import { Blob, LandingContainer } from "@/components"
-import { cn } from "@/lib"
+import { cn, routes } from "@/lib"
 
 const protocols = [
 	"yearn",
@@ -68,7 +69,7 @@ const ProtocolLine = ({
 		let timeoutId: NodeJS.Timeout
 
 		const addProtocol = () => {
-			if (isTabVisible && Math.random() < 0.2 && availableProtocolsRef.current.length > 0) {
+			if (isTabVisible && Math.random() < 0.3 && availableProtocolsRef.current.length > 0) {
 				const randomIndex = Math.floor(Math.random() * availableProtocolsRef.current.length)
 				const newProtocol = availableProtocolsRef.current[randomIndex]
 				const timestamp = Date.now() + nextId.current
@@ -115,13 +116,16 @@ const ProtocolLine = ({
 	}
 
 	return (
-		<div className={cn("group relative flex w-full overflow-hidden py-8")} onMouseEnter={handleMouseEnter}>
+		<div
+			className={cn("group relative ml-[-25vw] flex w-[150vw] overflow-hidden py-8")}
+			onMouseEnter={handleMouseEnter}
+		>
 			<motion.div
 				className={cn(
 					"absolute top-[50%] h-[2px] w-full translate-y-[-50%] bg-gradient-to-r transition-all duration-200 ease-in-out",
 					isGreen
 						? "from-plug-green to-plug-yellow blur filter"
-						: "from-grayscale-100 to-grayscale-100 group-hover:from-plug-green group-hover:to-plug-yellow group-hover:blur group-hover:filter"
+						: "from-grayscale-100 to-grayscale-100/0 group-hover:from-plug-green group-hover:to-plug-yellow group-hover:blur group-hover:filter"
 				)}
 				animate={
 					isStrumming
@@ -139,7 +143,7 @@ const ProtocolLine = ({
 					"absolute top-[50%] h-[2px] w-full translate-y-[-50%] bg-gradient-to-r transition-all duration-200 ease-in-out",
 					isGreen
 						? "from-plug-green to-plug-yellow"
-						: "from-grayscale-100 to-grayscale-100 group-hover:from-plug-green group-hover:to-plug-yellow"
+						: "from-grayscale-100 to-grayscale-100/0 group-hover:from-plug-green group-hover:to-plug-yellow"
 				)}
 				animate={
 					isStrumming
@@ -157,20 +161,40 @@ const ProtocolLine = ({
 				<motion.div
 					key={id}
 					initial={{ transform: "translateX(-2rem)" }}
-					animate={{ transform: "translateX(110vw)" }}
+					animate={{ transform: "translateX(160vw)" }}
 					transition={{
-						duration: 3,
+						duration: 2.5,
 						ease: "linear"
 					}}
 					onAnimationComplete={() => removeProtocol(id)}
-					className="absolute top-[25%] z-[2] h-8 w-8"
+					className="absolute top-[25%] z-[2]"
 				>
+					<style jsx>{`
+						.clip-path-asteroid-trail {
+							clip-path: polygon(40% 25%, 100% 0%, 100% 100%, 20% 75%);
+						}
+						.gradient-mask {
+							mask-image: linear-gradient(to left, black, transparent);
+							-webkit-mask-image: linear-gradient(to left, black, transparent);
+						}
+					`}</style>
+
+					<div className="clip-path-asteroid-trail gradient-mask absolute right-4 h-8 w-24 blur filter">
+						<Image
+							src={`/protocols/${name}.png`}
+							alt={name}
+							width={240}
+							height={240}
+							className="h-8 w-full object-cover"
+						/>
+					</div>
+
 					<motion.div className="relative h-8 w-8" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
 						<Image
 							src={`/protocols/${name}.png`}
 							alt={name}
-							width={40}
-							height={40}
+							width={240}
+							height={240}
 							className="h-8 w-8 min-w-8 rounded-full"
 						/>
 					</motion.div>
@@ -256,12 +280,21 @@ export const Light = () => {
 
 	return (
 		<div className="relative z-0 my-[80px]">
-			<Blob left={"-100"} top={"-500"} width={"1000"} height={"500"} />
+			<Blob left={"-100"} top={"-600"} width={"1000"} height={"500"} />
 
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
-					<h1 className="text-[64px] font-bold">Onchain Activity at the Speed of Light.</h1>
+					<h1 className="min-w-[640px] text-[64px] font-bold">Onchain Activity at the Speed of Light.</h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
+					<Link
+						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
+						href={`${routes.documentation}/introduction/integrations`}
+						target="_blank"
+						rel="noreferrer"
+					>
+						Explore Integrations
+					</Link>
+					<div className="h-[2px] w-24 bg-grayscale-100" />
 				</div>
 				<p className="max-w-[640px] text-[18px] font-bold opacity-40">
 					Trigger and build automatically executing transactions faster than you can comprehend. Combine
@@ -269,7 +302,12 @@ export const Light = () => {
 				</p>
 			</LandingContainer>
 
-			<div className="flex flex-col">
+			<div
+				className="flex flex-col"
+				style={{
+					transform: "rotate(-15deg)"
+				}}
+			>
 				{Array.from({ length: 5 }).map((_, index) => (
 					<ProtocolLine
 						key={index}

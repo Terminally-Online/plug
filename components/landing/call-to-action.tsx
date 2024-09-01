@@ -15,17 +15,42 @@ export const CallToAction: FC<{
 	button: string
 }> = ({ text, description, button }) => {
 	return (
-		<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+		<motion.div
+			initial={{ opacity: 0, transform: "translateY(20px)" }}
+			whileInView={{ opacity: 1, transform: "translateY(0px)" }}
+			transition={{ duration: 0.2 }}
+		>
 			<div className="relative flex flex-col justify-center overflow-hidden p-8 lg:min-h-[700px] lg:gap-[30px] lg:px-[80px]">
 				<HeroShapes />
 
-				<div className="z-[2] flex flex-col gap-4">
-					<h1 className="text-[36px] font-black text-white lg:max-w-[90%] lg:text-[72px] 2xl:max-w-[50%]">
+				<div className="z-[2] flex flex-col gap-16">
+					<motion.h1
+						className="max-w-[60%] text-[3.5rem] font-black leading-tight text-white md:text-[72px] lg:text-[96px]"
+						initial={{ y: 20, opacity: 0 }}
+						whileInView={{
+							y: [0, 20],
+							opacity: [0, 1]
+						}}
+						transition={{ duration: 0.3 }}
+					>
 						{text}
-					</h1>
-					<p className="text-[18px] font-bold text-white/80 md:max-w-[75%] lg:max-w-[60%] lg:text-[24px]">
+					</motion.h1>
+
+					<motion.p
+						className="max-w-[52%] text-[1.25rem] font-bold text-white/80 md:text-[24px]"
+						initial={{ y: -20, opacity: 0 }}
+						whileInView={{
+							y: [0, -20],
+							opacity: [0, 1]
+						}}
+						transition={{
+							duration: 0.3,
+							delay: 0.15
+						}}
+					>
 						{description}
-					</p>
+					</motion.p>
+
 					<Button
 						variant="white"
 						href={EARLY_ACCESS ? routes.earlyAccess : routes.app}

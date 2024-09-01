@@ -1,9 +1,9 @@
-import { CallToAction, Hero, LandingFooter, Light, Vision } from "@/components"
+import { CallToAction, Demo, Hero, LandingFooter, Light, Vision } from "@/components"
 
 const Page = () => (
 	<div className="overflow-x-hidden">
 		<Hero />
-		{/* <Demo /> */}
+		<Demo />
 		<Light />
 		<Vision />
 		<CallToAction
