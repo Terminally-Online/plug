@@ -174,12 +174,12 @@ const ProtocolLine = ({
 							clip-path: polygon(40% 25%, 100% 0%, 100% 100%, 20% 75%);
 						}
 						.gradient-mask {
-							mask-image: linear-gradient(to left, black, transparent);
-							-webkit-mask-image: linear-gradient(to left, black, transparent);
+							mask-image: linear-gradient(to left, black, transparent, transparent);
+							-webkit-mask-image: linear-gradient(to left, black, transparent, transparent);
 						}
 					`}</style>
 
-					<div className="clip-path-asteroid-trail gradient-mask absolute right-4 h-8 w-24 blur filter">
+					<div className="clip-path-asteroid-trail gradient-mask fade-out-trail absolute right-4 h-8 w-24 blur filter">
 						<Image
 							src={`/protocols/${name}.png`}
 							alt={name}
