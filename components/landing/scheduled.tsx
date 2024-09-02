@@ -14,9 +14,9 @@ export const Scheduled = () => {
 			background:
 				active === true
 					? [
-							"linear-gradient(30deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))",
+							"linear-gradient(30deg, rgba(0,239,53,0.65), rgba(147,233,0,1))",
 							"linear-gradient(30deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-							"linear-gradient(30deg, rgba(0,239,53,0.4), rgba(147,233,0,0.9))"
+							"linear-gradient(30deg, rgba(0,239,53,0.65), rgba(147,233,0,1))"
 						]
 					: ["rgba(217,217,217,0)", "rgba(217,217,217,0.4)", "rgba(217,217,217,0)"]
 		},

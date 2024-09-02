@@ -48,11 +48,20 @@ export const BookProfit = () => {
 						className="mr-0 flex w-[460px] items-center gap-4 overflow-hidden rounded-lg bg-white px-6 py-4 md:w-[640px]"
 					>
 						<div className="relative flex h-10 w-16 items-center justify-center">
-							<div className="absolute top-1/2 h-16 w-16 -translate-y-1/2 rounded-full bg-plug-green blur-[60px] filter" />
+							<div className="absolute top-1/2 h-16 w-16 -translate-y-1/2 rounded-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[60px] filter" />
 							<CheckCircle
-								className="absolute top-1/2 ml-auto h-5 w-5 -translate-y-1/2 text-center text-plug-green"
+								className="absolute top-1/2 ml-auto h-5 w-5 -translate-y-1/2 text-center"
 								size={24}
+								style={{
+									stroke: "url(#plug-gradient)"
+								}}
 							/>
+							<svg width="0" height="0">
+								<linearGradient id="plug-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop stopColor="#00E100" offset="0%" />
+									<stop stopColor="#A3F700" offset="100%" />
+								</linearGradient>
+							</svg>
 						</div>
 
 						<h3 className="flex w-full flex-col">

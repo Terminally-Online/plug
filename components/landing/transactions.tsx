@@ -2,8 +2,8 @@ import { Blob, Execution, LandingContainer, Recurring, Scheduled } from "@/compo
 
 export const Transactions = () => {
 	return (
-		<div className="relative z-[0]">
-			<LandingContainer className="mb-[80px] grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
+		<div className="relative z-[0] mb-[80px] h-full">
+			<LandingContainer className="grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
 				<Scheduled />
 				<Execution />
 				<Recurring />
