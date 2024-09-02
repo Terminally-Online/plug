@@ -51,7 +51,7 @@ export const Blob: FC<
 		<motion.div
 			id="blob"
 			className={cn(
-				"absolute z-[-2] rounded-full bg-gradient-to-r from-plug-green to-plug-yellow blur-[120px] filter",
+				"absolute z-[-2] rounded-full bg-gradient-to-r from-plug-green to-plug-yellow blur-[160px] filter",
 				className
 			)}
 			style={{

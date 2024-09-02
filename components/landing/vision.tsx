@@ -12,6 +12,6 @@ export const Vision: FC = () => (
 			<Cardiogram />
 		</LandingContainer>
 
-		<Blob left={"60%"} top={"100%"} width={"1000"} height={"500"} />
+		<Blob className="blur-[220px]" left={"60%"} top={"30%"} width={"400"} height={"300"} />
 	</div>
 )

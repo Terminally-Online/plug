@@ -1,6 +1,9 @@
 export * from "./cards"
 export * from "./layout"
 
+export { HeroBarChart } from "./bar-chart"
+export { HeroShapes } from "./shapes"
+
 export { Blob } from "./blob"
 export { Blocks } from "./blocks"
 export { BookProfit } from "./book-profit"

@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 
 import { routes } from "@/lib"
 
+import { Blob } from "./blob"
 import { LandingContainer } from "./layout"
 
 const blockchains = [
@@ -98,11 +99,21 @@ export const Blocks = ({ rows = 3 }) => {
 
 	return (
 		<div className="relative z-[1] overflow-hidden py-[80px]">
+			<Blob left={"60%"} top={"-45%"} width={"1000"} height={"300"} />
+
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
-					<h1 className="min-w-[640px] text-[64px] font-bold leading-tight">
+					<motion.h1
+						className="min-w-[620px] text-[64px] font-bold leading-tight"
+						initial={{ transform: "translateY(-20px)", opacity: 0 }}
+						whileInView={{
+							transform: ["translateY(-20px)", "translateY(0px)"],
+							opacity: [0, 1]
+						}}
+						transition={{ duration: 0.3 }}
+					>
 						The Entire Industry in One Place
-					</h1>
+					</motion.h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 					<Link
 						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
@@ -114,10 +125,18 @@ export const Blocks = ({ rows = 3 }) => {
 					</Link>
 					<div className="h-[2px] w-24 bg-grayscale-100" />
 				</div>
-				<p className="max-w-[540px] text-[18px] font-bold opacity-40">
+				<motion.p
+					className="max-w-[540px] text-[18px] font-bold text-black/40"
+					initial={{ transform: "translateY(20px)", opacity: 0 }}
+					whileInView={{
+						transform: ["translateY(20px)", "translateY(0px)"],
+						opacity: [0, 1]
+					}}
+					transition={{ duration: 0.3 }}
+				>
 					There&apos;s no need to bounce between different interfaces and apps when you always get the best
 					price and a unified experience in one cohesive hub.
-				</p>
+				</motion.p>
 
 				<div className="mt-12 flex w-full flex-col gap-2">
 					{[...Array(rows)].map((_, rowIndex) => {
@@ -134,16 +153,16 @@ export const Blocks = ({ rows = 3 }) => {
 										animate={
 											allHovered && !resetAll && !hasFallen
 												? {
-														transform: `translateY(${Math.random() * 500 + 100}px) rotate(${
+														transform: `translateY(${Math.random() * 500 + 200}px) rotate(${
 															Math.random() < 0.5
 																? Math.random() * 180
 																: Math.random() * -180
 														}deg)`,
-														transition: { duration: 1, ease: "easeIn" }
+														transition: { duration: 1, ease: "easeInOut" }
 													}
 												: {
 														transform: "translateY(0) rotate(0deg)",
-														transition: { duration: 0.5, ease: "easeOut" }
+														transition: { duration: 0.5, ease: "easeInOut" }
 													}
 										}
 									>
@@ -152,7 +171,7 @@ export const Blocks = ({ rows = 3 }) => {
                                         duration-200 ease-in-out group-hover:scale-110"
 										>
 											{((hoveredItems.has(item) && !hasFallen) || resetAll) && (
-												<div
+												<motion.div
 													className="absolute bottom-0 left-0 right-0 top-0 blur-2xl filter"
 													style={{
 														backgroundImage: `url(${item}.png)`,
@@ -160,6 +179,9 @@ export const Blocks = ({ rows = 3 }) => {
 														backgroundPosition: "center",
 														backgroundRepeat: "no-repeat"
 													}}
+													initial={{ opacity: 0 }}
+													whileInView={{ opacity: 1 }}
+													transition={{ duration: 0.3 }}
 												/>
 											)}
 

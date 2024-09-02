@@ -294,28 +294,38 @@ export const Light = () => {
 
 	return (
 		<div className="relative z-0 my-[80px]">
-			<Blob left={"-100"} top={"-600"} width={"1000"} height={"500"} />
+			<Blob left={"-100"} top={"-700"} width={"1000"} height={"500"} />
 
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
-					<h1 className="min-w-[640px] text-[64px] font-bold leading-tight">
-						Onchain Activity at the Speed of Light.
-					</h1>
-					<div className="h-[2px] w-full bg-grayscale-100" />
-					<Link
-						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
-						href={`${routes.documentation}/introduction/integrations`}
-						target="_blank"
-						rel="noreferrer"
+					<motion.h1
+						className="min-w-[640px] text-[64px] font-bold leading-tight"
+						initial={{ transform: "translateY(-20px)", opacity: 0 }}
+						whileInView={{
+							transform: ["translateY(-20px)", "translateY(0px)"],
+							opacity: [0, 1]
+						}}
+						transition={{ duration: 0.3 }}
 					>
-						Explore Integrations
-					</Link>
-					<div className="h-[2px] w-24 bg-grayscale-100" />
+						Onchain Activity at the Speed of Light.
+					</motion.h1>
+					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
-				<p className="max-w-[640px] text-[18px] font-bold opacity-40">
+				<motion.p
+					className="max-w-[640px] text-[18px] font-bold text-black/40"
+					initial={{ transform: "translateY(20px)", opacity: 0 }}
+					whileInView={{
+						transform: ["translateY(20px)", "translateY(0px)"],
+						opacity: [0, 1]
+					}}
+					transition={{
+						duration: 0.3,
+						delay: 0.15
+					}}
+				>
 					Trigger and build automatically executing transactions faster than you can comprehend. Combine
 					onchain and offchain data feeds to drive the most informed transactions possible.
-				</p>
+				</motion.p>
 			</LandingContainer>
 
 			<motion.div
