@@ -186,15 +186,22 @@ const ProtocolLine = ({
 						}
 					`}</style>
 
-					<div className="clip-path-asteroid-trail gradient-mask fade-out-trail absolute right-4 h-8 w-24 blur filter">
-						<Image
-							src={`/protocols/${name}.png`}
-							alt={name}
-							width={240}
-							height={240}
-							className="h-8 w-full object-cover"
-						/>
-					</div>
+					<motion.div
+						className="absolute right-4"
+						initial={{ width: "12rem" }}
+						animate={{ width: "6rem" }}
+						transition={{ duration: 2 }}
+					>
+						<div className="clip-path-asteroid-trail gradient-mask fade-out-trail h-8 w-full blur filter">
+							<Image
+								src={`/protocols/${name}.png`}
+								alt={name}
+								width={240}
+								height={240}
+								className="h-8 w-full object-cover"
+							/>
+						</div>
+					</motion.div>
 
 					<motion.div className="relative h-8 w-8" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
 						<Image
