@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react"
 
 import Image from "next/image"
-import Link from "next/link"
 
 import { motion } from "framer-motion"
 
 import { Animate, Blob, LandingContainer } from "@/components"
-import { cn, routes } from "@/lib"
+import { cn } from "@/lib"
 
 const protocols = [
 	"yearn",
@@ -312,7 +311,7 @@ export const Light = () => {
 					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
 				<motion.p
-					className="max-w-[640px] text-[18px] font-bold text-black/40"
+					className="max-w-[560px] text-[18px] font-bold text-black/40"
 					initial={{ transform: "translateY(20px)", opacity: 0 }}
 					whileInView={{
 						transform: ["translateY(20px)", "translateY(0px)"],

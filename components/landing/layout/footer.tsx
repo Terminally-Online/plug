@@ -67,7 +67,7 @@ export const LandingFooter: FC = () => (
 			</div>
 		</LandingContainer>
 
-		<div className="border-t-[1px] border-grayscale-100">
+		<div className="border-t-[2px] border-grayscale-100">
 			<LandingContainer className="flex flex-col gap-2 py-4 font-bold text-black/40 lg:flex-row lg:gap-8">
 				<p>Copyright Terminally Online, Inc. 2024</p>
 				<Link

@@ -31,9 +31,9 @@ export const InfoCard: FC<
 
 			<div className="flex-rows flex items-center gap-8">
 				<div className="mb-auto mt-1">{icon}</div>
-				<div className="z-[10] flex flex-col gap-2">
-					<h2 className="flex items-center gap-4 text-lg font-black lg:text-2xl">{text}</h2>
-					{description && <p className="max-w-[480px] font-bold text-black/40">{description}</p>}
+				<div className="z-[10] flex flex-col gap-2 font-bold">
+					<h2 className="flex items-center gap-4 text-lg lg:text-2xl">{text}</h2>
+					{description && <p className="max-w-[480px] text-black/40">{description}</p>}
 				</div>
 			</div>
 		</motion.div>

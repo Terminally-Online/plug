@@ -5,7 +5,7 @@ import { Blob, BookProfit, Cardiogram, LandingContainer } from "@/components"
 import { Underperforming } from "./underperforming"
 
 export const Vision: FC = () => (
-	<div className="relative z-[0]">
+	<div className="relative z-[0] mt-[80px]">
 		<LandingContainer className="mb-[80px] grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
 			<BookProfit />
 			<Underperforming />

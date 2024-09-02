@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -99,8 +99,6 @@ export const Blocks = ({ rows = 3 }) => {
 
 	return (
 		<div className="relative z-[1] overflow-hidden py-[80px]">
-			<Blob left={"60%"} top={"-45%"} width={"1000"} height={"300"} />
-
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
@@ -126,7 +124,7 @@ export const Blocks = ({ rows = 3 }) => {
 					<div className="h-[2px] w-24 bg-grayscale-100" />
 				</div>
 				<motion.p
-					className="max-w-[540px] text-[18px] font-bold text-black/40"
+					className="max-w-[520px] text-[18px] font-bold text-black/40"
 					initial={{ transform: "translateY(20px)", opacity: 0 }}
 					whileInView={{
 						transform: ["translateY(20px)", "translateY(0px)"],
