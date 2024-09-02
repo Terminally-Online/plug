@@ -7,8 +7,8 @@ import { LandingContainer } from "@/components"
 import { routes } from "@/lib"
 
 export const LandingFooter: FC = () => (
-	<>
-		<LandingContainer className="mb-16 mt-24 flex-col gap-2 lg:gap-4">
+	<div className="relative z-[12] border-t-[1px] border-plug-green bg-white lg:gap-4">
+		<LandingContainer className="mb-16	mt-24 flex-col gap-2">
 			<Image src="/black-logo.svg" alt="Logo" width={96} height={64} />
 
 			<div className="grid grid-cols-1 font-bold text-black/40 lg:grid-cols-12">
@@ -75,7 +75,7 @@ export const LandingFooter: FC = () => (
 				</Link>
 			</LandingContainer>
 		</div>
-	</>
+	</div>
 )
 
 export default LandingFooter

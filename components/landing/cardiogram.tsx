@@ -51,8 +51,8 @@ export const Cardiogram = () => {
 				/>
 			</svg>
 
-			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-[#FBFBFB]/0 to-[#FBFBFB]" />
-			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-[#FBFBFB]" />
+			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
+			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-grayscale-0" />
 		</InfoCard>
 	)
 }

@@ -1,7 +1,7 @@
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import { Check, CheckCircle, PowerOff } from "lucide-react"
+import { CheckCircle, PowerOff } from "lucide-react"
 
 import { InfoCard } from "@/components"
 
@@ -76,8 +76,8 @@ export const BookProfit = () => {
 					</motion.div>
 				))}
 			</motion.div>
-			<div className="absolute bottom-[30%] left-0 right-0 top-1/4 bg-gradient-to-b from-[#FBFBFB]/0 to-[#FBFBFB]" />
-			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-[#FBFBFB]" />
+			<div className="absolute bottom-[30%] left-0 right-0 top-1/4 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
+			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-grayscale-0" />
 		</InfoCard>
 	)
 }

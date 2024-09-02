@@ -15,14 +15,14 @@ export const HeroShapes = () => {
 	]
 
 	const positions = [
-		{ top: "0%", left: "0%" },
-		{ top: "0%", right: "0%" },
-		{ bottom: "0%", left: "0%" },
-		{ bottom: "0%", right: "0%" },
-		{ top: "0%", left: "50%", transform: "translateX(-50%)" },
-		{ bottom: "0%", left: "50%", transform: "translateX(-50%)" },
-		{ top: "50%", left: "0%", transform: "translateY(-50%)" },
-		{ top: "50%", right: "0%", transform: "translateY(-50%)" }
+		{ top: "5%", left: "10%" },
+		{ top: "15%", right: "5%" },
+		{ bottom: "8%", left: "12%" },
+		{ bottom: "20%", right: "15%" },
+		{ top: "30%", left: "45%" },
+		{ bottom: "25%", left: "60%" },
+		{ top: "55%", left: "8%" },
+		{ top: "40%", right: "20%" }
 	]
 
 	return (
@@ -34,18 +34,27 @@ export const HeroShapes = () => {
 						className={cn("absolute rounded-full", `z-${index}`)}
 						style={{
 							background: gradient,
-							width: "80%",
-							height: "80%",
+							width: `${70 + Math.random() * 20}%`,
+							height: `${70 + Math.random() * 20}%`,
 							...positions[index]
 						}}
 						animate={{
-							rotate: [0, 360]
+							rotate: [0, Math.random() < 0.5 ? 360 : -360, 0],
+							translateX: [
+								`${Math.random() * 10 - 5}%`,
+								`${Math.random() * 10 - 5}%`,
+								`${Math.random() * 10 - 5}%`
+							],
+							translateY: [
+								`${Math.random() * 10 - 5}%`,
+								`${Math.random() * 10 - 5}%`,
+								`${Math.random() * 10 - 5}%`
+							]
 						}}
 						transition={{
-							duration: 30,
-							ease: "linear",
-							repeat: Infinity,
-							delay: index * 6
+							duration: 30 + Math.random() * 2,
+							ease: "easeInOut",
+							repeat: Infinity
 						}}
 					/>
 				))}

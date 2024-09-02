@@ -5,7 +5,7 @@ import Link from "next/link"
 
 import { motion } from "framer-motion"
 
-import { Blob, LandingContainer } from "@/components"
+import { Animate, Blob, LandingContainer } from "@/components"
 import { cn, routes } from "@/lib"
 
 const protocols = [
@@ -174,8 +174,15 @@ const ProtocolLine = ({
 							clip-path: polygon(40% 25%, 100% 0%, 100% 100%, 20% 75%);
 						}
 						.gradient-mask {
-							mask-image: linear-gradient(to left, black, transparent, transparent);
-							-webkit-mask-image: linear-gradient(to left, black, transparent, transparent);
+							mask-image: linear-gradient(to left, black, black, transparent, transparent, transparent);
+							-webkit-mask-image: linear-gradient(
+								to left,
+								black,
+								black,
+								transparent,
+								transparent,
+								transparent
+							);
 						}
 					`}</style>
 
@@ -284,7 +291,9 @@ export const Light = () => {
 
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
-					<h1 className="min-w-[640px] text-[64px] font-bold">Onchain Activity at the Speed of Light.</h1>
+					<h1 className="min-w-[640px] text-[64px] font-bold leading-tight">
+						Onchain Activity at the Speed of Light.
+					</h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 					<Link
 						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
@@ -302,22 +311,27 @@ export const Light = () => {
 				</p>
 			</LandingContainer>
 
-			<div
+			<motion.div
 				className="flex flex-col"
 				style={{
 					transform: "rotate(-15deg)"
 				}}
+				initial={{ opacity: 0 }}
+				whileInView={{ opacity: 1 }}
 			>
-				{Array.from({ length: 5 }).map((_, index) => (
-					<ProtocolLine
-						key={index}
-						isGreen={greenLineIndex === index}
-						onHover={() => handleLineHover(index)}
-						strumDelay={Math.abs(index - lastHoveredLine) * 25}
-						stopStrumming={stopStrumming}
-					/>
-				))}
-			</div>
+				<Animate.List>
+					{Array.from({ length: 5 }).map((_, index) => (
+						<Animate.ListItem key={index}>
+							<ProtocolLine
+								isGreen={greenLineIndex === index}
+								onHover={() => handleLineHover(index)}
+								strumDelay={Math.abs(index - lastHoveredLine) * 25}
+								stopStrumming={stopStrumming}
+							/>
+						</Animate.ListItem>
+					))}
+				</Animate.List>
+			</motion.div>
 		</div>
 	)
 }

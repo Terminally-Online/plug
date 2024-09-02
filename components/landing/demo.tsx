@@ -10,7 +10,9 @@ export const Demo = () => {
 		<div className="relative z-[1] my-[80px]">
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
-					<h1 className="min-w-[640px] text-[64px] font-bold">The Hub For All Your Onchain Activity.</h1>
+					<h1 className="min-w-[640px] text-[64px] font-bold leading-tight">
+						The Hub For All Your Onchain Activity.
+					</h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 					<Link
 						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"

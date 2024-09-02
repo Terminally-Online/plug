@@ -1,0 +1,187 @@
+import { useEffect, useMemo, useState } from "react"
+
+import Image from "next/image"
+import Link from "next/link"
+
+import { motion } from "framer-motion"
+
+import { routes } from "@/lib"
+
+import { LandingContainer } from "./layout"
+
+const blockchains = [
+	"/blockchain/arbitrum",
+	"/blockchain/avalanche",
+	"/blockchain/base",
+	"/blockchain/bera",
+	"/blockchain/blast",
+	"/blockchain/ethereum",
+	"/blockchain/optimism",
+	"/blockchain/polygon",
+	"/blockchain/scroll",
+	"/blockchain/zksync"
+]
+
+const protocols = [
+	"/protocols/yearn",
+	"/protocols/hop",
+	"/protocols/gearbox",
+	"/protocols/aerodrome",
+	"/protocols/zora",
+	"/protocols/sushiswap",
+	"/protocols/alchemix",
+	"/protocols/eigen-layer",
+	"/protocols/ethena",
+	"/protocols/balancer",
+	"/protocols/chainlink",
+	"/protocols/rocket-pool",
+	"/protocols/compound",
+	"/protocols/maker",
+	"/protocols/fraxlend",
+	"/protocols/curve",
+	"/protocols/lido",
+	"/protocols/synthetix",
+	"/protocols/wasabi",
+	"/protocols/ens",
+	"/protocols/convex",
+	"/protocols/paraswap",
+	"/protocols/uniswap",
+	"/protocols/aave"
+]
+
+function shuffleArray<T>(array: Array<T>): Array<T> {
+	const shuffled = [...array]
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1))
+		;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+	}
+	return shuffled
+}
+
+export const Blocks = ({ rows = 3 }) => {
+	const [hoveredItems, setHoveredItems] = useState<Set<string>>(new Set())
+	const [allHovered, setAllHovered] = useState(false)
+	const [resetAll, setResetAll] = useState(false)
+	const [hasFallen, setHasFallen] = useState(false)
+	const [shuffledItems, setShuffledItems] = useState<string[]>([])
+
+	useEffect(() => {
+		const allItems = [...protocols, ...blockchains]
+		const shuffled = shuffleArray(allItems)
+		const totalNeeded = rows * 12
+		while (shuffled.length < totalNeeded) {
+			shuffled.push(...shuffleArray(allItems))
+		}
+		setShuffledItems(shuffled.slice(0, totalNeeded))
+	}, [rows])
+
+	const handleItemHover = (item: string) => {
+		if (!hasFallen) {
+			setHoveredItems(prev => {
+				const newSet = new Set(prev).add(item)
+				if (newSet.size === protocols.length + blockchains.length) {
+					setAllHovered(true)
+				}
+				return newSet
+			})
+		}
+	}
+
+	const handleItemClick = () => {
+		if (allHovered && !hasFallen) {
+			setResetAll(true)
+			setAllHovered(false)
+			setHoveredItems(new Set([...protocols, ...blockchains]))
+			setHasFallen(true)
+		}
+	}
+
+	return (
+		<div className="relative z-[1] overflow-hidden py-[80px]">
+			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
+				<div className="flex flex-row items-center gap-12">
+					<h1 className="min-w-[640px] text-[64px] font-bold leading-tight">
+						The Entire Industry in One Place
+					</h1>
+					<div className="h-[2px] w-full bg-grayscale-100" />
+					<Link
+						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
+						href={`${routes.documentation}/introduction/integrations`}
+						target="_blank"
+						rel="noreferrer"
+					>
+						Explore Integrations
+					</Link>
+					<div className="h-[2px] w-24 bg-grayscale-100" />
+				</div>
+				<p className="max-w-[540px] text-[18px] font-bold opacity-40">
+					There&apos;s no need to bounce between different interfaces and apps when you always get the best
+					price and a unified experience in one cohesive hub.
+				</p>
+
+				<div className="mt-12 flex w-full flex-col gap-2">
+					{[...Array(rows)].map((_, rowIndex) => {
+						const rowItems = shuffledItems.slice(rowIndex * 12, (rowIndex + 1) * 12)
+
+						return (
+							<div key={rowIndex} className="flex w-full flex-wrap gap-2">
+								{rowItems.map((item, index) => (
+									<motion.div
+										key={`${item}-${index}`}
+										className="relative flex aspect-square flex-1 cursor-pointer items-center justify-center rounded-xl bg-grayscale-0 transition-all duration-200 ease-in-out"
+										onMouseEnter={allHovered ? undefined : () => handleItemHover(item)}
+										onClick={handleItemClick}
+										animate={
+											allHovered && !resetAll && !hasFallen
+												? {
+														transform: `translateY(${Math.random() * 500 + 100}px) rotate(${
+															Math.random() < 0.5
+																? Math.random() * 180
+																: Math.random() * -180
+														}deg)`,
+														transition: { duration: 1, ease: "easeIn" }
+													}
+												: {
+														transform: "translateY(0) rotate(0deg)",
+														transition: { duration: 0.5, ease: "easeOut" }
+													}
+										}
+									>
+										<div
+											className="relative h-[40%] w-[40%] transition-all 
+                                        duration-200 ease-in-out group-hover:scale-110"
+										>
+											{((hoveredItems.has(item) && !hasFallen) || resetAll) && (
+												<div
+													className="absolute bottom-0 left-0 right-0 top-0 blur-2xl filter"
+													style={{
+														backgroundImage: `url(${item}.png)`,
+														backgroundSize: "contain",
+														backgroundPosition: "center",
+														backgroundRepeat: "no-repeat"
+													}}
+												/>
+											)}
+
+											<Image
+												src={`${item}.png`}
+												alt={item.split("/").pop() || ""}
+												layout="fill"
+												objectFit="contain"
+												className={`relative transition-all duration-200 ease-in-out ${
+													(hoveredItems.has(item) && !hasFallen) || resetAll
+														? ""
+														: "grayscale"
+												}`}
+											/>
+										</div>
+									</motion.div>
+								))}
+							</div>
+						)
+					})}
+				</div>
+			</LandingContainer>
+		</div>
+	)
+}
