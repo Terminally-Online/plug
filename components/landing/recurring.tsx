@@ -14,10 +14,10 @@ export const Recurring = () => {
 			<div className="ml-[-4px] grid h-[50%] w-[102%] gap-[2px]">
 				{Array.from({ length: 5 }).map((_, rowIndex) => (
 					<div key={rowIndex} className="flex flex-row gap-[2px]">
-						{Array.from({ length: 14 }).map((_, colIndex) => (
+						{Array.from({ length: 16 }).map((_, colIndex) => (
 							<motion.div
 								key={colIndex}
-								className="h-full w-full rounded-[2px]"
+								className="h-full w-full rounded-sm"
 								style={{
 									background:
 										Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #00E100, #A3F700)"
