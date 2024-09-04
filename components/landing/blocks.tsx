@@ -110,7 +110,7 @@ export const Blocks = ({ rows = 3 }) => {
 						}}
 						transition={{ duration: 0.3 }}
 					>
-						The Entire Industry in One Place
+						All of Ethereum in one place.
 					</motion.h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 					<Link
@@ -132,8 +132,9 @@ export const Blocks = ({ rows = 3 }) => {
 					}}
 					transition={{ duration: 0.3 }}
 				>
-					There&apos;s no need to bounce between different interfaces and apps when you always get the best
-					price and a unified experience in one cohesive hub.
+					Start using onchain protocols the way they were meant to be experienced. 
+					Access advanced functionality from the best protocols in one unified interface.
+
 				</motion.p>
 
 				<div className="mt-12 flex w-full flex-col gap-2">

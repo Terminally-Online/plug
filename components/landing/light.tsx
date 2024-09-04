@@ -306,7 +306,7 @@ export const Light = () => {
 						}}
 						transition={{ duration: 0.3 }}
 					>
-						Onchain Activity at the Speed of Light.
+						Blockchain transactions at the speed of light.
 					</motion.h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
@@ -322,8 +322,9 @@ export const Light = () => {
 						delay: 0.15
 					}}
 				>
-					Trigger and build automatically executing transactions faster than you can comprehend. Combine
-					onchain and offchain data feeds to drive the most informed transactions possible.
+					An engine that lets your transactions respond and execute faster than you can comprehend. 
+					Instead of constantly being fifteen minutes late, Plug submits your transaction the instant the value can be captured.
+
 				</motion.p>
 			</LandingContainer>
 

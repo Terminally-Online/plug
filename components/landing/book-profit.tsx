@@ -26,7 +26,8 @@ export const BookProfit = () => {
 		<InfoCard
 			icon={<PowerOff size={24} className="opacity-40" />}
 			text="Book profit even when you're sleeping."
-			description="Stop missing opportunities and have your transactions execute no matter where you are or what you're doing. If you want it done, it will be delivered on a silver platter."
+			description="Keep your money working even when you aren’t. Step away from the computer knowing 
+						that your transactions are executing no matter where you are or what you’re doing. "
 			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"
 		>
 			<motion.div

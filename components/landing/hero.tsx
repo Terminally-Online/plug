@@ -66,9 +66,8 @@ export const Hero = () => {
 									delay: 0.15
 								}}
 							>
-								Use the blockchain like never before with an &ldquo;if this, then that&rdquo; platform
-								that enables you to set rules so that everything executes instantly whether you&apos;re
-								at the computer or not.
+								Discover a new paradigm of human designed, bot executed transactions that kick your onchain activity into high gear. 
+								Adopt and create strategies that deliver the exact outcome you seek in seconds. 
 							</motion.p>
 
 							<Button

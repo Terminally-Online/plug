@@ -27,7 +27,7 @@ export const Underperforming = () => {
 		<InfoCard
 			icon={<Code size={24} className="opacity-40" />}
 			text="You're underperforming."
-			description="You don't need to be a rocket scientist to outcompete. Top performers no longer execute transactions manually."
+			description="Top earners don’t manually execute every trade. Diligent farmers don’t sit at their computer all day."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="relative -mx-1 flex h-[50%] flex-row gap-1 pt-2">

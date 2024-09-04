@@ -21,7 +21,7 @@ export const Demo = () => {
 						}}
 						transition={{ duration: 0.3 }}
 					>
-						The Hub For All Your Onchain Activity.
+						The home of all your onchain activity.
 					</motion.h1>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 					<Link
@@ -46,8 +46,9 @@ export const Demo = () => {
 						delay: 0.15
 					}}
 				>
-					Manage your assets, build strategies with protocol composability, view your activity, and more all
-					in one place with the simplest tool to 10x the amount of profit you can make.
+					Build and discover strategies, manage your portfolio, and more with an all-in-one experience you can 
+					customize to fit your exact needs and wants.
+
 				</motion.p>
 			</LandingContainer>
 

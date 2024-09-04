@@ -8,7 +8,8 @@ const Page = () => (
 		<Transactions />
 		<CallToAction
 			text="Operate at a level your friends only dream of."
-			description="With best in class execution and access to top strategies your capital can work harder than ever before. Compose top protocols and automate your portfolio's growth."
+			description="If you can’t beat them, join them. Embrace the future of onchain activity and 
+			supercharge your potential. So easy you’ll be able to teach your friends."
 			button="Get Started"
 		/>
 		<Vision />

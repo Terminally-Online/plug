@@ -8,7 +8,7 @@ export const Cardiogram = () => {
 		<InfoCard
 			icon={<Wallet size={24} className="opacity-40" />}
 			text="Automate or Die"
-			description="Not automating your transactions means you're leaving money on the table. The market is evolving - time to upgrade."
+			description="The market is evolving. It’s time to upgrade to a modern tool stack. You’re leaving money on the table."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<svg className="absolute inset-0 h-[50%] w-full" viewBox="0 0 200 100" preserveAspectRatio="none">

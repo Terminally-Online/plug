@@ -32,7 +32,7 @@ export const Scheduled = () => {
 		<InfoCard
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text="Transactions on a schedule."
-			description="Not automating your transactions means you're leaving money on the table. The market is evolving - time to upgrade."
+			description="Define opportunity windows and operating hours for your transactions. You don’t have to be online to be onchain."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="ml-auto grid w-full grid-cols-7 grid-rows-4 text-xs">
