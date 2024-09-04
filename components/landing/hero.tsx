@@ -41,9 +41,9 @@ export const Hero = () => {
 					</div>
 
 					<div className="my-auto flex min-h-[calc(100vh-180px)] items-center pb-6">
-						<div className="my-auto flex flex-col gap-8">
+						<div className="my-12 flex flex-col gap-8 md:my-auto">
 							<motion.h1
-								className="max-w-[75%] text-[3.5rem] font-black leading-tight text-white md:text-[72px] lg:text-[96px]"
+								className="text-[36px] font-black leading-tight md:max-w-[95%] md:text-[64px] lg:text-[72px] xl:max-w-[80%] xl:text-[96px] 2xl:max-w-[65%]"
 								initial={{ transform: "translateY(-20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(-20px)", "translateY(0px)"],
@@ -55,7 +55,7 @@ export const Hero = () => {
 							</motion.h1>
 
 							<motion.p
-								className="max-w-[52%] text-[1.25rem] font-bold text-white/80 md:text-[24px]"
+								className="max-w-[75%] text-[1.25rem] font-bold text-white/80 md:text-[24px] xl:max-w-[55%] 2xl:max-w-[45%]"
 								initial={{ transform: "translateY(20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(20px)", "translateY(0px)"],
