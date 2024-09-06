@@ -32,10 +32,10 @@ export const PlugContext = createContext<{
 		search: (data: string) => void
 		tag: (data: (typeof tags)[number]) => void
 		plug: {
-			add: (data?: string) => void
+			add: (data?: { id?: string; from?: string }) => void
 			edit: (data: { id: string } & WorkflowData) => void
-			delete: (data: { id: string; from?: string }) => void
-			fork: (data: { id: string; from?: string }) => void
+			delete: (data: { id: string; from?: string | null }) => void
+			fork: (data: { plug: string; id: string; from: string }) => void
 		}
 		action: {
 			edit: (data: { id?: string; actions: string }) => void
@@ -87,11 +87,18 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	const handleCreate = (
 		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plug.add.useMutation>[0]>["onSuccess"]>>[0],
-		redirect = true
+		redirect = false
 	) => {
 		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
 
-		if (redirect)
+		if (data.id && data.from)
+			handleSocket.columns.navigate({
+				id: data.id,
+				key: VIEW_KEYS.PLUG,
+				from: data.from,
+				item: data.plug.id
+			})
+		else if (redirect)
 			handleSocket.columns.add({
 				key: VIEW_KEYS.PLUG,
 				index: 0,
@@ -100,7 +107,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
-		onData: data => handleCreate({ plug: data, from: "" }, false)
+		onData: data => handleCreate({ plug: data, id: undefined, from: undefined }, false)
 	})
 
 	api.plug.onEdit.useSubscription(undefined, {
@@ -199,10 +206,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		<PlugContext.Provider
 			value={{
 				plugs,
-
 				search,
 				tag,
-
 				handle: {
 					search: handleSearch,
 					tag: handleTag,
@@ -223,7 +228,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	)
 }
 
-export const usePlugs = (id: string) => {
+export const usePlugs = (id?: string) => {
 	const context = useContext(PlugContext)
 
 	const { data: session } = useSession()

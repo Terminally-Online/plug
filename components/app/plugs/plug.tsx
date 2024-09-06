@@ -8,7 +8,7 @@ import {
 	ActionsFrame,
 	ActionView,
 	Button,
-	Container,
+	Callout,
 	ExecuteFrame,
 	ManagePlugFrame,
 	Search,

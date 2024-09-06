@@ -178,31 +178,33 @@ export const plug = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
-	add: anonymousProtectedProcedure.input(z.string().optional()).mutation(async ({ input, ctx }) => {
-		try {
-			const plug = await ctx.db.workflow.create({
-				data: {
-					name: "Untitled Plug",
-					userAddress: ctx.session.address,
-					color: Object.keys(colors)[
-						Math.floor(Math.random() * Object.keys(colors).length)
-					] as keyof typeof colors
-				}
-			})
+	add: anonymousProtectedProcedure
+		.input(z.object({ id: z.string().optional(), from: z.string().optional() }).optional())
+		.mutation(async ({ input, ctx }) => {
+			try {
+				const plug = await ctx.db.workflow.create({
+					data: {
+						name: "Untitled Plug",
+						userAddress: ctx.session.address,
+						color: Object.keys(colors)[
+							Math.floor(Math.random() * Object.keys(colors).length)
+						] as keyof typeof colors
+					}
+				})
 
-			ctx.emitter.emit(events.add, plug)
+				ctx.emitter.emit(events.add, plug)
 
-			return { plug, from: input }
-		} catch (error) {
-			throw new TRPCError({ code: "BAD_REQUEST" })
-		}
-	}),
+				return { plug, id: input?.id, from: input?.from }
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
+		}),
 	fork: anonymousProtectedProcedure
-		.input(z.object({ id: z.string(), from: z.string().optional() }))
+		.input(z.object({ plug: z.string(), id: z.string(), from: z.string() }))
 		.mutation(async ({ input, ctx }) => {
 			try {
 				const forking = await ctx.db.workflow.findUnique({
-					where: { id: input.id }
+					where: { id: input.plug }
 				})
 
 				if (forking == null) throw new TRPCError({ code: "BAD_REQUEST" })
@@ -219,7 +221,7 @@ export const plug = createTRPCRouter({
 
 				ctx.emitter.emit(events.add, plug)
 
-				return { plug, from: input.from }
+				return { plug, id: input.id, from: input.from }
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
@@ -255,22 +257,18 @@ export const plug = createTRPCRouter({
 			}
 		}),
 	delete: anonymousProtectedProcedure
-		.input(z.object({ id: z.string(), from: z.string().optional() }))
+		.input(z.object({ id: z.string(), from: z.string().nullish() }))
 		.mutation(async ({ input, ctx }) => {
-			try {
-				const plug = await ctx.db.workflow.delete({
-					where: {
-						id: input.id,
-						userAddress: ctx.session.address
-					}
-				})
+			const plug = await ctx.db.workflow.delete({
+				where: {
+					id: input.id,
+					userAddress: ctx.session.address
+				}
+			})
 
-				ctx.emitter.emit(events.delete, plug)
+			ctx.emitter.emit(events.delete, plug)
 
-				return { plug, from: input.from }
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+			return { plug, from: input.from }
 		}),
 	onAdd: subscription(events.add),
 	onEdit: subscription(events.edit),

@@ -2,7 +2,7 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
 import { usePlugs, useSockets } from "@/contexts"
-import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
+import { cn, greenGradientStyle } from "@/lib"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -134,7 +134,10 @@ const EmptyPlugs: FC<
 		isEmpty: boolean
 	}
 > = ({ id, isEmpty, className, ...props }) => {
-	if (isEmpty === false) return null
+	const { column } = useSockets(id)
+	const { handle } = usePlugs()
+
+	if (!column || isEmpty === false) return null
 
 	return (
 		<>
@@ -154,6 +157,42 @@ const EmptyPlugs: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => {}}>
 					View As
 				</Button>
+				<Button sizing="sm" onClick={() => handle.plug.add({ id, from: column.key })}>
+					Create
+				</Button>
+			</Base>
+		</>
+	)
+}
+
+const EmptyPlug: FC<
+	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		id: string
+		isEmpty: boolean
+	}
+> = ({ id, isEmpty, className, ...props }) => {
+	const { column } = useSockets(id)
+
+	if (!column || isEmpty === false) return null
+
+	return (
+		<>
+			<div
+				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				style={{
+					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+				}}
+			/>
+
+			<Base
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				title="No actions have been added, yet."
+				description="Get started by adding an action to your Plug."
+				{...props}
+			>
+				<Button variant="secondary" sizing="sm" onClick={() => {}}>
+					View As
+				</Button>
 				<Button sizing="sm" onClick={() => {}}>
 					Create
 				</Button>
@@ -162,4 +201,4 @@ const EmptyPlugs: FC<
 	)
 }
 
-export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets, EmptyPlugs })
+export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets, EmptyPlugs, EmptyPlug })

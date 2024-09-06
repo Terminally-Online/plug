@@ -57,86 +57,65 @@ export const ActionView: FC<{ id: string }> = ({ id }) => {
 	if (plug === undefined) return null
 
 	return (
-		<>
-			{actions && actions.length > 0 ? (
-				<div className="mb-72 flex flex-col">
-					{actions.map((_, index) => (
-						<Sentence id={id} key={index} index={index} />
-					))}
+		<div className="mb-72 flex flex-col">
+			{actions.map((_, index) => (
+				<Sentence id={id} key={index} index={index} />
+			))}
 
-					{own && (
-						<div className="mt-12">
-							<h4 className="mb-2 font-bold opacity-40">Next Action Suggestions</h4>
-							<div className="flex flex-col gap-2">
-								{suggestions.map((suggestion, idx) => (
-									<button
-										key={idx}
-										className="flex items-center gap-4 rounded-lg bg-grayscale-0 p-4 font-bold"
-										onClick={() =>
-											handle.action.edit({
-												id: plug.id,
-												actions: JSON.stringify([
-													...actions,
-													{
-														...suggestion,
-														values: getValues(
-															suggestion.categoryName,
-															suggestion.actionName
-														)
-													}
-												])
-											})
-										}
-									>
-										<Image
-											src={categories[suggestion.categoryName].image}
-											alt={suggestion.categoryName}
-											width={24}
-											height={24}
-											className="rounded-md"
-										/>
-										<p className="flex w-full flex-wrap items-center gap-[8px] truncate">
-											{formatTitle(suggestion.actionName)}
-										</p>
-										<Button
-											variant="secondary"
-											className="group p-1"
-											onClick={() =>
-												handle.action.edit({
-													id: plug.id,
-													actions: JSON.stringify([
-														...actions,
-														{
-															...suggestion,
-															values: getValues(
-																suggestion.categoryName,
-																suggestion.actionName
-															)
-														}
-													])
-												})
+			{own && (
+				<div className="mt-12">
+					<h4 className="mb-2 font-bold opacity-40">Next Action Suggestions</h4>
+					<div className="flex flex-col gap-2">
+						{suggestions.map((suggestion, idx) => (
+							<button
+								key={idx}
+								className="flex items-center gap-4 rounded-lg bg-grayscale-0 p-4 font-bold"
+								onClick={() =>
+									handle.action.edit({
+										id: plug.id,
+										actions: JSON.stringify([
+											...actions,
+											{
+												...suggestion,
+												values: getValues(suggestion.categoryName, suggestion.actionName)
 											}
-										>
-											<Plus size={14} />
-										</Button>
-									</button>
-								))}
-							</div>
-						</div>
-					)}
-				</div>
-			) : (
-				<div className="mx-auto my-auto flex h-full max-w-[80%] flex-col gap-2 text-center">
-					<p className="text-lg font-bold">No actions have been added yet.</p>
-					<p className="opacity-60">
-						Create a Plug to actions that you want to do on a regular basis and when all the conditions have
-						been met.
-					</p>
-					<Button className="mx-auto mt-4 w-max" onClick={() => handleFrame()}>
-						Add Action
-					</Button>
+										])
+									})
+								}
+							>
+								<Image
+									src={categories[suggestion.categoryName].image}
+									alt={suggestion.categoryName}
+									width={24}
+									height={24}
+									className="rounded-md"
+								/>
+								<p className="flex w-full flex-wrap items-center gap-[8px] truncate">
+									{formatTitle(suggestion.actionName)}
+								</p>
+								<Button
+									variant="secondary"
+									className="group p-1"
+									onClick={() =>
+										handle.action.edit({
+											id: plug.id,
+											actions: JSON.stringify([
+												...actions,
+												{
+													...suggestion,
+													values: getValues(suggestion.categoryName, suggestion.actionName)
+												}
+											])
+										})
+									}
+								>
+									<Plus size={14} />
+								</Button>
+							</button>
+						))}
+					</div>
 				</div>
 			)}
-		</>
+		</div>
 	)
 }

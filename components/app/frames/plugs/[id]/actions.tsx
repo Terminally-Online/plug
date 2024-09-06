@@ -35,18 +35,13 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 		[debouncedSearch]
 	)
 
-	// NOTE: Not sure what is going on here.
-	// useEffect(() => {
-	// 	if (frameVisible === undefined) handleDebounce("")
-	// }, [frameVisible, handleDebounce])
-
 	if (!id) return null
 
 	return (
 		<>
 			<Frame
 				id={id}
-				className="scrollbar-hide z-[1] max-h-[85vh] overflow-y-auto"
+				className="scrollbar-hide z-[1] max-h-[85%] overflow-y-auto"
 				icon={<Blocks size={18} className="opacity-60" />}
 				label="Add Action"
 				visible={isFrame}

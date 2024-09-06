@@ -3,10 +3,11 @@ import { FC, useEffect } from "react"
 import { PencilLine, Settings } from "lucide-react"
 
 import { Button, Checkbox, Frame, Search } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cardColors, useDebounce, useNavigation } from "@/lib"
 
 export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
+	const { column } = useSockets(id)
 	const { isFrame } = useFrame({ id, key: "manage" })
 	const { plug, handle } = usePlugs(id)
 
@@ -20,7 +21,7 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 		handle.plug.edit({ ...plug, name: debouncedName })
 	}, [nameRef, plug, debouncedName, handle])
 
-	if (!plug) return null
+	if (!column || !plug) return null
 
 	return (
 		<Frame
@@ -88,7 +89,7 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 				<Button
 					variant="destructive"
 					className="w-full"
-					onClick={() => handle.plug.delete({ id, from: "NOT_IMPLEMENTED" })}
+					onClick={() => handle.plug.delete({ id: plug.id, from: column.from })}
 				>
 					Delete
 				</Button>
