@@ -12,7 +12,7 @@ export const LandingFooter: FC = () => (
 		<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
 
 		<LandingContainer className="mb-16 flex-col gap-2">
-			<Image src="/black-logo.svg" alt="Logo" width={96} height={64} />
+			<Image className="mb-4" src="/black-logo.svg" alt="Logo" width={96} height={64} />
 
 			<div className="grid grid-cols-1 font-bold text-black/40 lg:grid-cols-12">
 				<div className="mb-8 lg:col-span-4 lg:mb-0">
