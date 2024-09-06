@@ -10,12 +10,7 @@ import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColumn?: boolean }> = ({
-	id,
-	isColumn = false,
-	className,
-	...props
-}) => {
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const { scrollYProgress } = useScroll()
 	const { search, tag, handleSearch, handleTag } = useSearch()
 

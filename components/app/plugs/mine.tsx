@@ -10,12 +10,7 @@ import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColumn?: boolean }> = ({
-	id,
-	isColumn = false,
-	className,
-	...props
-}) => {
+export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const { address, isExternal, column } = useSockets(id)
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
@@ -61,7 +56,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColu
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
 			{visiblePlugs.length > 0 && (
-				<Container column={isColumn}>
+				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search Plugs"

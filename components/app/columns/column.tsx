@@ -18,13 +18,10 @@ import {
 	ConsoleAdmin,
 	Header,
 	Plug,
-	Plugs,
 	PlugsDiscover,
 	PlugsMine,
 	SocketActivity,
-	SocketAssets,
 	SocketCollectionList,
-	SocketEarnings,
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
@@ -231,7 +228,7 @@ export const ConsoleColumn: FC<{
 								key === VIEW_KEYS.DISCOVER ? (
 									<PlugsDiscover className="pt-4" id={id} />
 								) : key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine className="pt-4" column={true} id={id} />
+									<PlugsMine className="pt-4" id={id} />
 								) : key === VIEW_KEYS.PLUG ? (
 									<Plug className="px-4 pt-4" id={id} item={item} />
 								) : // Socket related columns
