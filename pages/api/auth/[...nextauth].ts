@@ -21,12 +21,20 @@ const authOptions: NextAuthOptions = {
 				}
 			},
 			async authorize(credentials, req) {
-				if (!credentials || credentials.message === "0x0" || credentials.signature === "0x0") {
+				const unauthenticatedPairs = ["0x0", "0xdemo"]
+
+				if (
+					!credentials ||
+					unauthenticatedPairs.includes(credentials.message) ||
+					unauthenticatedPairs.includes(credentials.signature)
+				) {
 					const unixTimestamp = Math.floor(Date.now() / 1000)
 					const uuid = crypto.randomUUID()
+					const demo = credentials && credentials.message.startsWith("0xdemo")
+					const lead = demo ? "demo" : "anonymous"
 
 					return {
-						id: `anonymous-${unixTimestamp}-${uuid}`
+						id: `${lead}-${unixTimestamp}-${uuid}`
 					}
 				}
 
@@ -53,14 +61,15 @@ const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async session({ session, token }: { session: any; token: any }) {
-			if (token.sub.startsWith("anonymous")) {
+			if (token.sub.startsWith("anonymous") || token.sub.startsWith("demo")) {
 				// Create a hot id for the user that is uniquely identifying to the time it was created.
 				session.address = token.sub
 				session.user = {
 					id: "anonymous",
 					name: "Anonymous User",
 					image: `https://avatar.vercel.sh/anonymous.png`,
-					anonymous: true
+					anonymous: true,
+					demo: token.sub.startsWith("demo")
 				}
 			} else if (token.sub) {
 				session.address = token.sub
@@ -68,7 +77,8 @@ const authOptions: NextAuthOptions = {
 					id: token.sub,
 					name: token.sub,
 					image: `https://avatar.vercel.sh/${token.sub}.png`,
-					anonymous: false
+					anonymous: false,
+					demo: false
 				}
 			}
 

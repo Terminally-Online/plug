@@ -1,32 +1,47 @@
 import { FC } from "react"
 
 import { useSockets } from "@/contexts"
-import { cardColors, VIEW_KEYS } from "@/lib"
+import { cardColors, cn, VIEW_KEYS } from "@/lib"
 import { Workflow } from "@/server/api/routers/plug"
 
-type Props = { id: string; from: string; plug: Workflow }
+type Props = { id: string; from: string; plug: Workflow | undefined }
 
 export const PlugGridItem: FC<Props> = ({ id, from, plug }) => {
 	const { handle } = useSockets()
 
-	const backgroundImage = cardColors[plug.color]
+	const loading = plug === undefined
+	const backgroundImage = plug ? cardColors[plug.color] : undefined
 
 	return (
 		<button
-			onClick={() =>
-				handle.columns.navigate({
-					id,
-					key: VIEW_KEYS.PLUG,
-					item: plug.id,
-					from
-				})
+			onClick={
+				plug
+					? () =>
+							handle.columns.navigate({
+								id,
+								key: VIEW_KEYS.PLUG,
+								item: plug.id,
+								from
+							})
+					: undefined
 			}
-			className="flex min-h-[128px] w-full flex-col justify-end rounded-lg p-4 text-left text-white"
+			className={cn(
+				"flex min-h-[128px] w-full flex-col justify-end rounded-lg p-4 text-left text-white",
+				loading
+					? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
+					: "transition-all duration-200 ease-in-out",
+				loading === false && "bg-white hover:border-white hover:bg-grayscale-0",
+				loading === false ? "cursor-pointer" : "cursor-default"
+			)}
 			style={{
 				backgroundImage
 			}}
 		>
-			<span className="font-bold">{plug.name === "" ? "Untitled Plug" : plug.name}</span>
+			{plug === undefined ? (
+				<span className="invisible font-bold">.</span>
+			) : (
+				<span className="font-bold">{plug.name === "" ? "Untitled Plug" : plug.name}</span>
+			)}
 		</button>
 	)
 }

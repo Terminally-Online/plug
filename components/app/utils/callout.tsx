@@ -1,8 +1,8 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
-import { useSockets } from "@/contexts"
-import { cn, greenGradientStyle } from "@/lib"
+import { usePlugs, useSockets } from "@/contexts"
+import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -128,4 +128,38 @@ const EmptyAssets: FC<
 	)
 }
 
-export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets })
+const EmptyPlugs: FC<
+	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		id: string
+		isEmpty: boolean
+	}
+> = ({ id, isEmpty, className, ...props }) => {
+	if (isEmpty === false) return null
+
+	return (
+		<>
+			<div
+				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				style={{
+					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+				}}
+			/>
+
+			<Base
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				title="Nothing to see here, yet."
+				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
+				{...props}
+			>
+				<Button variant="secondary" sizing="sm" onClick={() => {}}>
+					View As
+				</Button>
+				<Button sizing="sm" onClick={() => {}}>
+					Create
+				</Button>
+			</Base>
+		</>
+	)
+}
+
+export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets, EmptyPlugs })

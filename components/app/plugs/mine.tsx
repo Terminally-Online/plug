@@ -1,35 +1,39 @@
-import { FC, HTMLAttributes, useState } from "react"
+import { FC, HTMLAttributes, useEffect, useMemo, useState } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Container, PlugGrid, Search, Tags } from "@/components"
-import { useSearch, VIEW_KEYS } from "@/lib"
+import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
+import { useSockets } from "@/contexts"
+import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({
+export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColumn?: boolean }> = ({
 	id,
-	column = false,
+	isColumn = false,
+	className,
 	...props
 }) => {
+	const { address, isAnonymous, isExternal, column } = useSockets(id)
+	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
-	const { search, tag, handleSearch, handleTag, handleReset } = useSearch()
 
 	const [plugs, setPlugs] = useState<{
 		count?: number
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
+	const { fetchNextPage, refetch, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
-			mine: true,
+			address: isExternal && column && column.viewAs ? column.viewAs.id : address,
 			search,
 			tag,
 			limit: 20
 		},
 		{
+			enabled: address !== undefined,
 			getNextPageParam(lastPage) {
 				return lastPage.nextCursor
 			},
@@ -42,38 +46,47 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; column
 		}
 	)
 
+	const visiblePlugs = useMemo(() => {
+		if (plugs === undefined || plugs.count === 0) return Array(12).fill(undefined)
+		return plugs.plugs
+	}, [plugs])
+
 	useMotionValueEvent(scrollYProgress, "change", latest => {
 		if (!plugs || isLoading || latest < 0.8) return
-
-		if ((plugs.count ?? 0) > plugs.plugs.length) {
-			fetchNextPage()
-		}
+		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
 	})
 
+	useEffect(() => {
+		refetch()
+	}, [address, column, refetch])
+
 	return (
-		<div {...props}>
+		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+			{visiblePlugs.length > 0 && (
+				<Container column={isColumn}>
+					<Search
+						icon={<SearchIcon size={14} className="opacity-60" />}
+						placeholder="Search Plugs"
+						search={search}
+						handleSearch={handleSearch}
+						clear={true}
+					/>
+				</Container>
+			)}
+
+			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
+
+			<Callout.EmptySearch
+				isEmpty={search !== "" && plugs && plugs.count === 0}
+				search={search}
+				handleSearch={handleSearch}
+			/>
+
 			<Container>
-				<Search
-					icon={<SearchIcon size={14} className="opacity-60" />}
-					placeholder="Search Plugs"
-					search={search}
-					handleSearch={handleSearch}
-					clear={true}
-				/>
+				<PlugGrid id={id} className="mb-4" from={VIEW_KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
-			{(plugs?.count ?? 0) > 0 && <Tags tag={tag} handleTag={handleTag} />}
-
-			<Container>
-				<PlugGrid
-					id={id}
-					className="mb-4"
-					from={VIEW_KEYS.MY_PLUGS}
-					search={search || tag}
-					handleReset={handleReset}
-					plugs={plugs.plugs}
-				/>
-			</Container>
+			<Callout.EmptyPlugs id={id} isEmpty={search === "" && plugs && plugs.count === 0} />
 		</div>
 	)
 }

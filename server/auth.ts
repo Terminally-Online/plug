@@ -15,6 +15,7 @@ declare module "next-auth" {
 			name: string
 			image: string
 			anonymous: boolean
+			demo: boolean
 		}
 		address: string
 	}
@@ -69,14 +70,15 @@ const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async session({ session, token }: { session: any; token: any }) {
-			if (token.sub.startsWith("anonymous")) {
+			if (token.sub.startsWith("anonymous") || token.sub.startsWith("demo")) {
 				// Create a hot id for the user that is uniquely identifying to the time it was created.
 				session.address = token.sub
 				session.user = {
 					id: "anonymous",
 					name: "Anonymous User",
 					image: `https://avatar.vercel.sh/anonymous.png`,
-					anonymous: true
+					anonymous: true,
+					demo: token.sub.startsWith("demo")
 				}
 			} else {
 				session.address = token.sub
@@ -84,7 +86,8 @@ const authOptions: NextAuthOptions = {
 					id: token.sub,
 					name: token.sub,
 					image: `https://avatar.vercel.sh/${token.sub}.png`,
-					anonymous: false
+					anonymous: false,
+					demo: false
 				}
 			}
 

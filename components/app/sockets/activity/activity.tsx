@@ -176,7 +176,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { id: string }>
 	const { isAnonymous, isExternal } = useSockets(id)
 
 	const visibleActivities = useMemo(() => {
-		if (isAnonymous && isExternal === false) return Array(5).fill(undefined)
+		if (isAnonymous && isExternal === false) return Array(10).fill(undefined)
 
 		return activities
 	}, [isAnonymous, isExternal])

@@ -1,31 +1,29 @@
-import { FC, HTMLAttributes, useState } from "react"
+import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
-import { Earth, Gem, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Container, Header, PlugGrid, Search, Tags } from "@/components"
-import { useSearch, VIEW_KEYS } from "@/lib"
+import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
+import { useSockets } from "@/contexts"
+import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({
 	id,
 	column = false,
+	className,
 	...props
 }) => {
 	const { scrollYProgress } = useScroll()
 	const { search, tag, handleSearch, handleTag, handleReset } = useSearch()
 
-	const [communityPlugs, setCommunityPlugs] = useState<{
+	const [plugs, setPlugs] = useState<{
 		count?: number
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const { data: curatedPlugs } = api.plug.all.useQuery({
-		target: "curated",
-		limit: 4
-	})
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
 			search,
@@ -37,7 +35,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; co
 				return lastPage.nextCursor
 			},
 			onSuccess(data) {
-				setCommunityPlugs(() => ({
+				setPlugs(() => ({
 					count: data.pages[data.pages.length - 1].count,
 					plugs: data.pages.flatMap(page => page.plugs)
 				}))
@@ -45,46 +43,46 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; co
 		}
 	)
 
-	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (!communityPlugs || isLoading || latest < 0.8) return
+	const visiblePlugs = useMemo(() => {
+		if (plugs === undefined || plugs.count === 0) return Array(12).fill(undefined)
+		return plugs.plugs
+	}, [plugs])
 
-		if ((communityPlugs.count ?? 0) > communityPlugs.plugs.length) {
+	useMotionValueEvent(scrollYProgress, "change", latest => {
+		if (!plugs || isLoading || latest < 0.8) return
+
+		if ((plugs.count ?? 0) > plugs.plugs.length) {
 			fetchNextPage()
 		}
 	})
 
 	return (
-		<div {...props}>
-			<Container column={column}>
-				<Search
-					icon={<SearchIcon size={14} className="opacity-60" />}
-					placeholder="Search Plugs"
-					search={search}
-					handleSearch={handleSearch}
-					clear={true}
-				/>
+		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+			{visiblePlugs.length > 0 && (
+				<Container>
+					<Search
+						icon={<SearchIcon size={14} className="opacity-60" />}
+						placeholder="Search Plugs"
+						search={search}
+						handleSearch={handleSearch}
+						clear={true}
+					/>
+				</Container>
+			)}
+
+			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
+
+			<Callout.EmptySearch
+				isEmpty={search !== "" && plugs && plugs.count === 0}
+				search={search}
+				handleSearch={handleSearch}
+			/>
+
+			<Container>
+				<PlugGrid id={id} className="mb-4" from={VIEW_KEYS.DISCOVER} plugs={visiblePlugs} />
 			</Container>
 
-			<Tags tag={tag} handleTag={handleTag} />
-
-			<Container column={column}>
-				{!search && !tag && curatedPlugs && curatedPlugs.length > 0 && (
-					<>
-						<Header size="sm" icon={<Gem size={14} className="opacity-40" />} label="Curated" />
-						<PlugGrid id={id} from={VIEW_KEYS.DISCOVER} count={4} plugs={curatedPlugs} />
-					</>
-				)}
-
-				<Header size="sm" icon={<Earth size={14} className="opacity-40" />} label="Community" />
-				<PlugGrid
-					id={id}
-					className="mb-4"
-					from={VIEW_KEYS.DISCOVER}
-					search={search || tag}
-					handleReset={handleReset}
-					plugs={communityPlugs.plugs}
-				/>
-			</Container>
+			<Callout.EmptyPlugs id={id} isEmpty={search === "" && plugs && plugs.count === 0} />
 		</div>
 	)
 }

@@ -44,7 +44,7 @@ export const plug = createTRPCRouter({
 	infinite: anonymousProtectedProcedure
 		.input(
 			z.object({
-				mine: z.boolean().optional(),
+				address: z.string().optional(),
 				cursor: z.string().nullish(),
 				limit: z.number().optional().default(10),
 				search: z.string().optional(),
@@ -54,8 +54,10 @@ export const plug = createTRPCRouter({
 		.query(async ({ input, ctx }) => {
 			const { cursor, search, tag } = input
 
+			const mine = input.address === ctx.session.address
+
 			const sessionWhere =
-				input.mine === true
+				mine === true
 					? {
 							userAddress: ctx.session.address
 						}
@@ -74,10 +76,10 @@ export const plug = createTRPCRouter({
 						? {
 								contains: search,
 								mode: "insensitive",
-								not: input.mine ? undefined : "Untitled Plug"
+								not: mine ? undefined : "Untitled Plug"
 							}
 						: {
-								not: input.mine ? undefined : "Untitled Plug"
+								not: mine ? undefined : "Untitled Plug"
 							},
 					tags: tag
 						? {
@@ -94,10 +96,10 @@ export const plug = createTRPCRouter({
 						? {
 								contains: search,
 								mode: "insensitive",
-								not: input.mine ? undefined : "Untitled Plug"
+								not: mine ? undefined : "Untitled Plug"
 							}
 						: {
-								not: input.mine ? undefined : "Untitled Plug"
+								not: mine ? undefined : "Untitled Plug"
 							},
 					tags: tag
 						? {

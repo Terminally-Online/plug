@@ -1,6 +1,6 @@
-import { FC, useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
 import { useSockets } from "@/contexts"
@@ -31,7 +31,6 @@ const DesktopPage = () => {
 
 const Page = () => {
 	const { data: session } = useSession()
-
 	const { md } = useMediaQuery()
 
 	useEffect(() => {

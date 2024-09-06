@@ -33,11 +33,6 @@ const OPTIONS: Options = [
 		icon: <Activity size={14} className="opacity-40" />
 	},
 	{
-		label: "ASSETS",
-		description: "View your tokens, collectibles and positions.",
-		icon: <Wallet size={14} className="opacity-40" />
-	},
-	{
 		label: "TOKENS",
 		description: "View your tokens and manage them.",
 		icon: <Coins size={14} className="opacity-40" />
@@ -51,16 +46,11 @@ const OPTIONS: Options = [
 		label: "POSITIONS",
 		description: "View your positions and manage them.",
 		icon: <PiggyBank size={14} className="opacity-40" />
-	},
-	{
-		label: "EARNINGS",
-		description: "View your earnings and manage them.",
-		icon: <Landmark size={14} className="opacity-40" />
 	}
 ] as const
 
 const ADMIN_OPTIONS: Options = [
-	...ANONYMOUS_OPTIONS,
+	...OPTIONS,
 	{
 		label: "ADMIN",
 		description: "View and manage the admin panel.",

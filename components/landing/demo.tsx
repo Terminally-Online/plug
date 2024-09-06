@@ -1,20 +1,43 @@
+import { useEffect } from "react"
+
 import Link from "next/link"
+
+import { signIn, useSession } from "next-auth/react"
 
 import { motion } from "framer-motion"
 
+import { Blob, ConsoleColumnRow, ConsoleSidebar, LandingContainer } from "@/components"
 import { routes, useMediaQuery } from "@/lib"
 
-import { Blob } from "./blob"
-import { LandingContainer } from "./layout"
+const DemoApp = () => {
+	const { data: session } = useSession()
+
+	useEffect(() => {
+		if (session !== null) return
+
+		signIn("credentials", {
+			message: "0xdemo",
+			signature: "0xdemo",
+			redirect: false
+		})
+	}, [session])
+
+	return (
+		<div className="min-w-screen flex h-full w-full flex-row overflow-y-hidden overflow-x-visible">
+			<ConsoleSidebar />
+			<ConsoleColumnRow />
+		</div>
+	)
+}
 
 export const Demo = () => {
 	const { lg } = useMediaQuery()
 
-	if(!lg) return null
+	if (!lg) return null
 
 	return (
 		<div className="relative z-[1] my-[80px]">
-			<LandingContainer className="relative flex flex-col gap-4 mb-[40px]">
+			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
 						className="text-[32px] font-bold leading-tight md:max-w-[520px] md:text-[52px] lg:min-w-[620px] lg:text-[64px] xl:min-w-[640px]"
@@ -59,7 +82,9 @@ export const Demo = () => {
 
 			<Blob left={"55%"} top={"350"} width={"1000"} height={"500"} />
 
-			<div className="z-[120] h-[800px] w-full bg-grayscale-0" />
+			<div className="z-[120] h-screen w-full border-y-[1px] border-grayscale-100 bg-white">
+				<DemoApp />
+			</div>
 		</div>
 	)
 }

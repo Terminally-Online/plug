@@ -112,7 +112,7 @@ export const socket = createTRPCRouter({
 			return socket
 		}),
 	search: anonymousProtectedProcedure
-		.input(z.object({ search: z.string(), limit: z.number().optional().default(5) }))
+		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {
 			return await ctx.db.userSocket.findMany({
 				where: {
@@ -145,6 +145,14 @@ export const socket = createTRPCRouter({
 							NOT: {
 								id: {
 									contains: "anonymous",
+									mode: "insensitive"
+								}
+							}
+						},
+						{
+							NOT: {
+								id: {
+									contains: "demo",
 									mode: "insensitive"
 								}
 							}

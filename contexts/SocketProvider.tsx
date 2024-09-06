@@ -21,6 +21,7 @@ export const SocketContext = createContext<{
 	positions: RouterOutputs["socket"]["balances"]["positions"]
 	page: ConsoleColumnModel | undefined
 	isAnonymous: boolean
+	isDemo: boolean
 	handle: {
 		columns: {
 			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
@@ -42,6 +43,7 @@ export const SocketContext = createContext<{
 	},
 	page: undefined,
 	isAnonymous: false,
+	isDemo: false,
 	handle: {
 		columns: {
 			add: () => {},
@@ -71,6 +73,7 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	})
 
 	const isAnonymous = !socketData || socketData.id.startsWith("anonymous")
+	const isDemo = socketData?.id.startsWith("demo") || false
 	const enabled =
 		socketData !== undefined &&
 		socketData.socketAddress !== undefined &&
@@ -159,6 +162,7 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 				positions,
 				page,
 				isAnonymous,
+				isDemo,
 				handle: {
 					columns: {
 						add: data => handle.columns.add.mutate(data),

@@ -42,4 +42,26 @@ const ListItem: FC<PropsWithChildren> = ({ children }) => (
 	</motion.div>
 )
 
-export const Animate = Object.assign(Base, { List, ListItem })
+const Grid: FC<PropsWithChildren> = ({ children }) => (
+	<motion.div
+		className="grid gap-2"
+		style={{
+			gridTemplateColumns: `repeat(auto-fit, minmax(160px, 1fr))`
+		}}
+		initial="hidden"
+		animate="visible"
+		variants={{
+			hidden: { opacity: 0 },
+			visible: {
+				opacity: 1,
+				transition: {
+					staggerChildren: 0.05
+				}
+			}
+		}}
+	>
+		{children}
+	</motion.div>
+)
+
+export const Animate = Object.assign(Base, { List, Grid, ListItem })

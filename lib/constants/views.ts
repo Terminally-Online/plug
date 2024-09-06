@@ -28,11 +28,15 @@ export const VIEW_KEYS = {
 export const DEFAULT_ANONYMOUS_VIEWS = [
 	{ key: VIEW_KEYS.HOME, index: -1 },
 	{ key: VIEW_KEYS.DISCOVER, index: 0 },
-	{ key: VIEW_KEYS.MY_PLUGS, index: 1 }
+	{ key: VIEW_KEYS.MY_PLUGS, index: 1 },
+	{ key: VIEW_KEYS.ACTIVITY, index: 2 },
+	{ key: VIEW_KEYS.ASSETS, index: 3 }
 ]
 
 export const DEFAULT_VIEWS = [
 	{ key: VIEW_KEYS.HOME, index: -1 },
-	{ key: VIEW_KEYS.PLUGS, index: 0 },
-	{ key: VIEW_KEYS.ACTIVITY, index: 1 }
+	{ key: VIEW_KEYS.DISCOVER, index: 0 },
+	{ key: VIEW_KEYS.MY_PLUGS, index: 1 },
+	{ key: VIEW_KEYS.ACTIVITY, index: 2 },
+	{ key: VIEW_KEYS.ASSETS, index: 3 }
 ]
