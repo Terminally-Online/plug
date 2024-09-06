@@ -10,14 +10,14 @@ import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { api } from "@/server/client"
 
-export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; column?: boolean }> = ({
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColumn?: boolean }> = ({
 	id,
-	column = false,
+	isColumn = false,
 	className,
 	...props
 }) => {
 	const { scrollYProgress } = useScroll()
-	const { search, tag, handleSearch, handleTag, handleReset } = useSearch()
+	const { search, tag, handleSearch, handleTag } = useSearch()
 
 	const [plugs, setPlugs] = useState<{
 		count?: number
@@ -50,10 +50,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string; co
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
 		if (!plugs || isLoading || latest < 0.8) return
-
-		if ((plugs.count ?? 0) > plugs.plugs.length) {
-			fetchNextPage()
-		}
+		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
 	})
 
 	return (

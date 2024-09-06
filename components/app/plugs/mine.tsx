@@ -16,7 +16,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColu
 	className,
 	...props
 }) => {
-	const { address, isAnonymous, isExternal, column } = useSockets(id)
+	const { address, isExternal, column } = useSockets(id)
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
 
@@ -25,7 +25,9 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColu
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const { fetchNextPage, refetch, isLoading } = api.plug.infinite.useInfiniteQuery(
+	const representative = isExternal && column && column.viewAs ? column.viewAs.id : address
+
+	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
 			address: isExternal && column && column.viewAs ? column.viewAs.id : address,
 			search,
@@ -33,7 +35,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColu
 			limit: 20
 		},
 		{
-			enabled: address !== undefined,
+			enabled: representative !== undefined,
 			getNextPageParam(lastPage) {
 				return lastPage.nextCursor
 			},
@@ -55,10 +57,6 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string; isColu
 		if (!plugs || isLoading || latest < 0.8) return
 		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
 	})
-
-	useEffect(() => {
-		refetch()
-	}, [address, column, refetch])
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
