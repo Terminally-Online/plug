@@ -27,7 +27,7 @@ export const ConsoleSidebar = () => {
 	})
 
 	return (
-		<div className="mr-2 flex h-screen w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
+		<div className="mr-2 flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
 			<div className={cn("flex w-full flex-col gap-4 px-4")}>
 				{address && (
 					<button
