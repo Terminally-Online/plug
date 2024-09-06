@@ -9,10 +9,9 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
 	from: string
 	plugs: Array<Workflow | undefined> | undefined
 	count?: number
-	handleReset?: () => void
 }
 
-export const PlugGrid: FC<Props> = ({ id, from, plugs, count, handleReset, ...props }) => {
+export const PlugGrid: FC<Props> = ({ id, from, plugs, count, ...props }) => {
 	if (plugs === undefined) return null
 
 	return (

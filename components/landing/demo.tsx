@@ -82,7 +82,7 @@ export const Demo = () => {
 
 			<Blob left={"55%"} top={"350"} width={"1000"} height={"500"} />
 
-			<div className="z-[120] h-screen w-full border-y-[1px] border-grayscale-100 bg-white">
+			<div className="z-[120] h-[80vh] w-full border-y-[1px] border-grayscale-100 bg-white">
 				<DemoApp />
 			</div>
 		</div>
