@@ -5,7 +5,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 
 import { Animate, Blob, LandingContainer } from "@/components"
-import { cn } from "@/lib"
+import { cn, useMediaQuery } from "@/lib"
 
 const protocols = [
 	"yearn",
@@ -48,9 +48,13 @@ const ProtocolLine = ({
 	const nextId = useRef(0)
 	const availableProtocolsRef = useRef(protocols)
 
+	const { md } = useMediaQuery()
+
 	const [activeProtocols, setActiveProtocols] = useState<Array<{ id: number; name: string }>>([])
 	const [isTabVisible, setIsTabVisible] = useState(true)
 	const [isStrumming, setIsStrumming] = useState(false)
+
+	const duration = md ? 2.5 : 1
 
 	useEffect(() => {
 		const handleVisibilityChange = () => {
@@ -162,7 +166,7 @@ const ProtocolLine = ({
 					initial={{ transform: "translateX(-2rem)" }}
 					animate={{ transform: "translateX(160vw)" }}
 					transition={{
-						duration: 2.5,
+						duration,
 						ease: "linear"
 					}}
 					onAnimationComplete={() => removeProtocol(id)}
@@ -311,7 +315,7 @@ export const Light = () => {
 					<div className="hidden h-[2px] w-full bg-grayscale-100 xl:flex" />
 				</div>
 				<motion.p
-					className="max-w-[540px] text-[16px] font-bold text-black/40 lg:text-[18px] lg:max-w-[620px]"
+					className="max-w-[540px] text-[16px] font-bold text-black/40 lg:max-w-[620px] lg:text-[18px]"
 					initial={{ transform: "translateY(20px)", opacity: 0 }}
 					whileInView={{
 						transform: ["translateY(20px)", "translateY(0px)"],
@@ -322,9 +326,8 @@ export const Light = () => {
 						delay: 0.15
 					}}
 				>
-					Transactions that respond and execute faster than you can comprehend. Instead of
-					constantly being fifteen minutes late, Plug submits your transaction the instant the value can be
-					captured.
+					Transactions that respond and execute faster than you can comprehend. Instead of constantly being
+					fifteen minutes late, Plug submits your transaction the instant the value can be captured.
 				</motion.p>
 			</LandingContainer>
 
