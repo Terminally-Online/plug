@@ -5,9 +5,8 @@ import Link from "next/link"
 
 import { motion } from "framer-motion"
 
-import { routes } from "@/lib"
+import { routes, useMediaQuery } from "@/lib"
 
-import { Blob } from "./blob"
 import { LandingContainer } from "./layout"
 
 const blockchains = [
@@ -59,12 +58,17 @@ function shuffleArray<T>(array: Array<T>): Array<T> {
 	return shuffled
 }
 
-export const Blocks = ({ rows = 3 }) => {
+export const Blocks = () => {
+	const { md } = useMediaQuery()
+
 	const [hoveredItems, setHoveredItems] = useState<Set<string>>(new Set())
 	const [allHovered, setAllHovered] = useState(false)
 	const [resetAll, setResetAll] = useState(false)
 	const [hasFallen, setHasFallen] = useState(false)
 	const [shuffledItems, setShuffledItems] = useState<string[]>([])
+
+	const rows = md ? 3 : 6
+	const columns = md ? 12 : 6
 
 	useEffect(() => {
 		const allItems = [...protocols, ...blockchains]
@@ -102,7 +106,7 @@ export const Blocks = ({ rows = 3 }) => {
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
-						className="min-w-[620px] text-[64px] font-bold leading-tight"
+						className="max-w-[320px] text-[32px] font-bold leading-tight md:max-w-[520px] md:text-[52px] lg:min-w-[480px] lg:max-w-[920px] lg:text-[64px]"
 						initial={{ transform: "translateY(-20px)", opacity: 0 }}
 						whileInView={{
 							transform: ["translateY(-20px)", "translateY(0px)"],
@@ -112,19 +116,21 @@ export const Blocks = ({ rows = 3 }) => {
 					>
 						All of Ethereum in one place.
 					</motion.h1>
-					<div className="h-[2px] w-full bg-grayscale-100" />
-					<Link
-						className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
-						href={`${routes.documentation}/introduction/integrations`}
-						target="_blank"
-						rel="noreferrer"
-					>
-						Explore Integrations
-					</Link>
-					<div className="h-[2px] w-24 bg-grayscale-100" />
+					<div className="hidden w-full items-center gap-4 md:visible xl:flex xl:flex-row">
+						<div className="h-[2px] w-full bg-grayscale-100" />
+						<Link
+							className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
+							href={`${routes.documentation}/introduction/integrations`}
+							target="_blank"
+							rel="noreferrer"
+						>
+							Explore Integrations
+						</Link>
+						<div className="h-[2px] w-24 bg-grayscale-100" />
+					</div>
 				</div>
 				<motion.p
-					className="max-w-[520px] text-[18px] font-bold text-black/40"
+					className="max-w-[520px] text-[16px] font-bold text-black/40 md:max-w-[480px] lg:text-[18px]"
 					initial={{ transform: "translateY(20px)", opacity: 0 }}
 					whileInView={{
 						transform: ["translateY(20px)", "translateY(0px)"],
@@ -132,14 +138,13 @@ export const Blocks = ({ rows = 3 }) => {
 					}}
 					transition={{ duration: 0.3 }}
 				>
-					Start using onchain protocols the way they were meant to be experienced. 
-					Access advanced functionality from the best protocols in one unified interface.
-
+					Use onchain protocols the way they were meant to be experienced. Access advanced functionality from
+					the best protocols in one unified interface.
 				</motion.p>
 
 				<div className="mt-12 flex w-full flex-col gap-2">
 					{[...Array(rows)].map((_, rowIndex) => {
-						const rowItems = shuffledItems.slice(rowIndex * 12, (rowIndex + 1) * 12)
+						const rowItems = shuffledItems.slice(rowIndex * columns, (rowIndex + 1) * columns)
 
 						return (
 							<div key={rowIndex} className="flex w-full flex-wrap gap-2">

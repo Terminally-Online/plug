@@ -295,10 +295,10 @@ export const Light = () => {
 		<div className="relative z-0 my-[80px]">
 			<Blob left={"-100"} top={"-700"} width={"1000"} height={"500"} />
 
-			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
+			<LandingContainer className="relative mb-[80px] flex flex-col gap-4 xl:mb-[40px]">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
-						className="min-w-[640px] text-[64px] font-bold leading-tight"
+						className="max-w-[420px] text-[32px] font-bold leading-tight md:max-w-[600px] md:text-[52px] lg:min-w-[720px] lg:max-w-[720px] lg:text-[64px]"
 						initial={{ transform: "translateY(-20px)", opacity: 0 }}
 						whileInView={{
 							transform: ["translateY(-20px)", "translateY(0px)"],
@@ -308,10 +308,10 @@ export const Light = () => {
 					>
 						Blockchain transactions at the speed of light.
 					</motion.h1>
-					<div className="h-[2px] w-full bg-grayscale-100" />
+					<div className="hidden h-[2px] w-full bg-grayscale-100 xl:flex" />
 				</div>
 				<motion.p
-					className="max-w-[560px] text-[18px] font-bold text-black/40"
+					className="max-w-[540px] text-[16px] font-bold text-black/40 lg:text-[18px] lg:max-w-[620px]"
 					initial={{ transform: "translateY(20px)", opacity: 0 }}
 					whileInView={{
 						transform: ["translateY(20px)", "translateY(0px)"],
@@ -322,9 +322,9 @@ export const Light = () => {
 						delay: 0.15
 					}}
 				>
-					An engine that lets your transactions respond and execute faster than you can comprehend. 
-					Instead of constantly being fifteen minutes late, Plug submits your transaction the instant the value can be captured.
-
+					Transactions that respond and execute faster than you can comprehend. Instead of
+					constantly being fifteen minutes late, Plug submits your transaction the instant the value can be
+					captured.
 				</motion.p>
 			</LandingContainer>
 

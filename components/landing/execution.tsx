@@ -276,13 +276,16 @@ export const Execution = () => {
 	return (
 		<InfoCard
 			icon={<CalendarClock size={24} className="opacity-40" />}
-			text='"If this, then that” driven execution.'
-			description="Control every granular detail and squeeze the maximum value out of every transaction. With embedded constraints you have complete certainty in the outcome."
-			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"
+			text='"If this, then that” execution.'
+			description="Control every granular detail and squeeze the maximum value out of every transaction."
+			className="col-span-2 h-full min-h-[640px] xl:col-span-4 xl:row-span-2"
 		>
-			<div className="flex h-[80%] w-full flex-col items-center justify-center gap-2">
+			<div className="flex h-[80%] w-full select-none flex-col items-center justify-center gap-2">
 				<ExecutionActions />
 			</div>
+
+			<div className="absolute bottom-[30%] left-0 right-0 top-[60%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
+			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-grayscale-0" />
 		</InfoCard>
 	)
 }

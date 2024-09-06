@@ -7,8 +7,8 @@ export const Cardiogram = () => {
 	return (
 		<InfoCard
 			icon={<Wallet size={24} className="opacity-40" />}
-			text="Automate or Die"
-			description="The market is evolving. It’s time to upgrade to a modern tool stack. You’re leaving money on the table."
+			text="Automate or die."
+			description="It's time to upgrade to a modern onchain tool stack. You're leaving money on the table."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<svg className="absolute inset-0 h-[50%] w-full" viewBox="0 0 200 100" preserveAspectRatio="none">
@@ -51,8 +51,7 @@ export const Cardiogram = () => {
 				/>
 			</svg>
 
-			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-grayscale-0" />
+			<div className="absolute bottom-[40%] left-0 right-0 top-0 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
 		</InfoCard>
 	)
 }

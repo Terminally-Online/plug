@@ -33,7 +33,7 @@ export const Hero = () => {
 
 						<Button
 							variant="none"
-							className="ml-auto w-max rounded-md border-[1px] border-white/20 bg-white/20 px-4 py-2 text-center text-sm font-black text-white"
+							className="ml-auto w-max rounded-md border-[1px] border-white/20 bg-white/20 px-4 py-2 text-center text-sm font-black text-white filter backdrop-blur-sm"
 							href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
 						>
 							Enter App
@@ -43,7 +43,7 @@ export const Hero = () => {
 					<div className="my-auto flex min-h-[calc(100vh-180px)] items-center pb-6">
 						<div className="my-12 flex flex-col gap-8 md:my-auto">
 							<motion.h1
-								className="text-[36px] font-black leading-tight md:max-w-[95%] md:text-[64px] lg:text-[72px] xl:max-w-[80%] xl:text-[96px] 2xl:max-w-[65%]"
+								className="text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[980px] xl:text-[96px]"
 								initial={{ transform: "translateY(-20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(-20px)", "translateY(0px)"],
@@ -55,7 +55,7 @@ export const Hero = () => {
 							</motion.h1>
 
 							<motion.p
-								className="max-w-[75%] text-[1.25rem] font-bold text-white/80 md:text-[24px] xl:max-w-[55%] 2xl:max-w-[45%]"
+								className="font-bold text-white/80 max-w-[480px] md:max-w-[520px] text-[18px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
 								initial={{ transform: "translateY(20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(20px)", "translateY(0px)"],
@@ -66,13 +66,13 @@ export const Hero = () => {
 									delay: 0.15
 								}}
 							>
-								Discover a new paradigm of human designed, bot executed transactions that kick your onchain activity into high gear. 
-								Adopt and create strategies that deliver the exact outcome you seek in seconds. 
+								Human designed, bot executed transactions that kick your onchain activity into high
+								gear. Adopt and create strategies that deliver the results you want in seconds.
 							</motion.p>
 
 							<Button
 								variant="none"
-								className="mt-8 w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white"
+								className="mt-8 w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white filter backdrop-blur-sm"
 								href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
 							>
 								Enter App

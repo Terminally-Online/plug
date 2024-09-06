@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react"
 
 import { motion } from "framer-motion"
 
-const totalBars = 100
+import { useMediaQuery } from "@/lib"
 
-const variants = {
+const createVariants = (totalBars: number) => ({
 	okayTrader: (index: number) => {
 		const baseValue = 10
 		const tradingPeriods = [20, 40, 60, 80]
@@ -40,15 +40,21 @@ const variants = {
 		const growthRate = 0.05
 		const baseGrowth = ((Math.exp(growthRate * index) - 1) / (Math.exp(growthRate * totalBars) - 1)) * 150
 		const smoothingFactor = 0.2
-		const previousGrowth = index > 0 ? variants.supernaturalTrader(index - 1) : baseGrowth
+		const previousGrowth = index > 0 ? createVariants(totalBars).supernaturalTrader(index - 1) : baseGrowth
 		const smoothedGrowth = previousGrowth * (1 - smoothingFactor) + baseGrowth * smoothingFactor
 		const noise = Math.random() * 0.5 - 0.25
 		return Math.min(100, Math.max(0, smoothedGrowth + noise))
 	}
-}
+})
 
 export const HeroBarChart = () => {
-	const [currentVariant, setCurrentVariant] = useState<keyof typeof variants>("okayTrader")
+	const { md } = useMediaQuery()
+
+	const [currentVariant, setCurrentVariant] = useState<keyof ReturnType<typeof createVariants>>("okayTrader")
+
+	const totalBars = md ? 100 : 60
+
+	const variants = useMemo(() => createVariants(totalBars), [totalBars])
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -60,7 +66,7 @@ export const HeroBarChart = () => {
 		}, 5000)
 
 		return () => clearInterval(interval)
-	}, [])
+	}, [variants])
 
 	const bars = useMemo(
 		() =>
@@ -83,7 +89,7 @@ export const HeroBarChart = () => {
 					/>
 				)
 			}),
-		[currentVariant]
+		[currentVariant, totalBars, variants]
 	)
 
 	return <div className="z-2 absolute bottom-0 left-0 right-0 top-0 -mx-8 flex flex-row justify-between">{bars}</div>

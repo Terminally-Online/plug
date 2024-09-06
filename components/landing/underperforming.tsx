@@ -27,10 +27,10 @@ export const Underperforming = () => {
 		<InfoCard
 			icon={<Code size={24} className="opacity-40" />}
 			text="You're underperforming."
-			description="Top earners don’t manually execute every trade. Diligent farmers don’t sit at their computer all day."
+			description="Top earners don't manually execute every trade. Diligent farmers don’t sit at their computer all day."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
-			<div className="relative -mx-1 flex h-[50%] flex-row gap-1 pt-2">
+			<div className="relative -mx-1 flex h-[40%] flex-row gap-1 pt-2">
 				{bars.map(({ key, height, redHeight, delay }) => (
 					<motion.div
 						key={key}
@@ -40,7 +40,7 @@ export const Underperforming = () => {
 						transition={{ ...animationProps, delay }}
 					>
 						<motion.div
-							className="absolute bottom-0 left-0 right-0 h-[12px] rounded-xl bg-plug-red shadow-[0_0_8px_rgba(255,0,0,0.5)]"
+							className="absolute bottom-0 left-0 right-0 h-[12px] rounded-xl bg-plug-red"
 							initial={{ bottom: redHeight }}
 							whileInView={{ bottom: [redHeight, "0%"] }}
 							transition={{ ...animationProps, delay }}
@@ -55,8 +55,8 @@ export const Underperforming = () => {
 				))}
 			</div>
 
-			<div className="absolute bottom-[50%] left-0 right-0 top-[25%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-grayscale-0" />
+			<div className="absolute bottom-[45%] left-0 right-0 top-[25%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
+			<div className="absolute bottom-0 left-0 right-0 top-[55%] bg-grayscale-0" />
 		</InfoCard>
 	)
 }

@@ -7,9 +7,9 @@ export const Recurring = () => {
 	return (
 		<InfoCard
 			icon={<Wallet size={24} className="opacity-40" />}
-			text="Recurring runs made easy."
-			description="Consistent outcomes with a click of a button. Set it and forget it with transactions that auto-execute when you want."
-			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
+			text="Recurring runs."
+			description="Set it and forget it with transactions that auto-execute on the frequency you have defined."
+			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="ml-[-4px] grid h-[50%] w-[102%] gap-[2px]">
 				{Array.from({ length: 5 }).map((_, rowIndex) => (

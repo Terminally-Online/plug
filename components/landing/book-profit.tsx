@@ -25,9 +25,8 @@ export const BookProfit = () => {
 	return (
 		<InfoCard
 			icon={<PowerOff size={24} className="opacity-40" />}
-			text="Book profit even when you're sleeping."
-			description="Keep your money working even when you aren’t. Step away from the computer knowing 
-						that your transactions are executing no matter where you are or what you’re doing. "
+			text="Book profit constantly."
+			description="Stay active in a market that never sleeps by keeping your money working even when you aren't."
 			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"
 		>
 			<motion.div
@@ -86,7 +85,7 @@ export const BookProfit = () => {
 					</motion.div>
 				))}
 			</motion.div>
-			<div className="absolute bottom-[30%] left-0 right-0 top-1/4 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
+			<div className="absolute bottom-[30%] left-0 right-0 top-[60%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
 			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-grayscale-0" />
 		</InfoCard>
 	)

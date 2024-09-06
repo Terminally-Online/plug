@@ -40,14 +40,7 @@ export const LandingFooter: FC = () => (
 						Guides
 					</a>
 				</div>
-				<div className="mb-2 flex flex-col gap-2 lg:col-span-2">
-					<a href={routes.comingSoon} className="transition-all duration-200 ease-in-out hover:text-black">
-						Brand Kit
-					</a>
-					<a href={routes.comingSoon} className="transition-all duration-200 ease-in-out hover:text-black">
-						Investor Memo
-					</a>
-				</div>
+				<div className="mb-2 flex flex-col gap-2 lg:col-span-2"></div>
 				<div className="mb-2 flex flex-col gap-2 lg:col-span-2 lg:text-right">
 					<a href={routes.comingSoon} className="transition-all duration-200 ease-in-out hover:text-black">
 						hello@onplug.io
