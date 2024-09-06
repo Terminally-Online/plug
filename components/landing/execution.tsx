@@ -198,7 +198,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 					}}
 				/>
 
-				<div className="relative z-10 m-[2px] flex w-full flex-row items-center gap-4 rounded-lg bg-white p-3">
+				<div className="relative z-10 m-[2px] flex w-full flex-row items-center gap-2 lg:gap-4 rounded-lg bg-white p-3">
 					<Image
 						src={`/protocols/${protocol}.png`}
 						alt={formatTitle(protocol)}
@@ -206,7 +206,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 						height={48}
 						className="h-6 w-6 rounded-sm"
 					/>
-					<p className="font-bold text-black/40">{children}</p>
+					<p className="text-[14px] font-bold text-black/40 lg:text-[16px]">{children}</p>
 				</div>
 			</motion.div>
 
