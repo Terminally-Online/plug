@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
 
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
-import { useSockets } from "@/contexts"
+import { FrameProvider, PlugProvider, SocketProvider, useSockets, WalletProvider } from "@/contexts"
 import { useMediaQuery } from "@/lib"
 
 const MobilePage = () => {
@@ -43,7 +43,15 @@ const Page = () => {
 		})
 	}, [session])
 
-	return <>{md ? <DesktopPage /> : <MobilePage />}</>
+	return (
+		<WalletProvider>
+			<SocketProvider>
+				<FrameProvider>
+					<PlugProvider>{md ? <DesktopPage /> : <MobilePage />}</PlugProvider>
+				</FrameProvider>
+			</SocketProvider>
+		</WalletProvider>
+	)
 }
 
 export default Page
