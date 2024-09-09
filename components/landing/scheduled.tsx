@@ -32,7 +32,7 @@ export const Scheduled = () => {
 		<InfoCard
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text="Scheduled transactions."
-			description="Define timeframes for when your transactions execute. You don’t have to be online to be onchain."
+			description="Define timeframes for your transactions. You don't have to be online to be onchain."
 			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="ml-auto grid w-full grid-cols-7 grid-rows-4 text-xs">
