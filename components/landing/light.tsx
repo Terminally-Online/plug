@@ -326,8 +326,8 @@ export const Light = () => {
 						delay: 0.15
 					}}
 				>
-					Transactions that respond and execute faster than you can comprehend. Instead of constantly being
-					fifteen minutes late, Plug submits your transaction the instant the value can be captured.
+					Transactions that respond and execute faster than you can click. Instead of constantly being fifteen
+					minutes late, Plug submits your transaction the instant the value can be captured.
 				</motion.p>
 			</LandingContainer>
 
