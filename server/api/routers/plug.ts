@@ -59,12 +59,12 @@ export const plug = createTRPCRouter({
 			const sessionWhere =
 				mine === true
 					? {
-							userAddress: ctx.session.address
+							socketId: ctx.session.address
 						}
 					: {
 							isPrivate: false,
 							isCurated: false,
-							userAddress: {
+							socketId: {
 								not: ctx.session.address
 							},
 							actions: { not: "[]" }
@@ -140,7 +140,7 @@ export const plug = createTRPCRouter({
 				if (input.target === "mine")
 					return await ctx.db.workflow.findMany({
 						where: {
-							userAddress: ctx.session.address
+							socketId: ctx.session.address
 						},
 						take: input.limit ? input.limit : undefined,
 						orderBy: {
@@ -164,7 +164,7 @@ export const plug = createTRPCRouter({
 				return await ctx.db.workflow.findMany({
 					where: {
 						isPrivate: false,
-						userAddress: {
+						socketId: {
 							not: ctx.session.address
 						},
 						actions: { not: "[]" }
@@ -185,7 +185,7 @@ export const plug = createTRPCRouter({
 				const plug = await ctx.db.workflow.create({
 					data: {
 						name: "Untitled Plug",
-						userAddress: ctx.session.address,
+						socketId: ctx.session.address,
 						color: Object.keys(colors)[
 							Math.floor(Math.random() * Object.keys(colors).length)
 						] as keyof typeof colors
@@ -215,7 +215,7 @@ export const plug = createTRPCRouter({
 					data: {
 						...forkingData,
 						name: forking.name,
-						userAddress: ctx.session.address
+						socketId: ctx.session.address
 					}
 				})
 
@@ -244,7 +244,7 @@ export const plug = createTRPCRouter({
 				const plug = await ctx.db.workflow.update({
 					where: {
 						id,
-						userAddress: ctx.session.address
+						socketId: ctx.session.address
 					},
 					data
 				})
@@ -262,7 +262,7 @@ export const plug = createTRPCRouter({
 			const plug = await ctx.db.workflow.delete({
 				where: {
 					id: input.id,
-					userAddress: ctx.session.address
+					socketId: ctx.session.address
 				}
 			})
 

@@ -34,7 +34,7 @@ export const DynamicFragment: FC<{
 
 	const Icon = staticAction.icon || CircleHelp
 
-	const own = plug && session && session.address === plug.userAddress
+	const own = plug && session && session.address === plug.socketId
 
 	const [childIndex, parentIndex] = useMemo(() => getIndexes(fragment), [fragment])
 

@@ -228,7 +228,7 @@ export const usePlugs = (id?: string) => {
 		[plugs, id, socket]
 	)
 
-	const own = plug && session && session.address === plug.userAddress
+	const own = plug && session && session.address === plug.socketId
 
 	const actions: Array<{
 		categoryName: keyof typeof categories

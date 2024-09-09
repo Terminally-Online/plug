@@ -27,7 +27,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { id: string; item: strin
 	const { handleFrame } = useFrame({ id: id })
 	const { plug } = usePlugs(item!)
 
-	const own = plug !== undefined && session && session.address === plug.userAddress
+	const own = plug !== undefined && session && session.address === plug.socketId
 
 	const page = socket?.columns.find(column => column.id === id)
 

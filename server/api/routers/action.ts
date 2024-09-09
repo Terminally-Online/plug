@@ -35,7 +35,7 @@ export const action = createTRPCRouter({
 				const tags = getTags(input.actions)
 
 				const plug = await ctx.db.workflow.update({
-					where: { id: input.id, userAddress: ctx.session.address },
+					where: { id: input.id, socketId: ctx.session.address },
 					data: {
 						actions: input.actions,
 						tags,

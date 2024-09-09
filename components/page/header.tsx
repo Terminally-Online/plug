@@ -90,7 +90,7 @@ const PlugHeader = () => {
 	const { handleFrame } = useFrame({ id: page?.id })
 	const { plug, handle: handlePlugs } = usePlugs(page?.id ?? "")
 
-	const own = plug !== undefined && session && session.address === plug.userAddress
+	const own = plug !== undefined && session && session.address === plug.socketId
 
 	if (!page || !plug) return null
 
@@ -122,8 +122,8 @@ const PlugHeader = () => {
 						<Ellipsis size={14} />
 					) : (
 						<div className="flex flex-row items-center gap-2">
-							<BlockiesSvg address={plug.userAddress} className="h-5 w-5 rounded-md" />
-							<p className="text-sm font-bold opacity-40">{formatAddress(plug.userAddress)}</p>
+							<BlockiesSvg address={plug.socketId} className="h-5 w-5 rounded-md" />
+							<p className="text-sm font-bold opacity-40">{formatAddress(plug.socketId)}</p>
 						</div>
 					)
 				}
