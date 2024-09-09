@@ -25,7 +25,7 @@ export const CallToAction: FC<{
 
 				<div className="z-[2] my-[40px] flex flex-col gap-16 text-white">
 					<motion.h1
-						className="max-w-[520px] text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[980px] xl:text-[96px]"
+						className="max-w-[520px] text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1200px] xl:text-[96px]"
 						initial={{ y: 20, opacity: 0 }}
 						whileInView={{
 							y: [0, 20],
