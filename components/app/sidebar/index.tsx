@@ -14,7 +14,7 @@ import { usePlugs, useSockets } from "@/contexts"
 import { cn, useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
-	const { isAnonymous, address, avatar, socket, handle: handleSocket } = useSockets()
+	const { address, avatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 

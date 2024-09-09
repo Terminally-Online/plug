@@ -3,7 +3,7 @@ import { FC, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 
 import BoringAvatar from "boring-avatars"
-import { ChevronLeft, Cog, GitFork, Grip, Share, X } from "lucide-react"
+import { ChevronLeft, Cog, GitFork, Grip, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -46,7 +46,7 @@ export const ConsoleColumn: FC<{
 
 	const { handleFrame } = useFrame({ id })
 	const { socket, handle } = useSockets()
-	const { plug } = usePlugs(id)
+	const { plug, handle: handlePlugs } = usePlugs(id)
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
@@ -166,7 +166,7 @@ export const ConsoleColumn: FC<{
 
 											{plug && (
 												<div className="flex flex-row items-center justify-end gap-4">
-													<Button
+													{/* <Button
 														variant="secondary"
 														className="group rounded-sm p-1"
 														onClick={
@@ -175,14 +175,17 @@ export const ConsoleColumn: FC<{
 														}
 													>
 														<Share size={14} className="opacity-60 hover:opacity-100" />
-													</Button>
+													</Button> */}
 
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={
-															() => {}
-															// handleFrame("share")
+														onClick={() =>
+															handlePlugs.plug.fork({
+																plug: plug.id,
+																id: id,
+																from: column.key
+															})
 														}
 													>
 														<GitFork size={14} className="opacity-60 hover:opacity-100" />
@@ -193,7 +196,7 @@ export const ConsoleColumn: FC<{
 														className="group rounded-sm p-1"
 														onClick={() => handleFrame("manage")}
 													>
-														<Cog size={14} className="opacity-60 hover:opacity-100" />
+														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
 
 													<Button

@@ -198,7 +198,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 					}}
 				/>
 
-				<div className="relative z-10 m-[2px] flex w-full flex-row items-center gap-2 lg:gap-4 rounded-lg bg-white p-3">
+				<div className="relative z-10 m-[2px] flex w-full flex-row items-center gap-2 rounded-lg bg-white p-3 lg:gap-4">
 					<Image
 						src={`/protocols/${protocol}.png`}
 						alt={formatTitle(protocol)}

@@ -102,6 +102,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			handleSocket.columns.add({
 				key: VIEW_KEYS.PLUG,
 				index: 0,
+				from: data.from,
 				item: data.plug.id
 			})
 	}

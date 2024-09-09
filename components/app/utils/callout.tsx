@@ -66,28 +66,37 @@ const EmptySearch: FC<
 	if (isEmpty === false) return null
 
 	return (
-		<Base
-			className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
-			title={
-				<>
-					No results for &lsquo;
-					<span
-						style={{
-							...greenGradientStyle
-						}}
-					>
-						{search}
-					</span>
-					&rsquo;.
-				</>
-			}
-			description="Your search returned no results."
-			{...props}
-		>
-			<Button sizing="sm" onClick={() => handleSearch("")}>
-				Reset
-			</Button>
-		</Base>
+		<>
+			<div
+				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				style={{
+					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+				}}
+			/>
+
+			<Base
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				title={
+					<>
+						No results for &lsquo;
+						<span
+							style={{
+								...greenGradientStyle
+							}}
+						>
+							{search}
+						</span>
+						&rsquo;.
+					</>
+				}
+				description="Your search returned no results."
+				{...props}
+			>
+				<Button sizing="sm" onClick={() => handleSearch("")}>
+					Reset
+				</Button>
+			</Base>
+		</>
 	)
 }
 

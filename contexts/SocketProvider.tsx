@@ -24,7 +24,7 @@ export const SocketContext = createContext<{
 	isDemo: boolean
 	handle: {
 		columns: {
-			add: (data: { key: string; id?: string; index?: number; item?: string }) => void
+			add: (data: { key: string; id?: string; index?: number; from?: string; item?: string }) => void
 			navigate: (data: { id?: string; key: string; item?: string; from?: string }) => void
 			remove: (id: string) => void
 			move: (data: { from: number; to: number }) => void

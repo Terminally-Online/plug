@@ -55,7 +55,7 @@ export const Hero = () => {
 							</motion.h1>
 
 							<motion.p
-								className="font-bold text-white/80 max-w-[480px] md:max-w-[520px] text-[18px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
+								className="max-w-[480px] text-[18px] font-bold text-white/80 md:max-w-[520px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
 								initial={{ transform: "translateY(20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(20px)", "translateY(0px)"],

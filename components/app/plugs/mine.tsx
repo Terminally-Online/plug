@@ -70,8 +70,8 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({
 			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
 
 			<Callout.EmptySearch
-				isEmpty={search !== "" && plugs && plugs.count === 0}
-				search={search}
+				isEmpty={(search !== "" || tag !== "") && plugs && plugs.count === 0}
+				search={search || tag}
 				handleSearch={handleSearch}
 			/>
 
@@ -79,7 +79,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({
 				<PlugGrid id={id} className="mb-4" from={VIEW_KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
-			<Callout.EmptyPlugs id={id} isEmpty={search === "" && plugs && plugs.count === 0} />
+			<Callout.EmptyPlugs id={id} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />
 		</div>
 	)
 }

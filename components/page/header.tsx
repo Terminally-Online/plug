@@ -78,7 +78,7 @@ const HomePageHeader = () => {
 					</button>
 				</>
 			}
-			nextOnClick={() => handlePlugs.plug.add(page.key)}
+			nextOnClick={() => handlePlugs.plug.add({ from: page.key })}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
@@ -138,8 +138,9 @@ const PlugHeader = () => {
 					className="group ml-auto p-1"
 					onClick={() =>
 						handlePlugs.plug.fork({
-							id: plug.id,
-							from: page.from ?? undefined
+							plug: plug.id,
+							id: page.id,
+							from: page.key
 						})
 					}
 				>
@@ -157,6 +158,8 @@ const PlugHeader = () => {
 const DynamicPageHeader = () => {
 	const { page, handle } = useSockets()
 	const { handle: handlePlugs } = usePlugs(page?.id ?? "")
+
+	if (!page) return null
 
 	return (
 		<Header
@@ -184,7 +187,7 @@ const DynamicPageHeader = () => {
 					</button>
 				</>
 			}
-			nextOnClick={() => handlePlugs.plug.add(page?.key ?? "")}
+			nextOnClick={() => handlePlugs.plug.add({ from: page.key })}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
