@@ -62,9 +62,25 @@ Table UserSocket {
   identity SocketIdentity
   columns ConsoleColumn [not null]
   viewedAs ConsoleColumn [not null]
+  workflow Workflow [not null]
   collectibles OpenseaCollectibleCache [not null]
   balances ImplementationBalance [not null]
   positions PositionCache [not null]
+}
+
+Table Workflow {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  name String [not null, default: 'Untitled Plug']
+  isCurated Boolean [not null, default: false]
+  isPrivate Boolean [not null, default: false]
+  actions String [not null, default: '[]']
+  color String [not null]
+  tags String[] [not null]
+  workflowForkedId String
+  socket UserSocket [not null]
+  socketId String [not null]
 }
 
 Table TokenPrice {
@@ -235,20 +251,6 @@ Table OpenseaCollectibleCache {
   }
 }
 
-Table Workflow {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  userAddress String [not null]
-  name String [not null, default: 'Untitled Plug']
-  isCurated Boolean [not null, default: false]
-  isPrivate Boolean [not null, default: false]
-  actions String [not null, default: '[]']
-  color String [not null]
-  tags String[] [not null]
-  workflowForkedId String
-}
-
 Table FeatureRequest {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
@@ -277,6 +279,8 @@ Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: SocketIdentity.ensName - ENS.name [delete: Set Null]
+
+Ref: Workflow.socketId > UserSocket.id
 
 Ref: ImplementationBalance.(implementationChain, implementationContract) > Implementation.(chain, contract)
 

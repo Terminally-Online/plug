@@ -135,6 +135,7 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     columns      ConsoleColumn[]
     viewedAs     ConsoleColumn[]           @relation("viewAs")
+    workflow     Workflow[]
     collectibles OpenseaCollectibleCache[]
     balances     ImplementationBalance[]
     positions    PositionCache[]
@@ -143,6 +144,32 @@ model UserSocket {
     // Indexes
     // ---------------------------------------------------------------------------
     @@index([socketAddress])
+}
+
+model Workflow {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    name             String   @default("Untitled Plug")
+    isCurated        Boolean  @default(false)
+    isPrivate        Boolean  @default(false)
+    actions          String   @default("[]")
+    color            String
+    tags             String[]
+    workflowForkedId String?
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socketId String
 }
 
 model TokenPrice {
@@ -440,27 +467,6 @@ model OpenseaCollectibleCache {
     // Identification
     // ---------------------------------------------------------------------------
     @@id([socketId, chain])
-}
-
-model Workflow {
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    userAddress      String
-    name             String   @default("Untitled Plug")
-    isCurated        Boolean  @default(false)
-    isPrivate        Boolean  @default(false)
-    actions          String   @default("[]")
-    color            String
-    tags             String[]
-    workflowForkedId String?
 }
 
 model FeatureRequest {
