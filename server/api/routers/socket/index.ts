@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { TRPCError } from "@trpc/server"
 
-import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_VIEWS, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
+import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_DEMO_VIEWS, DEFAULT_VIEWS, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
@@ -19,6 +19,12 @@ export const socket = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
+			const columnsToCreate = ctx.session.user.demo
+				? DEFAULT_DEMO_VIEWS
+				: ctx.session.user.anonymous
+					? DEFAULT_ANONYMOUS_VIEWS
+					: DEFAULT_VIEWS
+
 			const { columns } = await ctx.db.userSocket.upsert({
 				where: {
 					id: ctx.session.address
@@ -28,7 +34,7 @@ export const socket = createTRPCRouter({
 					socketAddress: TEMPORARY_ADDRESS,
 					columns: {
 						createMany: {
-							data: ctx.session.user.anonymous ? DEFAULT_ANONYMOUS_VIEWS : DEFAULT_VIEWS
+							data: columnsToCreate
 						}
 					},
 					identity: {

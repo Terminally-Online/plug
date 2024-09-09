@@ -15,8 +15,12 @@ export const SocketPositionList: FC<
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
-		if (search === "" && protocols.length === 0) return Array(5).fill(undefined)
-		if (protocols === undefined) return Array(3).fill(undefined)
+		if (
+			(isAnonymous && isExternal === false) ||
+			protocols === undefined ||
+			(search === "" && protocols.length === 0)
+		)
+			return Array(5).fill(undefined)
 
 		const filteredProtocols = protocols.filter(
 			protocol =>
