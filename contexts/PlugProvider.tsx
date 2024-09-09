@@ -34,7 +34,7 @@ export const PlugContext = createContext<{
 		plug: {
 			add: (data?: { id?: string; from?: string }) => void
 			edit: (data: { id: string } & WorkflowData) => void
-			delete: (data: { id: string; from?: string | null }) => void
+			delete: (data: { plug: string; id: string; from?: string | null }) => void
 			fork: (data: { plug: string; id: string; from: string }) => void
 		}
 		action: {
@@ -121,15 +121,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	})
 
 	api.plug.onDelete.useSubscription(undefined, {
-		onData: (data: Workflow) => {
-			// If the user was viewing the deleted plug, show a confirmation frame to signal that.
-			// if (id === data.id) {
-			// handlePage({ key: "home" })
-			// handleFrame()
-			// }
-
-			setPlugs(prev => (prev ? prev.filter(plug => plug.id !== data.id) : []))
-		}
+		onData: (data: Workflow) => setPlugs(prev => (prev ? prev.filter(plug => plug.id !== data.id) : []))
 	})
 
 	const handle = {
@@ -139,10 +131,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			}),
 			edit: api.plug.edit.useMutation({
 				onMutate: data => {
-					const previous = plugs ?? []
-
-					setPlugs(
-						previous.map(p =>
+					setPlugs(prev =>
+						prev.map(p =>
 							p.id === data.id
 								? {
 										...p,
@@ -152,22 +142,16 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 								: p
 						)
 					)
-
-					return previous
 				}
-				// onError: (_, __, context) => setPlugs(context)
 			}),
 			delete: api.plug.delete.useMutation({
 				onMutate: data => {
-					const previous = plugs ?? []
-
-					setPlugs(previous.filter(plug => plug.id !== data.id))
-
-					// handlePage({ key: data.from ?? "/app/plugs/" })
-
-					return previous
+					setPlugs(prev => prev.filter(plug => plug.id !== data.plug))
+					handleSocket.columns.navigate({
+						id: data.id,
+						key: data.from || VIEW_KEYS.MY_PLUGS
+					})
 				}
-				// onError: (_, __, context) => setPlugs(context)
 			}),
 			fork: api.plug.fork.useMutation({
 				onSuccess: data => handleCreate(data)
@@ -176,9 +160,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		action: {
 			edit: api.plug.action.edit.useMutation({
 				onMutate: data => {
-					const previous = plugs ?? []
-
-					setPlugs(
+					setPlugs(previous =>
 						previous.map(p =>
 							p.id === data.id
 								? {
@@ -189,10 +171,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 								: p
 						)
 					)
-
-					return previous
 				}
-				// onError: (_, __, context) => setPlugs(context)
 			})
 		}
 	}

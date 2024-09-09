@@ -257,7 +257,7 @@ export const plug = createTRPCRouter({
 			}
 		}),
 	delete: anonymousProtectedProcedure
-		.input(z.object({ id: z.string(), from: z.string().nullish() }))
+		.input(z.object({ plug: z.string(), id: z.string(), from: z.string().nullish() }))
 		.mutation(async ({ input, ctx }) => {
 			const plug = await ctx.db.workflow.delete({
 				where: {

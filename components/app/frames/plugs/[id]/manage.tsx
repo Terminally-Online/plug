@@ -89,7 +89,7 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 				<Button
 					variant="destructive"
 					className="w-full"
-					onClick={() => handle.plug.delete({ id: plug.id, from: column.from })}
+					onClick={() => handle.plug.delete({ plug: plug.id, id: column.id, from: column.from })}
 				>
 					Delete
 				</Button>

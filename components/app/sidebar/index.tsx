@@ -14,7 +14,7 @@ import { usePlugs, useSockets } from "@/contexts"
 import { cn, useClipboard, VIEW_KEYS } from "@/lib"
 
 export const ConsoleSidebar = () => {
-	const { address, avatar, socket, handle: handleSocket } = useSockets()
+	const { isAnonymous, address, avatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
@@ -22,7 +22,10 @@ export const ConsoleSidebar = () => {
 
 	const { disconnect } = useDisconnect({
 		mutation: {
-			onSuccess: () => signOut()
+			onSuccess: () =>
+				signOut({
+					redirect: false
+				})
 		}
 	})
 
@@ -225,7 +228,7 @@ export const ConsoleSidebar = () => {
 					)}
 				</div>
 
-				{address && (
+				{isAnonymous === false && address && (
 					<>
 						<div className="h-[1px] w-full bg-grayscale-100" />
 						<div

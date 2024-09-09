@@ -72,8 +72,8 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		avatar: ensAvatar
 	})
 
-	const isAnonymous = !socketData || socketData.id.startsWith("anonymous")
 	const isDemo = socketData?.id.startsWith("demo") || false
+	const isAnonymous = isDemo || socketData?.id.startsWith("anonymous") || false
 	const enabled =
 		socketData !== undefined &&
 		socketData.socketAddress !== undefined &&
