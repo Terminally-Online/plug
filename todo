@@ -1,17 +1,8 @@
-☐ Full management of an anonymous and a demo user.
 
 Do These:
-    Shared:
-        ☐ Native balance on optimism shows differently?
-            Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
-            Notes: This is just on Optimism after they migrated everyones dead balances from the bridge. Not sure
-                   if this balance is double-stored everywhere or not. Right now though, other places properly handle
-                   this but Alchemy has data that incorrect and truncated.
 
     Console:
         Small:
-            ☐ Make resizing more performant.
-                Notes: right now it is rerendering everything on a new frame as well as posting into the database.
             ☐ Referal functionality.
             ☐ Show total asset value when viewing tokens.
                 Notes: This does not include collectibles.
@@ -78,6 +69,13 @@ Blocked:
         ☐ Activity
 
 Archive:
+  ✔ Make resizing more performant.
+                Notes: right now it is rerendering everything on a new frame as well as posting into the database.
+  ✔ Native balance on optimism shows differently?
+      Notes: Not actually sure about this but I think it is showing as 'Ether' instead of 'Ethereum'
+      Notes: This is just on Optimism after they migrated everyones dead balances from the bridge. Not sure
+              if this balance is double-stored everywhere or not. Right now though, other places properly handle
+              this but Alchemy has data that incorrect and truncated.
   ✘ Settings column. @cancelled(24-08-13 16:30) @project(Do These.Console.Small)
   ✘ add contact info to database. @cancelled(24-08-13 16:30) @project(Do These.Console.Small)
   ✔ Retrieve the relative plug from the socket based on the item in the column. @done(24-08-13 12:15) @project(Do These.Console.Medium)
