@@ -10,7 +10,7 @@ export const StaticLayout: FC<PropsWithChildren & { title: string }> = ({ title,
 			<title>{title} | PLUG</title>
 		</Head>
 
-		{/* <Navbar /> */}
+		<Navbar />
 		{children}
 		<LandingFooter />
 	</>

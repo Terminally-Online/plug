@@ -1,37 +1,42 @@
 import { FC } from "react"
 
 import Image from "next/image"
-import Link from "next/link"
 
-import { Activity, Book } from "lucide-react"
+import { Book, Twitter } from "lucide-react"
 
-import { LandingContainer } from "@/components"
-import { routes } from "@/lib"
+import { Button, LandingContainer } from "@/components"
+import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
-const twitter =
-	"data:image/svg+xml;base64,PHN2ZyAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogIHdpZHRoPSIyNCIKICBoZWlnaHQ9IjI0IgogIHZpZXdCb3g9IjAgMCAyNCAyNCIKICBmaWxsPSJub25lIgogIHN0cm9rZT0iIzAwMCIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7IGJvcmRlci1yYWRpdXM6IDJweCIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjIgNHMtLjcgMi4xLTIgMy40YzEuNiAxMC05LjQgMTcuMy0xOCAxMS42IDIuMi4xIDQuNC0uNiA2LTJDMyAxNS41LjUgOS42IDMgNWMyLjIgMi42IDUuNiA0LjEgOSA0LS45LTQuMiA0LTYuNiA3LTMuOCAxLjEgMCAzLTEuMiAzLTEuMnoiIC8+Cjwvc3ZnPgo="
+export const Navbar: FC = () => {
+	const handleCallToAction = useAnalytics(
+		GTM_EVENTS.CTA_CLICKED,
+		process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? routes.app : routes.earlyAccess
+	)
 
-export const Navbar: FC = () => (
-	<LandingContainer className="fixed items-center gap-8 py-8">
-		<Link href={routes.index}>
-			<Image src="/black-logo.svg" alt="Logo" width={64} height={32} />
-		</Link>
-		<a href={routes.documentation} target="_blank" rel="noreferrer">
-			<Book size={18} className="opacity-60 transition-opacity duration-200 hover:opacity-100" />
-		</a>
-		<a href={routes.status} target="_blank" rel="noreferrer">
-			<Activity size={18} className="opacity-60 transition-opacity duration-200 hover:opacity-100" />
-		</a>
-		<a href={routes.twitter} target="_blank" rel="noreferrer" className="ml-auto">
-			<Image
-				src={twitter}
-				alt="Twitter"
-				width={18}
-				height={18}
-				className="opacity-60 transition-opacity duration-200 hover:opacity-100"
-			/>
-		</a>
-	</LandingContainer>
-)
+	return (
+		<LandingContainer className="fixed z-[10] w-full items-center gap-8 bg-gradient-to-b from-white to-white/0 py-8">
+			<div className="flex w-full flex-row items-center gap-4">
+				<button className="mr-8" onClick={() => handleCallToAction(routes.index)}>
+					<Image src="/black-icon.svg" alt="Logo" width={24} height={24} />
+				</button>
+				<button className="mr-4" onClick={() => handleCallToAction(routes.documentation)}>
+					<Book size={18} className="opacity-40 transition-opacity duration-200 hover:opacity-100" />
+				</button>
+				<button onClick={() => handleCallToAction(routes.twitter)}>
+					<Twitter size={18} className="opacity-40 transition-opacity duration-200 hover:opacity-100" />
+				</button>
+
+				<Button
+					variant="secondary"
+					className="ml-auto px-4 py-2"
+					sizing="sm"
+					onClick={() => handleCallToAction()}
+				>
+					Enter App
+				</Button>
+			</div>
+		</LandingContainer>
+	)
+}
 
 export default Navbar

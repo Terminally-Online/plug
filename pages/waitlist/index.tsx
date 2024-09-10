@@ -2,7 +2,7 @@ import { useEffect } from "react"
 
 import { useRouter } from "next/router"
 
-import { Button, Callout } from "@/components"
+import { Button, Callout, StaticLayout } from "@/components"
 import { GTM_EVENTS, useAnalytics } from "@/lib"
 
 const WAITLIST_FORM =
@@ -21,19 +21,21 @@ const Page = () => {
 	}, [router, handleCallToAction])
 
 	return (
-		<div className="flex h-screen w-screen items-center justify-center">
-			<Callout
-				title="You are being redirected to the waitlist. One moment please..."
-				description="If you are not automatically redirect, please click the button below."
-			>
-				<Button variant="secondary" sizing="sm" href="/">
-					Home
-				</Button>
-				<Button sizing="sm" onClick={() => handleCallToAction()}>
-					Join Waitlist
-				</Button>
-			</Callout>
-		</div>
+		<StaticLayout title="Waitlist">
+			<div className="flex h-screen w-screen items-center justify-center">
+				<Callout
+					title="You are being redirected to the waitlist. One moment please..."
+					description="If you are not automatically redirect, please click the button below."
+				>
+					<Button variant="secondary" sizing="sm" href="/">
+						Home
+					</Button>
+					<Button sizing="sm" onClick={() => handleCallToAction()}>
+						Join Waitlist
+					</Button>
+				</Callout>
+			</div>
+		</StaticLayout>
 	)
 }
 

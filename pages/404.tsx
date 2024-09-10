@@ -1,10 +1,12 @@
-import { Callout } from "@/components"
+import { Callout, StaticLayout } from "@/components"
 
 const NotFound = () => {
 	return (
-		<div className="flex h-screen flex-col items-center justify-center">
-			<Callout.EmptyPage />
-		</div>
+		<StaticLayout title="Page Not Found">
+			<div className="flex h-screen flex-col items-center justify-center">
+				<Callout.EmptyPage />
+			</div>
+		</StaticLayout>
 	)
 }
 

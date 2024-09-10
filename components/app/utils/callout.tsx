@@ -216,7 +216,7 @@ const EmptyPage: FC<PropsWithChildren> = () => (
 	<Base
 		title="Oh no! We could not find the page you were looking for."
 		description="Our team has been notified of this error. If you believe this happened by accident, please wait a moment and try again."
-		className="flex h-full flex-col items-center justify-center gap-2"
+		className="flex h-full flex-col items-center justify-center"
 	>
 		<div className="flex flex-col gap-4">
 			<Button className="w-max" sizing="sm" href="/">
