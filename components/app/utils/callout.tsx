@@ -14,7 +14,7 @@ const Base: FC<
 > = ({ title, description, children, className, ...props }) => (
 	<div className={cn("flex h-full flex-col items-center justify-center text-center font-bold", className)} {...props}>
 		<p className="max-w-[280px]">{title}</p>
-		{description && <p className="max-w-[300px] text-sm text-black text-opacity-40">{description}</p>}
+		{description && <p className="mt-2 max-w-[300px] text-sm text-black text-opacity-40">{description}</p>}
 		{children && <div className="mt-4 flex flex-row gap-2">{children}</div>}
 	</div>
 )
@@ -212,34 +212,18 @@ const EmptyPlug: FC<
 	)
 }
 
-const EmptyPage: FC<PropsWithChildren> = ({ children }) => {
-	const { asPath } = useRouter()
-
-	const [origin, setOrigin] = useState("")
-
-	useEffect(() => {
-		setOrigin(typeof window !== "undefined" && window.location.origin ? window.location.origin : "")
-	}, [])
-
-	return (
-		<Base
-			title="Oh no! We could not find the page you were looking for."
-			description={
-				<span>
-					The URL <b>{asPath}</b> does not exist on <b className="text-opacity-100">{origin}</b>. Our team has
-					been notified of this error.
-				</span>
-			}
-			className="flex h-full flex-col items-center justify-center gap-2"
-		>
-			<div className="flex flex-col gap-4">
-				<Button href="/">Return Back Home</Button>
-				<p className="max-w-[280px] text-sm font-bold text-black text-opacity-40">
-					If you believe this happened by accident, please wait a moment and try again.
-				</p>
-			</div>
-		</Base>
-	)
-}
+const EmptyPage: FC<PropsWithChildren> = () => (
+	<Base
+		title="Oh no! We could not find the page you were looking for."
+		description="Our team has been notified of this error. If you believe this happened by accident, please wait a moment and try again."
+		className="flex h-full flex-col items-center justify-center gap-2"
+	>
+		<div className="flex flex-col gap-4">
+			<Button className="w-max" sizing="sm" href="/">
+				Return Back Home
+			</Button>
+		</div>
+	</Base>
+)
 
 export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets, EmptyPlugs, EmptyPlug, EmptyPage })

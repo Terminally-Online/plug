@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 
 import { sendGTMEvent } from "@next/third-parties/google"
 
-export const useAnalytics = (event: string, topValue?: string, redirect = true) => {
+export const useAnalytics = (event: string, topValue?: string, redirect = true, callbackValue?: string) => {
 	const router = useRouter()
 
 	return (bottomValue?: string) => {
@@ -10,5 +10,6 @@ export const useAnalytics = (event: string, topValue?: string, redirect = true) 
 		sendGTMEvent({ event, value })
 
 		if (redirect && value) router.push(value)
+		if (callbackValue) router.push(callbackValue)
 	}
 }
