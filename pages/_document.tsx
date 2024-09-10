@@ -2,8 +2,7 @@ import { Head, Html, Main, NextScript } from "next/document"
 
 export default function Document() {
 	const title = "Plug"
-	const description =
-		"Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The outcomes you want can finally be achieved without being glued to your device."
+	const description = "Designed by humans on Earth. Executed by bots in the cloud."
 
 	return (
 		<Html lang="en">
