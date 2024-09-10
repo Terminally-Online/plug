@@ -7,7 +7,6 @@ import { getSession, signIn } from "next-auth/react"
 
 import { ConsolePage } from "@/components/pages/console"
 import { FrameProvider, PlugProvider, RootProvider, SocketProvider, WalletProvider } from "@/contexts"
-import { api } from "@/server/client"
 
 Page.getInitialProps = async (ctx: NextPageContext) => {
 	const session = await getSession(ctx)
@@ -40,4 +39,4 @@ function Page({ session }: { session: Session | null }) {
 	)
 }
 
-export default api.withTRPC(Page)
+export default Page

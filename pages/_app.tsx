@@ -1,10 +1,7 @@
 import { FC } from "react"
 
-import type { AppProps, AppType } from "next/app"
+import type { AppProps } from "next/app"
 import localFont from "next/font/local"
-
-import { Session } from "next-auth"
-import { getSession } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
@@ -62,4 +59,4 @@ const PlugApp: FC<
 	)
 }
 
-export default PlugApp
+export default api.withTRPC(PlugApp)
