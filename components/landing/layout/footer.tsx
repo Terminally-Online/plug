@@ -82,7 +82,7 @@ export const LandingFooter: FC = () => {
 			</LandingContainer>
 
 			<div className="border-t-[2px] border-grayscale-100">
-				<LandingContainer className="flex flex-col gap-2 py-4 font-bold text-black/40 lg:flex-row lg:gap-8">
+				<LandingContainer className="flex flex-col items-start gap-2 py-4 font-bold text-black/40 lg:flex-row lg:gap-8">
 					<p>Copyright Terminally Online, Inc. 2024</p>
 					<button
 						className="transition-all duration-200 ease-in-out hover:text-black lg:ml-auto"
