@@ -1,3 +1,5 @@
+export * from "./analytics"
+
 export { useBlockchain } from "./useBlockchain"
 export { useClient } from "./useClient"
 export { useClipboard } from "./useClipboard"

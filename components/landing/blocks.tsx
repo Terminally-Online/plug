@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
 
 import Image from "next/image"
-import Link from "next/link"
 
 import { motion } from "framer-motion"
 
-import { routes, useMediaQuery } from "@/lib"
+import { GTM_EVENTS, routes, useAnalytics, useMediaQuery } from "@/lib"
 
 import { LandingContainer } from "./layout"
 
@@ -60,6 +59,7 @@ function shuffleArray<T>(array: Array<T>): Array<T> {
 
 export const Blocks = () => {
 	const { md } = useMediaQuery()
+	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED, `${routes.documentation}/introduction/integrations`)
 
 	const [hoveredItems, setHoveredItems] = useState<Set<string>>(new Set())
 	const [allHovered, setAllHovered] = useState(false)
@@ -118,14 +118,12 @@ export const Blocks = () => {
 					</motion.h1>
 					<div className="hidden w-full items-center gap-4 md:visible xl:flex xl:flex-row">
 						<div className="h-[2px] w-full bg-grayscale-100" />
-						<Link
+						<button
 							className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
-							href={`${routes.documentation}/introduction/integrations`}
-							target="_blank"
-							rel="noreferrer"
+							onClick={() => handleCallToAction()}
 						>
 							Explore Integrations
-						</Link>
+						</button>
 						<div className="h-[2px] w-24 bg-grayscale-100" />
 					</div>
 				</div>

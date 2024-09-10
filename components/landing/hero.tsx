@@ -1,15 +1,17 @@
 import Image from "next/image"
-import Link from "next/link"
 
 import { motion } from "framer-motion"
 import { Book, Twitter } from "lucide-react"
 
 import { Button, HeroBarChart, HeroShapes, LandingContainer } from "@/components"
-import { routes } from "@/lib"
-
-const EARLY_ACCESS = process.env.NEXT_PUBLIC_EARLY_ACCESS !== "false"
+import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const Hero = () => {
+	const handleCallToAction = useAnalytics(
+		GTM_EVENTS.CTA_CLICKED,
+		process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? routes.app : routes.earlyAccess
+	)
+
 	return (
 		<div className="relative z-[2] flex h-full min-h-screen w-screen">
 			<HeroShapes />
@@ -18,23 +20,23 @@ export const Hero = () => {
 			<div className="z-2 relative w-full">
 				<LandingContainer className="flex h-full flex-col py-8 text-white">
 					<div className="flex flex-row items-center gap-4">
-						<Link className="mr-4" href={routes.index}>
+						<button className="mr-8" onClick={() => handleCallToAction(routes.index)}>
 							<Image src="/white-icon.svg" alt="Logo" width={24} height={24} />
-						</Link>
-						<a href={routes.documentation} target="_blank" rel="noreferrer">
+						</button>
+						<button className="mr-4" onClick={() => handleCallToAction(routes.documentation)}>
 							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
-						</a>
-						<a href={routes.twitter} target="_blank" rel="noreferrer">
+						</button>
+						<button onClick={() => handleCallToAction(routes.twitter)}>
 							<Twitter
 								size={18}
 								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
 							/>
-						</a>
+						</button>
 
 						<Button
 							variant="none"
 							className="ml-auto w-max rounded-md border-[1px] border-white/20 bg-white/20 px-4 py-2 text-center text-sm font-black text-white filter backdrop-blur-sm"
-							href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
+							onClick={() => handleCallToAction()}
 						>
 							Enter App
 						</Button>
@@ -73,7 +75,7 @@ export const Hero = () => {
 							<Button
 								variant="none"
 								className="mt-8 w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white filter backdrop-blur-sm"
-								href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
+								onClick={() => handleCallToAction()}
 							>
 								Enter App
 							</Button>

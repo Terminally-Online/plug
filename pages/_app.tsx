@@ -6,9 +6,8 @@ import { getSession } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-import { DeletedFrame, FeatureRequestFrame } from "@/components"
 import { RootProvider } from "@/contexts/RootProvider"
-import { NextPageWithLayout } from "@/lib"
+import { GTM_ID, NextPageWithLayout } from "@/lib"
 import { api } from "@/server/client"
 
 import "./styles.css"
@@ -55,10 +54,14 @@ const PlugApp: AppType<{ session: Session | null }> = ({
 					}
 				`}
 			</style>
-			<GoogleTagManager gtmId="GTM-PT3JT2P9" />
+
+			<GoogleTagManager gtmId={GTM_ID} />
+
 			<RootProvider session={pageProps.session}>
-				{/* <FeatureRequestFrame />
-				<DeletedFrame /> */}
+				{/* 
+					<FeatureRequestFrame />
+					<DeletedFrame /> 
+				*/}
 
 				{getLayout(<Component {...pageProps} />)}
 			</RootProvider>

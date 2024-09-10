@@ -2,18 +2,21 @@ import { FC } from "react"
 
 import { motion } from "framer-motion"
 
-import { Button, LandingContainer } from "@/components"
-import { routes } from "@/lib"
+import { Button } from "@/components"
+import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 import { HeroShapes } from "./shapes"
-
-const EARLY_ACCESS = process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? false : true
 
 export const CallToAction: FC<{
 	text: string
 	description: string
 	button: string
-}> = ({ text, description, button }) => {
+}> = ({ text, description }) => {
+	const handleNavigate = useAnalytics(
+		GTM_EVENTS.CTA_CLICKED,
+		process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? routes.app : routes.earlyAccess
+	)
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, transform: "translateY(20px)" }}
@@ -54,7 +57,7 @@ export const CallToAction: FC<{
 					<Button
 						variant="none"
 						className="w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white filter backdrop-blur-sm"
-						href={EARLY_ACCESS ? routes.earlyAccess : routes.app}
+						onClick={() => handleNavigate()}
 					>
 						Enter App
 					</Button>

@@ -1,5 +1,6 @@
 export * from "./abis"
 export * from "./actions"
+export * from "./analytics"
 export * from "./blockchain"
 export * from "./colors"
 export * from "./routes"
