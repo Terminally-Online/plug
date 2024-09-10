@@ -77,7 +77,7 @@ const actions = [
 			)
 		},
 		{
-			protocol: "plug",
+			protocol: "uniswap",
 			elements: (
 				<>
 					Swap <span className="rounded-sm bg-[#00E100]/10 p-2 py-1 text-[#00E100]">36,000</span>{" "}
