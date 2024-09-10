@@ -58,7 +58,7 @@ export const LandingFooter: FC = () => {
 						</button>
 					</div>
 					<div className="mb-2 flex flex-col gap-2 lg:col-span-2"></div>
-					<div className="mb-2 flex flex-col items-end gap-2 lg:col-span-2 lg:text-right">
+					<div className="mb-2 flex flex-col items-start gap-2 lg:col-span-2 lg:items-end lg:text-right">
 						<button
 							className="transition-all duration-200 ease-in-out hover:text-black"
 							onClick={() => handleCallToAction("mailto:hello@onplug.io")}
