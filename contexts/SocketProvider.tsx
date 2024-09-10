@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useContext, useMemo, useState } from "react"
+import { createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
 
 import { useSession } from "next-auth/react"
 
@@ -67,10 +67,15 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		name: normalize(ensName ?? "") || undefined
 	})
 
-	const { data: socketData } = api.socket.get.useQuery({
-		name: ensName,
-		avatar: ensAvatar
-	})
+	const { data: socketData } = api.socket.get.useQuery(
+		{
+			name: ensName,
+			avatar: ensAvatar
+		},
+		{
+			onSettled: data => setSocket(data)
+		}
+	)
 
 	const isDemo = socketData?.id.startsWith("demo") || false
 	const isAnonymous = isDemo || socketData?.id.startsWith("anonymous") || false
@@ -150,6 +155,10 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 			})
 		}
 	}
+
+	// useEffect(() => {
+	// 	setSocket(socketData)
+	// }, [socketData])
 
 	return (
 		<SocketContext.Provider

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 
 import { AnimatePresence } from "framer-motion"
+import { LoaderCircle } from "lucide-react"
 
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
@@ -31,12 +32,10 @@ import { VIEW_KEYS } from "@/lib"
 export const ConsoleColumnRow = () => {
 	const { socket, handle } = useSockets()
 
-	const [columns, setColumns] = useState<any[]>(
-		socket?.columns || [{ id: VIEW_KEYS, key: VIEW_KEYS.AUTHENTICATE, index: 0 }]
-	)
+	const [columns, setColumns] = useState<any[]>(socket?.columns || [])
 
 	const onDragEnd = (result: DropResult) => {
-		if (!result.destination) return
+		if (!columns || !result.destination) return
 
 		// This is done here instead of onMutate because there is a perceivable
 		// delay between the drag finishing and the onMutate callback being
@@ -69,7 +68,6 @@ export const ConsoleColumnRow = () => {
 	// state here that instantly updates the UI without a perceivable delay.
 	useEffect(() => {
 		if (socket === undefined) return
-
 		setColumns(socket?.columns)
 	}, [socket])
 

@@ -1,38 +1,20 @@
 import { useEffect } from "react"
 
-import { signIn, useSession } from "next-auth/react"
+import { NextPageContext } from "next"
 
-import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
-import { FrameProvider, PlugProvider, SocketProvider, useSockets, WalletProvider } from "@/contexts"
-import { useMediaQuery } from "@/lib"
+import { Session } from "next-auth"
+import { getSession, signIn } from "next-auth/react"
 
-const MobilePage = () => {
-	const { page } = useSockets()
+import { ConsolePage } from "@/components/pages/console"
+import { FrameProvider, PlugProvider, RootProvider, SocketProvider, WalletProvider } from "@/contexts"
+import { api } from "@/server/client"
 
-	if (!page) return null
-
-	return (
-		<>
-			<PageHeader />
-			<PageContent />
-			<AuthFrame id={page.id} />
-		</>
-	)
+Page.getInitialProps = async (ctx: NextPageContext) => {
+	const session = await getSession(ctx)
+	return { session }
 }
 
-const DesktopPage = () => {
-	return (
-		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
-			<ConsoleSidebar />
-			<ConsoleColumnRow />
-		</div>
-	)
-}
-
-const Page = () => {
-	const { data: session } = useSession()
-	const { md } = useMediaQuery()
-
+function Page({ session }: { session: Session | null }) {
 	useEffect(() => {
 		if (session !== null) return
 
@@ -44,14 +26,18 @@ const Page = () => {
 	}, [session])
 
 	return (
-		<WalletProvider>
-			<SocketProvider>
-				<FrameProvider>
-					<PlugProvider>{md ? <DesktopPage /> : <MobilePage />}</PlugProvider>
-				</FrameProvider>
-			</SocketProvider>
-		</WalletProvider>
+		<RootProvider session={session}>
+			<WalletProvider>
+				<SocketProvider>
+					<FrameProvider>
+						<PlugProvider>
+							<ConsolePage />
+						</PlugProvider>
+					</FrameProvider>
+				</SocketProvider>
+			</WalletProvider>
+		</RootProvider>
 	)
 }
 
-export default Page
+export default api.withTRPC(Page)

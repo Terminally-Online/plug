@@ -1,3 +1,5 @@
+import { FC } from "react"
+
 import type { AppProps, AppType } from "next/app"
 import localFont from "next/font/local"
 
@@ -6,7 +8,6 @@ import { getSession } from "next-auth/react"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-import { RootProvider } from "@/contexts/RootProvider"
 import { GTM_ID, NextPageWithLayout } from "@/lib"
 import { api } from "@/server/client"
 
@@ -37,12 +38,11 @@ const satoshi = localFont({
 	variable: "--font-satoshi"
 })
 
-const PlugApp: AppType<{ session: Session | null }> = ({
-	Component,
-	pageProps
-}: AppProps & {
-	Component: NextPageWithLayout
-}) => {
+const PlugApp: FC<
+	AppProps & {
+		Component: NextPageWithLayout
+	}
+> = ({ Component, pageProps }) => {
 	const getLayout = Component.getLayout ?? (page => page)
 
 	return (
@@ -57,22 +57,9 @@ const PlugApp: AppType<{ session: Session | null }> = ({
 
 			<GoogleTagManager gtmId={GTM_ID} />
 
-			<RootProvider session={pageProps.session}>
-				{/* 
-					<FeatureRequestFrame />
-					<DeletedFrame /> 
-				*/}
-
-				{getLayout(<Component {...pageProps} />)}
-			</RootProvider>
+			{getLayout(<Component {...pageProps} />)}
 		</>
 	)
 }
 
-PlugApp.getInitialProps = async ({ ctx }) => {
-	return {
-		session: await getSession(ctx)
-	}
-}
-
-export default api.withTRPC(PlugApp)
+export default PlugApp
