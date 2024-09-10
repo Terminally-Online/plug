@@ -1,6 +1,10 @@
 import { Head, Html, Main, NextScript } from "next/document"
 
 export default function Document() {
+	const title = "Plug"
+	const description =
+		"Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The outcomes you want can finally be achieved without being glued to your device."
+
 	return (
 		<Html lang="en">
 			<Head>
@@ -16,30 +20,21 @@ export default function Document() {
 
 				{/* Basic Meta */}
 				<meta charSet="utf-8" />
-				<meta
-					name="description"
-					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
-				/>
+				<meta name="description" content={description} />
 
 				{/* Open Graph */}
-				<meta property="og:title" content="Plug" />
+				<meta property="og:title" content={title} />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content="https://onplug.io" />
 				<meta property="og:image" content="https://onplug.io/opengraph.png" />
-				<meta
-					property="og:description"
-					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
-				/>
+				<meta property="og:description" content={description} />
 
 				{/* Twitter */}
+				<meta name="twitter:title" content={title} />
 				<meta name="twitter:card" content="summary_large_image" />
 				<meta name="twitter:site" content="@onplug_io" />
 				<meta name="twitter:creator" content="@onplug_io" />
-				<meta name="twitter:title" content="Plug" />
-				<meta
-					name="twitter:description"
-					content="Plug brings trustless automation and scheduling to the entirety of the Ethereum ecosystem with an intent powered framework. The onchain outcomes you want can finally be achieved without being glued to your device."
-				/>
+				<meta name="twitter:description" content={description} />
 				<meta name="twitter:image" content="https://onplug.io/opengraph.png" />
 			</Head>
 

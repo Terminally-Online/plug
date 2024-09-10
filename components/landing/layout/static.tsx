@@ -7,7 +7,7 @@ import { LandingFooter, Navbar } from "@/components"
 export const StaticLayout: FC<PropsWithChildren & { title: string }> = ({ title, children }) => (
 	<>
 		<Head>
-			<title>{title} | PLUG</title>
+			<title>{title} | Plug</title>
 		</Head>
 
 		<Navbar />
