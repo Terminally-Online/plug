@@ -2,9 +2,10 @@ import { FC, HTMLAttributes } from "react"
 
 import { Trophy } from "lucide-react"
 
+import { api } from "@/server/client"
+
 import { Button, Callout, Counter, Header, PlugGrid, SocketEarningsChart, StatCard } from "@/components"
 import { cn } from "@/lib"
-import { api } from "@/server/client"
 
 export const SocketEarnings: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const { data: plugs } = api.plug.all.useQuery({

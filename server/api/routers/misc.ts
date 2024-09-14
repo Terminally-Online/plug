@@ -1,8 +1,9 @@
 import { z } from "zod"
 
-import { getPositions } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { getDominantColor } from "@/server/color"
+
+import { getPositions } from "@/lib"
 
 export const misc = createTRPCRouter({
 	featureRequest: anonymousProtectedProcedure

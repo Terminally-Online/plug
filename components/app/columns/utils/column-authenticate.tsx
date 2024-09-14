@@ -277,6 +277,7 @@ export const ColumnAuthenticate = () => {
 				}
 			)
 		} catch (e) {
+			sign.reset()
 			disconnect()
 		}
 	}, [chainId, account, sign, disconnect])

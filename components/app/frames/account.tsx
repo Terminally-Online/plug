@@ -1,9 +1,9 @@
+import { signOut } from "next-auth/react"
 import Image from "next/image"
 
-import { signOut } from "next-auth/react"
+import { useDisconnect } from "wagmi"
 
 import BlockiesSvg from "blockies-react-svg"
-import { useDisconnect } from "wagmi"
 
 import { Button, Counter, Frame, StatCard } from "@/components"
 import { useFrame, useSockets } from "@/contexts"

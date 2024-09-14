@@ -1,7 +1,6 @@
-import { FC, PropsWithChildren } from "react"
-
 import { Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
+import { FC, PropsWithChildren } from "react"
 
 export const RootProvider: FC<
 	PropsWithChildren & {

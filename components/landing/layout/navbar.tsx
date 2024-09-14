@@ -1,6 +1,5 @@
-import { FC } from "react"
-
 import Image from "next/image"
+import { FC } from "react"
 
 import { Book, Twitter } from "lucide-react"
 

@@ -1,11 +1,12 @@
 import { z } from "zod"
 
-import { Prisma } from "@prisma/client"
+import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
 
+import { Prisma } from "@prisma/client"
+
 import { colors } from "@/lib"
-import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 
 import { action } from "./action"
 

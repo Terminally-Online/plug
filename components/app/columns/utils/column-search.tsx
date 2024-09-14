@@ -2,9 +2,10 @@ import { FC, HTMLAttributes, useState } from "react"
 
 import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
+import { api } from "@/server/client"
+
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
-import { api } from "@/server/client"
 
 export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const [search, setSearch] = useState("")

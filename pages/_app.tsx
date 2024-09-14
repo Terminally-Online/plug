@@ -1,12 +1,12 @@
-import { FC } from "react"
-
 import type { AppProps } from "next/app"
 import localFont from "next/font/local"
+import { FC } from "react"
+
+import { api } from "@/server/client"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
 import { GTM_ID, NextPageWithLayout } from "@/lib"
-import { api } from "@/server/client"
 
 import "./styles.css"
 

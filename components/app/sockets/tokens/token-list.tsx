@@ -2,10 +2,11 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
+import { api, RouterOutputs } from "@/server/client"
+
 import { Animate, Button, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {

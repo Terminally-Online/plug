@@ -1,9 +1,8 @@
 import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
-import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
-
 import BoringAvatar from "boring-avatars"
+import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
 
 import { ConsoleColumnModel } from "@/prisma/types"
 import { api } from "@/server/client"

@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
-
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
 import BoringAvatar from "boring-avatars"
 import { CheckCheck, SearchIcon } from "lucide-react"
 
+import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
+import { api } from "@/server/client"
+
 import { Accordion } from "@/components/shared"
 import { useSockets } from "@/contexts"
 import { formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
-import { api } from "@/server/client"
 
 import { Search } from "../../inputs"
 

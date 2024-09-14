@@ -2,8 +2,9 @@
 
 import { FC } from "react"
 
-import { SocketCollectibleItem } from "@/components"
 import { RouterOutputs } from "@/server/client"
+
+import { SocketCollectibleItem } from "@/components"
 
 export const SocketCollectibleGrid: FC<{
 	id: string

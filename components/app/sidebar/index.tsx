@@ -1,13 +1,12 @@
+import { signOut } from "next-auth/react"
+import Image from "next/image"
 import { useState } from "react"
 
-import Image from "next/image"
-
-import { signOut } from "next-auth/react"
+import { useDisconnect } from "wagmi"
 
 import Avatar from "boring-avatars"
 import { AnimatePresence, motion } from "framer-motion"
 import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
-import { useDisconnect } from "wagmi"
 
 import { Button } from "@/components"
 import { usePlugs, useSockets } from "@/contexts"

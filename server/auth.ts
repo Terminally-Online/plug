@@ -1,5 +1,4 @@
 import { type GetServerSidePropsContext } from "next"
-
 import { type DefaultSession, getServerSession, type NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { getCsrfToken } from "next-auth/react"

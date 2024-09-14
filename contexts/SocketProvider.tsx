@@ -1,12 +1,12 @@
+import { useSession } from "next-auth/react"
 import { createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
+
+import { mainnet } from "viem/chains"
+import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
 import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
 import { api, RouterOutputs } from "@/server/client"
-
-import { useSession } from "next-auth/react"
-import { mainnet } from "viem/chains"
-import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
 
 const TIME = 5 * 60 * 1000
 

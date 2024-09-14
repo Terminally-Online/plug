@@ -1,11 +1,11 @@
 import axios from "axios"
 import { z } from "zod"
 
+import { getDominantColor } from "@/server/color"
 import { TRPCError } from "@trpc/server"
 
 import { getAPIKey, getCollectibles } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"
-import { getDominantColor } from "@/server/color"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 

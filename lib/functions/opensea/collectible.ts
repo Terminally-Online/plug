@@ -1,9 +1,9 @@
 import axios from "axios"
 
+import { db } from "@/server/db"
 import { TRPCError } from "@trpc/server"
 
 import { OpenseaCollectible } from "@/lib/types"
-import { db } from "@/server/db"
 
 const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE

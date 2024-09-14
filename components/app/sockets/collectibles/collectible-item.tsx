@@ -1,7 +1,8 @@
 import { FC } from "react"
 
-import { useFrame } from "@/contexts"
 import { RouterOutputs } from "@/server/client"
+
+import { useFrame } from "@/contexts"
 
 export const SocketCollectibleItem: FC<{
 	id: string

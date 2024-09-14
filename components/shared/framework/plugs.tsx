@@ -2,10 +2,11 @@ import { FC, HTMLAttributes } from "react"
 
 import { PlugZap, Puzzle } from "lucide-react"
 
+import { api } from "@/server/client"
+
 import { Header, PlugGrid } from "@/components"
 import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
-import { api } from "@/server/client"
 
 export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }> = ({
 	id,

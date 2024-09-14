@@ -1,11 +1,11 @@
+import { useSession } from "next-auth/react"
 import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
 
-import { useSession } from "next-auth/react"
+import { Workflow } from "@/server/api/routers/plug"
+import { api } from "@/server/client"
 
 import { useFrame, useSockets } from "@/contexts"
 import { categories, actions as staticActions, tags, VIEW_KEYS } from "@/lib/constants"
-import { Workflow } from "@/server/api/routers/plug"
-import { api } from "@/server/client"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 

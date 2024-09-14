@@ -1,10 +1,10 @@
+import Image from "next/image"
 import { FC, useState } from "react"
 
-import Image from "next/image"
+import { RouterOutputs } from "@/server/client"
 
 import { Accordion } from "@/components"
 import { getChainImage } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 

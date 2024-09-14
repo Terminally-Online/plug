@@ -1,9 +1,9 @@
+import Image from "next/image"
+
 import { motion } from "framer-motion"
 import { CheckCircle, PowerOff } from "lucide-react"
 
 import { InfoCard } from "@/components"
-
-import Image from "next/image"
 
 export const BookProfit = () => {
 	const actions = [

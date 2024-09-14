@@ -1,5 +1,4 @@
 import next from "next"
-
 import { getSession } from "next-auth/react"
 
 import { createServer } from "node:http"

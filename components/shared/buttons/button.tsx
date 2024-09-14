@@ -1,8 +1,7 @@
+import Link from "next/link"
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 import { cn } from "@/lib"
-
-import Link from "next/link"
 
 type Props = {
 	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive" | "none"

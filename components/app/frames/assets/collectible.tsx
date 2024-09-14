@@ -1,6 +1,7 @@
+import Image from "next/image"
 import { FC, useEffect, useState } from "react"
 
-import Image from "next/image"
+import { getAddress } from "viem"
 
 import {
 	BookDashed,
@@ -16,7 +17,8 @@ import {
 	Twitter,
 	Waypoints
 } from "lucide-react"
-import { getAddress } from "viem"
+
+import { api, RouterOutputs } from "@/server/client"
 
 import { useFrame } from "@/contexts"
 import {
@@ -30,7 +32,6 @@ import {
 	getChainImage,
 	getTextColor
 } from "@/lib"
-import { api, RouterOutputs } from "@/server/client"
 
 import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
 import { Frame } from "../base"

@@ -1,8 +1,8 @@
 import { NextPageContext } from "next"
 
-import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
-
 import { type AppRouter } from "@/server/api/root"
+
+import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
 
 export const getBaseUrl = () => {
 	// browser should use relative url

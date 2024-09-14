@@ -1,6 +1,5 @@
-import { FC, useEffect, useMemo } from "react"
-
 import Image from "next/image"
+import { FC, useEffect, useMemo } from "react"
 
 import { Globe } from "lucide-react"
 

@@ -1,6 +1,5 @@
-import { FC } from "react"
-
 import Image from "next/image"
+import { FC } from "react"
 
 import { LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"

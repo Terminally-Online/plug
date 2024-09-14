@@ -2,9 +2,10 @@ import { FC, useState } from "react"
 
 import { Pen, Sparkle } from "lucide-react"
 
+import { api } from "@/server/client"
+
 import { Button, Frame, Search } from "@/components"
 import { useFrame } from "@/contexts"
-import { api } from "@/server/client"
 
 export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 	const { isFrame, prevFrame: from, handleFrame } = useFrame({ id, key: "freatureRequest", seperator: "-" })

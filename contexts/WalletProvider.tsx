@@ -1,9 +1,6 @@
 import { FC, PropsWithChildren } from "react"
+
 import { createClient } from "viem"
-import { createConfig, http, WagmiProvider } from "wagmi"
-
-import { injectedWithFallback } from "@/lib/functions/wallet/connector"
-
 import {
 	arbitrum,
 	avalanche,
@@ -22,7 +19,10 @@ import {
 	zkSync,
 	zora
 } from "viem/chains"
+import { createConfig, http, WagmiProvider } from "wagmi"
 import { coinbaseWallet, injected, safe, walletConnect } from "wagmi/connectors"
+
+import { injectedWithFallback } from "@/lib/functions/wallet/connector"
 
 export const WALLETCONNECT_PARAMS = {
 	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1",

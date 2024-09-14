@@ -1,13 +1,13 @@
+import Image from "next/image"
 import { FC, useMemo, useState } from "react"
 
-import Image from "next/image"
-
 import { ExternalLink, EyeOff } from "lucide-react"
+
+import { RouterOutputs } from "@/server/client"
 
 import { Counter } from "@/components/shared"
 import { useFrame } from "@/contexts"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 import { SocketTokenPriceChart } from "../../sockets"
 import { TokenImage } from "../../sockets/tokens/token-image"

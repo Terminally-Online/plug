@@ -1,10 +1,10 @@
 import axios from "axios"
 
+import { db } from "@/server/db"
 import { TRPCError } from "@trpc/server"
 
 import { NATIVE_TOKEN_ADDRESS, TOKENS } from "@/lib/constants"
 import { ZerionPositions } from "@/lib/types"
-import { db } from "@/server/db"
 
 import { getChainId } from "../blockchain"
 import { getPrices } from "../llama"

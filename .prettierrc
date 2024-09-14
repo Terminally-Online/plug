@@ -11,7 +11,7 @@
 	"importOrder": [
 		"^(react|next)(.*)$",
 		"^(@walletconnect|wagmi|viem|siwe)(.*)$",
-		"^(framer|lucide)(.*)$",
+		"^(framer|lucide|boring-avatars)(.*)$",
 		"<THIRD_PARTY_MODULES>",
 		"^(@trpc/server|@/server|@/prisma)(.*)$",
 		"^@[a-zA-Z]",

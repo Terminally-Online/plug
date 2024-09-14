@@ -1,6 +1,8 @@
+import Image from "next/image"
 import { useMemo, useState } from "react"
 
-import Image from "next/image"
+import { isAddress, zeroAddress } from "viem"
+import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
 import { motion } from "framer-motion"
 import {
@@ -14,8 +16,6 @@ import {
 	User,
 	Wallet
 } from "lucide-react"
-import { isAddress, zeroAddress } from "viem"
-import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
 
 import { Button, Frame, Search, SocketTokenList } from "@/components"
 import { useFrame, useSockets } from "@/contexts"

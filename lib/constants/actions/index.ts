@@ -1,5 +1,6 @@
-import { InfinityIcon } from "lucide-react"
 import { AbiParameter } from "viem"
+
+import { InfinityIcon } from "lucide-react"
 
 import aave from "./aave"
 import chainlink from "./chainlink"

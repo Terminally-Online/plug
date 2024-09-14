@@ -1,6 +1,5 @@
-import { FC, HTMLAttributes } from "react"
-
 import { useSession } from "next-auth/react"
+import { FC, HTMLAttributes } from "react"
 
 import { SearchIcon } from "lucide-react"
 

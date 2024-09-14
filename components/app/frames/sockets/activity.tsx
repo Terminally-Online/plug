@@ -1,6 +1,5 @@
-import { FC } from "react"
-
 import Image from "next/image"
+import { FC } from "react"
 
 import { Counter } from "@/components/shared"
 import { useFrame } from "@/contexts"

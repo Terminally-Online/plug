@@ -1,13 +1,13 @@
+import Image from "next/image"
 import { FC } from "react"
 
-import Image from "next/image"
-
 import { motion } from "framer-motion"
+
+import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Counter } from "@/components/shared"
 import { useFrame } from "@/contexts"
 import { cn, formatTitle, getChainImage } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 export const SocketPositionItem: FC<{
 	id: string

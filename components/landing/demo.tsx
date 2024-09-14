@@ -1,8 +1,6 @@
-import { useEffect } from "react"
-
-import Link from "next/link"
-
 import { signIn, useSession } from "next-auth/react"
+import Link from "next/link"
+import { useEffect } from "react"
 
 import { motion } from "framer-motion"
 

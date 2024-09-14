@@ -3,12 +3,13 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
+import { api } from "@/server/client"
+
 import { Workflow } from "@prisma/client"
 
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
-import { api } from "@/server/client"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
 	const { scrollYProgress } = useScroll()

@@ -1,6 +1,5 @@
-import { FC, useMemo } from "react"
-
 import Image from "next/image"
+import { FC, useMemo } from "react"
 
 import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
 

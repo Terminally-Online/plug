@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { createConnector } from "wagmi"
 
+import { createConnector } from "wagmi"
 import { injected } from "wagmi/connectors"
 
 export function injectedWithFallback() {

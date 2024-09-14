@@ -1,6 +1,5 @@
-import { useEffect } from "react"
-
 import { useRouter } from "next/router"
+import { useEffect } from "react"
 
 import { Button, Callout, StaticLayout } from "@/components"
 import { GTM_EVENTS, useAnalytics } from "@/lib"

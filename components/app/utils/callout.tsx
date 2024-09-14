@@ -1,11 +1,11 @@
+import { useRouter } from "next/router"
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode, useEffect, useState } from "react"
 
-import { useRouter } from "next/router"
+import { columns } from "@/server/api/routers/socket/columns"
 
 import { Button } from "@/components/shared"
 import { usePlugs, useSockets } from "@/contexts"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
-import { columns } from "@/server/api/routers/socket/columns"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {

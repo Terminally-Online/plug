@@ -1,6 +1,5 @@
-import { FC, HTMLAttributes, PropsWithChildren, useCallback, useEffect } from "react"
-
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react"
+import { FC, HTMLAttributes, PropsWithChildren, useCallback, useEffect } from "react"
 
 import { SiweMessage } from "siwe"
 import { useAccount, useChainId, useDisconnect, useSignMessage } from "wagmi"

@@ -1,6 +1,7 @@
 "use client"
 
 import { FC, PropsWithChildren } from "react"
+
 import { useClient } from "wagmi"
 
 import { AccordionContent } from "@/components"

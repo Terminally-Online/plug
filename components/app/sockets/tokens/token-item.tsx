@@ -1,9 +1,10 @@
 import { FC } from "react"
 
+import { RouterOutputs } from "@/server/client"
+
 import { Accordion, Counter, SocketTokenPercentages, TokenImage } from "@/components"
 import { useFrame } from "@/contexts"
 import { cn, getChainId } from "@/lib"
-import { RouterOutputs } from "@/server/client"
 
 export const SocketTokenItem: FC<{
 	id: string

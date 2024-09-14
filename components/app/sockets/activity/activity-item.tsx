@@ -1,5 +1,6 @@
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 import { FC, useMemo, useState } from "react"
+
+import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince } from "@/components"
 import { useFrame } from "@/contexts"

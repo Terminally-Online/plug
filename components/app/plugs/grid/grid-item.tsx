@@ -1,8 +1,9 @@
 import { FC } from "react"
 
+import { Workflow } from "@/server/api/routers/plug"
+
 import { useSockets } from "@/contexts"
 import { cardColors, cn, VIEW_KEYS } from "@/lib"
-import { Workflow } from "@/server/api/routers/plug"
 
 type Props = { id: string; from: string; plug: Workflow | undefined }
 

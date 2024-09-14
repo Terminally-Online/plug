@@ -1,6 +1,5 @@
-import { FC } from "react"
-
 import { useSession } from "next-auth/react"
+import { FC } from "react"
 
 import { User } from "lucide-react"
 

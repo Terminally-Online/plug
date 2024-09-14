@@ -1,7 +1,7 @@
 import { FC, useState } from "react"
+import { DateRange, DayPicker } from "react-day-picker"
 
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
-import { DateRange, DayPicker } from "react-day-picker"
 
 import { Button, Dropdown, Frame } from "@/components"
 import { useFrame, usePlugs } from "@/contexts"

@@ -1,6 +1,5 @@
-import { useEffect } from "react"
-
 import { signIn } from "next-auth/react"
+import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
