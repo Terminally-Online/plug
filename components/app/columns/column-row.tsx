@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react"
 
 import { AnimatePresence } from "framer-motion"
-import { LoaderCircle } from "lucide-react"
 
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
 import { useSockets } from "@/contexts"
-import { VIEW_KEYS } from "@/lib"
 
 // This component has a bunch of hacky workarounds to make it work due to the
 // complexities of TRPC combined with commonly requested animation frames. The

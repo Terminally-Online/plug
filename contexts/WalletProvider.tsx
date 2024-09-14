@@ -1,9 +1,8 @@
-import type { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren } from "react"
+import { createClient } from "viem"
+import { createConfig, http, WagmiProvider } from "wagmi"
 
-import { WagmiProvider } from "wagmi"
-
-import { createWeb3Modal } from "@web3modal/wagmi/react"
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
+import { injectedWithFallback } from "@/lib/functions/wallet/connector"
 
 import {
 	arbitrum,
@@ -23,17 +22,19 @@ import {
 	zkSync,
 	zora
 } from "viem/chains"
+import { coinbaseWallet, injected, safe, walletConnect } from "wagmi/connectors"
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1"
-
-const metadata = {
-	name: "Plug",
-	description: '"IF This, Then That" for Ethereum blockchains and protocols.',
-	url: "https://onplug.io",
-	icons: ["https://onplug.io/favicon.ico"]
+export const WALLETCONNECT_PARAMS = {
+	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1",
+	metadata: {
+		name: "Plug",
+		description: '"IF This, Then That" for Ethereum blockchains and protocols.',
+		url: "https://onplug.io",
+		icons: ["https://onplug.io/favicon.ico"]
+	}
 }
 
-const chains = [
+export const wagmiChains = [
 	mainnet,
 	base,
 	optimism,
@@ -43,6 +44,7 @@ const chains = [
 	bsc,
 	celo,
 	gnosis,
+	linea,
 	polygon,
 	scroll,
 	mantle,
@@ -51,19 +53,38 @@ const chains = [
 	zkSync
 ] as const
 
-const config = defaultWagmiConfig({
-	chains,
-	projectId,
-	metadata,
-	ssr: true,
-	enableEIP6963: true,
-	enableEmail: true
+declare module "wagmi" {
+	interface Register {
+		config: typeof wagmiConfig
+	}
+}
+
+export const wagmiConfig = createConfig({
+	chains: wagmiChains,
+	connectors: [
+		injectedWithFallback(),
+		walletConnect(WALLETCONNECT_PARAMS),
+		coinbaseWallet({
+			appName: WALLETCONNECT_PARAMS.metadata.name,
+			appLogoUrl: WALLETCONNECT_PARAMS.metadata.icons[0],
+			reloadOnDisconnect: false,
+			enableMobileWalletLink: true
+		}),
+		safe()
+	],
+	client({ chain }) {
+		return createClient({
+			chain,
+			batch: { multicall: true },
+			pollingInterval: 12_000,
+			// TODO: Update this to be an appOnly provider.
+			transport: http(chain.rpcUrls.default.http[0])
+		})
+	}
 })
 
-createWeb3Modal({ wagmiConfig: config, projectId })
-
 export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
-	return <WagmiProvider config={config}>{children}</WagmiProvider>
+	return <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
 }
 
 export default WalletProvider

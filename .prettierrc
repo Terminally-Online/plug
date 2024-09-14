@@ -8,7 +8,16 @@
 	"arrowParens": "avoid",
 	"endOfLine": "auto",
 	"plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
-	"importOrder": ["^react$", "^next$", "^next/(.*)$", "next-auth", "<THIRD_PARTY_MODULES>", "^@[a-zA-Z]", "^@/(.*)$", "./(.*)$"],
+	"importOrder": [
+		"^(react|next)(.*)$",
+		"^(@walletconnect|wagmi|viem|siwe)(.*)$",
+		"^(framer|lucide)(.*)$",
+		"<THIRD_PARTY_MODULES>",
+		"^(@trpc/server|@/server|@/prisma)(.*)$",
+		"^@[a-zA-Z]",
+		"^@/(.*)$",
+		"./(.*)$"
+	],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true,
 	"importOrderGroupNamespaceSpecifiers": true,

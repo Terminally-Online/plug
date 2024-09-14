@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useMemo } from "react"
 
 import { formatAddress, getBlockExplorerAddress } from "@/lib"

@@ -1,6 +1,5 @@
-import { FC, useMemo, useState } from "react"
-
 import Image from "next/image"
+import { FC, useMemo, useState } from "react"
 
 import { MapIcon, Send } from "lucide-react"
 

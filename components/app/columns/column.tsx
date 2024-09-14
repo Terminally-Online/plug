@@ -1,9 +1,12 @@
+import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
-import Image from "next/image"
+import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
 
 import BoringAvatar from "boring-avatars"
-import { ChevronLeft, Cog, GitFork, Grip, Settings, Share, X } from "lucide-react"
+
+import { ConsoleColumnModel } from "@/prisma/types"
+import { api } from "@/server/client"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -27,8 +30,6 @@ import {
 } from "@/components"
 import { useFrame, usePlugs, useSockets } from "@/contexts"
 import { cardColors, cn, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { ConsoleColumnModel } from "@/prisma/types"
-import { api } from "@/server/client"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380

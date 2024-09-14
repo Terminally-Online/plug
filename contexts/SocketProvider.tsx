@@ -1,12 +1,10 @@
 import { createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
-
-import { useSession } from "next-auth/react"
-
 import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { ConsoleColumnModel, UserSocketModel } from "@/prisma/types"
 import { api, RouterOutputs } from "@/server/client"
 
+import { useSession } from "next-auth/react"
 import { mainnet } from "viem/chains"
 import { GetEnsAvatarReturnType, GetEnsNameReturnType, normalize } from "viem/ens"
 
@@ -105,6 +103,9 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 	const handle = {
 		columns: {
 			add: api.socket.columns.add.useMutation({
+				onMutate: data => {
+					console.log("adding column")
+				},
 				onSuccess: data => setSocket(data)
 			}),
 			navigate: api.socket.columns.navigate.useMutation({

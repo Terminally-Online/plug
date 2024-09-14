@@ -10,7 +10,6 @@ export const ColumnAdd = () => {
 
 	const isAdding = useMemo(() => {
 		if (socket === undefined) return false
-
 		return socket.columns.find(column => column.key === "ADD") !== undefined
 	}, [socket])
 

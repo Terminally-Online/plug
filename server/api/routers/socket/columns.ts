@@ -17,6 +17,8 @@ export const columns = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
+			console.log("adding column")
+
 			return await ctx.db.$transaction(async tx => {
 				if (Object.values(VIEW_KEYS).includes(input.key) === false)
 					throw new TRPCError({

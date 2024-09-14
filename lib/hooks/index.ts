@@ -1,4 +1,5 @@
 export * from "./analytics"
+export * from "./wallet"
 
 export { useBlockchain } from "./useBlockchain"
 export { useClient } from "./useClient"

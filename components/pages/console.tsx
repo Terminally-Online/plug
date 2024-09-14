@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { signIn, useSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
 
 import { LoaderCircle } from "lucide-react"
 
@@ -34,6 +34,16 @@ const DesktopPage = () => {
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
 	const { socket } = useSockets()
+
+	useEffect(() => {
+		if (socket) return
+
+		signIn("credentials", {
+			message: "0x0",
+			signature: "0x0",
+			redirect: false
+		})
+	}, [socket])
 
 	if (!socket)
 		return (

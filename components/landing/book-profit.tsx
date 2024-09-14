@@ -1,9 +1,9 @@
-import Image from "next/image"
-
 import { motion } from "framer-motion"
 import { CheckCircle, PowerOff } from "lucide-react"
 
 import { InfoCard } from "@/components"
+
+import Image from "next/image"
 
 export const BookProfit = () => {
 	const actions = [
@@ -68,7 +68,7 @@ export const BookProfit = () => {
 							<span className="font-bold md:text-xl">{action[0]}</span>
 							<span className="flex w-full flex-row items-center gap-2 md:text-lg">
 								<Image
-									src={`/wallets/${action[1]}.png`}
+									src={`/users/${action[1]}.png`}
 									alt="NFT Chance"
 									width={18}
 									height={18}

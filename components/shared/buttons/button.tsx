@@ -1,8 +1,8 @@
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
-import Link from "next/link"
-
 import { cn } from "@/lib"
+
+import Link from "next/link"
 
 type Props = {
 	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive" | "none"
@@ -43,7 +43,7 @@ export const Button: FC<Props> = ({
 	const base =
 		"relative cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
 
-	if (onClick)
+	if (onClick || disabled)
 		return (
 			<button
 				{...props}

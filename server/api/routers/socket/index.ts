@@ -1,9 +1,9 @@
 import { z } from "zod"
 
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
 import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_DEMO_VIEWS, DEFAULT_VIEWS, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
-import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
 import { columns } from "./columns"

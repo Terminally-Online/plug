@@ -4,7 +4,8 @@ import { useRouter } from "next/router"
 
 import { Button } from "@/components/shared"
 import { usePlugs, useSockets } from "@/contexts"
-import { cn, greenGradientStyle } from "@/lib"
+import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
+import { columns } from "@/server/api/routers/socket/columns"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -26,7 +27,7 @@ const Anonymous: FC<
 		isAbsolute?: boolean
 	}
 > = ({ id, viewing, isAbsolute = false, className, ...props }) => {
-	const { isAnonymous, isExternal } = useSockets(id)
+	const { isAnonymous, isExternal, handle, column } = useSockets(id)
 
 	if (isAnonymous === false || isExternal === true) return null
 
@@ -50,7 +51,10 @@ const Anonymous: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => {}}>
 					View As
 				</Button>
-				<Button sizing="sm" onClick={() => {}}>
+				<Button
+					sizing="sm"
+					onClick={() => handle.columns.navigate({ id, key: VIEW_KEYS.AUTHENTICATE, from: column?.key })}
+				>
 					Login
 				</Button>
 			</Base>
