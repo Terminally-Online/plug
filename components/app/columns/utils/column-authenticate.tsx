@@ -239,7 +239,16 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 			onExpand={
 				isDisabled
 					? undefined
-					: () => connection.connect({ connector }, { onSuccess: data => prove(data.accounts[0]) })
+					: () =>
+							connection.connect(
+								{ connector },
+								{
+									onSuccess: data => {
+										updateRecentConnectorId(connector.id)
+										prove(data.accounts[0])
+									}
+								}
+							)
 			}
 		>
 			<div className="flex flex-row items-center gap-4">
