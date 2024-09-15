@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 
 import { EthereumProvider, EthereumProviderOptions } from "@walletconnect/ethereum-provider"
 import { Connector as wagmiConnector } from "wagmi"
@@ -7,14 +7,17 @@ import { Connector as wagmiConnector } from "wagmi"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
+import { useSetAtom } from "jotai"
 import qrcode from "qrcode-generator"
 
 import { Accordion, Animate, Button, Callout } from "@/components"
 import { wagmiChains, WALLETCONNECT_PARAMS } from "@/contexts"
 import {
+	cn,
 	CONNECTOR_ICON_OVERRIDE_MAP,
 	formatAddress,
 	greenGradientStyle,
+	recentConnectorIdAtom,
 	useConnect,
 	useOrderedConnections,
 	useRecentConnectorId
@@ -62,9 +65,11 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 	)
 }
 
+const size = 200
+const pixelSpacing = 0.4
+
 const ConnectorQrCode = () => {
-	const size = 200
-	const pixelSpacing = 0.4
+	const { connection } = useConnect()
 
 	const [uri, setUri] = useState<string>()
 
@@ -125,7 +130,7 @@ const ConnectorQrCode = () => {
 				provider.on("display_uri", uri => setUri(uri))
 			}
 
-			generateUri()
+			// generateUri()
 		} catch (e) {
 			console.error(e)
 		}
@@ -192,13 +197,25 @@ const ConnectorQrCode = () => {
 				)}
 			</div>
 
-			<p className="pt-4 text-sm font-bold opacity-40">Scan to connect your wallet.</p>
+			<p
+				className={cn(
+					"max-w-[320px] pt-4 text-sm font-bold",
+					connection.isError ? "text-red-500" : "opacity-40"
+				)}
+			>
+				{connection.isError
+					? "Error connecting. Please click try and again and follow the steps to connect in your wallet."
+					: connection.isLoading
+						? "Open your wallet to confirm the connection."
+						: "Scan to connect your wallet."}
+			</p>
 		</div>
 	)
 }
 
 const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	const { connection, prove } = useConnect()
+	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
 	const isLoading = connection.isLoading && connection.variables?.connector === connector
 
@@ -217,15 +234,25 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	}
 
 	return (
-		<Accordion onExpand={() => connection.connect({ connector }, { onSuccess: data => prove(data.accounts[0]) })}>
+		<Accordion
+			onExpand={() =>
+				connection.connect(
+					{ connector },
+					{
+						onSuccess: data => {
+							updateRecentConnectorId(connector.id)
+							prove(data.accounts[0])
+						}
+					}
+				)
+			}
+		>
 			<div className="flex flex-row items-center gap-4">
 				<ConnectorImage icon={icon} name={connector.name} />
 				<p className="font-bold">{connector.name}</p>
-				{isDetected && (
-					<p className="ml-auto text-sm font-bold">
-						<Badge />
-					</p>
-				)}
+				<p className="ml-auto text-sm font-bold">
+					<Badge />
+				</p>
 			</div>
 		</Accordion>
 	)
@@ -254,41 +281,36 @@ const Connectors = () => {
 export const ColumnAuthenticate = () => {
 	const { account, sign, prove } = useConnect()
 
-	const Column = useCallback(() => {
-		if (account.address) {
-			if (sign.isLoading)
-				return (
-					<Callout
-						title="Proving ownership."
-						description={`Completing the signing process to prove ownership of ${formatAddress(account.address)}`}
-					>
-						<Button className="mt-2" sizing="sm" disabled>
-							Signing...
-						</Button>
-					</Callout>
-				)
-
-			const title = sign.failureReason ? "Signature error." : "Prove ownership."
-			const description = sign.failureReason
-				? "An internal error was received while signing the message. " +
-					sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
-				: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
-
-			return (
-				<Callout title={title} description={description}>
+	return (
+		<div className="flex h-full flex-col items-center justify-center text-center">
+			{account.address && sign.isLoading === false && (
+				<Callout
+					title={sign.failureReason ? "Signature error." : "Prove ownership."}
+					description={
+						sign.failureReason
+							? "An internal error was received while signing the message. " +
+								sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
+							: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
+					}
+				>
 					<Button className="mt-2" sizing="sm" onClick={() => prove()}>
 						Sign Message
 					</Button>
 				</Callout>
-			)
-		}
+			)}
 
-		return <Connectors />
-	}, [account.address, sign.failureReason, sign.isLoading, prove])
+			{account.address && sign.isLoading && (
+				<Callout
+					title="Proving ownership."
+					description={`Completing the signing process to prove ownership of ${formatAddress(account.address)}`}
+				>
+					<Button className="mt-2" sizing="sm" disabled>
+						Signing...
+					</Button>
+				</Callout>
+			)}
 
-	return (
-		<div className="flex h-full flex-col items-center justify-center text-center">
-			<Column />
+			{account.address === undefined && <Connectors />}
 		</div>
 	)
 }
