@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -7,22 +8,24 @@ import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap
 
 import { Button } from "@/components"
 import { usePlugs, useSockets } from "@/contexts"
-import { cn, useClipboard, VIEW_KEYS } from "@/lib"
+import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 
 export const ConsoleSidebar = () => {
-	const { isAnonymous, address, avatar, socket, handle: handleSocket } = useSockets()
+	const { account } = useConnect()
+	const { disconnect } = useDisconnect(true)
+	const { data: session } = useSession()
+
+	const { avatar, socket, handle: handleSocket } = useSockets()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	const [expanded, setExpanded] = useState(false)
 
-	const { disconnect } = useDisconnect(true)
-
 	return (
 		<div className="mr-2 flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
 			<div className={cn("flex w-full flex-col gap-4 px-4")}>
-				{address && (
+				{session && (
 					<button
 						className="relative mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
 						onClick={() => handleCopied()}
@@ -44,7 +47,7 @@ export const ConsoleSidebar = () => {
 							) : (
 								<div className="overflow-hidden rounded-sm">
 									<Avatar
-										name={address}
+										name={session?.address}
 										variant="beam"
 										size={"100%"}
 										colors={["#00E100", "#A3F700"]}
@@ -218,7 +221,7 @@ export const ConsoleSidebar = () => {
 					)}
 				</div>
 
-				{isAnonymous === false && address && (
+				{account.address && (
 					<>
 						<div className="h-[1px] w-full bg-grayscale-100" />
 						<div

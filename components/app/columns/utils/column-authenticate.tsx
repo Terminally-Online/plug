@@ -217,7 +217,7 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	}
 
 	return (
-		<Accordion onExpand={() => connection.connect({ connector })}>
+		<Accordion onExpand={() => connection.connect({ connector }, { onSuccess: data => prove(data.accounts[0]) })}>
 			<div className="flex flex-row items-center gap-4">
 				<ConnectorImage icon={icon} name={connector.name} />
 				<p className="font-bold">{connector.name}</p>
