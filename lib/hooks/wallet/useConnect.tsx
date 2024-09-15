@@ -14,7 +14,10 @@ import {
 	UseSignMessageReturnType
 } from "wagmi"
 
+import { useSetAtom } from "jotai"
+
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
+import { authenticationAtom, authenticationLoadingAtom, authenticationResponseAtom } from "@/state"
 
 const ConnectionContext = createContext<
 	| {
@@ -27,6 +30,9 @@ const ConnectionContext = createContext<
 >(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
+	const setAuthenticationLoading = useSetAtom(authenticationLoadingAtom)
+	const setAuthenticationResponse = useSetAtom(authenticationResponseAtom)
+
 	const connection = useConnectWagmi({
 		mutation: {
 			onError(error) {
@@ -43,6 +49,8 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const prove = useCallback(
 		async (address?: string) => {
 			try {
+				setAuthenticationLoading(false)
+
 				const nonce = await getCsrfToken()
 
 				if (!nonce) throw new Error("Could not get nonce.")
@@ -67,14 +75,20 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 						message
 					},
 					{
-						onSuccess: signature =>
-							signIn("credentials", {
+						onSuccess: async signature => {
+							setAuthenticationLoading(true)
+							setAuthenticationResponse(undefined)
+
+							const authenticationResponse = await signIn("credentials", {
 								message,
 								signature,
 								chainId,
 								redirect: true,
 								callbackUrl: "/app/"
-							}),
+							})
+
+							setAuthenticationResponse(authenticationResponse)
+						},
 						onError: (_, account) => {
 							if (account.connector) account.connector.disconnect()
 
@@ -85,13 +99,14 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 					}
 				)
 			} catch (e) {
-				console.error("hit the error here")
+				setAuthenticationLoading(false)
+
 				connection.reset()
 				sign.reset()
 				disconnect()
 			}
 		},
-		[connection, chainId, account, sign, disconnect]
+		[connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
 	)
 
 	// useEffect(() => {

@@ -7,7 +7,7 @@ import { Connector as wagmiConnector } from "wagmi"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
-import { useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import qrcode from "qrcode-generator"
 
 import { Accordion, Animate, Button, Callout } from "@/components"
@@ -23,6 +23,7 @@ import {
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
+import { authenticationAtom } from "@/state"
 
 const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
 	const dimensions = {
@@ -193,7 +194,7 @@ const ConnectorQrCode = () => {
 					</motion.div>
 				) : (
 					<div className="flex h-[300px] w-[300px] items-center justify-center">
-						<Loader2 size={24} className="animate-spin opacity-60" />
+						<Loader2 size={24} className="animate-spin opacity-40" />
 					</div>
 				)}
 			</div>
@@ -216,6 +217,7 @@ const ConnectorQrCode = () => {
 
 const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	const { connection, prove } = useConnect()
+
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
 	const isLoading = connection.isLoading && connection.variables?.connector === connector
@@ -226,7 +228,7 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	const icon = CONNECTOR_ICON_OVERRIDE_MAP[connector.id] ?? connector.icon
 
 	const Badge = () => {
-		if (isLoading) return <Loader2 className="animate-spin opacity-60" size={14} />
+		if (isLoading) return <Loader2 className="animate-spin opacity-40" size={14} />
 		if (isRecent) return <span style={{ ...greenGradientStyle }}>Recent</span>
 		if (isDetected) return <span className="opacity-40">Detected</span>
 		return null
@@ -283,10 +285,18 @@ const Connectors = () => {
 
 export const ColumnAuthenticate = () => {
 	const { account, sign, prove } = useConnect()
+	const authentication = useAtomValue(authenticationAtom)
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">
-			{account.address && sign.isLoading === false && (
+			{authentication.isLoading && (
+				<Callout
+					title="Authentication loading."
+					description="We are loading all the state of your account. One moment please."
+				/>
+			)}
+
+			{account.address && sign.isLoading === false && authentication.isLoading === false && (
 				<Callout
 					title={sign.failureReason ? "Signature error." : "Prove ownership."}
 					description={
