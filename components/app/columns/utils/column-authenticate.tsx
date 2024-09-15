@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 
 import { EthereumProvider, EthereumProviderOptions } from "@walletconnect/ethereum-provider"
 import { Connector as wagmiConnector } from "wagmi"
@@ -17,6 +17,7 @@ import {
 	CONNECTOR_ICON_OVERRIDE_MAP,
 	formatAddress,
 	greenGradientStyle,
+	isIFramed,
 	recentConnectorIdAtom,
 	useConnect,
 	useOrderedConnections,
@@ -218,13 +219,11 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
 	const isLoading = connection.isLoading && connection.variables?.connector === connector
-
-	const isDetected = connector.isInjected as boolean
 	const isRecent = connector.id === useRecentConnectorId()
+	const isDetected = connector.isInjected as boolean
+	// TODO(#389): Remove isIFrame check when we can update wagmi to version >= 2.9.4
+	const isDisabled = Boolean(connection?.isLoading && !isIFramed())
 	const icon = CONNECTOR_ICON_OVERRIDE_MAP[connector.id] ?? connector.icon
-	// TODO(WEB-4173): Remove isIFrame check when we can update wagmi to version >= 2.9.4
-	const isDisabled = Boolean(connection?.isLoading)
-	// const isDisabled = Boolean(connection?.isLoading && !isIFramed())
 
 	const Badge = () => {
 		if (isLoading) return <Loader2 className="animate-spin opacity-60" size={14} />
