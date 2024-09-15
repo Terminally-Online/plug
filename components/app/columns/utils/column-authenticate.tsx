@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { EthereumProvider, EthereumProviderOptions } from "@walletconnect/ethereum-provider"
 import { Connector as wagmiConnector } from "wagmi"
@@ -206,8 +206,8 @@ const ConnectorQrCode = () => {
 				{connection.isError
 					? "Error connecting. Please click try and again and follow the steps to connect in your wallet."
 					: connection.isLoading
-						? "Open your wallet to confirm the connection."
-						: "Scan to connect your wallet."}
+						? "Open the wallet you selected to confirm the connection with Plug."
+						: "Scan the QR code to connect your wallet from your camera or the in-wallet scanner."}
 			</p>
 		</div>
 	)
@@ -235,16 +235,11 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 
 	return (
 		<Accordion
-			onExpand={() =>
-				connection.connect(
-					{ connector },
-					{
-						onSuccess: data => {
-							updateRecentConnectorId(connector.id)
-							prove(data.accounts[0])
-						}
-					}
-				)
+			className={cn(isDisabled && "cursor-not-allowed bg-grayscale-0")}
+			onExpand={
+				isDisabled
+					? undefined
+					: () => connection.connect({ connector }, { onSuccess: data => prove(data.accounts[0]) })
 			}
 		>
 			<div className="flex flex-row items-center gap-4">
@@ -263,7 +258,7 @@ const Connectors = () => {
 
 	return (
 		<div className="mb-auto w-full pt-2">
-			{/* <ConnectorQrCode /> */}
+			<ConnectorQrCode />
 			<div className="h-[1px] w-full bg-grayscale-100" />
 			<div className="px-4 pt-4">
 				<Animate.List>
