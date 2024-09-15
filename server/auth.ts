@@ -3,9 +3,10 @@ import { type DefaultSession, getServerSession, type NextAuthOptions } from "nex
 import CredentialsProvider from "next-auth/providers/credentials"
 import { getCsrfToken } from "next-auth/react"
 
-import { SiweMessage } from "siwe"
+import { createPublicClient, extractChain, http } from "viem"
+import { parseSiweMessage } from "viem/siwe"
 
-import { getBaseUrl } from "@/server/client/links"
+import { wagmiChains } from "@/contexts"
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {
@@ -20,45 +21,69 @@ declare module "next-auth" {
 	}
 }
 
-const authOptions: NextAuthOptions = {
+// For more information on each option (and a full list of options) go to
+// https://next-auth.js.org/configuration/options
+export const authOptions: NextAuthOptions = {
 	providers: [
 		CredentialsProvider({
 			name: "Ethereum",
 			credentials: {
 				message: {
 					label: "Message",
-					type: "text",
-					placeholder: "0x0"
+					type: "text"
 				},
 				signature: {
 					label: "Signature",
-					type: "text",
-					placeholder: "0x0"
+					type: "text"
+				},
+				chainId: {
+					label: "Chain ID",
+					type: "text"
 				}
 			},
 			async authorize(credentials, req) {
-				if (!credentials || credentials.message === "0x0" || credentials.signature === "0x0") {
+				if (!credentials?.message || !credentials?.signature || !credentials?.chainId) return null
+
+				const unauthenticatedPairs = ["0x0", "0xdemo"]
+				if (
+					unauthenticatedPairs.includes(credentials.message) ||
+					unauthenticatedPairs.includes(credentials.signature)
+				) {
 					const unixTimestamp = Math.floor(Date.now() / 1000)
 					const uuid = crypto.randomUUID()
+					const demo = credentials && credentials.message.startsWith("0xdemo")
+					const lead = demo ? "demo" : "anonymous"
 
 					return {
-						id: `anonymous-${unixTimestamp}-${uuid}`
+						id: `${lead}-${unixTimestamp}-${uuid}`
 					}
 				}
 
 				try {
-					const siwe = new SiweMessage(JSON.parse(credentials.message))
-					const nextAuthUrl = new URL(`${getBaseUrl()}/api/auth`)
+					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
 
-					const result = await siwe.verify({
-						signature: credentials.signature,
+					const publicClient = createPublicClient({
+						chain: extractChain({
+							chains: wagmiChains,
+							//@ts-expect-error -- Viem strictness is an unneeded burden here.
+							id: Number(credentials.chainId)
+						}),
+						transport: http()
+					})
+
+					const valid = await publicClient.verifySiweMessage({
+						message: credentials.message,
+						signature: credentials.signature as `0x${string}`,
 						domain: nextAuthUrl.host,
 						nonce: await getCsrfToken({
 							req: { headers: req.headers }
 						})
 					})
 
-					if (result.success) return { id: siwe.address }
+					if (valid) {
+						const address = parseSiweMessage(credentials.message).address as string
+						return { id: address }
+					}
 
 					return null
 				} catch (e) {

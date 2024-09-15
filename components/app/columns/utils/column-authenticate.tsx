@@ -1,10 +1,8 @@
-import { getCsrfToken, signIn } from "next-auth/react"
 import Image from "next/image"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { EthereumProvider, EthereumProviderOptions } from "@walletconnect/ethereum-provider"
-import { SiweMessage } from "siwe"
-import { useChainId, useDisconnect, Connector as wagmiConnector } from "wagmi"
+import { Connector as wagmiConnector } from "wagmi"
 
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
@@ -64,8 +62,21 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 	)
 }
 
-const ConnectorQrCode: FC<{ uri: string | undefined }> = ({ uri }) => {
+const ConnectorQrCode = () => {
 	const size = 200
+	const pixelSpacing = 0.4
+
+	const [uri, setUri] = useState<string>()
+
+	// const init = async () => {
+	// 	setInitialized(true)
+	// 	try {
+
+	// 	} catch (e) {
+	// 		console.error(e)
+	// 		setInitialized(false)
+	// 	}
+	// }
 
 	const qrMatrix = useMemo(() => {
 		if (uri === undefined) return
@@ -73,11 +84,16 @@ const ConnectorQrCode: FC<{ uri: string | undefined }> = ({ uri }) => {
 		const qr = qrcode(0, "L")
 		qr.addData(uri)
 		qr.make()
+
 		return {
 			moduleCount: qr.getModuleCount(),
 			getModule: (row: number, col: number) => qr.isDark(row, col)
 		}
 	}, [uri])
+
+	const moduleSize = qrMatrix ? size / qrMatrix.moduleCount : 0
+	const actualSize = moduleSize - moduleSize * pixelSpacing
+	const offset = (moduleSize * pixelSpacing) / 2
 
 	const isCorner = (row: number, col: number) => {
 		if (qrMatrix === undefined) return false
@@ -85,10 +101,35 @@ const ConnectorQrCode: FC<{ uri: string | undefined }> = ({ uri }) => {
 		return (row < 7 && col < 7) || (row < 7 && col > lastIndex - 7) || (row > lastIndex - 7 && col < 7)
 	}
 
-	const pixelSpacing = 0.4
-	const moduleSize = qrMatrix ? size / qrMatrix.moduleCount : 0
-	const actualSize = moduleSize - moduleSize * pixelSpacing
-	const offset = (moduleSize * pixelSpacing) / 2
+	// useEffect(() => {
+	// 	if (!initialized) init()
+	// }, [initialized])
+
+	useEffect(() => {
+		try {
+			const generateUri = async () => {
+				console.log("generating uri")
+
+				const provider = await EthereumProvider.init({
+					...WALLETCONNECT_PARAMS,
+					showQrModal: false,
+					optionalChains: wagmiChains.map(chain => chain.id)
+				} as EthereumProviderOptions)
+
+				console.log("setting provider")
+
+				await provider.connect()
+
+				console.log("connecting to walletconnect")
+
+				provider.on("display_uri", uri => setUri(uri))
+			}
+
+			generateUri()
+		} catch (e) {
+			console.error(e)
+		}
+	}, [])
 
 	return (
 		<div className="my-2 flex w-full flex-col items-center justify-center py-8">
@@ -157,7 +198,7 @@ const ConnectorQrCode: FC<{ uri: string | undefined }> = ({ uri }) => {
 }
 
 const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
-	const { connection } = useConnect()
+	const { connection, prove } = useConnect()
 
 	const isLoading = connection.isLoading && connection.variables?.connector === connector
 
@@ -193,41 +234,9 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 const Connectors = () => {
 	const connectors = useOrderedConnections(true)
 
-	const [initialized, setInitialized] = useState(false)
-	const [provider, setProvider] = useState<Awaited<ReturnType<typeof EthereumProvider.init>>>()
-	const [uri, setUri] = useState<string>()
-
-	const init = async () => {
-		const provider = await EthereumProvider.init({
-			...WALLETCONNECT_PARAMS,
-			showQrModal: false,
-			optionalChains: wagmiChains.map(chain => chain.id)
-		} as EthereumProviderOptions)
-
-		setProvider(provider)
-		setInitialized(true)
-	}
-
-	useEffect(() => {
-		if (!initialized) init()
-	}, [initialized])
-
-	useEffect(() => {
-		if (!provider) return
-
-		const generateUri = async () => {
-			if (!provider) return
-			await provider.connect()
-		}
-
-		provider.on("display_uri", (uri: string) => setUri(uri))
-
-		generateUri()
-	}, [provider])
-
 	return (
 		<div className="mb-auto w-full pt-2">
-			<ConnectorQrCode uri={uri} />
+			{/* <ConnectorQrCode /> */}
 			<div className="h-[1px] w-full bg-grayscale-100" />
 			<div className="px-4 pt-4">
 				<Animate.List>
@@ -243,50 +252,7 @@ const Connectors = () => {
 }
 
 export const ColumnAuthenticate = () => {
-	const chainId = useChainId()
-	const { account, sign } = useConnect()
-	const { disconnect } = useDisconnect()
-
-	const handleProof = useCallback(async () => {
-		if (!account.address) throw new Error("Message cannot be signed without a connected wallet.")
-
-		try {
-			const message = new SiweMessage({
-				domain: window.location.host,
-				address: account.address,
-				statement: `Access the Plug platform by proving your ownership of the address: ${account.address}.`,
-				uri: window.location.origin,
-				version: "1",
-				chainId: chainId,
-				nonce: await getCsrfToken()
-			}).prepareMessage()
-
-			sign.signMessage(
-				{
-					message
-				},
-				{
-					onSuccess: signature =>
-						signIn("credentials", {
-							message: JSON.stringify(message),
-							redirect: true,
-							signature,
-							callbackUrl: "/app/"
-						}),
-					onError: () => disconnect()
-				}
-			)
-		} catch (e) {
-			sign.reset()
-			disconnect()
-		}
-	}, [chainId, account, sign, disconnect])
-
-	// useEffect(() => {
-	// 	if (isConnected === false || isLoading || isError) return
-
-	// 	handleLogin()
-	// }, [isConnected, isLoading, isError, handleLogin])
+	const { account, sign, prove } = useConnect()
 
 	const Column = useCallback(() => {
 		if (account.address) {
@@ -310,7 +276,7 @@ export const ColumnAuthenticate = () => {
 
 			return (
 				<Callout title={title} description={description}>
-					<Button className="mt-2" sizing="sm" onClick={handleProof}>
+					<Button className="mt-2" sizing="sm" onClick={() => prove()}>
 						Sign Message
 					</Button>
 				</Callout>
@@ -318,7 +284,7 @@ export const ColumnAuthenticate = () => {
 		}
 
 		return <Connectors />
-	}, [account.address, sign.failureReason, sign.isLoading, handleProof])
+	}, [account.address, sign.failureReason, sign.isLoading, prove])
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">

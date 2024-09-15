@@ -1,13 +1,4 @@
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react"
-import { FC, HTMLAttributes, PropsWithChildren, useCallback, useEffect } from "react"
-
-import { SiweMessage } from "siwe"
-import { useAccount, useChainId, useDisconnect, useSignMessage } from "wagmi"
-
-import { useWeb3Modal } from "@web3modal/wagmi/react"
-
-import { Button } from "@/components"
-import { cn } from "@/lib"
+import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 export type ButtonProps = {
 	callbackUrl?: string
@@ -17,30 +8,8 @@ export type ButtonProps = {
 export const AuthButton: FC<HTMLAttributes<HTMLButtonElement> & PropsWithChildren<ButtonProps>> = ({
 	callbackUrl = "/app/",
 	redirect = true,
-	className,
-	...props
+	className
 }) => {
-	// const { open } = useWeb3Modal()
-
-	// const { address, isConnected } = useAccount()
-	// const chainId = useChainId()
-
-	// const { signMessageAsync, isLoading, isError } = useSignMessage()
-
-	// const { data: session } = useSession()
-	// const { disconnect } = useDisconnect({
-	// 	mutation: {
-	// 		onSuccess: () => signOut()
-	// 		// { callbackUrl: "/" }
-	// 	}
-	// })
-
-	// useEffect(() => {
-	// 	if (isConnected === false || isLoading || isError) return
-
-	// 	handleLogin()
-	// }, [isConnected, isLoading, isError, handleLogin])
-
 	return <></>
 }
 

@@ -40,6 +40,7 @@ export const ConsolePage = () => {
 		signIn("credentials", {
 			message: "0x0",
 			signature: "0x0",
+			chainId: 0,
 			redirect: false
 		})
 	}, [socket])

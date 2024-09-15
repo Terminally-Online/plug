@@ -1,8 +1,5 @@
-import { signOut } from "next-auth/react"
 import Image from "next/image"
 import { useState } from "react"
-
-import { useDisconnect } from "wagmi"
 
 import Avatar from "boring-avatars"
 import { AnimatePresence, motion } from "framer-motion"
@@ -11,6 +8,7 @@ import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap
 import { Button } from "@/components"
 import { usePlugs, useSockets } from "@/contexts"
 import { cn, useClipboard, VIEW_KEYS } from "@/lib"
+import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 
 export const ConsoleSidebar = () => {
 	const { isAnonymous, address, avatar, socket, handle: handleSocket } = useSockets()
@@ -19,14 +17,7 @@ export const ConsoleSidebar = () => {
 
 	const [expanded, setExpanded] = useState(false)
 
-	const { disconnect } = useDisconnect({
-		mutation: {
-			onSuccess: () =>
-				signOut({
-					redirect: false
-				})
-		}
-	})
+	const { disconnect } = useDisconnect(true)
 
 	return (
 		<div className="mr-2 flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react"
 
 import { UseDisconnectReturnType, useDisconnect as useDisconnectWagmi } from "wagmi"
 
-export function useDisconnect(redirect: boolean = false): UseDisconnectReturnType {
+export function useDisconnect(out: boolean = false): UseDisconnectReturnType {
 	const { connectors, disconnect, ...rest } = useDisconnectWagmi()
 
 	const disconnectAll = useCallback(() => {
@@ -11,8 +11,8 @@ export function useDisconnect(redirect: boolean = false): UseDisconnectReturnTyp
 			disconnect({ connector })
 		})
 
-		if (redirect) signOut({ callbackUrl: "/app/" })
-	}, [connectors, redirect, disconnect])
+		if (out) signOut({ callbackUrl: "/app/" })
+	}, [connectors, out, disconnect])
 
 	return useMemo(() => ({ ...rest, disconnect: disconnectAll, connectors }), [disconnectAll, connectors, rest])
 }
