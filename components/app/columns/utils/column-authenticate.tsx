@@ -23,7 +23,7 @@ import {
 import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state"
 
 const QR_CODE_SIZE = 200
-const QR_CODE_PIXEL_SPACING = 0.4
+const QR_CODE_PIXEL_SPACING = 0.3
 
 const ConnectorQrCode = () => {
 	const { connection } = useConnect()
@@ -75,8 +75,8 @@ const ConnectorQrCode = () => {
 												y={row * moduleSize + (isCorner(row, col) ? 0 : offset)}
 												width={isCorner(row, col) ? moduleSize : actualSize}
 												height={isCorner(row, col) ? moduleSize : actualSize}
-												rx={isCorner(row, col) ? 0 : "1px"}
-												ry={isCorner(row, col) ? 0 : "1px"}
+												rx={isCorner(row, col) ? "2px" : "1px"}
+												ry={isCorner(row, col) ? "2px" : "1px"}
 												fill={"#000000"}
 											/>
 										)
