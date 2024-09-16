@@ -57,8 +57,8 @@ importers:
         specifier: ^11.5.4
         version: 11.5.4(react-dom@18.2.0(react@18.3.1))(react@18.3.1)
       i18next:
-        specifier: 23.2.3
-        version: 23.2.3
+        specifier: 23.15.1
+        version: 23.15.1
       jotai:
         specifier: ^2.9.3
         version: 2.9.3(@types/react@18.3.3)(react@18.3.1)
@@ -3654,8 +3654,8 @@ packages:
   i18next@23.11.5:
     resolution: {integrity: sha512-41pvpVbW9rhZPk5xjCX2TPJi2861LEig/YRhUkY+1FQ2IQPS0bKUDYnEqY8XPPbB48h1uIwLnP9iiEfuSl20CA==}
 
-  i18next@23.2.3:
-    resolution: {integrity: sha512-5spO7L0rNmW0jFuNhz+gfirlFt1anle4mTy4+gFkgsH0+T3R5++4oncBrzeKa7v8pweRyGBoGmOpboqlxovg6A==}
+  i18next@23.15.1:
+    resolution: {integrity: sha512-wB4abZ3uK7EWodYisHl/asf8UYEhrI/vj/8aoSsrj/ZDxj4/UXPOa1KvFt1Fq5hkUHquNqwFlDprmjZ8iySgYA==}
 
   idb-keyval@6.2.1:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
@@ -10898,7 +10898,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.25.0
 
-  i18next@23.2.3:
+  i18next@23.15.1:
     dependencies:
       '@babel/runtime': 7.25.0
 
