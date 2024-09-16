@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback } from "react"
 
 import { Connector as wagmiConnector } from "wagmi"
 
@@ -7,7 +7,6 @@ import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
 import { useAtomValue, useSetAtom } from "jotai"
-import qrcode from "qrcode-generator"
 
 import { Accordion, Animate, Button, Callout } from "@/components"
 import {
@@ -21,83 +20,32 @@ import {
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
-import { authenticationAtom, walletConnectURIAtom } from "@/state"
+import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state"
 
-const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
-	const dimensions = {
-		blur: 4,
-		content: 2.5
-	}
-
-	if (!icon) return null
-
-	return (
-		<div
-			className="relative h-10"
-			style={{
-				width: `${dimensions.content}rem`,
-				height: `${dimensions.content}rem`
-			}}
-		>
-			<Image
-				className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-md blur-xl filter"
-				src={icon}
-				alt={name}
-				style={{
-					height: `${dimensions.blur}rem`,
-					width: `${dimensions.blur}rem`
-				}}
-				width={48}
-				height={48}
-			/>
-			<Image
-				className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md"
-				src={icon}
-				alt={name}
-				style={{
-					width: `${dimensions.content}rem`,
-					height: `${dimensions.content}rem`
-				}}
-				width={48}
-				height={48}
-			/>
-		</div>
-	)
-}
-
-const size = 200
-const pixelSpacing = 0.4
+const QR_CODE_SIZE = 200
+const QR_CODE_PIXEL_SPACING = 0.4
 
 const ConnectorQrCode = () => {
 	const { connection } = useConnect()
-	const uri = useAtomValue(walletConnectURIAtom)
 
-	const qrMatrix = useMemo(() => {
-		if (uri === undefined) return
-
-		const qr = qrcode(0, "L")
-		qr.addData(uri)
-		qr.make()
-		return {
-			moduleCount: qr.getModuleCount(),
-			getModule: (row: number, col: number) => qr.isDark(row, col)
-		}
-	}, [uri])
+	const qrMatrix = useAtomValue(walletConnectURIMatrixAtom)
 
 	const isCorner = useCallback(
 		(row: number, col: number) => {
 			if (qrMatrix === undefined) return false
 
-			const lastIndex = qrMatrix.moduleCount - 1
-
-			return (row < 7 && col < 7) || (row < 7 && col > lastIndex - 7) || (row > lastIndex - 7 && col < 7)
+			return (
+				(row < 7 && col < 7) ||
+				(row < 7 && col > qrMatrix.moduleCount - 1 - 7) ||
+				(row > qrMatrix.moduleCount - 1 - 7 && col < 7)
+			)
 		},
 		[qrMatrix]
 	)
 
-	const moduleSize = qrMatrix ? size / qrMatrix.moduleCount : 0
-	const actualSize = moduleSize - moduleSize * pixelSpacing
-	const offset = (moduleSize * pixelSpacing) / 2
+	const moduleSize = qrMatrix ? QR_CODE_SIZE / qrMatrix.moduleCount : 0
+	const actualSize = moduleSize - moduleSize * QR_CODE_PIXEL_SPACING
+	const offset = (moduleSize * QR_CODE_PIXEL_SPACING) / 2
 
 	return (
 		<div className="my-2 flex w-full flex-col items-center justify-center py-8">
@@ -112,10 +60,10 @@ const ConnectorQrCode = () => {
 						<svg
 							width="100%"
 							height="100%"
-							viewBox={`0 0 ${size} ${size}`}
+							viewBox={`0 0 ${QR_CODE_SIZE} ${QR_CODE_SIZE}`}
 							preserveAspectRatio="xMidYMid meet"
 						>
-							<rect width={size} height={size} fill={"#FFFFFF"} />
+							<rect width={QR_CODE_SIZE} height={QR_CODE_SIZE} fill={"#FFFFFF"} />
 							{Array.from({ length: qrMatrix.moduleCount }, (_, row) =>
 								Array.from(
 									{ length: qrMatrix.moduleCount },
@@ -172,6 +120,48 @@ const ConnectorQrCode = () => {
 						? "Open the wallet you selected to confirm the connection with Plug."
 						: "Scan the QR code to connect your wallet from your camera or the in-wallet scanner."}
 			</p>
+		</div>
+	)
+}
+
+const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
+	const dimensions = {
+		blur: 4,
+		content: 2.5
+	}
+
+	if (!icon) return null
+
+	return (
+		<div
+			className="relative h-10"
+			style={{
+				width: `${dimensions.content}rem`,
+				height: `${dimensions.content}rem`
+			}}
+		>
+			<Image
+				className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-md blur-xl filter"
+				src={icon}
+				alt={name}
+				style={{
+					height: `${dimensions.blur}rem`,
+					width: `${dimensions.blur}rem`
+				}}
+				width={48}
+				height={48}
+			/>
+			<Image
+				className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md"
+				src={icon}
+				alt={name}
+				style={{
+					width: `${dimensions.content}rem`,
+					height: `${dimensions.content}rem`
+				}}
+				width={48}
+				height={48}
+			/>
 		</div>
 	)
 }
