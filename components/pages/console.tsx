@@ -3,7 +3,7 @@ import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
+import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
 import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
 
@@ -12,7 +12,8 @@ const MobilePage = () => {
 		<>
 			<PageHeader />
 			<PageContent />
-			{/* <AuthFrame id={page.id} /> */}
+
+			<AuthFrame />
 		</>
 	)
 }
