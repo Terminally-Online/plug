@@ -1,5 +1,5 @@
 import { getCsrfToken, signIn } from "next-auth/react"
-import { createContext, PropsWithChildren, useCallback, useContext } from "react"
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect } from "react"
 
 import { UserRejectedRequestError } from "viem"
 import { createSiweMessage } from "viem/siwe"
@@ -14,10 +14,16 @@ import {
 	UseSignMessageReturnType
 } from "wagmi"
 
-import { useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 
+import { CONNECTION, getConnectorWithId, WalletConnectProvider } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { authenticationAtom, authenticationLoadingAtom, authenticationResponseAtom } from "@/state"
+import {
+	authenticationLoadingAtom,
+	authenticationResponseAtom,
+	walletConnectProviderAtom,
+	walletConnectURIAtom
+} from "@/state"
 
 const ConnectionContext = createContext<
 	| {
@@ -30,6 +36,8 @@ const ConnectionContext = createContext<
 >(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
+	const [walletConnectProvider, setWalletConnectProvider] = useAtom(walletConnectProviderAtom)
+	const [walletConnectURI, setWalletConnectURI] = useAtom(walletConnectURIAtom)
 	const setAuthenticationLoading = useSetAtom(authenticationLoadingAtom)
 	const setAuthenticationResponse = useSetAtom(authenticationResponseAtom)
 
@@ -108,6 +116,38 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 		},
 		[connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
 	)
+
+	/**
+	 * Prepare the wallet connect provider for displaying the QR code outside of the general context.
+	 *
+	 * Without calling `.connect()` on the provider, the QR code will not be displayed as we would need it
+	 * to be triggered by a user clicking a button.
+	 *
+	 * Additionally, if we do not load it preemptively, the QR code
+	 * will have a loading cycle. This way, it is constantly prepared and ready to be displayed.
+	 * @see {@link https://www.npmjs.com/package/@walletconnect/ethereum-provider}
+	 */
+	const init = useCallback(async () => {
+		const connector = getConnectorWithId(connection.connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, {
+			shouldThrow: true
+		})
+
+		const provider = (await connector?.getProvider?.()) as WalletConnectProvider
+
+		setWalletConnectProvider(provider)
+
+		await provider.connect()
+	}, [connection.connectors, setWalletConnectProvider])
+
+	useEffect(() => {
+		if (account.address) return
+
+		if (!walletConnectProvider) {
+			init()
+		} else if (walletConnectURI === undefined) {
+			walletConnectProvider.once("display_uri", setWalletConnectURI)
+		}
+	}, [account.address, walletConnectProvider, walletConnectURI, init, setWalletConnectURI])
 
 	// useEffect(() => {
 	// 	if (!accountDrawer.isOpen && connection.isPending) {

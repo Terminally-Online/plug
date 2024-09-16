@@ -31,7 +31,8 @@ export const WALLETCONNECT_PARAMS = {
 		description: '"IF This, Then That" for Ethereum blockchains and protocols.',
 		url: "https://onplug.io",
 		icons: ["https://onplug.io/favicon.ico"]
-	}
+	},
+	showQrModal: false
 }
 
 export const wagmiChains = [

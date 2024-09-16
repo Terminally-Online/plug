@@ -1,7 +1,6 @@
 import Image from "next/image"
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useMemo } from "react"
 
-import { EthereumProvider, EthereumProviderOptions } from "@walletconnect/ethereum-provider"
 import { Connector as wagmiConnector } from "wagmi"
 
 import { motion } from "framer-motion"
@@ -11,7 +10,6 @@ import { useAtomValue, useSetAtom } from "jotai"
 import qrcode from "qrcode-generator"
 
 import { Accordion, Animate, Button, Callout } from "@/components"
-import { wagmiChains, WALLETCONNECT_PARAMS } from "@/contexts"
 import {
 	cn,
 	CONNECTOR_ICON_OVERRIDE_MAP,
@@ -23,7 +21,7 @@ import {
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
-import { authenticationAtom } from "@/state"
+import { authenticationAtom, walletConnectURIAtom } from "@/state"
 
 const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
 	const dimensions = {
@@ -72,18 +70,7 @@ const pixelSpacing = 0.4
 
 const ConnectorQrCode = () => {
 	const { connection } = useConnect()
-
-	const [uri, setUri] = useState<string>()
-
-	// const init = async () => {
-	// 	setInitialized(true)
-	// 	try {
-
-	// 	} catch (e) {
-	// 		console.error(e)
-	// 		setInitialized(false)
-	// 	}
-	// }
+	const uri = useAtomValue(walletConnectURIAtom)
 
 	const qrMatrix = useMemo(() => {
 		if (uri === undefined) return
@@ -91,52 +78,26 @@ const ConnectorQrCode = () => {
 		const qr = qrcode(0, "L")
 		qr.addData(uri)
 		qr.make()
-
 		return {
 			moduleCount: qr.getModuleCount(),
 			getModule: (row: number, col: number) => qr.isDark(row, col)
 		}
 	}, [uri])
 
+	const isCorner = useCallback(
+		(row: number, col: number) => {
+			if (qrMatrix === undefined) return false
+
+			const lastIndex = qrMatrix.moduleCount - 1
+
+			return (row < 7 && col < 7) || (row < 7 && col > lastIndex - 7) || (row > lastIndex - 7 && col < 7)
+		},
+		[qrMatrix]
+	)
+
 	const moduleSize = qrMatrix ? size / qrMatrix.moduleCount : 0
 	const actualSize = moduleSize - moduleSize * pixelSpacing
 	const offset = (moduleSize * pixelSpacing) / 2
-
-	const isCorner = (row: number, col: number) => {
-		if (qrMatrix === undefined) return false
-		const lastIndex = qrMatrix.moduleCount - 1
-		return (row < 7 && col < 7) || (row < 7 && col > lastIndex - 7) || (row > lastIndex - 7 && col < 7)
-	}
-
-	// useEffect(() => {
-	// 	if (!initialized) init()
-	// }, [initialized])
-
-	useEffect(() => {
-		try {
-			const generateUri = async () => {
-				console.log("generating uri")
-
-				const provider = await EthereumProvider.init({
-					...WALLETCONNECT_PARAMS,
-					showQrModal: false,
-					optionalChains: wagmiChains.map(chain => chain.id)
-				} as EthereumProviderOptions)
-
-				console.log("setting provider")
-
-				await provider.connect()
-
-				console.log("connecting to walletconnect")
-
-				provider.on("display_uri", uri => setUri(uri))
-			}
-
-			// generateUri()
-		} catch (e) {
-			console.error(e)
-		}
-	}, [])
 
 	return (
 		<div className="my-2 flex w-full flex-col items-center justify-center py-8">
@@ -194,7 +155,7 @@ const ConnectorQrCode = () => {
 					</motion.div>
 				) : (
 					<div className="flex h-[300px] w-[300px] items-center justify-center">
-						<Loader2 size={24} className="animate-spin opacity-40" />
+						<Loader2 size={24} className="animate-spin opacity-60" />
 					</div>
 				)}
 			</div>

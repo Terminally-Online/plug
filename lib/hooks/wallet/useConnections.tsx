@@ -8,13 +8,13 @@ type ConnectorID = (typeof CONNECTION)[keyof typeof CONNECTION]
 
 const SHOULD_THROW = { shouldThrow: true } as const
 
-function getConnectorWithId(
+export function getConnectorWithId(
 	connectors: readonly Connector[],
 	id: ConnectorID,
 	options: { shouldThrow: true }
 ): Connector
-function getConnectorWithId(connectors: readonly Connector[], id: ConnectorID): Connector | undefined
-function getConnectorWithId(
+export function getConnectorWithId(connectors: readonly Connector[], id: ConnectorID): Connector | undefined
+export function getConnectorWithId(
 	connectors: readonly Connector[],
 	id: ConnectorID,
 	options?: { shouldThrow: true }
@@ -40,7 +40,7 @@ export function useConnectorWithId(id: ConnectorID, options?: { shouldThrow: tru
 	)
 }
 
-function getInjectedConnectors(connectors: readonly Connector[], excludeUniswapConnections?: boolean) {
+function getInjectedConnectors(connectors: readonly Connector[]) {
 	let isCoinbaseWalletBrowser = false
 	const injectedConnectors = connectors.filter(c => {
 		// Special-case: Ignore coinbase eip6963-injected connector; coinbase connection is handled via the SDK connector.
@@ -48,11 +48,6 @@ function getInjectedConnectors(connectors: readonly Connector[], excludeUniswapC
 			if (isMobileWeb) {
 				isCoinbaseWalletBrowser = true
 			}
-			return false
-		}
-
-		// Special-case: Ignore the Uniswap Extension injection here if it's being displayed separately.
-		if (c.id === CONNECTION.UNISWAP_EXTENSION_RDNS && excludeUniswapConnections) {
 			return false
 		}
 
@@ -69,7 +64,7 @@ function getInjectedConnectors(connectors: readonly Connector[], excludeUniswapC
 }
 
 type InjectableConnector = Connector & { isInjected?: boolean }
-export function useOrderedConnections(excludeUniswapConnections?: boolean): InjectableConnector[] {
+export function useOrderedConnections(excludeWalletConnectConnections = false): InjectableConnector[] {
 	const { connection } = useConnect()
 	const recentConnectorId = useRecentConnectorId()
 
@@ -88,8 +83,7 @@ export function useOrderedConnections(excludeUniswapConnections?: boolean): Inje
 
 	return useMemo(() => {
 		const { injectedConnectors: injectedConnectorsBase, isCoinbaseWalletBrowser } = getInjectedConnectors(
-			connection.connectors,
-			excludeUniswapConnections
+			connection.connectors
 		)
 		const injectedConnectors = injectedConnectorsBase.map(c => ({ ...c, isInjected: true }))
 
@@ -98,8 +92,13 @@ export function useOrderedConnections(excludeUniswapConnections?: boolean): Inje
 			CONNECTION.COINBASE_SDK_CONNECTOR_ID,
 			SHOULD_THROW
 		)
+		const walletConnectConnector = getConnectorWithId(
+			connection.connectors,
+			CONNECTION.WALLET_CONNECT_CONNECTOR_ID,
+			SHOULD_THROW
+		)
 
-		if (!coinbaseSdkConnector) {
+		if (!coinbaseSdkConnector || !walletConnectConnector) {
 			throw new Error("Expected connector(s) missing from wagmi context.")
 		}
 
@@ -114,46 +113,13 @@ export function useOrderedConnections(excludeUniswapConnections?: boolean): Inje
 		}
 
 		const orderedConnectors: InjectableConnector[] = [...injectedConnectors, coinbaseSdkConnector]
+
+		if (!excludeWalletConnectConnections) {
+			orderedConnectors.push(walletConnectConnector)
+		}
+
 		orderedConnectors.sort(sortByRecent)
 
 		return orderedConnectors
-	}, [connection.connectors, excludeUniswapConnections, sortByRecent])
-}
-
-export enum ExtensionRequestMethods {
-	OPEN_SIDEBAR = "uniswap_openSidebar"
-}
-
-const ExtensionRequestArguments = {
-	[ExtensionRequestMethods.OPEN_SIDEBAR]: ["Tokens", "Activity"]
-} as const
-
-export function useUniswapExtensionConnector() {
-	const connector = useConnectorWithId(CONNECTION.UNISWAP_EXTENSION_RDNS)
-	const extensionRequest = useCallback(
-		async <
-			Type extends keyof typeof ExtensionRequestArguments,
-			Key extends (typeof ExtensionRequestArguments)[Type][number]
-		>(
-			method: Type,
-			arg: Key
-		) => {
-			const provider = (await connector?.getProvider()) as {
-				request?: (params: { method: Type; params: Key[] }) => Promise<void>
-			}
-			if (!provider.request) {
-				return
-			}
-
-			await provider.request({
-				method,
-				params: [arg]
-			})
-		},
-		[connector]
-	)
-
-	return useMemo(() => {
-		return connector ? { ...connector, extensionRequest } : undefined
-	}, [connector, extensionRequest])
+	}, [connection.connectors, excludeWalletConnectConnections, sortByRecent])
 }
