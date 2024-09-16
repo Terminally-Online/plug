@@ -5,27 +5,25 @@ import { FC, useMemo } from "react"
 import { ChevronRight, CircleHelp } from "lucide-react"
 
 import { Button, Frame, Search } from "@/components"
-import { Option, useFrame, usePlugs, Value } from "@/contexts"
+import { Option, usePlugs, Value } from "@/contexts"
 import { categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
+import { useFrame } from "@/state"
 
 export const DynamicFragment: FC<{
-	id: string
+	item: string
 	index: number
+	actionIndex: number
 	fragmentIndex: number
-}> = ({ id, index, fragmentIndex }) => {
+}> = ({ index, item, actionIndex, fragmentIndex }) => {
 	const { data: session } = useSession()
-	const {
-		id: frameId,
-		isFrame,
-		handleFrame
-	} = useFrame({
-		id,
-		key: `${index}-${fragmentIndex}`
+	const { isFrame, handleFrame } = useFrame({
+		index,
+		key: `${index}-${actionIndex}-${fragmentIndex}`
 	})
-	const { plug, actions, fragments, dynamic, handle } = usePlugs(id)
+	const { plug, actions, fragments, dynamic, handle } = usePlugs(item)
 
-	const action = actions[index]
-	const fragment = fragments[index][fragmentIndex]
+	const action = actions[actionIndex]
+	const fragment = fragments[actionIndex][fragmentIndex]
 
 	const category = categories[action.categoryName]
 	const staticAction = staticActions[action.categoryName][action.actionName]
@@ -74,10 +72,10 @@ export const DynamicFragment: FC<{
 	//        upper index value.
 	const handleValue = (value: Value) => {
 		const hasChanged =
-			value instanceof Object && actions[index].values[parentIndex] instanceof Object
+			value instanceof Object && actions[actionIndex].values[parentIndex] instanceof Object
 				? // @ts-ignore -- Don't know why this is necessary or how to resolve it, but it is.
 					value.value !== actions[index].values[parentIndex].value
-				: value !== actions[index].values[parentIndex]
+				: value !== actions[actionIndex].values[parentIndex]
 
 		// If the value is the same as the current value, then we don't need
 		// to update the database with a non-changing value.
@@ -85,10 +83,10 @@ export const DynamicFragment: FC<{
 			handle.action.edit({
 				id: plug?.id,
 				actions: JSON.stringify(
-					actions.map((action, actionIndex) => ({
+					actions.map((action, nestedActionIndex) => ({
 						...action,
 						values: action.values.map((actionValue, valueIndex) => {
-							if (actionIndex === index) {
+							if (actionIndex === nestedActionIndex) {
 								// If it is the action and fragment we are editing, return
 								// the new value and save it to the database.
 								if (valueIndex === parentIndex) return value
@@ -96,7 +94,7 @@ export const DynamicFragment: FC<{
 								// If it is the action, but another fragment depends on the one that is changing,
 								// then we need to set the value to undefined if the value is actually changing.
 								// If the value is not changing, then we can just return the original value.
-								const [childIndex] = getIndexes(dynamic[index][valueIndex])
+								const [childIndex] = getIndexes(dynamic[actionIndex][valueIndex])
 
 								if (parentIndex === childIndex) return undefined
 							}
@@ -131,7 +129,7 @@ export const DynamicFragment: FC<{
 			</button>
 
 			<Frame
-				id={frameId}
+				index={index}
 				className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={
 					<Image
@@ -160,7 +158,7 @@ export const DynamicFragment: FC<{
 						<div className="flex w-full flex-col gap-2">
 							{options.map((option, optionIndex) => (
 								<button
-									key={`${index}-${optionIndex}`}
+									key={`${index}-${actionIndex}-${optionIndex}`}
 									className="group flex w-full items-center text-left font-bold"
 									onClick={() => handleValue(option)}
 								>

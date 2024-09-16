@@ -7,7 +7,11 @@ import { api } from "@/server/client"
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 
-export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
+export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
+	index,
+	className,
+	...props
+}) => {
 	const [search, setSearch] = useState("")
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
@@ -98,7 +102,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 							</p>
 
 							<PlugGrid
-								id={id}
+								index={index}
 								from={VIEW_KEYS.SEARCH}
 								plugs={expanded.includes("plugs") ? results.plugs : results.plugs.slice(0, 6)}
 							/>
@@ -128,7 +132,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 								)}
 							</p>
 							<SocketTokenList
-								id={id}
+								index={index}
 								className="mb-4"
 								tokens={results.tokens}
 								expanded={expanded.includes("tokens")}
@@ -162,7 +166,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 							</p>
 
 							<SocketCollectionList
-								id={id}
+								index={index}
 								className="mb-4"
 								collectibles={results.collectibles}
 								expanded={expanded.includes("collectibles")}

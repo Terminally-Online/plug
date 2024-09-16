@@ -7,18 +7,20 @@ import { api, RouterOutputs } from "@/server/client"
 import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
-		id: string
+		index: number
 		collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ id, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous, isExternal, column, collectibles: apiCollectibles } = useSockets(id)
-	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs?.socketAddress, {
+> = ({ index, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { isAnonymous, collectibles: apiCollectibles } = useSockets()
+	const { column, isExternal } = useColumns(index)
+	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs, {
 		enabled: isExternal
 	})
 
@@ -48,16 +50,19 @@ export const SocketCollectionList: FC<
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
-			{(isAnonymous === false || isExternal) && isColumn && (
-				<Search
-					className="mb-2"
-					icon={<SearchIcon size={14} className="opacity-40" />}
-					placeholder="Search collectibles"
-					search={search}
-					handleSearch={handleSearch}
-					clear
-				/>
-			)}
+			{(isAnonymous === false || isExternal) &&
+				isColumn &&
+				columnCollectibles &&
+				columnCollectibles.length > 0 && (
+					<Search
+						className="mb-2"
+						icon={<SearchIcon size={14} className="opacity-40" />}
+						placeholder="Search collectibles"
+						search={search}
+						handleSearch={handleSearch}
+						clear
+					/>
+				)}
 
 			<Callout.EmptySearch
 				isEmpty={search !== "" && visibleCollectibles.length === 0}
@@ -68,12 +73,12 @@ export const SocketCollectionList: FC<
 			<Animate.List>
 				{visibleCollectibles.map((collection, index) => (
 					<Animate.ListItem key={index}>
-						<SocketCollectionItem id={id} collection={collection} searched={search !== ""} />
+						<SocketCollectionItem index={index} collection={collection} searched={search !== ""} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
 
-			<Callout.Anonymous id={id} viewing="collectibles" isAbsolute={true} />
+			<Callout.Anonymous index={index} viewing="collectibles" isAbsolute={true} />
 			<Callout.EmptyAssets
 				isEmpty={!isAnonymous && search === "" && collectibles.length === 0}
 				isViewing="collectibles"
@@ -86,7 +91,7 @@ export const SocketCollectionList: FC<
 					collection.collectibles.map(collectible => (
 						<CollectibleFrame
 							key={`${index}-${collectible.identifier}`}
-							id={id}
+							index={index}
 							collection={collection}
 							collectible={collectible}
 						/>

@@ -4,8 +4,9 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffec
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
-import { useFrame, useSockets } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { categories, actions as staticActions, tags, VIEW_KEYS } from "@/lib/constants"
+import { useColumns } from "@/state"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 
@@ -69,13 +70,13 @@ export const PlugContext = createContext<{
 // TODO: Remove search and tag from here because we may have multiple contexts open now.
 
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
-	const { socket, handle: handleSocket } = useSockets()
+	const { columns, add, navigate } = useColumns()
 
 	const [search, handleSearch] = useState("")
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
 
 	const ids =
-		(socket?.columns
+		(columns
 			.map(column => (column.item === null ? undefined : column.item))
 			.filter(column => Boolean(column)) as Array<string>) || []
 
@@ -91,15 +92,15 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	) => {
 		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
 
-		if (data.id && data.from)
-			handleSocket.columns.navigate({
-				id: data.id,
+		if (data.index && data.from)
+			navigate({
+				index: data.index,
 				key: VIEW_KEYS.PLUG,
 				from: data.from,
 				item: data.plug.id
 			})
 		else if (redirect)
-			handleSocket.columns.add({
+			add({
 				key: VIEW_KEYS.PLUG,
 				index: 0,
 				from: data.from,
@@ -108,7 +109,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
-		onData: data => handleCreate({ plug: data, id: undefined, from: undefined }, false)
+		onData: data => handleCreate({ plug: data, index: undefined, from: undefined }, false)
 	})
 
 	api.plug.onEdit.useSubscription(undefined, {
@@ -147,8 +148,8 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 			delete: api.plug.delete.useMutation({
 				onMutate: data => {
 					setPlugs(prev => prev.filter(plug => plug.id !== data.plug))
-					handleSocket.columns.navigate({
-						id: data.id,
+					navigate({
+						index: data.index,
 						key: data.from || VIEW_KEYS.MY_PLUGS
 					})
 				}
@@ -213,6 +214,7 @@ export const usePlugs = (id?: string) => {
 
 	const { data: session } = useSession()
 	const { socket } = useSockets()
+	const { columns } = useColumns()
 
 	const { plugs } = context
 
@@ -220,13 +222,7 @@ export const usePlugs = (id?: string) => {
 	// id provided or the item id that is stored in the column. This way, we do not
 	// need to drill down two props every time we want to use a plug since it can
 	// be found in the context of the columns.
-	const plug = useMemo(
-		() =>
-			plugs?.find(plug => plug.id === id) ||
-			plugs?.find(plug => plug.id === socket?.columns.find(column => column.id === id)?.item) ||
-			undefined,
-		[plugs, id, socket]
-	)
+	const plug = useMemo(() => plugs?.find(plug => plug.id === id) || undefined, [plugs, id])
 
 	const own = plug && session && session.address === plug.socketId
 

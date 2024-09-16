@@ -2,16 +2,16 @@ import { FC } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { useFrame } from "@/contexts"
+import { useFrame } from "@/state"
 
 export const SocketCollectibleItem: FC<{
-	id: string
+	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = ({ id, collection, collectible }) => {
+}> = ({ index, collection, collectible }) => {
 	const { handleFrame } = useFrame({
-		id,
-		key: `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
+		index,
+		key: `${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 	})
 
 	return (

@@ -4,13 +4,13 @@ import { FC, useMemo } from "react"
 import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
 
 import { ActionCard, ActionItem, Button, Frame, Search } from "@/components"
-import { useFrame } from "@/contexts"
 import { abis, categories, formatAddress, formatTitle, actions as staticActions, useDebounce } from "@/lib"
+import { useFrame } from "@/state"
 
-export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
+export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, frames, handleFrame } = useFrame({
-		id,
-		key: "actions"
+		index,
+		key: `${index}-${item}-actions`
 	})
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
@@ -34,12 +34,10 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 		[debouncedSearch]
 	)
 
-	if (!id) return null
-
 	return (
 		<>
 			<Frame
-				id={id}
+				index={index}
 				className="scrollbar-hide z-[1] max-h-[85%] overflow-y-auto"
 				icon={<Blocks size={18} className="opacity-60" />}
 				label="Add Action"
@@ -62,7 +60,8 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 								allFilteredActions.map(({ categoryName, actionName }) => (
 									<ActionItem
 										key={`${categoryName}-${actionName}`}
-										id={id}
+										index={index}
+										item={item}
 										categoryName={categoryName}
 										actionName={actionName}
 										image={true}
@@ -113,7 +112,12 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 											</Button>
 										</button>
 
-										<ActionCard id={id} categoryName={categoryName} category={category} />
+										<ActionCard
+											index={index}
+											item={item}
+											categoryName={categoryName}
+											category={category}
+										/>
 									</div>
 								</div>
 							)
@@ -127,7 +131,7 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 
 				return (
 					<Frame
-						id={id}
+						index={index}
 						key={categoryName}
 						className="scrollbar-hide z-[2] max-h-[85vh] overflow-y-auto"
 						icon={
@@ -140,19 +144,20 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 							/>
 						}
 						label={formatTitle(categoryName)}
-						visible={frames[id] === categoryName}
+						visible={frames[index] === categoryName}
 						handleBack={() => handleFrame("actions")}
 						hasOverlay={true}
 						hasChildrenPadding={false}
 					>
 						<div className="flex flex-col gap-4 px-6">
-							<ActionCard id={id} categoryName={categoryName} category={category} />
+							<ActionCard index={index} item={item} categoryName={categoryName} category={category} />
 
 							<div className="flex flex-col gap-2">
 								{Object.keys(staticActions[categoryName]).map(actionName => (
 									<ActionItem
 										key={actionName}
-										id={id}
+										index={index}
+										item={item}
 										categoryName={categoryName}
 										actionName={actionName}
 									/>
@@ -169,7 +174,7 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 
 					return (
 						<Frame
-							id={id}
+							index={index}
 							key={`${categoryName}-${actionName}-info`}
 							className="scrollbar-hide z-[3] max-h-[calc(100vh-80px)] overflow-y-auto"
 							icon={
@@ -182,7 +187,7 @@ export const ActionsFrame: FC<{ id: string }> = ({ id }) => {
 								/>
 							}
 							label={formatTitle(actionName)}
-							visible={frames[id] === `${categoryName}-${actionName}`}
+							visible={frames[index] === `${categoryName}-${actionName}`}
 							handleBack={() => handleFrame(debouncedSearch ? "actions" : categoryName)}
 							hasOverlay={true}
 							hasChildrenPadding={false}

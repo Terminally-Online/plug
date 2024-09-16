@@ -3,6 +3,7 @@ import { FC, HTMLAttributes, useMemo } from "react"
 import { ActivityItem, Animate, Callout } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
 import { ActivityFrame } from "../../frames/sockets/activity"
 
@@ -172,8 +173,13 @@ const activities = [
 	}
 ]
 
-export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
-	const { isAnonymous, isExternal } = useSockets(id)
+export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
+	index,
+	className,
+	...props
+}) => {
+	const { isAnonymous } = useSockets()
+	const { isExternal } = useColumns(index)
 
 	const visibleActivities = useMemo(() => {
 		if (isAnonymous && isExternal === false) return Array(10).fill(undefined)
@@ -184,22 +190,22 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { id: string }>
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
 			<Animate.List>
-				{visibleActivities.map((activity, index) => (
+				{visibleActivities.map((activity, activityIndex) => (
 					<Animate.ListItem key={index}>
-						<ActivityItem id={id} index={index} activity={activity} />
+						<ActivityItem index={index} activityIndex={activityIndex} activity={activity} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
 
-			<Callout.Anonymous id={id} viewing="activity" isAbsolute={true} />
+			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
 
 			{visibleActivities
 				.filter(activity => Boolean(activity))
-				.map((activity, index) => (
+				.map((activity, activityIndex) => (
 					<ActivityFrame
 						key={index}
-						id={id}
-						activity={{ id: index.toString(), name: activity.text, status }}
+						index={index}
+						activity={{ id: activityIndex.toString(), name: activity.text, status }}
 					/>
 				))}
 		</div>

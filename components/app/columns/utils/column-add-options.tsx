@@ -5,6 +5,7 @@ import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, Us
 import { Accordion } from "@/components/shared"
 import { useSockets } from "@/contexts"
 import { cn, formatTitle, VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
 type Options = Array<{
 	label: keyof typeof VIEW_KEYS
@@ -66,10 +67,11 @@ const ADMIN_OPTIONS: Options = [
 export const ColumnAddOptions: FC<
 	HTMLAttributes<HTMLDivElement> &
 		PropsWithChildren<{
-			id: string
+			index: number
 		}>
-> = ({ id, className, ...props }) => {
-	const { socket, handle } = useSockets()
+> = ({ index, className, ...props }) => {
+	const { socket } = useSockets()
+	const { navigate } = useColumns()
 
 	const isAdmin = socket?.admin ?? false
 	const options = isAdmin ? ADMIN_OPTIONS : OPTIONS
@@ -77,7 +79,7 @@ export const ColumnAddOptions: FC<
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
 			{options.map(option => (
-				<Accordion key={option.label} onExpand={() => handle.columns.add({ key: option.label, id })}>
+				<Accordion key={option.label} onExpand={() => navigate({ key: option.label, index })}>
 					<div className="flex flex-row items-center gap-2">
 						<div className="flex h-10 w-10 min-w-10 items-center justify-center">{option.icon}</div>
 

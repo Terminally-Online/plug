@@ -2,28 +2,31 @@ import { FC } from "react"
 
 import { DynamicFragment, StaticFragment } from "@/components"
 import { ACTION_REGEX, usePlugs } from "@/contexts"
+import { useColumns } from "@/state"
 
 export const Fragments: FC<{
-	id: string
 	index: number
-}> = ({ id, index }) => {
-	const { fragments } = usePlugs(id)
+	item: string
+	actionIndex: number
+}> = ({ index, item, actionIndex }) => {
+	const { fragments } = usePlugs(item)
 
 	return (
 		<>
-			{fragments[index].map((fragment, fragmentIndex) =>
+			{fragments[actionIndex].map((fragment, fragmentIndex) =>
 				fragment.match(ACTION_REGEX) ? (
 					<DynamicFragment
-						key={`${index}-${fragmentIndex}`}
-						id={id}
+						key={`${actionIndex}-${fragmentIndex}`}
+						item={item}
 						index={index}
+						actionIndex={actionIndex}
 						fragmentIndex={fragmentIndex}
 					/>
 				) : (
 					<StaticFragment
-						key={`${index}-${fragmentIndex}`}
-						id={id}
-						index={index}
+						key={`${actionIndex}-${fragmentIndex}`}
+						item={item}
+						actionIndex={actionIndex}
 						fragmentIndex={fragmentIndex}
 					/>
 				)

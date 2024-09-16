@@ -20,7 +20,6 @@ import {
 
 import { api, RouterOutputs } from "@/server/client"
 
-import { useFrame } from "@/contexts"
 import {
 	cn,
 	formatAddress,
@@ -32,6 +31,7 @@ import {
 	getChainImage,
 	getTextColor
 } from "@/lib"
+import { useFrame } from "@/state"
 
 import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
 import { Frame } from "../base"
@@ -39,13 +39,13 @@ import { Frame } from "../base"
 type Traits = Array<{ trait_type: string; value: string }>
 
 export const CollectibleFrame: FC<{
-	id: string
+	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = ({ id, collection, collectible }) => {
+}> = ({ index, collection, collectible }) => {
 	const { isFrame } = useFrame({
-		id,
-		key: `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
+		index,
+		key: `${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 	})
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery({
@@ -68,7 +68,7 @@ export const CollectibleFrame: FC<{
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="max-h-[85vh] overflow-y-auto overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">

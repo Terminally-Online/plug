@@ -6,6 +6,7 @@ import { columns } from "@/server/api/routers/socket/columns"
 import { Button } from "@/components/shared"
 import { usePlugs, useSockets } from "@/contexts"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -22,12 +23,13 @@ const Base: FC<
 
 const Anonymous: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "id" | "title" | "description"> & {
-		id: string
+		index: number
 		viewing: string
 		isAbsolute?: boolean
 	}
-> = ({ id, viewing, isAbsolute = false, className, ...props }) => {
-	const { isAnonymous, isExternal, handle, column } = useSockets(id)
+> = ({ index, viewing, isAbsolute = false, className, ...props }) => {
+	const { isAnonymous, isExternal } = useSockets()
+	const { column, navigate } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null
 
@@ -51,10 +53,7 @@ const Anonymous: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => {}}>
 					View As
 				</Button>
-				<Button
-					sizing="sm"
-					onClick={() => handle.columns.navigate({ id, key: VIEW_KEYS.AUTHENTICATE, from: column?.key })}
-				>
+				<Button sizing="sm" onClick={() => navigate({ index, key: VIEW_KEYS.AUTHENTICATE, from: column?.key })}>
 					Login
 				</Button>
 			</Base>
@@ -145,12 +144,11 @@ const EmptyAssets: FC<
 
 const EmptyPlugs: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
-		id: string
+		index: number
 		isEmpty: boolean
 	}
-> = ({ id, isEmpty, className, ...props }) => {
-	const { column } = useSockets(id)
-	const { handle } = usePlugs()
+> = ({ index, isEmpty, className, ...props }) => {
+	const { column, add } = useColumns(index)
 
 	if (!column || isEmpty === false) return null
 
@@ -172,7 +170,7 @@ const EmptyPlugs: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => {}}>
 					View As
 				</Button>
-				<Button sizing="sm" onClick={() => handle.plug.add({ id, from: column.key })}>
+				<Button sizing="sm" onClick={() => add({ index, from: column.key })}>
 					Create
 				</Button>
 			</Base>
@@ -182,11 +180,11 @@ const EmptyPlugs: FC<
 
 const EmptyPlug: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
-		id: string
+		index: number
 		isEmpty: boolean
 	}
-> = ({ id, isEmpty, className, ...props }) => {
-	const { column } = useSockets(id)
+> = ({ index, isEmpty, className, ...props }) => {
+	const { column } = useColumns(index)
 
 	if (!column || isEmpty === false) return null
 

@@ -5,12 +5,12 @@ import { Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories } from "@/lib/constants"
 
-export const ActionPreview: FC<{ id: string }> = ({ id }) => {
-	const { actions } = usePlugs(id)
+export const ActionPreview: FC<{ index: number; item: string }> = ({ index, item }) => {
+	const { actions } = usePlugs(item)
 
 	return (
 		<div className="mb-4 flex flex-col gap-2">
-			{actions.map((action, index) => (
+			{actions.map((action, actionIndex) => (
 				<div key={index} className="relative">
 					{index < actions.length - 1 && (
 						<div className="absolute bottom-[-12px] top-2 z-[3] ml-[11px] w-[2px] bg-grayscale-100" />
@@ -26,7 +26,7 @@ export const ActionPreview: FC<{ id: string }> = ({ id }) => {
 								height={24}
 							/>
 
-							<Sentence id={id} index={index} preview={true} />
+							<Sentence index={index} item={item} actionIndex={actionIndex} preview={true} />
 						</div>
 
 						<p className="ml-10 text-sm opacity-60">Ready</p>

@@ -4,8 +4,9 @@ import { FC, useMemo } from "react"
 import { Plus } from "lucide-react"
 
 import { Button, Sentence } from "@/components"
-import { useFrame, usePlugs, useSockets } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { actions, categories, formatTitle, getValues } from "@/lib"
+import { useColumns } from "@/state"
 
 const baseSuggestions = Object.entries(actions).flatMap(([categoryName, actions]) =>
 	Object.keys(actions).map(actionName => ({
@@ -29,9 +30,11 @@ const getProtocolFrequency = (
 	return protocolFrequency
 }
 
-export const ActionView: FC<{ id: string }> = ({ id }) => {
-	const { handleFrame } = useFrame({ id, key: "actions" })
-	const { plug, own, actions, handle } = usePlugs(id)
+export const ActionView: FC<{ index: number }> = ({ index }) => {
+	// const { handleFrame } = useFrame({ index, key: "actions" })
+	const { column } = useColumns(index)
+	const { item } = column ?? {}
+	const { plug, own, actions, handle } = usePlugs(item)
 
 	const suggestions = useMemo(() => {
 		const protocolFrequency = getProtocolFrequency(actions)
@@ -53,12 +56,12 @@ export const ActionView: FC<{ id: string }> = ({ id }) => {
 			.slice(0, 3)
 	}, [actions])
 
-	if (plug === undefined) return null
+	if (!item || !plug) return null
 
 	return (
 		<div className="mb-72 flex flex-col">
-			{actions.map((_, index) => (
-				<Sentence id={id} key={index} index={index} />
+			{actions.map((_, actionIndex) => (
+				<Sentence key={index} index={index} item={item} actionIndex={actionIndex} />
 			))}
 
 			{own && (

@@ -7,17 +7,19 @@ import { api, RouterOutputs } from "@/server/client"
 import { Animate, Button, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
-		id: string
+		index: number
 		tokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ id, tokens, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous, isExternal, positions } = useSockets(id)
+> = ({ index, tokens, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { isAnonymous, positions } = useSockets()
+	const { isExternal } = useColumns(index)
 	const { tokens: apiTokens } = positions
 	tokens = tokens ?? apiTokens
 
@@ -62,12 +64,12 @@ export const SocketTokenList: FC<
 			<Animate.List>
 				{visibleTokens.map((token, index) => (
 					<Animate.ListItem key={index}>
-						<SocketTokenItem id={id} token={token} />
+						<SocketTokenItem index={index} token={token} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
 
-			<Callout.Anonymous id={id} viewing="tokens" isAbsolute={true} />
+			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets
 				isEmpty={!isAnonymous && search === "" && tokens.length === 0}
 				isViewing="tokens"
@@ -77,7 +79,7 @@ export const SocketTokenList: FC<
 			{visibleTokens
 				.filter(token => Boolean(token))
 				.map((token, index) => {
-					return <TokenFrame key={index} id={id} symbol={token.symbol} />
+					return <TokenFrame key={index} index={index} symbol={token.symbol} />
 				})}
 		</div>
 	)

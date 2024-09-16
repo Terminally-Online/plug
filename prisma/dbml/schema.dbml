@@ -2,21 +2,6 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table ConsoleColumn {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  key String [not null]
-  index Int [not null]
-  width Int
-  item String
-  from String
-  socket UserSocket [not null]
-  socketId String [not null]
-  viewAs UserSocket
-  viewAsId String
-}
-
 Table FarcasterUserAddress {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
@@ -60,8 +45,6 @@ Table UserSocket {
   admin Boolean [not null, default: false]
   socketAddress String [not null]
   identity SocketIdentity
-  columns ConsoleColumn [not null]
-  viewedAs ConsoleColumn [not null]
   workflow Workflow [not null]
   collectibles OpenseaCollectibleCache [not null]
   balances ImplementationBalance [not null]
@@ -269,10 +252,6 @@ Table FarcasterFollows {
   followersId String [ref: > FarcasterUser.id]
   followingId String [ref: > FarcasterUser.id]
 }
-
-Ref: ConsoleColumn.socketId > UserSocket.id [delete: Cascade]
-
-Ref: ConsoleColumn.viewAsId > UserSocket.id [delete: Cascade]
 
 Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 

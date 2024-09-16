@@ -1,21 +1,19 @@
 import Image from "next/image"
 import { FC } from "react"
 
-import { motion } from "framer-motion"
-
 import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Counter } from "@/components/shared"
-import { useFrame } from "@/contexts"
-import { cn, formatTitle, getChainImage } from "@/lib"
+import { cn } from "@/lib"
+import { useFrame } from "@/state"
 
 export const SocketPositionItem: FC<{
-	id: string
+	index: number
 	protocol?: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
-}> = ({ id, protocol }) => {
+}> = ({ index, protocol }) => {
 	const { handleFrame } = useFrame({
-		id,
-		key: `position-${protocol?.name ?? ""}`
+		index,
+		key: `${index}-${protocol?.name ?? ""}-position`
 	})
 
 	const { positions } = protocol ?? {}

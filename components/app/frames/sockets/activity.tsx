@@ -2,23 +2,23 @@ import Image from "next/image"
 import { FC } from "react"
 
 import { Counter } from "@/components/shared"
-import { useFrame } from "@/contexts"
+import { useFrame } from "@/state"
 
 import { getStatusIcon } from "../../sockets/activity/activity-item"
 import { Frame } from "../base"
 
 export const ActivityFrame: FC<{
-	id: string
+	index: number
 	activity: { id: string; name: string; status: string }
-}> = ({ id, activity }) => {
+}> = ({ index, activity }) => {
 	const { isFrame } = useFrame({
-		id,
-		key: `activity-${activity.id}`
+		index,
+		key: `${index}-${activity.id}-activity-item`
 	})
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			icon={<div className="relative h-10 w-10">{getStatusIcon(activity.status)}</div>}
 			label={activity.name}
 			visible={isFrame}

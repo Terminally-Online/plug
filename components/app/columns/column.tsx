@@ -1,11 +1,6 @@
-import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
-import BoringAvatar from "boring-avatars"
 import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
-
-import { ConsoleColumnModel } from "@/prisma/types"
-import { api } from "@/server/client"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -27,8 +22,9 @@ import {
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
-import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { cardColors, cn, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
+import { usePlugs, useSockets } from "@/contexts"
+import { cardColors, cn, Column, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
+import { useColumns, useFrame } from "@/state"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
@@ -37,21 +33,21 @@ const MAX_COLUMN_WIDTH = 620
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
 export const ConsoleColumn: FC<{
-	column: ConsoleColumnModel
+	column: Column
 }> = ({ column }) => {
+	const { key, index, item, from, width: apiColumnWidth } = column
+
 	const resizeRef = useRef<HTMLDivElement>(null)
-	const { mutate } = api.socket.columns.resize.useMutation()
 
-	const { id, key, index, item, from, width: apiColumnWidth } = column
+	const { navigate, resize, remove } = useColumns(index)
 
-	const { handleFrame } = useFrame({ id })
-	const { socket, handle } = useSockets()
-	const { plug, handle: handlePlugs } = usePlugs(id)
+	const { handleFrame } = useFrame({ index })
+	const { plug } = usePlugs(item)
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
 	const [width, _, handleWidth] = useDebounce(columnWidth.toString(), 100, data =>
-		isResizing ? mutate({ id, width: Number(data) }) : undefined
+		isResizing ? resize({ index, width: Number(data) }) : undefined
 	)
 
 	useEffect(() => {
@@ -78,7 +74,7 @@ export const ConsoleColumn: FC<{
 
 	return (
 		<div className="relative select-none">
-			<Draggable draggableId={id.toString()} index={index}>
+			<Draggable draggableId={`${index}-${key}`} index={index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
@@ -115,8 +111,8 @@ export const ConsoleColumn: FC<{
 												<Button
 													variant="secondary"
 													onClick={() =>
-														handle.columns.navigate({
-															id,
+														navigate({
+															index,
 															key: from!
 														})
 													}
@@ -135,7 +131,8 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											{socket && column.viewAs && (
+											{/* TOOD: Reenable this once columns are fully functional again. */}
+											{/* {socket && column.viewAs && (
 												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
 													{column.viewAs.identity?.ens?.avatar ? (
 														<Image
@@ -154,7 +151,7 @@ export const ConsoleColumn: FC<{
 														/>
 													)}
 												</div>
-											)}
+											)} */}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
@@ -177,19 +174,20 @@ export const ConsoleColumn: FC<{
 														<Share size={14} className="opacity-60 hover:opacity-100" />
 													</Button> */}
 
-													<Button
+													{/* TODO: Reenable this once plugs have been moved into atomic state */}
+													{/* <Button
 														variant="secondary"
 														className="group rounded-sm p-1"
 														onClick={() =>
 															handlePlugs.plug.fork({
 																plug: plug.id,
-																id: id,
-																from: column.key
+																index,
+																from: key
 															})
 														}
 													>
 														<GitFork size={14} className="opacity-60 hover:opacity-100" />
-													</Button>
+													</Button> */}
 
 													<Button
 														variant="secondary"
@@ -202,7 +200,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => handle.columns.remove(id)}
+														onClick={() => remove(index)}
 													>
 														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -211,7 +209,7 @@ export const ConsoleColumn: FC<{
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => handle.columns.remove(id) : undefined}
+									nextOnClick={plug === undefined ? () => remove(index) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
@@ -220,31 +218,27 @@ export const ConsoleColumn: FC<{
 								{key === VIEW_KEYS.AUTHENTICATE ? (
 									<ColumnAuthenticate />
 								) : key === VIEW_KEYS.ADD ? (
-									<ColumnAddOptions className="px-4 pt-4" id={id} />
+									<ColumnAddOptions className="px-4 pt-4" index={index} />
 								) : key === VIEW_KEYS.SEARCH ? (
-									<ColumnSearch className="px-4 pt-4" id={id} />
-								) : key === VIEW_KEYS.ALERTS ? (
-									<ColumnAlerts className="px-4 pt-4" id={id} />
+									<ColumnSearch index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.VIEW_AS ? (
 									<ColumnViewAs />
-								) : // Plug related columns
-								key === VIEW_KEYS.DISCOVER ? (
-									<PlugsDiscover className="pt-4" id={id} />
+								) : key === VIEW_KEYS.DISCOVER ? (
+									<PlugsDiscover className="pt-4" index={index} />
 								) : key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine className="pt-4" id={id} />
+									<PlugsMine className="pt-4" index={index} />
 								) : key === VIEW_KEYS.PLUG ? (
-									<Plug className="px-4 pt-4" id={id} item={item} />
-								) : // Socket related columns
-								key === VIEW_KEYS.ACTIVITY ? (
-									<SocketActivity id={id} className="px-4 pt-4" />
+									<Plug className="px-4 pt-4" index={index} item={item} from={from} />
+								) : key === VIEW_KEYS.ACTIVITY ? (
+									<SocketActivity index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.TOKENS ? (
-									<SocketTokenList id={id} className="px-4 pt-4" expanded={true} />
+									<SocketTokenList index={index} className="px-4 pt-4" expanded={true} />
 								) : key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList id={id} className="px-4 pt-4" expanded={true} />
+									<SocketCollectionList index={index} className="px-4 pt-4" expanded={true} />
 								) : key === VIEW_KEYS.POSITIONS ? (
-									<SocketPositionList id={id} className="px-4 pt-4" />
+									<SocketPositionList index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ADMIN ? (
-									<ConsoleAdmin id={id} className="px-4 pt-4" />
+									<ConsoleAdmin index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.PROFILE ? (
 									<ColumnProfile className="px-4 py-4" />
 								) : (

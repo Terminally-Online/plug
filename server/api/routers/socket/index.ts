@@ -3,10 +3,9 @@ import { z } from "zod"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
-import { DEFAULT_ANONYMOUS_VIEWS, DEFAULT_DEMO_VIEWS, DEFAULT_VIEWS, SOCKET_BASE_QUERY, VIEW_KEYS } from "@/lib"
+import { SOCKET_BASE_QUERY } from "@/lib"
 
 import { balances } from "./balances"
-import { columns } from "./columns"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
@@ -19,24 +18,19 @@ export const socket = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			const columnsToCreate = ctx.session.user.demo
-				? DEFAULT_DEMO_VIEWS
-				: ctx.session.user.anonymous
-					? DEFAULT_ANONYMOUS_VIEWS
-					: DEFAULT_VIEWS
+			// const columnsToCreate = ctx.session.user.demo
+			// 	? DEFAULT_DEMO_VIEWS
+			// 	: ctx.session.user.anonymous
+			// 		? DEFAULT_ANONYMOUS_VIEWS
+			// 		: DEFAULT_VIEWS
 
-			const { columns } = await ctx.db.userSocket.upsert({
+			await ctx.db.userSocket.upsert({
 				where: {
 					id: ctx.session.address
 				},
 				create: {
 					id: ctx.session.address,
 					socketAddress: TEMPORARY_ADDRESS,
-					columns: {
-						createMany: {
-							data: columnsToCreate
-						}
-					},
 					identity: {
 						connectOrCreate: {
 							where: { socketId: ctx.session.address },
@@ -64,8 +58,7 @@ export const socket = createTRPCRouter({
 							update: {}
 						}
 					}
-				},
-				select: { columns: true }
+				}
 			})
 
 			if (input.name)
@@ -95,18 +88,6 @@ export const socket = createTRPCRouter({
 						}
 					}
 				})
-
-			// NOTE: Make sure the socket always has the global home column that is
-			//       denoted by the -1 index as the column view should never show it.
-			if (columns.find(column => column.index === -1) === undefined) {
-				await ctx.db.consoleColumn.create({
-					data: {
-						key: VIEW_KEYS.HOME,
-						index: -1,
-						socketId: ctx.session.address
-					}
-				})
-			}
 
 			const socket = await ctx.db.userSocket.findFirst({
 				where: { id: ctx.session.address },
@@ -175,6 +156,5 @@ export const socket = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
-	balances,
-	columns
+	balances
 })

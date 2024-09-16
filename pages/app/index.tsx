@@ -3,7 +3,7 @@ import { Session } from "next-auth"
 import { getSession } from "next-auth/react"
 
 import { ConsolePage } from "@/components/pages/console"
-import { FrameProvider, PlugProvider, RootProvider, SocketProvider, WalletProvider } from "@/contexts"
+import { PlugProvider, RootProvider, SocketProvider, WalletProvider } from "@/contexts"
 import { ConnectionProvider } from "@/lib"
 
 Page.getInitialProps = async (ctx: NextPageContext) => {
@@ -17,11 +17,9 @@ function Page({ session }: { session: Session | null }) {
 			<WalletProvider>
 				<ConnectionProvider>
 					<SocketProvider>
-						<FrameProvider>
-							<PlugProvider>
-								<ConsolePage />
-							</PlugProvider>
-						</FrameProvider>
+						<PlugProvider>
+							<ConsolePage />
+						</PlugProvider>
 					</SocketProvider>
 				</ConnectionProvider>
 			</WalletProvider>

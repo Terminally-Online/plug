@@ -3,20 +3,16 @@ import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
+import { ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
 import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
 
 const MobilePage = () => {
-	const { page } = useSockets()
-
-	if (!page) return null
-
 	return (
 		<>
 			<PageHeader />
 			<PageContent />
-			<AuthFrame id={page.id} />
+			{/* <AuthFrame id={page.id} /> */}
 		</>
 	)
 }
@@ -54,10 +50,10 @@ export const ConsolePage = () => {
 
 	return (
 		<>
-			{/* 
-                <FeatureRequestFrame />
-                <DeletedFrame /> 
-            */}
+			{/*
+	            <FeatureRequestFrame />
+	            <DeletedFrame />
+	        */}
 
 			{md ? <DesktopPage /> : <MobilePage />}
 		</>

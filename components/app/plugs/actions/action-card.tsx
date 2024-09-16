@@ -1,15 +1,17 @@
 import { FC, useMemo } from "react"
 
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
+import { useFrame } from "@/state"
 
 export const ActionCard: FC<{
-	id: string
+	index: number
+	item: string
 	categoryName: keyof typeof categories
 	category: (typeof categories)[keyof typeof categories]
-}> = ({ id, categoryName, category }) => {
-	const { handleFrame } = useFrame({ id })
-	const { plug, actions, handle } = usePlugs(id)
+}> = ({ index, item, categoryName, category }) => {
+	const { handleFrame } = useFrame({ index })
+	const { plug, actions, handle } = usePlugs(item)
 
 	const primaryActions = useMemo(() => {
 		return Object.keys(staticActions[categoryName]).reduce(

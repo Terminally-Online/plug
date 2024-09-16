@@ -4,14 +4,19 @@ import { FC, useMemo, useState } from "react"
 import { MapIcon, Send } from "lucide-react"
 
 import { Counter, Frame, SocketTokenPriceChart } from "@/components"
-import { useFrame, useSockets } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
+import { useFrame } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
-export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) => {
-	const { isFrame } = useFrame({ id, key: `token/${symbol}` })
-	const { positions } = useSockets(id)
+export const TokenFrame: FC<{ index: number; symbol: string }> = ({ index, symbol }) => {
+	const { isFrame } = useFrame({
+		index,
+		key: `${index}-${symbol ?? ""}-token`
+	})
+
+	const { positions } = useSockets()
 	const { tokens } = positions
 
 	const token = useMemo(() => tokens && tokens.find(token => token.symbol === symbol && token.name), [tokens, symbol])
@@ -71,7 +76,7 @@ export const TokenFrame: FC<{ id: string; symbol: string }> = ({ id, symbol }) =
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">

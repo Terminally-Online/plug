@@ -3,13 +3,13 @@ import { FC, useEffect } from "react"
 import { PencilLine, Settings } from "lucide-react"
 
 import { Button, Checkbox, Frame, Search } from "@/components"
-import { useFrame, usePlugs, useSockets } from "@/contexts"
-import { cardColors, useDebounce, useNavigation } from "@/lib"
+import { usePlugs } from "@/contexts"
+import { cardColors, useDebounce } from "@/lib"
+import { useFrame } from "@/state"
 
-export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
-	const { column } = useSockets(id)
-	const { isFrame } = useFrame({ id, key: "manage" })
-	const { plug, handle } = usePlugs(id)
+export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
+	const { isFrame } = useFrame({ index, key: "manage" })
+	const { plug, handle } = usePlugs(item)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
 
@@ -21,11 +21,11 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 		handle.plug.edit({ ...plug, name: debouncedName })
 	}, [nameRef, plug, debouncedName, handle])
 
-	if (!column || !plug) return null
+	if (!plug) return null
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="z-[2]"
 			icon={<Settings size={18} />}
 			label="Manage Plug"
@@ -89,7 +89,7 @@ export const ManagePlugFrame: FC<{ id: string }> = ({ id }) => {
 				<Button
 					variant="destructive"
 					className="w-full"
-					onClick={() => handle.plug.delete({ plug: plug.id, id: column.id, from: column.from })}
+					onClick={() => handle.plug.delete({ plug: plug.id, index, from })}
 				>
 					Delete
 				</Button>

@@ -5,11 +5,13 @@ import { SearchIcon } from "lucide-react"
 import { Animate, Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
 export const SocketPositionList: FC<
-	HTMLAttributes<HTMLDivElement> & { id: string; expanded?: boolean; isColumn?: boolean }
-> = ({ id, expanded, isColumn = true, className, ...props }) => {
-	const { isAnonymous, isExternal, positions } = useSockets(id)
+	HTMLAttributes<HTMLDivElement> & { index: number; expanded?: boolean; isColumn?: boolean }
+> = ({ index, expanded, isColumn = true, className, ...props }) => {
+	const { isAnonymous, positions } = useSockets()
+	const { isExternal } = useColumns(index)
 	const { protocols } = positions
 
 	const [search, handleSearch] = useState("")
@@ -38,7 +40,7 @@ export const SocketPositionList: FC<
 		if (expanded) return filteredProtocols
 
 		return filteredProtocols.slice(0, 3)
-	}, [expanded, protocols, search])
+	}, [isAnonymous, isExternal, expanded, protocols, search])
 
 	if (positions === undefined) return null
 
@@ -64,12 +66,12 @@ export const SocketPositionList: FC<
 			<Animate.List>
 				{visibilePositions.map((protocol, index) => (
 					<Animate.ListItem key={index}>
-						<SocketPositionItem id={id} protocol={protocol} />
+						<SocketPositionItem index={index} protocol={protocol} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
 
-			<Callout.Anonymous id={id} viewing="positions" isAbsolute={true} />
+			<Callout.Anonymous index={index} viewing="positions" isAbsolute={true} />
 			<Callout.EmptyAssets
 				isEmpty={!isAnonymous && search === "" && protocols.length === 0}
 				isViewing="positions"
@@ -78,8 +80,8 @@ export const SocketPositionList: FC<
 
 			{visibilePositions
 				.filter(protocol => Boolean(protocol))
-				.map((protocol, index) => {
-					return <PositionFrame key={index} id={id} protocol={protocol} />
+				.map((protocol, protocolIndex) => {
+					return <PositionFrame key={protocolIndex} index={index} protocol={protocol} />
 				})}
 		</div>
 	)

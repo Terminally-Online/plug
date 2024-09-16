@@ -4,19 +4,20 @@ import { FC } from "react"
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
+import { useFrame } from "@/state"
 
-export const ShareFrame: FC<{ id: string }> = ({ id }) => {
-	const { isFrame } = useFrame({ id, key: "share" })
-	const { plug } = usePlugs(id)
+export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
+	const { isFrame } = useFrame({ index, key: "share" })
+	const { plug } = usePlugs(item)
 
 	const { copied, handleCopied } = useClipboard(`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`)
 
 	if (!plug) return null
 
 	return (
-		<Frame id={id} className="z-[2]" icon={<Badge size={18} />} label="Share Plug" visible={isFrame}>
+		<Frame index={index} className="z-[2]" icon={<Badge size={18} />} label="Share Plug" visible={isFrame}>
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">
 					<Link size={14} />

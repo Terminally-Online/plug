@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import BoringAvatar from "boring-avatars"
 import { CheckCheck, SearchIcon } from "lucide-react"
@@ -7,42 +7,31 @@ import { CheckCheck, SearchIcon } from "lucide-react"
 import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
-import { Accordion } from "@/components/shared"
+import { Accordion, Search } from "@/components"
 import { useSockets } from "@/contexts"
-import { formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-
-import { Search } from "../../inputs"
+import { Column, formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
 const EXCLUDED_KEYS = [VIEW_KEYS.HOME, VIEW_KEYS.VIEW_AS, VIEW_KEYS.ADD, VIEW_KEYS.PLUG]
 
 export const ColumnViewAs = () => {
-	const { socket, handle } = useSockets()
+	const { socket } = useSockets()
+	const { columns, as } = useColumns()
 
 	const [sockets, setSockets] = useState<UserSocketModel[]>([])
 	const [search, debouncedSearch, setSearch] = useDebounce("")
-	const [as, setAs] = useState<UserSocketModel | undefined>(socket)
-	const [columns, setColumns] = useState<
-		Array<{ column: UserSocketModel["columns"][number]; as: MinimalUserSocketModel | null }> | undefined
-	>(undefined)
+	const [view, setView] = useState<MinimalUserSocketModel | undefined>(socket)
 
 	const options = socket && sockets ? [socket, ...sockets] : sockets
 
-	// NOTE: This is a kind of hacky way to prevent flashing when searching for sockets.
-	//       This way, we update the local state when the search hits instead of showing a
-	//       loading state.
 	api.socket.search.useQuery(
 		{
 			search: debouncedSearch
 		},
 		{
-			onSettled: data => data && setSockets(data)
+			onSuccess: data => data && setSockets(data)
 		}
 	)
-
-	useEffect(() => {
-		if (!socket) return
-		setColumns(socket.columns.map(column => ({ column, as: column.viewAs })))
-	}, [socket])
 
 	return (
 		<div className="flex h-full flex-col py-4">
@@ -59,7 +48,7 @@ export const ColumnViewAs = () => {
 				{socket && options && options.length > 0 && (
 					<div className="flex flex-col gap-2">
 						{options.map(option => (
-							<Accordion key={option.id} onExpand={() => setAs(option)}>
+							<Accordion key={option.id} onExpand={() => setView(option)}>
 								<div className="flex flex-row items-center gap-4 whitespace-nowrap">
 									<div className="relative h-8 w-8 min-w-8 rounded-sm">
 										{option.identity?.ens?.avatar ? (
@@ -114,7 +103,7 @@ export const ColumnViewAs = () => {
 										</p>
 									</div>
 
-									{as && option.id === as.id && (
+									{view && option.id === view.id && (
 										<CheckCheck size={14} className="ml-auto text-plug-green" />
 									)}
 								</div>
@@ -129,31 +118,27 @@ export const ColumnViewAs = () => {
 			<div className="px-4">
 				<div className="flex flex-col gap-2">
 					{socket &&
-						columns &&
-						as &&
+						view &&
 						columns
-							.filter(column => EXCLUDED_KEYS.includes(column.column.key) === false)
-							.map(column => (
-								<Accordion
-									key={column.column.id}
-									onExpand={() => handle.columns.as({ id: column.column.id, as: as.id })}
-								>
+							.filter(column => EXCLUDED_KEYS.includes(column.key) === false)
+							.map((column: Column) => (
+								<Accordion key={column.index} onExpand={() => as({ index: column.index, as: view })}>
 									<div className="flex flex-row items-center justify-between gap-4">
-										<p className="font-bold">{formatTitle(column.column.key.toLowerCase())}</p>
+										<p className="font-bold">{formatTitle(column.key.toLowerCase())}</p>
 										<>
 											<div className="relative h-6 w-6 min-w-6 rounded-sm">
-												{column.as && column.as.identity?.ens?.avatar ? (
+												{column.viewAs && column.viewAs.identity?.ens?.avatar ? (
 													<>
 														<Image
 															className="absolute left-0 top-0 blur-xl filter"
-															src={column.as.identity.ens.avatar}
+															src={column.viewAs.identity.ens.avatar}
 															alt="ENS Avatar"
 															width={240}
 															height={240}
 														/>
 														<Image
 															className="relative rounded-sm"
-															src={column.as.identity.ens.avatar}
+															src={column.viewAs.identity.ens.avatar}
 															alt="ENS Avatar"
 															width={240}
 															height={240}
@@ -164,7 +149,7 @@ export const ColumnViewAs = () => {
 														<div className="absolute left-0 top-0 blur-xl filter">
 															<BoringAvatar
 																variant="beam"
-																name={column.as?.id ?? socket.id}
+																name={column.viewAs?.id ?? socket.id}
 																size={"100%"}
 																colors={["#00E100", "#A3F700"]}
 																square
@@ -173,7 +158,7 @@ export const ColumnViewAs = () => {
 														<div className="relative overflow-hidden rounded-sm">
 															<BoringAvatar
 																variant="beam"
-																name={column.as?.id ?? socket.id}
+																name={column.viewAs?.id ?? socket.id}
 																size={"100%"}
 																colors={["#00E100", "#A3F700"]}
 																square

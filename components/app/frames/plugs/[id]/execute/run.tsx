@@ -4,15 +4,16 @@ import { FC } from "react"
 import { Eye } from "lucide-react"
 
 import { ActionPreview, Button, Frame } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
+import { useFrame } from "@/state"
 
-export const RunFrame: FC<{ id: string }> = ({ id }) => {
+export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, prevFrame, handleFrame } = useFrame({
-		id,
+		index,
 		key: "run",
-		seperator: "-"
+		separator: "-"
 	})
-	const { chains } = usePlugs(id)
+	const { chains } = usePlugs(item)
 
 	const handleBack =
 		prevFrame !== "schedule"
@@ -23,7 +24,7 @@ export const RunFrame: FC<{ id: string }> = ({ id }) => {
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="z-[2]"
 			handleBack={handleBack}
 			icon={<Eye size={18} />}
@@ -33,7 +34,7 @@ export const RunFrame: FC<{ id: string }> = ({ id }) => {
 		>
 			<div className="flex flex-col gap-2">
 				<p className="font-bold opacity-60">Actions</p>
-				<ActionPreview id={id} />
+				<ActionPreview index={index} item={item} />
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-60">Run On</span>

@@ -8,10 +8,13 @@ import { api } from "@/server/client"
 import { Workflow } from "@prisma/client"
 
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 
-export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
+	index,
+	className,
+	...props
+}) => {
 	const { scrollYProgress } = useScroll()
 	const { search, tag, handleSearch, handleTag } = useSearch()
 
@@ -72,10 +75,10 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { id: string }> 
 			/>
 
 			<Container>
-				<PlugGrid id={id} className="mb-4" from={VIEW_KEYS.DISCOVER} plugs={visiblePlugs} />
+				<PlugGrid index={index} className="mb-4" from={VIEW_KEYS.DISCOVER} plugs={visiblePlugs} />
 			</Container>
 
-			<Callout.EmptyPlugs id={id} isEmpty={search === "" && plugs && plugs.count === 0} />
+			<Callout.EmptyPlugs index={index} isEmpty={search === "" && plugs && plugs.count === 0} />
 		</div>
 	)
 }

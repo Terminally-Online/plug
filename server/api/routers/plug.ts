@@ -180,7 +180,7 @@ export const plug = createTRPCRouter({
 			}
 		}),
 	add: anonymousProtectedProcedure
-		.input(z.object({ id: z.string().optional(), from: z.string().optional() }).optional())
+		.input(z.object({ index: z.number().optional(), from: z.string().optional() }).optional())
 		.mutation(async ({ input, ctx }) => {
 			try {
 				const plug = await ctx.db.workflow.create({
@@ -195,13 +195,13 @@ export const plug = createTRPCRouter({
 
 				ctx.emitter.emit(events.add, plug)
 
-				return { plug, id: input?.id, from: input?.from }
+				return { plug, index: input?.index, from: input?.from }
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
 	fork: anonymousProtectedProcedure
-		.input(z.object({ plug: z.string(), id: z.string(), from: z.string() }))
+		.input(z.object({ plug: z.string(), index: z.number(), from: z.string() }))
 		.mutation(async ({ input, ctx }) => {
 			try {
 				const forking = await ctx.db.workflow.findUnique({
@@ -222,7 +222,7 @@ export const plug = createTRPCRouter({
 
 				ctx.emitter.emit(events.add, plug)
 
-				return { plug, id: input.id, from: input.from }
+				return { plug, index: input.index, from: input.from }
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}

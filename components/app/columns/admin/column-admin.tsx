@@ -1,5 +1,5 @@
 import { FC, HTMLAttributes } from "react"
 
-export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, ...props }) => {
+export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	return <div {...props}></div>
 }

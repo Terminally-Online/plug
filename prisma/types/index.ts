@@ -2,26 +2,6 @@ import { Prisma } from "@prisma/client"
 
 import { SOCKET_BASE_QUERY } from "@/lib"
 
-const consoleColumnModel = Prisma.validator<Prisma.ConsoleColumnDefaultArgs>()({
-	include: {
-		viewAs: {
-			include: {
-				identity: {
-					include: {
-						ens: {
-							omit: { createdAt: true, updatedAt: true }
-						}
-					},
-					omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true, ensName: true }
-				}
-			},
-			omit: { createdAt: true, updatedAt: true, admin: true }
-		}
-	},
-	omit: { createdAt: true, updatedAt: true, socketId: true, viewAsId: true }
-})
-export type ConsoleColumnModel = Prisma.ConsoleColumnGetPayload<typeof consoleColumnModel>
-
 const userSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
 	...SOCKET_BASE_QUERY
 })

@@ -3,15 +3,16 @@ import { FC, useEffect } from "react"
 import { LoaderCircle } from "lucide-react"
 
 import { Frame } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
+import { useFrame } from "@/state"
 
-export const RunningFrame: FC<{ id: string }> = ({ id }) => {
+export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, prevFrame, handleFrame } = useFrame({
-		id,
+		index,
 		key: "running",
-		seperator: "-"
+		separator: "-"
 	})
-	const { plug } = usePlugs(id)
+	const { plug } = usePlugs(item)
 
 	const label = prevFrame ? (prevFrame === "schedule" ? "Signing Intent" : "Transaction Running") : ""
 
@@ -27,7 +28,7 @@ export const RunningFrame: FC<{ id: string }> = ({ id }) => {
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="z-[2]"
 			icon={<LoaderCircle size={18} className="animate-spin" />}
 			label={label}

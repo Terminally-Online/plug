@@ -1,5 +1,3 @@
-export * from "@/contexts/DomainProvider"
-export * from "@/contexts/FrameProvider"
 export * from "@/contexts/PlugProvider"
 export * from "@/contexts/RootProvider"
 export * from "@/contexts/SocketProvider"

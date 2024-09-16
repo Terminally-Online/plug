@@ -1,4 +1,5 @@
 export * from "./blockchain"
+export * from "./columns"
 export * from "./next"
 export * from "./opensea"
 export * from "./page"

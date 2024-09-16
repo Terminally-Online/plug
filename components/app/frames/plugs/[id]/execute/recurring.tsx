@@ -3,7 +3,7 @@ import { FC, useState } from "react"
 import { Clock } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { useFrame } from "@/contexts"
+import { useFrame } from "@/state"
 
 const frequencies = [
 	{ label: "Never", value: "0" },
@@ -14,9 +14,9 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const RecurringFrame: FC<{ id: string }> = ({ id }) => {
+export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 	const { isFrame, handleFrame } = useFrame({
-		id,
+		index,
 		key: "recurring"
 	})
 
@@ -24,7 +24,7 @@ export const RecurringFrame: FC<{ id: string }> = ({ id }) => {
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 			icon={<Clock size={18} className="opacity-60" />}
 			label="Recurring Frequency"

@@ -7,13 +7,13 @@ import { RunFrame } from "./execute/run"
 import { RunningFrame } from "./execute/running"
 import { ScheduleFrame } from "./execute/schedule"
 
-export const ExecuteFrame: FC<{ id: string }> = ({ id }) => (
+export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item }) => (
 	<>
-		<ChainFrame id={id} />
-		<ScheduleFrame id={id} />
-		<RecurringFrame id={id} />
-		<RunFrame id={id} />
-		<RunningFrame id={id} />
-		<RanFrame id={id} />
+		<ChainFrame index={index} item={item} />
+		<ScheduleFrame index={index} item={item} />
+		<RecurringFrame index={index} />
+		<RunFrame index={index} item={item} />
+		<RunningFrame index={index} item={item} />
+		<RanFrame index={index} item={item}  />
 	</>
 )

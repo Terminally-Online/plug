@@ -12,33 +12,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model ConsoleColumn {
-    id String @id @default(uuid())
-
-    // ---------------------------------------------------------------------------
-    // Core
-    // ---------------------------------------------------------------------------
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    key   String
-    index Int
-    width Int?
-    item  String?
-    from  String?
-
-    // ---------------------------------------------------------------------------
-    // Many-to-one
-    // ---------------------------------------------------------------------------
-    socket   UserSocket  @relation(fields: [socketId], references: [id], onDelete: Cascade)
-    socketId String
-    viewAs   UserSocket? @relation(fields: [viewAsId], references: [id], onDelete: SetNull, name: "viewAs")
-    viewAsId String?
-}
-
 model FarcasterUserAddress {
     // ---------------------------------------------------------------------------
     // Core
@@ -133,8 +106,6 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // One-to-many 
     // ---------------------------------------------------------------------------
-    columns      ConsoleColumn[]
-    viewedAs     ConsoleColumn[]           @relation("viewAs")
     workflow     Workflow[]
     collectibles OpenseaCollectibleCache[]
     balances     ImplementationBalance[]

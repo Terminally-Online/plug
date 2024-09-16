@@ -2,13 +2,13 @@ import { FC } from "react"
 
 import { Workflow } from "@/server/api/routers/plug"
 
-import { useSockets } from "@/contexts"
 import { cardColors, cn, VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
-type Props = { id: string; from: string; plug: Workflow | undefined }
+type Props = { index: number; from: string; plug: Workflow | undefined }
 
-export const PlugGridItem: FC<Props> = ({ id, from, plug }) => {
-	const { handle } = useSockets()
+export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
+	const { navigate } = useColumns()
 
 	const loading = plug === undefined
 	const backgroundImage = plug ? cardColors[plug.color] : undefined
@@ -18,8 +18,8 @@ export const PlugGridItem: FC<Props> = ({ id, from, plug }) => {
 			onClick={
 				plug
 					? () =>
-							handle.columns.navigate({
-								id,
+							navigate({
+								index,
 								key: VIEW_KEYS.PLUG,
 								item: plug.id,
 								from

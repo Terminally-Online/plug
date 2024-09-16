@@ -8,13 +8,14 @@ import { usePlugs } from "@/contexts"
 import { categories, cn } from "@/lib"
 
 export const Sentence: FC<{
-	id: string
 	index: number
+	item: string
+	actionIndex: number
 	preview?: boolean
-}> = ({ id, index, preview = false }) => {
-	const { plug, own, actions, handle } = usePlugs(id)
+}> = ({ index, item, actionIndex, preview = false }) => {
+	const { plug, own, actions, handle } = usePlugs(item)
 
-	const { categoryName } = actions[index]
+	const { categoryName } = actions[actionIndex]
 
 	if (plug === undefined || actions === undefined) return null
 
@@ -37,7 +38,7 @@ export const Sentence: FC<{
 						/>
 					)}
 
-					<Fragments id={id} index={index} />
+					<Fragments index={index} item={item} actionIndex={actionIndex} />
 				</p>
 
 				{preview === false && own && (
@@ -47,7 +48,7 @@ export const Sentence: FC<{
 						onClick={() =>
 							handle.action.edit({
 								id: plug.id,
-								actions: JSON.stringify(actions.filter((_, i) => i !== index))
+								actions: JSON.stringify(actions.filter((_, i) => i !== actionIndex))
 							})
 						}
 					>
@@ -56,7 +57,7 @@ export const Sentence: FC<{
 				)}
 			</div>
 
-			{index < actions.length - 1 && <div className="mx-auto h-2 w-[2px] bg-grayscale-100" />}
+			{actionIndex < actions.length - 1 && <div className="mx-auto h-2 w-[2px] bg-grayscale-100" />}
 		</>
 	)
 }

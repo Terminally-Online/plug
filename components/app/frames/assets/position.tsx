@@ -6,22 +6,22 @@ import { ExternalLink, EyeOff } from "lucide-react"
 import { RouterOutputs } from "@/server/client"
 
 import { Counter } from "@/components/shared"
-import { useFrame } from "@/contexts"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
+import { useFrame } from "@/state"
 
 import { SocketTokenPriceChart } from "../../sockets"
 import { TokenImage } from "../../sockets/tokens/token-image"
 import { Frame } from "../base"
 
 export const PositionFrame: FC<{
-	id: string
+	index: number
 	protocol: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
-}> = ({ id, protocol }) => {
+}> = ({ index, protocol }) => {
 	const { positions } = protocol
 
 	const { isFrame } = useFrame({
-		id,
-		key: `position-${protocol.name}`
+		index,
+		key: `${index}-${protocol.name}-position`
 	})
 
 	const [color, setColor] = useState("")
@@ -66,7 +66,7 @@ export const PositionFrame: FC<{
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			icon={<TokenImage logo={protocol?.icon ?? ""} symbol={protocol.name} size="sm" handleColor={setColor} />}
 			label={protocol.name}
 			visible={isFrame}
@@ -108,14 +108,14 @@ export const PositionFrame: FC<{
 							</div>
 
 							<div className="flex flex-col gap-2">
-								{groupedPositions[type].map((position, index) => {
+								{groupedPositions[type].map((position, positionIndex) => {
 									const implementation = position.fungible.implementations.find(
 										implementation => implementation.chain === position.chain
 									)
 									const key = `${position.chain}:${implementation?.contract}`
 
 									return (
-										<div key={`${type}-${index}`}>
+										<div key={`${type}-${positionIndex}`}>
 											<div className="flex flex-row items-center gap-4">
 												<button
 													className="relative"

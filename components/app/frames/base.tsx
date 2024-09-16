@@ -4,12 +4,12 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
 import { Button, Header } from "@/components"
-import { useFrame, useSockets } from "@/contexts"
 import { cn, useMediaQuery } from "@/lib"
+import { useFrame } from "@/state"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
-		id?: string
+		index?: number
 		label: string
 		visible: boolean
 		icon?: JSX.Element
@@ -20,7 +20,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> &
 	}
 
 export const Frame: FC<Props> = ({
-	id,
+	index,
 	label,
 	visible,
 	icon,
@@ -32,12 +32,7 @@ export const Frame: FC<Props> = ({
 	next
 }) => {
 	const { md } = useMediaQuery()
-	const { socket } = useSockets()
-	const { handleFrame } = useFrame({ id })
-
-	const page = socket?.columns.find(column => column.id === id)
-
-	if (page === undefined) return null
+	const { handleFrame } = useFrame({ index })
 
 	return (
 		<AnimatePresence>
@@ -57,7 +52,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30",
-							page.index !== -1 && "rounded-lg"
+							index !== -1 && "rounded-lg"
 						)}
 						onClick={() => handleFrame()}
 					/>
@@ -72,7 +67,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 w-full rounded-t-lg bg-white",
 							className,
 							"z-[11]",
-							page.index !== -1 && "rounded-b-lg"
+							index !== -1 && "rounded-b-lg"
 						)}
 					>
 						<div className="flex flex-row items-center gap-2 px-6 py-4">

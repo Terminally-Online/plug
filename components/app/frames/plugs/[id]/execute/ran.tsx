@@ -4,23 +4,24 @@ import { FC } from "react"
 import { CheckCircle } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
+import { useFrame } from "@/state"
 
-export const RanFrame: FC<{ id: string }> = ({ id }) => {
+export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, prevFrame, handleFrame } = useFrame({
-		id,
+		index,
 		key: "ran",
-		seperator: "-"
+		separator: "-"
 	})
-	const { plug, chains } = usePlugs(id)
+	const { plug, chains } = usePlugs(item)
 
 	const label = isFrame ? (prevFrame === "schedule" ? "Intent Signed" : "Transaction Ran") : ""
 
 	if (!plug) return null
 
 	return (
-		<Frame id={id} className="z-[2]" icon={<CheckCircle size={18} />} label={label} visible={isFrame}>
+		<Frame index={index} className="z-[2]" icon={<CheckCircle size={18} />} label={label} visible={isFrame}>
 			<div className="flex flex-col gap-2">
 				<p>
 					<span className="opacity-60">Your</span>

@@ -3,16 +3,16 @@ import { FC } from "react"
 import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Counter, SocketTokenPercentages, TokenImage } from "@/components"
-import { useFrame } from "@/contexts"
 import { cn, getChainId } from "@/lib"
+import { useFrame } from "@/state"
 
 export const SocketTokenItem: FC<{
-	id: string
+	index: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = ({ id, token }) => {
+}> = ({ index, token }) => {
 	const { handleFrame } = useFrame({
-		id,
-		key: `token/${token?.symbol ?? ""}`
+		index,
+		key: `${index}-${token?.symbol ?? ""}-token`
 	})
 
 	return (

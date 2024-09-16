@@ -4,20 +4,22 @@ import { FC } from "react"
 import { Info } from "lucide-react"
 
 import { Button } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
+import { useFrame } from "@/state"
 
 export const ActionItem: FC<{
-	id: string
+	index: number
+	item: string
 	categoryName: keyof typeof categories
 	actionName: keyof (typeof staticActions)[keyof typeof categories]
 	image?: boolean
-}> = ({ id, categoryName, actionName, image = false }) => {
+}> = ({ index, item, categoryName, actionName, image = false }) => {
 	const { handleFrame } = useFrame({
-		id,
+		index,
 		key: `${categoryName}-${actionName}`
 	})
-	const { plug, actions, handle } = usePlugs(id)
+	const { plug, actions, handle } = usePlugs(item)
 
 	if (!plug) return null
 

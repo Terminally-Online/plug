@@ -9,10 +9,10 @@ import { getChainImage } from "@/lib"
 import { SocketCollectibleGrid } from "./collectible-grid"
 
 export const SocketCollectionItem: FC<{
-	id: string
+	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number] | undefined
 	searched?: boolean
-}> = ({ id, collection, searched = false }) => {
+}> = ({ index, collection, searched = false }) => {
 	const [expanded, setExpanded] = useState(searched)
 	const [error, setError] = useState(false)
 
@@ -24,7 +24,7 @@ export const SocketCollectionItem: FC<{
 			className="text-left"
 			expanded={expanded || searched}
 			onExpand={collection === undefined || searched ? () => {} : () => setExpanded(!expanded)}
-			accordion={collection && <SocketCollectibleGrid id={id} collection={collection} />}
+			accordion={collection && <SocketCollectibleGrid index={index} collection={collection} />}
 		>
 			{collection === undefined ? (
 				<div className="invisible">

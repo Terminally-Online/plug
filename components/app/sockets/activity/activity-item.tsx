@@ -1,12 +1,10 @@
-import { FC, useMemo, useState } from "react"
+import { FC } from "react"
 
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince } from "@/components"
-import { useFrame } from "@/contexts"
-import { colors, formatTitle } from "@/lib"
-
-import { ActivityFrame } from "../../frames/sockets/activity"
+import { formatTitle } from "@/lib"
+import { useFrame } from "@/state"
 
 export const getStatusIcon = (status: string) => {
 	switch (status) {
@@ -44,18 +42,18 @@ export const getStatusIcon = (status: string) => {
 }
 
 export const ActivityItem: FC<{
-	id: string
 	index: number
+	activityIndex: number
 	activity?: {
 		text: string
 		color: string
 		status: string
 		time: string
 	}
-}> = ({ id, index, activity }) => {
+}> = ({ index, activityIndex, activity }) => {
 	const { handleFrame } = useFrame({
-		id,
-		key: `activity-${index}`
+		index,
+		key: `${index}-${activityIndex}-activity`
 	})
 
 	const pastDate = new Date(Date.now() - 60000 * 0.2)
