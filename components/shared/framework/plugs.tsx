@@ -7,13 +7,14 @@ import { api } from "@/server/client"
 import { Header, PlugGrid } from "@/components"
 import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
-export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?: boolean }> = ({
-	id,
+export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { index?: number; hideEmpty?: boolean }> = ({
+	index = -1,
 	hideEmpty = false,
 	...props
 }) => {
-	const { page, handle } = useSockets()
+	const { navigate } = useColumns(index)
 
 	const { data: discoveryPlugs } = api.plug.all.useQuery({
 		target: "others",
@@ -25,8 +26,6 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?
 		limit: 4
 	})
 
-	if (page === undefined) return null
-
 	return (
 		<div {...props}>
 			{(!hideEmpty || (hideEmpty && (discoveryPlugs?.length ?? 0) > 0)) && (
@@ -36,15 +35,15 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?
 						icon={<Puzzle size={14} className="opacity-40" />}
 						label="Discover"
 						nextOnClick={() =>
-							handle.columns.navigate({
-								id: page.id,
+							navigate({
+								index,
 								key: VIEW_KEYS.DISCOVER
 							})
 						}
 						nextLabel="See All"
 					/>
 
-					<PlugGrid id={id} from={VIEW_KEYS.HOME} plugs={discoveryPlugs} />
+					<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={discoveryPlugs} />
 				</>
 			)}
 
@@ -55,14 +54,15 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { id: string; hideEmpty?
 						icon={<PlugZap size={14} className="opacity-40" />}
 						label="My Plugs"
 						nextOnClick={() =>
-							handle.columns.navigate({
-								id: page.id,
+							navigate({
+								index,
 								key: VIEW_KEYS.MY_PLUGS
 							})
 						}
 						nextLabel="See All"
 					/>
-					<PlugGrid id={id} from={VIEW_KEYS.HOME} plugs={myPlugs} />
+
+					<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={myPlugs} />
 				</>
 			)}
 		</div>

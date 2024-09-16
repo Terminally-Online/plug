@@ -1,25 +1,32 @@
-import { PageActivity, PageDiscover, PageHome, PageMine, PagePlug } from "@/components"
-import { useSockets } from "@/contexts"
+import { Container, Plug, Plugs, PlugsDiscover, PlugsMine, SocketActivity, SocketAssets } from "@/components"
 import { VIEW_KEYS } from "@/lib"
+import { useColumns } from "@/state"
 
 export const PageContent = () => {
-	const { page } = useSockets()
+	const { column } = useColumns(-1)
 
-	if (page === undefined) return null
+	if (column === undefined) return null
 
-	switch (page.key) {
+	switch (column.key) {
 		case VIEW_KEYS.HOME:
-			return <PageHome />
-		case VIEW_KEYS.ACTIVITY:
-			return <PageActivity />
-		case VIEW_KEYS.DISCOVER:
-			return <PageDiscover />
-		case VIEW_KEYS.MY_PLUGS:
-			return <PageMine />
+			return (
+				<Container>
+					<Plugs hideEmpty={true} />
+					<SocketAssets />
+				</Container>
+			)
 		case VIEW_KEYS.PLUG:
-			return <PagePlug />
-		case VIEW_KEYS.EARNINGS:
-			return <></>
+			return (
+				<Container>
+					<Plug item={column.item} />
+				</Container>
+			)
+		case VIEW_KEYS.ACTIVITY:
+			return <SocketActivity />
+		case VIEW_KEYS.DISCOVER:
+			return <PlugsDiscover />
+		case VIEW_KEYS.MY_PLUGS:
+			return <PlugsMine />
 		default:
 			return <></>
 	}

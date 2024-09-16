@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 
 import { Button, Frame, Search, SocketTokenList } from "@/components"
-import { useFrame, useSockets } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { formatTitle, getChainImage } from "@/lib"
 
 const DEFAULT_TRANSFER = {

@@ -2,9 +2,9 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { api, RouterOutputs } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
 
-import { Animate, Button, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
+import { Animate, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
 import { useColumns } from "@/state"

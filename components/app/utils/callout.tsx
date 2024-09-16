@@ -1,10 +1,7 @@
-import { useRouter } from "next/router"
-import { FC, HTMLAttributes, PropsWithChildren, ReactNode, useEffect, useState } from "react"
-
-import { columns } from "@/server/api/routers/socket/columns"
+import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
-import { usePlugs, useSockets } from "@/contexts"
+import { useSockets } from "@/contexts"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
@@ -28,8 +25,8 @@ const Anonymous: FC<
 		isAbsolute?: boolean
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
-	const { isAnonymous, isExternal } = useSockets()
-	const { column, navigate } = useColumns(index)
+	const { isAnonymous } = useSockets()
+	const { column, isExternal, navigate } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null
 

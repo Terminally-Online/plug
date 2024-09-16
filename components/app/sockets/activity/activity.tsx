@@ -173,8 +173,8 @@ const activities = [
 	}
 ]
 
-export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
-	index,
+export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
+	index = -1,
 	className,
 	...props
 }) => {

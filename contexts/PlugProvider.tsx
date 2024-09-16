@@ -213,8 +213,6 @@ export const usePlugs = (id?: string) => {
 	const context = useContext(PlugContext)
 
 	const { data: session } = useSession()
-	const { socket } = useSockets()
-	const { columns } = useColumns()
 
 	const { plugs } = context
 

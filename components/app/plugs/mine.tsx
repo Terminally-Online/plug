@@ -12,7 +12,11 @@ import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
-export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, className, ...props }) => {
+export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
+	index = -1,
+	className,
+	...props
+}) => {
 	const { address } = useSockets()
 	const { column, isExternal } = useColumns(index)
 	const { search, tag, handleSearch, handleTag } = useSearch()
@@ -27,7 +31,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index: number }> =
 
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
-			address: isExternal && column && column.viewAs ? column.viewAs : address,
+			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : address,
 			search,
 			tag,
 			limit: 20

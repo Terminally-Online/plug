@@ -3,16 +3,15 @@ import { FC } from "react"
 import { Trash2 } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { useFrame, usePlugs } from "@/contexts"
+import { usePlugs } from "@/contexts"
+import { useFrame } from "@/state"
 
-export const DeletedFrame: FC<{ id: string }> = ({ id }) => {
-	const { isFrame } = useFrame({ id, key: "deleted" })
-	const { plug, handle } = usePlugs(id)
-
-	if (!plug) return null
+export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
+	const { isFrame } = useFrame({ index, key: "deleted" })
+	const { handle } = usePlugs()
 
 	return (
-		<Frame id={id} className="z-[2]" icon={<Trash2 size={18} />} label="Plug Deleted" visible={isFrame}>
+		<Frame index={index} className="z-[2]" icon={<Trash2 size={18} />} label="Plug Deleted" visible={isFrame}>
 			<p className="w-full opacity-60">
 				This content you were viewing is no longer available. It may have been deleted or made private by the
 				creator.

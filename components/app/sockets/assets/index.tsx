@@ -5,16 +5,22 @@ import { CircleDollarSign, ImageIcon } from "lucide-react"
 import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
 import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
-export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id, className, ...props }) => {
-	const { isAnonymous, isExternal, collectibles, positions } = useSockets(id)
+export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
+	index = -1,
+	className,
+	...props
+}) => {
+	const { isAnonymous, collectibles, positions } = useSockets()
+	const { isExternal } = useColumns(index)
 	const { tokens, protocols } = positions
 
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Callout.Anonymous id={id} viewing="assets" />
+			<Callout.Anonymous index={index} viewing="assets" />
 
 			{(isAnonymous === false || isExternal) && (
 				<>
@@ -39,7 +45,7 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 									)
 								}
 							/>
-							<SocketTokenList id={id} expanded={expanded.includes("tokens")} isColumn={false} />
+							<SocketTokenList index={index} expanded={expanded.includes("tokens")} isColumn={false} />
 						</>
 					)}
 
@@ -64,7 +70,11 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 									)
 								}
 							/>
-							<SocketPositionList id={id} expanded={expanded.includes("positions")} isColumn={false} />
+							<SocketPositionList
+								index={index}
+								expanded={expanded.includes("positions")}
+								isColumn={false}
+							/>
 						</>
 					)}
 
@@ -75,7 +85,7 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { id: string }> =
 								icon={<ImageIcon size={14} className="opacity-40" />}
 								label="Collectibles"
 							/>
-							<SocketCollectionList id={id} expanded={true} isColumn={false} />
+							<SocketCollectionList index={index} expanded={true} isColumn={false} />
 						</>
 					)}
 				</>

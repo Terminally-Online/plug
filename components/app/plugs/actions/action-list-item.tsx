@@ -4,14 +4,15 @@ import { FC } from "react"
 import { ChevronRight } from "lucide-react"
 
 import { ActionCard, Button } from "@/components"
-import { useFrame } from "@/contexts"
 import { categories, formatTitle } from "@/lib"
+import { useFrame } from "@/state"
 
 export const ActionListItem: FC<{
-	id: string
+	index: number
+	item: string
 	categoryName: string
-}> = ({ id, categoryName }) => {
-	const { handleFrame } = useFrame({ id, key: categoryName })
+}> = ({ index, item, categoryName }) => {
+	const { handleFrame } = useFrame({ index, key: categoryName })
 
 	const category = categories[categoryName]
 
@@ -38,7 +39,7 @@ export const ActionListItem: FC<{
 					</Button>
 				</button>
 
-				<ActionCard id={id} categoryName={categoryName} category={category} />
+				<ActionCard index={index} item={item} categoryName={categoryName} category={category} />
 			</div>
 		</div>
 	)

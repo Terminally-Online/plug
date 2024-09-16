@@ -10,8 +10,8 @@ import { Workflow } from "@prisma/client"
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
 
-export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
-	index,
+export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
+	index = -1,
 	className,
 	...props
 }) => {

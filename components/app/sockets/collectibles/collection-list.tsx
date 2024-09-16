@@ -20,8 +20,8 @@ export const SocketCollectionList: FC<
 > = ({ index, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, collectibles: apiCollectibles } = useSockets()
 	const { column, isExternal } = useColumns(index)
-	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs, {
-		enabled: isExternal
+	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs?.socketAddress, {
+		enabled: isExternal && column?.viewAs?.socketAddress !== undefined
 	})
 
 	collectibles = collectibles ?? columnCollectibles ?? apiCollectibles

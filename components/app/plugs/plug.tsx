@@ -8,8 +8,8 @@ import { usePlugs } from "@/contexts"
 import { cn } from "@/lib"
 import { useFrame } from "@/state"
 
-export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index: number; item?: string; from?: string }> = ({
-	index,
+export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
+	index = -1,
 	item,
 	from,
 	...props
