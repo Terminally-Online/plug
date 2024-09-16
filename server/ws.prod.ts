@@ -1,11 +1,11 @@
 import next from "next"
 import { getSession } from "next-auth/react"
 
+import { applyWSSHandler } from "@trpc/server/adapters/ws"
+
 import { createServer } from "node:http"
 import { parse } from "node:url"
 import { WebSocketServer } from "ws"
-
-import { applyWSSHandler } from "@trpc/server/adapters/ws"
 
 import { appRouter } from "./api/root"
 import { createInnerTRPCContext } from "./api/trpc"

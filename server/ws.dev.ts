@@ -1,8 +1,8 @@
 import { getSession } from "next-auth/react"
 
-import ws from "ws"
-
 import { applyWSSHandler } from "@trpc/server/adapters/ws"
+
+import ws from "ws"
 
 import { version } from "../package.json"
 import { appRouter } from "./api/root"

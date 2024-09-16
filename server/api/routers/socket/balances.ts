@@ -1,8 +1,8 @@
-import axios from "axios"
-import { z } from "zod"
-
 import { getDominantColor } from "@/server/color"
 import { TRPCError } from "@trpc/server"
+
+import axios from "axios"
+import { z } from "zod"
 
 import { getAPIKey, getCollectibles } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"

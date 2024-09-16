@@ -35,8 +35,8 @@ export const PlugContext = createContext<{
 		plug: {
 			add: (data?: { id?: string; from?: string }) => void
 			edit: (data: { id: string } & WorkflowData) => void
-			delete: (data: { plug: string; id: string; from?: string | null }) => void
-			fork: (data: { plug: string; id: string; from: string }) => void
+			delete: (data: { plug: string; index: number; from?: string | null }) => void
+			fork: (data: { plug: string; index: number; from: string }) => void
 		}
 		action: {
 			edit: (data: { id?: string; actions: string }) => void

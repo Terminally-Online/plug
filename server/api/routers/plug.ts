@@ -1,8 +1,8 @@
-import { z } from "zod"
-
 import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
+
+import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
@@ -258,18 +258,18 @@ export const plug = createTRPCRouter({
 			}
 		}),
 	delete: anonymousProtectedProcedure
-		.input(z.object({ plug: z.string(), id: z.string(), from: z.string().nullish() }))
+		.input(z.object({ plug: z.string(), index: z.number(), from: z.string().nullish() }))
 		.mutation(async ({ input, ctx }) => {
 			const plug = await ctx.db.workflow.delete({
 				where: {
-					id: input.id,
+					id: input.plug,
 					socketId: ctx.session.address
 				}
 			})
 
 			ctx.emitter.emit(events.delete, plug)
 
-			return { plug, from: input.from }
+			return { plug, index: input.index, from: input.from }
 		}),
 	onAdd: subscription(events.add),
 	onEdit: subscription(events.edit),

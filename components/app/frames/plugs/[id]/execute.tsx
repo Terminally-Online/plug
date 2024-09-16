@@ -14,6 +14,6 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 		<RecurringFrame index={index} />
 		<RunFrame index={index} item={item} />
 		<RunningFrame index={index} item={item} />
-		<RanFrame index={index} item={item}  />
+		<RanFrame index={index} item={item} />
 	</>
 )

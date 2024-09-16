@@ -5,10 +5,10 @@ import { Pen, Sparkle } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Button, Frame, Search } from "@/components"
-import { useFrame } from "@/contexts"
+import { useFrame } from "@/state"
 
-export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
-	const { isFrame, prevFrame: from, handleFrame } = useFrame({ id, key: "freatureRequest", seperator: "-" })
+export const FeatureRequestFrame: FC<{ index: number }> = ({ index }) => {
+	const { isFrame, prevFrame: from, handleFrame } = useFrame({ index, key: "freatureRequest", separator: "-" })
 
 	const [message, setMessage] = useState("")
 
@@ -21,7 +21,7 @@ export const FeatureRequestFrame: FC<{ id: string }> = ({ id }) => {
 
 	return (
 		<Frame
-			id={id}
+			index={index}
 			icon={<Sparkle size={18} />}
 			label="Feature Request"
 			visible={isFrame}
