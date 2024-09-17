@@ -2,9 +2,8 @@ import { useSession } from "next-auth/react"
 import { FC, HTMLAttributes, useMemo } from "react"
 
 import { ActivityItem, Animate, Callout } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 import { ActivityFrame } from "../../frames/sockets/activity"
 
@@ -180,7 +179,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { isAnonymous } = useSockets()
+	const { isAnonymous } = useSocket()
 	const { isExternal } = useColumns(index)
 
 	const visibleActivities = useMemo(() => {

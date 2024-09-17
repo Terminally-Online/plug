@@ -24,9 +24,9 @@ import {
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
-import { usePlugs, useSockets } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { cardColors, cn, Column, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { useColumns, useFrame } from "@/state"
+import { useColumns, useFrame, useSocket } from "@/state"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
@@ -41,7 +41,7 @@ export const ConsoleColumn: FC<{
 
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 	const { navigate, resize, remove } = useColumns(index)
 
 	const { handleFrame } = useFrame({ index })

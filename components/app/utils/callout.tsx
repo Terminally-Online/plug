@@ -1,9 +1,9 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
-import { usePlugs, useSockets } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -25,7 +25,7 @@ const Anonymous: FC<
 		isAbsolute?: boolean
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
-	const { isAnonymous } = useSockets()
+	const { isAnonymous } = useSocket()
 	const { column, isExternal, navigate } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null

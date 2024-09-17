@@ -7,17 +7,17 @@ import { AnimatePresence, motion } from "framer-motion"
 import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
 
 import { Button } from "@/components"
-import { usePlugs, useSockets } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const ConsoleSidebar = () => {
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { data: session } = useSession()
 
-	const { avatar, socket } = useSockets()
+	const { avatar, socket } = useSocket()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
 	const { add } = useColumns()
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")

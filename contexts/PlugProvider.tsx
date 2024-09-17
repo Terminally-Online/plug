@@ -4,7 +4,6 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffec
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
-import { useSockets } from "@/contexts"
 import { categories, actions as staticActions, tags, VIEW_KEYS } from "@/lib/constants"
 import { useColumns } from "@/state"
 
@@ -82,8 +81,6 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plug.add.useMutation>[0]>["onSuccess"]>>[0],
 		redirect = false
 	) => {
-		console.log("in handleCreate", data)
-
 		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
 
 		if (redirect)

@@ -1,10 +1,9 @@
 import { FC, HTMLAttributes } from "react"
 
-import { useSockets } from "@/contexts"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const ColumnProfile: FC<HTMLAttributes<HTMLDivElement>> = ({ ...props }) => {
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 	const { columns } = useColumns()
 
 	return (

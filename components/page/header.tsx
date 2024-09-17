@@ -6,15 +6,15 @@ import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Container, Header } from "@/components"
-import { usePlugs, useSockets } from "@/contexts"
+import { usePlugs } from "@/contexts"
 import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, VIEW_KEYS } from "@/lib"
-import { useColumns, useFrame } from "@/state"
+import { useColumns, useFrame, useSocket } from "@/state"
 
 const HomePageHeader = () => {
 	const index = -1
 	const { handleFrame } = useFrame({ index })
 	const { column, navigate } = useColumns(index)
-	const { address, avatar } = useSockets()
+	const { socket, avatar } = useSocket()
 	const { handle } = usePlugs()
 
 	if (!column) return null
@@ -24,7 +24,7 @@ const HomePageHeader = () => {
 			size="lg"
 			label={
 				<>
-					{address ? (
+					{socket ? (
 						<button className="flex flex-row items-center gap-2" onClick={() => handleFrame("auth")}>
 							{avatar ? (
 								<Image
@@ -35,7 +35,7 @@ const HomePageHeader = () => {
 									className="h-6 w-6 rounded-sm"
 								/>
 							) : (
-								<BlockiesSvg className="h-6 w-6 rounded-sm" address={address} />
+								<BlockiesSvg className="h-6 w-6 rounded-sm" address={socket.id} />
 							)}
 						</button>
 					) : (

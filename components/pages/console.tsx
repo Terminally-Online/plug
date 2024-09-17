@@ -4,8 +4,8 @@ import { useEffect } from "react"
 import { LoaderCircle } from "lucide-react"
 
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
-import { useSockets } from "@/contexts"
 import { useMediaQuery } from "@/lib"
+import { useSocket } from "@/state"
 
 const MobilePage = () => {
 	return (
@@ -29,7 +29,7 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 
 	useEffect(() => {
 		if (socket) return
@@ -46,6 +46,7 @@ export const ConsolePage = () => {
 		return (
 			<div className="absolute bottom-0 left-0 right-0 top-0 flex h-screen w-screen items-center justify-center">
 				<LoaderCircle size={24} className="animate-spin opacity-60" />
+				Socket has not been loaded.
 			</div>
 		)
 

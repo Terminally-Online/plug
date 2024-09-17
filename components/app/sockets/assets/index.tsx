@@ -3,18 +3,20 @@ import { FC, HTMLAttributes, useState } from "react"
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
 import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
 	className,
 	...props
 }) => {
-	const { isAnonymous, collectibles, positions } = useSockets()
+	const { isAnonymous } = useSocket()
 	const { isExternal } = useColumns(index)
-	const { tokens, protocols } = positions
+
+	// TODO: Implement this once positions have been implemented in the data layer.
+	const collectibles = []
+	const { tokens, protocols } = { tokens: [], protocols: [] }
 
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
@@ -31,11 +33,7 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number 
 								icon={<CircleDollarSign size={14} className="opacity-40" />}
 								label="Tokens"
 								nextLabel={
-									positions.tokens.length < 5
-										? undefined
-										: expanded.includes("tokens")
-											? "Collapse"
-											: "See All"
+									tokens.length < 5 ? undefined : expanded.includes("tokens") ? "Collapse" : "See All"
 								}
 								nextOnClick={() =>
 									setExpanded(prev =>

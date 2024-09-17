@@ -5,7 +5,6 @@ import { PlugZap, Puzzle } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Header, PlugGrid } from "@/components"
-import { useSockets } from "@/contexts"
 import { VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 

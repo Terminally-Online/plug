@@ -18,8 +18,8 @@ import {
 } from "lucide-react"
 
 import { Button, Frame, Search, SocketTokenList } from "@/components"
-import { useSockets } from "@/contexts"
 import { formatTitle, getChainImage } from "@/lib"
+import { useSocket } from "@/state"
 
 const DEFAULT_TRANSFER = {
 	token: undefined,
@@ -39,7 +39,7 @@ export const TransferFrame = () => {
 	const [advanced, setAdvanced] = useState(false)
 
 	const { address } = useAccount()
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 
 	// const fromAddress =
 	// 	(transfer.action !== undefined

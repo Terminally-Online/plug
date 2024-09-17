@@ -6,14 +6,13 @@ import { useDisconnect } from "wagmi"
 import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Counter, Frame, StatCard } from "@/components"
-import { useSockets } from "@/contexts"
-import { useFrame } from "@/state"
+import { useFrame, useSocket } from "@/state"
 
 export const AccountFrame = () => {
 	// NOTE: This is only accessible on the mobile view so the index will always be -1.
 	const index = -1
 	const { isFrame } = useFrame({ index, key: "account" })
-	const { address, avatar } = useSockets()
+	const { socket, avatar } = useSocket()
 
 	const { disconnect } = useDisconnect({
 		mutation: {
@@ -21,7 +20,7 @@ export const AccountFrame = () => {
 		}
 	})
 
-	if (!address) return null
+	if (!socket) return null
 
 	return (
 		<Frame
@@ -31,7 +30,7 @@ export const AccountFrame = () => {
 				avatar ? (
 					<Image src={avatar} alt="ENS Avatar" width={24} height={24} className="h-6 w-6 rounded-sm" />
 				) : (
-					<BlockiesSvg className="h-6 w-6 rounded-sm" address={address} />
+					<BlockiesSvg className="h-6 w-6 rounded-sm" address={socket.id} />
 				)
 			}
 			label="Wallet"

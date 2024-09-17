@@ -1,6 +1,8 @@
 import { SignInResponse } from "next-auth/react"
 
-import { atom } from "jotai"
+import { UserSocketModel } from "@/prisma/types"
+
+import { atom, useAtomValue } from "jotai"
 import qrcode from "qrcode-generator"
 
 import { WalletConnectProvider } from "@/lib"
@@ -34,3 +36,23 @@ export const walletConnectURIMatrixAtom = atom<
 		getModule: (row: number, col: number) => qr.isDark(row, col)
 	}
 })
+
+export const socketModelAtom = atom<UserSocketModel | undefined>(undefined)
+export const socketAtom = atom(get => {
+	const socket = get(socketModelAtom)
+
+	const isDemo = socket?.id.startsWith("demo") || false
+	const isAnonymous = socket === undefined || isDemo || socket?.id.startsWith("anonymous") || false
+
+	const name = socket?.identity?.ens?.name ?? undefined
+	const avatar = socket?.identity?.ens?.avatar ?? undefined
+
+	return {
+		isDemo,
+		isAnonymous,
+		name,
+		avatar,
+		socket
+	}
+})
+export const useSocket = () => useAtomValue(socketAtom)

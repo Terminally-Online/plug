@@ -1,19 +1,18 @@
-import { useSession } from "next-auth/react"
 import { useCallback, useMemo } from "react"
 
 import { MinimalUserSocketModel } from "@/prisma/types"
 
 import { useAtom } from "jotai"
 
-import { useSockets } from "@/contexts"
 import { Column } from "@/lib"
+import { useSocket } from "@/state"
 
 import { atomWithStorage } from "jotai/utils"
 
 const columnsAtom = atomWithStorage<Column[]>("COLUMNS", [])
 
 export const useColumns = (index?: number) => {
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 
 	const [columns, setColumns] = useAtom(columnsAtom)
 

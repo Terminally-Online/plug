@@ -5,9 +5,8 @@ import { SearchIcon } from "lucide-react"
 import { api, RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -18,13 +17,20 @@ export const SocketCollectionList: FC<
 		isColumn?: boolean
 	}
 > = ({ index, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous, collectibles: apiCollectibles } = useSockets()
+	const { socket, isAnonymous } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(column?.viewAs?.socketAddress, {
-		enabled: isExternal && column?.viewAs?.socketAddress !== undefined
-	})
+	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(
+		column?.viewAs?.socketAddress ?? socket?.socketAddress,
+		{
+			enabled:
+				(isExternal && column?.viewAs?.socketAddress !== undefined) ||
+				(socket !== undefined &&
+					socket.socketAddress !== undefined &&
+					socket.id.startsWith("anonymous") === false)
+		}
+	)
 
-	collectibles = collectibles ?? columnCollectibles ?? apiCollectibles
+	collectibles = collectibles ?? columnCollectibles ?? []
 
 	const [search, handleSearch] = useState("")
 

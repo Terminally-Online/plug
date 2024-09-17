@@ -2,26 +2,35 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
+import { api, RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		tokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
+		positions?: RouterOutputs["socket"]["balances"]["positions"]
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ index, tokens, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous, positions } = useSockets()
-	const { isExternal } = useColumns(index)
-	const { tokens: apiTokens } = positions
-	tokens = tokens ?? apiTokens
+> = ({ index, positions, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { socket, isAnonymous } = useSocket()
+	const { column, isExternal } = useColumns(index)
+	const { data: columnPositions } = api.socket.balances.positions.useQuery(
+		column?.viewAs?.socketAddress ?? socket?.socketAddress,
+		{
+			enabled:
+				(isExternal && column?.viewAs?.socketAddress !== undefined) ||
+				(socket !== undefined &&
+					socket.socketAddress !== undefined &&
+					socket.id.startsWith("anonymous") === false)
+		}
+	)
+
+	const { tokens } = positions ?? columnPositions ?? { tokens: [] }
 
 	const [search, handleSearch] = useState("")
 

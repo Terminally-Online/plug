@@ -1,3 +1,7 @@
+import { mainnet } from "viem/chains"
+import { normalize } from "viem/ens"
+import { useEnsAvatar, useEnsName } from "wagmi"
+
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
@@ -10,94 +14,98 @@ import { balances } from "./balances"
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 export const socket = createTRPCRouter({
-	get: anonymousProtectedProcedure
-		.input(
-			z.object({
-				name: z.string().nullish(),
-				avatar: z.string().nullish()
-			})
-		)
-		.query(async ({ input, ctx }) => {
-			// const columnsToCreate = ctx.session.user.demo
-			// 	? DEFAULT_DEMO_VIEWS
-			// 	: ctx.session.user.anonymous
-			// 		? DEFAULT_ANONYMOUS_VIEWS
-			// 		: DEFAULT_VIEWS
+	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
+		// const columnsToCreate = ctx.session.user.demo
+		// 	? DEFAULT_DEMO_VIEWS
+		// 	: ctx.session.user.anonymous
+		// 		? DEFAULT_ANONYMOUS_VIEWS
+		// 		: DEFAULT_VIEWS
+		// const { data: name } = useEnsName({
+		// 	chainId: mainnet.id,
+		// 	address: ctx.session?.address as `0x${string}`
+		// })
+		// const { data: avatar } = useEnsAvatar({
+		// 	chainId: mainnet.id,
+		// 	name: normalize(name ?? "") || undefined
+		// })
 
-			await ctx.db.userSocket.upsert({
-				where: {
-					id: ctx.session.address
-				},
+		const name = ""
+		const avatar = ""
+
+		await ctx.db.userSocket.upsert({
+			where: {
+				id: ctx.session.address
+			},
+			create: {
+				id: ctx.session.address,
+				socketAddress: TEMPORARY_ADDRESS,
+				identity: {
+					connectOrCreate: {
+						where: { socketId: ctx.session.address },
+						create: {
+							ens: name
+								? {
+										connectOrCreate: {
+											where: { name },
+											create: {
+												name,
+												avatar
+											}
+										}
+									}
+								: undefined
+						}
+					}
+				}
+			},
+			update: {
+				identity: {
+					upsert: {
+						where: { socketId: ctx.session.address },
+						create: {},
+						update: {}
+					}
+				}
+			}
+		})
+
+		if (name)
+			await ctx.db.eNS.upsert({
+				where: { name },
 				create: {
-					id: ctx.session.address,
-					socketAddress: TEMPORARY_ADDRESS,
+					name,
+					avatar: avatar ? avatar : undefined,
 					identity: {
 						connectOrCreate: {
 							where: { socketId: ctx.session.address },
 							create: {
-								ens: input.name
-									? {
-											connectOrCreate: {
-												where: { name: input.name },
-												create: {
-													name: input.name,
-													avatar: input.avatar
-												}
-											}
-										}
-									: undefined
+								socketId: ctx.session.address
 							}
 						}
 					}
 				},
 				update: {
+					avatar: avatar ? avatar : undefined,
 					identity: {
-						upsert: {
+						connectOrCreate: {
 							where: { socketId: ctx.session.address },
-							create: {},
-							update: {}
+							create: {
+								socketId: ctx.session.address
+							}
 						}
 					}
 				}
 			})
 
-			if (input.name)
-				await ctx.db.eNS.upsert({
-					where: { name: input.name },
-					create: {
-						name: input.name,
-						avatar: input.avatar ? input.avatar : undefined,
-						identity: {
-							connectOrCreate: {
-								where: { socketId: ctx.session.address },
-								create: {
-									socketId: ctx.session.address
-								}
-							}
-						}
-					},
-					update: {
-						avatar: input.avatar ? input.avatar : undefined,
-						identity: {
-							connectOrCreate: {
-								where: { socketId: ctx.session.address },
-								create: {
-									socketId: ctx.session.address
-								}
-							}
-						}
-					}
-				})
+		const socket = await ctx.db.userSocket.findFirst({
+			where: { id: ctx.session.address },
+			...SOCKET_BASE_QUERY
+		})
 
-			const socket = await ctx.db.userSocket.findFirst({
-				where: { id: ctx.session.address },
-				...SOCKET_BASE_QUERY
-			})
+		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 
-			if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-			return socket
-		}),
+		return socket
+	}),
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {

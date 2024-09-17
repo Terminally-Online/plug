@@ -8,14 +8,13 @@ import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
 import { Accordion, Search } from "@/components"
-import { useSockets } from "@/contexts"
 import { Column, formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 const EXCLUDED_KEYS = [VIEW_KEYS.HOME, VIEW_KEYS.VIEW_AS, VIEW_KEYS.ADD, VIEW_KEYS.PLUG]
 
 export const ColumnViewAs = () => {
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 	const { columns, as } = useColumns()
 
 	const [sockets, setSockets] = useState<UserSocketModel[]>([])
@@ -29,7 +28,7 @@ export const ColumnViewAs = () => {
 			search: debouncedSearch
 		},
 		{
-			onSuccess: data => data && setSockets(data)
+			onSettled: data => data && setSockets(data)
 		}
 	)
 

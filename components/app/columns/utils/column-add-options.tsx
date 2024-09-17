@@ -3,9 +3,8 @@ import { FC, HTMLAttributes, PropsWithChildren } from "react"
 import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, User, Wallet } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
-import { useSockets } from "@/contexts"
 import { cn, formatTitle, VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 type Options = Array<{
 	label: keyof typeof VIEW_KEYS
@@ -70,7 +69,7 @@ export const ColumnAddOptions: FC<
 			index: number
 		}>
 > = ({ index, className, ...props }) => {
-	const { socket } = useSockets()
+	const { socket } = useSocket()
 	const { navigate } = useColumns()
 
 	const isAdmin = socket?.admin ?? false

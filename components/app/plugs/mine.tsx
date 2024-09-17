@@ -8,16 +8,15 @@ import { api } from "@/server/client"
 import { Workflow } from "@prisma/client"
 
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
-import { useSockets } from "@/contexts"
 import { cn, useSearch, VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
 	className,
 	...props
 }) => {
-	const { address } = useSockets()
+	const { socket } = useSocket()
 	const { column, isExternal } = useColumns(index)
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
@@ -27,11 +26,11 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const representative = isExternal && column && column.viewAs ? column.viewAs : address
+	const representative = isExternal && column && column.viewAs ? column.viewAs : socket?.id
 
 	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
 		{
-			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : address,
+			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : socket?.id,
 			search,
 			tag,
 			limit: 40

@@ -1,6 +1,7 @@
 import { FC } from "react"
 
-import { useSockets } from "@/contexts"
+import { RouterOutputs } from "@/server/client"
+
 import { getChainColor } from "@/lib"
 
 const SIZE = 14
@@ -9,7 +10,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const VIEWBOX = 120
 
 export const SocketTokenPercentages: FC<{
-	implementations: NonNullable<ReturnType<typeof useSockets>["positions"]["tokens"]>[number]["implementations"]
+	implementations: RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]["implementations"]
 }> = ({ implementations }) => {
 	let accumulatedPercentage = 0
 
