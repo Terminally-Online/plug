@@ -30,8 +30,6 @@ type Action = {
 	primary?: boolean
 }
 
-// TODO: Fix this type @chance
-
 export const actions: Record<string, Record<string, Action>> = {
 	plug,
 	nouns,

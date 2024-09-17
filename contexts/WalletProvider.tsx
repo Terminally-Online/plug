@@ -78,7 +78,7 @@ export const wagmiConfig = createConfig({
 			chain,
 			batch: { multicall: true },
 			pollingInterval: 12_000,
-			// TODO: Update this to be an appOnly provider.
+			// TODO(#402): Update this to be an appOnly provider.
 			transport: http(chain.rpcUrls.default.http[0])
 		})
 	}

@@ -18,7 +18,7 @@ export const misc = createTRPCRouter({
 			})
 		}),
 	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		// TODO: Handle private plugs and exclude them while combining the self-results.
+		// TODO(#403): Handle private plugs and exclude them while combining the self-results.
 		const plugs = await ctx.db.workflow.findMany({
 			where: {
 				name: {
