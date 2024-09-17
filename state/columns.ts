@@ -90,7 +90,7 @@ export const useColumns = (index?: number) => {
 	const isExternal = useMemo(() => {
 		if (socket === undefined) return false
 
-		return column !== undefined && column.viewAs && column.viewAs.id !== socket.id
+		return (column !== undefined && column.viewAs && column.viewAs.id !== socket.id) || false
 	}, [column, socket])
 
 	return {
