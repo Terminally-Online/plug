@@ -22,12 +22,14 @@ export const useFrame = ({ index, key, separator }: { index?: number; key?: stri
 	const frame = separator && key ? key.split(separator)[0] : key
 	const prevFrame = separator && key ? key.split(separator)[1] : undefined
 
-	const isFrame = index ? frames[index] === frame : false
+	const isFrame = index !== undefined ? frames[index] === frame : false
 
 	const handleFrame = (key?: string) => {
 		const frameKey = key ?? frame
 
-		if (!index) return
+		console.log("in handleFrame", frameKey, index, frameKey)
+
+		if (index === undefined) return
 
 		setFrames(prevFrames => ({
 			...prevFrames,
