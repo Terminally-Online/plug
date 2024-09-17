@@ -1,7 +1,7 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
-import { useSockets } from "@/contexts"
+import { usePlugs, useSockets } from "@/contexts"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
@@ -145,7 +145,8 @@ const EmptyPlugs: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column, add } = useColumns(index)
+	const { handle } = usePlugs()
+	const { column } = useColumns(index)
 
 	if (!column || isEmpty === false) return null
 
@@ -167,7 +168,7 @@ const EmptyPlugs: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => {}}>
 					View As
 				</Button>
-				<Button sizing="sm" onClick={() => add({ index, from: column.key })}>
+				<Button sizing="sm" onClick={() => handle.plug.add({ index, from: column.key })}>
 					Create
 				</Button>
 			</Base>

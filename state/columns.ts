@@ -21,7 +21,6 @@ export const useColumns = (index?: number) => {
 
 	const add = useCallback(
 		({ key, index, from, item }: Partial<Column>) => {
-			console.log("adding")
 			updateColumns(prev => {
 				const newColumn = { key, index: index ?? prev.length, from, item } as Column
 				const updatedColumns = [...prev]
@@ -40,11 +39,7 @@ export const useColumns = (index?: number) => {
 	const navigate = useCallback(
 		({ index, key, item, from }: Partial<Column> & { index: number }) =>
 			updateColumns(prev =>
-				prev.map((col, idx) =>
-					idx === index
-						? { ...col, key: key || col.key, item: item || col.item, from: from || col.from }
-						: col
-				)
+				prev.map((col, idx) => (idx === index ? { ...col, key: key ?? col.key, item, from } : col))
 			),
 		[updateColumns]
 	)

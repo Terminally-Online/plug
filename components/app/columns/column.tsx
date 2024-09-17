@@ -158,7 +158,9 @@ export const ConsoleColumn: FC<{
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
 													{formatTitle(
-														plug ? plug.name : key.replace("_", " ").toLowerCase()
+														plug
+															? plug.name
+															: (key?.replace("_", " ").toLowerCase() ?? "ERROR")
 													)}
 												</p>
 											</div>

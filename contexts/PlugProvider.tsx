@@ -33,7 +33,7 @@ export const PlugContext = createContext<{
 		search: (data: string) => void
 		tag: (data: (typeof tags)[number]) => void
 		plug: {
-			add: (data?: { id?: string; from?: string }) => void
+			add: (data?: { index?: number; from?: string }) => void
 			edit: (data: { id: string } & WorkflowData) => void
 			delete: (data: { plug: string; index: number; from?: string | null }) => void
 			fork: (data: { plug: string; index: number; from: string }) => void
@@ -61,14 +61,6 @@ export const PlugContext = createContext<{
 	}
 })
 
-// TODO: Pick back up here in the morning. We are removing the single slot id of the
-//       plug that is being selected so that we can have multiple visible and accessible
-//       throughout a set of columns. Right now, frames retrieve the single id that is
-//       stored and when a parameter is provided to the hook it selects it. Instead,
-//       we should automatically retrieve the plug based on all of the `item` values
-//       that are stored in the columns.
-// TODO: Remove search and tag from here because we may have multiple contexts open now.
-
 export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { columns, add, navigate } = useColumns()
 
@@ -90,22 +82,25 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plug.add.useMutation>[0]>["onSuccess"]>>[0],
 		redirect = false
 	) => {
+		console.log("in handleCreate", data)
+
 		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
 
-		if (data.index && data.from)
-			navigate({
-				index: data.index,
-				key: VIEW_KEYS.PLUG,
-				from: data.from,
-				item: data.plug.id
-			})
-		else if (redirect)
-			add({
-				key: VIEW_KEYS.PLUG,
-				index: 0,
-				from: data.from,
-				item: data.plug.id
-			})
+		if (redirect)
+			if (data.index === 0)
+				add({
+					index: data.index,
+					key: VIEW_KEYS.PLUG,
+					from: data.from,
+					item: data.plug.id
+				})
+			else if (data.index)
+				navigate({
+					key: VIEW_KEYS.PLUG,
+					index: data.index,
+					from: data.from,
+					item: data.plug.id
+				})
 	}
 
 	api.plug.onAdd.useSubscription(undefined, {
@@ -128,7 +123,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const handle = {
 		plug: {
 			add: api.plug.add.useMutation({
-				onSuccess: data => handleCreate(data)
+				onSuccess: data => handleCreate(data, true)
 			}),
 			edit: api.plug.edit.useMutation({
 				onMutate: data => {
