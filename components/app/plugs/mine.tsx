@@ -34,7 +34,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : address,
 			search,
 			tag,
-			limit: 20
+			limit: 40
 		},
 		{
 			enabled: representative !== undefined,

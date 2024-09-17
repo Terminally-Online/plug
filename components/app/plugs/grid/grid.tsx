@@ -17,8 +17,8 @@ export const PlugGrid: FC<Props> = ({ index, from, plugs, count, ...props }) => 
 	return (
 		<div {...props}>
 			<Animate.Grid>
-				{plugs.slice(0, count || plugs.length).map((plug, index) => (
-					<Animate.ListItem key={index}>
+				{plugs.slice(0, count || plugs.length).map((plug, plugIndex) => (
+					<Animate.ListItem key={plugIndex}>
 						<PlugGridItem index={index} from={from} plug={plug} />
 					</Animate.ListItem>
 				))}

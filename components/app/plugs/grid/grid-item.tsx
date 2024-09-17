@@ -38,10 +38,10 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 				backgroundImage
 			}}
 		>
-			{plug === undefined ? (
-				<span className="invisible font-bold">.</span>
-			) : (
+			{plug ? (
 				<span className="font-bold">{plug.name === "" ? "Untitled Plug" : plug.name}</span>
+			) : (
+				<span className="invisible font-bold">.</span>
 			)}
 		</button>
 	)
