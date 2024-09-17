@@ -27,9 +27,8 @@ export const useFrame = ({ index, key, separator }: { index?: number; key?: stri
 	const handleFrame = (key?: string) => {
 		const frameKey = key ?? frame
 
-		console.log("in handleFrame", frameKey, index, frameKey)
-
-		if (index === undefined) return
+		// NOTE: This should never be reached in production, but is useful for debugging.
+		if (index === undefined) throw new Error("Index for Frame interaction is undefined.")
 
 		setFrames(prevFrames => ({
 			...prevFrames,
