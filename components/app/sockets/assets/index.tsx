@@ -4,7 +4,7 @@ import { CircleDollarSign, ImageIcon } from "lucide-react"
 
 import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
 import { cn } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useColumns, useHoldings, useSocket } from "@/state"
 
 export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -12,11 +12,8 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number 
 	...props
 }) => {
 	const { isAnonymous } = useSocket()
-	const { isExternal } = useColumns(index)
-
-	// TODO: Implement this once positions have been implemented in the data layer.
-	const collectibles = []
-	const { tokens, protocols } = { tokens: [], protocols: [] }
+	const { column, isExternal } = useColumns(index)
+	const { collectibles, tokens, protocols } = useHoldings(column?.viewAs?.socketAddress)
 
 	const [expanded, setExpanded] = useState<Array<string>>([])
 

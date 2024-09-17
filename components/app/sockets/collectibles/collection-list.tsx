@@ -6,36 +6,32 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
 import { cn } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useColumns, useHoldings, useSocket } from "@/state"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		collectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
+		columnCollectibles?: RouterOutputs["socket"]["balances"]["collectibles"]
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ index, collectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { socket, isAnonymous } = useSocket()
+> = ({ index, columnCollectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { isAnonymous } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { data: columnCollectibles } = api.socket.balances.collectibles.useQuery(
-		column?.viewAs?.socketAddress ?? socket?.socketAddress,
-		{
-			enabled:
-				(isExternal && column?.viewAs?.socketAddress !== undefined) ||
-				(socket !== undefined &&
-					socket.socketAddress !== undefined &&
-					socket.id.startsWith("anonymous") === false)
-		}
-	)
+	const { collectibles: apiCollectibles } = useHoldings(column?.viewAs?.socketAddress)
 
-	collectibles = collectibles ?? columnCollectibles ?? []
+	const collectibles = columnCollectibles ?? apiCollectibles
 
 	const [search, handleSearch] = useState("")
 
 	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
-		if (collectibles === undefined || (search === "" && collectibles.length === 0)) return Array(5).fill(undefined)
+		if (
+			(isAnonymous && isExternal === false) ||
+			collectibles === undefined ||
+			(search === "" && collectibles.length === 0)
+		)
+			return Array(5).fill(undefined)
 
 		const filteredCollectibles = collectibles.filter(
 			collectible =>
@@ -52,23 +48,20 @@ export const SocketCollectionList: FC<
 		if (expanded) return filteredCollectibles
 
 		return filteredCollectibles.slice(0, count)
-	}, [collectibles, expanded, count, search])
+	}, [isAnonymous, isExternal, collectibles, expanded, count, search])
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
-			{(isAnonymous === false || isExternal) &&
-				isColumn &&
-				columnCollectibles &&
-				columnCollectibles.length > 0 && (
-					<Search
-						className="mb-2"
-						icon={<SearchIcon size={14} className="opacity-40" />}
-						placeholder="Search collectibles"
-						search={search}
-						handleSearch={handleSearch}
-						clear
-					/>
-				)}
+			{(isAnonymous === false || isExternal) && isColumn && collectibles && collectibles.length > 0 && (
+				<Search
+					className="mb-2"
+					icon={<SearchIcon size={14} className="opacity-40" />}
+					placeholder="Search collectibles"
+					search={search}
+					handleSearch={handleSearch}
+					clear
+				/>
+			)}
 
 			<Callout.EmptySearch
 				isEmpty={search !== "" && visibleCollectibles.length === 0}

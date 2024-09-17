@@ -2,41 +2,35 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { api, RouterOutputs } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { cn } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useColumns, useHoldings, useSocket } from "@/state"
 
 export const SocketPositionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		positions?: RouterOutputs["socket"]["balances"]["positions"]
+		columnProtocols?: RouterOutputs["socket"]["balances"]["positions"]["protocols"]
 		expanded?: boolean
 		isColumn?: boolean
 	}
-> = ({ index, positions, expanded, isColumn = true, className, ...props }) => {
-	const { socket, isAnonymous } = useSocket()
+> = ({ index, columnProtocols, expanded, isColumn = true, className, ...props }) => {
+	const { isAnonymous } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { data: columnPositions, isLoading } = api.socket.balances.positions.useQuery(
-		column?.viewAs?.socketAddress ?? socket?.socketAddress,
-		{
-			enabled:
-				(isExternal && column?.viewAs?.socketAddress !== undefined) ||
-				(socket !== undefined &&
-					socket.socketAddress !== undefined &&
-					socket.id.startsWith("anonymous") === false)
-		}
-	)
+	const { protocols: apiProtocols } = useHoldings(column?.viewAs?.socketAddress)
 
-	console.log("columnPositions", columnPositions)
-
-	const { protocols } = positions ?? columnPositions ?? { protocols: [] }
+	const protocols = columnProtocols ?? apiProtocols
 
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
-		if (protocols === undefined || (search === "" && protocols.length === 0)) return Array(5).fill(undefined)
+		if (
+			(isAnonymous && isExternal === false) ||
+			protocols === undefined ||
+			(search === "" && protocols.length === 0)
+		)
+			return Array(5).fill(undefined)
 
 		const filteredProtocols = protocols.filter(
 			protocol =>
@@ -54,7 +48,7 @@ export const SocketPositionList: FC<
 		if (expanded) return filteredProtocols
 
 		return filteredProtocols.slice(0, 3)
-	}, [expanded, protocols, search])
+	}, [isAnonymous, isExternal, expanded, protocols, search])
 
 	if (protocols === undefined) return null
 
@@ -70,8 +64,6 @@ export const SocketPositionList: FC<
 					clear
 				/>
 			)}
-
-			{isLoading && <p>Loading...</p>}
 
 			<Callout.EmptySearch
 				isEmpty={search !== "" && visibilePositions.length === 0}

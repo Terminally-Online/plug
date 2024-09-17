@@ -2,40 +2,32 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { api, RouterOutputs } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
 import { cn } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useColumns, useHoldings, useSocket } from "@/state"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		positions?: RouterOutputs["socket"]["balances"]["positions"]
+		columnTokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ index, positions, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { socket, isAnonymous } = useSocket()
+> = ({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
+	const { isAnonymous } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { data: columnPositions } = api.socket.balances.positions.useQuery(
-		column?.viewAs?.socketAddress ?? socket?.socketAddress,
-		{
-			enabled:
-				(isExternal && column?.viewAs?.socketAddress !== undefined) ||
-				(socket !== undefined &&
-					socket.socketAddress !== undefined &&
-					socket.id.startsWith("anonymous") === false)
-		}
-	)
+	const { tokens: apiTokens } = useHoldings(column?.viewAs?.socketAddress)
 
-	const { tokens } = positions ?? columnPositions ?? { tokens: [] }
+	const tokens = columnTokens ?? apiTokens
 
 	const [search, handleSearch] = useState("")
 
 	const visibleTokens = useMemo(() => {
-		if (tokens === undefined || (search === "" && tokens.length === 0)) return Array(5).fill(undefined)
+		if ((isAnonymous && isExternal === false) || tokens === undefined || (search === "" && tokens.length === 0))
+			return Array(5).fill(undefined)
 
 		const filteredTokens = tokens.filter(
 			token =>
@@ -49,7 +41,7 @@ export const SocketTokenList: FC<
 		if (expanded) return filteredTokens
 
 		return filteredTokens.slice(0, count)
-	}, [tokens, expanded, count, search])
+	}, [isAnonymous, isExternal, tokens, expanded, count, search])
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>

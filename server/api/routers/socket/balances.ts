@@ -4,20 +4,38 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 import { z } from "zod"
 
-import { getAPIKey, getCollectibles } from "@/lib"
+import { getAPIKey, getCollectibles, SOCKET_BASE_QUERY } from "@/lib"
 import { getPositions } from "@/lib/functions/zerion"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	collectibles: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input }) => {
-		if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
-		return await getCollectibles(input)
+	collectibles: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
+		if (input) return await getCollectibles(input)
+
+		const socket = await ctx.db.userSocket.findFirst({
+			where: { id: ctx.session.address },
+			...SOCKET_BASE_QUERY
+		})
+
+		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+
+		console.log("retrieving collectibles")
+
+		return await getCollectibles(socket.socketAddress)
 	}),
-	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input }) => {
+	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
 		try {
-			if (input === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
-			return await getPositions(input)
+			if (input) return await getPositions(input)
+
+			const socket = await ctx.db.userSocket.findFirst({
+				where: { id: ctx.session.address },
+				...SOCKET_BASE_QUERY
+			})
+
+			if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+
+			return await getPositions(socket.socketAddress)
 		} catch (error) {
 			console.error(error)
 			throw new TRPCError({ code: "BAD_REQUEST" })
