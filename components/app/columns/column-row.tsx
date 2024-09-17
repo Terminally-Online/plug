@@ -1,3 +1,5 @@
+import { AnimatePresence } from "framer-motion"
+
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
@@ -21,12 +23,14 @@ export const ConsoleColumnRow = () => {
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
-							{columns
-								.filter(column => column.index !== -1)
-								.sort((a, b) => a.index - b.index)
-								.map(column => (
-									<ConsoleColumn key={column.index} column={column} />
-								))}
+							<AnimatePresence>
+								{columns
+									.filter(column => column.index !== -1)
+									.sort((a, b) => a.index - b.index)
+									.map(column => (
+										<ConsoleColumn key={column.index} column={column} />
+									))}
+							</AnimatePresence>
 							{provided.placeholder}
 						</div>
 					)}

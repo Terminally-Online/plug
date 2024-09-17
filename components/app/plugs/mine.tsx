@@ -62,7 +62,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
-			{visiblePlugs.length > 0 && (
+			{plugs && plugs.plugs.length > 0 && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
