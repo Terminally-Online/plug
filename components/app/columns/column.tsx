@@ -1,5 +1,7 @@
+import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
+import BoringAvatar from "boring-avatars"
 import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
@@ -39,10 +41,11 @@ export const ConsoleColumn: FC<{
 
 	const resizeRef = useRef<HTMLDivElement>(null)
 
+	const { socket } = useSockets()
 	const { navigate, resize, remove } = useColumns(index)
 
 	const { handleFrame } = useFrame({ index })
-	const { plug } = usePlugs(item)
+	const { plug, handle } = usePlugs(item)
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
@@ -131,8 +134,7 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											{/* TOOD: Reenable this once columns are fully functional again. */}
-											{/* {socket && column.viewAs && (
+											{socket && column.viewAs && (
 												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
 													{column.viewAs.identity?.ens?.avatar ? (
 														<Image
@@ -151,7 +153,7 @@ export const ConsoleColumn: FC<{
 														/>
 													)}
 												</div>
-											)} */}
+											)}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
@@ -174,12 +176,11 @@ export const ConsoleColumn: FC<{
 														<Share size={14} className="opacity-60 hover:opacity-100" />
 													</Button> */}
 
-													{/* TODO: Reenable this once plugs have been moved into atomic state */}
-													{/* <Button
+													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
 														onClick={() =>
-															handlePlugs.plug.fork({
+															handle.plug.fork({
 																plug: plug.id,
 																index,
 																from: key
@@ -187,7 +188,7 @@ export const ConsoleColumn: FC<{
 														}
 													>
 														<GitFork size={14} className="opacity-60 hover:opacity-100" />
-													</Button> */}
+													</Button>
 
 													<Button
 														variant="secondary"
