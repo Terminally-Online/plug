@@ -4,13 +4,12 @@ import { MinimalUserSocketModel } from "@/prisma/types"
 
 import { useAtom } from "jotai"
 
-import { Column } from "@/lib"
+import { Column, DEFAULT_VIEWS } from "@/lib"
 import { useSocket } from "@/state"
 
 import { atomWithStorage } from "jotai/utils"
 
-const columnsAtom = atomWithStorage<Column[]>("COLUMNS", [])
-
+const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_VIEWS)
 export const useColumns = (index?: number) => {
 	const { socket } = useSocket()
 
@@ -79,7 +78,10 @@ export const useColumns = (index?: number) => {
 		[updateColumns]
 	)
 
-	const column = useMemo(() => (index !== undefined ? columns[index] : undefined), [columns, index])
+	const column = useMemo(
+		() => (index !== undefined ? columns.find(column => column.index === index) : undefined),
+		[columns, index]
+	)
 
 	const isExternal = useMemo(() => {
 		if (socket === undefined) return false

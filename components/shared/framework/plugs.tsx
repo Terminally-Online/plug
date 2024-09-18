@@ -27,43 +27,35 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { index?: number; hideEm
 
 	return (
 		<div {...props}>
-			{(!hideEmpty || (hideEmpty && (discoveryPlugs?.length ?? 0) > 0)) && (
-				<>
-					<Header
-						size="md"
-						icon={<Puzzle size={14} className="opacity-40" />}
-						label="Discover"
-						nextOnClick={() =>
-							navigate({
-								index,
-								key: VIEW_KEYS.DISCOVER
-							})
-						}
-						nextLabel="See All"
-					/>
+			<Header
+				size="md"
+				icon={<Puzzle size={14} className="opacity-40" />}
+				label="Discover"
+				nextOnClick={() =>
+					navigate({
+						index,
+						key: VIEW_KEYS.DISCOVER
+					})
+				}
+				nextLabel="See All"
+			/>
 
-					<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={discoveryPlugs} />
-				</>
-			)}
+			<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={discoveryPlugs} />
 
-			{(!hideEmpty || (hideEmpty && (myPlugs?.length ?? 0) > 0)) && (
-				<>
-					<Header
-						size="md"
-						icon={<PlugZap size={14} className="opacity-40" />}
-						label="My Plugs"
-						nextOnClick={() =>
-							navigate({
-								index,
-								key: VIEW_KEYS.MY_PLUGS
-							})
-						}
-						nextLabel="See All"
-					/>
+			<Header
+				size="md"
+				icon={<PlugZap size={14} className="opacity-40" />}
+				label="My Plugs"
+				nextOnClick={() =>
+					navigate({
+						index,
+						key: VIEW_KEYS.MY_PLUGS
+					})
+				}
+				nextLabel="See All"
+			/>
 
-					<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={myPlugs} />
-				</>
-			)}
+			<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={myPlugs} />
 		</div>
 	)
 }

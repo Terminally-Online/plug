@@ -67,9 +67,11 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 	const [tag, handleTag] = useState<(typeof tags)[number]>(tags[0])
 
 	const ids =
-		(columns
-			.map(column => (column.item === null ? undefined : column.item))
-			.filter(column => Boolean(column)) as Array<string>) || []
+		(columns &&
+			(columns
+				.map(column => (column.item === null ? undefined : column.item))
+				.filter(column => Boolean(column)) as Array<string>)) ||
+		[]
 
 	const { data: apiPlugs } = api.plug.get.useQuery(ids, {
 		enabled: ids.length > 0 ? true : false

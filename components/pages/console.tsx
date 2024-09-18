@@ -3,15 +3,16 @@ import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader } from "@/components"
+import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader, PageNavbar } from "@/components"
 import { useMediaQuery } from "@/lib"
-import { useSocket } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 const MobilePage = () => {
 	return (
 		<>
 			<PageHeader />
 			<PageContent />
+			<PageNavbar />
 
 			<AuthFrame />
 		</>
@@ -30,6 +31,7 @@ const DesktopPage = () => {
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
 	const { socket } = useSocket()
+	const { columns } = useColumns()
 
 	useEffect(() => {
 		if (socket) return

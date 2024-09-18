@@ -7,13 +7,12 @@ import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Container, Header } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, VIEW_KEYS } from "@/lib"
+import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useFrame, useSocket } from "@/state"
 
 const HomePageHeader = () => {
-	const index = -1
-	const { handleFrame } = useFrame({ index })
-	const { column, navigate } = useColumns(index)
+	const { handleFrame } = useFrame({ index: MOBILE_INDEX })
+	const { column, navigate } = useColumns(MOBILE_INDEX)
 	const { socket, avatar } = useSocket()
 	const { handle } = usePlugs()
 
@@ -88,8 +87,8 @@ const HomePageHeader = () => {
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
-	const { handleFrame } = useFrame({ index: -1 })
-	const { column, navigate } = useColumns(-1)
+	const { handleFrame } = useFrame({ index: MOBILE_INDEX })
+	const { column, navigate } = useColumns(MOBILE_INDEX)
 	const { plug, handle } = usePlugs(column?.item ?? "")
 
 	const own = plug !== undefined && session && session.address === plug.socketId
@@ -158,7 +157,7 @@ const PlugHeader = () => {
 }
 
 const DynamicPageHeader = () => {
-	const { column, navigate } = useColumns(-1)
+	const { column, navigate } = useColumns(MOBILE_INDEX)
 	const { handle } = usePlugs(column?.item ?? "")
 
 	if (!column) return null
@@ -181,12 +180,12 @@ const DynamicPageHeader = () => {
 						<ChevronLeft size={14} />
 					</Button>
 
-					<button
+					<Button
 						className="mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
 						onClick={() => navigate({ index: -1, key: VIEW_KEYS.ACTIVITY })}
 					>
 						{formatTitle(column?.key.toLowerCase() ?? "")}
-					</button>
+					</Button>
 				</>
 			}
 			nextOnClick={() => handle.plug.add({ from: column.key })}
@@ -196,7 +195,7 @@ const DynamicPageHeader = () => {
 }
 
 export const PageHeader = () => {
-	const { column } = useColumns(-1)
+	const { column } = useColumns(MOBILE_INDEX)
 
 	return (
 		<Container>
