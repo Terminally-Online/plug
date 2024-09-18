@@ -9,7 +9,6 @@ import { Draggable } from "@hello-pangea/dnd"
 import {
 	Button,
 	ColumnAddOptions,
-	ColumnAlerts,
 	ColumnAuthenticate,
 	ColumnProfile,
 	ColumnSearch,
@@ -219,25 +218,25 @@ export const ConsoleColumn: FC<{
 
 							<div className="h-full overflow-y-scroll">
 								{key === VIEW_KEYS.AUTHENTICATE ? (
-									<ColumnAuthenticate />
+									<ColumnAuthenticate index={index} />
 								) : key === VIEW_KEYS.ADD ? (
-									<ColumnAddOptions className="px-4 pt-4" index={index} />
+									<ColumnAddOptions index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.SEARCH ? (
 									<ColumnSearch index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.VIEW_AS ? (
 									<ColumnViewAs />
 								) : key === VIEW_KEYS.DISCOVER ? (
-									<PlugsDiscover className="pt-4" index={index} />
+									<PlugsDiscover index={index} className="pt-4" />
 								) : key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine className="pt-4" index={index} />
+									<PlugsMine index={index} className="pt-4" />
 								) : key === VIEW_KEYS.PLUG ? (
-									<Plug className="px-4 pt-4" index={index} item={item} from={from} />
+									<Plug index={index} item={item} from={from} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ACTIVITY ? (
 									<SocketActivity index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.TOKENS ? (
-									<SocketTokenList index={index} className="px-4 pt-4" expanded={true} />
+									<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={index} className="px-4 pt-4" expanded={true} />
+									<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.POSITIONS ? (
 									<SocketPositionList index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ADMIN ? (

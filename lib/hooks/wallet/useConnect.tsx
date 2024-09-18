@@ -21,6 +21,7 @@ import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import {
 	authenticationLoadingAtom,
 	authenticationResponseAtom,
+	useColumns,
 	walletConnectProviderAtom,
 	walletConnectURIAtom
 } from "@/state"
@@ -30,12 +31,14 @@ const ConnectionContext = createContext<
 			connection: UseConnectReturnType<ResolvedRegister["config"]>
 			account: UseAccountReturnType<ResolvedRegister["config"]>
 			sign: UseSignMessageReturnType
-			prove: (address?: string) => Promise<void>
+			prove: (index: number, from?: string, address?: string) => Promise<void>
 	  }
 	| undefined
 >(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
+	const { navigate } = useColumns()
+
 	const [walletConnectProvider, setWalletConnectProvider] = useAtom(walletConnectProviderAtom)
 	const [walletConnectURI, setWalletConnectURI] = useAtom(walletConnectURIAtom)
 	const setAuthenticationLoading = useSetAtom(authenticationLoadingAtom)
@@ -51,11 +54,16 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 
 	const chainId = useChainId()
 	const account = useAccount()
-	const { disconnect } = useDisconnect()
 	const sign = useSignMessage()
+	const { disconnect } = useDisconnect()
 
+	/**
+	 * Trigger and handle the signing of a message to prove ownership of the address.
+	 * @param address The address to prove ownership of.
+	 * @returns A promise that resolves when the signing is complete.
+	 */
 	const prove = useCallback(
-		async (address?: string) => {
+		async (index: number, from?: string, address?: string) => {
 			try {
 				setAuthenticationLoading(false)
 
@@ -96,6 +104,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 							})
 
 							setAuthenticationResponse(authenticationResponse)
+							navigate({ index, key: from })
 						},
 						onError: (_, account) => {
 							if (account.connector) account.connector.disconnect()
@@ -114,7 +123,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 				disconnect()
 			}
 		},
-		[connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
+		[navigate, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
 	)
 
 	/**
@@ -148,13 +157,6 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 			walletConnectProvider.once("display_uri", setWalletConnectURI)
 		}
 	}, [account.address, walletConnectProvider, walletConnectURI, init, setWalletConnectURI])
-
-	// useEffect(() => {
-	// 	if (!accountDrawer.isOpen && connection.isPending) {
-	// 		connection.reset()
-	// 		disconnect()
-	// 	}
-	// }, [connection, accountDrawer.isOpen, disconnect])
 
 	return (
 		<ConnectionContext.Provider value={{ connection, account, sign, prove }}>{children}</ConnectionContext.Provider>

@@ -20,7 +20,7 @@ import {
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
-import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state"
+import { authenticationAtom, useColumns, walletConnectURIMatrixAtom } from "@/state"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -166,7 +166,7 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 	)
 }
 
-const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
+const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }> = ({ connector, index, from }) => {
 	const { connection, prove } = useConnect()
 
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
@@ -197,7 +197,7 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 								{
 									onSuccess: data => {
 										updateRecentConnectorId(connector.id)
-										prove(data.accounts[0])
+										prove(index, from, data.accounts[0])
 									}
 								}
 							)
@@ -214,7 +214,7 @@ const Connector: FC<{ connector: wagmiConnector }> = ({ connector }) => {
 	)
 }
 
-const Connectors = () => {
+const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 	const connectors = useOrderedConnections(true)
 
 	return (
@@ -225,7 +225,7 @@ const Connectors = () => {
 				<Animate.List>
 					{connectors.map(connector => (
 						<Animate.ListItem key={connector.id}>
-							<Connector connector={connector} />
+							<Connector connector={connector} index={index} from={from} />
 						</Animate.ListItem>
 					))}
 				</Animate.List>
@@ -234,8 +234,10 @@ const Connectors = () => {
 	)
 }
 
-export const ColumnAuthenticate = () => {
+export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const { account, sign, prove } = useConnect()
+	const { column } = useColumns(index)
+
 	const authentication = useAtomValue(authenticationAtom)
 
 	return (
@@ -257,7 +259,7 @@ export const ColumnAuthenticate = () => {
 							: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
 					}
 				>
-					<Button className="mt-2" sizing="sm" onClick={() => prove()}>
+					<Button className="mt-2" sizing="sm" onClick={() => prove(index, column?.from)}>
 						Sign Message
 					</Button>
 				</Callout>
@@ -274,7 +276,7 @@ export const ColumnAuthenticate = () => {
 				</Callout>
 			)}
 
-			{account.address === undefined && <Connectors />}
+			{account.address === undefined && <Connectors index={index} from={column?.from} />}
 		</div>
 	)
 }
