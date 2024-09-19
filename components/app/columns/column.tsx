@@ -109,13 +109,15 @@ export const ConsoleColumn: FC<{
 												/>
 											</Button>
 
+											{column.index}
+
 											{from && (
 												<Button
 													variant="secondary"
 													onClick={() =>
 														navigate({
 															index,
-															key: from!
+															key: from
 														})
 													}
 													className="rounded-sm p-1"

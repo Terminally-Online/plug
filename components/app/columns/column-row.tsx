@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion"
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
+import { MOBILE_INDEX } from "@/lib"
 import { useColumns } from "@/state"
 
 export const ConsoleColumnRow = () => {
@@ -25,7 +26,7 @@ export const ConsoleColumnRow = () => {
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
 							<AnimatePresence>
 								{columns
-									.filter(column => column.index !== -1)
+									.filter(column => column.index !== MOBILE_INDEX)
 									.sort((a, b) => a.index - b.index)
 									.map(column => (
 										<ConsoleColumn key={column.index} column={column} />

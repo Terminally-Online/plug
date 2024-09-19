@@ -17,37 +17,65 @@ export const useColumns = (index?: number) => {
 
 	const updateColumns = useCallback((updater: (prev: Column[]) => Column[]) => setColumns(updater), [setColumns])
 
+	/**
+	 * Add a column either to the end or to a specific index.
+	 * @param key The key of the column to add.
+	 * @param index The index of the column to add.
+	 * @param from The from of the column to add.
+	 * @param item The item of the column to add.
+	 */
 	const add = useCallback(
-		({ key, index, from, item }: Partial<Column>) => {
+		({ index, key, from, item }: Partial<Column>) => {
 			updateColumns(prev => {
 				const newColumn = { key, index: index ?? prev.length, from, item } as Column
 				const updatedColumns = [...prev]
 				if (index !== undefined) {
 					updatedColumns.splice(index, 0, newColumn)
-					for (let i = index + 1; i < updatedColumns.length; i++) updatedColumns[i].index++
 				} else {
 					updatedColumns.push(newColumn)
 				}
-				return updatedColumns
+				return updatedColumns.map((col, idx) => ({ ...col, index: idx - 1 }))
 			})
 		},
 		[updateColumns]
 	)
 
+	/**
+	 * Update the state (navigate within the context) of a column.
+	 * @param index The index of the column to update.
+	 * @param key The new key of the column.
+	 * @param item The new item of the column.
+	 * @param from The new from of the column.
+	 */
 	const navigate = useCallback(
 		({ index, key, item, from }: Partial<Column> & { index: number }) =>
 			updateColumns(prev =>
-				prev.map((col, idx) => (idx === index ? { ...col, key: key ?? col.key, item, from } : col))
+				prev.map(col => (col.index === index ? { ...col, key: key ?? col.key, item, from } : col))
 			),
 		[updateColumns]
 	)
 
+	/**
+	 * Remove a column from the state.
+	 * @param index The index of the column to remove.
+	 */
 	const remove = useCallback(
 		(index: number) =>
-			updateColumns(prev => prev.filter((_, idx) => idx !== index).map((col, idx) => ({ ...col, index: idx }))),
+			updateColumns(prev =>
+				prev
+					.filter(col => col.index !== index)
+					.sort((a, b) => a.index - b.index)
+					// NOTE: Account for the mobile index always being -1.
+					.map((col, idx) => ({ ...col, index: idx - 1 }))
+			),
 		[updateColumns]
 	)
 
+	/**
+	 * Move one column (in from index) to another index (to index).
+	 * @param from The index of the column to move the column from.
+	 * @param to The index of the column to move the column to.
+	 */
 	const move = useCallback(
 		({ from, to }: { from: number; to: number }) =>
 			updateColumns(prev => {
@@ -59,17 +87,22 @@ export const useColumns = (index?: number) => {
 		[updateColumns]
 	)
 
+	/**
+	 * Resize a single column.
+	 * @param index The index of the column to resize.
+	 * @param width The new width of the column.
+	 */
 	const resize = useCallback(
 		({ index, width }: { index: number; width: number }) =>
-			updateColumns(prev => {
-				const updatedColumns = [...prev]
-				const [movedColumn] = updatedColumns.splice(index, 1)
-				updatedColumns.splice(index, 0, { ...movedColumn, width })
-				return updatedColumns.map((col, idx) => ({ ...col, index: idx }))
-			}),
+			updateColumns(prev => prev.map((col, idx) => (idx === index ? { ...col, width } : col))),
 		[updateColumns]
 	)
 
+	/**
+	 * View the state of a column as another socket (user).
+	 * @param index The index of the column to view as.
+	 * @param as The socket to view as.
+	 */
 	const as = useCallback(
 		({ index, as }: { index: number; as: MinimalUserSocketModel }) =>
 			updateColumns(prev =>
