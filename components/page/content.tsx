@@ -1,9 +1,9 @@
-import { Container, Plug, Plugs, PlugsDiscover, PlugsMine, SocketActivity, SocketAssets } from "@/components"
-import { VIEW_KEYS } from "@/lib"
+import { Container, Plug, Plugs, PlugsDiscover, PlugsMine, SocketActivity } from "@/components"
+import { MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
 export const PageContent = () => {
-	const { column } = useColumns(-1)
+	const { column } = useColumns(MOBILE_INDEX)
 
 	if (column === undefined) return null
 
@@ -12,7 +12,6 @@ export const PageContent = () => {
 			return (
 				<Container>
 					<Plugs hideEmpty={true} />
-					<SocketAssets />
 				</Container>
 			)
 		case VIEW_KEYS.PLUG:

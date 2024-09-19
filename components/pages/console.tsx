@@ -10,7 +10,6 @@ import { useColumns, useSocket } from "@/state"
 const MobilePage = () => {
 	return (
 		<>
-			<PageHeader />
 			<PageContent />
 			<PageNavbar />
 
