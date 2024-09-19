@@ -109,8 +109,6 @@ export const ConsoleColumn: FC<{
 												/>
 											</Button>
 
-											{column.index}
-
 											{from && (
 												<Button
 													variant="secondary"

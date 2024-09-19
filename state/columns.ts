@@ -30,7 +30,7 @@ export const useColumns = (index?: number) => {
 				const newColumn = { key, index: index ?? prev.length, from, item } as Column
 				const updatedColumns = [...prev]
 				if (index !== undefined) {
-					updatedColumns.splice(index, 0, newColumn)
+					updatedColumns.splice(index + 1, 0, newColumn)
 				} else {
 					updatedColumns.push(newColumn)
 				}
