@@ -81,6 +81,7 @@ export const SocketPositionList: FC<
 
 			<Callout.Anonymous index={index} viewing="positions" isAbsolute={true} />
 			<Callout.EmptyAssets
+				index={index}
 				isEmpty={!isAnonymous && search === "" && protocols.length === 0}
 				isViewing="positions"
 				isReceivable={false}

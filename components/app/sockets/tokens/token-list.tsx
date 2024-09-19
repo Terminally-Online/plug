@@ -72,6 +72,7 @@ export const SocketTokenList: FC<
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets
+				index={index}
 				isEmpty={!isAnonymous && search === "" && tokens.length === 0}
 				isViewing="tokens"
 				isReceivable={true}

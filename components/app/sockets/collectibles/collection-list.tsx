@@ -79,6 +79,7 @@ export const SocketCollectionList: FC<
 
 			<Callout.Anonymous index={index} viewing="collectibles" isAbsolute={true} />
 			<Callout.EmptyAssets
+				index={index}
 				isEmpty={!isAnonymous && search === "" && collectibles.length === 0}
 				isViewing="collectibles"
 				isReceivable={false}

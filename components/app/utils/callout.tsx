@@ -2,7 +2,7 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
 import { usePlugs } from "@/contexts"
-import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
+import { cn, greenGradientStyle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
 const Base: FC<
@@ -104,11 +104,12 @@ const EmptySearch: FC<
 
 const EmptyAssets: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		index: number
 		isEmpty: boolean
 		isViewing: string
 		isReceivable: boolean
 	}
-> = ({ isEmpty, isViewing, isReceivable, className, ...props }) => {
+> = ({ index, isEmpty, isViewing, isReceivable, className, ...props }) => {
 	if (isEmpty === false) return null
 
 	return (
@@ -126,9 +127,11 @@ const EmptyAssets: FC<
 				description={`When this account has ${isViewing} they will appear here.`}
 				{...props}
 			>
-				<Button variant="secondary" sizing="sm" onClick={() => {}}>
-					View As
-				</Button>
+				{index !== MOBILE_INDEX && (
+					<Button variant="secondary" sizing="sm" onClick={() => {}}>
+						View As
+					</Button>
+				)}
 				{isReceivable && (
 					<Button sizing="sm" onClick={() => {}}>
 						Receive
@@ -165,9 +168,11 @@ const EmptyPlugs: FC<
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
 			>
-				<Button variant="secondary" sizing="sm" onClick={() => {}}>
-					View As
-				</Button>
+				{index !== MOBILE_INDEX && (
+					<Button variant="secondary" sizing="sm" onClick={() => {}}>
+						View As
+					</Button>
+				)}
 				<Button sizing="sm" onClick={() => handle.plug.add({ index, from: column.key })}>
 					Create
 				</Button>
@@ -201,9 +206,11 @@ const EmptyPlug: FC<
 				description="Get started by adding an action to your Plug."
 				{...props}
 			>
-				<Button variant="secondary" sizing="sm" onClick={() => {}}>
-					View As
-				</Button>
+				{index !== MOBILE_INDEX && (
+					<Button variant="secondary" sizing="sm" onClick={() => {}}>
+						View As
+					</Button>
+				)}
 				<Button sizing="sm" onClick={() => {}}>
 					Create
 				</Button>
