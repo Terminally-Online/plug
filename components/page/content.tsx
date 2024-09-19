@@ -31,7 +31,7 @@ export const PageContent = () => {
 				</Container>
 			)
 		case VIEW_KEYS.ACTIVITY:
-			return <SocketActivity />
+			return <Container className="pt-4"><SocketActivity /></Container>
 		default:
 			return <></>
 	}
