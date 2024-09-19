@@ -1,4 +1,16 @@
-import { ColumnSearch, Container, Plug, Plugs, PlugsDiscover, PlugsMine, Search, SocketActivity } from "@/components"
+import {
+	ColumnAuthenticate,
+	ColumnSearch,
+	Container,
+	Plug,
+	Plugs,
+	PlugsDiscover,
+	PlugsMine,
+	Search,
+	SocketActivity,
+	SocketAssets,
+	SocketProfile
+} from "@/components"
 import { MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
@@ -31,7 +43,24 @@ export const PageContent = () => {
 				</Container>
 			)
 		case VIEW_KEYS.ACTIVITY:
-			return <Container className="pt-4"><SocketActivity /></Container>
+			return (
+				<Container className="pt-4">
+					<SocketActivity />
+				</Container>
+			)
+		case VIEW_KEYS.PROFILE:
+			return (
+				<Container className="pt-4">
+					<SocketProfile />
+					<SocketAssets />
+				</Container>
+			)
+		case VIEW_KEYS.AUTHENTICATE:
+			return (
+				<Container className="pt-4">
+					<ColumnAuthenticate index={column.index} />
+				</Container>
+			)
 		default:
 			return <></>
 	}

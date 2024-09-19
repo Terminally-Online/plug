@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
 import { usePlugs } from "@/contexts"
-import { MOBILE_INDEX, VIEW_KEYS } from "@/lib"
+import { cn, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
 export const PageNavbar = () => {
@@ -26,7 +26,10 @@ export const PageNavbar = () => {
 				>
 					<HousePlug
 						size={24}
-						className="text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100"
+						className={cn(
+							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
+							column?.key === VIEW_KEYS.HOME && "text-opacity-100"
+						)}
 					/>
 				</button>
 				<button
@@ -35,11 +38,14 @@ export const PageNavbar = () => {
 				>
 					<Search
 						size={24}
-						className="text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100"
+						className={cn(
+							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
+							column?.key === VIEW_KEYS.SEARCH && "text-opacity-100"
+						)}
 					/>
 				</button>
 				<button
-					className="group flex h-8 w-8 items-center justify-center rounded-sm bg-gradient-to-tr from-plug-green to-plug-yellow"
+					className="group flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-plug-green to-plug-yellow"
 					onClick={() => handle.plug.add({ index: MOBILE_INDEX })}
 				>
 					<Plus
@@ -53,16 +59,19 @@ export const PageNavbar = () => {
 				>
 					<Bell
 						size={24}
-						className="text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100"
+						className={cn(
+							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
+							column?.key === VIEW_KEYS.ACTIVITY && "text-opacity-100"
+						)}
 					/>
 				</button>
 				<button
 					className="group h-8 w-8"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.ACTIVITY })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.PROFILE })}
 				>
 					{session && (
 						<button
-							className="relative h-8 w-8 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
+							className="relative h-8 w-8 rounded-md bg-grayscale-0 transition-all duration-200 ease-in-out"
 							onClick={() => {}}
 						>
 							<motion.div
