@@ -27,7 +27,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 		{
 			search,
 			tag,
-			limit: 20
+			limit: 40
 		},
 		{
 			getNextPageParam(lastPage) {

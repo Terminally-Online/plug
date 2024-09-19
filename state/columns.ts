@@ -80,9 +80,9 @@ export const useColumns = (index?: number) => {
 		({ from, to }: { from: number; to: number }) =>
 			updateColumns(prev => {
 				const updatedColumns = [...prev]
-				const [movedColumn] = updatedColumns.splice(from, 1)
-				updatedColumns.splice(to, 0, movedColumn)
-				return updatedColumns.map((col, idx) => ({ ...col, index: idx }))
+				const [movedColumn] = updatedColumns.splice(from + 1, 1)
+				updatedColumns.splice(to + 1, 0, movedColumn)
+				return updatedColumns.map((col, idx) => ({ ...col, index: idx - 1 }))
 			}),
 		[updateColumns]
 	)

@@ -5,6 +5,7 @@ import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
+import { usePlugs } from "@/contexts"
 import { MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
@@ -125,7 +126,10 @@ const ProgressiveBlur = () => {
 export const PageNavbar = () => {
 	const { data: session } = useSession()
 	const { avatar } = useSocket()
-	const { navigate } = useColumns(MOBILE_INDEX)
+	const { column, navigate } = useColumns(MOBILE_INDEX)
+	const { handle } = usePlugs()
+
+	if (!column) return null
 
 	return (
 		<div className="fixed bottom-0 left-0 right-0 z-[10] ">
@@ -133,7 +137,7 @@ export const PageNavbar = () => {
 			<div className="relative z-[11] flex flex-row items-center justify-between gap-2  px-8 py-6">
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.PLUGS })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.HOME })}
 				>
 					<HousePlug
 						size={24}
@@ -151,7 +155,7 @@ export const PageNavbar = () => {
 				</button>
 				<button
 					className="group flex h-8 w-8 items-center justify-center rounded-sm bg-gradient-to-tr from-plug-green to-plug-yellow"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.ACTIVITY })}
+					onClick={() => handle.plug.add({ index: MOBILE_INDEX })}
 				>
 					<Plus
 						size={24}

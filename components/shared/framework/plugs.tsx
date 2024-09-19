@@ -17,12 +17,12 @@ export const Plugs: FC<HTMLAttributes<HTMLDivElement> & { index?: number; hideEm
 
 	const { data: discoveryPlugs } = api.plug.all.useQuery({
 		target: "others",
-		limit: 2
+		limit: 4
 	})
 
 	const { data: myPlugs } = api.plug.all.useQuery({
 		target: "mine",
-		limit: 4
+		limit: 12
 	})
 
 	return (
