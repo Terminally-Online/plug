@@ -9,120 +9,6 @@ import { usePlugs } from "@/contexts"
 import { MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
-const ProgressiveBlur = () => {
-	return (
-		<>
-			<style jsx>{`
-				.gradient-blur {
-					position: absolute;
-					z-index: 5;
-					inset: auto 0 0 0;
-					height: 100%;
-					pointer-events: none;
-				}
-				.gradient-blur > div,
-				.gradient-blur::before,
-				.gradient-blur::after {
-					position: absolute;
-					inset: 0;
-				}
-				.gradient-blur::before {
-					content: "";
-					z-index: 1;
-					backdrop-filter: blur(0.5px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 0%,
-						rgba(0, 0, 0, 1) 12.5%,
-						rgba(0, 0, 0, 1) 25%,
-						rgba(0, 0, 0, 0) 37.5%
-					);
-				}
-				.gradient-blur > div:nth-of-type(1) {
-					z-index: 2;
-					backdrop-filter: blur(1px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 12.5%,
-						rgba(0, 0, 0, 1) 25%,
-						rgba(0, 0, 0, 1) 37.5%,
-						rgba(0, 0, 0, 0) 50%
-					);
-				}
-				.gradient-blur > div:nth-of-type(2) {
-					z-index: 3;
-					backdrop-filter: blur(2px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 25%,
-						rgba(0, 0, 0, 1) 37.5%,
-						rgba(0, 0, 0, 1) 50%,
-						rgba(0, 0, 0, 0) 62.5%
-					);
-				}
-				.gradient-blur > div:nth-of-type(3) {
-					z-index: 4;
-					backdrop-filter: blur(4px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 37.5%,
-						rgba(0, 0, 0, 1) 50%,
-						rgba(0, 0, 0, 1) 62.5%,
-						rgba(0, 0, 0, 0) 75%
-					);
-				}
-				.gradient-blur > div:nth-of-type(4) {
-					z-index: 5;
-					backdrop-filter: blur(8px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 50%,
-						rgba(0, 0, 0, 1) 62.5%,
-						rgba(0, 0, 0, 1) 75%,
-						rgba(0, 0, 0, 0) 87.5%
-					);
-				}
-				.gradient-blur > div:nth-of-type(5) {
-					z-index: 6;
-					backdrop-filter: blur(16px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 62.5%,
-						rgba(0, 0, 0, 1) 75%,
-						rgba(0, 0, 0, 1) 87.5%,
-						rgba(0, 0, 0, 0) 100%
-					);
-				}
-				.gradient-blur > div:nth-of-type(6) {
-					z-index: 7;
-					backdrop-filter: blur(32px);
-					mask: linear-gradient(
-						to bottom,
-						rgba(0, 0, 0, 0) 75%,
-						rgba(0, 0, 0, 1) 87.5%,
-						rgba(0, 0, 0, 1) 100%
-					);
-				}
-				.gradient-blur::after {
-					content: "";
-					z-index: 8;
-					backdrop-filter: blur(64px);
-					mask: linear-gradient(to bottom, rgba(0, 0, 0, 0) 87.5%, rgba(0, 0, 0, 1) 100%);
-				}
-			`}</style>
-
-			<div className="gradient-blur">
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-			</div>
-		</>
-	)
-}
-
 export const PageNavbar = () => {
 	const { data: session } = useSession()
 	const { avatar } = useSocket()
@@ -132,9 +18,8 @@ export const PageNavbar = () => {
 	if (!column) return null
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-[10] ">
-			<ProgressiveBlur />
-			<div className="relative z-[11] flex flex-row items-center justify-between gap-2  px-8 py-6">
+		<div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-grayscale-100 bg-white">
+			<div className="relative z-[11] flex flex-row items-center justify-between gap-2 px-8 py-4">
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
 					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.HOME })}
