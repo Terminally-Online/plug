@@ -38,7 +38,7 @@ export const PageContent = () => {
 			)
 		case VIEW_KEYS.SEARCH:
 			return (
-				<Container className="pt-4">
+				<Container className="h-full min-h-screen pt-4">
 					<ColumnSearch index={column.index} />
 				</Container>
 			)

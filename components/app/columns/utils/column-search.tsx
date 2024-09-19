@@ -134,7 +134,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 							<SocketTokenList
 								index={index}
 								className="mb-4"
-								tokens={results.tokens}
+								columnTokens={results.tokens}
 								expanded={expanded.includes("tokens")}
 								count={5}
 								isColumn={false}
@@ -168,7 +168,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 							<SocketCollectionList
 								index={index}
 								className="mb-4"
-								collectibles={results.collectibles}
+								columnCollectibles={results.collectibles}
 								expanded={expanded.includes("collectibles")}
 								count={5}
 								isColumn={false}
