@@ -22,7 +22,7 @@ export const PageContent = () => {
 	switch (column.key) {
 		case VIEW_KEYS.HOME:
 			return (
-				<Container>
+				<Container className="mb-24">
 					<Plugs hideEmpty={true} />
 				</Container>
 			)
