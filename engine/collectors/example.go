@@ -14,8 +14,7 @@ func (c *ExampleCollector) GetKey() string {
 	return c.key
 }
 
-func (c *ExampleCollector) GetCollectionStream(stream chan<- engine.Collection) error {
-	// Simulating collection of data
+func (c *ExampleCollector) GetCollectionStream(_, _, stream chan<- engine.Collection) error {
 	go func() {
 		for i := 0; ; i++ {
 			stream <- engine.Collection{

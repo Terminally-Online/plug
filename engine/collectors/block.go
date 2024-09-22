@@ -10,35 +10,25 @@ import (
 	"solver/engine"
 )
 
-// Block represents an Ethereum block
-type Block struct {
-	Number       *big.Int
-	Hash         string
-	Timestamp    uint64
-	Transactions []string
+type BlockCollection struct {
+	Number    *big.Int
+	Hash      string
+	Timestamp uint64
 }
 
-// BlockCollector implements the Collector interface for Ethereum blocks
 type BlockCollector struct {
 	key    string
 	client *ethclient.Client
 }
 
-// NewBlockCollector creates a new BlockCollector
-func NewBlockCollector(key string, nodeURL string) (*BlockCollector, error) {
-	client, err := ethclient.Dial(nodeURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to Ethereum node: %v", err)
-	}
-	return &BlockCollector{key: key, client: client}, nil
+func NewBlockCollector(key string, client *ethclient.Client) *BlockCollector {
+	return &BlockCollector{key: key, client: client}
 }
 
-// GetKey returns the collector's key
 func (bc *BlockCollector) GetKey() string {
 	return bc.key
 }
 
-// GetCollectionStream starts collecting Ethereum blocks and sends them to the stream
 func (bc *BlockCollector) GetCollectionStream(ctx context.Context, networkName string, stream chan<- engine.Collection) error {
 	log.Printf("Starting block collection for network %s", networkName)
 
@@ -59,20 +49,17 @@ func (bc *BlockCollector) GetCollectionStream(ctx context.Context, networkName s
 				continue
 			}
 
-			blockData := Block{
-				Number:    block.Number(),
-				Hash:      block.Hash().Hex(),
-				Timestamp: block.Time(),
-			}
-
 			stream <- engine.Collection{
 				NetworkName: networkName,
-				Key:  bc.key,
-				Data: blockData,
+				Key:         bc.key,
+				Data: BlockCollection{
+					Number:    block.Number(),
+					Hash:      block.Hash().Hex(),
+					Timestamp: block.Time(),
+				},
 			}
 		case <-ctx.Done():
 			return ctx.Err()
 		}
 	}
 }
-

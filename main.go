@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"solver/engine"
@@ -10,6 +9,11 @@ import (
 	"solver/engine/executors"
 	"solver/engine/processes"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -22,17 +26,25 @@ func main() {
 	if alchemyAPIKey == "" {
 		log.Fatal("ALCHEMY_API_KEY environment variable not set")
 	}
-	alchemyURL := fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
-
-	blockCollector, err := collectors.NewBlockCollector("BlockCollector", alchemyURL)
+	ethClient, err := ethclient.Dial(fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey))
 	if err != nil {
-		log.Fatalf("Failed to create BlockCollector: %v", err)
+		log.Fatalf("failed to connect to Ethereum node: %v", err)
 	}
+
+	transferEventSignature := crypto.Keccak256Hash([]byte("Transfer(address,address,uint256)"))
+
+	blockCollector := collectors.NewBlockCollector("BlockCollector", ethClient)
+	eventCollector := collectors.NewEventCollector("EventCollector", ethClient, []collectors.EventFilter{
+		{
+			Topics: []common.Hash{transferEventSignature},
+		},
+	})
 
 	networks := make(map[string]engine.Network)
 	networks["ethereum"] = engine.Network{
 		Collectors: []engine.Collector{
 			blockCollector,
+			eventCollector,
 		},
 		Executors: []engine.Executor{
 			executors.NewExampleExecutor("ExampleExecutor"),
