@@ -3,24 +3,24 @@ package collectors
 import (
 	"context"
 	"fmt"
-	"log"
-	"math/big"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"log"
+	"math/big"
 	"solver/engine"
 )
 
 // Block represents an Ethereum block
 type Block struct {
-	Number     *big.Int
-	Hash       string
-	Timestamp  uint64
+	Number       *big.Int
+	Hash         string
+	Timestamp    uint64
 	Transactions []string
 }
 
 // BlockCollector implements the Collector interface for Ethereum blocks
 type BlockCollector struct {
-	key string
+	key    string
 	client *ethclient.Client
 }
 
@@ -39,44 +39,40 @@ func (bc *BlockCollector) GetKey() string {
 }
 
 // GetCollectionStream starts collecting Ethereum blocks and sends them to the stream
-func (bc *BlockCollector) GetCollectionStream(stream chan<- engine.Collection) error {
+func (bc *BlockCollector) GetCollectionStream(ctx context.Context, networkName string, stream chan<- engine.Collection) error {
+	log.Printf("Starting block collection for network %s", networkName)
+
 	headers := make(chan *types.Header)
-	sub, err := bc.client.SubscribeNewHead(context.Background(), headers)
+	sub, err := bc.client.SubscribeNewHead(ctx, headers)
 	if err != nil {
 		return fmt.Errorf("failed to subscribe to new headers: %v", err)
 	}
 
-	go func() {
-		for {
-			select {
-			case err := <-sub.Err():
-				log.Printf("Error in block subscription: %v", err)
-				return
-			case header := <-headers:
-				block, err := bc.client.BlockByHash(context.Background(), header.Hash())
-				if err != nil {
-					log.Printf("Error fetching block: %v", err)
-					continue
-				}
-				
-				txHashes := make([]string, len(block.Transactions()))
-				for i, tx := range block.Transactions() {
-					txHashes[i] = tx.Hash().Hex()
-				}
-
-				blockData := Block{
-					Number:     block.Number(),
-					Hash:       block.Hash().Hex(),
-					Timestamp:  block.Time(),
-				}
-
-				stream <- engine.Collection{
-					Key:  bc.key,
-					Data: blockData,
-				}
+	for {
+		select {
+		case err := <-sub.Err():
+			return fmt.Errorf("subscription error: %v", err)
+		case header := <-headers:
+			block, err := bc.client.BlockByHash(ctx, header.Hash())
+			if err != nil {
+				log.Printf("Error fetching block: %v", err)
+				continue
 			}
-		}
-	}()
 
-	return nil
+			blockData := Block{
+				Number:    block.Number(),
+				Hash:      block.Hash().Hex(),
+				Timestamp: block.Time(),
+			}
+
+			stream <- engine.Collection{
+				NetworkName: networkName,
+				Key:  bc.key,
+				Data: blockData,
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
 }
+

@@ -1,23 +1,34 @@
 package engine
 
 import (
+	"context"
 	"fmt"
-	"time"
 	"sync"
+	"time"
 )
 
 // NewEngine creates a new Engine instance
-func NewEngine(network Network, processes map[string]Process, retries int, delay time.Duration) *Engine {
+func NewEngine(networks map[string]Network, retries int, delay time.Duration) *Engine {
 	e := &Engine{
-		Network:   network,
-		Processes: processes,
-		Stream:    make(chan Collection),
-		Retries:   retries,
-		Delay:     delay,
+		Networks: networks,
+		Stream:   make(chan Collection),
+		Retries:  retries,
+		Delay:    delay,
 	}
 
-	fmt.Printf("Engine initialized with %d collectors, %d executors, and %d processes.\n",
-		len(network.Collectors), len(network.Executors), len(processes))
+	totalCollectors := 0
+	totalExecutors := 0
+	totalProcesses := 0
+	for networkName, network := range networks {
+		totalCollectors += len(network.Collectors)
+		totalExecutors += len(network.Executors)
+		totalProcesses += len(network.Processes)
+		fmt.Printf("Engine network %s with %d collectors, %d executors, and %d processes.\n",
+			networkName, len(network.Collectors), len(network.Executors), len(network.Processes))
+	}
+
+	fmt.Printf("Engine initialized with %d networks, %d collectors, %d executors, and %d processes.\n",
+		len(networks), totalCollectors, totalExecutors, totalProcesses)
 
 	return e
 }
@@ -45,61 +56,70 @@ func (e *Engine) Restart(err error) {
 
 // Run starts the engine
 func (e *Engine) Run() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	var wg sync.WaitGroup
 
-	// Start executors
-	executorChannels := make(map[string]chan interface{})
-	for _, executor := range e.Network.Executors {
-		executorChan := make(chan interface{})
-		executorChannels[executor.GetKey()] = executorChan
-		wg.Add(1)
-		go func(exec Executor, ch <-chan interface{}) {
-			defer wg.Done()
-			for action := range ch {
-				if err := exec.Execute(action); err != nil {
-					fmt.Printf("Error executing action for %s: %v\n", exec.GetKey(), err)
-				}
-			}
-		}(executor, executorChan)
-	}
-
-	// Start processes
-	for name, process := range e.Processes {
-		fmt.Printf("Running Process: %s\n", name)
-
-		if err := process.SyncState(); err != nil {
-			fmt.Printf("Error syncing state for process %s: %v\n", name, err)
-		}
-
-		wg.Add(1)
-		go func(proc Process) {
-			defer wg.Done()
-			for collection := range e.Stream {
-				execution, err := proc.ProcessCollection(collection.Key, collection.Data)
-				if err != nil {
-					fmt.Printf("Error processing collection for %s: %v\n", proc.GetKey(), err)
-					continue
-				}
-				if execution.Key != "" {
-					if ch, ok := executorChannels[execution.Key]; ok {
-						ch <- execution.Execution
-					} else {
-						fmt.Printf("No executor found for key: %s\n", execution.Key)
+	// Manage the state of all the networks we are running on
+	for networkName, network := range e.Networks {
+		// Start executors
+		executorChannels := make(map[string]chan interface{})
+		for _, executor := range network.Executors {
+			executorChan := make(chan interface{})
+			executorChannels[executor.GetKey()] = executorChan
+			wg.Add(1)
+			go func(net string, exec Executor, ch <-chan interface{}) {
+				defer wg.Done()
+				for action := range ch {
+					if err := exec.Execute(action); err != nil {
+						fmt.Printf("Error executing action for %s on network %s: %v\n", exec.GetKey(), net, err)
 					}
 				}
-			}
-		}(process)
-	}
+			}(networkName, executor, executorChan)
+		}
 
-	// Start collectors
-	for _, collector := range e.Network.Collectors {
-		wg.Add(1)
-		go func(coll Collector) {
-			defer wg.Done()
-			if err := coll.GetCollectionStream(e.Stream); err != nil {
-				fmt.Printf("Error in collector %s: %v\n", coll.GetKey(), err)
+		// Start processes
+		for _, process := range network.Processes {
+			fmt.Printf("Running Process: %s on network %s\n", process.GetKey(), networkName)
+
+			if err := process.SyncState(); err != nil {
+				fmt.Printf("Error syncing state for process %s on network %s: %v\n", process.GetKey(), networkName, err)
 			}
-		}(collector)
+
+			wg.Add(1)
+			go func(net string, proc Process) {
+				defer wg.Done()
+				for collection := range e.Stream {
+					if collection.NetworkName != net {
+						continue
+					}
+					execution, err := proc.ProcessCollection(collection.Key, collection.Data)
+					if err != nil {
+						fmt.Printf("Error processing collection for %s on network %s: %v\n", proc.GetKey(), net, err)
+						continue
+					}
+					if execution.Key != "" {
+						if ch, ok := executorChannels[execution.Key]; ok {
+							ch <- execution.Execution
+						} else {
+							fmt.Printf("No executor found for key: %s on network %s\n", execution.Key, net)
+						}
+					}
+				}
+			}(networkName, process)
+		}
+
+		// Start collectors
+		for _, collector := range network.Collectors {
+			wg.Add(1)
+			go func(net string, coll Collector) {
+				defer wg.Done()
+				if err := coll.GetCollectionStream(ctx, net, e.Stream); err != nil {
+					fmt.Printf("Error in collector %s on network %s: %v\n", coll.GetKey(), net, err)
+				}
+			}(networkName, collector)
+		}
 	}
 
 	// Wait for all goroutines to complete
