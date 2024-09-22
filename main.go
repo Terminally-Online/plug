@@ -34,11 +34,15 @@ func main() {
 	transferEventSignature := crypto.Keccak256Hash([]byte("Transfer(address,address,uint256)"))
 
 	blockCollector := collectors.NewBlockCollector("BlockCollector", ethClient)
-	eventCollector := collectors.NewEventCollector("EventCollector", ethClient, []collectors.EventFilter{
-		{
-			Topics: []common.Hash{transferEventSignature},
+	eventCollector := collectors.NewEventCollector(
+		"EventCollector",
+		ethClient,
+		[]collectors.EventFilter{
+			{
+				Topics: []common.Hash{transferEventSignature},
+			},
 		},
-	})
+	)
 
 	networks := make(map[string]engine.Network)
 	networks["ethereum"] = engine.Network{
