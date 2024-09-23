@@ -14,6 +14,10 @@ func (e ValidationError) Error() string {
 }
 
 var (
+	ErrInvalidChainId = func(field string, value int) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid chainId", value)}
+	}
+
 	ErrInvalidAddress = func(field string, value string) ValidationError {
 		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid Ethereum address", value)}
 	}
@@ -28,6 +32,25 @@ var (
 
 	ErrInvalidBytes = func(field string, value string, size int) ValidationError {
 		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid bytes%d value", value, size)}
+	}
+
+	ErrInvalidArrayLength = func(field string, min *int, max *int) ValidationError {
+		if min == nil && max == nil {
+			return ValidationError{
+				Field:   field,
+				Message: "minimum or maximum array length are required",
+			}
+		}
+
+		var message string
+		if min != nil && max != nil {
+			message = fmt.Sprintf("not a valid array length between %d and %d", *min, *max)
+		} else if min != nil {
+			message = fmt.Sprintf("not a valid array length (minimum %d)", *min)
+		} else {
+			message = fmt.Sprintf("not a valid array length (maximum %d)", *max)
+		}
+		return ValidationError{Field: field, Message: message}
 	}
 
 	ErrMissingField = func(field string) ValidationError {

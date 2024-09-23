@@ -8,8 +8,8 @@ import (
 )
 
 /*
-Action represents a generic action with its type and inputs. This is the 
-standard shape for a new action to be added to the intent that will be parsed, 
+Action represents a generic action with its type and inputs. This is the
+standard shape for a new action to be added to the intent that will be parsed,
 built and sent back to the caller of the endpoint.
 */
 type Action struct {
@@ -20,7 +20,7 @@ type Action struct {
 // ActionInputs is an interface that all specific action input structs should implement
 type ActionInputs interface {
 	Validate() error
-	Build() (*utils.Transaction, error)
+	Build(from string) (*utils.Transaction, error)
 }
 
 // ParseAction parses the Action struct and returns the specific ActionInputs

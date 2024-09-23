@@ -27,7 +27,7 @@ func (i ApproveInputs) Validate() error {
 	return nil
 }
 
-func (i ApproveInputs) Build() (*utils.Transaction, error) {
+func (i ApproveInputs) Build(from string) (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}

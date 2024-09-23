@@ -10,8 +10,8 @@ func SetupRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.Use(jsonContentTypeMiddleware)
 
-	transaction := r.PathPrefix("/transaction").Subrouter()
-	transaction.HandleFunc("", api.GetTransaction).Methods("GET")
+	intent := r.PathPrefix("/intent").Subrouter()
+	intent.HandleFunc("", api.CreateIntent).Methods("POST")
 
 	return r
 }

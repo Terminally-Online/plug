@@ -41,7 +41,7 @@ func (i TransferFromInputs) Validate() error {
 	return nil
 }
 
-func (i TransferFromInputs) Build() (*utils.Transaction, error) {
+func (i TransferFromInputs) Build(from string) (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (i TransferFromInputs) Build() (*utils.Transaction, error) {
 
 	return &utils.Transaction{
 		Transaction: "0x" + hex.EncodeToString(transferFrom.Data()),
-		From:        utils.ZeroAddress.Hex(),
+		From:        from,
 		To:          transferFrom.To().Hex(),
 		Value:       big.NewInt(0),
 	}, nil

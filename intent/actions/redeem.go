@@ -28,7 +28,7 @@ func (i RedeemInputs) Validate() error {
 	return nil
 }
 
-func (i RedeemInputs) Build() (*utils.Transaction, error) {
+func (i RedeemInputs) Build(from string) (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
