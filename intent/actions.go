@@ -15,6 +15,7 @@ type Action struct {
 // ActionInputs is an interface that all specific action input structs should implement
 type ActionInputs interface {
 	Validate() error
+	// TODO: Add Build() method to return the transaction data for the action.
 }
 
 // ParseAction parses the Action struct and returns the specific ActionInputs
