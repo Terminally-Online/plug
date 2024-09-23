@@ -9,12 +9,9 @@ import (
 )
 
 type ApproveInputs struct {
-	// Address of the token to approve.
-	Token string `json:"token"`
-	// Address of the spender.
-	Spender string `json:"spender"`
-	// Amount to approve.
-	Amount string `json:"amount"`
+	Token   string `json:"token"`   // Address of the token to approve.
+	Spender string `json:"spender"` // Address of the spender.
+	Amount  string `json:"amount"`  // Amount to approve.
 }
 
 func (i ApproveInputs) Validate() error {

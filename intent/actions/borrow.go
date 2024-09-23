@@ -5,10 +5,10 @@ import (
 )
 
 type BorrowInputs struct {
-	Collateral     string `json:"collateral"`
-	TokenOut       string `json:"tokenOut"`
-	AmountOut      string `json:"amountOut"`
-	PrimaryAddress string `json:"primaryAddress"`
+	Collateral     string `json:"collateral"`     // Address of the collateral token (supplied).
+	TokenOut       string `json:"tokenOut"`       // Address of the token to receive (borrow).
+	AmountOut      string `json:"amountOut"`      // Raw amount of tokens to borrow.
+	PrimaryAddress string `json:"primaryAddress"` // Address of the smart contract to interact with.
 }
 
 func (i BorrowInputs) Validate() error {

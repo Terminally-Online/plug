@@ -1,6 +1,10 @@
 package intent
 
 import (
+	"encoding/hex"
+	"github.com/ethereum/go-ethereum/common"
+	"math/big"
+	"solver/bindings/erc20"
 	"solver/utils"
 )
 
@@ -36,3 +40,30 @@ func (i TransferInputs) Validate() error {
 	return nil
 }
 
+func (i TransferInputs) Build() (*string, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), nil)
+	if err != nil {
+		return nil, utils.ErrContractFailed(i.Token)
+	}
+
+	amount, ok := new(big.Int).SetString(i.Amount, 10)
+	if !ok {
+		return nil, utils.ErrInvalidUint("amount", i.Amount, 256)
+	}
+
+	tx, err := contract.Transfer(
+		utils.DummyTransactOpts(),
+		common.HexToAddress(i.Recipient),
+		amount,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	data := "0x" + hex.EncodeToString(tx.Data())
+	return &data, nil
+}
