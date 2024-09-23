@@ -26,3 +26,11 @@ func (i BorrowInputs) Validate() error {
 	}
 	return nil
 }
+
+func (i BorrowInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("BorrowInputs.Build")
+}

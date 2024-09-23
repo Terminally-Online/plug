@@ -27,3 +27,11 @@ func (i RouteInputs) Validate() error {
 
 	return nil
 }
+
+func (i RouteInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("RouteInputs.Build")
+}

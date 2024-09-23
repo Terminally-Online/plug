@@ -17,7 +17,6 @@ This is of use when an ethereum account is transferring tokens for themselves
 in an external context or someone else is transferring tokens on the behalf
 of the sender. In this case, approval of the tokens is requried beforehand.
 */
-
 type TransferFromInputs struct {
 	Token     string `json:"token"`     // Address of the token to transfer.
 	Sender    string `json:"sender"`    // Address of the sender.
@@ -42,7 +41,7 @@ func (i TransferFromInputs) Validate() error {
 	return nil
 }
 
-func (i TransferFromInputs) Build() (*string, error) {
+func (i TransferFromInputs) Build() (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
@@ -57,7 +56,7 @@ func (i TransferFromInputs) Build() (*string, error) {
 		return nil, utils.ErrInvalidUint("amount", i.Amount, 256)
 	}
 
-	tx, err := contract.TransferFrom(
+	transferFrom, err := contract.TransferFrom(
 		utils.DummyTransactOpts(),
 		common.HexToAddress(i.Sender),
 		common.HexToAddress(i.Recipient),
@@ -67,6 +66,10 @@ func (i TransferFromInputs) Build() (*string, error) {
 		return nil, err
 	}
 
-	data := "0x" + hex.EncodeToString(tx.Data())
-	return &data, nil
+	return &utils.Transaction{
+		Transaction: "0x" + hex.EncodeToString(transferFrom.Data()),
+		From:        utils.ZeroAddress.Hex(),
+		To:          transferFrom.To().Hex(),
+		Value:       big.NewInt(0),
+	}, nil
 }

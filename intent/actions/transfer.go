@@ -19,7 +19,6 @@ This is of use when a smart account is transferring tokens directly from their o
 account to another destination. As the call is being routed through the smart account,
 the sender does not need to be provided as well as approvals are not required.
 */
-
 type TransferInputs struct {
 	Token     string `json:"token"`     // Address of the token to transfer.
 	Recipient string `json:"recipient"` // Address of the recipient.
@@ -40,7 +39,7 @@ func (i TransferInputs) Validate() error {
 	return nil
 }
 
-func (i TransferInputs) Build() (*string, error) {
+func (i TransferInputs) Build() (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
@@ -55,7 +54,7 @@ func (i TransferInputs) Build() (*string, error) {
 		return nil, utils.ErrInvalidUint("amount", i.Amount, 256)
 	}
 
-	tx, err := contract.Transfer(
+	transfer, err := contract.Transfer(
 		utils.DummyTransactOpts(),
 		common.HexToAddress(i.Recipient),
 		amount,
@@ -64,6 +63,10 @@ func (i TransferInputs) Build() (*string, error) {
 		return nil, err
 	}
 
-	data := "0x" + hex.EncodeToString(tx.Data())
-	return &data, nil
+	return &utils.Transaction{
+		Transaction: "0x" + hex.EncodeToString(transfer.Data()),
+		From:        utils.ZeroAddress.Hex(),
+		To:          transfer.To().Hex(),
+		Value:       big.NewInt(0),
+	}, nil
 }

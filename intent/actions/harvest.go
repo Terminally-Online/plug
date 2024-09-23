@@ -18,3 +18,11 @@ func (i HarvestInputs) Validate() error {
 	}
 	return nil
 }
+
+func (i HarvestInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("HarvestInputs.Build")
+}

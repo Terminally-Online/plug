@@ -31,3 +31,11 @@ func (i SwapInputs) Validate() error {
 
 	return nil
 }
+
+func (i SwapInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("SwapInputs.Build")
+}

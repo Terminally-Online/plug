@@ -10,7 +10,3 @@ type Transaction struct {
 	To          string   `json:"to"`
 	Value       *big.Int `json:"value"`
 }
-
-type TransactionBuilder interface { 
-	BuildTransaction() (*Transaction, error)
-}

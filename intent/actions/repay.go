@@ -23,3 +23,11 @@ func (i RepayInputs) Validate() error {
 
 	return nil
 }
+
+func (i RepayInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("RepayInputs.Build")
+}

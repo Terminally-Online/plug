@@ -26,3 +26,11 @@ func (i DepositInputs) Validate() error {
 	}
 	return nil
 }
+
+func (i DepositInputs) Build() (*utils.Transaction, error) {
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	return nil, utils.ErrNotImplemented("DepositInputs.Build")
+}

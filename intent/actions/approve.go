@@ -27,7 +27,7 @@ func (i ApproveInputs) Validate() error {
 	return nil
 }
 
-func (i ApproveInputs) Build() (*string, error) {
+func (i ApproveInputs) Build() (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (i ApproveInputs) Build() (*string, error) {
 		return nil, utils.ErrInvalidUint("amount", i.Amount, 256)
 	}
 
-	tx, err := contract.Approve(
+	approve, err := contract.Approve(
 		utils.DummyTransactOpts(),
 		common.HexToAddress(i.Spender),
 		amount,
@@ -51,6 +51,10 @@ func (i ApproveInputs) Build() (*string, error) {
 		return nil, err
 	}
 
-	data := "0x" + hex.EncodeToString(tx.Data())
-	return &data, nil
+	return &utils.Transaction{
+		Transaction: "0x" + hex.EncodeToString(approve.Data()),
+		From:        utils.ZeroAddress.Hex(),
+		To:          approve.To().Hex(),
+		Value:       big.NewInt(0),
+	}, nil
 }

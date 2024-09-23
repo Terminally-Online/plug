@@ -4,9 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/intent/actions"
+	"solver/utils"
 )
 
-// Action represents a generic action with its type and inputs
+/*
+Action represents a generic action with its type and inputs. This is the 
+standard shape for a new action to be added to the intent that will be parsed, 
+built and sent back to the caller of the endpoint.
+*/
 type Action struct {
 	Type   string          `json:"action"`
 	Inputs json.RawMessage `json:"inputs"`
@@ -15,7 +20,7 @@ type Action struct {
 // ActionInputs is an interface that all specific action input structs should implement
 type ActionInputs interface {
 	Validate() error
-	// TODO: Add Build() method to return the transaction data for the action.
+	Build() (*utils.Transaction, error)
 }
 
 // ParseAction parses the Action struct and returns the specific ActionInputs
@@ -31,8 +36,6 @@ func ParseAction(action Action) (ActionInputs, error) {
 		inputs = &intent.DepositInputs{}
 	case "harvest":
 		inputs = &intent.HarvestInputs{}
-	case "permittransferfrom":
-		inputs = &intent.PermitTransferFromInputs{}
 	case "redeem":
 		inputs = &intent.RedeemInputs{}
 	case "repay":
@@ -41,7 +44,7 @@ func ParseAction(action Action) (ActionInputs, error) {
 		inputs = &intent.SwapInputs{}
 	case "transfer":
 		inputs = &intent.TransferInputs{}
-	case "transferfrom":
+	case "transfer_from":
 		inputs = &intent.TransferFromInputs{}
 	case "route":
 		inputs = &intent.RouteInputs{}
