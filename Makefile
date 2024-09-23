@@ -10,4 +10,4 @@ bindings:
 	mkdir -p abigenBindings
 	pnpm truffle run abigen
 	mkdir -p bindings
-	go run cmd/bindings.go
+	go run cmd/bindings/main.go
