@@ -27,7 +27,7 @@ func (i BorrowInputs) Validate() error {
 	return nil
 }
 
-func (i BorrowInputs) Build(from string) (*utils.Transaction, error) {
+func (i BorrowInputs) Build(chainId int, from string) (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}

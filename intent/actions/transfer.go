@@ -39,7 +39,7 @@ func (i TransferInputs) Validate() error {
 	return nil
 }
 
-func (i TransferInputs) Build(from string) (*utils.Transaction, error) {
+func (i TransferInputs) Build(chainId int, from string) (*utils.Transaction, error) {
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}

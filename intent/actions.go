@@ -13,14 +13,14 @@ standard shape for a new action to be added to the intent that will be parsed,
 built and sent back to the caller of the endpoint.
 */
 type Action struct {
-	Type   string          `json:"action"`
+	Type   string          `json:"type"`
 	Inputs json.RawMessage `json:"inputs"`
 }
 
 // ActionInputs is an interface that all specific action input structs should implement
 type ActionInputs interface {
 	Validate() error
-	Build(from string) (*utils.Transaction, error)
+	Build(chainId int, from string) (*utils.Transaction, error)
 }
 
 // ParseAction parses the Action struct and returns the specific ActionInputs

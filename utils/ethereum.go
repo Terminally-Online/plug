@@ -2,6 +2,7 @@ package utils
 
 import (
 	"math/big"
+	"slices"
 	"regexp"
 	"strings"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,6 +26,10 @@ var (
 	uint128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
 	uint256Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
 )
+
+func IsSupportedChain(chainId int) bool {
+	return slices.Contains(SupportedChains, chainId)
+}
 
 func IsAddress(s string) bool {
 	return addressPattern.MatchString(s)

@@ -4,6 +4,11 @@ import (
 	"math/big"
 )
 
+var (
+	MinActions      = 1
+	MaxActions      = 10
+)
+
 type Transaction struct {
 	Transaction string   `json:"transaction"`
 	From        string   `json:"from"`

@@ -1,27 +1,70 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
-type Error struct {
-	Message string
+type ServerError struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Details string `json:"details"`
 }
 
-func (e Error) Error() string {
-	return fmt.Sprintf("Error: %s", e.Message)
+func (e ServerError) Error() string {
+	return e.Message
+}
+
+func Error(w http.ResponseWriter, error error, statusCode int) {
+	w.WriteHeader(statusCode)
+
+	err := ServerError{
+		Status:  statusCode,
+		Details: error.Error(),
+	}
+
+	switch error.(type) {
+	case ValidationError:
+		err.Message = "Validation error"
+	case *json.SyntaxError, *json.UnmarshalTypeError:
+		err.Message = "Invalid JSON"
+	default:
+		if statusCode >= 500 {
+			err.Message = "Internal server error"
+		} else {
+			err.Message = "Request error"
+		}
+	}
+
+	if err := json.NewEncoder(w).Encode(err); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 var (
-	ErrNotImplemented = func(functionName string) ValidationError {
-		return ValidationError{Message: fmt.Sprintf("%s is not implemented.", functionName)}
+	ErrNotImplemented = func(functionName string) ServerError {
+		return ServerError{Message: fmt.Sprintf("%s is not implemented.", functionName)}
 	}
 
-	ErrContractFailed = func(address string) ValidationError {
-		return ValidationError{Message: fmt.Sprintf("Contract at %s could not be interfaced with.", address)}
+	ErrEnvironmentNotInitialized = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("loading environment (.env) failed: %s", error)}
 	}
 
-	ErrTransactionFailed = func(functionName string, address string) ValidationError {
-		return ValidationError{Message: fmt.Sprintf("%s transaction to %s failed while being built.", functionName, address)}
+	ErrEnvironmentVarNotSet = func(envVar string) ServerError {
+		return ServerError{Message: fmt.Sprintf("%s environment variable not set.", envVar)}
+	}
+
+	ErrEthClientFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("failed to connect to Ethereum node: %s", error)}
+	}
+
+	ErrContractFailed = func(address string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Contract at %s could not be interfaced with.", address)}
+	}
+
+	ErrTransactionFailed = func(functionName string, address string) ServerError {
+		return ServerError{Message: fmt.Sprintf("%s transaction to %s failed while being built.", functionName, address)}
 	}
 )

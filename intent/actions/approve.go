@@ -2,7 +2,9 @@ package intent
 
 import (
 	"encoding/hex"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"solver/bindings/erc20"
 	"solver/utils"
@@ -27,12 +29,13 @@ func (i ApproveInputs) Validate() error {
 	return nil
 }
 
-func (i ApproveInputs) Build(from string) (*utils.Transaction, error) {
-	if err := i.Validate(); err != nil {
+func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, error) {
+	ethClient, err := utils.GetProvider(chainId) 
+	if err != nil {
 		return nil, err
 	}
 
-	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), nil)
+	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), ethClient)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}
@@ -43,7 +46,13 @@ func (i ApproveInputs) Build(from string) (*utils.Transaction, error) {
 	}
 
 	approve, err := contract.Approve(
-		utils.DummyTransactOpts(),
+		&bind.TransactOpts{
+			From: common.HexToAddress(from),
+			Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
+				return tx, nil
+			},
+			NoSend: true,
+		},
 		common.HexToAddress(i.Spender),
 		amount,
 	)
@@ -53,7 +62,7 @@ func (i ApproveInputs) Build(from string) (*utils.Transaction, error) {
 
 	return &utils.Transaction{
 		Transaction: "0x" + hex.EncodeToString(approve.Data()),
-		From:        utils.ZeroAddress.Hex(),
+		From:        from,
 		To:          approve.To().Hex(),
 		Value:       big.NewInt(0),
 	}, nil

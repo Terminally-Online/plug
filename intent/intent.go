@@ -1,7 +1,6 @@
 package intent
 
 import (
-	"slices"
 	"solver/utils"
 )
 
@@ -11,14 +10,8 @@ type IntentRequest struct {
 	Actions []Action `json:"actions"`
 }
 
-var (
-	SupportedChains = []int{1}
-	MinActions      = 1
-	MaxActions      = 10
-)
-
 func (i IntentRequest) Validate() error {
-	if !slices.Contains(SupportedChains, i.ChainId) {
+	if !utils.IsSupportedChain(i.ChainId) {
 		return utils.ErrInvalidChainId("chainId", i.ChainId)
 	}
 
@@ -26,8 +19,8 @@ func (i IntentRequest) Validate() error {
 		return utils.ErrInvalidAddress("from", i.From)
 	}
 
-	if len(i.Actions) < MinActions || len(i.Actions) > MaxActions {
-		return utils.ErrInvalidArrayLength("actions", &MinActions, &MaxActions)
+	if len(i.Actions) < utils.MinActions || len(i.Actions) > utils.MaxActions {
+		return utils.ErrInvalidArrayLength("actions", &utils.MinActions, &utils.MaxActions)
 	}
 
 	return nil

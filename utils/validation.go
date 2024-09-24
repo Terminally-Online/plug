@@ -10,12 +10,20 @@ type ValidationError struct {
 }
 
 func (e ValidationError) Error() string {
-	return fmt.Sprintf("Validation error: %s %s", e.Field, e.Message)
+	return fmt.Sprintf("%s: %s", e.Field, e.Message)
 }
 
 var (
+	ErrInvalidPayload = func(field string, value string) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid payload", value)}
+	}
+
 	ErrInvalidChainId = func(field string, value int) ValidationError {
 		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid chainId", value)}
+	}
+
+	ErrInvalidProviderId = func(field string, value int) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%d chainId does not have a supported provider", value)}
 	}
 
 	ErrInvalidAddress = func(field string, value string) ValidationError {

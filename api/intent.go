@@ -7,15 +7,15 @@ import (
 	"solver/utils"
 )
 
-func CreateIntent(w http.ResponseWriter, r *http.Request) {
+func GetIntent(w http.ResponseWriter, r *http.Request) {
 	var intentRequest intent.IntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&intentRequest); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		utils.Error(w, utils.ServerError{Message: "Invalid request payload"}, http.StatusBadRequest)
 		return
 	}
 
 	if err := intentRequest.Validate(); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.Error(w, err, http.StatusBadRequest)
 		return
 	}
 
@@ -23,13 +23,13 @@ func CreateIntent(w http.ResponseWriter, r *http.Request) {
 	for _, action := range intentRequest.Actions {
 		inputs, err := intent.ParseAction(action)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			utils.Error(w, err, http.StatusBadRequest)
 			return
 		}
 
-		transaction, err := inputs.Build(intentRequest.From)
+		transaction, err := inputs.Build(intentRequest.ChainId, intentRequest.From)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			utils.Error(w, err, http.StatusBadRequest)
 			return
 		}
 
@@ -42,7 +42,7 @@ func CreateIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(intentResponse); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.Error(w, err, http.StatusInternalServerError)
 		return
 	}
 }

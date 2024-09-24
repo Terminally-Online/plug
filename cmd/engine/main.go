@@ -2,31 +2,19 @@ package main
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"log"
-	"os"
 	"solver/engine"
 	"solver/engine/collectors"
 	"solver/engine/executors"
 	"solver/engine/processes"
+	"solver/utils"
 	"time"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
-	if alchemyAPIKey == "" {
-		log.Fatal("ALCHEMY_API_KEY environment variable not set")
-	}
-	ethClient, err := ethclient.Dial(fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey))
+	ethClient, err := utils.GetProvider(1)
 	if err != nil {
 		log.Fatalf("failed to connect to Ethereum node: %v", err)
 	}
