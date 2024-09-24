@@ -55,7 +55,7 @@ func (i TransferInputs) Build(chainId int, from string) (*utils.Transaction, err
 	}
 
 	transfer, err := contract.Transfer(
-		utils.DummyTransactOpts(),
+		utils.DummyTransactOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Recipient),
 		amount,
 	)

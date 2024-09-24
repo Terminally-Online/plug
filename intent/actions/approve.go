@@ -2,18 +2,16 @@ package intent
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"solver/bindings/erc20"
 	"solver/utils"
 )
 
 type ApproveInputs struct {
-	Token   string `json:"token"`   // Address of the token to approve.
-	Spender string `json:"spender"` // Address of the spender.
-	Amount  string `json:"amount"`  // Amount to approve.
+	Token   string  `json:"token"`   // Address of the token to approve.
+	Spender string  `json:"spender"` // Address of the spender.
+	Amount  big.Int `json:"amount"`  // Amount to approve.
 }
 
 func (i ApproveInputs) Validate() error {
@@ -23,14 +21,14 @@ func (i ApproveInputs) Validate() error {
 	if !utils.IsAddress(i.Spender) {
 		return utils.ErrInvalidAddress("spender", i.Spender)
 	}
-	if !utils.IsUint(i.Amount, 256) {
-		return utils.ErrInvalidUint("amount", i.Amount, 256)
+	if !utils.IsUint(i.Amount.String(), 256) {
+		return utils.ErrInvalidUint("amount", i.Amount.String(), 256)
 	}
 	return nil
 }
 
 func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, error) {
-	ethClient, err := utils.GetProvider(chainId) 
+	ethClient, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -40,21 +38,10 @@ func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, erro
 		return nil, utils.ErrContractFailed(i.Token)
 	}
 
-	amount, ok := new(big.Int).SetString(i.Amount, 10)
-	if !ok {
-		return nil, utils.ErrInvalidUint("amount", i.Amount, 256)
-	}
-
 	approve, err := contract.Approve(
-		&bind.TransactOpts{
-			From: common.HexToAddress(from),
-			Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
-				return tx, nil
-			},
-			NoSend: true,
-		},
+		utils.DummyTransactOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Spender),
-		amount,
+		&i.Amount,
 	)
 	if err != nil {
 		return nil, err
@@ -64,6 +51,7 @@ func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, erro
 		Transaction: "0x" + hex.EncodeToString(approve.Data()),
 		From:        from,
 		To:          approve.To().Hex(),
-		Value:       big.NewInt(0),
+		Value:       approve.Value(),
+		Gas:         approve.Gas(),
 	}, nil
 }

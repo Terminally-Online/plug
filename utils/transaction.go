@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	MinActions      = 1
-	MaxActions      = 10
+	MinActions = 1
+	MaxActions = 10
 )
 
 type Transaction struct {
@@ -14,4 +14,5 @@ type Transaction struct {
 	From        string   `json:"from"`
 	To          string   `json:"to"`
 	Value       *big.Int `json:"value"`
+	Gas         uint64   `json:"gas"`
 }
