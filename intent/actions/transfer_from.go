@@ -30,7 +30,7 @@ type TransferFromInputs struct {
 	Sender    string   `json:"sender"`    // Address of the sender.
 	Recipient string   `json:"recipient"` // Address of the recipient.
 	TokenId   *big.Int `json:"tokenId"`   // Token ID of the token to transfer.
-	Amount    *big.Int  `json:"amount"`    // Raw amount of tokens to transfer.
+	Amount    *big.Int `json:"amount"`    // Raw amount of tokens to transfer.
 }
 
 func (i TransferFromInputs) Validate() error {
@@ -83,6 +83,13 @@ func (i TransferFromInputs) Validate() error {
 
 	default:
 		return utils.ErrInvalidTokenStandard("type", i.Type)
+	}
+
+	if i.Amount != nil && !utils.IsUint(i.Amount.String(), 256) {
+		return utils.ErrInvalidUint("amount", i.Amount.String(), 256)
+	}
+	if i.TokenId != nil && !utils.IsUint(i.TokenId.String(), 256) {
+		return utils.ErrInvalidUint("tokenId", i.TokenId.String(), 256)
 	}
 
 	return nil
