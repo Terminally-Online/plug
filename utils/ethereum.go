@@ -1,16 +1,19 @@
 package utils
 
 import (
-	"math/big"
-	"slices"
-	"regexp"
-	"strings"
 	"github.com/ethereum/go-ethereum/common"
+	"math/big"
+	"regexp"
+	"slices"
+	"strings"
 )
 
 var (
-	ZeroAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
+	ZeroAddress        = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	NativeTokenAddress = common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")
+
+	TokenStandards     = []int{0, 20, 721, 1155}
+	VaultStandards     = []int{4626}
 )
 
 var (
@@ -29,6 +32,14 @@ var (
 
 func IsSupportedChain(chainId int) bool {
 	return slices.Contains(SupportedChains, chainId)
+}
+
+func IsSupportedTokenStandard(standard int) bool {
+	return slices.Contains(TokenStandards, standard)
+}
+
+func IsSupportedVaultStandard(standard int) bool {
+	return slices.Contains(VaultStandards, standard)
 }
 
 func IsAddress(s string) bool {

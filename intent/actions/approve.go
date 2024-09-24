@@ -28,12 +28,12 @@ func (i ApproveInputs) Validate() error {
 }
 
 func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, error) {
-	ethClient, err := utils.GetProvider(chainId)
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), ethClient)
+	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}

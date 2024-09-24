@@ -7,6 +7,10 @@ import (
 	"math/big"
 )
 
+var (
+	DummyNonce = uint64(0)
+)
+
 // DummyTransactOpts returns a TransactOpts with a dummy signer.
 // This is useful for generating transaction data without actually signing the transaction.
 func DummyTransactOpts(address string, value *big.Int) *bind.TransactOpts {

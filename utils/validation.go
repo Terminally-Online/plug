@@ -18,12 +18,24 @@ var (
 		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid payload", value)}
 	}
 
-	ErrInvalidChainId = func(field string, value int) ValidationError {
-		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid chainId", value)}
+	ErrInvalidField = func(field string, message string) ValidationError {
+		return ValidationError{Field: field, Message: message}
 	}
 
 	ErrInvalidProviderId = func(field string, value int) ValidationError {
 		return ValidationError{Field: field, Message: fmt.Sprintf("%d chainId does not have a supported provider", value)}
+	}
+
+	ErrInvalidChainId = func(field string, value int) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid chainId", value)}
+	}
+
+	ErrInvalidTokenStandard = func(field string, value int) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid token standard", value)}
+	}
+
+	ErrInvalidVaultStandard = func(field string, value int) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid vault standard", value)}
 	}
 
 	ErrInvalidAddress = func(field string, value string) ValidationError {
