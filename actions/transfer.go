@@ -1,17 +1,18 @@
-package intent
+package actions
 
 import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc20"
+	"solver/types"
 	"solver/utils"
 )
 
 /*
-TransferInputs represents the inputs for the Transfer action.
+TransferInputsImpl represents the inputs for the Transfer action.
 
 A Transfer action transfers tokens from the local sender (source) of the transaction
 to a target recipient. In essence, the sender is not provided because the source is
@@ -21,14 +22,14 @@ This is of use when a smart account is transferring tokens directly from their o
 account to another destination. As the call is being routed through the smart account,
 the sender does not need to be provided as well as approvals are not required.
 */
-type TransferInputs struct {
+type TransferInputsImpl struct {
 	Type      int     `json:"type"`
 	Token     string  `json:"token"`     // Address of the token to transfer.
 	Recipient string  `json:"recipient"` // Address of the recipient.
 	Amount    big.Int `json:"amount"`    // Raw amount of tokens to transfer.
 }
 
-func (i TransferInputs) Validate() error {
+func (i *TransferInputsImpl) Validate() error {
 	if !utils.IsAddress(i.Token) {
 		return utils.ErrInvalidAddress("token", i.Token)
 	}
@@ -47,13 +48,13 @@ func (i TransferInputs) Validate() error {
 	return nil
 }
 
-func (i TransferInputs) Build(chainId int, from string) (*utils.Transaction, error) {
+func (i *TransferInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	var transfer *types.Transaction
+	var transfer *ethtypes.Transaction
 	switch i.Type {
 	case 0:
 		transfer, err = i.BuildNativeTransfer(provider, from)
@@ -66,7 +67,7 @@ func (i TransferInputs) Build(chainId int, from string) (*utils.Transaction, err
 		return nil, err
 	}
 
-	return &utils.Transaction{
+	return &types.Transaction{
 		Transaction: "0x" + hex.EncodeToString(transfer.Data()),
 		From:        from,
 		To:          transfer.To().Hex(),
@@ -75,8 +76,8 @@ func (i TransferInputs) Build(chainId int, from string) (*utils.Transaction, err
 	}, nil
 }
 
-func (i TransferInputs) BuildNativeTransfer(provider *ethclient.Client, from string) (*types.Transaction, error) {
-	return types.NewTransaction(
+func (i *TransferInputsImpl) BuildNativeTransfer(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
+	return ethtypes.NewTransaction(
 		0,
 		common.HexToAddress(i.Recipient),
 		&i.Amount,
@@ -86,7 +87,7 @@ func (i TransferInputs) BuildNativeTransfer(provider *ethclient.Client, from str
 	), nil
 }
 
-func (i TransferInputs) BuildERC20Transfer(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *TransferInputsImpl) BuildERC20Transfer(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -98,3 +99,8 @@ func (i TransferInputs) BuildERC20Transfer(provider *ethclient.Client, from stri
 		&i.Amount,
 	)
 }
+
+func (i *TransferInputsImpl) GetType() uint64 { return uint64(i.Type) }
+func (i *TransferInputsImpl) GetToken() string  { return i.Token }
+func (i *TransferInputsImpl) GetRecipient() string { return i.Recipient }
+func (i *TransferInputsImpl) GetAmount() *big.Int { return new(big.Int).Set(&i.Amount) }

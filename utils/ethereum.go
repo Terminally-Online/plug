@@ -42,6 +42,10 @@ func IsSupportedVaultStandard(standard int) bool {
 	return slices.Contains(VaultStandards, standard)
 }
 
+func IsSupportedProtocol(protocols []string, slug string) bool {
+	return slices.Contains(protocols, slug)
+}
+
 func IsAddress(s string) bool {
 	return addressPattern.MatchString(s)
 }

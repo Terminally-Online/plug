@@ -1,19 +1,20 @@
-package intent
+package actions
 
 import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc1155"
 	"solver/bindings/erc20"
 	"solver/bindings/erc721"
+	"solver/types"
 	"solver/utils"
 )
 
 /*
-TransferFromInputs represents the inputs for the TransferFrom action.
+TransferFromInputsImpl represents the inputs for the TransferFrom action.
 
 A TransferFrom action transfers tokens from the sender to a target recipient.
 
@@ -24,7 +25,7 @@ of the sender. In this case, approval of the tokens is requried beforehand.
 This function does not support the transfering of native tokens (ETH). To
 transfer native tokens, use the Transfer action instead.
 */
-type TransferFromInputs struct {
+type TransferFromInputsImpl struct {
 	Type      int      `json:"type"`      // Type (numerical standard) of the token to transfer.
 	Token     string   `json:"token"`     // Address of the token to transfer.
 	Sender    string   `json:"sender"`    // Address of the sender.
@@ -33,7 +34,7 @@ type TransferFromInputs struct {
 	Amount    *big.Int `json:"amount"`    // Raw amount of tokens to transfer.
 }
 
-func (i TransferFromInputs) Validate() error {
+func (i *TransferFromInputsImpl) Validate() error {
 	if !utils.IsAddress(i.Token) {
 		return utils.ErrInvalidAddress("token", i.Token)
 	}
@@ -94,13 +95,13 @@ func (i TransferFromInputs) Validate() error {
 
 	return nil
 }
-func (i TransferFromInputs) Build(chainId int, from string) (*utils.Transaction, error) {
+func (i *TransferFromInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	var transferFrom *types.Transaction
+	var transferFrom *ethtypes.Transaction
 	switch i.Type {
 	case 20:
 		transferFrom, err = i.BuildERC20TransferFrom(provider, from)
@@ -115,7 +116,7 @@ func (i TransferFromInputs) Build(chainId int, from string) (*utils.Transaction,
 		return nil, err
 	}
 
-	return &utils.Transaction{
+	return &types.Transaction{
 		Transaction: "0x" + hex.EncodeToString(transferFrom.Data()),
 		From:        from,
 		To:          transferFrom.To().Hex(),
@@ -124,7 +125,7 @@ func (i TransferFromInputs) Build(chainId int, from string) (*utils.Transaction,
 	}, nil
 }
 
-func (i TransferFromInputs) BuildERC20TransferFrom(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *TransferFromInputsImpl) BuildERC20TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), nil)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -138,7 +139,7 @@ func (i TransferFromInputs) BuildERC20TransferFrom(provider *ethclient.Client, f
 	)
 }
 
-func (i TransferFromInputs) BuildERC721TransferFrom(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *TransferFromInputsImpl) BuildERC721TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc721.NewErc721(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -152,7 +153,7 @@ func (i TransferFromInputs) BuildERC721TransferFrom(provider *ethclient.Client, 
 	)
 }
 
-func (i TransferFromInputs) BuildERC1155TransferFrom(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *TransferFromInputsImpl) BuildERC1155TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc1155.NewErc1155(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -167,3 +168,10 @@ func (i TransferFromInputs) BuildERC1155TransferFrom(provider *ethclient.Client,
 		[]byte{},
 	)
 }
+
+func (i *TransferFromInputsImpl) GetType() uint64      { return uint64(i.Type) }
+func (i *TransferFromInputsImpl) GetToken() string     { return i.Token }
+func (i *TransferFromInputsImpl) GetSender() string    { return i.Sender }
+func (i *TransferFromInputsImpl) GetRecipient() string { return i.Recipient }
+func (i *TransferFromInputsImpl) GetTokenId() *big.Int { return new(big.Int).Set(i.TokenId) }
+func (i *TransferFromInputsImpl) GetAmount() *big.Int  { return new(big.Int).Set(i.Amount) }

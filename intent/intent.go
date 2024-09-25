@@ -2,6 +2,7 @@ package intent
 
 import (
 	"solver/utils"
+	"solver/types"
 )
 
 type IntentRequest struct {
@@ -28,5 +29,5 @@ func (i IntentRequest) Validate() error {
 
 type IntentResponse struct {
 	Request      IntentRequest       `json:"request"`
-	Transactions []utils.Transaction `json:"transactions"`
+	Transactions []types.Transaction `json:"transactions"`
 }

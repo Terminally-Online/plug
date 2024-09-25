@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"solver/intent"
 	"solver/utils"
+	"solver/types"
 )
 
 func GetIntent(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +20,7 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var transactions []utils.Transaction
+	var transactions []types.Transaction
 	for _, action := range intentRequest.Actions {
 		inputs, err := intent.ParseAction(action)
 		if err != nil {

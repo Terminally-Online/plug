@@ -1,14 +1,15 @@
-package intent
+package actions
 
 import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc1155"
 	"solver/bindings/erc20"
 	"solver/bindings/erc721"
+	"solver/types"
 	"solver/utils"
 )
 
@@ -21,7 +22,7 @@ Based on the optional fields being provided or not, the proper function call is 
 without explicit definition of the function to call. All approvals are handled by the contract, so
 the transaction will be a simple call to the contract.
 */
-type ApproveInputs struct {
+type ApproveInputsImpl struct {
 	Type     int      `json:"type"`     // Type (numerical standard) of the token to approve.
 	Token    string   `json:"token"`    // Address of the token to approve.
 	Spender  string   `json:"spender"`  // Address of the spender.
@@ -30,7 +31,7 @@ type ApproveInputs struct {
 	Approved *bool    `json:"approved"` // Whether to approve or revoke approval.
 }
 
-func (i ApproveInputs) Validate() error {
+func (i *ApproveInputsImpl) Validate() error {
 	if !utils.IsAddress(i.Token) {
 		return utils.ErrInvalidAddress("token", i.Token)
 	}
@@ -92,13 +93,13 @@ func (i ApproveInputs) Validate() error {
 	return nil
 }
 
-func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, error) {
+func (i *ApproveInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	var approve *types.Transaction
+	var approve *ethtypes.Transaction
 	switch i.Type {
 	case 20:
 		approve, err = i.BuildERC20Approve(provider, from)
@@ -113,7 +114,7 @@ func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, erro
 		return nil, err
 	}
 
-	return &utils.Transaction{
+	return &types.Transaction{
 		Transaction: "0x" + hex.EncodeToString(approve.Data()),
 		From:        from,
 		To:          approve.To().Hex(),
@@ -122,7 +123,7 @@ func (i ApproveInputs) Build(chainId int, from string) (*utils.Transaction, erro
 	}, nil
 }
 
-func (i ApproveInputs) BuildERC20Approve(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *ApproveInputsImpl) BuildERC20Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -143,7 +144,7 @@ batched token approvals, this function will build the appropriate transaction ba
 When a tokenId is not provided, the transaction will be a SetApprovalForAll transaction -- thus becoming
 reliant on `Approved` provided in the inputs. Otherwise, it will be an Approve transaction.
 */
-func (i ApproveInputs) BuildERC721Approve(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *ApproveInputsImpl) BuildERC721Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc721.NewErc721(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -164,7 +165,7 @@ func (i ApproveInputs) BuildERC721Approve(provider *ethclient.Client, from strin
 	)
 }
 
-func (i ApproveInputs) BuildERC1155Approve(provider *ethclient.Client, from string) (*types.Transaction, error) {
+func (i *ApproveInputsImpl) BuildERC1155Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
 	contract, err := erc1155.NewErc1155(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
@@ -176,3 +177,10 @@ func (i ApproveInputs) BuildERC1155Approve(provider *ethclient.Client, from stri
 		*i.Approved,
 	)
 }
+
+func (b *ApproveInputsImpl) GetType() int         { return b.Type }
+func (b *ApproveInputsImpl) GetToken() string     { return b.Token }
+func (b *ApproveInputsImpl) GetSpender() string   { return b.Spender }
+func (b *ApproveInputsImpl) GetTokenId() *big.Int { return b.TokenId }
+func (b *ApproveInputsImpl) GetAmount() *big.Int  { return b.Amount }
+func (b *ApproveInputsImpl) GetApproved() *bool   { return b.Approved }

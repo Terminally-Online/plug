@@ -91,7 +91,9 @@ func (e *Engine) Run() error {
 			go func(net string, proc Process) {
 				defer wg.Done()
 				for collection := range e.Stream {
-					if collection.NetworkName != net { continue }
+					if collection.NetworkName != net {
+						continue
+					}
 					execution, err := proc.ProcessCollection(collection.Key, collection.Data)
 					if err != nil {
 						fmt.Printf("Error processing collection for %s on network %s: %v\n", proc.GetKey(), net, err)

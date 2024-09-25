@@ -3,8 +3,8 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
-	"solver/intent/actions"
-	"solver/utils"
+	"solver/actions"
+	"solver/types"
 )
 
 /*
@@ -17,37 +17,33 @@ type Action struct {
 	Inputs json.RawMessage `json:"inputs"`
 }
 
-// ActionInputs is an interface that all specific action input structs should implement
-type ActionInputs interface {
-	Validate() error
-	Build(chainId int, from string) (*utils.Transaction, error)
-}
-
 // ParseAction parses the Action struct and returns the specific ActionInputs
-func ParseAction(action Action) (ActionInputs, error) {
-	var inputs ActionInputs
+func ParseAction(action Action) (types.ActionInputs, error) {
+	var inputs types.ActionInputs
 
 	switch action.Type {
+	// Standard based actions that do not require a protocol
 	case "approve":
-		inputs = &intent.ApproveInputs{}
-	case "borrow":
-		inputs = &intent.BorrowInputs{}
-	case "deposit":
-		inputs = &intent.DepositInputs{}
-	case "harvest":
-		inputs = &intent.HarvestInputs{}
-	case "redeem":
-		inputs = &intent.RedeemInputs{}
-	case "repay":
-		inputs = &intent.RepayInputs{}
-	case "swap":
-		inputs = &intent.SwapInputs{}
+		inputs = &actions.ApproveInputsImpl{}
 	case "transfer":
-		inputs = &intent.TransferInputs{}
+		inputs = &actions.TransferInputsImpl{}
 	case "transfer_from":
-		inputs = &intent.TransferFromInputs{}
+		inputs = &actions.TransferFromInputsImpl{}
 	case "route":
-		inputs = &intent.RouteInputs{}
+		inputs = &actions.RouteInputsImpl{}
+	// Contract based actions that require a protocol
+	case "borrow":
+		inputs = &actions.BorrowInputsImpl{}
+	case "deposit":
+		inputs = &actions.DepositInputsImpl{}
+	case "harvest":
+		inputs = &actions.HarvestInputsImpl{}
+	case "redeem":
+		inputs = &actions.RedeemInputsImpl{}
+	case "repay":
+		inputs = &actions.RepayInputsImpl{}
+	case "swap":
+		inputs = &actions.SwapInputsImpl{}
 	default:
 		return nil, fmt.Errorf("unknown action type: %s", action.Type)
 	}

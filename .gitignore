@@ -30,3 +30,4 @@ abigenBindings
 
 .DS_Store
 .env
+scratch.*

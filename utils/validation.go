@@ -38,6 +38,10 @@ var (
 		return ValidationError{Field: field, Message: fmt.Sprintf("%d is not a valid vault standard", value)}
 	}
 
+	ErrInvalidProtocol = func(field string, value string) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid protocol", value)}
+	}
+
 	ErrInvalidAddress = func(field string, value string) ValidationError {
 		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid Ethereum address", value)}
 	}
