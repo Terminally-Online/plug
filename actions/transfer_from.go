@@ -6,9 +6,9 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
-	"solver/bindings/erc1155"
-	"solver/bindings/erc20"
-	"solver/bindings/erc721"
+	"solver/bindings/erc_1155"
+	"solver/bindings/erc_20"
+	"solver/bindings/erc_721"
 	"solver/types"
 	"solver/utils"
 )
@@ -126,7 +126,7 @@ func (i *TransferFromInputsImpl) Build(chainId int, from string) (*types.Transac
 }
 
 func (i *TransferFromInputsImpl) BuildERC20TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), nil)
+	contract, err := erc_20.NewErc20(common.HexToAddress(i.Token), nil)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}
@@ -140,7 +140,7 @@ func (i *TransferFromInputsImpl) BuildERC20TransferFrom(provider *ethclient.Clie
 }
 
 func (i *TransferFromInputsImpl) BuildERC721TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc721.NewErc721(common.HexToAddress(i.Token), provider)
+	contract, err := erc_721.NewErc721(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}
@@ -154,7 +154,7 @@ func (i *TransferFromInputsImpl) BuildERC721TransferFrom(provider *ethclient.Cli
 }
 
 func (i *TransferFromInputsImpl) BuildERC1155TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc1155.NewErc1155(common.HexToAddress(i.Token), provider)
+	contract, err := erc_1155.NewErc1155(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}

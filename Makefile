@@ -1,13 +1,14 @@
 .DEFAULT_GOAL := bindings
-.PHONY: clean bindings
+.PHONY: clean references bindings
 
 clean:
-	rm -rf build abigenBindings 
+	rm -rf build abis bindings
+
+references:
+	mkdir -p abis
+	go run cmd/references/main.go
 
 bindings:
 	make clean
-	pnpm truffle compile
-	mkdir -p abigenBindings
-	pnpm truffle run abigen
 	mkdir -p bindings
 	go run cmd/bindings/main.go

@@ -6,7 +6,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
-	"solver/bindings/erc20"
+	"solver/bindings/erc_20"
 	"solver/types"
 	"solver/utils"
 )
@@ -88,7 +88,7 @@ func (i *TransferInputsImpl) BuildNativeTransfer(provider *ethclient.Client, fro
 }
 
 func (i *TransferInputsImpl) BuildERC20Transfer(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc20.NewErc20(common.HexToAddress(i.Token), provider)
+	contract, err := erc_20.NewErc20(common.HexToAddress(i.Token), provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)
 	}
@@ -100,7 +100,7 @@ func (i *TransferInputsImpl) BuildERC20Transfer(provider *ethclient.Client, from
 	)
 }
 
-func (i *TransferInputsImpl) GetType() uint64 { return uint64(i.Type) }
-func (i *TransferInputsImpl) GetToken() string  { return i.Token }
+func (i *TransferInputsImpl) GetType() uint64      { return uint64(i.Type) }
+func (i *TransferInputsImpl) GetToken() string     { return i.Token }
 func (i *TransferInputsImpl) GetRecipient() string { return i.Recipient }
-func (i *TransferInputsImpl) GetAmount() *big.Int { return new(big.Int).Set(&i.Amount) }
+func (i *TransferInputsImpl) GetAmount() *big.Int  { return new(big.Int).Set(&i.Amount) }

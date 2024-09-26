@@ -8,65 +8,46 @@ import (
 	"strings"
 )
 
-// GenerateBindings is the main function to generate bindings for all contracts
 func GenerateBindings() error {
-	// Ensure the required directories exist
-	if err := ensureDir("abigenBindings/bin"); err != nil {
-		return err
-	}
-	if err := ensureDir("abigenBindings/abi"); err != nil {
-		return err
-	}
 	if err := ensureDir("bindings"); err != nil {
 		return err
 	}
 
-	// Get all contract files from the contracts directory
-	contracts, err := filepath.Glob("contracts/*.sol")
-	if err != nil {
-		return fmt.Errorf("error reading contracts: %v", err)
-	}
-
-	for _, contract := range contracts {
-		if err := generateBinding(contract); err != nil {
+	var abiFiles []string
+	err := filepath.Walk("abis", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
 			return err
 		}
-	}
-
-	return nil
-}
-
-// RunBindingGeneration is a wrapper function that can be called from main or other packages
-func RunBindingGeneration() {
-	if err := GenerateBindings(); err != nil {
-		fmt.Printf("Error generating bindings: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Println("All bindings generated successfully")
-}
-
-func generateBinding(contractPath string) error {
-	contractName := strings.TrimSuffix(filepath.Base(contractPath), ".sol")
-	lowerContractName := strings.ToLower(contractName)
-	outputDirectory := fmt.Sprintf("bindings/%s", lowerContractName)
-
-	if err := ensureDir(outputDirectory); err != nil {
-		return err
-	}
-	
-	cmd := exec.Command("abigen",
-		"--bin", fmt.Sprintf("abigenBindings/bin/%s.bin", contractName),
-		"--abi", fmt.Sprintf("abigenBindings/abi/%s.abi", contractName),
-		"--pkg", lowerContractName,
-		"--out", fmt.Sprintf("%s/%s.go", outputDirectory, lowerContractName))
-
-	// Run the command
-	output, err := cmd.CombinedOutput()
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".json") {
+			abiFiles = append(abiFiles, path)
+		}
+		return nil
+	})
 	if err != nil {
-		return fmt.Errorf("error generating binding for %s: %v\n%s", contractName, err, string(output))
+		return fmt.Errorf("error walking through references directory: %v", err)
 	}
-	
-	fmt.Printf("Successfully generated binding for %s\n", contractName)
+
+	for _, abiPath := range abiFiles {
+		contractName := strings.TrimSuffix(filepath.Base(abiPath), ".json")
+		folderName := filepath.Base(filepath.Dir(abiPath))
+		packageName := fmt.Sprintf("%s_%s", strings.ToLower(folderName), contractName)
+		outputDirectory := filepath.Join("bindings", packageName)
+		if err := ensureDir(outputDirectory); err != nil {
+			return err
+		}
+		outputFile := filepath.Join(outputDirectory, packageName+".go")
+		cmd := exec.Command("abigen",
+			"--abi", abiPath,
+			"--pkg", packageName,
+			"--out", outputFile)
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("error generating binding for %s/%s: %v\n%s", folderName, contractName, err, string(output))
+		}
+		fmt.Printf("Successfully generated binding for %s/%s\n", folderName, contractName)
+	}
+
 	return nil
 }
 
@@ -77,3 +58,4 @@ func ensureDir(dirName string) error {
 	}
 	return nil
 }
+

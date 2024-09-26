@@ -60,6 +60,10 @@ var (
 		return ServerError{Message: fmt.Sprintf("failed to connect to Ethereum node: %s", error)}
 	}
 
+	ErrExplorerFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("failed to connect to Etherscan: %s", error)}
+	}
+
 	ErrContractFailed = func(address string) ServerError {
 		return ServerError{Message: fmt.Sprintf("Contract at %s could not be interfaced with.", address)}
 	}
