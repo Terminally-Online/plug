@@ -1,6 +1,9 @@
 ## Generating Contract Bindings
 
-1. Add the contract you want to generate a binding for to `contracts` directory.
-2. Run `make bindings` to generate the bindings.
+For all contract interactions we build an interface binding that streamlines the act of onchain transaction preparation and execution. For this, we utilize the [abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) tool from the Ethereum Go client.
 
-With the bindings generated, you can now reference the types and functions in your code. You should not have to do anything else to get it functional.
+While the bindings are generated for abis that are sitting in the `abis` directory, you can also generate them for any contract that is deployed on the Ethereum mainnet. To do this, you will add a mapping record to the relevant network in `references.go`.
+
+With this, all you need to do is add the abi to the `abis` directory and run `make bindings`. By doing this a related `go` file will be generated that you do not need to manage or manually manipulate.
+
+It is implemented this way to allow for the lowest effort and most expedient way of integrating a new protocol.
