@@ -30,6 +30,16 @@ func GetProvider(chainId int) (*ethclient.Client, error) {
 	switch chainId {
 	case 1:
 		rpcURL = "wss://eth-mainnet.g.alchemy.com/v2/%v"
+	case 11155111:
+		rpcURL = "wss://eth-sepolia.g.alchemy.com/v2/%v"
+	case 10:
+		rpcURL = "wss://opt-mainnet.g.alchemy.com/v2/%v"
+	case 11155420:
+		rpcURL = "wss://opt-sepolia.g.alchemy.com/v2/%v"
+	case 8453:
+		rpcURL = "wss://base-mainnet.g.alchemy.com/v2/%v"
+	case 84532:
+		rpcURL = "wss://base-sepolia.g.alchemy.com/v2/%v"
 	default:
 		return nil, ErrInvalidProviderId("chainId", chainId)
 	}

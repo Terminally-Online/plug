@@ -116,7 +116,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 
 	// If there is an implement address, we have found a proxy contract and need to pull in
 	// the ABI from the implementation contract.
-	if explorerResponse.Implementation != "" {
+	if explorerResponse.Implementation != "" && explorerResponse.Implementation != address {
 		return GenerateReference(explorer, folderName, contractName, explorerResponse.Implementation, retries)
 	}
 
