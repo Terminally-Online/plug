@@ -29,11 +29,13 @@ type AdditionalSource struct {
 }
 
 var (
+	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
+
 	Mainnet = &Network{
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
-			"aave_v2": { 
-				"pool": "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
+			"aave_v2": {
+				"pool": "0x02d84abd89ee9db409572f19b6e1596c301f3c81",
 			},
 			"aave_v3": {
 				"pool": "0x34339f94350ec5274ea44d0c37dae9e968c44081",
