@@ -35,10 +35,10 @@ var (
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"aave_v2": {
-				"pool": "0x02d84abd89ee9db409572f19b6e1596c301f3c81",
+				"pool": "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
 			},
 			"aave_v3": {
-				"pool": "0x34339f94350ec5274ea44d0c37dae9e968c44081",
+				"pool": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 			},
 		},
 	}
@@ -98,8 +98,9 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	}
 
 	var explorerResponse struct {
-		ABI          string `json:"ABI"`
-		ContractName string `json:"ContractName"`
+		ABI            string `json:"ABI"`
+		ContractName   string `json:"ContractName"`
+		Implementation string `json:"Implementation"`
 	}
 	err = json.Unmarshal(response.Result[0], &explorerResponse)
 	if err != nil {
@@ -111,6 +112,12 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 			fmt.Printf("Source code not verified for %s/%s.\n", folderName, contractName)
 			return nil
 		}
+	}
+
+	// If there is an implement address, we have found a proxy contract and need to pull in
+	// the ABI from the implementation contract.
+	if explorerResponse.Implementation != "" {
+		return GenerateReference(explorer, folderName, contractName, explorerResponse.Implementation, retries)
 	}
 
 	var abiJSON interface{}
