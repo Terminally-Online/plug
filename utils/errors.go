@@ -60,6 +60,14 @@ var (
 		return ServerError{Message: fmt.Sprintf("failed to connect to Ethereum node: %s", error)}
 	}
 
+	ErrNetworkRequestFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("connecting to downstream provider failed: %s", error)}
+	}
+
+	ErrAPIRequestFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("downstream provider request failed: %s", error)}
+	}
+
 	ErrExplorerFailed = func(error string) ServerError {
 		return ServerError{Message: fmt.Sprintf("failed to connect to Etherscan: %s", error)}
 	}

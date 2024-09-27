@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/joho/godotenv"
 	"os"
 )
 
@@ -14,11 +13,6 @@ var (
 func GetProvider(chainId int) (*ethclient.Client, error) {
 	if !IsSupportedChain(chainId) {
 		return nil, ErrInvalidChainId("chainId", chainId)
-	}
-
-	err := godotenv.Load()
-	if err != nil {
-		return nil, ErrEnvironmentNotInitialized(err.Error())
 	}
 
 	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
