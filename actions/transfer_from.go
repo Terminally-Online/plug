@@ -95,13 +95,9 @@ func (i *TransferFromInputsImpl) Validate() error {
 
 	return nil
 }
-func (i *TransferFromInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
-	provider, err := utils.GetProvider(chainId)
-	if err != nil {
-		return nil, err
-	}
-
+func (i *TransferFromInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	var transferFrom *ethtypes.Transaction
+	var err error
 	switch i.Type {
 	case 20:
 		transferFrom, err = i.BuildERC20TransferFrom(provider, from)

@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/types"
 	"solver/utils"
@@ -30,7 +31,7 @@ func (i *RouteInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *RouteInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
+func (i *RouteInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	return nil, utils.ErrNotImplemented("RouteInputsImpl.Build")
 }
 

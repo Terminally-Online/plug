@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 )
 
@@ -25,7 +26,7 @@ type Transaction struct {
 
 type ActionInputs interface {
 	Validate() error
-	Build(chainId int, from string) (*Transaction, error)
+	Build(provider *ethclient.Client, chainId int, from string) (*Transaction, error)
 }
 
 type ApproveInputs interface {

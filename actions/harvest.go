@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"github.com/ethereum/go-ethereum/ethclient"
 	"solver/types"
 	"solver/utils"
 )
@@ -17,7 +18,7 @@ func (i *HarvestInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *HarvestInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
+func (i *HarvestInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	switch i.Protocol {
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)

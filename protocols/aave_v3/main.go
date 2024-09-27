@@ -1,6 +1,8 @@
 package aave_v3
 
 import (
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"solver/types"
 )
 
@@ -8,18 +10,18 @@ var (
 	Key = "aave_v3"
 )
 
-func BuildBorrow(inputs types.BorrowInputs, chainId int, from string) (*types.Transaction, error) {
+func BuildBorrow(inputs types.BorrowInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	return nil, nil
 }
 
-func BuildDeposit(inputs types.DepositInputs, chainId int, from string) (*types.Transaction, error) {
+func BuildDeposit(inputs types.DepositInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	return nil, nil
 }
 
-func BuildRedeem(inputs types.RepayInputs, chainId int, from string) (*types.Transaction, error) {
+func BuildRedeem(inputs types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	return nil, nil
 }
 
-func BuildRepay(inputs types.RepayInputs, chainId int, from string) (*types.Transaction, error) {
+func BuildRepay(inputs types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	return nil, nil
 }

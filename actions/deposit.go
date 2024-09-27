@@ -1,7 +1,11 @@
 package actions
 
 import (
+	"encoding/hex"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
+	"solver/protocols/aave_v2"
 	"solver/protocols/aave_v3"
 	"solver/types"
 	"solver/utils"
@@ -27,13 +31,28 @@ func (i *DepositInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *DepositInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
+func (i *DepositInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+	var deposit *ethtypes.Transaction
+	var err error
 	switch i.Protocol {
+	case aave_v2.Key:
+		deposit, err = aave_v2.BuildDeposit(i, provider, chainId, from)
 	case aave_v3.Key:
-		return aave_v3.BuildDeposit(i, chainId, from)
+		deposit, err = aave_v3.BuildDeposit(i, provider, chainId, from)
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.Transaction{
+		Transaction: "0x" + hex.EncodeToString(deposit.Data()),
+		From:        from,
+		To:          deposit.To().Hex(),
+		Value:       deposit.Value(),
+		Gas:         deposit.Gas(),
+	}, nil
 }
 
 func (i *DepositInputsImpl) GetProtocol() string   { return i.Protocol }

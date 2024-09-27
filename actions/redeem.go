@@ -1,7 +1,11 @@
 package actions
 
 import (
+	"encoding/hex"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
+	"solver/protocols/aave_v2"
 	"solver/protocols/aave_v3"
 	"solver/types"
 	"solver/utils"
@@ -28,13 +32,28 @@ func (i *RedeemInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *RedeemInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
-	switch i.Protocol { 
+func (i *RedeemInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+	var redeem *ethtypes.Transaction
+	var err error
+	switch i.Protocol {
+	case aave_v2.Key:
+		redeem, err = aave_v2.BuildRedeem(i, provider, chainId, from)
 	case aave_v3.Key:
-		return aave_v3.BuildRedeem(i, chainId, from)
+		redeem, err = aave_v3.BuildRedeem(i, provider, chainId, from)
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.Transaction{
+		Transaction: "0x" + hex.EncodeToString(redeem.Data()),
+		From:        from,
+		To:          redeem.To().Hex(),
+		Value:       redeem.Value(),
+		Gas:         redeem.Gas(),
+	}, nil
 }
 
 func (i *RedeemInputsImpl) GetProtocol() string   { return i.Protocol }

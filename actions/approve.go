@@ -93,13 +93,9 @@ func (i *ApproveInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *ApproveInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
-	provider, err := utils.GetProvider(chainId)
-	if err != nil {
-		return nil, err
-	}
-
+func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	var approve *ethtypes.Transaction
+	var err error
 	switch i.Type {
 	case 20:
 		approve, err = i.BuildERC20Approve(provider, from)

@@ -48,13 +48,9 @@ func (i *TransferInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *TransferInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
-	provider, err := utils.GetProvider(chainId)
-	if err != nil {
-		return nil, err
-	}
-
+func (i *TransferInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	var transfer *ethtypes.Transaction
+	var err error
 	switch i.Type {
 	case 0:
 		transfer, err = i.BuildNativeTransfer(provider, from)

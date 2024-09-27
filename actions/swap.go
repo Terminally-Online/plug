@@ -1,15 +1,16 @@
 package actions
 
 import (
+	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/types"
 	"solver/utils"
 )
 
 type SwapInputsImpl struct {
-	Protocol string `json:"protocol"` // Slug of the protocol to use.
-	TokenIn  string `json:"tokenIn"`  // Address of the token to swap (sell).
-	TokenOut string `json:"tokenOut"` // Address of the token to swap (buy).
+	Protocol string  `json:"protocol"` // Slug of the protocol to use.
+	TokenIn  string  `json:"tokenIn"`  // Address of the token to swap (sell).
+	TokenOut string  `json:"tokenOut"` // Address of the token to swap (buy).
 	AmountIn big.Int `json:"amountIn"` // Raw amount of tokens to swap (sell).
 	Slippage big.Int `json:"slippage"` // Slippage tolerance when executing the swap.
 }
@@ -31,14 +32,14 @@ func (i *SwapInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *SwapInputsImpl) Build(chainId int, from string) (*types.Transaction, error) {
+func (i *SwapInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
 	switch i.Protocol {
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}
 }
 
-func (i *SwapInputsImpl) GetProtocol() string { return i.Protocol }
-func (i *SwapInputsImpl) GetTokenIn() string  { return i.TokenIn }
-func (i *SwapInputsImpl) GetTokenOut() string { return i.TokenOut }
+func (i *SwapInputsImpl) GetProtocol() string   { return i.Protocol }
+func (i *SwapInputsImpl) GetTokenIn() string    { return i.TokenIn }
+func (i *SwapInputsImpl) GetTokenOut() string   { return i.TokenOut }
 func (i *SwapInputsImpl) GetAmountIn() *big.Int { return new(big.Int).Set(&i.AmountIn) }

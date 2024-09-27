@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"solver/intent"
 	"solver/types"
@@ -20,6 +21,11 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	provider, err := utils.GetProvider(intentRequest.ChainId)
+	if err != nil {
+		log.Fatalf("failed to connect to Ethereum node: %v", err)
+	}
+
 	var transactions []types.Transaction
 	for _, action := range intentRequest.Actions {
 		inputs, err := intent.ParseAction(action)
@@ -28,7 +34,7 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		transaction, err := inputs.Build(intentRequest.ChainId, intentRequest.From)
+		transaction, err := inputs.Build(provider, intentRequest.ChainId, intentRequest.From)
 		if err != nil {
 			utils.Error(w, err, http.StatusBadRequest)
 			return
