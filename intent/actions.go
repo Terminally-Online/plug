@@ -7,18 +7,9 @@ import (
 	"solver/types"
 )
 
-/*
-Action represents a generic action with its type and inputs. This is the
-standard shape for a new action to be added to the intent that will be parsed,
-built and sent back to the caller of the endpoint.
-*/
-type Action struct {
-	Type   string          `json:"type"`
-	Inputs json.RawMessage `json:"inputs"`
-}
 
 // ParseAction parses the Action struct and returns the specific ActionInputs
-func ParseAction(action Action) (types.ActionInputs, error) {
+func ParseAction(action types.Action) (types.ActionInputs, error) {
 	var inputs types.ActionInputs
 
 	switch action.Type {

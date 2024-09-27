@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"solver/intent"
-	"solver/utils"
 	"solver/types"
+	"solver/utils"
 )
 
 func GetIntent(w http.ResponseWriter, r *http.Request) {

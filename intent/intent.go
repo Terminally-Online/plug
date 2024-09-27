@@ -1,14 +1,14 @@
 package intent
 
 import (
-	"solver/utils"
 	"solver/types"
+	"solver/utils"
 )
 
 type IntentRequest struct {
-	ChainId int      `json:"chainId"`
-	From    string   `json:"from"`
-	Actions []Action `json:"actions"`
+	ChainId int            `json:"chainId"`
+	From    string         `json:"from"`
+	Actions []types.Action `json:"actions"`
 }
 
 func (i IntentRequest) Validate() error {

@@ -2,7 +2,7 @@
 .PHONY: clean references bindings
 
 clean:
-	rm -rf build abis bindings
+	rm -rf build bindings
 
 references:
 	mkdir -p abis
@@ -10,5 +10,6 @@ references:
 
 bindings:
 	make clean
+	make references
 	mkdir -p bindings
 	go run cmd/bindings/main.go

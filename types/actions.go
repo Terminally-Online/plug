@@ -1,8 +1,19 @@
 package types
 
 import (
+	"encoding/json"
 	"math/big"
 )
+
+/*
+Action represents a generic action with its type and inputs. This is the
+standard shape for a new action to be added to the intent that will be parsed,
+built and sent back to the caller of the endpoint.
+*/
+type Action struct {
+	Type   string          `json:"type"`
+	Inputs json.RawMessage `json:"inputs"`
+}
 
 type Transaction struct {
 	Transaction string   `json:"transaction"`

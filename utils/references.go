@@ -32,6 +32,9 @@ var (
 	Mainnet = &Network{
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
+			"aave_v2": { 
+				"pool": "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
+			},
 			"aave_v3": {
 				"pool": "0x34339f94350ec5274ea44d0c37dae9e968c44081",
 			},
@@ -108,14 +111,12 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		}
 	}
 
-	// Parse the ABI string into a more structured format
 	var abiJSON interface{}
 	err = json.Unmarshal([]byte(explorerResponse.ABI), &abiJSON)
 	if err != nil {
 		return fmt.Errorf("failed to parse ABI JSON: %v", err)
 	}
 
-	// Convert the parsed ABI back to a formatted JSON string
 	formattedABI, err := json.MarshalIndent(abiJSON, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to format ABI JSON: %v", err)
