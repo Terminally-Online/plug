@@ -4,9 +4,6 @@
 [submodule "packages/core"]
 	path = packages/core
 	url = https://github.com/nftchance/plug-core
-[submodule "packages/types"]
-	path = packages/types
-	url = https://github.com/nftchance/plug-types
 [submodule "packages/docs"]
 	path = packages/docs
 	url = https://github.com/nftchance/plug-docs
