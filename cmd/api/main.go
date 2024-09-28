@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"solver/router"
 	"solver/utils"
-	"github.com/joho/godotenv"
 )
 
 func main() {
