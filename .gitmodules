@@ -16,9 +16,6 @@
 [submodule "packages/router"]
 	path = packages/router
 	url = https://github.com/nftchance/plug-router
-[submodule "packages/solver"]
-	path = packages/solver
-	url = https://github.com/nftchance/plug-solver
 [submodule "packages/science"]
 	path = packages/science
 	url = https://github.com/nftchance/plug-science
