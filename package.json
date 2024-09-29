@@ -61,7 +61,6 @@
     "typescript": "~5.4.5"
   },
   "dependencies": {
-    "@0xsequence/wallet-contracts": "^2.0.0",
     "abitype": "^1.0.2",
     "commander": "^12.1.0",
     "ethers": "^6.13.2",
@@ -114,10 +113,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@0xsequence/wallet-contracts@2.0.0": "patches/@0xsequence__wallet-contracts@2.0.0.patch"
-    }
   }
 }

@@ -8,7 +8,6 @@
         "forge-std/=node_modules/forge-std/src/",
         "@nftchance/plug-core/=node_modules/@nftchance/plug-core/src/",
         "solady/=node_modules/solady/src/",
-        "sequence/=node_modules/@0xsequence/wallet-contracts/contracts/"
     ]
     block_timestamp = 1_680_220_800
     bytecode_hash = "none"
