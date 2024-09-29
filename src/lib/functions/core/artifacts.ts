@@ -1,7 +1,7 @@
 import { default as fs, writeFileSync } from 'fs-extra'
 import { keccak256 } from 'viem'
 
-import { etchContracts } from '../constants'
+import { etchContracts } from '@/src/lib/constants'
 
 const directory = './artifacts'
 

@@ -34,9 +34,7 @@ interface PlugSocketInterface {
      * @param $plugs The Plug bundle to execute.
      * @return $results The return data of each plug executed.
      */
-    function plug(
-        PlugTypesLib.Plugs calldata $plugs
-    )
+    function plug(PlugTypesLib.Plugs calldata $plugs)
         external
         payable
         returns (PlugTypesLib.Result[] memory $results);

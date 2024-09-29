@@ -1,5 +1,5 @@
-import { constantContracts, etchContracts } from '../constants'
-import { Contract } from '../types'
+import { constantContracts, etchContracts } from '@/src/lib/constants'
+import { Contract } from '@/src/lib/types'
 import { exec, execSync } from 'child_process'
 import dedent from 'dedent'
 import { default as fs } from 'fs-extra'

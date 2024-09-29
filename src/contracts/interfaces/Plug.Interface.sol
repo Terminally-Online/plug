@@ -10,9 +10,7 @@ interface PlugInterface {
      * @param $livePlugs The Plug bundle to execute.
      * @return $results The return data of each plug executed.
      */
-    function plug(
-        PlugTypesLib.LivePlugs calldata $livePlugs
-    )
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
         external
         payable
         returns (PlugTypesLib.Result[] memory $results);
@@ -23,9 +21,7 @@ interface PlugInterface {
      * @param $livePlugs The set of Plug bundles to execute.
      * @return $results The return data of each bundle executed.
      */
-    function plug(
-        PlugTypesLib.LivePlugs[] calldata $livePlugs
-    )
+    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
         external
         payable
         returns (PlugTypesLib.Result[][] memory $results);

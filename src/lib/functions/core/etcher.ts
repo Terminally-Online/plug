@@ -1,4 +1,4 @@
-import { contractsPath, etchContracts } from '../constants'
+import { contractsPath, etchContracts } from '@/src/lib'
 import { execSync } from 'child_process'
 import { default as fs } from 'fs-extra'
 
