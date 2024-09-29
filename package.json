@@ -63,8 +63,10 @@
   "dependencies": {
     "@0xsequence/wallet-contracts": "^2.0.0",
     "abitype": "^1.0.2",
+    "commander": "^12.1.0",
     "ethers": "^6.13.2",
     "lucide-react": "^0.446.0",
+    "pathe": "^1.1.2",
     "solady": "^0.0.191",
     "viem": "^2.9.17",
     "wagmi": "^2.5.19",
