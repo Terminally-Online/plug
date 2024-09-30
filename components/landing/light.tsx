@@ -296,8 +296,6 @@ export const Light = () => {
 
 	return (
 		<div className="relative z-0 my-[80px]">
-			<Blob left={"-100"} top={"-700"} width={"1000"} height={"500"} />
-
 			<LandingContainer className="relative mb-[80px] flex flex-col gap-4 xl:mb-[40px]">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1

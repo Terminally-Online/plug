@@ -13,15 +13,14 @@ export const Hero = () => {
 	)
 
 	return (
-		<div className="relative z-[2] flex h-full min-h-screen w-screen">
+		<div className="relative z-[2] flex h-full min-h-screen w-screen bg-white">
 			<HeroShapes />
-			<HeroBarChart />
 
 			<div className="z-2 relative w-full">
-				<LandingContainer className="flex h-full flex-col py-8 text-white">
+				<LandingContainer className="flex h-full flex-col py-8 text-black">
 					<div className="flex flex-row items-center gap-4">
 						<button className="mr-8" onClick={() => handleCallToAction(routes.index)}>
-							<Image src="/white-icon.svg" alt="Logo" width={24} height={24} />
+							<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
 						</button>
 						<button className="mr-4" onClick={() => handleCallToAction(routes.documentation)}>
 							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
@@ -35,7 +34,7 @@ export const Hero = () => {
 
 						<Button
 							variant="none"
-							className="ml-auto w-max rounded-md border-[1px] border-white/20 bg-white/20 px-4 py-2 text-center text-sm font-black text-white filter backdrop-blur-sm"
+							className="ml-auto w-max rounded-md border-[1px] border-black/20 bg-black/2 px-4 py-2 text-center text-sm font-black text-black filter backdrop-blur-xl"
 							onClick={() => handleCallToAction()}
 						>
 							Enter App
@@ -57,7 +56,7 @@ export const Hero = () => {
 							</motion.h1>
 
 							<motion.p
-								className="max-w-[480px] text-[18px] font-bold text-white/80 md:max-w-[520px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
+								className="max-w-[480px] text-[18px] font-bold text-black/40 md:max-w-[520px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
 								initial={{ transform: "translateY(20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(20px)", "translateY(0px)"],
@@ -74,7 +73,7 @@ export const Hero = () => {
 
 							<Button
 								variant="none"
-								className="mt-8 w-max rounded-md border-[1px] border-white/30 bg-white/20 px-8 py-3 text-center font-black text-white filter backdrop-blur-sm"
+								className="mt-8 w-max rounded-md border-[1px] border-black/30 bg-black/2 px-8 py-3 text-center font-black text-black filter backdrop-blur-xl"
 								onClick={() => handleCallToAction()}
 							>
 								Enter App

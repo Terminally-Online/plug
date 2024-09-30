@@ -13,7 +13,7 @@ const Page = () => (
 			<Light />
 			<Transactions />
 			<CallToAction
-				text="Operate at a level your friends only dream of."
+				text="Reach your full potential without compromises."
 				description="If you can't beat them, join them. Embrace the future of onchain activity and supercharge your potential with only a couple of clicks and a few minutes."
 				button="Get Started"
 			/>

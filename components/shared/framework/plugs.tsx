@@ -13,7 +13,7 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 
 	const { data: plugs, isLoading } = api.plug.all.useQuery({
 		target: "others",
-		limit: 6
+		limit: 4
 	})
 
 	const visiblePlugs = useMemo(() => {
@@ -30,7 +30,8 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 				nextOnClick={() =>
 					navigate({
 						index,
-						key: VIEW_KEYS.DISCOVER
+						key: VIEW_KEYS.DISCOVER,
+						from: VIEW_KEYS.HOME
 					})
 				}
 				nextLabel="See All"
@@ -51,7 +52,7 @@ const Mine: FC<{ index: number }> = ({ index }) => {
 	})
 
 	const visiblePlugs = useMemo(() => {
-		if (isLoading || plugs === undefined || plugs.length === 0) return Array(4).fill(undefined)
+		if (isLoading || plugs === undefined || plugs.length === 0) return Array(6).fill(undefined)
 		return plugs
 	}, [isLoading, plugs])
 
@@ -64,7 +65,8 @@ const Mine: FC<{ index: number }> = ({ index }) => {
 				nextOnClick={() =>
 					navigate({
 						index,
-						key: VIEW_KEYS.MY_PLUGS
+						key: VIEW_KEYS.MY_PLUGS,
+						from: VIEW_KEYS.HOME
 					})
 				}
 				nextLabel="See All"
