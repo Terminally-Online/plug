@@ -1,3 +1,5 @@
+![Plug solver banner](/plug-solver.png)
+
 ## Generating Contract Bindings
 
 For all contract interactions we build an interface binding that streamlines the act of onchain transaction preparation and execution. For this, we utilize the [abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) tool from the Ethereum Go client.
