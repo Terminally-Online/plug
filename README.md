@@ -19,3 +19,5 @@ It's the first all-in-one solution for managing your onchain activity while unlo
 ├─ science - "Singular housing location for all of the code-supported research of the ecosystem."
 └─ solver — "Instant transaction and route building for intents within Plug."
 ```
+
+Both `app` and `solver` are currently applying a [Business Source License](https://www.onplug.io/license/busl) to their codebases and are not open source. If you're interested in contributing to either of these packages, please reach out to us at [hello@onplug.io](mailto:hello@onplug.io).
