@@ -1,7 +1,7 @@
 # 🔌 Plug App
 
 > [!NOTE]
-> This repository is a submodule of the larger [Plug monorepo](https://github.com/nftchance/plug) that contains all the required pieces to run the entire Plug stack yourself.
+> This repository is a submodule of the larger [Plug monorepo](https://github.com/terminally-online/plug) that contains all the required pieces to run the entire Plug stack yourself.
 
 The application of Plug powers the front-end user interface that enables the capability of building complex declarative EVM transactions (intents) in a trustless node-based editor.
 
@@ -20,7 +20,7 @@ services
 
 ## Dependencies
 
-In order to run `@nftchance/plug-app` it is necessary to install all of the following dependencies first:
+In order to run `@terminally-online/plug-app` it is necessary to install all of the following dependencies first:
 
 ```ml
 ├─ docker — "Pipeline to run containerized code processes."
@@ -29,7 +29,7 @@ In order to run `@nftchance/plug-app` it is necessary to install all of the foll
 
 ## Getting Started
 
-To run an instance of `@nftchance/plug-app` is incredibly straightforward. Open your terminal and run:
+To run an instance of `@terminally-online/plug-app` is incredibly straightforward. Open your terminal and run:
 
 ```bash
 pnpm i
