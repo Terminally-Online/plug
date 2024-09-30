@@ -1,5 +1,5 @@
 ---
-"@terminally-online/plug-core": patch
+'@terminally-online/plug-core': patch
 ---
 
 feat: initial release
