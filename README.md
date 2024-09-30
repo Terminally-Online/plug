@@ -1,21 +1,21 @@
 ![Plug banner](/plug.png)
 
-`@nftchance/plug` is a generalized intent framework that brings the capability of automated transactions powered by outcome assurance across all Ethereum based chains. With state and outcome assurance users can schedule their transactions and desired outcomes, step away from their device, and relax as everything is magically executed according to their specification.
+`@terminally-online/plug` is a generalized intent framework and platform that brings the capability of automated transactions to all Ethereum based chains.
 
----
+With state and outcome assurance users can:
 
-📚 **Previous solutions:**
+-   schedule their transactions and desired outcomes
+-   step away from their device
+-   and relax as everything is magically executed according to their specification
 
--   ❌ Users have to stay glued to their device or risk missing opportunities.
--   ❌ Code updates and liquidity migration needed for protocols to support intents.
--   ❌ Running backend architecture required by protocols to enable users.
--   ❌ Transactions executed that result in something unexpected.
--   ❌ Switch to new wallets and sign one transaction at a time.
+It's the first all-in-one solution for managing your onchain activity while unlocking the true power of composability and automation.
 
-🔌 **Plug:**
-
--   ✅ Automatically execute transactions when all conditions have been met.
--   ✅ Instantly supports all contracts deployed past, present and future.
--   ✅ Schedule multiple transactions across multiple chains with one offchain signature.
--   ✅ Trustless sale of intent-enabled accounts.
--   ✅ Unlock the capability of systems at scale and reactivity with a single click.
+```ml
+├─ app - "Front-end application for end-users to interact with Plug."
+├─ core - "The onchain logic for Plug that powers imperative and declarative intents."
+├─ docs - "End-user focused documentation for Plug."
+├─ licenses - "Automatic license generation and distribution for each package of Plug."
+├─ pitch - "Automatic generation of pitch deck and supporting materials."
+├─ science - "Singular housing location for all of the code-supported research of the ecosystem."
+└─ solver — "Instant transaction and route building for intents within Plug."
+```
