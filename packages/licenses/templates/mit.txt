@@ -1,6 +1,6 @@
                                 MIT License
 
-Copyright (c) 2023 nftchance. Use of this software (<PACKAGE_NAME>) is 
+Copyright (c) 2024 Terminally Online. Use of this software (<PACKAGE_NAME>) is 
 governed by the MIT License included in the LICENSE file and 
 at www.onplug.io/license/mit.
 

@@ -1,7 +1,7 @@
                       BUSINESS SOURCE LICENSE
                             VERSION 1.1
 
-Copyright (C) 2023 nftchance. Use of this software (<PACKAGE_NAME>) is 
+Copyright (C) 2024 Terminally Online. Use of this software (<PACKAGE_NAME>) is 
 governed by the Business Source License included in the LICENSE file and 
 at www.onplug.io/license/busl.
 
@@ -52,7 +52,7 @@ AN "AS IS" BASIS. LICENSOR HEREBY DISCLAIMS ALL WARRANTIES AND CONDITIONS,
 EXPRESS OR IMPLIED, INCLUDING (WITHOUT LIMITATION) WARRANTIES OF 
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND TITLE.
 
-nftchance hereby grants you permission to use this License's text to license 
+Terminally Online hereby grants you permission to use this License's text to license 
 your works, and to refer to it using the trademark "Business Source License", 
 as long as you comply with the Covenants of Licensor below.
 
@@ -60,7 +60,7 @@ as long as you comply with the Covenants of Licensor below.
 
 In consideration of the right to use this License's text and the 
 "Business Source License" name and trademark, Licensor covenants to 
-nftchance, and to all other recipients of the licensed work to 
+Terminally Online, and to all other recipients of the licensed work to 
 be provided by Licensor:
 
 1. To specify as the Change License the GPL Version 2.0 or any later version, 
