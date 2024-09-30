@@ -1,15 +1,15 @@
 [submodule "packages/app"]
 	path = packages/app
-	url = https://github.com/nftchance/plug-app
+	url = https://github.com/terminally-online/plug-app
 [submodule "packages/core"]
 	path = packages/core
-	url = https://github.com/nftchance/plug-core
+	url = https://github.com/terminally-online/plug-core
 [submodule "packages/docs"]
 	path = packages/docs
-	url = https://github.com/nftchance/plug-docs
+	url = https://github.com/terminally-online/plug-docs
 [submodule "packages/pitch"]
 	path = packages/pitch
-	url = https://github.com/nftchance/plug-pitch
+	url = https://github.com/terminally-online/plug-pitch
 [submodule "packages/science"]
 	path = packages/science
-	url = https://github.com/nftchance/plug-science
+	url = https://github.com/terminally-online/plug-science
