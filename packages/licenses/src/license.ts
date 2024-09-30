@@ -55,7 +55,7 @@ const main = async () => {
                     .toString()
                     .replace(
                         /<PACKAGE_NAME>/g,
-                        `@nftchance/plug-${packageName}`
+                        `@terminally-online/plug-${packageName}`
                     )
             );
 
