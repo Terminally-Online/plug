@@ -13,3 +13,6 @@
 [submodule "packages/science"]
 	path = packages/science
 	url = https://github.com/terminally-online/plug-science
+[submodule "packages/solver"]
+	path = packages/solver
+	url = https://github.com/terminally-online/plug-solver
