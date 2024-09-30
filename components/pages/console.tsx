@@ -1,9 +1,9 @@
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageHeader, PageNavbar } from "@/components"
+import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
 import { useMediaQuery } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
@@ -12,7 +12,6 @@ const MobilePage = () => {
 		<>
 			<PageContent />
 			<PageNavbar />
-
 			<AuthFrame />
 		</>
 	)
@@ -29,25 +28,25 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
+	const { data: session } = useSession()
 	const { socket } = useSocket()
 	const { columns } = useColumns()
 
-	useEffect(() => {
-		if (socket) return
-
-		signIn("credentials", {
-			message: "0x0",
-			signature: "0x0",
-			chainId: 0,
-			redirect: false
-		})
-	}, [socket])
+	// useEffect(() => {
+	// 	if (socket) return
+	//
+	// 	signIn("credentials", {
+	// 		message: "0x0",
+	// 		signature: "0x0",
+	// 		chainId: 0,
+	// 		redirect: false
+	// 	})
+	// }, [socket])
 
 	if (!socket)
 		return (
 			<div className="absolute bottom-0 left-0 right-0 top-0 flex h-screen w-screen items-center justify-center">
 				<LoaderCircle size={24} className="animate-spin opacity-60" />
-				Socket has not been loaded.
 			</div>
 		)
 
@@ -57,6 +56,13 @@ export const ConsolePage = () => {
 	            <FeatureRequestFrame />
 	            <DeletedFrame />
 	        */}
+
+			{/*
+			<p>{session?.address}</p>
+			<p>{socket.id}</p>
+			<p>{socket.socketAddress}</p>
+			<p>{JSON.stringify(columns, null, 2)}</p>
+			*/}
 
 			{md ? <DesktopPage /> : <MobilePage />}
 		</>

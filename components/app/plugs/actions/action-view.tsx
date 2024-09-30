@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { Plus } from "lucide-react"
 
-import { Button, Sentence } from "@/components"
+import { Button, Callout, Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { actions, categories, formatTitle, getValues } from "@/lib"
 import { useColumns } from "@/state"
@@ -31,7 +31,6 @@ const getProtocolFrequency = (
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	// const { handleFrame } = useFrame({ index, key: "actions" })
 	const { column } = useColumns(index)
 	const { item } = column ?? {}
 	const { plug, own, actions, handle } = usePlugs(item)
@@ -60,6 +59,8 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 	return (
 		<div className="mb-72 flex flex-col">
+			<Callout.EmptyPlug index={index} isEmpty={actions.length === 0} />
+
 			{actions.map((_, actionIndex) => (
 				<Sentence key={index} index={index} item={item} actionIndex={actionIndex} />
 			))}

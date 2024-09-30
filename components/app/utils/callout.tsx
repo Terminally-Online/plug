@@ -192,30 +192,12 @@ const EmptyPlug: FC<
 	if (!column || isEmpty === false) return null
 
 	return (
-		<>
-			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
-				style={{
-					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
-				}}
-			/>
-
-			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
-				title="No actions have been added, yet."
-				description="Get started by adding an action to your Plug."
-				{...props}
-			>
-				{index !== MOBILE_INDEX && (
-					<Button variant="secondary" sizing="sm" onClick={() => {}}>
-						View As
-					</Button>
-				)}
-				<Button sizing="sm" onClick={() => {}}>
-					Create
-				</Button>
-			</Base>
-		</>
+		<Base
+			className={cn("my-52", className)}
+			title="No actions have been added, yet."
+			description="Get started by adding one of the many actions available to your Plug."
+			{...props}
+		/>
 	)
 }
 

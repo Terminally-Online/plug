@@ -192,7 +192,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
 			<Animate.List>
 				{visibleActivities.map((activity, activityIndex) => (
-					<Animate.ListItem key={index}>
+					<Animate.ListItem key={activityIndex}>
 						<ActivityItem index={index} activityIndex={activityIndex} activity={activity} />
 					</Animate.ListItem>
 				))}
@@ -204,9 +204,10 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 				.filter(activity => Boolean(activity))
 				.map((activity, activityIndex) => (
 					<ActivityFrame
-						key={index}
+						key={activityIndex}
 						index={index}
-						activity={{ id: activityIndex.toString(), name: activity.text, status }}
+						activityIndex={activityIndex}
+						activity={{ name: activity.text, status }}
 					/>
 				))}
 		</div>

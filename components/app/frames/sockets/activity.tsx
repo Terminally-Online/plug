@@ -9,11 +9,12 @@ import { Frame } from "../base"
 
 export const ActivityFrame: FC<{
 	index: number
-	activity: { id: string; name: string; status: string }
-}> = ({ index, activity }) => {
+	activityIndex: number
+	activity: { name: string; status: string }
+}> = ({ index, activityIndex, activity }) => {
 	const { isFrame } = useFrame({
 		index,
-		key: `${index}-${activity.id}-activity-item`
+		key: `${index}-${activityIndex}-activity`
 	})
 
 	return (

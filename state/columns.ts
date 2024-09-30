@@ -106,7 +106,7 @@ export const useColumns = (index?: number) => {
 	const as = useCallback(
 		({ index, as }: { index: number; as: MinimalUserSocketModel }) =>
 			updateColumns(prev =>
-				prev.map((col, idx) => (idx === index ? { ...col, viewAs: as === col.viewAs ? undefined : as } : col))
+				prev.map(col => (col.index === index ? { ...col, viewAs: as === col.viewAs ? undefined : as } : col))
 			),
 		[updateColumns]
 	)

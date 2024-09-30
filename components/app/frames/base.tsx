@@ -51,8 +51,7 @@ export const Frame: FC<Props> = ({
 							md ? "absolute" : "fixed",
 							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
 							(handleBack === undefined || hasOverlay === true) &&
-								"bg-gradient-to-b from-black/10 to-black/30",
-							index !== -1 && "rounded-lg"
+								"bg-gradient-to-b from-black/10 to-black/30"
 						)}
 						onClick={() => handleFrame()}
 					/>
@@ -70,7 +69,7 @@ export const Frame: FC<Props> = ({
 							index !== -1 && "rounded-b-lg"
 						)}
 					>
-						<div className="flex flex-row items-center gap-2 px-6 py-4">
+						<div className="mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 px-6 py-4">
 							{handleBack && (
 								<Button variant="secondary" onClick={handleBack} className="mr-2 h-min rounded-sm p-1">
 									<ChevronLeft size={14} />
@@ -89,7 +88,7 @@ export const Frame: FC<Props> = ({
 							/>
 						</div>
 
-						<div className={cn(hasChildrenPadding && "px-6 py-8")}>{children}</div>
+						<div className={cn(hasChildrenPadding && "overflow-hidden px-6 py-8")}>{children}</div>
 					</motion.div>
 				</div>
 			) : null}

@@ -1,17 +1,9 @@
-import { useRouter } from "next/router"
-import { useEffect } from "react"
-
 import { atom, useAtom } from "jotai"
 
 const framesAtom = atom<Record<string, string | undefined>>({})
 
 export const useFrames = () => {
-	const router = useRouter()
 	const [frames, setFrames] = useAtom(framesAtom)
-
-	useEffect(() => {
-		setFrames({})
-	}, [router.pathname, setFrames])
 
 	return { frames, setFrames }
 }

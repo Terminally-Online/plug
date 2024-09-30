@@ -1,9 +1,9 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Blocks, ChevronRight, SearchIcon } from "lucide-react"
+import { Blocks, SearchIcon } from "lucide-react"
 
-import { ActionCard, ActionItem, Button, Frame, Search } from "@/components"
+import { ActionItem, Button, Frame, Search } from "@/components"
 import { abis, categories, formatAddress, formatTitle, actions as staticActions, useDebounce } from "@/lib"
 import { useFrame } from "@/state"
 
@@ -44,7 +44,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 				visible={isFrame}
 				hasChildrenPadding={false}
 			>
-				<div className="flex flex-col gap-4 px-6">
+				<div className="flex flex-col px-6">
 					<Search
 						className="mb-4"
 						icon={<SearchIcon size={14} />}
@@ -54,119 +54,38 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 						clear={true}
 					/>
 
-					{debouncedSearch ? (
-						<div className="flex flex-col gap-2">
-							{allFilteredActions && allFilteredActions.length > 0 ? (
-								allFilteredActions.map(({ categoryName, actionName }) => (
-									<ActionItem
-										key={`${categoryName}-${actionName}`}
-										index={index}
-										item={item}
-										categoryName={categoryName}
-										actionName={actionName}
-										image={true}
-									/>
-								))
-							) : (
-								<>
-									<div className="mx-auto my-64 flex h-full max-w-[80%] flex-col gap-2 text-center">
-										<p className="text-lg font-bold">No matching actions.</p>
-										<p className="opacity-60">
-											Search for another action or protocol or request a new integration.
-										</p>
-										<Button
-											className="mx-auto mt-4 w-max"
-											onClick={() => handleFrame("featureRequest-actions")}
-										>
-											Request Integration
-										</Button>
-									</div>
-								</>
-							)}
-						</div>
-					) : (
-						Object.keys(categories).map(categoryName => {
-							const category = categories[categoryName]
+					<div className="flex flex-col gap-2">
+						{allFilteredActions.length > 0 ? (
+							allFilteredActions.map(({ categoryName, actionName }) => (
+								<ActionItem
+									key={`${categoryName}-${actionName}`}
+									index={index}
+									item={item}
+									categoryName={categoryName}
+									actionName={actionName}
+									image={true}
+								/>
+							))
+						) : (
+							<>
+								<div className="mx-auto my-64 flex h-full max-w-[80%] flex-col gap-2 text-center">
+									<p className="text-lg font-bold">No matching actions.</p>
+									<p className="opacity-60">
+										Search for another action or protocol or request a new integration.
+									</p>
 
-							return (
-								<div key={categoryName} className="flex flex-col gap-4">
-									<div className="flex flex-col items-center gap-2">
-										<button
-											className="group flex w-full flex-row items-center gap-4"
-											onClick={() => handleFrame(categoryName)}
-										>
-											<Image
-												src={category.image}
-												alt={categoryName}
-												width={32}
-												height={32}
-												className="h-6 w-6 rounded-sm"
-											/>
-											<p className="text-lg font-bold">{formatTitle(categoryName)}</p>
-											<Button
-												variant="secondary"
-												className="ml-auto rounded-sm p-1"
-												onClick={() => handleFrame(categoryName)}
-											>
-												<ChevronRight size={14} />
-											</Button>
-										</button>
-
-										<ActionCard
-											index={index}
-											item={item}
-											categoryName={categoryName}
-											category={category}
-										/>
-									</div>
+									<Button
+										className="mx-auto mt-4 w-max"
+										onClick={() => handleFrame("featureRequest-actions")}
+									>
+										Request Integration
+									</Button>
 								</div>
-							)
-						})
-					)}
+							</>
+						)}
+					</div>
 				</div>
 			</Frame>
-
-			{Object.keys(categories).map(categoryName => {
-				const category = categories[categoryName]
-
-				return (
-					<Frame
-						index={index}
-						key={categoryName}
-						className="scrollbar-hide z-[2] max-h-[85vh] overflow-y-auto"
-						icon={
-							<Image
-								src={category.image}
-								alt={categoryName}
-								width={32}
-								height={32}
-								className="h-6 w-6 rounded-sm"
-							/>
-						}
-						label={formatTitle(categoryName)}
-						visible={frames[index] === categoryName}
-						handleBack={() => handleFrame("actions")}
-						hasOverlay={true}
-						hasChildrenPadding={false}
-					>
-						<div className="flex flex-col gap-4 px-6">
-							<ActionCard index={index} item={item} categoryName={categoryName} category={category} />
-
-							<div className="flex flex-col gap-2">
-								{Object.keys(staticActions[categoryName]).map(actionName => (
-									<ActionItem
-										key={actionName}
-										index={index}
-										item={item}
-										categoryName={categoryName}
-										actionName={actionName}
-									/>
-								))}
-							</div>
-						</div>
-					</Frame>
-				)
-			})}
 
 			{Object.keys(categories).map(categoryName => {
 				return Object.keys(staticActions[categoryName]).map(actionName => {
@@ -187,8 +106,8 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 								/>
 							}
 							label={formatTitle(actionName)}
-							visible={frames[index] === `${categoryName}-${actionName}`}
-							handleBack={() => handleFrame(debouncedSearch ? "actions" : categoryName)}
+							visible={frames[index] === `${index}-${categoryName}-${actionName}`}
+							handleBack={() => handleFrame(`${index}-${item}-actions`)}
 							hasOverlay={true}
 							hasChildrenPadding={false}
 						>

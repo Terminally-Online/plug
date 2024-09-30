@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
 				// Create a hot id for the user that is uniquely identifying to the time it was created.
 				session.address = token.sub
 				session.user = {
-					id: "anonymous",
+					id: token.sub,
 					name: "Anonymous User",
 					image: `https://avatar.vercel.sh/anonymous.png`,
 					anonymous: true,
