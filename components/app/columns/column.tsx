@@ -210,7 +210,7 @@ export const ConsoleColumn: FC<{
 							</div>
 
 							{/* TODO(#416): Have the column.frame check to disable the scroll when a frame is open. Need a better solution. */}
-							<div className={cn("relative h-full", !column.frame && "overflow-y-scroll")}>
+							<div className={cn("h-full", !column.frame && "overflow-y-scroll")}>
 								{key === VIEW_KEYS.AUTHENTICATE ? (
 									<ColumnAuthenticate index={index} />
 								) : key === VIEW_KEYS.ADD ? (
