@@ -103,7 +103,7 @@ export const TokenImage: FC<{
 
 	return (
 		<div
-			className="relative h-10"
+			className="relative"
 			style={{
 				width: `${dimensions.content}rem`,
 				height: `${dimensions.content}rem`
@@ -141,7 +141,7 @@ export const TokenImage: FC<{
 						<Image
 							src={logo}
 							alt={symbol}
-							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							style={{
 								width: `${dimensions.imageBlur}rem`,
 								height: `${dimensions.imageBlur}rem`
@@ -154,7 +154,7 @@ export const TokenImage: FC<{
 						ref={imgRef}
 						src={logo}
 						alt={symbol}
-						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+						className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full bg-grayscale-100"
 						style={{
 							height: `${dimensions.content}rem`,
 							width: `${dimensions.content}rem`,

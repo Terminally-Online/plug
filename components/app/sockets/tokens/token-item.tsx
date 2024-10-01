@@ -11,24 +11,14 @@ export const SocketTokenItem: FC<{
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { key, handleFrame } = useFrame({
+	const { handleFrame } = useFrame({
 		index,
 		key: `${index}-${tokenIndex}-token`
 	})
 
 	return (
 		<>
-			<Accordion
-				loading={token === undefined}
-				onExpand={
-					token === undefined
-						? () => {}
-						: () => {
-								handleFrame()
-								console.log("clicked", key)
-							}
-				}
-			>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => handleFrame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>

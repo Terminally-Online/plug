@@ -48,10 +48,15 @@ export const CollectibleFrame: FC<{
 		key: `${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
 	})
 
-	const { data: metadata } = api.socket.balances.metadata.useQuery({
-		type: "ERC721",
-		id: collectible.id
-	})
+	const { data: metadata } = api.socket.balances.metadata.useQuery(
+		{
+			type: "ERC721",
+			id: collectible.id
+		},
+		{
+			staleTime: Infinity
+		}
+	)
 
 	const [expanded, setExpanded] = useState(false)
 
