@@ -16,7 +16,7 @@ export const TokenFrame: FC<{
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { isFrame } = useColumns(index, `${index}-${tokenIndex}-token`)
+	const { isFrame } = useColumns(index, `${tokenIndex}-token`)
 
 	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{

@@ -72,8 +72,8 @@ export const SocketPositionList: FC<
 			/>
 
 			<Animate.List>
-				{visibilePositions.map((protocol, index) => (
-					<Animate.ListItem key={index}>
+				{visibilePositions.map((protocol, positionIndex) => (
+					<Animate.ListItem key={positionIndex}>
 						<SocketPositionItem index={index} protocol={protocol} />
 					</Animate.ListItem>
 				))}

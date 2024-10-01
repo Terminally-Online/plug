@@ -11,7 +11,7 @@ export const SocketPositionItem: FC<{
 	index: number
 	protocol?: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
 }> = ({ index, protocol }) => {
-	const { frame } = useColumns(index, `${index}-${protocol?.name ?? ""}-position`)
+	const { frame } = useColumns(index, `${protocol?.name ?? ""}-position`)
 
 	const { positions } = protocol ?? {}
 

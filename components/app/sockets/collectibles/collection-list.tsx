@@ -2,7 +2,7 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { api, RouterOutputs } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
 
 import { Animate, Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
 import { cn } from "@/lib"
@@ -70,8 +70,8 @@ export const SocketCollectionList: FC<
 			/>
 
 			<Animate.List>
-				{visibleCollectibles.map((collection, index) => (
-					<Animate.ListItem key={index}>
+				{visibleCollectibles.map((collection, collectionIndex) => (
+					<Animate.ListItem key={collectionIndex}>
 						<SocketCollectionItem index={index} collection={collection} searched={search !== ""} />
 					</Animate.ListItem>
 				))}
@@ -86,11 +86,11 @@ export const SocketCollectionList: FC<
 			/>
 
 			{visibleCollectibles.map(
-				(collection, index) =>
+				(collection, collectionIndex) =>
 					collection &&
 					collection.collectibles.map(collectible => (
 						<CollectibleFrame
-							key={`${index}-${collectible.identifier}`}
+							key={collectionIndex}
 							index={index}
 							collection={collection}
 							collectible={collectible}

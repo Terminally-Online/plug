@@ -18,6 +18,8 @@ export const ConsoleColumnRow = () => {
 		})
 	}
 
+	console.log(columns)
+
 	return (
 		<div className="flex h-full flex-row overflow-x-auto overflow-y-hidden">
 			<DragDropContext onDragEnd={onDragEnd}>

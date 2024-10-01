@@ -11,7 +11,7 @@ export const SocketTokenItem: FC<{
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { frame } = useColumns(index, `${index}-${tokenIndex}-token`)
+	const { frame } = useColumns(index, `${tokenIndex}-token`)
 
 	return (
 		<>

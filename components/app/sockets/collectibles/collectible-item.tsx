@@ -9,10 +9,7 @@ export const SocketCollectibleItem: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { frame } = useColumns(
-		index,
-		`${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
-	)
+	const { frame } = useColumns(index, `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`)
 
 	return (
 		<div

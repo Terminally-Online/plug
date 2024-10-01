@@ -19,7 +19,7 @@ export const PositionFrame: FC<{
 }> = ({ index, protocol }) => {
 	const { positions } = protocol
 
-	const { isFrame } = useColumns(index, `${index}-${protocol.name}-position`)
+	const { isFrame } = useColumns(index, `${protocol.name}-position`)
 
 	const [color, setColor] = useState("")
 	const [colors, setColors] = useState<Record<string, string>>({})
