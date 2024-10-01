@@ -4,7 +4,7 @@ import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince } from "@/components"
 import { formatTitle } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const getStatusIcon = (status: string) => {
 	switch (status) {
@@ -51,15 +51,12 @@ export const ActivityItem: FC<{
 		time: string
 	}
 }> = ({ index, activityIndex, activity }) => {
-	const { handleFrame } = useFrame({
-		index,
-		key: `${index}-${activityIndex}-activity`
-	})
+	const { frame } = useColumns(index, `${index}-${activityIndex}-activity`)
 
 	const pastDate = new Date(Date.now() - 60000 * 0.2)
 
 	return (
-		<Accordion loading={activity === undefined} onExpand={() => handleFrame()}>
+		<Accordion loading={activity === undefined} onExpand={() => frame()}>
 			{activity === undefined ? (
 				<div className="invisible">
 					<p>.</p>

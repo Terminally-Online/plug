@@ -7,7 +7,7 @@ import { ChevronRight, CircleHelp } from "lucide-react"
 import { Button, Frame, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
 import { categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const DynamicFragment: FC<{
 	item: string
@@ -16,10 +16,7 @@ export const DynamicFragment: FC<{
 	fragmentIndex: number
 }> = ({ index, item, actionIndex, fragmentIndex }) => {
 	const { data: session } = useSession()
-	const { isFrame, handleFrame } = useFrame({
-		index,
-		key: `${index}-${actionIndex}-${fragmentIndex}`
-	})
+	const { isFrame, frame } = useColumns(index, `${index}-${actionIndex}-${fragmentIndex}`)
 	const { plug, actions, fragments, dynamic, handle } = usePlugs(item)
 
 	const action = actions[actionIndex]
@@ -108,7 +105,7 @@ export const DynamicFragment: FC<{
 			})
 
 		// If the value selected was from a list of options, close the frame.
-		if (value instanceof Object) handleFrame(undefined)
+		if (value instanceof Object) frame()
 	}
 
 	if (plug === undefined || actions === undefined) return null
@@ -123,7 +120,7 @@ export const DynamicFragment: FC<{
 				style={{
 					background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 				}}
-				onClick={() => (own ? handleFrame() : undefined)}
+				onClick={() => (own ? frame() : undefined)}
 			>
 				{label}
 			</button>

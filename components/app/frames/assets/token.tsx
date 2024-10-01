@@ -7,7 +7,7 @@ import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, SocketTokenPriceChart } from "@/components"
 import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
@@ -16,10 +16,7 @@ export const TokenFrame: FC<{
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { isFrame } = useFrame({
-		index,
-		key: `${index}-${tokenIndex}-token`
-	})
+	const { isFrame } = useColumns(index, `${index}-${tokenIndex}-token`)
 
 	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{

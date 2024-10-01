@@ -2,7 +2,7 @@ import Image from "next/image"
 import { FC } from "react"
 
 import { Counter } from "@/components/shared"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 import { getStatusIcon } from "../../sockets/activity/activity-item"
 import { Frame } from "../base"
@@ -12,10 +12,7 @@ export const ActivityFrame: FC<{
 	activityIndex: number
 	activity: { name: string; status: string }
 }> = ({ index, activityIndex, activity }) => {
-	const { isFrame } = useFrame({
-		index,
-		key: `${index}-${activityIndex}-activity`
-	})
+	const { isFrame } = useColumns(index, `${index}-${activityIndex}-activity`)
 
 	return (
 		<Frame

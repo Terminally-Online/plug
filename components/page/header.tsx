@@ -8,11 +8,10 @@ import BlockiesSvg from "blockies-react-svg"
 import { Button, Container, Header } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
-import { useColumns, useFrame, useSocket } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 const HomePageHeader = () => {
-	const { handleFrame } = useFrame({ index: MOBILE_INDEX })
-	const { column, navigate } = useColumns(MOBILE_INDEX)
+	const { column, navigate, frame } = useColumns(MOBILE_INDEX)
 	const { socket, avatar } = useSocket()
 	const { handle } = usePlugs()
 
@@ -24,7 +23,7 @@ const HomePageHeader = () => {
 			label={
 				<>
 					{socket ? (
-						<button className="flex flex-row items-center gap-2" onClick={() => handleFrame("auth")}>
+						<button className="flex flex-row items-center gap-2" onClick={() => frame("auth")}>
 							{avatar ? (
 								<Image
 									src={avatar}
@@ -87,8 +86,7 @@ const HomePageHeader = () => {
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
-	const { handleFrame } = useFrame({ index: MOBILE_INDEX })
-	const { column, navigate } = useColumns(MOBILE_INDEX)
+	const { column, navigate, frame } = useColumns(MOBILE_INDEX)
 	const { plug, handle } = usePlugs(column?.item ?? "")
 
 	const own = plug !== undefined && session && session.address === plug.socketId
@@ -117,7 +115,7 @@ const PlugHeader = () => {
 					/>
 				}
 				label={plug.name === "" ? "Untitled Plug" : plug.name}
-				nextOnClick={own ? () => handleFrame("manage") : () => {}}
+				nextOnClick={own ? () => frame("manage") : () => {}}
 				nextLabel={
 					own ? (
 						<Ellipsis size={14} />
@@ -148,7 +146,7 @@ const PlugHeader = () => {
 					<GitFork size={14} />
 				</Button>
 
-				<Button variant="secondary" className="group p-1" onClick={() => handleFrame("share")}>
+				<Button variant="secondary" className="group p-1" onClick={() => frame("share")}>
 					<Share size={14} />
 				</Button>
 			</div>

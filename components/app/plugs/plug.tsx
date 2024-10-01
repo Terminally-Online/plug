@@ -6,7 +6,7 @@ import { SearchIcon } from "lucide-react"
 import { ActionsFrame, ActionView, Button, ExecuteFrame, ManagePlugFrame, Search, ShareFrame } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, MOBILE_INDEX } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
 	index = -1,
@@ -15,7 +15,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { handleFrame } = useFrame({ index })
+	const { frame } = useColumns(index)
 	const { plug } = usePlugs(item)
 
 	const own = plug !== undefined && session && session.address === plug.socketId
@@ -40,16 +40,16 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						className="px-4 pt-16"
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search protocols and actions"
-						handleOnClick={() => handleFrame(`${index}-${item}-actions`)}
+						handleOnClick={() => frame(`${index}-${item}-actions`)}
 					/>
 				)}
 
 				<div className="relative flex flex-row gap-2 px-4">
-					<Button variant="secondary" className="w-max bg-white" onClick={() => handleFrame("socket-run")}>
+					<Button variant="secondary" className="w-max bg-white" onClick={() => frame("socket-run")}>
 						Run
 					</Button>
 
-					<Button className="w-full" onClick={() => handleFrame("socket-schedule")}>
+					<Button className="w-full" onClick={() => frame("socket-schedule")}>
 						Schedule
 					</Button>
 				</div>

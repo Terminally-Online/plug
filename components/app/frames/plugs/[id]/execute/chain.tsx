@@ -1,24 +1,18 @@
-import Image from "next/image"
-import { FC, useEffect, useMemo } from "react"
-
-import { Globe } from "lucide-react"
-
-import { Button, Checkbox, Frame } from "@/components"
-import { usePlugs } from "@/contexts"
-import { categories, formatTitle } from "@/lib"
-import { useColumns, useFrame } from "@/state"
+import { FC } from "react"
 
 export const ChainFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, prevFrame: nextFrame, handleFrame } = useFrame({ index, key: "chain", separator: "-" })
-	const { chains, actions, handle } = usePlugs(item)
+	index
+	item
+	// const { isFrame, frame } = useColumns(index, "chain")
+	// const { chains, actions, handle } = usePlugs(item)
 
-	const isDisabled = chains.length === 0
+	// const isDisabled = chains.length === 0
 
-	useEffect(() => {
-		if (isFrame === false) return
-
-		if (chains.length < 2 && chains.length === 1) handleFrame(nextFrame)
-	}, [chains, isFrame, nextFrame, handleFrame])
+	// useEffect(() => {
+	// 	if (isFrame === false) return
+	//
+	// 	if (chains.length < 2 && chains.length === 1) handleFrame(nextFrame)
+	// }, [chains, isFrame])
 
 	return <></>
 

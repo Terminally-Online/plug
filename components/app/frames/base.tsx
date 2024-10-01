@@ -5,7 +5,7 @@ import { ChevronLeft, X } from "lucide-react"
 
 import { Button, Header } from "@/components"
 import { cn, useMediaQuery } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
@@ -32,7 +32,7 @@ export const Frame: FC<Props> = ({
 	next
 }) => {
 	const { md } = useMediaQuery()
-	const { handleFrame } = useFrame({ index })
+	const { frame } = useColumns(index)
 
 	return (
 		<AnimatePresence>
@@ -53,7 +53,7 @@ export const Frame: FC<Props> = ({
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-black/10 to-black/30"
 						)}
-						onClick={() => handleFrame()}
+						onClick={() => frame()}
 					/>
 
 					<motion.div
@@ -82,7 +82,7 @@ export const Frame: FC<Props> = ({
 								icon={icon}
 								label={label}
 								nextPadded={false}
-								nextOnClick={() => handleFrame()}
+								nextOnClick={() => frame()}
 								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}
 								nextEmpty={next !== undefined}
 							/>

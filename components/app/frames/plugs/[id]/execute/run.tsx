@@ -5,22 +5,20 @@ import { Eye } from "lucide-react"
 
 import { ActionPreview, Button, Frame } from "@/components"
 import { usePlugs } from "@/contexts"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, prevFrame, handleFrame } = useFrame({
-		index,
-		key: "run",
-		separator: "-"
-	})
+	const { isFrame, frame } = useColumns(index, "run")
 	const { chains } = usePlugs(item)
+
+	const prevFrame = "NOT_IMPLEMENTED" as string
 
 	const handleBack =
 		prevFrame !== "schedule"
 			? chains.length === 1
 				? undefined
-				: () => handleFrame(`chain-${prevFrame}`)
-			: () => handleFrame(`schedule`)
+				: () => frame(`chain-${prevFrame}`)
+			: () => frame(`schedule`)
 
 	return (
 		<Frame
@@ -58,7 +56,7 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					</span>
 				</p>
 
-				<Button className="mt-4 w-full" onClick={() => handleFrame(`running-${prevFrame}`)}>
+				<Button className="mt-4 w-full" onClick={() => frame(`running-${prevFrame}`)}>
 					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
 				</Button>
 			</div>

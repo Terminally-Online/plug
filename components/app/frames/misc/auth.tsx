@@ -3,12 +3,12 @@ import { useSession } from "next-auth/react"
 import { User } from "lucide-react"
 
 import { AuthButton, Frame } from "@/components"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const AuthFrame = () => {
 	const index = -1
-	const { isFrame } = useFrame({ index, key: "auth" })
 	const { data: session } = useSession()
+	const { isFrame } = useColumns(index, "auth")
 
 	return (
 		<Frame

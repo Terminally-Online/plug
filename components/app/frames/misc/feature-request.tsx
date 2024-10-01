@@ -5,17 +5,18 @@ import { Pen, Sparkle } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Button, Frame, Search } from "@/components"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const FeatureRequestFrame: FC<{ index: number }> = ({ index }) => {
-	const { isFrame, prevFrame: from, handleFrame } = useFrame({ index, key: "freatureRequest", separator: "-" })
+	const { isFrame } = useColumns(index, "freatureRequest")
 
 	const [message, setMessage] = useState("")
 
 	const handleFeatureRequest = api.misc.featureRequest.useMutation({
 		onMutate: () => {
 			setMessage("")
-			handleFrame(`featureRequestSubmit-${from}`)
+			// TODO: We un-implemented this when beginning to store frames on columns.
+			// frame(`featureRequestSubmit-${from}`)
 		}
 	})
 
@@ -25,7 +26,7 @@ export const FeatureRequestFrame: FC<{ index: number }> = ({ index }) => {
 			icon={<Sparkle size={18} />}
 			label="Feature Request"
 			visible={isFrame}
-			handleBack={from ? () => handleFrame(from) : undefined}
+			// handleBack={from ? () => handleFrame(from) : undefined}
 			hasOverlay={true}
 		>
 			<div className="flex flex-col items-center gap-2">

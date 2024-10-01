@@ -5,21 +5,21 @@ import { ChevronRight } from "lucide-react"
 
 import { ActionCard, Button } from "@/components"
 import { categories, formatTitle } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ActionListItem: FC<{
 	index: number
 	item: string
 	categoryName: string
 }> = ({ index, item, categoryName }) => {
-	const { handleFrame } = useFrame({ index, key: categoryName })
+	const { frame } = useColumns(index, categoryName)
 
 	const category = categories[categoryName]
 
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col items-center gap-2">
-				<button className="group flex w-full flex-row items-center gap-4" onClick={() => handleFrame()}>
+				<button className="group flex w-full flex-row items-center gap-4" onClick={() => frame()}>
 					<Image
 						src={category.image}
 						alt={categoryName}
@@ -33,7 +33,7 @@ export const ActionListItem: FC<{
 					<Button
 						variant="secondary"
 						className="ml-auto p-1 group-hover:bg-grayscale-100"
-						onClick={() => handleFrame()}
+						onClick={() => frame()}
 					>
 						<ChevronRight size={14} />
 					</Button>

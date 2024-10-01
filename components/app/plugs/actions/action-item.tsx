@@ -4,7 +4,7 @@ import { FC } from "react"
 import { Accordion } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ActionItem: FC<{
 	index: number
@@ -13,8 +13,8 @@ export const ActionItem: FC<{
 	actionName: keyof (typeof staticActions)[keyof typeof categories]
 	image?: boolean
 }> = ({ index, item, categoryName, actionName, image = false }) => {
-	const { handleFrame } = useFrame({ index })
 	const { plug, actions, handle } = usePlugs(item)
+	const { frame } = useColumns(index)
 
 	if (!plug) return null
 
@@ -32,7 +32,7 @@ export const ActionItem: FC<{
 						}
 					])
 				})
-				handleFrame("")
+				frame()
 			}}
 		>
 			<div className="flex flex-row items-center gap-2">

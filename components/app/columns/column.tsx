@@ -25,7 +25,7 @@ import {
 } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cardColors, cn, Column, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { useColumns, useFrame, useSocket } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
@@ -41,9 +41,8 @@ export const ConsoleColumn: FC<{
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { socket } = useSocket()
-	const { navigate, resize, remove } = useColumns(index)
+	const { navigate, resize, remove, frame } = useColumns(index)
 
-	const { handleFrame } = useFrame({ index })
 	const { plug, handle } = usePlugs(item)
 
 	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
@@ -194,7 +193,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => handleFrame(`${index}-${item}-manage`)}
+														onClick={() => frame(`${index}-${item}-manage`)}
 													>
 														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>

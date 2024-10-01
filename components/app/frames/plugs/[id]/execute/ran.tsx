@@ -6,15 +6,13 @@ import { CheckCircle } from "lucide-react"
 import { Button, Frame } from "@/components"
 import { usePlugs } from "@/contexts"
 import { formatTitle } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, prevFrame, handleFrame } = useFrame({
-		index,
-		key: "ran",
-		separator: "-"
-	})
+	const { isFrame, frame } = useColumns(index, "ran")
 	const { plug, chains } = usePlugs(item)
+
+	const prevFrame = "NOT_IMPLEMENTED" as string
 
 	const label = isFrame ? (prevFrame === "schedule" ? "Intent Signed" : "Transaction Ran") : ""
 
@@ -78,7 +76,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					</p>
 				)}
 
-				<Button variant="secondary" className="mt-4 w-full" onClick={() => handleFrame("chain")}>
+				<Button variant="secondary" className="mt-4 w-full" onClick={() => frame("chain")}>
 					View on Explorer
 				</Button>
 			</div>

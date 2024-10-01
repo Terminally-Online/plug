@@ -4,21 +4,18 @@ import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Counter, SocketTokenPercentages, TokenFrame, TokenImage } from "@/components"
 import { cn, getChainId } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const SocketTokenItem: FC<{
 	index: number
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { handleFrame } = useFrame({
-		index,
-		key: `${index}-${tokenIndex}-token`
-	})
+	const { frame } = useColumns(index, `${index}-${tokenIndex}-token`)
 
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => handleFrame()}>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => frame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>

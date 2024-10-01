@@ -10,7 +10,7 @@ import { useSocket } from "@/state"
 import { atomWithStorage } from "jotai/utils"
 
 const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_VIEWS)
-export const useColumns = (index?: number) => {
+export const useColumns = (index?: number, key?: string) => {
 	const { socket } = useSocket()
 
 	const [columns, setColumns] = useAtom(columnsAtom)
@@ -111,6 +111,23 @@ export const useColumns = (index?: number) => {
 		[updateColumns]
 	)
 
+	/**
+	 * Toggle the frame visibility of a column.
+	 * @param index The index of the column to toggle the frame state in.
+	 * @param key The id of the frame to toggole.
+	 */
+	const frame = useCallback(
+		(columnKey?: string) => {
+			const frameKey = columnKey ?? key
+			updateColumns(prev =>
+				prev.map(col =>
+					col.index === index ? { ...col, frame: col.frame === frameKey ? undefined : frameKey } : col
+				)
+			)
+		},
+		[updateColumns]
+	)
+
 	const column = useMemo(
 		() => (index !== undefined ? columns.find(column => column.index === index) : undefined),
 		[columns, index]
@@ -122,15 +139,23 @@ export const useColumns = (index?: number) => {
 		return (column !== undefined && column.viewAs && column.viewAs.id !== socket.id) || false
 	}, [column, socket])
 
+	const isFrame = useMemo(() => {
+		if (column === undefined) return false
+
+		return column.frame === key
+	}, [column])
+
 	return {
 		columns,
 		column,
 		isExternal,
+		isFrame,
 		add,
 		navigate,
 		remove,
 		move,
 		resize,
-		as
+		as,
+		frame
 	}
 }

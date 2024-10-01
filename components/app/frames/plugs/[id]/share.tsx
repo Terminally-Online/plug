@@ -6,10 +6,10 @@ import { Badge, Link, Send, Twitter } from "lucide-react"
 import { Button, Frame } from "@/components"
 import { usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame } = useFrame({ index, key: "share" })
+	const { isFrame } = useColumns(index, "share")
 	const { plug } = usePlugs(item)
 
 	const { copied, handleCopied } = useClipboard(`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`)

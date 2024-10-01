@@ -5,13 +5,10 @@ import { Blocks, SearchIcon } from "lucide-react"
 
 import { ActionItem, Button, Frame, Search } from "@/components"
 import { abis, categories, formatAddress, formatTitle, actions as staticActions, useDebounce } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, frames, handleFrame } = useFrame({
-		index,
-		key: `${index}-${item}-actions`
-	})
+	const { column, isFrame, frame } = useColumns(index, `${index}-${item}-actions`)
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
 	const allFilteredActions = useMemo(
@@ -33,6 +30,8 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			}),
 		[debouncedSearch]
 	)
+
+	if (!column) return null
 
 	return (
 		<>
@@ -76,7 +75,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 
 									<Button
 										className="mx-auto mt-4 w-max"
-										onClick={() => handleFrame("featureRequest-actions")}
+										onClick={() => frame("featureRequest-actions")}
 									>
 										Request Integration
 									</Button>
@@ -106,8 +105,8 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 								/>
 							}
 							label={formatTitle(actionName)}
-							visible={frames[index] === `${index}-${categoryName}-${actionName}`}
-							handleBack={() => handleFrame(`${index}-${item}-actions`)}
+							visible={column.frame === `${index}-${categoryName}-${actionName}`}
+							handleBack={() => frame(`${index}-${item}-actions`)}
 							hasOverlay={true}
 							hasChildrenPadding={false}
 						>

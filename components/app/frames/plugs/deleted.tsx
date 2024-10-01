@@ -4,10 +4,10 @@ import { Trash2 } from "lucide-react"
 
 import { Button, Frame } from "@/components"
 import { usePlugs } from "@/contexts"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
-	const { isFrame } = useFrame({ index, key: "deleted" })
+	const { isFrame } = useColumns(index, "deleted")
 	const { handle } = usePlugs()
 
 	return (

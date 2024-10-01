@@ -7,7 +7,7 @@ import { RouterOutputs } from "@/server/client"
 
 import { Counter } from "@/components/shared"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 import { SocketTokenPriceChart } from "../../sockets"
 import { TokenImage } from "../../sockets/tokens/token-image"
@@ -19,10 +19,7 @@ export const PositionFrame: FC<{
 }> = ({ index, protocol }) => {
 	const { positions } = protocol
 
-	const { isFrame } = useFrame({
-		index,
-		key: `${index}-${protocol.name}-position`
-	})
+	const { isFrame } = useColumns(index, `${index}-${protocol.name}-position`)
 
 	const [color, setColor] = useState("")
 	const [colors, setColors] = useState<Record<string, string>>({})

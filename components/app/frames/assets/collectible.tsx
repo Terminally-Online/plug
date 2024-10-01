@@ -31,7 +31,7 @@ import {
 	getChainImage,
 	getTextColor
 } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
 import { Frame } from "../base"
@@ -43,10 +43,10 @@ export const CollectibleFrame: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { isFrame } = useFrame({
+	const { isFrame } = useColumns(
 		index,
-		key: `${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
-	})
+		`${index}-${collection.slug}-${collectible?.contract}-${collectible?.identifier}`
+	)
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery(
 		{

@@ -7,4 +7,5 @@ export type Column = {
 	item?: string
 	from?: string
 	viewAs?: MinimalUserSocketModel
+	frame?: string
 }

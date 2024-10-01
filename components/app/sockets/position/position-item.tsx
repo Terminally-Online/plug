@@ -5,16 +5,13 @@ import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Counter } from "@/components/shared"
 import { cn } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const SocketPositionItem: FC<{
 	index: number
 	protocol?: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
 }> = ({ index, protocol }) => {
-	const { handleFrame } = useFrame({
-		index,
-		key: `${index}-${protocol?.name ?? ""}-position`
-	})
+	const { frame } = useColumns(index, `${index}-${protocol?.name ?? ""}-position`)
 
 	const { positions } = protocol ?? {}
 
@@ -24,7 +21,7 @@ export const SocketPositionItem: FC<{
 		: 0
 
 	return (
-		<Accordion loading={positions === undefined} onExpand={() => handleFrame()}>
+		<Accordion loading={positions === undefined} onExpand={() => frame()}>
 			{protocol === undefined ? (
 				<div className="invisible">
 					<p>.</p>

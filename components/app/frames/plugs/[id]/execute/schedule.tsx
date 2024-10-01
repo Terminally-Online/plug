@@ -4,9 +4,8 @@ import { DateRange, DayPicker } from "react-day-picker"
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Button, Dropdown, Frame } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cn, formatDate } from "@/lib"
-import { useColumns, useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 const frequencies = [
 	{ label: "Never", value: "0" },
@@ -17,23 +16,20 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const ScheduleFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, handleFrame } = useFrame({
-		index,
-		key: "schedule"
-	})
-	const { chains } = usePlugs(item)
+export const ScheduleFrame: FC<{ index: number; item: string }> = ({ index }) => {
+	const { isFrame, frame } = useColumns(index, "schedule")
+	// const { chains } = usePlugs(item)
 
 	const [date, setDate] = useState<DateRange | undefined>({
 		from: undefined,
 		to: undefined
 	})
-	const [frequency, setFrequency] = useState<(typeof frequencies)[0]>(frequencies[0])
+	const [frequency] = useState<(typeof frequencies)[0]>(frequencies[0])
 
 	const handleBack =
 		// chainsAvailable.length === 1
 		// 	? undefined
-		() => handleFrame("chain-schedule")
+		() => frame("chain-schedule")
 
 	return (
 		<Frame
@@ -125,13 +121,13 @@ export const ScheduleFrame: FC<{ index: number; item: string }> = ({ index, item
 					placeholder="Repeats"
 					value={frequency.label}
 					options={frequencies}
-					handleClick={() => handleFrame("recurring")}
+					handleClick={() => frame("recurring")}
 				/>
 
 				<Button
 					variant={date && date.from ? "primary" : "disabled"}
 					className="mt-4 w-full"
-					onClick={() => handleFrame("run-schedule")}
+					onClick={() => frame("run-schedule")}
 					disabled={!date || !date.from}
 				>
 					{date && date.from ? "Next" : "Select a Date"}

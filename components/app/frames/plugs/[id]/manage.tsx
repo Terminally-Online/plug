@@ -5,10 +5,10 @@ import { PencilLine, Settings } from "lucide-react"
 import { Button, Checkbox, Frame, Search } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cardColors, useDebounce } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
-	const { isFrame } = useFrame({ index, key: `${index}-${item}-manage` })
+	const { isFrame } = useColumns(index, `${index}-${item}-manage`)
 	const { plug, handle } = usePlugs(item)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)

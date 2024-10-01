@@ -2,7 +2,7 @@ import { FC, useMemo } from "react"
 
 import { usePlugs } from "@/contexts"
 import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
-import { useFrame } from "@/state"
+import { useColumns } from "@/state"
 
 export const ActionCard: FC<{
 	index: number
@@ -10,7 +10,7 @@ export const ActionCard: FC<{
 	categoryName: keyof typeof categories
 	category: (typeof categories)[keyof typeof categories]
 }> = ({ index, item, categoryName, category }) => {
-	const { handleFrame } = useFrame({ index })
+	const { frame } = useColumns(index)
 	const { plug, actions, handle } = usePlugs(item)
 
 	const primaryActions = useMemo(() => {
@@ -55,7 +55,7 @@ export const ActionCard: FC<{
 								])
 							})
 
-							handleFrame()
+							frame()
 						}}
 					>
 						<div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 transition-all duration-200 ease-in-out group-hover:bg-white/40">
