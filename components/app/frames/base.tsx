@@ -83,7 +83,7 @@ export const Frame: FC<Props> = ({
 								label={label}
 								nextPadded={false}
 								nextOnClick={() => handleFrame()}
-								nextLabel={next ?? <X size={14} />}
+								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}
 								nextEmpty={next !== undefined}
 							/>
 						</div>
