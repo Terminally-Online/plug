@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { Plus } from "lucide-react"
 
-import { Button, Callout, Sentence } from "@/components"
+import { Accordion, Button, Callout, Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { actions, categories, formatTitle, getValues } from "@/lib"
 import { useColumns } from "@/state"
@@ -70,10 +70,10 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 					<h4 className="mb-2 font-bold opacity-40">Next Action Suggestions</h4>
 					<div className="flex flex-col gap-2">
 						{suggestions.map((suggestion, idx) => (
-							<button
+							<Accordion
 								key={idx}
-								className="flex items-center gap-4 rounded-lg bg-grayscale-0 p-4 font-bold"
-								onClick={() =>
+								className="flex items-center gap-4 font-bold"
+								onExpand={() =>
 									handle.action.edit({
 										id: plug.id,
 										actions: JSON.stringify([
@@ -86,35 +86,28 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 									})
 								}
 							>
-								<Image
-									src={categories[suggestion.categoryName].image}
-									alt={suggestion.categoryName}
-									width={24}
-									height={24}
-									className="rounded-md"
-								/>
-								<p className="flex w-full flex-wrap items-center gap-[8px] truncate">
-									{formatTitle(suggestion.actionName)}
-								</p>
-								<Button
-									variant="secondary"
-									className="group p-1"
-									onClick={() =>
-										handle.action.edit({
-											id: plug.id,
-											actions: JSON.stringify([
-												...actions,
-												{
-													...suggestion,
-													values: getValues(suggestion.categoryName, suggestion.actionName)
-												}
-											])
-										})
-									}
-								>
-									<Plus size={14} />
-								</Button>
-							</button>
+								<div className="flex items-center gap-4">
+									<div className="relative h-6 w-10">
+										<Image
+											src={categories[suggestion.categoryName].image}
+											alt={suggestion.categoryName}
+											width={64}
+											height={64}
+											className="absolute h-6 w-6 rounded-sm blur-xl filter"
+										/>
+										<Image
+											src={categories[suggestion.categoryName].image}
+											alt={suggestion.categoryName}
+											width={64}
+											height={64}
+											className="absolute h-6 w-6 rounded-sm"
+										/>
+									</div>
+									<p className="flex w-full flex-wrap items-center gap-[8px] truncate">
+										{formatTitle(suggestion.actionName)}
+									</p>
+								</div>
+							</Accordion>
 						))}
 					</div>
 				</div>
