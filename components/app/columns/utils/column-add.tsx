@@ -1,5 +1,7 @@
 import { useMemo } from "react"
 
+import { getAddress } from "viem"
+
 import { Plus } from "lucide-react"
 
 import { Button } from "@/components"

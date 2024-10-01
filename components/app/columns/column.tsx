@@ -135,7 +135,7 @@ export const ConsoleColumn: FC<{
 											{socket &&
 												column.viewAs &&
 												column.viewAs.socketAddress !== socket.socketAddress && (
-													<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
+													<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-[4px]">
 														{column.viewAs.identity?.ens?.avatar ? (
 															<Image
 																src={column.viewAs.identity.ens.avatar}
