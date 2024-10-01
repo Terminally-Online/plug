@@ -3,7 +3,7 @@ import { FC } from "react"
 import { Workflow } from "@/server/api/routers/plug"
 
 import { Accordion } from "@/components/shared"
-import { cn, colors, VIEW_KEYS } from "@/lib"
+import { cn, colors, formatTitle, VIEW_KEYS } from "@/lib"
 import { useColumns } from "@/state"
 
 type Props = { index: number; from: string; plug: Workflow | undefined }
@@ -44,7 +44,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 
 			<div className="relative">
 				{plug ? (
-					<span className="font-bold">{plug.name === "" ? "Untitled Plug" : plug.name}</span>
+					<span className="font-bold">{plug.name === "" ? "Untitled Plug" : formatTitle(plug.name)}</span>
 				) : (
 					<span className="invisible font-bold">.</span>
 				)}
