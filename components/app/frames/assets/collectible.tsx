@@ -71,7 +71,6 @@ export const CollectibleFrame: FC<{
 	return (
 		<Frame
 			index={index}
-			className="max-h-[85vh] overflow-y-auto overflow-x-hidden"
 			icon={
 				<div className="relative h-10 w-10">
 					<div

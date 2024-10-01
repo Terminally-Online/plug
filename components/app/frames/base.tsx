@@ -63,7 +63,7 @@ export const Frame: FC<Props> = ({
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							md ? "absolute" : "fixed",
-							"bottom-0 left-0 w-full rounded-t-lg bg-white",
+							"inset-0 top-auto max-h-[90%] w-full overflow-y-auto overflow-x-hidden rounded-t-lg bg-white",
 							className,
 							"z-[11]",
 							index !== -1 && "rounded-b-lg"

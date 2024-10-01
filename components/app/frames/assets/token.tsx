@@ -74,7 +74,6 @@ export const TokenFrame: FC<{
 	return (
 		<Frame
 			index={index}
-			className="overflow-x-hidden"
 			icon={
 				<div className="relative h-8 w-10">
 					<TokenImage

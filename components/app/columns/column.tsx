@@ -90,7 +90,7 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"group relative z-[11] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[30] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging ? "bg-grayscale-0" : "hover:bg-grayscale-0"
 								)}
 								{...provided.dragHandleProps}
@@ -209,7 +209,8 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							<div className="h-full overflow-y-scroll">
+							{/* TODO(#416): Have the column.frame check to disable the scroll when a frame is open. Need a better solution. */}
+							<div className={cn("relative h-full", !column.frame && "overflow-y-scroll")}>
 								{key === VIEW_KEYS.AUTHENTICATE ? (
 									<ColumnAuthenticate index={index} />
 								) : key === VIEW_KEYS.ADD ? (

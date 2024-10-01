@@ -64,6 +64,7 @@ export const PositionFrame: FC<{
 	return (
 		<Frame
 			index={index}
+			className="max-h-[85vh] overflow-y-auto overflow-x-hidden"
 			icon={<TokenImage logo={protocol?.icon ?? ""} symbol={protocol.name} size="sm" handleColor={setColor} />}
 			label={protocol.name}
 			visible={isFrame}
