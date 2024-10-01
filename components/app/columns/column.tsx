@@ -24,10 +24,9 @@ import {
 	SocketTokenList
 } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, Column, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
+import { cardColors, cn, Column, formatTitle, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
-const DEFAULT_COLUMN_WIDTH = 420
 const MIN_COLUMN_WIDTH = 380
 const MAX_COLUMN_WIDTH = 620
 
@@ -36,7 +35,7 @@ const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_W
 export const ConsoleColumn: FC<{
 	column: Column
 }> = ({ column }) => {
-	const { key, index, item, from, width: apiColumnWidth } = column
+	const { key, index, item, from, width } = column
 
 	const resizeRef = useRef<HTMLDivElement>(null)
 
@@ -45,17 +44,16 @@ export const ConsoleColumn: FC<{
 
 	const { plug, handle } = usePlugs(item)
 
-	const [columnWidth] = useState(apiColumnWidth ?? DEFAULT_COLUMN_WIDTH)
 	const [isResizing, setIsResizing] = useState(false)
-	const [width, _, handleWidth] = useDebounce(columnWidth.toString(), 100, data =>
-		isResizing ? resize({ index, width: Number(data) }) : undefined
-	)
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			handleWidth(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left).toString())
+			resize({
+				index,
+				width: getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left)
+			})
 		}
 
 		const handleMouseUp = () => {
@@ -71,7 +69,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [isResizing, handleWidth])
+	}, [isResizing, resize])
 
 	return (
 		<div className="relative select-none">
@@ -135,7 +133,7 @@ export const ConsoleColumn: FC<{
 											{socket &&
 												column.viewAs &&
 												column.viewAs.socketAddress !== socket.socketAddress && (
-													<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-[4px]">
+													<div className="relative h-6 w-6 min-w-6 overflow-hidden">
 														{column.viewAs.identity?.ens?.avatar ? (
 															<Image
 																src={column.viewAs.identity.ens.avatar}

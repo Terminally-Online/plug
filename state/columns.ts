@@ -9,6 +9,8 @@ import { useSocket } from "@/state"
 
 import { atomWithStorage } from "jotai/utils"
 
+const DEFAULT_COLUMN_WIDTH = 420
+
 const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_VIEWS)
 export const useColumns = (index?: number, key?: string) => {
 	const { socket } = useSocket()
@@ -27,7 +29,13 @@ export const useColumns = (index?: number, key?: string) => {
 	const add = useCallback(
 		({ index, key, from, item }: Partial<Column>) => {
 			updateColumns(prev => {
-				const newColumn = { key, index: index ?? prev.length, from, item } as Column
+				const newColumn = {
+					key,
+					index: index ?? prev.length,
+					from,
+					item,
+					width: DEFAULT_COLUMN_WIDTH
+				} as Column
 				const updatedColumns = [...prev]
 				if (index !== undefined) {
 					updatedColumns.splice(index + 1, 0, newColumn)
@@ -94,7 +102,7 @@ export const useColumns = (index?: number, key?: string) => {
 	 */
 	const resize = useCallback(
 		({ index, width }: { index: number; width: number }) =>
-			updateColumns(prev => prev.map((col, idx) => (idx === index ? { ...col, width } : col))),
+			updateColumns(prev => prev.map(col => (col.index === index ? { ...col, width } : col))),
 		[updateColumns]
 	)
 
