@@ -46,7 +46,7 @@ const Grid: FC<PropsWithChildren> = ({ children }) => (
 	<motion.div
 		className="grid gap-2"
 		style={{
-			gridTemplateColumns: `repeat(auto-fit, minmax(160px, 1fr))`
+			gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
 		}}
 		initial="hidden"
 		animate="visible"
