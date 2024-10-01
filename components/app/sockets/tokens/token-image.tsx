@@ -115,7 +115,7 @@ export const TokenImage: FC<{
 				<>
 					{blur && (
 						<div
-							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							style={{
 								backgroundColor: getAssetColor(symbol),
 								height: `${dimensions.blur}rem`,
