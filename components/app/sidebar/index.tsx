@@ -2,11 +2,10 @@ import { useSession } from "next-auth/react"
 import Image from "next/image"
 import { useState } from "react"
 
-import Avatar from "boring-avatars"
 import { AnimatePresence, motion } from "framer-motion"
-import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon, Zap } from "lucide-react"
+import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon } from "lucide-react"
 
-import { Button } from "@/components"
+import { Avatar, Button } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -47,15 +46,7 @@ export const ConsoleSidebar = () => {
 									className="h-full w-full rounded-sm"
 								/>
 							) : (
-								<div className="overflow-hidden rounded-sm">
-									<Avatar
-										name={session?.address}
-										variant="beam"
-										size={"100%"}
-										colors={["#00E100", "#A3F700"]}
-										square
-									/>
-								</div>
+								<Avatar name={session?.address} />
 							)}
 						</motion.div>
 

@@ -5,3 +5,5 @@ export const SocketProfile = () => {
 
 	return <></>
 }
+
+export * from "./avatar"

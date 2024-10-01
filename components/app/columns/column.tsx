@@ -1,12 +1,12 @@
 import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
-import BoringAvatar from "boring-avatars"
 import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
 import {
+	Avatar,
 	Button,
 	ColumnAddOptions,
 	ColumnAuthenticate,
@@ -132,26 +132,22 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											{socket && column.viewAs && (
-												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
-													{column.viewAs.identity?.ens?.avatar ? (
-														<Image
-															src={column.viewAs.identity.ens.avatar}
-															alt="ENS Avatar"
-															width={240}
-															height={240}
-														/>
-													) : (
-														<BoringAvatar
-															variant="beam"
-															name={column.viewAs?.id ?? socket.id}
-															size={"100%"}
-															colors={["#00E100", "#A3F700"]}
-															square
-														/>
-													)}
-												</div>
-											)}
+											{socket &&
+												column.viewAs &&
+												column.viewAs.socketAddress !== socket.socketAddress && (
+													<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
+														{column.viewAs.identity?.ens?.avatar ? (
+															<Image
+																src={column.viewAs.identity.ens.avatar}
+																alt="ENS Avatar"
+																width={240}
+																height={240}
+															/>
+														) : (
+															<Avatar name={column.viewAs?.id ?? socket.id} />
+														)}
+													</div>
+												)}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">

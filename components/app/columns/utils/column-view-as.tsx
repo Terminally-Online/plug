@@ -1,13 +1,12 @@
 import Image from "next/image"
 import { useState } from "react"
 
-import BoringAvatar from "boring-avatars"
 import { CheckCheck, SearchIcon } from "lucide-react"
 
 import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
-import { Accordion, Search } from "@/components"
+import { Accordion, Avatar, Search } from "@/components"
 import { Column, formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
@@ -69,24 +68,10 @@ export const ColumnViewAs = () => {
 											</>
 										) : (
 											<>
-												<div className="absolute left-0 top-0 blur-xl filter">
-													<BoringAvatar
-														variant="beam"
-														name={option.id}
-														size={"100%"}
-														colors={["#00E100", "#A3F700"]}
-														square
-													/>
+												<div className="top-1/2blur-xl absolute filter">
+													<Avatar name={option.id} />
 												</div>
-												<div className="relative overflow-hidden rounded-md">
-													<BoringAvatar
-														variant="beam"
-														name={option.id}
-														size={"100%"}
-														colors={["#00E100", "#A3F700"]}
-														square
-													/>
-												</div>
+												<Avatar name={option.id} />
 											</>
 										)}
 									</div>
@@ -146,23 +131,9 @@ export const ColumnViewAs = () => {
 												) : (
 													<>
 														<div className="absolute left-0 top-0 blur-xl filter">
-															<BoringAvatar
-																variant="beam"
-																name={column.viewAs?.id ?? socket.id}
-																size={"100%"}
-																colors={["#00E100", "#A3F700"]}
-																square
-															/>
+															<Avatar name={column.viewAs?.id ?? socket.id} />
 														</div>
-														<div className="relative overflow-hidden rounded-sm">
-															<BoringAvatar
-																variant="beam"
-																name={column.viewAs?.id ?? socket.id}
-																size={"100%"}
-																colors={["#00E100", "#A3F700"]}
-																square
-															/>
-														</div>
+														<Avatar name={column.viewAs?.id ?? socket.id} />
 													</>
 												)}
 											</div>
