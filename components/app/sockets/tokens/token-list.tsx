@@ -63,9 +63,9 @@ export const SocketTokenList: FC<
 			/>
 
 			<Animate.List>
-				{visibleTokens.map((token, index) => (
-					<Animate.ListItem key={index}>
-						<SocketTokenItem index={index} token={token} />
+				{visibleTokens.map((token, tokenIndex) => (
+					<Animate.ListItem key={tokenIndex}>
+						<SocketTokenItem index={index} tokenIndex={tokenIndex} token={token} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
@@ -77,12 +77,6 @@ export const SocketTokenList: FC<
 				isViewing="tokens"
 				isReceivable={true}
 			/>
-
-			{visibleTokens
-				.filter(token => Boolean(token))
-				.map((token, index) => {
-					return <TokenFrame key={index} index={index} symbol={token.symbol} />
-				})}
 		</div>
 	)
 }

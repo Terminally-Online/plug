@@ -3,29 +3,23 @@ import { FC, useMemo, useState } from "react"
 
 import { MapIcon, Send } from "lucide-react"
 
-import { api } from "@/server/client"
+import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, SocketTokenPriceChart } from "@/components"
 import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
-import { useFrame, useSocket } from "@/state"
+import { useFrame } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
-export const TokenFrame: FC<{ index: number; symbol: string }> = ({ index, symbol }) => {
-	const { socket } = useSocket()
+export const TokenFrame: FC<{
+	index: number
+	tokenIndex: number
+	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+}> = ({ index, tokenIndex, token }) => {
 	const { isFrame } = useFrame({
 		index,
-		key: `${index}-${symbol ?? ""}-token`
+		key: `${index}-${tokenIndex}-token`
 	})
-
-	const { data: positions } = api.socket.balances.positions.useQuery(socket?.socketAddress, {
-		enabled:
-			socket !== undefined && socket.socketAddress !== undefined && socket.id.startsWith("anonymous") === false
-	})
-
-	const { tokens } = positions ?? { tokens: [] }
-
-	const token = useMemo(() => tokens && tokens.find(token => token.symbol === symbol && token.name), [tokens, symbol])
 
 	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{
