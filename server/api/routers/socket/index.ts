@@ -31,6 +31,7 @@ export const socket = createTRPCRouter({
 
 		const name = ""
 		const avatar = ""
+		// TODO(#423): Removed ENS avatar and name and never re-implemented it.
 
 		await ctx.db.userSocket.upsert({
 			where: {

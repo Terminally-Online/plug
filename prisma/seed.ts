@@ -9,6 +9,7 @@ const seedSockets = async () => {
 		"0x581BEf12967f06f2eBfcabb7504fA61f0326CD9A",
 		"0xda70761A63d5D0DdE3bdE3b179126127Cccb44b3"
 	]
+	// TODO(#423): Implement ENS acquistion and addition to the seed sockets.
 
 	await prisma.userSocket.createMany({
 		data: DEFAULT_SOCKETS.map(id => ({
