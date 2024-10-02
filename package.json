@@ -46,7 +46,7 @@
 		"i18next": "23.15.1",
 		"jotai": "^2.9.3",
 		"lucide-react": "^0.441.0",
-		"next": "14.2.6",
+		"next": "14.2.10",
 		"next-auth": "^4.24.7",
 		"qrcode-generator": "^1.4.4",
 		"react": "^18.2.0",
