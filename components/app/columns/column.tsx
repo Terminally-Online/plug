@@ -69,7 +69,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [isResizing, resize])
+	}, [index, isResizing, resize])
 
 	return (
 		<div className="relative select-none">
@@ -159,17 +159,6 @@ export const ConsoleColumn: FC<{
 
 											{plug && (
 												<div className="flex flex-row items-center justify-end gap-4">
-													{/* <Button
-														variant="secondary"
-														className="group rounded-sm p-1"
-														onClick={
-															() => {}
-															// handleFrame("share")
-														}
-													>
-														<Share size={14} className="opacity-60 hover:opacity-100" />
-													</Button> */}
-
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
