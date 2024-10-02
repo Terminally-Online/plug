@@ -27,7 +27,7 @@
 		"seed": "tsx prisma/seed.ts"
 	},
 	"dependencies": {
-		"@hello-pangea/dnd": "^16.6.0",
+		"@hello-pangea/dnd": "^17.0.0",
 		"@next-auth/prisma-adapter": "^1.0.7",
 		"@next/third-parties": "^14.2.3",
 		"@prisma/client": "5.17.0",
