@@ -110,7 +110,7 @@ export const ColumnViewAs = () => {
 									<div className="flex flex-row items-center justify-between gap-4">
 										<p className="font-bold">{formatTitle(column.key.toLowerCase())}</p>
 										<>
-											<div className="relative h-6 w-6 min-w-6 rounded-sm overflow-hidden">
+											<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
 												{column.viewAs && column.viewAs.identity?.ens?.avatar ? (
 													<>
 														<Image
@@ -131,9 +131,15 @@ export const ColumnViewAs = () => {
 												) : (
 													<>
 														<div className="absolute left-0 top-0 blur-xl filter">
-															<Avatar name={column.viewAs?.id ?? socket.id} className="rounded-sm" />
+															<Avatar
+																name={column.viewAs?.id ?? socket.id}
+																className="rounded-sm"
+															/>
 														</div>
-														<Avatar name={column.viewAs?.id ?? socket.id} className="rounded-sm" />
+														<Avatar
+															name={column.viewAs?.id ?? socket.id}
+															className="rounded-sm"
+														/>
 													</>
 												)}
 											</div>

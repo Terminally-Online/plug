@@ -58,7 +58,7 @@ export const SocketPositionItem: FC<{
 								/>
 							</div>
 						</div>
-						<div className="flex w-full flex-row items-center gap-2 text-sm font-bold ">
+						<div className="flex w-full flex-row items-center gap-2 text-sm font-bold">
 							<p className="opacity-40">{protocol.positions.length} Positions</p>
 							<div
 								className={cn(

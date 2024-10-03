@@ -70,7 +70,7 @@ export const ConsoleSidebar = () => {
 					className="group flex cursor-pointer flex-row items-center gap-4 px-2"
 					onClick={() => handlePlugs.plug.add({ index: 0 })}
 				>
-					<Button variant="primary" onClick={() => {}} sizing="sm" className="rounded-sm p-1 ">
+					<Button variant="primary" onClick={() => {}} sizing="sm" className="rounded-sm p-1">
 						<Plus
 							size={14}
 							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"

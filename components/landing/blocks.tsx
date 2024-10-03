@@ -167,10 +167,7 @@ export const Blocks = () => {
 													}
 										}
 									>
-										<div
-											className="relative h-[40%] w-[40%] transition-all 
-                                        duration-200 ease-in-out group-hover:scale-110"
-										>
+										<div className="relative h-[40%] w-[40%] transition-all duration-200 ease-in-out group-hover:scale-110">
 											{((hoveredItems.has(item) && !hasFallen) || resetAll) && (
 												<motion.div
 													className="absolute bottom-0 left-0 right-0 top-0 blur-2xl filter"

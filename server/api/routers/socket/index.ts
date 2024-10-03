@@ -12,7 +12,7 @@ import { SOCKET_BASE_QUERY } from "@/lib"
 import { balances } from "./balances"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
-const ENS_CACHE_TIME = 24 * 60 * 60 * 1000; // 24 hours
+const ENS_CACHE_TIME = 24 * 60 * 60 * 1000 // 24 hours
 
 const client = createPublicClient({
 	chain: mainnet,
@@ -21,25 +21,42 @@ const client = createPublicClient({
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
-		const ens = await ctx.db.eNS.findFirst({
+		let ens = await ctx.db.eNS.findFirst({
 			where: { identity: { socketId: ctx.session.address } },
 			orderBy: { updatedAt: "desc" }
 		})
 
-		let name = ens?.name || ""
-		let avatar = ens?.avatar || ""
+		if (!ens) {
+			ens = await ctx.db.eNS.create({
+				data: {
+					name: "",
+					avatar: "",
+					identity: { connect: { socketId: ctx.session.address } }
+				}
+			})
+		}
 
-		if (ens === null || (ens && ens.updatedAt > new Date(Date.now() - ENS_CACHE_TIME))) {
+		let name = ens.name
+		let avatar = ens.avatar
+
+		if (Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) {
 			try {
-				name = (await client.getEnsName({ address: ctx.session.address as `0x${string}` })) || ""
-				if (name) {
+				const newName = await client.getEnsName({ address: ctx.session.address as `0x${string}` })
+				if (newName) {
+					name = newName
 					avatar = (await client.getEnsAvatar({ name: normalize(name) })) || ""
 				}
+			} catch (error) {
+				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
 			} finally {
 				// NOTE: We silently swallow errors here because we don't want to interrupt the
-				//       user's session if the ENS name is not available. There may be a better
-				//       way to handle this in the future. For now, it is fine since it works and
-				//       logs about failed ENS lookups don't really matter.
+				// user's session if the ENS name is not available. There may be a better
+				// way to handle this in the future. For now, it is fine since it works and
+				// logs about failed ENS lookups don't really matter.
+				await ctx.db.eNS.update({
+					where: { name: ens.name },
+					data: { name, avatar, updatedAt: new Date() }
+				})
 			}
 		}
 
@@ -49,45 +66,25 @@ export const socket = createTRPCRouter({
 				id: ctx.session.address,
 				socketAddress: TEMPORARY_ADDRESS,
 				identity: {
-					connectOrCreate: {
-						where: { socketId: ctx.session.address },
-						create: {
-							ens: {
-								connectOrCreate: {
-									where: { name },
-									create: {
-										name,
-										avatar
-									}
-								}
-							}
+					create: {
+						ens: {
+							connect: { name: ens.name }
 						}
 					}
 				}
 			},
 			update: {
+				updatedAt: new Date(), // Add this line
 				identity: {
 					upsert: {
 						create: {
 							ens: {
-								create: {
-									name,
-									avatar
-								}
+								connect: { name: ens.name }
 							}
 						},
 						update: {
 							ens: {
-								upsert: {
-									create: {
-										name,
-										avatar
-									},
-									update: {
-										name,
-										avatar
-									}
-								}
+								connect: { name: ens.name }
 							}
 						}
 					}

@@ -34,7 +34,7 @@ export const Hero = () => {
 
 						<Button
 							variant="none"
-							className="ml-auto w-max rounded-md border-[1px] border-black/20 bg-black/2 px-4 py-2 text-center text-sm font-black text-black filter backdrop-blur-xl"
+							className="bg-black/2 ml-auto w-max rounded-md border-[1px] border-black/20 px-4 py-2 text-center text-sm font-black text-black filter backdrop-blur-xl"
 							onClick={() => handleCallToAction()}
 						>
 							Enter App
@@ -73,7 +73,7 @@ export const Hero = () => {
 
 							<Button
 								variant="none"
-								className="mt-8 w-max rounded-md border-[1px] border-black/30 bg-black/2 px-8 py-3 text-center font-black text-black filter backdrop-blur-xl"
+								className="bg-black/2 mt-8 w-max rounded-md border-[1px] border-black/30 px-8 py-3 text-center font-black text-black filter backdrop-blur-xl"
 								onClick={() => handleCallToAction()}
 							>
 								Enter App

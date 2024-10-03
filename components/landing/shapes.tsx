@@ -6,7 +6,7 @@ export const HeroShapes = () => {
 	const gradients = [
 		"linear-gradient(45deg, #00E100, #A3F700)",
 		"linear-gradient(135deg, #A3F700, #00E100)",
-		"linear-gradient(45deg, #00E100, #A3F700)",
+		"linear-gradient(45deg, #00E100, #A3F700)"
 	]
 
 	const positions = [
@@ -52,7 +52,8 @@ export const HeroShapes = () => {
 				</div>
 			</div>
 
-			<div className="absolute inset-0 top-0 left-0 right-0 bottom-0 z-1"
+			<div
+				className="z-1 absolute inset-0 bottom-0 left-0 right-0 top-0"
 				style={{
 					backgroundImage: `url(/cheese.svg)`,
 					backgroundSize: "cover",

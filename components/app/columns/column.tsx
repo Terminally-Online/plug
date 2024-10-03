@@ -143,7 +143,10 @@ export const ConsoleColumn: FC<{
 																className="rounded-sm"
 															/>
 														) : (
-															<Avatar name={column.viewAs?.id ?? socket.id} className="rounded-sm" />
+															<Avatar
+																name={column.viewAs?.id ?? socket.id}
+																className="rounded-sm"
+															/>
 														)}
 													</div>
 												)}
