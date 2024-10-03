@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { FC, useEffect, useState } from "react"
 
 import { getAddress } from "viem"
@@ -20,6 +19,7 @@ import {
 
 import { api, RouterOutputs } from "@/server/client"
 
+import { CollectibleImage, Frame, Image } from "@/components"
 import {
 	cn,
 	formatAddress,
@@ -32,9 +32,6 @@ import {
 	getTextColor
 } from "@/lib"
 import { useColumns } from "@/state"
-
-import { CollectibleImage } from "../../sockets/collectibles/collectible-image"
-import { Frame } from "../base"
 
 type Traits = Array<{ trait_type: string; value: string }>
 

@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { Eye } from "lucide-react"
 
-import { ActionPreview, Button, Frame } from "@/components"
+import { ActionPreview, Button, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { useColumns } from "@/state"
 

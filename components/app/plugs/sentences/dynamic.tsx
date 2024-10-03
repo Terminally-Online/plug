@@ -1,10 +1,9 @@
 import { useSession } from "next-auth/react"
-import Image from "next/image"
 import { FC, useMemo } from "react"
 
 import { ChevronRight, CircleHelp } from "lucide-react"
 
-import { Button, Frame, Search } from "@/components"
+import { Button, Frame, Image, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
 import { categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
 import { useColumns } from "@/state"

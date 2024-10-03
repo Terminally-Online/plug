@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC, useState } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Accordion } from "@/components"
+import { Accordion, Image } from "@/components"
 import { getChainImage } from "@/lib"
 
 import { SocketCollectibleGrid } from "./collectible-grid"

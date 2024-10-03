@@ -3,3 +3,5 @@ export { SocketCollectionItem } from "./collection-item"
 
 export { SocketCollectibleGrid } from "./collectible-grid"
 export { SocketCollectibleItem } from "./collectible-item"
+
+export { CollectibleImage } from "./collectible-image"

@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { ChevronRight } from "lucide-react"
 
-import { ActionCard, Button } from "@/components"
+import { ActionCard, Button, Image } from "@/components"
 import { categories, formatTitle } from "@/lib"
 import { useColumns } from "@/state"
 

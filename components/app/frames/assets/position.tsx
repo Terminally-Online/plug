@@ -1,17 +1,12 @@
-import Image from "next/image"
 import { FC, useMemo, useState } from "react"
 
 import { ExternalLink, EyeOff } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Counter } from "@/components/shared"
+import { Counter, Frame, Image, SocketTokenPriceChart, TokenImage } from "@/components"
 import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
 import { useColumns } from "@/state"
-
-import { SocketTokenPriceChart } from "../../sockets"
-import { TokenImage } from "../../sockets/tokens/token-image"
-import { Frame } from "../base"
 
 export const PositionFrame: FC<{
 	index: number

@@ -1,9 +1,7 @@
-import Image from "next/image"
-
 import { motion } from "framer-motion"
 import { Book, Twitter } from "lucide-react"
 
-import { Button, HeroBarChart, HeroShapes, LandingContainer } from "@/components"
+import { Button, HeroShapes, Image, LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const Hero = () => {

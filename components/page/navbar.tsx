@@ -1,10 +1,10 @@
 import { useSession } from "next-auth/react"
-import Image from "next/image"
 
 import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
+import { Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"

@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { X } from "lucide-react"
 
-import { Accordion, Button, Fragments } from "@/components"
+import { Accordion, Button, Fragments, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories, cn } from "@/lib"
 

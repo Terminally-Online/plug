@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { useState } from "react"
 
 import { CheckCheck, SearchIcon } from "lucide-react"
@@ -6,7 +5,7 @@ import { CheckCheck, SearchIcon } from "lucide-react"
 import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
-import { Accordion, Avatar, Search } from "@/components"
+import { Accordion, Avatar, Image, Search } from "@/components"
 import { Column, formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 

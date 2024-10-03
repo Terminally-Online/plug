@@ -1,7 +1,6 @@
-import Image from "next/image"
 import { FC } from "react"
 
-import { Accordion } from "@/components"
+import { Accordion, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories, formatTitle, getValues, actions as staticActions } from "@/lib"
 import { useColumns } from "@/state"

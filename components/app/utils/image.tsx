@@ -1,5 +1,5 @@
 import NextImage from "next/image"
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, Ref } from "react"
 
 const loader = ({ src }: { src: string }) => {
 	if (src.startsWith("data:image")) {
@@ -17,7 +17,13 @@ const loader = ({ src }: { src: string }) => {
 }
 
 export const Image: FC<
-	HTMLAttributes<HTMLImageElement> & { src: string; width: number; height: number; alt: string }
+	React.PropsWithRef<HTMLAttributes<HTMLImageElement>> & {
+		src: string
+		width: number
+		height: number
+		alt: string
+		ref?: Ref<HTMLImageElement>
+	}
 > = ({ src, width, height, alt, ...props }) => {
 	return <NextImage loader={loader} src={src} width={width} height={height} alt={alt} {...props} />
 }

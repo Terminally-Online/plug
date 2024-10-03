@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { useMemo, useState } from "react"
 
 import { isAddress, zeroAddress } from "viem"

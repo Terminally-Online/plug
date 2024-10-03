@@ -1,10 +1,9 @@
-import Image from "next/image"
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react"
+import { FC, PropsWithChildren, useEffect, useState } from "react"
 
 import { motion } from "framer-motion"
 import { CalendarClock } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { Image, InfoCard } from "@/components"
 import { formatTitle } from "@/lib"
 
 const actions = [

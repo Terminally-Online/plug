@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC, useMemo } from "react"
 
 import { Blocks, SearchIcon } from "lucide-react"
 
-import { ActionItem, Button, Frame, Search } from "@/components"
+import { ActionItem, Button, Frame, Image, Search } from "@/components"
 import { abis, categories, formatAddress, formatTitle, actions as staticActions, useDebounce } from "@/lib"
 import { useColumns } from "@/state"
 

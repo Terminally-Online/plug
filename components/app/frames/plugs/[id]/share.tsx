@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
-import { Button, Frame } from "@/components"
+import { Button, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
 import { useColumns } from "@/state"

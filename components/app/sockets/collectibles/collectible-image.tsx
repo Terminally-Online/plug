@@ -1,7 +1,8 @@
-import Image from "next/image"
 import { FC, useState } from "react"
 
 import { TriangleAlert } from "lucide-react"
+
+import { Image } from "@/components"
 
 export const CollectibleImage: FC<{
 	video?: string

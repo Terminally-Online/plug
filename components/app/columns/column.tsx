@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
 import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
@@ -15,6 +14,7 @@ import {
 	ColumnViewAs,
 	ConsoleAdmin,
 	Header,
+	Image,
 	Plug,
 	PlugsDiscover,
 	PlugsMine,

@@ -1,11 +1,10 @@
 import { useSession } from "next-auth/react"
-import Image from "next/image"
 import { useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { BookUser, ClipboardCheck, LogOut, PanelRightOpen, Plus, SearchIcon } from "lucide-react"
 
-import { Avatar, Button } from "@/components"
+import { Avatar, Button, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"

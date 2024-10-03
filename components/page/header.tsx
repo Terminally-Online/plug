@@ -1,11 +1,10 @@
 import { useSession } from "next-auth/react"
-import Image from "next/image"
 
 import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 
 import BlockiesSvg from "blockies-react-svg"
 
-import { Button, Container, Header } from "@/components"
+import { Button, Container, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
 import { useColumns, useSocket } from "@/state"

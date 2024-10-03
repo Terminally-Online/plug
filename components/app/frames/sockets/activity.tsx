@@ -1,7 +1,6 @@
-import Image from "next/image"
 import { FC } from "react"
 
-import { Counter } from "@/components/shared"
+import { Counter, Image } from "@/components"
 import { useColumns } from "@/state"
 
 import { getStatusIcon } from "../../sockets/activity/activity-item"

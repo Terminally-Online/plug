@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { Book, Twitter } from "lucide-react"
 
-import { Button, LandingContainer } from "@/components"
+import { Button, Image, LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const Navbar: FC = () => {

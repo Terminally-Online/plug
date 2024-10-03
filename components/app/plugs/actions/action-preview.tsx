@@ -1,7 +1,6 @@
-import Image from "next/image"
 import { FC } from "react"
 
-import { Sentence } from "@/components"
+import { Image, Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories } from "@/lib/constants"
 

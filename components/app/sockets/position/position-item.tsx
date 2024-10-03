@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { FC } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Accordion, Counter } from "@/components/shared"
+import { Accordion, Counter, Image } from "@/components"
 import { cn } from "@/lib"
 import { useColumns } from "@/state"
 

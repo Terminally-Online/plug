@@ -1,11 +1,10 @@
 import { signOut } from "next-auth/react"
-import Image from "next/image"
 
 import { useDisconnect } from "wagmi"
 
 import BlockiesSvg from "blockies-react-svg"
 
-import { Button, Counter, Frame, StatCard } from "@/components"
+import { Button, Counter, Frame, Image, StatCard } from "@/components"
 import { MOBILE_INDEX } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 

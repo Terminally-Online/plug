@@ -1,11 +1,10 @@
-import Image from "next/image"
 import { FC, useMemo, useState } from "react"
 
 import { MapIcon, Send } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Counter, Frame, SocketTokenPriceChart } from "@/components"
+import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
 import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
 import { useColumns } from "@/state"
 

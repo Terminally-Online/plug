@@ -1,9 +1,8 @@
-import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
 
-import { Animate, Blob, LandingContainer } from "@/components"
+import { Animate, Image, LandingContainer } from "@/components"
 import { cn, useMediaQuery } from "@/lib"
 
 const protocols = [

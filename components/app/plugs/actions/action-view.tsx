@@ -1,9 +1,6 @@
-import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Plus } from "lucide-react"
-
-import { Accordion, Button, Callout, Sentence } from "@/components"
+import { Accordion, Callout, Image, Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { actions, categories, formatTitle, getValues } from "@/lib"
 import { useColumns } from "@/state"
