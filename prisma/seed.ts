@@ -19,13 +19,13 @@ const seedSockets = async () => {
 	]
 
 	for (const address of DEFAULT_SOCKETS) {
-		let ensName = null
-		let ensAvatar = null
+		let name = ""
+		let avatar = ""
 
 		try {
-			ensName = await client.getEnsName({ address: address as `0x${string}` })
-			if (ensName) {
-				ensAvatar = await client.getEnsAvatar({ name: ensName })
+			name = (await client.getEnsName({ address: address as `0x${string}` })) || ""
+			if (name) {
+				avatar = (await client.getEnsAvatar({ name: name })) || ""
 			}
 		} catch (error) {
 			console.error(`Error fetching ENS data for ${address}:`, error)
@@ -38,30 +38,26 @@ const seedSockets = async () => {
 				identity: {
 					upsert: {
 						create: {
-							ens: ensName
-								? {
-										create: {
-											name: ensName,
-											avatar: ensAvatar || undefined
-										}
-									}
-								: undefined
+							ens: {
+								create: {
+									name,
+									avatar
+								}
+							}
 						},
 						update: {
-							ens: ensName
-								? {
-										upsert: {
-											create: {
-												name: ensName,
-												avatar: ensAvatar || undefined
-											},
-											update: {
-												name: ensName,
-												avatar: ensAvatar || undefined
-											}
-										}
+							ens: {
+								upsert: {
+									create: {
+										name,
+										avatar
+									},
+									update: {
+										name,
+										avatar
 									}
-								: undefined
+								}
+							}
 						}
 					}
 				}
@@ -71,14 +67,12 @@ const seedSockets = async () => {
 				socketAddress: address,
 				identity: {
 					create: {
-						ens: ensName
-							? {
-									create: {
-										name: ensName,
-										avatar: ensAvatar || undefined
-									}
-								}
-							: undefined
+						ens: {
+							create: {
+								name,
+								avatar
+							}
+						}
 					}
 				}
 			}
