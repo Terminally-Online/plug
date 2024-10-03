@@ -1,6 +1,6 @@
+import { createPublicClient, http } from "viem"
 import { mainnet } from "viem/chains"
 import { normalize } from "viem/ens"
-import { useEnsAvatar, useEnsName } from "wagmi"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
@@ -12,6 +12,11 @@ import { SOCKET_BASE_QUERY } from "@/lib"
 import { balances } from "./balances"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
+
+const client = createPublicClient({
+	chain: mainnet,
+	transport: http(process.env.ALCHEMY_API_URL)
+})
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
@@ -97,7 +102,6 @@ export const socket = createTRPCRouter({
 					}
 				}
 			})
-
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
 			...SOCKET_BASE_QUERY
