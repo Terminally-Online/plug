@@ -26,8 +26,8 @@ func (i *BorrowInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if !utils.IsUint(i.AmountOut.String(), 256) {
-		return utils.ErrInvalidUint("amountOut", i.AmountOut.String(), 256)
+	if (i.AmountOut.Cmp(big.NewInt(0)) >= 0 && i.AmountOut.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amountOut", i.AmountOut.String())
 	}
 	return nil
 }

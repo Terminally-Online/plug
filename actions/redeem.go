@@ -28,8 +28,8 @@ func (i *RedeemInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if !utils.IsUint(i.AmountIn.String(), 256) {
-		return utils.ErrInvalidUint("amountIn", i.AmountIn.String(), 256)
+	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 
 	return nil
@@ -66,5 +66,5 @@ func (i *RedeemInputsImpl) Build(provider *ethclient.Client, chainId int, from s
 func (i *RedeemInputsImpl) GetProtocol() string   { return i.Protocol }
 func (i *RedeemInputsImpl) GetTokenIn() string    { return i.TokenIn }
 func (i *RedeemInputsImpl) GetTokenOut() string   { return i.TokenOut }
-func (i *RedeemInputsImpl) GetAmountIn() *big.Int { return new(big.Int).Set(big.NewInt(0)) }
+func (i *RedeemInputsImpl) GetAmountIn() *big.Int { return &i.AmountIn }
 func (i *RedeemInputsImpl) GetTarget() *string    { return i.Target }

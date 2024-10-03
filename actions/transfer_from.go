@@ -87,11 +87,11 @@ func (i *TransferFromInputsImpl) Validate() error {
 		return utils.ErrInvalidTokenStandard("type", i.Type)
 	}
 
-	if i.Amount != nil && !utils.IsUint(i.Amount.String(), 256) {
-		return utils.ErrInvalidUint("amount", i.Amount.String(), 256)
+	if (i.Amount != nil && i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amount", i.Amount.String())
 	}
-	if i.TokenId != nil && !utils.IsUint(i.TokenId.String(), 256) {
-		return utils.ErrInvalidUint("tokenId", i.TokenId.String(), 256)
+	if (i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) >= 0 && i.TokenId.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("tokenId", i.TokenId.String())
 	}
 
 	return nil

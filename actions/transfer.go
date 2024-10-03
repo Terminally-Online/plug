@@ -41,9 +41,8 @@ func (i *TransferInputsImpl) Validate() error {
 	if i.Amount.Cmp(big.NewInt(0)) <= 0 {
 		return utils.ErrInvalidField("amount", "must be greater than 0 for token transfers")
 	}
-
-	if !utils.IsUint(i.Amount.String(), 256) {
-		return utils.ErrInvalidUint("amount", i.Amount.String(), 256)
+	if (i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amount", i.Amount.String())
 	}
 
 	return nil

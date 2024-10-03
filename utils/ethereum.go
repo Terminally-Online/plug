@@ -1,19 +1,20 @@
 package utils
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"regexp"
 	"slices"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
 	ZeroAddress        = common.HexToAddress("0x0000000000000000000000000000000000000000")
 	NativeTokenAddress = common.HexToAddress("0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE")
 
-	TokenStandards     = []int{0, 20, 721, 1155}
-	VaultStandards     = []int{4626}
+	TokenStandards = []int{0, 20, 721, 1155}
+	VaultStandards = []int{4626}
 )
 
 var (
@@ -79,7 +80,7 @@ func IsUint(value string, bits int) bool {
 		return false
 	}
 
-	return n.Sign() >= 0 && n.Cmp(max) <= 0
+	return n.Sign() >= 0 && n.Cmp(max) <= 0 || n.Cmp(max) == 0
 }
 
 func IsBytes(value string, size int) bool {

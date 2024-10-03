@@ -22,8 +22,8 @@ func (i *RepayInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenIn) {
 		return utils.ErrInvalidAddress("tokenIn", i.TokenIn)
 	}
-	if !utils.IsUint(i.AmountIn.String(), 256) {
-		return utils.ErrInvalidUint("amountIn", i.AmountIn.String(), 256)
+	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 
 	return nil

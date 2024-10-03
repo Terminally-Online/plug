@@ -31,7 +31,7 @@ var (
 	registryHexAddress = common.HexToAddress(registryAddress)
 )
 
-func ValidateTarget(provider *ethclient.Client, asset string, target *string) (*common.Address, error) {
+func ValidateVault(provider *ethclient.Client, asset string, target string) (*common.Address, error) {
 	registry, err := yearn_v3_registry.NewYearnV3Registry(registryHexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(registryAddress)
@@ -46,12 +46,12 @@ func ValidateTarget(provider *ethclient.Client, asset string, target *string) (*
 
 	// Confirm the returned list of addresses (`vaults`) contains the target address.
 	for _, vault := range vaults {
-		if vault.String() == *target {
+		if vault.String() == target {
 			return &vault, nil
 		}
 	}
 
-	return nil, utils.ErrInvalidField("target", *target)
+	return nil, utils.ErrInvalidField("target", target)
 }
 
 /*
@@ -68,7 +68,7 @@ If type(uint256).max is used as the amount, the vault will use the entire allowe
 between the token balance of the sender and the max allowed deposit amount of the vault.
 */
 func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
-	target, err := ValidateTarget(provider, i.GetTokenIn(), i.GetTarget())
+	target, err := ValidateVault(provider, i.GetTokenIn(), i.GetTokenOut())
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int
 		}
 
 		if amountIn.Cmp(big.NewInt(0)) == 0 {
-			return nil, utils.ErrInvalidField("amount", amountIn.String())
+			return nil, utils.ErrInvalidField("amount: max", amountIn.String())
 		}
 	}
 
@@ -148,15 +148,16 @@ func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int
 BuildRedeem is the primary function for building a redemption for a Yearn V3 vault.
 
 It includes top-level validation for the token is supported by a yearn v3 vault.
-We cannot run these actions in separate transactions because the tokens could be stolen. 
+We cannot run these actions in separate transactions because the tokens could be stolen.
 This must be done in a multicall.
 
-If type(uint256).max is used as the amount, the vault will use determine the amount of shares 
+If type(uint256).max is used as the amount, the vault will use determine the amount of shares
 to redeem based on the users desire to redeem the "maximum". The maximum amount is calculated
 by the contract and utilized through a read call to the vault.
 */
 func BuildRedeem(i types.RedeemInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
-	target, err := ValidateTarget(provider, i.GetTokenOut(), i.GetTarget())
+	// Validate that providing the pool token as the target is valid to receive the intended token out.
+	target, err := ValidateVault(provider, i.GetTokenOut(), i.GetTokenIn())
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +166,7 @@ func BuildRedeem(i types.RedeemInputs, provider *ethclient.Client, chainId int, 
 	if amountIn.Cmp(utils.Uint256Max) == 0 {
 		pool, err := yearn_v3_pool.NewYearnV3Pool(*target, provider)
 		if err != nil {
-			return nil, utils.ErrContractFailed(i.GetTokenIn())
+			return nil, utils.ErrContractFailed(target.String())
 		}
 		amountIn, err = pool.MaxRedeem(
 			utils.BuildCallOpts(from, big.NewInt(0)),
@@ -176,7 +177,7 @@ func BuildRedeem(i types.RedeemInputs, provider *ethclient.Client, chainId int, 
 		}
 
 		if amountIn.Cmp(big.NewInt(0)) == 0 {
-			return nil, utils.ErrInvalidField("amountIn", amountIn.String())
+			return nil, utils.ErrInvalidField("amountIn: max", amountIn.String())
 		}
 	}
 

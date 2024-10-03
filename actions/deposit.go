@@ -28,8 +28,8 @@ func (i *DepositInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if !utils.IsUint(i.AmountIn.String(), 256) {
-		return utils.ErrInvalidUint("amountIn", i.AmountIn.String(), 256)
+	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 	return nil
 }
@@ -65,5 +65,5 @@ func (i *DepositInputsImpl) Build(provider *ethclient.Client, chainId int, from 
 func (i *DepositInputsImpl) GetProtocol() string   { return i.Protocol }
 func (i *DepositInputsImpl) GetTokenIn() string    { return i.TokenIn }
 func (i *DepositInputsImpl) GetTokenOut() string   { return i.TokenOut }
-func (i *DepositInputsImpl) GetAmountIn() *big.Int { return new(big.Int).Set(&i.AmountIn) }
+func (i *DepositInputsImpl) GetAmountIn() *big.Int { return &i.AmountIn }
 func (i *DepositInputsImpl) GetTarget() *string    { return i.Target }

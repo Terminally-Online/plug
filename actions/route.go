@@ -64,8 +64,8 @@ func (i *RouteInputsImpl) Validate() error {
 	if !utils.IsUint(i.AmountIn.String(), 256) {
 		return utils.ErrInvalidUint("amountIn", i.AmountIn.String(), 256)
 	}
-	if !utils.IsUint(i.Slippage.String(), 256) {
-		return utils.ErrInvalidUint("slippage", i.Slippage.String(), 256)
+	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 
 	return nil
