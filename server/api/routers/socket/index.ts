@@ -19,22 +19,31 @@ const client = createPublicClient({
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
-		let ensName = null
-		let ensAvatar = null
+		const existingSocket = await ctx.db.userSocket.findUnique({
+			where: { id: ctx.session.address },
+			include: { identity: { include: { ens: true } } },
+		});
 
-		try {
-			ensName = await client.getEnsName({ address: ctx.session.address as `0x${string}` })
-			if (ensName) {
-				ensAvatar = await client.getEnsAvatar({ name: ensName })
+		const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+		const shouldUpdateENS = !existingSocket?.identity?.ens ||
+			(existingSocket.identity.ens.updatedAt < thirtyDaysAgo);
+
+		let ensName = existingSocket?.identity?.ens?.name || null;
+		let ensAvatar = existingSocket?.identity?.ens?.avatar || null;
+
+		if (shouldUpdateENS) {
+			try {
+				ensName = await client.getEnsName({ address: ctx.session.address as `0x${string}` });
+				if (ensName) {
+					ensAvatar = await client.getEnsAvatar({ name: ensName });
+				}
+			} catch (error) {
+				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error);
 			}
-		} catch (error) {
-			console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
 		}
 
 		await ctx.db.userSocket.upsert({
-			where: {
-				id: ctx.session.address
-			},
+			where: { id: ctx.session.address },
 			create: {
 				id: ctx.session.address,
 				socketAddress: ctx.session.address,
@@ -77,16 +86,16 @@ export const socket = createTRPCRouter({
 					}
 				}
 			}
-		})
+		});
 
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
 			...SOCKET_BASE_QUERY
-		})
+		});
 
-		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" });
 
-		return socket
+		return socket;
 	}),
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
