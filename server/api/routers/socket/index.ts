@@ -1,5 +1,6 @@
 import { createPublicClient, http } from "viem"
 import { mainnet } from "viem/chains"
+import { normalize } from "viem/ens"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
@@ -11,39 +12,34 @@ import { SOCKET_BASE_QUERY } from "@/lib"
 import { balances } from "./balances"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
-const ENS_UPDATE_INTERVAL_DAYS = 30;
+const ENS_CACHE_TIME = 30 * 24 * 60 * 60 * 1000
 
 const client = createPublicClient({
 	chain: mainnet,
 	transport: http(process.env.ALCHEMY_API_URL)
 })
 
-function shouldUpdateENS(lastUpdated: Date | null): boolean {
-	if (!lastUpdated) return true;
-	const updateInterval = ENS_UPDATE_INTERVAL_DAYS * 24 * 60 * 60 * 1000;
-	return Date.now() - lastUpdated.getTime() > updateInterval;
-}
-
 export const socket = createTRPCRouter({
-	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
-		const existingSocket = await ctx.db.userSocket.findUnique({
-			where: { id: ctx.session.address },
-			include: { identity: { include: { ens: true } } },
-		});
+	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
+		const ens = await ctx.db.eNS.findFirst({
+			where: { identity: { socketId: ctx.session.address } },
+			orderBy: { updatedAt: "desc" }
+		})
 
-		const shouldUpdate = shouldUpdateENS(existingSocket?.identity?.ens?.updatedAt || null);
+		let name = ens?.name || ""
+		let avatar = ens?.avatar || ""
 
-		let ensName = existingSocket?.identity?.ens?.name || null;
-		let ensAvatar = existingSocket?.identity?.ens?.avatar || null;
-
-		if (shouldUpdate) {
+		if (ens === null || (ens && ens.updatedAt > new Date(Date.now() - ENS_CACHE_TIME))) {
 			try {
-				ensName = await client.getEnsName({ address: ctx.session.address as `0x${string}` });
-				if (ensName) {
-					ensAvatar = await client.getEnsAvatar({ name: ensName });
+				name = (await client.getEnsName({ address: ctx.session.address as `0x${string}` })) || ""
+				if (name) {
+					avatar = (await client.getEnsAvatar({ name: normalize(name) })) || ""
 				}
-			} catch (error) {
-				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error);
+			} finally {
+				// NOTE: We silently swallow errors here because we don't want to interrupt the
+				//       user's session if the ENS name is not available. There may be a better
+				//       way to handle this in the future. For now, it is fine since it works and
+				//       logs about failed ENS lookups don't really matter.
 			}
 		}
 
@@ -51,15 +47,21 @@ export const socket = createTRPCRouter({
 			where: { id: ctx.session.address },
 			create: {
 				id: ctx.session.address,
-				socketAddress: ctx.session.address,
+				socketAddress: TEMPORARY_ADDRESS,
 				identity: {
-					create: {
-						ens: ensName ? {
-							create: {
-								name: ensName,
-								avatar: ensAvatar || undefined
+					connectOrCreate: {
+						where: { socketId: ctx.session.address },
+						create: {
+							ens: {
+								connectOrCreate: {
+									where: { name },
+									create: {
+										name,
+										avatar
+									}
+								}
 							}
-						} : undefined
+						}
 					}
 				}
 			},
@@ -67,40 +69,40 @@ export const socket = createTRPCRouter({
 				identity: {
 					upsert: {
 						create: {
-							ens: ensName ? {
+							ens: {
 								create: {
-									name: ensName,
-									avatar: ensAvatar || undefined
+									name,
+									avatar
 								}
-							} : undefined
+							}
 						},
 						update: {
-							ens: ensName ? {
+							ens: {
 								upsert: {
 									create: {
-										name: ensName,
-										avatar: ensAvatar || undefined
+										name,
+										avatar
 									},
 									update: {
-										name: ensName,
-										avatar: ensAvatar || undefined
+										name,
+										avatar
 									}
 								}
-							} : undefined
+							}
 						}
 					}
 				}
 			}
-		});
+		})
 
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
 			...SOCKET_BASE_QUERY
-		});
+		})
 
-		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" });
+		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 
-		return socket;
+		return socket
 	}),
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
