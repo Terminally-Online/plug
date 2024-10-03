@@ -11,11 +11,18 @@ import { SOCKET_BASE_QUERY } from "@/lib"
 import { balances } from "./balances"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
+const ENS_UPDATE_INTERVAL_DAYS = 30;
 
 const client = createPublicClient({
 	chain: mainnet,
 	transport: http(process.env.ALCHEMY_API_URL)
 })
+
+function shouldUpdateENS(lastUpdated: Date | null): boolean {
+	if (!lastUpdated) return true;
+	const updateInterval = ENS_UPDATE_INTERVAL_DAYS * 24 * 60 * 60 * 1000;
+	return Date.now() - lastUpdated.getTime() > updateInterval;
+}
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
@@ -24,14 +31,12 @@ export const socket = createTRPCRouter({
 			include: { identity: { include: { ens: true } } },
 		});
 
-		const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-		const shouldUpdateENS = !existingSocket?.identity?.ens ||
-			(existingSocket.identity.ens.updatedAt < thirtyDaysAgo);
+		const shouldUpdate = shouldUpdateENS(existingSocket?.identity?.ens?.updatedAt || null);
 
 		let ensName = existingSocket?.identity?.ens?.name || null;
 		let ensAvatar = existingSocket?.identity?.ens?.avatar || null;
 
-		if (shouldUpdateENS) {
+		if (shouldUpdate) {
 			try {
 				ensName = await client.getEnsName({ address: ctx.session.address as `0x${string}` });
 				if (ensName) {
