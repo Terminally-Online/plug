@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { FC, useCallback } from "react"
 
 import { Connector as wagmiConnector } from "wagmi"
@@ -8,7 +7,7 @@ import { Loader2 } from "lucide-react"
 
 import { useAtomValue, useSetAtom } from "jotai"
 
-import { Accordion, Animate, Button, Callout } from "@/components"
+import { Accordion, Animate, Button, Callout, Image } from "@/components"
 import {
 	cn,
 	CONNECTOR_ICON_OVERRIDE_MAP,
@@ -133,7 +132,8 @@ const loader = ({ src }: { src: string }) => {
 		for (let i = 0; i < byteString.length; i++) {
 			ia[i] = byteString.charCodeAt(i)
 		}
-		return new Blob([ab], { type: mimeString })
+		const blob = new Blob([ab], { type: mimeString })
+		return URL.createObjectURL(blob)
 	}
 	return src
 }
@@ -156,7 +156,6 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 		>
 			<Image
 				className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-md blur-xl filter"
-				loader={loader}
 				src={icon}
 				alt={name}
 				style={{
@@ -168,7 +167,6 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 			/>
 			<Image
 				className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md"
-				loader={loader}
 				src={icon}
 				alt={name}
 				style={{
