@@ -22,8 +22,7 @@ export const SOCKET_BASE_INCLUDE = {
 			createdAt: true,
 			updatedAt: true,
 			socketId: true,
-			farcasterId: true,
-			ensName: true
+			farcasterId: true
 		}
 	}
 } as const

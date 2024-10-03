@@ -21,42 +21,25 @@ const client = createPublicClient({
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
-		let ens = await ctx.db.eNS.findFirst({
-			where: { identity: { socketId: ctx.session.address } },
-			orderBy: { updatedAt: "desc" }
+		let ens = await ctx.db.eNS.findUnique({
+			where: { socketId: ctx.session.address }
 		})
 
-		if (!ens) {
-			ens = await ctx.db.eNS.create({
-				data: {
-					name: "",
-					avatar: "",
-					identity: { connect: { socketId: ctx.session.address } }
-				}
-			})
-		}
+		let name = ""
+		let avatar = ""
 
-		let name = ens.name
-		let avatar = ens.avatar
-
-		if (Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) {
+		if (ens === null || Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) {
 			try {
-				const newName = await client.getEnsName({ address: ctx.session.address as `0x${string}` })
-				if (newName) {
-					name = newName
+				name = (await client.getEnsName({ address: ctx.session.address as `0x${string}` })) || ""
+				if (name) {
 					avatar = (await client.getEnsAvatar({ name: normalize(name) })) || ""
 				}
 			} catch (error) {
-				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
-			} finally {
 				// NOTE: We silently swallow errors here because we don't want to interrupt the
 				// user's session if the ENS name is not available. There may be a better
 				// way to handle this in the future. For now, it is fine since it works and
 				// logs about failed ENS lookups don't really matter.
-				await ctx.db.eNS.update({
-					where: { name: ens.name },
-					data: { name, avatar, updatedAt: new Date() }
-				})
+				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
 			}
 		}
 
@@ -68,23 +51,35 @@ export const socket = createTRPCRouter({
 				identity: {
 					create: {
 						ens: {
-							connect: { name: ens.name }
+							create: {
+								name,
+								avatar
+							}
 						}
 					}
 				}
 			},
 			update: {
-				updatedAt: new Date(), // Add this line
+				updatedAt: new Date(),
 				identity: {
 					upsert: {
 						create: {
 							ens: {
-								connect: { name: ens.name }
+								connectOrCreate: {
+									where: { socketId: ctx.session.address },
+									create: {
+										name,
+										avatar
+									}
+								}
 							}
 						},
 						update: {
 							ens: {
-								connect: { name: ens.name }
+								update: {
+									where: { socketId: ctx.session.address },
+									data: { name, avatar, updatedAt: new Date() }
+								}
 							}
 						}
 					}
@@ -123,9 +118,11 @@ export const socket = createTRPCRouter({
 								},
 								{
 									identity: {
-										ensName: {
-											contains: input.search,
-											mode: "insensitive"
+										ens: {
+											name: {
+												contains: input.search,
+												mode: "insensitive"
+											}
 										}
 									}
 								}

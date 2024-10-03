@@ -57,13 +57,16 @@ model ENS {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name   String  @id @unique
+    name   String
     avatar String?
 
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    identity SocketIdentity?
+    identity SocketIdentity @relation(fields: [socketId], references: [socketId], onDelete: Cascade)
+    socketId String         @id
+
+    @@index([name])
 }
 
 model SocketIdentity {
@@ -80,8 +83,7 @@ model SocketIdentity {
     socketId    String         @id @unique
     farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
     farcasterId String?        @unique
-    ens         ENS?           @relation(fields: [ensName], references: [name], onDelete: SetNull)
-    ensName     String?        @unique
+    ens         ENS?
 }
 
 model UserSocket {

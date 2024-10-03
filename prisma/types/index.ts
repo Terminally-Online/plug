@@ -15,7 +15,7 @@ const minimalUserSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()(
 					omit: { createdAt: true, updatedAt: true }
 				}
 			},
-			omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true, ensName: true }
+			omit: { createdAt: true, updatedAt: true, socketId: true, farcasterId: true }
 		}
 	},
 	omit: { createdAt: true, updatedAt: true, admin: true }

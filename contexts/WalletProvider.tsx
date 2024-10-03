@@ -20,7 +20,7 @@ import {
 	zora
 } from "viem/chains"
 import { createConfig, http, WagmiProvider } from "wagmi"
-import { coinbaseWallet, injected, safe, walletConnect } from "wagmi/connectors"
+import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
 

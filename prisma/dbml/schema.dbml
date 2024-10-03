@@ -22,9 +22,10 @@ Table FarcasterUser {
 Table ENS {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  name String [pk]
+  name String [not null]
   avatar String
-  identity SocketIdentity
+  identity SocketIdentity [not null]
+  socketId String [pk]
 }
 
 Table SocketIdentity {
@@ -35,7 +36,6 @@ Table SocketIdentity {
   farcaster FarcasterUser
   farcasterId String [unique]
   ens ENS
-  ensName String [unique]
 }
 
 Table UserSocket {
@@ -253,11 +253,11 @@ Table FarcasterFollows {
   followingId String [ref: > FarcasterUser.id]
 }
 
+Ref: ENS.socketId - SocketIdentity.socketId [delete: Cascade]
+
 Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
-
-Ref: SocketIdentity.ensName - ENS.name [delete: Set Null]
 
 Ref: Workflow.socketId > UserSocket.id
 
