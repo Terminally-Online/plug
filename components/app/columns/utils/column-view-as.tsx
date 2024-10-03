@@ -68,7 +68,7 @@ export const ColumnViewAs = () => {
 											</>
 										) : (
 											<>
-												<div className="top-1/2blur-xl absolute filter">
+												<div className="absolute top-1/2 blur-xl filter">
 													<Avatar name={option.id} />
 												</div>
 												<Avatar name={option.id} />

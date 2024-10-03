@@ -44,7 +44,11 @@ const nextConfig = {
 	poweredByHeader: false,
 	trailingSlash: true,
 	images: {
-		remotePatterns
+		remotePatterns,
+		dangerouslyAllowSVG: true,
+		contentDispositionType: 'attachment',
+		contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+		formats: ['image/avif', 'image/webp'],
 	},
 	/** We run eslint as a separate task in CI */
 	eslint: { ignoreDuringBuilds: !!process.env.CI },
