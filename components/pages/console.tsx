@@ -1,11 +1,11 @@
-import { signIn, useSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
 import { useMediaQuery } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useSocket } from "@/state"
 
 const MobilePage = () => {
 	return (
@@ -28,20 +28,18 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
-	const { data: session } = useSession()
 	const { socket } = useSocket()
-	const { columns } = useColumns()
 
-	// useEffect(() => {
-	// 	if (socket) return
-	//
-	// 	signIn("credentials", {
-	// 		message: "0x0",
-	// 		signature: "0x0",
-	// 		chainId: 0,
-	// 		redirect: false
-	// 	})
-	// }, [socket])
+	useEffect(() => {
+		if (socket) return
+
+		signIn("credentials", {
+			message: "0x0",
+			signature: "0x0",
+			chainId: 0,
+			redirect: false
+		})
+	}, [socket])
 
 	if (!socket)
 		return (
