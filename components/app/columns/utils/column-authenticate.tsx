@@ -124,6 +124,20 @@ const ConnectorQrCode = () => {
 	)
 }
 
+const loader = ({ src }: { src: string }) => {
+	if (src.startsWith("data:image")) {
+		const byteString = atob(src)
+		const mimeString = byteString.split("")[0]
+		const ab = new ArrayBuffer(byteString.length)
+		const ia = new Uint8Array(ab)
+		for (let i = 0; i < byteString.length; i++) {
+			ia[i] = byteString.charCodeAt(i)
+		}
+		return new Blob([ab], { type: mimeString })
+	}
+	return src
+}
+
 const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
 	const dimensions = {
 		blur: 4,
@@ -142,6 +156,7 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 		>
 			<Image
 				className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-md blur-xl filter"
+				loader={loader}
 				src={icon}
 				alt={name}
 				style={{
@@ -153,6 +168,7 @@ const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, 
 			/>
 			<Image
 				className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md"
+				loader={loader}
 				src={icon}
 				alt={name}
 				style={{

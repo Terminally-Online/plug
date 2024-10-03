@@ -13,8 +13,8 @@ const remotePatterns = [
 	},
 	{
 		protocol: "https",
-		hostname: "**",
-	},
+		hostname: "**"
+	}
 ]
 
 const headers = [
@@ -37,37 +37,35 @@ const headers = [
 	{
 		key: "Content-Security-Policy",
 		value: "frame-ancestors 'none'"
-	},
+	}
 ]
 
 const nextConfig = {
 	poweredByHeader: false,
 	trailingSlash: true,
 	images: {
+		domains: [""],
 		remotePatterns,
 		dangerouslyAllowSVG: true,
-		contentDispositionType: 'attachment',
+		contentDispositionType: "attachment",
 		contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-		formats: ['image/avif', 'image/webp'],
+		formats: ["image/avif", "image/webp"]
 	},
 	/** We run eslint as a separate task in CI */
 	eslint: { ignoreDuringBuilds: !!process.env.CI },
 	headers: () => {
-		return [{
-			source: "/(.*)",
-			headers
-		}]
-	},
-	webpack: (config) => {
-		config.externals.push(
-			"pino-pretty",
-			"lokijs",
-			"encoding",
+		return [
 			{
-				"utf-8-validate": "commonjs utf-8-validate",
-				"bufferutil": "commonjs bufferutil"
+				source: "/(.*)",
+				headers
 			}
-		)
+		]
+	},
+	webpack: config => {
+		config.externals.push("pino-pretty", "lokijs", "encoding", {
+			"utf-8-validate": "commonjs utf-8-validate",
+			bufferutil: "commonjs bufferutil"
+		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
 		return config
