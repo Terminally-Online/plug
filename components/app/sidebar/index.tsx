@@ -45,7 +45,7 @@ export const ConsoleSidebar = () => {
 									className="h-full w-full rounded-sm"
 								/>
 							) : (
-								<Avatar name={session?.address} />
+								<Avatar name={socket?.id ?? ""} />
 							)}
 						</motion.div>
 
