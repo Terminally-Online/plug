@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
 import BoringAvatar from "boring-avatars"
 
@@ -11,7 +11,13 @@ const angle = angles / breakpoints
 
 // TODO(#413): This is a temporary implementation of the Avatar component that implements color shifting
 // with hue rotation. We will probably change it in the future because it does not look very good.
-export const Avatar: FC<{ name: string; rotation?: number; className?: string }> = ({ name, rotation, className }) => {
+export const Avatar: FC<HTMLAttributes<HTMLDivElement> & { name: string; rotation?: number }> = ({
+	name,
+	rotation,
+	className,
+	style,
+	...props
+}) => {
 	const { socket } = useSocket()
 
 	const hueRotation = useMemo(() => {
@@ -25,7 +31,8 @@ export const Avatar: FC<{ name: string; rotation?: number; className?: string }>
 	return (
 		<div
 			className={cn("relative overflow-hidden rounded-sm", className)}
-			style={{ filter: `hue-rotate(${hueRotation}deg)` }}
+			style={{ filter: `hue-rotate(${hueRotation}deg)`, ...style }}
+			{...props}
 		>
 			<BoringAvatar variant="beam" name={name} size={"100%"} colors={["#00E100", "#A3F700"]} square />
 		</div>
