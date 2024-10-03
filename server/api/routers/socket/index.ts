@@ -1,6 +1,5 @@
 import { createPublicClient, http } from "viem"
 import { mainnet } from "viem/chains"
-import { normalize } from "viem/ens"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
@@ -25,14 +24,6 @@ export const socket = createTRPCRouter({
 		// 	: ctx.session.user.anonymous
 		// 		? DEFAULT_ANONYMOUS_VIEWS
 		// 		: DEFAULT_VIEWS
-		// const { data: name } = useEnsName({
-		// 	chainId: mainnet.id,
-		// 	address: ctx.session?.address as `0x${string}`
-		// })
-		// const { data: avatar } = useEnsAvatar({
-		// 	chainId: mainnet.id,
-		// 	name: normalize(name ?? "") || undefined
-		// })
 
 		const name = ""
 		const avatar = ""

@@ -5,10 +5,9 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-// Create a viem public client
 const client = createPublicClient({
 	chain: mainnet,
-	transport: http(process.env.ALCHEMY_API_URL) // Use the Alchemy API URL from your .env file
+	transport: http(process.env.ALCHEMY_API_URL)
 })
 
 const seedSockets = async () => {
