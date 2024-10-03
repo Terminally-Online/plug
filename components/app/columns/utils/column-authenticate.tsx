@@ -123,21 +123,6 @@ const ConnectorQrCode = () => {
 	)
 }
 
-const loader = ({ src }: { src: string }) => {
-	if (src.startsWith("data:image")) {
-		const byteString = atob(src)
-		const mimeString = byteString.split("")[0]
-		const ab = new ArrayBuffer(byteString.length)
-		const ia = new Uint8Array(ab)
-		for (let i = 0; i < byteString.length; i++) {
-			ia[i] = byteString.charCodeAt(i)
-		}
-		const blob = new Blob([ab], { type: mimeString })
-		return URL.createObjectURL(blob)
-	}
-	return src
-}
-
 const ConnectorImage: FC<{ icon: string | undefined; name: string }> = ({ icon, name }) => {
 	const dimensions = {
 		blur: 4,
