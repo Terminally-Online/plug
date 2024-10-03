@@ -198,7 +198,7 @@ export const getCollectiblesForChain = async (address: string, chain: string, li
 	return Array.from(newCollectiblesMap.values())
 }
 
-export const getCollectibles = async (address: string, chains = ["ethereum", "optimism", "base"]) => {
+export const getCollectibles = async (address: string, chains = ["ethereum"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { socketAddress: address }
 	})

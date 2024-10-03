@@ -20,8 +20,6 @@ export const balances = createTRPCRouter({
 
 		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 
-		console.log("retrieving collectibles")
-
 		return await getCollectibles(socket.socketAddress)
 	}),
 	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {

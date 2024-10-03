@@ -28,7 +28,10 @@ export const socket = createTRPCRouter({
 		let name = ens?.name ?? ""
 		let avatar = ens?.avatar ?? ""
 
-		if (ens === null || Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) {
+		if (
+			(ens === null || Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) &&
+			ctx.session.address.startsWith("0x")
+		) {
 			try {
 				name = (await client.getEnsName({ address: ctx.session.address as `0x${string}` })) || ""
 				if (name) {
@@ -39,7 +42,6 @@ export const socket = createTRPCRouter({
 				// user's session if the ENS name is not available. There may be a better
 				// way to handle this in the future. For now, it is fine since it works and
 				// logs about failed ENS lookups don't really matter.
-				console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
 			}
 		}
 

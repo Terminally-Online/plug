@@ -409,7 +409,7 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 	})
 }
 
-export const getPositions = async (address: string, search?: string, chains = ["ethereum", "optimism", "base"]) => {
+export const getPositions = async (address: string, search?: string, chains = ["ethereum"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})
