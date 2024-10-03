@@ -1,13 +1,14 @@
 package aave_v3
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/aave_v3_pool"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
@@ -18,19 +19,20 @@ var (
 	interestRateMode = new(big.Int).SetUint64(2)
 )
 
-func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
+func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
 	contract, err := aave_v3_pool.NewAaveV3Pool(hexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(address)
 	}
 
-	return contract.Supply(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+	deposit, err := contract.Supply(
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.GetTokenOut()),
 		i.GetAmountIn(),
 		common.HexToAddress(from),
 		uint16(0),
 	)
+	return []*ethtypes.Transaction{deposit}, err
 }
 
 func BuildBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
@@ -40,7 +42,7 @@ func BuildBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, 
 	}
 
 	return contract.Borrow(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.GetTokenOut()),
 		i.GetAmountOut(),
 		interestRateMode,
@@ -49,18 +51,19 @@ func BuildBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, 
 	)
 }
 
-func BuildRedeem(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
+func BuildRedeem(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
 	contract, err := aave_v3_pool.NewAaveV3Pool(hexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(address)
 	}
 
-	return contract.Withdraw(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+	redeem, err := contract.Withdraw(
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.GetTokenIn()),
 		i.GetAmountIn(),
 		common.HexToAddress(from),
 	)
+	return []*ethtypes.Transaction{redeem}, err
 }
 
 func BuildRepay(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
@@ -70,7 +73,7 @@ func BuildRepay(i types.RepayInputs, provider *ethclient.Client, chainId int, fr
 	}
 
 	return contract.Repay(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.GetTokenIn()),
 		i.GetAmountIn(),
 		interestRateMode,

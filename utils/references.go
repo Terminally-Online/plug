@@ -40,6 +40,14 @@ var (
 			"aave_v3": {
 				"pool": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 			},
+			"yearn_v3": {
+				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",
+				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
+				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
+			},
+			"multicall": {
+				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
+			},
 		},
 	}
 )
@@ -114,7 +122,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		}
 	}
 
-	// If there is an implement address, we have found a proxy contract and need to 
+	// If there is an implement address, we have found a proxy contract and need to
 	// pull in the ABI from the implementation contract.
 	if explorerResponse.Implementation != "" && explorerResponse.Implementation != address {
 		return GenerateReference(explorer, folderName, contractName, explorerResponse.Implementation, retries)
@@ -144,6 +152,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	}
 
 	fmt.Printf("Generated ABI file for %s/%s at %s\n", folderName, contractName, referencePath)
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }
 

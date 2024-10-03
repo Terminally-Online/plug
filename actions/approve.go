@@ -2,15 +2,16 @@ package actions
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc_1155"
 	"solver/bindings/erc_20"
 	"solver/bindings/erc_721"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 /*
@@ -93,7 +94,7 @@ func (i *ApproveInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var approve *ethtypes.Transaction
 	var err error
 	switch i.Type {
@@ -110,13 +111,11 @@ func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from 
 		return nil, err
 	}
 
-	return &types.Transaction{
-		Transaction: "0x" + hex.EncodeToString(approve.Data()),
-		From:        from,
-		To:          approve.To().Hex(),
-		Value:       approve.Value(),
-		Gas:         approve.Gas(),
-	}, nil
+	return []*types.Transaction{{
+		Transaction: "0x" + hex.EncodeToString(approve.Data()), 
+		To: approve.To().Hex(), 
+		Value: approve.Value(), 
+	}}, nil
 }
 
 func (i *ApproveInputsImpl) BuildERC20Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
@@ -126,7 +125,7 @@ func (i *ApproveInputsImpl) BuildERC20Approve(provider *ethclient.Client, from s
 	}
 
 	return contract.Approve(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Spender),
 		i.Amount,
 	)
@@ -148,14 +147,14 @@ func (i *ApproveInputsImpl) BuildERC721Approve(provider *ethclient.Client, from 
 
 	if i.TokenId == nil {
 		return contract.SetApprovalForAll(
-			utils.DummyTransactOpts(from, big.NewInt(0)),
+			utils.BuildTransactionOpts(from, big.NewInt(0)),
 			common.HexToAddress(i.Spender),
 			*i.Approved,
 		)
 	}
 
 	return contract.Approve(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Spender),
 		i.TokenId,
 	)
@@ -168,7 +167,7 @@ func (i *ApproveInputsImpl) BuildERC1155Approve(provider *ethclient.Client, from
 	}
 
 	return contract.SetApprovalForAll(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Spender),
 		*i.Approved,
 	)

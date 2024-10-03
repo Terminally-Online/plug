@@ -2,8 +2,9 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 /*
@@ -18,15 +19,13 @@ type Action struct {
 
 type Transaction struct {
 	Transaction string   `json:"transaction"`
-	From        string   `json:"from"`
 	To          string   `json:"to"`
 	Value       *big.Int `json:"value"`
-	Gas         uint64   `json:"gas"`
 }
 
 type ActionInputs interface {
 	Validate() error
-	Build(provider *ethclient.Client, chainId int, from string) (*Transaction, error)
+	Build(provider *ethclient.Client, chainId int, from string) ([]*Transaction, error)
 }
 
 type ApproveInputs interface {
@@ -53,6 +52,7 @@ type DepositInputs interface {
 	GetTokenIn() string
 	GetTokenOut() string
 	GetAmountIn() *big.Int
+	GetTarget() *string
 }
 
 type HarvestInputs interface {
@@ -67,6 +67,7 @@ type RedeemInputs interface {
 	GetTokenIn() string
 	GetTokenOut() string
 	GetAmountIn() *big.Int
+	GetTarget() *string
 }
 
 type RepayInputs interface {

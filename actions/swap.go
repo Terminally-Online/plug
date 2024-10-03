@@ -1,10 +1,11 @@
 package actions
 
 import (
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type SwapInputsImpl struct {
@@ -32,7 +33,7 @@ func (i *SwapInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *SwapInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *SwapInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	switch i.Protocol {
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)

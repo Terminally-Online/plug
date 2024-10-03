@@ -3,7 +3,6 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"io"
 	"math/big"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 	"solver/types"
 	"solver/utils"
 	"time"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const (
@@ -70,7 +71,7 @@ func (i *RouteInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *RouteInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *RouteInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	baseURL, err := url.Parse(baseAPIURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse base URL: %w", err)
@@ -135,24 +136,16 @@ func (i *RouteInputsImpl) Build(provider *ethclient.Client, chainId int, from st
 		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
 
-	gas, ok := new(big.Int).SetString(apiResp.Gas, 10)
-	if !ok {
-		return nil, fmt.Errorf("invalid gas value: %s", apiResp.Gas)
-	}
-
 	value, ok := new(big.Int).SetString(apiResp.Tx.Value, 10)
 	if !ok {
 		return nil, fmt.Errorf("invalid value: %s", apiResp.Tx.Value)
 	}
 
-	tx := &types.Transaction{
+	return []*types.Transaction{{
 		Transaction: apiResp.Tx.Data,
 		To:          apiResp.Tx.To,
 		Value:       value,
-		Gas:         gas.Uint64(),
-	}
-
-	return tx, nil
+	}}, nil
 }
 
 func (i *RouteInputsImpl) GetTokenIn() string    { return i.TokenIn }

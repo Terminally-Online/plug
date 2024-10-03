@@ -2,15 +2,16 @@ package actions
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc_1155"
 	"solver/bindings/erc_20"
 	"solver/bindings/erc_721"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 /*
@@ -95,7 +96,7 @@ func (i *TransferFromInputsImpl) Validate() error {
 
 	return nil
 }
-func (i *TransferFromInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *TransferFromInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var transferFrom *ethtypes.Transaction
 	var err error
 	switch i.Type {
@@ -112,13 +113,11 @@ func (i *TransferFromInputsImpl) Build(provider *ethclient.Client, chainId int, 
 		return nil, err
 	}
 
-	return &types.Transaction{
+	return []*types.Transaction{{
 		Transaction: "0x" + hex.EncodeToString(transferFrom.Data()),
-		From:        from,
 		To:          transferFrom.To().Hex(),
 		Value:       transferFrom.Value(),
-		Gas:         transferFrom.Gas(),
-	}, nil
+	}}, nil
 }
 
 func (i *TransferFromInputsImpl) BuildERC20TransferFrom(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
@@ -128,7 +127,7 @@ func (i *TransferFromInputsImpl) BuildERC20TransferFrom(provider *ethclient.Clie
 	}
 
 	return contract.TransferFrom(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Sender),
 		common.HexToAddress(i.Recipient),
 		i.Amount,
@@ -142,7 +141,7 @@ func (i *TransferFromInputsImpl) BuildERC721TransferFrom(provider *ethclient.Cli
 	}
 
 	return contract.TransferFrom(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(from),
 		common.HexToAddress(i.Recipient),
 		i.TokenId,
@@ -156,7 +155,7 @@ func (i *TransferFromInputsImpl) BuildERC1155TransferFrom(provider *ethclient.Cl
 	}
 
 	return contract.SafeTransferFrom(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(from),
 		common.HexToAddress(i.Recipient),
 		i.TokenId,

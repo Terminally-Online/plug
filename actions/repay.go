@@ -2,13 +2,14 @@ package actions
 
 import (
 	"encoding/hex"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/protocols/aave_v2"
 	"solver/protocols/aave_v3"
 	"solver/types"
 	"solver/utils"
+
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type RepayInputsImpl struct {
@@ -28,7 +29,7 @@ func (i *RepayInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *RepayInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *RepayInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var repay *ethtypes.Transaction
 	var err error
 	switch i.Protocol {
@@ -43,13 +44,11 @@ func (i *RepayInputsImpl) Build(provider *ethclient.Client, chainId int, from st
 		return nil, err
 	}
 
-	return &types.Transaction{
+	return []*types.Transaction{{
 		Transaction: "0x" + hex.EncodeToString(repay.Data()),
-		From:        from,
 		To:          repay.To().Hex(),
 		Value:       repay.Value(),
-		Gas:         repay.Gas(),
-	}, nil
+	}}, nil
 }
 
 func (i *RepayInputsImpl) GetProtocol() string   { return i.Protocol }

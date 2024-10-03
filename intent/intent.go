@@ -8,6 +8,7 @@ import (
 type IntentRequest struct {
 	ChainId int            `json:"chainId"`
 	From    string         `json:"from"`
+	Solver  *string        `json:"solver"`
 	Actions []types.Action `json:"actions"`
 }
 
@@ -27,7 +28,15 @@ func (i IntentRequest) Validate() error {
 	return nil
 }
 
+type Plugs struct {
+	Socket       string              `json:"socket"`
+	Transactions []types.Transaction `json:"plugs"`
+	Solver       string              `json:"solver"`
+	Salt         string              `json:"salt"`
+}
+
 type IntentResponse struct {
-	Request      IntentRequest       `json:"request"`
-	Transactions []types.Transaction `json:"transactions"`
+	Request   IntentRequest `json:"request"`
+	Plugs     Plugs         `json:"plugs"`
+	Signature string        `json:"signature"`
 }

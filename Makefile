@@ -1,8 +1,11 @@
 .DEFAULT_GOAL := bindings
-.PHONY: clean references bindings
+.PHONY: api clean references bindings
 
 clean:
 	rm -rf build bindings
+
+api:
+	go run cmd/api/main.go
 
 references:
 	mkdir -p abis

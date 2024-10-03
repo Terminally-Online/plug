@@ -2,13 +2,14 @@ package actions
 
 import (
 	"encoding/hex"
-	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/erc_20"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 /*
@@ -48,7 +49,7 @@ func (i *TransferInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *TransferInputsImpl) Build(provider *ethclient.Client, chainId int, from string) (*types.Transaction, error) {
+func (i *TransferInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var transfer *ethtypes.Transaction
 	var err error
 	switch i.Type {
@@ -63,13 +64,11 @@ func (i *TransferInputsImpl) Build(provider *ethclient.Client, chainId int, from
 		return nil, err
 	}
 
-	return &types.Transaction{
+	return []*types.Transaction{{
 		Transaction: "0x" + hex.EncodeToString(transfer.Data()),
-		From:        from,
 		To:          transfer.To().Hex(),
 		Value:       transfer.Value(),
-		Gas:         transfer.Gas(),
-	}, nil
+	}}, nil
 }
 
 func (i *TransferInputsImpl) BuildNativeTransfer(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
@@ -90,7 +89,7 @@ func (i *TransferInputsImpl) BuildERC20Transfer(provider *ethclient.Client, from
 	}
 
 	return contract.Transfer(
-		utils.DummyTransactOpts(from, big.NewInt(0)),
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
 		common.HexToAddress(i.Recipient),
 		&i.Amount,
 	)

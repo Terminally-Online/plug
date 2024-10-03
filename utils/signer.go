@@ -1,19 +1,21 @@
 package utils
 
 import (
+	"context"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 )
 
 var (
 	DummyNonce = uint64(0)
 )
 
-// DummyTransactOpts returns a TransactOpts with a dummy signer.
+// BuildTransactionOpts returns a TransactOpts with a dummy signer.
 // This is useful for generating transaction data without actually signing the transaction.
-func DummyTransactOpts(address string, value *big.Int) *bind.TransactOpts {
+func BuildTransactionOpts(address string, value *big.Int) *bind.TransactOpts {
 	return &bind.TransactOpts{
 		From: common.HexToAddress(address),
 		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
@@ -21,5 +23,13 @@ func DummyTransactOpts(address string, value *big.Int) *bind.TransactOpts {
 		},
 		NoSend:    true,
 		Value:     value,
+	}
+}
+
+func BuildCallOpts(address string, value *big.Int) *bind.CallOpts {
+	return &bind.CallOpts{
+		From: common.HexToAddress(address),
+		Pending: true,
+		Context: context.Background(),
 	}
 }

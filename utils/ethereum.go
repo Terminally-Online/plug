@@ -22,12 +22,12 @@ var (
 )
 
 var (
-	uint8Max   = new(big.Int).SetUint64(0xFF)
-	uint16Max  = new(big.Int).SetUint64(0xFFFF)
-	uint32Max  = new(big.Int).SetUint64(0xFFFFFFFF)
-	uint64Max  = new(big.Int).SetUint64(0xFFFFFFFFFFFFFFFF)
-	uint128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
-	uint256Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
+	Uint8Max   = new(big.Int).SetUint64(0xFF)
+	Uint16Max  = new(big.Int).SetUint64(0xFFFF)
+	Uint32Max  = new(big.Int).SetUint64(0xFFFFFFFF)
+	Uint64Max  = new(big.Int).SetUint64(0xFFFFFFFFFFFFFFFF)
+	Uint128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
+	Uint256Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
 )
 
 func IsSupportedChain(chainId int) bool {
@@ -64,17 +64,17 @@ func IsUint(value string, bits int) bool {
 	var max *big.Int
 	switch bits {
 	case 8:
-		max = uint8Max
+		max = Uint8Max
 	case 16:
-		max = uint16Max
+		max = Uint16Max
 	case 32:
-		max = uint32Max
+		max = Uint32Max
 	case 64:
-		max = uint64Max
+		max = Uint64Max
 	case 128:
-		max = uint128Max
+		max = Uint128Max
 	case 256:
-		max = uint256Max
+		max = Uint256Max
 	default:
 		return false
 	}

@@ -72,11 +72,19 @@ var (
 		return ServerError{Message: fmt.Sprintf("failed to connect to Etherscan: %s", error)}
 	}
 
+	ErrABIFailed = func(contractName string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Contract %s could not be interfaced with.", contractName)}
+	}
+
 	ErrContractFailed = func(address string) ServerError {
 		return ServerError{Message: fmt.Sprintf("Contract at %s could not be interfaced with.", address)}
 	}
 
-	ErrTransactionFailed = func(functionName string, address string) ServerError {
-		return ServerError{Message: fmt.Sprintf("%s transaction to %s failed while being built.", functionName, address)}
+	ErrCallFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Calling contract failed: %s", error)}
+	}
+
+	ErrTransactionFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
 	}
 )

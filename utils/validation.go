@@ -80,4 +80,8 @@ var (
 	ErrMissingField = func(field string) ValidationError {
 		return ValidationError{Field: field, Message: "is required"}
 	}
+
+	ErrInvalidTarget = func(field string, value string) ValidationError {
+		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid target", value)}
+	}
 )

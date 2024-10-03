@@ -7,7 +7,6 @@ import (
 	"solver/types"
 )
 
-
 // ParseAction parses the Action struct and returns the specific ActionInputs
 func ParseAction(action types.Action) (types.ActionInputs, error) {
 	var inputs types.ActionInputs
