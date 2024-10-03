@@ -25,8 +25,8 @@ export const socket = createTRPCRouter({
 			where: { socketId: ctx.session.address }
 		})
 
-		let name = ""
-		let avatar = ""
+		let name = ens?.name ?? ""
+		let avatar = ens?.avatar ?? ""
 
 		if (ens === null || Date.now() - ens.updatedAt.getTime() > ENS_CACHE_TIME) {
 			try {
