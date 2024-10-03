@@ -19,15 +19,17 @@ const client = createPublicClient({
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ input, ctx }) => {
-		// const columnsToCreate = ctx.session.user.demo
-		// 	? DEFAULT_DEMO_VIEWS
-		// 	: ctx.session.user.anonymous
-		// 		? DEFAULT_ANONYMOUS_VIEWS
-		// 		: DEFAULT_VIEWS
+		let ensName = null
+		let ensAvatar = null
 
-		const name = ""
-		const avatar = ""
-		// TODO(#423): Removed ENS avatar and name and never re-implemented it.
+		try {
+			ensName = await client.getEnsName({ address: ctx.session.address as `0x${string}` })
+			if (ensName) {
+				ensAvatar = await client.getEnsAvatar({ name: ensName })
+			}
+		} catch (error) {
+			console.error(`Error fetching ENS data for ${ctx.session.address}:`, error)
+		}
 
 		await ctx.db.userSocket.upsert({
 			where: {
@@ -35,64 +37,48 @@ export const socket = createTRPCRouter({
 			},
 			create: {
 				id: ctx.session.address,
-				socketAddress: TEMPORARY_ADDRESS,
+				socketAddress: ctx.session.address,
 				identity: {
-					connectOrCreate: {
-						where: { socketId: ctx.session.address },
-						create: {
-							ens: name
-								? {
-										connectOrCreate: {
-											where: { name },
-											create: {
-												name,
-												avatar
-											}
-										}
-									}
-								: undefined
-						}
+					create: {
+						ens: ensName ? {
+							create: {
+								name: ensName,
+								avatar: ensAvatar || undefined
+							}
+						} : undefined
 					}
 				}
 			},
 			update: {
 				identity: {
 					upsert: {
-						where: { socketId: ctx.session.address },
-						create: {},
-						update: {}
+						create: {
+							ens: ensName ? {
+								create: {
+									name: ensName,
+									avatar: ensAvatar || undefined
+								}
+							} : undefined
+						},
+						update: {
+							ens: ensName ? {
+								upsert: {
+									create: {
+										name: ensName,
+										avatar: ensAvatar || undefined
+									},
+									update: {
+										name: ensName,
+										avatar: ensAvatar || undefined
+									}
+								}
+							} : undefined
+						}
 					}
 				}
 			}
 		})
 
-		if (name)
-			await ctx.db.eNS.upsert({
-				where: { name },
-				create: {
-					name,
-					avatar: avatar ? avatar : undefined,
-					identity: {
-						connectOrCreate: {
-							where: { socketId: ctx.session.address },
-							create: {
-								socketId: ctx.session.address
-							}
-						}
-					}
-				},
-				update: {
-					avatar: avatar ? avatar : undefined,
-					identity: {
-						connectOrCreate: {
-							where: { socketId: ctx.session.address },
-							create: {
-								socketId: ctx.session.address
-							}
-						}
-					}
-				}
-			})
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
 			...SOCKET_BASE_QUERY
