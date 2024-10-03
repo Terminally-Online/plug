@@ -1,6 +1,6 @@
+import Image from "next/image"
 import { FC, useEffect, useRef, useState } from "react"
 
-import { Image } from "@/components"
 import { getAssetColor } from "@/lib"
 
 export const TokenImage: FC<{
