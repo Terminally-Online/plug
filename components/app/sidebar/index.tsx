@@ -32,7 +32,7 @@ const ConsoleSidebarAction: FC<
 					"group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 					isActive && "bg-grayscale-0 hover:bg-white",
 					isPrimary &&
-						"group-hover: bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
+						"group-hover: bg-gradient-to-tr from-plug-green border-plug-yellow to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
 				)}
 			>
 				{icon}
