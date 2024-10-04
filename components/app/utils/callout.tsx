@@ -26,8 +26,8 @@ const Anonymous: FC<
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
 	const { isAnonymous } = useSocket()
-	const { toggleViewingAs } = useSidebar()
-	const { column, isExternal, navigate } = useColumns(index)
+	const { toggleViewingAs, toggleAuthenticating } = useSidebar()
+	const { isExternal } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null
 
@@ -51,7 +51,7 @@ const Anonymous: FC<
 				<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
 					View As
 				</Button>
-				<Button sizing="sm" onClick={() => navigate({ index, key: VIEW_KEYS.AUTHENTICATE, from: column?.key })}>
+				<Button sizing="sm" onClick={() => toggleAuthenticating()}>
 					Login
 				</Button>
 			</Base>

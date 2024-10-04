@@ -23,7 +23,7 @@ export const ConsoleColumnRow = () => {
 		<div
 			className={cn(
 				"flex h-full flex-row overflow-x-auto overflow-y-hidden",
-				(is.searching || is.viewingAs) === false && "ml-2"
+				(is.authenticating || is.searching || is.viewingAs) === false && "ml-2"
 			)}
 		>
 			<DragDropContext onDragEnd={onDragEnd}>

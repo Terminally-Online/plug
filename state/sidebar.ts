@@ -6,37 +6,33 @@ import { atomWithStorage } from "jotai/utils"
 
 interface SidebarState {
 	expanded: boolean
-	searching: boolean
-	viewingAs: boolean
+	activePane: "authenticating" | "searching" | "viewingAs" | null
 	width: number
 }
 
 const DEFAULT_SIDEBAR_STATE: SidebarState = {
 	expanded: false,
-	searching: false,
-	viewingAs: false,
+	activePane: null,
 	width: 380
 }
 
 const sidebarAtom = atomWithStorage<SidebarState>("sidebar", DEFAULT_SIDEBAR_STATE)
 
-const createToggleAction = (key: keyof SidebarState) =>
-	atom(
-		get => get(sidebarAtom)[key],
-		(get, set) => {
-			const current = get(sidebarAtom)
-			set(sidebarAtom, {
-				...current,
-				[key]: !current[key],
-				...(key === "searching" ? { viewingAs: false } : {}),
-				...(key === "viewingAs" ? { searching: false } : {})
-			})
-		}
-	)
+const expandedAtom = atom(
+	get => get(sidebarAtom).expanded,
+	(get, set) => {
+		const current = get(sidebarAtom)
+		set(sidebarAtom, { ...current, expanded: !current.expanded })
+	}
+)
 
-const expandedAtom = createToggleAction("expanded")
-const searchingAtom = createToggleAction("searching")
-const viewingAsAtom = createToggleAction("viewingAs")
+const activePaneAtom = atom(
+	get => get(sidebarAtom).activePane,
+	(get, set, newPane: SidebarState["activePane"]) => {
+		const current = get(sidebarAtom)
+		set(sidebarAtom, { ...current, activePane: current.activePane === newPane ? null : newPane })
+	}
+)
 
 const widthAtom = atom(
 	get => get(sidebarAtom).width,
@@ -49,16 +45,22 @@ const widthAtom = atom(
 export const useSidebar = () => {
 	const [sidebarState] = useAtom(sidebarAtom)
 	const [, toggleExpanded] = useAtom(expandedAtom)
-	const [, toggleSearching] = useAtom(searchingAtom)
-	const [, toggleViewingAs] = useAtom(viewingAsAtom)
+	const [, setActivePane] = useAtom(activePaneAtom)
 	const [width, setWidth] = useAtom(widthAtom)
 
 	return {
-		is: sidebarState,
+		is: {
+			...sidebarState,
+			authenticating: sidebarState.activePane === "authenticating",
+			searching: sidebarState.activePane === "searching",
+			viewingAs: sidebarState.activePane === "viewingAs"
+		},
 		width,
+		handleActivePane: useCallback((newPane: SidebarState["activePane"]) => setActivePane(newPane), [setActivePane]),
 		toggleExpanded: useCallback(() => toggleExpanded(), [toggleExpanded]),
-		toggleSearching: useCallback(() => toggleSearching(), [toggleSearching]),
-		toggleViewingAs: useCallback(() => toggleViewingAs(), [toggleViewingAs]),
+		toggleAuthenticating: useCallback(() => setActivePane("authenticating"), [setActivePane]),
+		toggleSearching: useCallback(() => setActivePane("searching"), [setActivePane]),
+		toggleViewingAs: useCallback(() => setActivePane("viewingAs"), [setActivePane]),
 		resize: useCallback((newWidth: number) => setWidth(newWidth), [setWidth])
 	}
 }

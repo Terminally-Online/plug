@@ -111,13 +111,13 @@ export const ScheduleFrame: FC<{ index: number; item: string }> = ({ index }) =>
 						day_hidden: "invisible"
 					}}
 					components={{
-						Chevron: (props) => { 
+						Chevron: props => {
 							if (props.orientation === "left") {
 								return <ChevronRight className="h-4 w-4" {...props} />
 							}
 
 							return <ChevronLeft className="h-4 w-4" {...props} />
-						} 
+						}
 					}}
 				/>
 

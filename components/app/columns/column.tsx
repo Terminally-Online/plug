@@ -128,26 +128,24 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											{socket &&
-												column.viewAs &&
-												column.viewAs.id !== socket.id && (
-													<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
-														{column.viewAs.identity?.ens?.avatar ? (
-															<Image
-																src={column.viewAs.identity.ens.avatar}
-																alt="ENS Avatar"
-																width={240}
-																height={240}
-																className="rounded-sm"
-															/>
-														) : (
-															<Avatar
-																name={column.viewAs?.id ?? socket.id}
-																className="rounded-sm"
-															/>
-														)}
-													</div>
-												)}
+											{socket && column.viewAs && column.viewAs.id !== socket.id && (
+												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
+													{column.viewAs.identity?.ens?.avatar ? (
+														<Image
+															src={column.viewAs.identity.ens.avatar}
+															alt="ENS Avatar"
+															width={240}
+															height={240}
+															className="rounded-sm"
+														/>
+													) : (
+														<Avatar
+															name={column.viewAs?.id ?? socket.id}
+															className="rounded-sm"
+														/>
+													)}
+												</div>
+											)}
 
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
@@ -202,35 +200,38 @@ export const ConsoleColumn: FC<{
 
 							{/* TODO(#416): Have the column.frame check to disable the scroll when a frame is open. Need a better solution. */}
 							<div className="h-full overflow-y-scroll">
-								{key === VIEW_KEYS.AUTHENTICATE ? (
-									<ColumnAuthenticate index={index} />
-								) : key === VIEW_KEYS.ADD ? (
-									<ColumnAddOptions index={index} className="px-4 pt-4" />
-								) : // ) : key === VIEW_KEYS.SEARCH ? (
-								// 	<ColumnSearch index={index} className="px-4 pt-4" />
-								// ) : key === VIEW_KEYS.VIEW_AS ? (
-								// 	<ColumnViewAs />
-								key === VIEW_KEYS.DISCOVER ? (
-									<PlugsDiscover index={index} className="pt-4" />
-								) : key === VIEW_KEYS.MY_PLUGS ? (
-									<PlugsMine index={index} className="pt-4" />
-								) : key === VIEW_KEYS.PLUG ? (
-									<Plug index={index} item={item} from={from} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.ACTIVITY ? (
-									<SocketActivity index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.TOKENS ? (
-									<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.POSITIONS ? (
-									<SocketPositionList index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.ADMIN ? (
-									<ConsoleAdmin index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.PROFILE ? (
-									<ColumnProfile className="px-4 py-4" />
-								) : (
-									<></>
-								)}
+								{
+									// key === VIEW_KEYS.AUTHENTICATE ? (
+									// <ColumnAuthenticate index={index} />
+									//) :
+									key === VIEW_KEYS.ADD ? (
+										<ColumnAddOptions index={index} className="px-4 pt-4" />
+									) : // ) : key === VIEW_KEYS.SEARCH ? (
+									// 	<ColumnSearch index={index} className="px-4 pt-4" />
+									// ) : key === VIEW_KEYS.VIEW_AS ? (
+									// 	<ColumnViewAs />
+									key === VIEW_KEYS.DISCOVER ? (
+										<PlugsDiscover index={index} className="pt-4" />
+									) : key === VIEW_KEYS.MY_PLUGS ? (
+										<PlugsMine index={index} className="pt-4" />
+									) : key === VIEW_KEYS.PLUG ? (
+										<Plug index={index} item={item} from={from} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.ACTIVITY ? (
+										<SocketActivity index={index} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.TOKENS ? (
+										<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.COLLECTIBLES ? (
+										<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.POSITIONS ? (
+										<SocketPositionList index={index} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.ADMIN ? (
+										<ConsoleAdmin index={index} className="px-4 pt-4" />
+									) : key === VIEW_KEYS.PROFILE ? (
+										<ColumnProfile className="px-4 py-4" />
+									) : (
+										<></>
+									)
+								}
 							</div>
 						</div>
 

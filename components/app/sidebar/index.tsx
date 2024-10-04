@@ -4,7 +4,7 @@ import { FC, ReactNode, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
 
-import { Avatar, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
+import { Avatar, ColumnAuthenticate, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -58,8 +58,16 @@ export const ConsoleSidebar = () => {
 
 	const { avatar, socket } = useSocket()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
-	const { is, width, toggleExpanded, toggleSearching, toggleViewingAs, resize } = useSidebar()
-	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
+	const {
+		is,
+		width,
+		handleActivePane,
+		toggleExpanded,
+		toggleAuthenticating,
+		toggleSearching,
+		toggleViewingAs,
+		resize
+	} = useSidebar()
 
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -94,7 +102,7 @@ export const ConsoleSidebar = () => {
 					{session && (
 						<button
 							className="relative mx-4 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
-							onClick={() => handleCopied()}
+							onClick={() => toggleAuthenticating()}
 						>
 							<motion.div
 								initial={{ opacity: 0 }}
@@ -114,20 +122,6 @@ export const ConsoleSidebar = () => {
 									<Avatar name={socket?.id ?? ""} />
 								)}
 							</motion.div>
-
-							<AnimatePresence>
-								{copied && (
-									<motion.div
-										className="absolute -bottom-2 -right-2 rounded-full border-[1px] border-grayscale-0 bg-white p-1"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.2 }}
-									>
-										<ClipboardCheck size={14} className="opacity-40" />
-									</motion.div>
-								)}
-							</AnimatePresence>
 						</button>
 					)}
 
@@ -202,7 +196,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			{(is.viewingAs || is.searching) && (
+			{(is.authenticating || is.viewingAs || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
@@ -212,7 +206,7 @@ export const ConsoleSidebar = () => {
 					>
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
 							<Header
-								label={is.viewingAs ? "View As" : "Search"}
+								label={is.viewingAs ? "View As" : is.searching ? "Search" : "Login"}
 								size="md"
 								icon={
 									is.searching ? (
@@ -228,12 +222,13 @@ export const ConsoleSidebar = () => {
 									)
 								}
 								nextPadded={false}
-								nextOnClick={is.viewingAs ? toggleViewingAs : toggleSearching}
+								nextOnClick={() => handleActivePane(null)}
 								nextLabel={<X size={14} />}
 							/>
 						</div>
 
 						<div className="h-full">
+							{is.authenticating && <ColumnAuthenticate index={0} />}
 							{is.searching && <ColumnSearch index={0} className="px-4" />}
 							{is.viewingAs && <ColumnViewAs />}
 						</div>
