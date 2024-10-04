@@ -7,29 +7,31 @@ import { api } from "@/server/client"
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
 
+import { useDebounce } from "@/lib/hooks"
+
 export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
 	className,
 	...props
 }) => {
-	const [search, setSearch] = useState("")
+	const [search, debouncedSearch, setSearch] = useDebounce("")
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
-	const enabled = search !== ""
+	const enabled = debouncedSearch !== ""
 
-	const { data: results, isInitialLoading } = api.misc.search.useQuery(search, {
+	const { data: results, isInitialLoading } = api.misc.search.useQuery(debouncedSearch, {
 		enabled
 	})
 
 	const emptyResults =
-		search !== "" &&
+		debouncedSearch !== "" &&
 		results &&
 		results.plugs.length === 0 &&
 		results.tokens.length === 0 &&
 		results.collectibles.length === 0
 
 	return (
-		<div className={cn("flex h-full flex-col overflow-x-hidden", className)} {...props}>
+		<div className={cn("flex h-full flex-col overflow-x-hidden py-4", className)} {...props}>
 			<Search
 				className="mb-4"
 				icon={<SearchIcon size={14} className="opacity-60" />}
@@ -39,7 +41,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 				clear={true}
 			/>
 
-			{search === "" && (
+			{debouncedSearch === "" && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center opacity-60">
@@ -65,7 +67,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 								...greenGradientStyle
 							}}
 						>
-							{search}
+							{debouncedSearch}
 						</span>
 						&rsquo;.
 					</p>

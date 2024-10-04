@@ -58,7 +58,7 @@
 		"superjson": "^2.2.1",
 		"tailwind-merge": "^2.5.2",
 		"utf-8-validate": "5.0.2",
-		"viem": "^2.21.16",
+		"viem": "^2.21.17",
 		"wagmi": "^2.12.16",
 		"ws": "^8.17.1",
 		"zod": "^3.23.8"
@@ -78,7 +78,7 @@
 		"eslint": "^8",
 		"eslint-config-next": "14.2.14",
 		"npm-run-all": "^4.1.5",
-		"postcss": "^8.4.38",
+		"postcss": "^8.4.47",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.6.8",
 		"prisma": "^5.18.0",
