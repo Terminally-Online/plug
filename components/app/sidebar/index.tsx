@@ -60,8 +60,8 @@ export const ConsoleSidebar = () => {
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	return (
-		<div className="mr-2 flex h-full w-max flex-row border-r-[1px] border-grayscale-100 bg-white">
-			<div className={cn("flex h-full w-max flex-col items-center py-4")}>
+		<div className="flex h-full w-max flex-row bg-transparent">
+			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
 				<div className={cn("flex w-full flex-col gap-4 p-4")}>
 					{session && (
 						<button
@@ -157,37 +157,23 @@ export const ConsoleSidebar = () => {
 					/>
 
 					{account.address && (
-						<>
-							<div className="h-[1px] w-full bg-grayscale-100" />
-							<div
-								className="group flex cursor-pointer flex-row items-center gap-4 px-6"
-								onClick={() => disconnect()}
-							>
-								<Button
-									variant="secondary"
-									onClick={() => (is.expanded ? disconnect() : {})}
-									sizing="sm"
-									className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
-								>
-									<LogOut
-										size={14}
-										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-									/>
-								</Button>
-
-								{is.expanded && (
-									<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-										Logout
-									</p>
-								)}
-							</div>
-						</>
+						<ConsoleSidebarAction
+							icon={
+								<LogOut
+									size={14}
+									className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+								/>
+							}
+							title="Logout"
+							isExpanded={is.expanded}
+							onClick={toggleExpanded}
+						/>
 					)}
 				</div>
 			</div>
 
 			{(is.viewingAs || is.searching) && (
-				<div className="flex border-l-[1px] border-grayscale-100">
+				<div className="flex border-r-[1px] border-grayscale-100">
 					<div className="m-2 flex min-w-[420px] flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100">
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4 pl-10">
 							<Header
