@@ -15,14 +15,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 	className,
 	...props
 }) => {
-	// const { scrollYProgress } = useScroll()
 	const { search, tag, handleSearch, handleTag } = useSearch()
-
-	// const [plugs, setPlugs] = useState<{
-	// 	count?: number
-	// 	plugs: Array<Workflow>
-	// }>({ plugs: [] })
-
 	const { data: plugs } = api.plug.all.useQuery({
 		target: "others"
 	})
@@ -31,11 +24,6 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 		if (plugs === undefined || plugs.length === 0) return Array(12).fill(undefined)
 		return plugs
 	}, [plugs])
-
-	// useMotionValueEvent(scrollYProgress, "change", latest => {
-	// 	if (!plugs || isLoading || latest < 0.8) return
-	// 	if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
-	// })
 
 	return (
 		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>

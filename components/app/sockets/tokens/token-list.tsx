@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Animate, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
+import { Animate, Callout, Search, SocketTokenItem } from "@/components"
 import { cn } from "@/lib"
 import { useColumns, useHoldings, useSocket } from "@/state"
 

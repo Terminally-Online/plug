@@ -84,19 +84,6 @@ export const SocketCollectionList: FC<
 				isViewing="collectibles"
 				isReceivable={false}
 			/>
-
-			{visibleCollectibles.map(
-				(collection, collectionIndex) =>
-					collection &&
-					collection.collectibles.map(collectible => (
-						<CollectibleFrame
-							key={collectionIndex}
-							index={index}
-							collection={collection}
-							collectible={collectible}
-						/>
-					))
-			)}
 		</div>
 	)
 }
