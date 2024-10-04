@@ -32,7 +32,7 @@ export const ConsolePage = () => {
 
 	// useEffect(() => {
 	// 	if (socket) return
-
+	//
 	// 	signIn("credentials", {
 	// 		message: "0x0",
 	// 		signature: "0x0",
