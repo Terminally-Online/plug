@@ -11,14 +11,14 @@ export const AccordionContent: FC<Props> = ({ expanded, className, style, childr
 
 	const isClient = useClient()
 
-	if (!isClient) return null
+	if (!isClient|| !expanded) return null
 
 	return (
 		<span
 			className={cn("w-full overflow-y-hidden transition-all", className)}
 			style={{
-				opacity: expanded ? 1 : 0,
-				height: expanded ? ref.current?.offsetHeight || 0 : 0,
+				opacity: 1,
+				height: ref.current?.offsetHeight,
 				...style
 			}}
 			{...props}

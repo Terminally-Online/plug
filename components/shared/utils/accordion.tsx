@@ -35,9 +35,7 @@ export const Accordion: FC<Props> = ({
 			className={cn(
 				"group relative flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 outline-none",
 				expanded && "bg-grayscale-0 hover:bg-white",
-				loading
-					? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
-					: "transition-all duration-200 ease-in-out",
+				loading ? "animate-loading bg-gradient-animated bg-[length:200%_200%]" : "transition-all duration-200 ease-in-out",
 				loading === false && expanded === false && "bg-white hover:border-white hover:bg-grayscale-0/80",
 				loading === false ? "cursor-pointer" : "cursor-default",
 				className
