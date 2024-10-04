@@ -14,17 +14,17 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 	className,
 	...props
 }) => {
-	const [search, setSearch] = useState("")
+	const [search, debouncedSearch, setSearch] = useDebounce("")
 	const [expanded, setExpanded] = useState<Array<string>>([])
 
-	const enabled = search !== ""
+	const enabled = debouncedSearch !== ""
 
-	const { data: results, isInitialLoading } = api.misc.search.useQuery(search, {
+	const { data: results, isInitialLoading } = api.misc.search.useQuery(debouncedSearch, {
 		enabled
 	})
 
 	const emptyResults =
-		search !== "" &&
+		debouncedSearch !== "" &&
 		results &&
 		results.plugs.length === 0 &&
 		results.tokens.length === 0 &&
@@ -41,7 +41,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 				clear={true}
 			/>
 
-			{search === "" && (
+			{debouncedSearch === "" && (
 				<div className="my-auto flex flex-col items-center">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center opacity-60">
@@ -67,7 +67,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 								...greenGradientStyle
 							}}
 						>
-							{search}
+							{debouncedSearch}
 						</span>
 						&rsquo;.
 					</p>
