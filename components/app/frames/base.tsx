@@ -63,13 +63,13 @@ export const Frame: FC<Props> = ({
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							md ? "absolute" : "fixed",
-							"inset-0 top-auto max-h-[90%] w-full overflow-y-auto overflow-x-hidden rounded-t-lg bg-white",
+							"inset-0 top-auto max-h-[100%] w-full overflow-y-auto overflow-x-hidden rounded-t-lg bg-white",
 							className,
-							"z-[11]",
+							"z-[41]",
 							index !== -1 && "rounded-b-lg"
 						)}
 					>
-						<div className="mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 px-6 py-4">
+						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 px-6 py-4 bg-white">
 							{handleBack && (
 								<Button variant="secondary" onClick={handleBack} className="mr-2 h-min rounded-sm p-1">
 									<ChevronLeft size={14} />

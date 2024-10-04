@@ -69,7 +69,19 @@ export const CollectibleFrame: FC<{
 		<Frame
 			index={index}
 			icon={
-				<div className="relative h-10 w-10">
+				<div className="relative h-8 w-10">
+					<div
+						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100 filter blur-2xl"
+						style={{
+							backgroundImage: `url(${collection.imageUrl})`,
+							backgroundSize: "cover",
+							backgroundPosition: "center",
+							backgroundRepeat: "no-repeat",
+							width: "4rem",
+							minWidth: "4rem",
+							height: "4rem"
+						}}
+					/>
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
 						style={{
