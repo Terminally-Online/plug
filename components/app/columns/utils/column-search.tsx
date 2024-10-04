@@ -29,7 +29,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 		results.collectibles.length === 0
 
 	return (
-		<div className={cn("flex h-full flex-col overflow-x-hidden", className)} {...props}>
+		<div className={cn("flex h-full flex-col overflow-x-hidden py-4", className)} {...props}>
 			<Search
 				className="mb-4"
 				icon={<SearchIcon size={14} className="opacity-60" />}

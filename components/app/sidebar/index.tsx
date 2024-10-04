@@ -2,9 +2,9 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { BookUser, ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon } from "lucide-react"
+import { BookUser, ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
 
-import { Avatar, Button, ColumnSearch, ColumnViewAs, Image } from "@/components"
+import { Avatar, Button, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -22,7 +22,7 @@ const ConsoleSidebarAction: FC<
 	return (
 		<div
 			className={cn(
-				"group mr-auto flex h-8 w-full cursor-pointer flex-row items-center justify-center gap-4 p-4 transition-all duration-200 ease-in-out",
+				"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-4 transition-all duration-200 ease-in-out",
 				className
 			)}
 			{...props}
@@ -61,7 +61,7 @@ export const ConsoleSidebar = () => {
 
 	return (
 		<div className="mr-2 flex h-full w-max flex-row border-r-[1px] border-grayscale-100 bg-white">
-			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
+			<div className={cn("flex h-full w-max flex-col items-center py-4")}>
 				<div className={cn("flex w-full flex-col gap-4 p-4")}>
 					{session && (
 						<button
@@ -187,9 +187,23 @@ export const ConsoleSidebar = () => {
 			</div>
 
 			{(is.viewingAs || is.searching) && (
-				<div className="flex min-w-[380px] flex-col">
-					{is.searching && <ColumnSearch index={0} />}
-					{is.viewingAs && <ColumnViewAs />}
+				<div className="flex border-l-[1px] border-grayscale-100">
+					<div className="m-2 flex min-w-[420px] flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100">
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4 pl-10">
+							<Header
+								label={is.viewingAs ? "View As" : "Search"}
+								size="md"
+								nextPadded={false}
+								nextOnClick={is.viewingAs ? toggleViewingAs : toggleSearching}
+								nextLabel={<X size={14} />}
+							/>
+						</div>
+
+						<div className="h-full">
+							{is.searching && <ColumnSearch index={0} className="px-4" />}
+							{is.viewingAs && <ColumnViewAs />}
+						</div>
+					</div>
 				</div>
 			)}
 		</div>

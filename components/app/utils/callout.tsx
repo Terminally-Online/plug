@@ -3,7 +3,7 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 import { Button } from "@/components/shared"
 import { usePlugs } from "@/contexts"
 import { cn, greenGradientStyle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { useColumns, useSidebar, useSocket } from "@/state"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -26,6 +26,7 @@ const Anonymous: FC<
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
 	const { isAnonymous } = useSocket()
+	const { toggleViewingAs } = useSidebar()
 	const { column, isExternal, navigate } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null
@@ -47,7 +48,7 @@ const Anonymous: FC<
 				description={`To view ${viewing} you must authenticate a wallet or select an account to view as.`}
 				{...props}
 			>
-				<Button variant="secondary" sizing="sm" onClick={() => {}}>
+				<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
 					View As
 				</Button>
 				<Button sizing="sm" onClick={() => navigate({ index, key: VIEW_KEYS.AUTHENTICATE, from: column?.key })}>
@@ -110,6 +111,8 @@ const EmptyAssets: FC<
 		isReceivable: boolean
 	}
 > = ({ index, isEmpty, isViewing, isReceivable, className, ...props }) => {
+	const { toggleViewingAs } = useSidebar()
+
 	if (isEmpty === false) return null
 
 	return (
@@ -128,7 +131,7 @@ const EmptyAssets: FC<
 				{...props}
 			>
 				{index !== MOBILE_INDEX && (
-					<Button variant="secondary" sizing="sm" onClick={() => {}}>
+					<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
 						View As
 					</Button>
 				)}
@@ -149,6 +152,7 @@ const EmptyPlugs: FC<
 	}
 > = ({ index, isEmpty, className, ...props }) => {
 	const { handle } = usePlugs()
+	const { toggleViewingAs } = useSidebar()
 	const { column } = useColumns(index)
 
 	if (!column || isEmpty === false) return null
@@ -169,7 +173,7 @@ const EmptyPlugs: FC<
 				{...props}
 			>
 				{index !== MOBILE_INDEX && (
-					<Button variant="secondary" sizing="sm" onClick={() => {}}>
+					<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
 						View As
 					</Button>
 				)}
