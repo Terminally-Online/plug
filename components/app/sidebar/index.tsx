@@ -1,12 +1,12 @@
 import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { AnimatePresence, motion } from "framer-motion"
-import { ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
+import { motion } from "framer-motion"
+import { Eye, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, X } from "lucide-react"
 
 import { Avatar, ColumnAuthenticate, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cn, useClipboard, useConnect } from "@/lib"
+import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { useSocket } from "@/state"
 import { useSidebar } from "@/state/sidebar"
@@ -32,7 +32,7 @@ const ConsoleSidebarAction: FC<
 					"group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 					isActive && "bg-grayscale-0 hover:bg-white",
 					isPrimary &&
-						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
+					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
 				)}
 			>
 				{icon}
@@ -214,12 +214,15 @@ export const ConsoleSidebar = () => {
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									) : (
+									) : is.viewingAs ? (
 										<Eye
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									)
+									) : <ScanFace
+										size={14}
+										className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+									/>
 								}
 								nextPadded={false}
 								nextOnClick={() => handleActivePane(null)}

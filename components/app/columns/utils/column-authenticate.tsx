@@ -20,6 +20,7 @@ import {
 	useRecentConnectorId
 } from "@/lib"
 import { authenticationAtom, useColumns, walletConnectURIMatrixAtom } from "@/state"
+import { useSession } from "next-auth/react"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -234,6 +235,7 @@ const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 }
 
 export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
+	const { data: session } = useSession()
 	const { account, sign, prove } = useConnect()
 	const { column } = useColumns(index)
 
@@ -241,6 +243,13 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">
+			{session?.user.id === account.address && 
+				<Callout
+					title="You are authenticated."
+					description="You should not be seeing this message. Please refresh the page."
+				/>
+			}
+
 			{authentication.isLoading && (
 				<Callout
 					title="Authentication loading."
@@ -248,7 +257,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 				/>
 			)}
 
-			{account.address && sign.isLoading === false && authentication.isLoading === false && (
+			{session?.user.id !== account.address && account.address && sign.isLoading === false && authentication.isLoading === false && (
 				<Callout
 					title={sign.failureReason ? "Signature error." : "Prove ownership."}
 					description={
