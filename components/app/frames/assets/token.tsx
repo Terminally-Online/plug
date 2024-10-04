@@ -86,7 +86,7 @@ export const TokenFrame: FC<{
 					/>
 				</div>
 			}
-			label=""
+			label={token.name}
 			visible={isFrame}
 			hasChildrenPadding={false}
 			hasOverlay
@@ -109,7 +109,7 @@ export const TokenFrame: FC<{
 							color
 						}}
 					>
-						{token.name}
+					{`$${token.symbol}`}
 					</p>
 				</div>
 				<div
