@@ -23,7 +23,12 @@ const createToggleAction = (key: keyof SidebarState) =>
 		get => get(sidebarAtom)[key],
 		(get, set) => {
 			const current = get(sidebarAtom)
-			set(sidebarAtom, { ...current, [key]: !current[key] })
+			set(sidebarAtom, {
+				...current,
+				[key]: !current[key],
+				...(key === "searching" ? { viewingAs: false } : {}),
+				...(key === "viewingAs" ? { searching: false } : {})
+			})
 		}
 	)
 

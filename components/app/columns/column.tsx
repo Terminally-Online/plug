@@ -208,11 +208,11 @@ export const ConsoleColumn: FC<{
 									<ColumnAuthenticate index={index} />
 								) : key === VIEW_KEYS.ADD ? (
 									<ColumnAddOptions index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.SEARCH ? (
-									<ColumnSearch index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.VIEW_AS ? (
-									<ColumnViewAs />
-								) : key === VIEW_KEYS.DISCOVER ? (
+								) : // ) : key === VIEW_KEYS.SEARCH ? (
+								// 	<ColumnSearch index={index} className="px-4 pt-4" />
+								// ) : key === VIEW_KEYS.VIEW_AS ? (
+								// 	<ColumnViewAs />
+								key === VIEW_KEYS.DISCOVER ? (
 									<PlugsDiscover index={index} className="pt-4" />
 								) : key === VIEW_KEYS.MY_PLUGS ? (
 									<PlugsMine index={index} className="pt-4" />

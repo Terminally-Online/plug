@@ -4,7 +4,7 @@ import { FC, ReactNode } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { BookUser, ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon } from "lucide-react"
 
-import { Avatar, Button, Image } from "@/components"
+import { Avatar, Button, ColumnSearch, ColumnViewAs, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -15,8 +15,10 @@ const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
 		icon: ReactNode
 		isExpanded: boolean
+		isPrimary?: boolean
+		isActive?: boolean
 	}
-> = ({ icon, isExpanded, className, title, ...props }) => {
+> = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => {
 	return (
 		<div
 			className={cn(
@@ -25,7 +27,14 @@ const ConsoleSidebarAction: FC<
 			)}
 			{...props}
 		>
-			<div className="group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0">
+			<div
+				className={cn(
+					"group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
+					isActive && "bg-grayscale-0 hover:bg-white",
+					isPrimary &&
+						"group-hover: bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
+				)}
+			>
 				{icon}
 			</div>
 			<p
@@ -51,126 +60,138 @@ export const ConsoleSidebar = () => {
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	return (
-		<div className="mr-2 flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 bg-white py-4">
-			<div className={cn("flex w-full flex-col gap-4 p-4")}>
-				{session && (
-					<button
-						className="relative mx-4 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
-						onClick={() => handleCopied()}
-					>
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.2 }}
+		<div className="mr-2 flex h-full w-max flex-row border-r-[1px] border-grayscale-100 bg-white">
+			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
+				<div className={cn("flex w-full flex-col gap-4 p-4")}>
+					{session && (
+						<button
+							className="relative mx-4 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
+							onClick={() => handleCopied()}
 						>
-							{avatar ? (
-								<Image
-									src={avatar}
-									alt="ENS Avatar"
-									width={64}
-									height={64}
-									className="h-full w-full rounded-sm"
-								/>
-							) : (
-								<Avatar name={socket?.id ?? ""} />
-							)}
-						</motion.div>
-
-						<AnimatePresence>
-							{copied && (
-								<motion.div
-									className="absolute -bottom-2 -right-2 rounded-full border-[1px] border-grayscale-0 bg-white p-1"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{ opacity: 0 }}
-									transition={{ duration: 0.2 }}
-								>
-									<ClipboardCheck size={14} className="opacity-40" />
-								</motion.div>
-							)}
-						</AnimatePresence>
-					</button>
-				)}
-
-				<ConsoleSidebarAction
-					icon={
-						<Plus
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
-					}
-					title="New Plug"
-					isExpanded={is.expanded}
-					onClick={() => handlePlugs.plug.add({ index: 0 })}
-				/>
-
-				<ConsoleSidebarAction
-					icon={
-						<Search
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
-					}
-					title="Search"
-					isExpanded={is.expanded}
-					onClick={toggleSearching}
-				/>
-
-				<ConsoleSidebarAction
-					icon={
-						<Eye
-							size={14}
-							className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
-					}
-					title="View As"
-					isExpanded={is.expanded}
-					onClick={toggleViewingAs}
-				/>
-			</div>
-
-			<div className="mt-auto flex w-full flex-col items-center gap-4 p-4">
-				<ConsoleSidebarAction
-					icon={
-						<PanelRightOpen
-							size={14}
-							className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-						/>
-					}
-					title="Collapse"
-					isExpanded={is.expanded}
-					onClick={toggleExpanded}
-				/>
-
-				{account.address && (
-					<>
-						<div className="h-[1px] w-full bg-grayscale-100" />
-						<div
-							className="group flex cursor-pointer flex-row items-center gap-4 px-6"
-							onClick={() => disconnect()}
-						>
-							<Button
-								variant="secondary"
-								onClick={() => (is.expanded ? disconnect() : {})}
-								sizing="sm"
-								className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.2 }}
 							>
-								<LogOut
-									size={14}
-									className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-								/>
-							</Button>
+								{avatar ? (
+									<Image
+										src={avatar}
+										alt="ENS Avatar"
+										width={64}
+										height={64}
+										className="h-full w-full rounded-sm"
+									/>
+								) : (
+									<Avatar name={socket?.id ?? ""} />
+								)}
+							</motion.div>
 
-							{is.expanded && (
-								<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
-									Logout
-								</p>
-							)}
-						</div>
-					</>
-				)}
+							<AnimatePresence>
+								{copied && (
+									<motion.div
+										className="absolute -bottom-2 -right-2 rounded-full border-[1px] border-grayscale-0 bg-white p-1"
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.2 }}
+									>
+										<ClipboardCheck size={14} className="opacity-40" />
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</button>
+					)}
+
+					<ConsoleSidebarAction
+						icon={
+							<Plus
+								size={14}
+								className="transition-all duration-200 ease-in-out group-hover:opacity-100"
+							/>
+						}
+						title="New Plug"
+						isExpanded={is.expanded}
+						isPrimary={true}
+						onClick={() => handlePlugs.plug.add({ index: 0 })}
+					/>
+
+					<ConsoleSidebarAction
+						icon={
+							<Search
+								size={14}
+								className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+							/>
+						}
+						title="Search"
+						isExpanded={is.expanded}
+						isActive={is.searching}
+						onClick={toggleSearching}
+					/>
+
+					<ConsoleSidebarAction
+						icon={
+							<Eye
+								size={14}
+								className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+							/>
+						}
+						title="View As"
+						isExpanded={is.expanded}
+						isActive={is.viewingAs}
+						onClick={toggleViewingAs}
+					/>
+				</div>
+
+				<div className="mt-auto flex w-full flex-col items-center gap-4 p-4">
+					<ConsoleSidebarAction
+						icon={
+							<PanelRightOpen
+								size={14}
+								className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+							/>
+						}
+						title="Collapse"
+						isExpanded={is.expanded}
+						onClick={toggleExpanded}
+					/>
+
+					{account.address && (
+						<>
+							<div className="h-[1px] w-full bg-grayscale-100" />
+							<div
+								className="group flex cursor-pointer flex-row items-center gap-4 px-6"
+								onClick={() => disconnect()}
+							>
+								<Button
+									variant="secondary"
+									onClick={() => (is.expanded ? disconnect() : {})}
+									sizing="sm"
+									className="rounded-sm p-1 outline-none group-hover:bg-grayscale-100 group-hover:text-opacity-100"
+								>
+									<LogOut
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								</Button>
+
+								{is.expanded && (
+									<p className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-80">
+										Logout
+									</p>
+								)}
+							</div>
+						</>
+					)}
+				</div>
 			</div>
+
+			{(is.viewingAs || is.searching) && (
+				<div className="flex min-w-[380px] flex-col">
+					{is.searching && <ColumnSearch index={0} />}
+					{is.viewingAs && <ColumnViewAs />}
+				</div>
+			)}
 		</div>
 	)
 }
