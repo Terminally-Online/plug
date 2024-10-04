@@ -44,7 +44,6 @@ const nextConfig = {
 	poweredByHeader: false,
 	trailingSlash: true,
 	images: {
-		domains: [""],
 		remotePatterns,
 		dangerouslyAllowSVG: true,
 		contentDispositionType: "attachment",
@@ -69,7 +68,26 @@ const nextConfig = {
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
 		return config
+	},
+	experimental: {
+		optimizePackageImports: [
+			// "./components",
+			// "./lib",
+			// "./state",
+			// "./server",
+			// "framer-motion",
+			// "viem",
+			// "viem/chains",
+			// "viem/ens",
+			// "viem/siwe",
+			// "wagmi",
+			// "lucide-react"
+		]
 	}
 }
 
-module.exports = nextConfig
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+	enabled: process.env.ANALYZE === "true"
+})
+
+module.exports = withBundleAnalyzer(nextConfig)
