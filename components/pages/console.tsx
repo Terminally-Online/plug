@@ -30,16 +30,16 @@ export const ConsolePage = () => {
 	const { md } = useMediaQuery()
 	const { socket } = useSocket()
 
-	useEffect(() => {
-		if (socket) return
+	// useEffect(() => {
+	// 	if (socket) return
 
-		signIn("credentials", {
-			message: "0x0",
-			signature: "0x0",
-			chainId: 0,
-			redirect: false
-		})
-	}, [socket])
+	// 	signIn("credentials", {
+	// 		message: "0x0",
+	// 		signature: "0x0",
+	// 		chainId: 0,
+	// 		redirect: false
+	// 	})
+	// }, [socket])
 
 	if (!socket)
 		return (

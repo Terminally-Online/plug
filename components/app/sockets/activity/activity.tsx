@@ -189,7 +189,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	}, [session, isAnonymous, isExternal])
 
 	return (
-		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
 			<Animate.List>
 				{visibleActivities.map((activity, activityIndex) => (
 					<Animate.ListItem key={activityIndex}>
