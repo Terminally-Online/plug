@@ -13,8 +13,8 @@ export const formatFloat = (value: number) => parseFloat(formatNumber(value).toS
 export const formatChainName = (name: string) =>
 	name.replace("Mainnet", "").replace("Testnet", "").replace("OP", "Optimism")
 
-export const formatAddress = (address: string) => {
-	return `${address.slice(0, 6)}...${address.slice(-4)}`
+export const formatAddress = (address: string | `0x${string}`, characters = 4) => {
+	return `${address.slice(0, characters)}...${address.slice(-characters)}`
 }
 
 export const formatBalance = (value: string | bigint | bigint | undefined, decimals: number | undefined) => {

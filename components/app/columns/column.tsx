@@ -8,8 +8,6 @@ import {
 	Avatar,
 	Button,
 	ColumnAddOptions,
-	ColumnAuthenticate,
-	ColumnProfile,
 	ConsoleAdmin,
 	Header,
 	Image,
@@ -97,7 +95,7 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											<Button variant="none" onClick={() => {}} className="rounded-sm p-1">
+											<Button variant="none" onClick={() => { }} className="rounded-sm p-1">
 												<Grip
 													size={14}
 													className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -198,40 +196,28 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							{/* TODO(#416): Have the column.frame check to disable the scroll when a frame is open. Need a better solution. */}
 							<div className="h-full overflow-y-scroll">
-								{
-									// key === VIEW_KEYS.AUTHENTICATE ? (
-									// <ColumnAuthenticate index={index} />
-									//) :
-									key === VIEW_KEYS.ADD ? (
-										<ColumnAddOptions index={index} className="px-4 pt-4" />
-									) : // ) : key === VIEW_KEYS.SEARCH ? (
-									// 	<ColumnSearch index={index} className="px-4 pt-4" />
-									// ) : key === VIEW_KEYS.VIEW_AS ? (
-									// 	<ColumnViewAs />
-									key === VIEW_KEYS.DISCOVER ? (
-										<PlugsDiscover index={index} className="pt-4" />
-									) : key === VIEW_KEYS.MY_PLUGS ? (
-										<PlugsMine index={index} className="pt-4" />
-									) : key === VIEW_KEYS.PLUG ? (
-										<Plug index={index} item={item} from={from} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.ACTIVITY ? (
-										<SocketActivity index={index} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.TOKENS ? (
-										<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.COLLECTIBLES ? (
-										<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.POSITIONS ? (
-										<SocketPositionList index={index} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.ADMIN ? (
-										<ConsoleAdmin index={index} className="px-4 pt-4" />
-									) : key === VIEW_KEYS.PROFILE ? (
-										<ColumnProfile className="px-4 py-4" />
-									) : (
-										<></>
-									)
-								}
+								{key === VIEW_KEYS.ADD ? (
+									<ColumnAddOptions index={index} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.DISCOVER ? (
+									<PlugsDiscover index={index} className="pt-4" />
+								) : key === VIEW_KEYS.MY_PLUGS ? (
+									<PlugsMine index={index} className="pt-4" />
+								) : key === VIEW_KEYS.PLUG ? (
+									<Plug index={index} item={item} from={from} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.ACTIVITY ? (
+									<SocketActivity index={index} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.TOKENS ? (
+									<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.COLLECTIBLES ? (
+									<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.POSITIONS ? (
+									<SocketPositionList index={index} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.ADMIN ? (
+									<ConsoleAdmin index={index} className="px-4 pt-4" />
+								) : (
+									<></>
+								)}
 							</div>
 						</div>
 

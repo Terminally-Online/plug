@@ -4,7 +4,7 @@ import { FC, ReactNode, useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Eye, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, User, X } from "lucide-react"
 
-import { Avatar, ColumnAuthenticate, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
+import { Avatar, ColumnAuthenticate, ColumnProfile, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -80,6 +80,7 @@ const ConsoleSidebarPane = () => {
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
 	}, [isResizing, resize])
+
 	return (
 		<>
 			{(is.authenticating || is.viewingAs || is.searching) && (
@@ -124,7 +125,7 @@ const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full">
-							{is.authenticating && session?.user.id && <>This is your profile</>}
+							{is.authenticating && session?.user.id && <ColumnProfile index={0} />}
 							{is.authenticating && session?.user.id.startsWith("0x") === false && <ColumnAuthenticate index={0} />}
 							{is.searching && <ColumnSearch index={0} className="px-4" />}
 							{is.viewingAs && <ColumnViewAs />}
