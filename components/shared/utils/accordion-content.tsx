@@ -11,7 +11,7 @@ export const AccordionContent: FC<Props> = ({ expanded, className, style, childr
 
 	const isClient = useClient()
 
-	if (!isClient|| !expanded) return null
+	if (!isClient || !expanded) return null
 
 	return (
 		<span

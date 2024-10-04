@@ -69,7 +69,7 @@ export const Frame: FC<Props> = ({
 							index !== -1 && "rounded-b-lg"
 						)}
 					>
-						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 px-6 py-4 bg-white">
+						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 bg-white px-6 py-4">
 							{handleBack && (
 								<Button variant="secondary" onClick={handleBack} className="mr-2 h-min rounded-sm p-1">
 									<ChevronLeft size={14} />

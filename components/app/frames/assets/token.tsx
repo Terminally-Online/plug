@@ -109,7 +109,7 @@ export const TokenFrame: FC<{
 							color
 						}}
 					>
-					{`$${token.symbol}`}
+						{`$${token.symbol}`}
 					</p>
 				</div>
 				<div
