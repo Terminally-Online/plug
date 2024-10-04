@@ -82,7 +82,7 @@ export const SocketCollectionList: FC<
 				index={index}
 				isEmpty={!isAnonymous && search === "" && collectibles.length === 0}
 				isViewing="collectibles"
-				isReceivable={false}
+				isReceivable={true}
 			/>
 		</div>
 	)
