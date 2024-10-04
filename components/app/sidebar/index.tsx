@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
-import { Eye, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, X } from "lucide-react"
+import { Eye, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, User, X } from "lucide-react"
 
 import { Avatar, ColumnAuthenticate, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
@@ -32,7 +32,7 @@ const ConsoleSidebarAction: FC<
 					"group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 					isActive && "bg-grayscale-0 hover:bg-white",
 					isPrimary &&
-					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
+						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
 				)}
 			>
 				{icon}
@@ -49,25 +49,11 @@ const ConsoleSidebarAction: FC<
 	)
 }
 
-export const ConsoleSidebar = () => {
+const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { account } = useConnect()
-	const { disconnect } = useDisconnect(true)
 	const { data: session } = useSession()
-
-	const { avatar, socket } = useSocket()
-	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
-	const {
-		is,
-		width,
-		handleActivePane,
-		toggleExpanded,
-		toggleAuthenticating,
-		toggleSearching,
-		toggleViewingAs,
-		resize
-	} = useSidebar()
+	const { is, width, handleActivePane, resize } = useSidebar()
 
 	const [isResizing, setIsResizing] = useState(false)
 
@@ -94,6 +80,80 @@ export const ConsoleSidebar = () => {
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
 	}, [isResizing, resize])
+	return (
+		<>
+			{(is.authenticating || is.viewingAs || is.searching) && (
+				<div ref={resizeRef} className="flex">
+					<div
+						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
+						style={{
+							width: `${width}px`
+						}}
+					>
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
+							<Header
+								label={is.viewingAs ? "View As" : is.searching ? "Search" : session?.user.id ? "Profile" : "Login"}
+								size="md"
+								icon={
+									is.searching ? (
+										<SearchIcon
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									) : is.viewingAs ? (
+										<Eye
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									) : is.authenticating && session?.user.id ?(
+										<User
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									): (
+										<ScanFace
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									)
+								}
+								nextPadded={false}
+								nextOnClick={() => handleActivePane(null)}
+								nextLabel={<X size={14} />}
+							/>
+						</div>
+
+						<div className="h-full">
+							{is.authenticating && session?.user.id && <>This is your profile</>}
+							{is.authenticating && session?.user.id.startsWith("0x") === false && <ColumnAuthenticate index={0} />}
+							{is.searching && <ColumnSearch index={0} className="px-4" />}
+							{is.viewingAs && <ColumnViewAs />}
+						</div>
+					</div>
+
+					<div
+						className="h-full cursor-col-resize px-2"
+						onMouseDown={e => {
+							e.preventDefault()
+							setIsResizing(true)
+						}}
+					>
+						<div className="h-full w-[1px] bg-grayscale-100" />
+					</div>
+				</div>
+			)}
+		</>
+	)
+}
+
+export const ConsoleSidebar = () => {
+	const { account } = useConnect()
+	const { disconnect } = useDisconnect(true)
+	const { data: session } = useSession()
+
+	const { avatar, socket } = useSocket()
+	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
+	const { is, toggleExpanded, toggleAuthenticating, toggleSearching, toggleViewingAs } = useSidebar()
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
@@ -196,58 +256,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			{(is.authenticating || is.viewingAs || is.searching) && (
-				<div ref={resizeRef} className="flex">
-					<div
-						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
-						style={{
-							width: `${width}px`
-						}}
-					>
-						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
-							<Header
-								label={is.viewingAs ? "View As" : is.searching ? "Search" : "Login"}
-								size="md"
-								icon={
-									is.searching ? (
-										<SearchIcon
-											size={14}
-											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-										/>
-									) : is.viewingAs ? (
-										<Eye
-											size={14}
-											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-										/>
-									) : <ScanFace
-										size={14}
-										className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-									/>
-								}
-								nextPadded={false}
-								nextOnClick={() => handleActivePane(null)}
-								nextLabel={<X size={14} />}
-							/>
-						</div>
-
-						<div className="h-full">
-							{is.authenticating && <ColumnAuthenticate index={0} />}
-							{is.searching && <ColumnSearch index={0} className="px-4" />}
-							{is.viewingAs && <ColumnViewAs />}
-						</div>
-					</div>
-
-					<div
-						className="h-full cursor-col-resize px-2"
-						onMouseDown={e => {
-							e.preventDefault()
-							setIsResizing(true)
-						}}
-					>
-						<div className="h-full w-[1px] bg-grayscale-100" />
-					</div>
-				</div>
-			)}
+			<ConsoleSidebarPane />
 		</div>
 	)
 }
