@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { BookUser, ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
+import { BookUser, ClipboardCheck, Eye, Grip, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
 
 import { Avatar, Button, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
@@ -60,7 +60,7 @@ export const ConsoleSidebar = () => {
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
 
 	return (
-		<div className="flex h-full w-max flex-row bg-transparent">
+		<div className="flex h-full w-max select-none flex-row bg-transparent">
 			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
 				<div className={cn("flex w-full flex-col gap-4 p-4")}>
 					{session && (
@@ -175,10 +175,23 @@ export const ConsoleSidebar = () => {
 			{(is.viewingAs || is.searching) && (
 				<div className="flex border-r-[1px] border-grayscale-100">
 					<div className="m-2 flex min-w-[420px] flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100">
-						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4 pl-10">
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
 							<Header
 								label={is.viewingAs ? "View As" : "Search"}
 								size="md"
+								icon={
+									is.searching ? (
+										<SearchIcon
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									) : (
+										<Eye
+											size={14}
+											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
+										/>
+									)
+								}
 								nextPadded={false}
 								nextOnClick={is.viewingAs ? toggleViewingAs : toggleSearching}
 								nextLabel={<X size={14} />}
