@@ -10,8 +10,6 @@ import {
 	ColumnAddOptions,
 	ColumnAuthenticate,
 	ColumnProfile,
-	ColumnSearch,
-	ColumnViewAs,
 	ConsoleAdmin,
 	Header,
 	Image,

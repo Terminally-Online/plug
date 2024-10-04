@@ -19,7 +19,7 @@ export const ConsoleColumnRow = () => {
 	}
 
 	return (
-		<div className="ml-2 flex h-full flex-row overflow-x-auto overflow-y-hidden">
+		<div className="flex h-full flex-row overflow-x-auto overflow-y-hidden">
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (

@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, ReactNode } from "react"
+import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
@@ -50,14 +50,42 @@ const ConsoleSidebarAction: FC<
 }
 
 export const ConsoleSidebar = () => {
+	const resizeRef = useRef<HTMLDivElement>(null)
+
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { data: session } = useSession()
 
 	const { avatar, socket } = useSocket()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
-	const { is, toggleExpanded, toggleSearching, toggleViewingAs } = useSidebar()
+	const { is, width, toggleExpanded, toggleSearching, toggleViewingAs, resize } = useSidebar()
 	const { copied, handleCopied } = useClipboard(socket?.socketAddress ?? "")
+
+	const [isResizing, setIsResizing] = useState(false)
+
+	useEffect(() => {
+		const getBoundedWidth = (width: number) => Math.min(Math.max(width, 380), 620)
+
+		const handleMouseMove = (e: MouseEvent) => {
+			if (!resizeRef.current || !isResizing) return
+
+			resize(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left))
+		}
+
+		const handleMouseUp = () => {
+			setIsResizing(false)
+		}
+
+		if (isResizing) {
+			window.addEventListener("mousemove", handleMouseMove)
+			window.addEventListener("mouseup", handleMouseUp)
+		}
+
+		return () => {
+			window.removeEventListener("mousemove", handleMouseMove)
+			window.removeEventListener("mouseup", handleMouseUp)
+		}
+	}, [isResizing, resize])
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
@@ -175,8 +203,13 @@ export const ConsoleSidebar = () => {
 			</div>
 
 			{(is.viewingAs || is.searching) && (
-				<div className="flex border-r-[1px] border-grayscale-100">
-					<div className="m-2 flex min-w-[420px] flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100">
+				<div ref={resizeRef} className="flex">
+					<div
+						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
+						style={{
+							width: `${width}px`
+						}}
+					>
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
 							<Header
 								label={is.viewingAs ? "View As" : "Search"}
@@ -204,6 +237,16 @@ export const ConsoleSidebar = () => {
 							{is.searching && <ColumnSearch index={0} className="px-4" />}
 							{is.viewingAs && <ColumnViewAs />}
 						</div>
+					</div>
+
+					<div
+						className="h-full cursor-col-resize px-2"
+						onMouseDown={e => {
+							e.preventDefault()
+							setIsResizing(true)
+						}}
+					>
+						<div className="h-full w-[1px] bg-grayscale-100" />
 					</div>
 				</div>
 			)}
