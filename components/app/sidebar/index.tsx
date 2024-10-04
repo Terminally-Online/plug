@@ -2,13 +2,13 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { BookUser, ClipboardCheck, Eye, Grip, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
+import { ClipboardCheck, Eye, LogOut, PanelRightOpen, Plus, Search, SearchIcon, X } from "lucide-react"
 
-import { Avatar, Button, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
+import { Avatar, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cn, useClipboard, useConnect, VIEW_KEYS } from "@/lib"
+import { cn, useClipboard, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { useColumns, useSocket } from "@/state"
+import { useSocket } from "@/state"
 import { useSidebar } from "@/state/sidebar"
 
 const ConsoleSidebarAction: FC<
@@ -145,6 +145,7 @@ export const ConsoleSidebar = () => {
 
 				<div className="mt-auto flex w-full flex-col items-center gap-4 p-4">
 					<ConsoleSidebarAction
+						className={cn(is.expanded && "pr-16")}
 						icon={
 							<PanelRightOpen
 								size={14}
@@ -158,6 +159,7 @@ export const ConsoleSidebar = () => {
 
 					{account.address && (
 						<ConsoleSidebarAction
+							className={cn(is.expanded && "pr-16")}
 							icon={
 								<LogOut
 									size={14}
@@ -166,7 +168,7 @@ export const ConsoleSidebar = () => {
 							}
 							title="Logout"
 							isExpanded={is.expanded}
-							onClick={toggleExpanded}
+							onClick={() => disconnect()}
 						/>
 					)}
 				</div>
