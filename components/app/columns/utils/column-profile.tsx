@@ -207,14 +207,16 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	}, [])
 
 	const canFeed = useMemo(() => {
-		if (!socket && !feed) return
-		const lastFed = Number(
-			feed?.lastFeedAt?.toISOString() ??
-				socket?.identity?.companion?.lastFeedAt?.toISOString() ??
-				new Date().toISOString()
+		if (!socket && !feed) return false
+		if (socket?.identity?.companion?.lastFeedAt === null || (feed && feed.lastFeedAt === null)) return true
+
+		return (
+			Number(new Date().toISOString()) -
+				Number(
+					feed?.lastFeedAt?.toISOString() ?? socket?.identity?.companion?.lastFeedAt?.toISOString() ?? "0"
+				) >=
+			24 * 60 * 60 * 1000
 		)
-		const timeSinceLastFeed = Number(new Date().toISOString()) - lastFed
-		return timeSinceLastFeed >= 24 * 60 * 60 * 1000
 	}, [socket, feed])
 
 	if (!socket || !session?.user.id) return null
@@ -240,6 +242,9 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 						</>
 					)}
 				</div>
+
+				<pre className="text-[12px]">{JSON.stringify(socket, null, 2)}</pre>
+				<p>{canFeed ? "canFeed" : "cannotFeed"}</p>
 
 				<div className="relative flex w-full flex-col">
 					<p className="mr-auto text-lg font-bold">
