@@ -60,8 +60,8 @@ importers:
         specifier: 23.15.1
         version: 23.15.1
       jotai:
-        specifier: ^2.9.3
-        version: 2.9.3(@types/react@18.3.11)(react@18.3.1)
+        specifier: ^2.10.0
+        version: 2.10.0(@types/react@18.3.11)(react@18.3.1)
       lucide-react:
         specifier: ^0.441.0
         version: 0.441.0(react@18.3.1)
@@ -4087,8 +4087,8 @@ packages:
   jose@4.15.9:
     resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
 
-  jotai@2.9.3:
-    resolution: {integrity: sha512-IqMWKoXuEzWSShjd9UhalNsRGbdju5G2FrqNLQJT+Ih6p41VNYe2sav5hnwQx4HJr25jq9wRqvGSWGviGG6Gjw==}
+  jotai@2.10.0:
+    resolution: {integrity: sha512-8W4u0aRlOIwGlLQ0sqfl/c6+eExl5D8lZgAUolirZLktyaj4WnxO/8a0HEPmtriQAB6X5LMhXzZVmw02X0P0qQ==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=17.0.0'
@@ -11443,7 +11443,7 @@ snapshots:
 
   jose@4.15.9: {}
 
-  jotai@2.9.3(@types/react@18.3.11)(react@18.3.1):
+  jotai@2.10.0(@types/react@18.3.11)(react@18.3.1):
     optionalDependencies:
       '@types/react': 18.3.11
       react: 18.3.1
