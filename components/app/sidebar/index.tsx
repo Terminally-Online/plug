@@ -133,7 +133,7 @@ const ConsoleSidebarPane = () => {
 					</div>
 
 					<div
-						className="h-full cursor-col-resize px-2"
+						className="h-full cursor-col-resize pl-2"
 						onMouseDown={e => {
 							e.preventDefault()
 							setIsResizing(true)

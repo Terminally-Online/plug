@@ -3,11 +3,10 @@ import { AnimatePresence } from "framer-motion"
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
-import { cn, MOBILE_INDEX } from "@/lib"
-import { useColumns, useSidebar } from "@/state"
+import { MOBILE_INDEX } from "@/lib"
+import { useColumns } from "@/state"
 
 export const ConsoleColumnRow = () => {
-	const { is } = useSidebar()
 	const { columns, move } = useColumns()
 
 	const onDragEnd = (result: DropResult) => {
@@ -20,12 +19,7 @@ export const ConsoleColumnRow = () => {
 	}
 
 	return (
-		<div
-			className={cn(
-				"flex h-full flex-row overflow-x-auto overflow-y-hidden",
-				(is.authenticating || is.searching || is.viewingAs) === false && "ml-2"
-			)}
-		>
+		<div className="flex h-full flex-row overflow-x-auto overflow-y-hidden">
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (

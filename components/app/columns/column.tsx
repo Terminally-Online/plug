@@ -68,7 +68,7 @@ export const ConsoleColumn: FC<{
 	}, [index, isResizing, resize])
 
 	return (
-		<div className="relative select-none">
+		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
 			<Draggable draggableId={`${index}-${key}`} index={index}>
 				{(provided, snapshot) => (
 					<div
