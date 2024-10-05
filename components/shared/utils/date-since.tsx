@@ -2,7 +2,7 @@ import { FC, PropsWithChildren, useEffect, useState } from "react"
 
 import { Counter } from "@/components"
 
-const getTimeSince = (date: Date) => {
+export const getTimeSince = (date: Date) => {
 	const now = new Date()
 	const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
@@ -34,10 +34,9 @@ const getTimeSince = (date: Date) => {
 	return { interval: Math.floor(seconds), unit: "s" }
 }
 
-export const DateSince: FC<{ date: Date } & PropsWithChildren & React.HTMLProps<HTMLParagraphElement>> = ({
-	date,
-	...props
-}) => {
+export const DateSince: FC<
+	{ date: Date; ago?: boolean } & PropsWithChildren & React.HTMLProps<HTMLParagraphElement>
+> = ({ date, ago = true, ...props }) => {
 	const [timeSince, setTimeSince] = useState(getTimeSince(date))
 
 	useEffect(() => {
@@ -53,7 +52,8 @@ export const DateSince: FC<{ date: Date } & PropsWithChildren & React.HTMLProps<
 			<span>
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>
-			{timeSince.unit} ago
+			{timeSince.unit}
+			{ago && <>ago</>}
 		</p>
 	)
 }

@@ -29,6 +29,5 @@ export const SOCKET_BASE_INCLUDE = {
 } as const
 
 export const SOCKET_BASE_QUERY = {
-	include: SOCKET_BASE_INCLUDE,
-	omit: { createdAt: true, updatedAt: true }
+	include: SOCKET_BASE_INCLUDE
 }

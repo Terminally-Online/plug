@@ -6,7 +6,7 @@ import { Carrot, Clock, Heart, PawPrintIcon } from "lucide-react"
 
 import { api } from "@/server/client"
 
-import { Avatar, Button, Counter, Image } from "@/components"
+import { Avatar, Button, Counter, DateSince, Image } from "@/components"
 import { cn, formatAddress, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state"
 
@@ -297,7 +297,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					<p className="flex flex-row gap-2 font-bold opacity-40">
 						<Clock size={24} className="opacity-40" />
 						Age:
-						<Counter count={feed?.feedCount ?? socket?.identity?.companion?.feedCount ?? 0} />
+						<DateSince date={socket?.createdAt ?? new Date()} ago={false} />
 					</p>
 				</div>
 			</div>
