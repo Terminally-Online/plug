@@ -189,7 +189,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 
 	const feedMutation = api.socket.companion.feed.useMutation({
 		onMutate: () => {
-			setTimeSinceFeed(0) // Reset the time since feed to 0 onMutate
+			setTimeSinceFeed(0)
 		},
 		onSuccess: data => {
 			setTreatsAnimation({
@@ -226,7 +226,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	)
 
 	const [hours, minutes, seconds] = useMemo(() => {
-		const timeUntilFeed = Math.max(24 * 60 * 60 * 1000 - timeSinceFeed,0) / 1000 // ensure timeUntilFeed is not negative
+		const timeUntilFeed = Math.max(24 * 60 * 60 * 1000 - timeSinceFeed,0) / 1000
 
 		return [
 			String(Math.floor(timeUntilFeed / 3600)).padStart(2, "0"),
