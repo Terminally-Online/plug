@@ -42,7 +42,7 @@
 		"blockies-react-svg": "^0.0.13",
 		"boring-avatars": "^1.10.2",
 		"clsx": "^2.1.1",
-		"framer-motion": "^11.5.4",
+		"framer-motion": "^11.11.1",
 		"i18next": "23.15.1",
 		"jotai": "^2.9.3",
 		"lucide-react": "^0.441.0",
