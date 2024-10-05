@@ -23,5 +23,4 @@ self.addEventListener('fetch', (event: FetchEvent) => {
       .then((response) => response || fetch(event.request))
   );
 });
-
 export {};

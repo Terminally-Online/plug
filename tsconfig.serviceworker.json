@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["webworker", "es2018"],
+    "moduleResolution": "node",
+    "strict": true,
+    "outDir": "public",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["public/service-worker.ts"],
+  "exclude": ["node_modules"]
+}
