@@ -10,6 +10,10 @@ import { GTM_ID, NextPageWithLayout } from "@/lib"
 
 import "./styles.css"
 
+import { useEffect } from "react"
+import { registerServiceWorker } from "@/lib/pwa"
+import PWAPrompt from "@/components/PWAPrompt"
+
 const satoshi = localFont({
 	src: [
 		{ path: "../assets/Satoshi-Light.ttf", weight: "300" },
