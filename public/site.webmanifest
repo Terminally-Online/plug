@@ -15,5 +15,9 @@
 	],
 	"theme_color": "#00e100",
 	"background_color": "#00e100",
-	"display": "standalone"
+	"display": "standalone",
+	"start_url": "/",
+	"scope": "/",
+	"description": "Automate your transactions on every popular Ethereum based blockchain.",
+	"orientation": "portrait-primary"
 }
