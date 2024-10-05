@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const PWAPrompt: React.FC = () => {
+const PwaPrompt: React.FC = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
@@ -62,4 +62,4 @@ const PWAPrompt: React.FC = () => {
   return null;
 };
 
-export default PWAPrompt;
+export default PwaPrompt;

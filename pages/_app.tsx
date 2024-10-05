@@ -12,7 +12,7 @@ import "./styles.css"
 
 import { useEffect } from "react"
 import { registerServiceWorker } from "@/lib/pwa"
-import PWAPrompt from "@/components/PWAPrompt"
+import PwaPrompt from "@/components/pwaPrompt"
 
 const satoshi = localFont({
 	src: [
@@ -63,7 +63,7 @@ const PlugApp: FC<
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}
-			<PWAPrompt />
+			<PwaPrompt />
 		</>
 	)
 }
