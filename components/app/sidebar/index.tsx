@@ -29,26 +29,36 @@ const ConsoleSidebarAction: FC<
 		>
 			<div
 				className={cn(
-					"relative group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
+					"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 					isActive && "bg-grayscale-0 hover:bg-white",
 					isPrimary &&
-					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
+						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
 				)}
 			>
-				{isPrimary && <>
-					<div className={cn(
-						"absolute inset-0 shadow-[inset_-2px_0_2px_0_rgba(255,255,255,.3)] rounded-sm",
-					)} />
-					<div className={cn(
-						"absolute inset-0 shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)] rounded-sm",
-					)} />
-					<div className={cn(
-						"absolute inset-0 shadow-[inset_0_2px_2px_0_rgba(255,255,255,.3)] rounded-sm",
-					)} />
-					<div className={cn(
-						"absolute inset-0 shadow-[inset_0_-2px_2px_0_rgba(255,255,255,.3)] rounded-sm",
-					)} />
-				</>}
+				{isPrimary && (
+					<>
+						<div
+							className={cn(
+								"absolute inset-0 rounded-sm shadow-[inset_-2px_0_2px_0_rgba(255,255,255,.3)]"
+							)}
+						/>
+						<div
+							className={cn(
+								"absolute inset-0 rounded-sm shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)]"
+							)}
+						/>
+						<div
+							className={cn(
+								"absolute inset-0 rounded-sm shadow-[inset_0_2px_2px_0_rgba(255,255,255,.3)]"
+							)}
+						/>
+						<div
+							className={cn(
+								"absolute inset-0 rounded-sm shadow-[inset_0_-2px_2px_0_rgba(255,255,255,.3)]"
+							)}
+						/>
+					</>
+				)}
 
 				{icon}
 			</div>
@@ -109,7 +119,15 @@ const ConsoleSidebarPane = () => {
 					>
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
 							<Header
-								label={is.viewingAs ? "View As" : is.searching ? "Search" : session?.user.id ? "Profile" : "Login"}
+								label={
+									is.viewingAs
+										? "View As"
+										: is.searching
+											? "Search"
+											: session?.user.id
+												? "Profile"
+												: "Login"
+								}
 								size="md"
 								icon={
 									is.searching ? (
@@ -141,15 +159,17 @@ const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full">
-							{is.searching
-								? <ColumnSearch index={0} className="px-4" />
-								: is.viewingAs ? <ColumnViewAs />
-									: session?.user.id.startsWith("0x")
-										? <ColumnProfile index={0} />
-										: session?.user.id.startsWith("0x") === false
-											? <ColumnAuthenticate index={0} />
-											: <></>
-							}
+							{is.searching ? (
+								<ColumnSearch index={0} className="px-4" />
+							) : is.viewingAs ? (
+								<ColumnViewAs />
+							) : session?.user.id.startsWith("0x") ? (
+								<ColumnProfile index={0} />
+							) : session?.user.id.startsWith("0x") === false ? (
+								<ColumnAuthenticate index={0} />
+							) : (
+								<></>
+							)}
 						</div>
 					</div>
 

@@ -10,6 +10,7 @@ import { z } from "zod"
 import { SOCKET_BASE_QUERY } from "@/lib"
 
 import { balances } from "./balances"
+import { companion } from "./companion"
 
 const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000 // 24 hours
@@ -57,6 +58,13 @@ export const socket = createTRPCRouter({
 								name,
 								avatar
 							}
+						},
+						companion: {
+							create: {
+								name: "New Companion",
+								feedCount: 0,
+								treatsFed: 0
+							}
 						}
 					}
 				}
@@ -74,6 +82,16 @@ export const socket = createTRPCRouter({
 										avatar
 									}
 								}
+							},
+							companion: {
+								connectOrCreate: {
+									where: { socketId: ctx.session.address },
+									create: {
+										name: "New Companion",
+										feedCount: 0,
+										treatsFed: 0
+									}
+								}
 							}
 						},
 						update: {
@@ -81,6 +99,17 @@ export const socket = createTRPCRouter({
 								update: {
 									where: { socketId: ctx.session.address },
 									data: { name, avatar, updatedAt: new Date() }
+								}
+							},
+							companion: {
+								upsert: {
+									where: { socketId: ctx.session.address },
+									create: {
+										name: "New Companion",
+										feedCount: 0,
+										treatsFed: 0
+									},
+									update: {}
 								}
 							}
 						}
@@ -158,5 +187,6 @@ export const socket = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
-	balances
+	balances,
+	companion
 })

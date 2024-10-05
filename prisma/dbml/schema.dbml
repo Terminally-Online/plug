@@ -28,6 +28,17 @@ Table ENS {
   socketId String [pk]
 }
 
+Table Companion {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  lastFeedAt DateTime
+  name String [not null]
+  feedCount Int [not null, default: 0]
+  treatsFed Int [not null, default: 0]
+  identity SocketIdentity [not null]
+  socketId String [pk]
+}
+
 Table SocketIdentity {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -36,6 +47,7 @@ Table SocketIdentity {
   farcaster FarcasterUser
   farcasterId String [unique]
   ens ENS
+  companion Companion
 }
 
 Table UserSocket {
@@ -254,6 +266,8 @@ Table FarcasterFollows {
 }
 
 Ref: ENS.socketId - SocketIdentity.socketId [delete: Cascade]
+
+Ref: Companion.socketId - SocketIdentity.socketId [delete: Cascade]
 
 Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 

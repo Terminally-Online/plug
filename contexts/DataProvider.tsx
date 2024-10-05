@@ -6,7 +6,9 @@ import { useSetAtom } from "jotai"
 
 import { socketModelAtom } from "@/state"
 
-export const DataContext = createContext({})
+export const DataContext = createContext({
+	refetch: () => {}
+})
 
 /**
  * This is the data layer for the application. It is implemented as a context for simplicity
@@ -16,9 +18,17 @@ export const DataContext = createContext({})
 export const DataProvider: FC<PropsWithChildren> = ({ children }) => {
 	const setSocket = useSetAtom(socketModelAtom)
 
-	api.socket.get.useQuery(undefined, {
+	const { refetch } = api.socket.get.useQuery(undefined, {
 		onSuccess: data => setSocket(data)
 	})
 
-	return <DataContext.Provider value={{}}>{children}</DataContext.Provider>
+	return (
+		<DataContext.Provider
+			value={{
+				refetch
+			}}
+		>
+			{children}
+		</DataContext.Provider>
+	)
 }

@@ -1,8 +1,10 @@
 import { useSession } from "next-auth/react"
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useEffect, useMemo, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Heart, PawPrintIcon } from "lucide-react"
+import { Carrot, Clock, Heart, PawPrintIcon } from "lucide-react"
+
+import { api } from "@/server/client"
 
 import { Avatar, Button, Counter, Image } from "@/components"
 import { cn, formatAddress, greenGradientStyle } from "@/lib"
@@ -156,7 +158,7 @@ const ProfileStats = () => {
 							<Counter count={currentStats[2]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="from-ocean-blue to-ocean-purple h-2 w-2 rounded-full bg-gradient-to-tr" />
+							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-ocean-blue to-ocean-purple" />
 							Views
 						</p>
 					</div>
@@ -170,7 +172,7 @@ const ProfileStats = () => {
 							<Counter count={currentStats[3]} />
 						</p>
 						<p className="flex flex-row items-center gap-2 font-bold text-black/40">
-							<span className="from-pink-pink to-pink-purple h-2 w-2 rounded-full bg-gradient-to-tr" />
+							<span className="h-2 w-2 rounded-full bg-gradient-to-tr from-pink-pink to-pink-purple" />
 							Referrals
 						</p>
 					</div>
@@ -185,13 +187,35 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	const { name, avatar, socket } = useSocket()
 	const [iconIndex, setIconIndex] = useState(0)
 
+	const feedMutation = api.socket.companion.feed.useMutation()
+	const [feed, setFeed] = useState<{
+		createdAt: Date
+		updatedAt: Date
+		name: string
+		feedCount: number
+		treatsFed: number
+		lastFeedAt: Date | null
+		socketId: string
+	}>()
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setIconIndex(prev => (prev === 0 ? 1 : 0))
-		}, 3000) // Switch every 3 seconds
+		}, 3000)
 
 		return () => clearInterval(interval)
 	}, [])
+
+	const canFeed = useMemo(() => {
+		if (!socket && !feed) return
+		const lastFed = Number(
+			feed?.lastFeedAt?.toISOString() ??
+				socket?.identity?.companion?.lastFeedAt?.toISOString() ??
+				new Date().toISOString()
+		)
+		const timeSinceLastFeed = Number(new Date().toISOString()) - lastFed
+		return timeSinceLastFeed >= 24 * 60 * 60 * 1000
+	}, [socket, feed])
 
 	if (!socket || !session?.user.id) return null
 
@@ -230,12 +254,11 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 						>
 							#123
 						</span>{" "}
-						<span className="opacity-40">{new Date().toLocaleDateString()}</span>
 					</p>
 				</div>
 			</div>
 
-			<div className="mx-4 flex min-h-52 flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16">
+			<div className="relative mx-4 flex min-h-96 flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16">
 				<div className="relative mb-4 h-[48px] w-[48px]">
 					<AnimatePresence mode="wait">
 						<motion.div
@@ -260,11 +283,38 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 				</div>
 				<p className="font-bold">Your companion is loading.</p>
 				<p className="mx-auto max-w-[220px] text-sm font-bold opacity-40">
-					As you build Plugs and have transations executed, the DNA of your companion will grow.
+					As you build Plugs and execute transactions , the DNA of your companion will grow.
 				</p>
+				<div className="absolute bottom-0 left-0 right-0 m-4 flex flex-row justify-between gap-2">
+					<p className="flex flex-row gap-2 font-bold opacity-40">
+						<Carrot size={24} className="opacity-40" />
+						Treats:
+						<Counter count={feed?.treatsFed ?? socket?.identity?.companion?.treatsFed ?? 0} />
+					</p>
+					<p className="flex flex-row gap-2 font-bold opacity-40">
+						<Clock size={24} className="opacity-40" />
+						Age:
+						<Counter count={feed?.feedCount ?? socket?.identity?.companion?.feedCount ?? 0} />
+					</p>
+				</div>
 			</div>
 
-			<div className="px-4">
+			<div className="flex flex-row gap-2 px-4">
+				<Button
+					variant="secondary"
+					className="w-max"
+					onClick={
+						canFeed
+							? () =>
+									feedMutation.mutate(undefined, {
+										onSuccess: data => setFeed(data)
+									})
+							: () => {}
+					}
+					disabled={feedMutation.isLoading || !canFeed}
+				>
+					{feedMutation.isLoading ? "..." : canFeed ? "Feed" : "Already fed"}
+				</Button>
 				<Button className="w-full" onClick={() => {}}>
 					Share Link
 				</Button>

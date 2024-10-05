@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import { FC, useCallback } from "react"
 
 import { Connector as wagmiConnector } from "wagmi"
@@ -20,7 +21,6 @@ import {
 	useRecentConnectorId
 } from "@/lib"
 import { authenticationAtom, useColumns, walletConnectURIMatrixAtom } from "@/state"
-import { useSession } from "next-auth/react"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -243,12 +243,12 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">
-			{session?.user.id === account.address && 
+			{session?.user.id === account.address && (
 				<Callout
 					title="You are authenticated."
 					description="You should not be seeing this message. Please refresh the page."
 				/>
-			}
+			)}
 
 			{authentication.isLoading && (
 				<Callout
@@ -257,21 +257,24 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 				/>
 			)}
 
-			{session?.user.id !== account.address && account.address && sign.isLoading === false && authentication.isLoading === false && (
-				<Callout
-					title={sign.failureReason ? "Signature error." : "Prove ownership."}
-					description={
-						sign.failureReason
-							? "An internal error was received while signing the message. " +
-								sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
-							: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
-					}
-				>
-					<Button className="mt-2" sizing="sm" onClick={() => prove(index, column?.from)}>
-						Sign Message
-					</Button>
-				</Callout>
-			)}
+			{session?.user.id !== account.address &&
+				account.address &&
+				sign.isLoading === false &&
+				authentication.isLoading === false && (
+					<Callout
+						title={sign.failureReason ? "Signature error." : "Prove ownership."}
+						description={
+							sign.failureReason
+								? "An internal error was received while signing the message. " +
+									sign.failureReason.message.split("Details:")[1].split("Details:")[0].trim()
+								: `Please sign the message to prove your ownership of ${formatAddress(account.address)}.`
+						}
+					>
+						<Button className="mt-2" sizing="sm" onClick={() => prove(index, column?.from)}>
+							Sign Message
+						</Button>
+					</Callout>
+				)}
 
 			{account.address && sign.isLoading && (
 				<Callout

@@ -16,7 +16,8 @@ export const SOCKET_BASE_INCLUDE = {
 			},
 			ens: {
 				omit: { createdAt: true, updatedAt: true }
-			}
+			},
+			companion: true
 		},
 		omit: {
 			createdAt: true,

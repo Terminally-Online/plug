@@ -95,7 +95,7 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											<Button variant="none" onClick={() => { }} className="rounded-sm p-1">
+											<Button variant="none" onClick={() => {}} className="rounded-sm p-1">
 												<Grip
 													size={14}
 													className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
