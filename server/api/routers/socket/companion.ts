@@ -21,7 +21,7 @@ export const companion = createTRPCRouter({
 			}
 		}
 
-		const treatsToFeed = Math.floor(Math.random() * 5 + 2 + Math.random() > 0.95 ? 20 * Math.random() * 0.3 : 0)
+		const treatsToFeed = Math.floor(Math.random() * 5 + 2 + Math.random() > 0.95 ? 20 * Math.random() * 0.3 : 0) + 2
 		// TODO: Already doing date calculations -- Might as well keep track of their streak
 		// TODO: I don't know if this is actually the right way to see if the times are 24 hours within another.
 		// const streaking = Number(new Date().toISOString()) - Number(existingCompanion?.lastFeedAt.toISOString()) > 24 * 60 * 60 * 1000

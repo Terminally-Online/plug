@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 import React, { FC, useEffect, useMemo, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Activity, Carrot, Clock, Egg, Heart, PawPrintIcon, Sun } from "lucide-react"
+import { Carrot, Clock, Egg, Heart, PawPrintIcon, Sun } from "lucide-react"
 
 import { api } from "@/server/client"
 
@@ -198,6 +198,8 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 		socketId: string
 	}>()
 
+	const [treatsAnimation, setTreatsAnimation] = useState<{ count: number; key: number } | null>(null)
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setIconIndex(prev => (prev === 0 ? 1 : 0))
@@ -207,41 +209,38 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	}, [])
 
 	const [timeSinceFeed, setTimeSinceFeed] = useState(
-		Number(new Date().getTime()) - Number(socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
+		Number(new Date().getTime()) -
+			Number(feed?.lastFeedAt?.getTime() || socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
 	)
 
-	const timeUntilFeed = useMemo(() => {
-		return (24 * 60 * 60 * 1000 - timeSinceFeed) / 1000
+	const [hours, minutes, seconds] = useMemo(() => {
+		const timeUntilFeed = (24 * 60 * 60 * 1000 - timeSinceFeed) / 1000
+
+		return [
+			String(Math.floor(timeUntilFeed / 3600)).padStart(2, "0"),
+			String(Math.floor((timeUntilFeed % 3600) / 60)).padStart(2, "0"),
+			String(Math.floor(timeUntilFeed % 60)).padStart(2, "0")
+		]
 	}, [timeSinceFeed])
 
-	const [hours, minutes, seconds] = useMemo(() => {
-		const time = timeUntilFeed
-		return [
-			String(Math.floor(time / 3600)).padStart(2, "0"),
-			String(Math.floor((time % 3600) / 60)).padStart(2, "0"),
-			String(Math.floor(time % 60)).padStart(2, "0")
-		]
-	}, [timeUntilFeed])
-
 	const canFeed = useMemo(() => {
-		if (!socket && !feed) return false
+		if (!socket) return false
 
 		return timeSinceFeed >= 24 * 60 * 60 * 1000
-	}, [socket, feed, timeSinceFeed])
+	}, [socket, timeSinceFeed])
 
-	// update the timeSinceFeed every second
-	// if the feed is null, then the feed was never fed
 	useEffect(() => {
-		if (!socket) return
+		if (!socket && !feed) return
 
 		const interval = setInterval(() => {
 			setTimeSinceFeed(
-				Number(new Date().getTime()) - Number(socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
+				Number(new Date().getTime()) -
+					Number(feed?.lastFeedAt?.getTime() || socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
 			)
 		}, 1000)
 
 		return () => clearInterval(interval)
-	}, [socket])
+	}, [socket, feed])
 
 	if (!socket || !session?.user.id) return null
 
@@ -306,7 +305,19 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 									{canFeed ? (
 										<PawPrintIcon size={48} className="opacity-40" />
 									) : (
-										<Egg size={48} className="opacity-40" />
+										<motion.div
+											style={{ transformOrigin: "bottom center" }}
+											animate={{
+												rotate: [-6, 6, -6],
+												transition: {
+													duration: 0.5,
+													repeat: Infinity,
+													ease: "easeInOut"
+												}
+											}}
+										>
+											<Egg size={48} className="opacity-40" />
+										</motion.div>
 									)}
 								</>
 							)}
@@ -319,11 +330,24 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 						? "Feed your companion to boost the growth of their DNA."
 						: "As you interact with protocols, increase your stats below, and feed your companion, the DNA will grow."}
 				</p>
+
 				<div className="absolute bottom-0 left-0 right-0 m-4 flex flex-row justify-between gap-2">
-					<p className="flex flex-row gap-2 font-bold opacity-40">
+					<p className="relative flex flex-row gap-2 font-bold text-opacity-40">
 						<Carrot size={24} className="opacity-40" />
 						Treats:
 						<Counter count={feed?.treatsFed ?? socket?.identity?.companion?.treatsFed ?? 0} />
+						{treatsAnimation && (
+							<motion.span
+								key={treatsAnimation.key}
+								initial={{ opacity: 1, y: 0 }}
+								animate={{ opacity: 0, y: -20 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 1 }}
+								className="absolute -right-8 text-opacity-100"
+							>
+								+{treatsAnimation.count}
+							</motion.span>
+						)}
 					</p>
 					<p className="flex flex-row gap-2 font-bold opacity-40">
 						<Clock size={24} className="opacity-40" />
@@ -336,12 +360,21 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 			<div className="flex flex-row gap-2 px-4">
 				<Button
 					variant="secondary"
-					className={cn("w-max", canFeed === false && "cursor-auto bg-grayscale-0 hover:bg-grayscale-0")}
+					className={cn(
+						"w-max",
+						canFeed === false && "cursor-auto bg-grayscale-0 hover:bg-grayscale-0 hover:text-opacity-60"
+					)}
 					onClick={
 						canFeed
 							? () =>
 									feedMutation.mutate(undefined, {
-										onSuccess: data => setFeed(data)
+										onSuccess: data => {
+											setTreatsAnimation({
+												key: Date.now(),
+												count: data.treatsFed - (socket?.identity?.companion?.treatsFed ?? 0)
+											})
+											setFeed(data)
+										}
 									})
 							: () => {}
 					}
@@ -349,7 +382,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 				>
 					{feedMutation.isLoading ? (
 						"..."
-					) : canFeed ? (
+					) : canFeed && !feed ? (
 						"Feed"
 					) : (
 						<span className="tabular-nums">
