@@ -8,6 +8,7 @@ import { ZerionPositions } from "@/lib/types"
 
 import { getChainId } from "../blockchain"
 import { getPrices } from "../llama"
+import { getZerionApiKey } from "./authentication"
 
 const prohibitedNameInclusions = [
 	".com",
@@ -36,196 +37,13 @@ const MINUTE = 60 * 1000
 const HOUR = 60 * MINUTE
 const POSITIONS_CACHE_TIME = 12 * HOUR
 
-const getAPIKey = () => {
-	return `Basic ${process.env.ZERION_API_KEY}`
-}
-
-const findPositions = async (socketId: string, search: string = "") => {
-	const tokens = await db.fungible.findMany({
-		where: {
-			AND: [
-				...prohibitedNameInclusions.map(inclusion => ({
-					NOT: {
-						name: {
-							contains: inclusion
-						}
-					}
-				})),
-				...prohibitedSymbolInclusions.map(inclusion => ({
-					NOT: {
-						symbol: {
-							contains: inclusion
-						}
-					}
-				})),
-				{
-					OR: [
-						{
-							name: {
-								contains: search,
-								mode: "insensitive"
-							}
-						},
-						{
-							symbol: {
-								contains: search,
-								mode: "insensitive"
-							}
-						}
-					]
-				},
-				{
-					implementations: {
-						some: { balances: { some: { socketId, balance: { gt: 0 } } } }
-					}
-				}
-			]
-		},
-		select: {
-			name: true,
-			symbol: true,
-			icon: true,
-			verified: true,
-			implementations: {
-				where: { balances: { some: { socketId, balance: { gt: 0 } } } },
-				omit: {
-					createdAt: true,
-					updatedAt: true,
-					fungibleName: true,
-					fungibleSymbol: true
-				},
-				include: {
-					balances: {
-						where: { socketId, balance: { gt: 0 } },
-						select: {
-							balance: true
-						}
-					}
-				}
-			}
-		}
-	})
-
-	const protocols = await db.protocol.findMany({
-		where: {
-			positions: { some: { cacheId: socketId } }
-		},
-		omit: { createdAt: true, updatedAt: true },
-		include: {
-			positions: {
-				where: { cacheId: socketId },
-				omit: {
-					id: true,
-					createdAt: true,
-					updatedAt: true,
-					cacheId: true,
-					fungibleName: true,
-					fungibleSymbol: true
-				},
-				include: {
-					fungible: {
-						omit: { createdAt: true, updatedAt: true },
-						include: {
-							implementations: {
-								omit: {
-									createdAt: true,
-									updatedAt: true,
-									fungibleName: true,
-									fungibleSymbol: true
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	})
-
-	const prices = await getPrices(
-		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
-			protocols.flatMap(protocol =>
-				protocol.positions.map(
-					position =>
-						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
-				)
-			)
-		)
-	)
-
-	return {
-		tokens: tokens
-			.map(token => {
-				const balance = token.implementations.reduce(
-					(acc, implementation) =>
-						acc +
-						implementation.balances.reduce((acc, balance) => {
-							return acc + balance.balance
-						}, 0),
-					0
-				)
-
-				const implementations = token.implementations
-					.map(implementation => {
-						const implementationBalance = implementation.balances.reduce(
-							(acc, balance) => acc + balance.balance,
-							0
-						)
-
-						return {
-							...implementation,
-							balance: implementationBalance,
-							percentage: (implementationBalance / balance) * 100
-						}
-					})
-					.sort((a, b) => b.percentage - a.percentage)
-
-				const { price, change } =
-					prices.find(
-						price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`
-					) || {}
-
-				return {
-					...token,
-					implementations,
-					balance,
-					price,
-					change,
-					value: price ? balance * price : undefined
-				}
-			})
-			.sort((a, b) => (b.value || 0) - (a.value || 0)),
-		protocols: protocols.map(protocol => {
-			return {
-				...protocol,
-				positions: protocol.positions.map(position => {
-					const { fungible, balance } = position
-
-					const { price, change } =
-						prices.find(
-							price =>
-								price.id ===
-								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
-						) || {}
-
-					return {
-						...position,
-						price,
-						change,
-						value: price && balance ? balance * price : undefined
-					}
-				})
-			}
-		})
-	}
-}
-
-const getFungiblePositions = async (socketId: string, socketAddress: string, chains: string[]) => {
+const getZerionPositions = async (socketId: string, socketAddress: string, chains: string[]) => {
 	const response = await axios.get(
 		`https://api.zerion.io/v1/wallets/${socketAddress}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
 			headers: {
 				accept: "application/json",
-				authorization: getAPIKey()
+				authorization: getZerionApiKey()
 			}
 		}
 	)
@@ -409,6 +227,185 @@ const getFungiblePositions = async (socketId: string, socketAddress: string, cha
 	})
 }
 
+const findPositions = async (socketId: string, search: string = "") => {
+	const tokens = await db.fungible.findMany({
+		where: {
+			AND: [
+				...prohibitedNameInclusions.map(inclusion => ({
+					NOT: {
+						name: {
+							contains: inclusion
+						}
+					}
+				})),
+				...prohibitedSymbolInclusions.map(inclusion => ({
+					NOT: {
+						symbol: {
+							contains: inclusion
+						}
+					}
+				})),
+				{
+					OR: [
+						{
+							name: {
+								contains: search,
+								mode: "insensitive"
+							}
+						},
+						{
+							symbol: {
+								contains: search,
+								mode: "insensitive"
+							}
+						}
+					]
+				},
+				{
+					implementations: {
+						some: { balances: { some: { socketId, balance: { gt: 0 } } } }
+					}
+				}
+			]
+		},
+		select: {
+			name: true,
+			symbol: true,
+			icon: true,
+			verified: true,
+			implementations: {
+				where: { balances: { some: { socketId, balance: { gt: 0 } } } },
+				omit: {
+					createdAt: true,
+					updatedAt: true,
+					fungibleName: true,
+					fungibleSymbol: true
+				},
+				include: {
+					balances: {
+						where: { socketId, balance: { gt: 0 } },
+						select: {
+							balance: true
+						}
+					}
+				}
+			}
+		}
+	})
+
+	const protocols = await db.protocol.findMany({
+		where: {
+			positions: { some: { cacheId: socketId } }
+		},
+		omit: { createdAt: true, updatedAt: true },
+		include: {
+			positions: {
+				where: { cacheId: socketId },
+				omit: {
+					id: true,
+					createdAt: true,
+					updatedAt: true,
+					cacheId: true,
+					fungibleName: true,
+					fungibleSymbol: true
+				},
+				include: {
+					fungible: {
+						omit: { createdAt: true, updatedAt: true },
+						include: {
+							implementations: {
+								omit: {
+									createdAt: true,
+									updatedAt: true,
+									fungibleName: true,
+									fungibleSymbol: true
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	})
+
+	const prices = await getPrices(
+		[...tokens.map(token => `${token.implementations[0].chain}:${token.implementations[0].contract}`)].concat(
+			protocols.flatMap(protocol =>
+				protocol.positions.map(
+					position =>
+						`${position.fungible.implementations[0].chain}:${position.fungible.implementations[0].contract}`
+				)
+			)
+		)
+	)
+
+	return {
+		tokens: tokens
+			.map(token => {
+				const balance = token.implementations.reduce(
+					(acc, implementation) =>
+						acc +
+						implementation.balances.reduce((acc, balance) => {
+							return acc + balance.balance
+						}, 0),
+					0
+				)
+
+				const implementations = token.implementations
+					.map(implementation => {
+						const implementationBalance = implementation.balances.reduce(
+							(acc, balance) => acc + balance.balance,
+							0
+						)
+
+						return {
+							...implementation,
+							balance: implementationBalance,
+							percentage: (implementationBalance / balance) * 100
+						}
+					})
+					.sort((a, b) => b.percentage - a.percentage)
+
+				const { price, change } =
+					prices.find(
+						price => price.id === `${token.implementations[0].chain}:${token.implementations[0].contract}`
+					) || {}
+
+				return {
+					...token,
+					implementations,
+					balance,
+					price,
+					change,
+					value: price ? balance * price : undefined
+				}
+			})
+			.sort((a, b) => (b.value || 0) - (a.value || 0)),
+		protocols: protocols.map(protocol => {
+			return {
+				...protocol,
+				positions: protocol.positions.map(position => {
+					const { fungible, balance } = position
+
+					const { price, change } =
+						prices.find(
+							price =>
+								price.id ===
+								`${fungible.implementations[0].chain}:${fungible.implementations[0].contract}`
+						) || {}
+
+					return {
+						...position,
+						price,
+						change,
+						value: price && balance ? balance * price : undefined
+					}
+				})
+			}
+		})
+	}
+}
+
 export const getPositions = async (address: string, search?: string, chains = ["ethereum"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
@@ -428,7 +425,7 @@ export const getPositions = async (address: string, search?: string, chains = ["
 	if (cachedPositions && cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
 		return await findPositions(socket.id, search)
 
-	await getFungiblePositions(socket.id, socket.socketAddress, chains)
+	await getZerionPositions(socket.id, socket.socketAddress, chains)
 
 	return await findPositions(socket.id, search)
 }

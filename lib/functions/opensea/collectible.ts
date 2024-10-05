@@ -92,6 +92,8 @@ export const getOpenseaCollectiblesForChain = async (
 		}
 	)
 
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
 	const responseCollectibles = await Promise.all(
 		response.data.nfts.map(async (collectible: OpenseaCollectible) => ({
 			...collectible,
@@ -102,7 +104,7 @@ export const getOpenseaCollectiblesForChain = async (
 	collectibles = [...collectibles, ...responseCollectibles]
 
 	return response.data.next
-		? getOpenseaCollectiblesForChain(address, chain, limit, response.data.next, collectibles)
+		? await getOpenseaCollectiblesForChain(address, chain, limit, response.data.next, collectibles)
 		: collectibles
 }
 
@@ -152,7 +154,6 @@ export const getCollectiblesForChain = async (address: string, chain: string, li
 	)
 
 	const existingCollectiblesMap = new Map(existingCollectibles.map(c => [`${c.identifier}:${c.collectionSlug}`, c]))
-
 	const toDelete = existingCollectibles.filter(c => !newCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`))
 	const toCreate = Array.from(newCollectiblesMap.values()).filter(
 		c => !existingCollectiblesMap.has(`${c.identifier}:${c.collectionSlug}`)

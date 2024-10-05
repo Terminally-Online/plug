@@ -40,12 +40,14 @@ export const CollectibleFrame: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { isFrame } = useColumns(index, `${collection.slug}-${collectible?.contract}-${collectible?.identifier}`)
+	const { isFrame } = useColumns(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery(
 		{
 			type: "ERC721",
-			id: collectible.id
+			address: collectible.collectionAddress,
+			chain: collectible.collectionChain,
+			tokenId: collectible.tokenId
 		},
 		{
 			staleTime: Infinity
@@ -57,7 +59,8 @@ export const CollectibleFrame: FC<{
 	const textColor = getTextColor(metadata?.color ?? "#ffffff")
 
 	const { truncated } = formatLongString(
-		collectible?.description || collection.description,
+		// collectible?.description || collection.description,
+		collection.description,
 		expanded === false ? 80 : undefined
 	)
 
@@ -73,7 +76,7 @@ export const CollectibleFrame: FC<{
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100 blur-2xl filter"
 						style={{
-							backgroundImage: `url(${collection.imageUrl})`,
+							backgroundImage: `url(${collection.iconUrl})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -85,7 +88,7 @@ export const CollectibleFrame: FC<{
 					<div
 						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
 						style={{
-							backgroundImage: `url(${collection.imageUrl})`,
+							backgroundImage: `url(${collection.iconUrl})`,
 							backgroundSize: "cover",
 							backgroundPosition: "center",
 							backgroundRepeat: "no-repeat",
@@ -103,11 +106,9 @@ export const CollectibleFrame: FC<{
 		>
 			<div className="flex flex-col gap-2 px-6 pb-4">
 				<CollectibleImage
-					video={
-						collectible?.displayAnimationUrl?.includes("mp4") ? collectible?.displayAnimationUrl : undefined
-					}
-					image={collectible?.displayImageUrl ?? undefined}
-					fallbackImage={collection.imageUrl}
+					video={collectible?.videoUrl?.includes("mp4") ? collectible?.videoUrl : undefined}
+					image={collectible?.imageUrl ?? undefined}
+					fallbackImage={collection.iconUrl ?? ""}
 					name={collectible?.name || collection.name}
 				/>
 
@@ -119,7 +120,8 @@ export const CollectibleFrame: FC<{
 						expanded === false ? "max-h-[60px]" : "h-auto max-h-[1000px]"
 					)}
 				>
-					<p className="font-bold opacity-40">{collectible?.description || collection.description}</p>
+					{/* <p className="font-bold opacity-40">{collectible?.description || collection.description}</p> */}
+					<p className="font-bold opacity-40">{collection.description}</p>
 
 					<div
 						className={cn(
@@ -189,14 +191,12 @@ export const CollectibleFrame: FC<{
 						<p className="flex w-full flex-row items-center gap-4">
 							<BookText size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Address</span>
-							{formatAddress(getAddress(collectible.contract))}
+							{formatAddress(getAddress(collectible.collectionAddress))}
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<Hash size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Identifier</span>
-							{collectible.identifier.length > 11
-								? formatAddress(collectible.identifier)
-								: collectible.identifier}
+							{collectible.tokenId.length > 11 ? formatAddress(collectible.tokenId) : collectible.tokenId}
 						</p>
 						<p className="flex w-full flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
@@ -215,149 +215,150 @@ export const CollectibleFrame: FC<{
 						<p className="flex w-full flex-row items-center gap-4">
 							<BookText size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Token Standard</span>
-							<span className="whitespace-nowrap">{formatTokenStandard(collectible.tokenStandard)}</span>
+							<span className="whitespace-nowrap">{formatTokenStandard(collectible.interface)}</span>
 						</p>
 					</div>
 
-					<>
-						<div className="mt-4 flex flex-row items-center gap-4">
-							<p className="font-bold opacity-40">Links</p>
-							<div
-								className="h-[2px] w-full"
-								style={{
-									backgroundColor: metadata?.color ?? ""
-								}}
-							/>
-						</div>
+					<div className="mt-4 flex flex-row items-center gap-4">
+						<p className="font-bold opacity-40">Links</p>
+						<div
+							className="h-[2px] w-full"
+							style={{
+								backgroundColor: metadata?.color ?? ""
+							}}
+						/>
+					</div>
 
-						<div className="mt-2 flex flex-wrap gap-2">
+					<div className="mt-2 flex flex-wrap gap-2">
+						<a
+							className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+							style={{
+								backgroundColor: metadata?.color ?? "",
+								color: textColor
+							}}
+							href={getBlockExplorerAddress(
+								getChainId(collectible.collectionChain),
+								collectible.collectionAddress
+							)}
+							target="_blank"
+							rel="noreferrer"
+						>
+							<MapIcon size={14} className="opacity-60" />
+							Explorer
+						</a>
+
+						{collection.projectUrl && (
 							<a
 								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 								style={{
 									backgroundColor: metadata?.color ?? "",
 									color: textColor
 								}}
-								href={getBlockExplorerAddress(getChainId(collectible.cacheChain), collectible.contract)}
+								href={collection.projectUrl}
 								target="_blank"
 								rel="noreferrer"
 							>
-								<MapIcon size={14} className="opacity-60" />
-								Explorer
+								<Globe size={14} className="opacity-60" />
+								Website
 							</a>
+						)}
 
-							{collection.projectUrl && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={collection.projectUrl}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<Globe size={14} className="opacity-60" />
-									Website
-								</a>
-							)}
+						{collection.discordUrl && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={collection.discordUrl}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<MessageCircle size={14} className="opacity-60" />
+								Discord
+							</a>
+						)}
 
-							{collection.discordUrl && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={collection.discordUrl}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<MessageCircle size={14} className="opacity-60" />
-									Discord
-								</a>
-							)}
+						{collection.twitterUsername && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={`https://twitter.com/${collection.twitterUsername}`}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Twitter size={14} className="opacity-60" />
+								Twitter
+							</a>
+						)}
 
-							{collection.twitterUsername && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={`https://twitter.com/${collection.twitterUsername}`}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<Twitter size={14} className="opacity-60" />
-									Twitter
-								</a>
-							)}
+						{collection.telegramUrl && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={collection.telegramUrl}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Globe size={14} className="opacity-60" />
+								Telegram
+							</a>
+						)}
 
-							{collection.telegramUrl && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={collection.telegramUrl}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<Globe size={14} className="opacity-60" />
-									Telegram
-								</a>
-							)}
+						{collection.instagramUsername && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={`https://instagram.com/${collection.instagramUsername}`}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Instagram size={14} className="opacity-60" />
+								Instagram
+							</a>
+						)}
 
-							{collection.instagramUsername && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={`https://instagram.com/${collection.instagramUsername}`}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<Instagram size={14} className="opacity-60" />
-									Instagram
-								</a>
-							)}
+						{collection.openseaUrl && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={collection.openseaUrl}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Ship size={14} className="opacity-60" />
+								Opensea
+							</a>
+						)}
 
-							{collection.openseaUrl && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={collection.openseaUrl}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<Ship size={14} className="opacity-60" />
-									Opensea
-								</a>
-							)}
-
-							{collection.wikiUrl && (
-								<a
-									className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-									style={{
-										backgroundColor: metadata?.color ?? "",
-										color: textColor
-									}}
-									href={collection.wikiUrl}
-									target="_blank"
-									rel="noreferrer"
-								>
-									<BookDashed size={14} className="opacity-60" />
-									Wiki
-								</a>
-							)}
-						</div>
-					</>
+						{collection.wikiUrl && (
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: metadata?.color ?? "",
+									color: textColor
+								}}
+								href={collection.wikiUrl}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<BookDashed size={14} className="opacity-60" />
+								Wiki
+							</a>
+						)}
+					</div>
 				</div>
 			</div>
 		</Frame>

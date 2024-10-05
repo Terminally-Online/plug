@@ -4,8 +4,8 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 import { z } from "zod"
 
-import { getAPIKey, getCollectibles, SOCKET_BASE_QUERY } from "@/lib"
-import { getPositions } from "@/lib/functions/zerion"
+import { getAPIKey, SOCKET_BASE_QUERY } from "@/lib"
+import { getCollectibles, getPositions } from "@/lib/functions/zerion"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
@@ -23,46 +23,42 @@ export const balances = createTRPCRouter({
 		return await getCollectibles(socket.socketAddress)
 	}),
 	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		try {
-			if (input) return await getPositions(input)
+		if (input) return await getPositions(input)
 
-			const socket = await ctx.db.userSocket.findFirst({
-				where: { id: ctx.session.address },
-				...SOCKET_BASE_QUERY
-			})
+		const socket = await ctx.db.userSocket.findFirst({
+			where: { id: ctx.session.address },
+			...SOCKET_BASE_QUERY
+		})
 
-			if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 
-			return await getPositions(socket.socketAddress)
-		} catch (error) {
-			console.error(error)
-			throw new TRPCError({ code: "BAD_REQUEST" })
-		}
+		return await getPositions(socket.socketAddress)
 	}),
 	metadata: anonymousProtectedProcedure
 		.input(
 			z.object({
 				type: z.union([z.literal("ERC20"), z.literal("ERC721"), z.literal("ERC1155")]),
-				id: z.string()
+				address: z.string(),
+				tokenId: z.string(),
+				chain: z.string()
 			})
 		)
 		.query(async ({ input, ctx }) => {
 			if (input.type === "ERC20") throw new TRPCError({ code: "NOT_IMPLEMENTED" })
 
-			const metadataCache = await ctx.db.openseaCollectibleMetadata.findUnique({
-				where: { collectibleId: input.id }
+			const metadataCache = await ctx.db.collectibleMetadata.findUnique({
+				where: {
+					tokenId_collectionAddress_collectionChain: {
+						tokenId: input.tokenId,
+						collectionAddress: input.address,
+						collectionChain: input.chain
+					}
+				}
 			})
 
 			if (metadataCache) return metadataCache
 
-			const collectible = await ctx.db.openseaCollectible.findUnique({
-				where: { id: input.id },
-				include: { collection: true }
-			})
-
-			if (collectible === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-			const url = `https://api.opensea.io/api/v2/chain/${collectible.collection.chain}/contract/${collectible.contract}/nfts/${collectible.identifier}`
+			const url = `https://api.opensea.io/api/v2/chain/${input.chain}/contract/${input.address}/nfts/${input.tokenId}`
 			const response = await axios.get(url, {
 				headers: {
 					Accept: "application/json",
@@ -73,22 +69,27 @@ export const balances = createTRPCRouter({
 			if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 			const traits = response.data.nft.traits === null ? [] : response.data.nft.traits
-			const color = await getDominantColor(collectible.displayImageUrl ?? collectible.collection.imageUrl)
+			// const color = await getDominantColor(collectible.displayImageUrl ?? collectible.collection.imageUrl)
+			const color = "#000000"
 
-			if (metadataCache !== null)
-				return await ctx.db.openseaCollectibleMetadata.update({
-					where: { collectibleId: input.id },
-					data: {
-						traits,
-						color
+			return await ctx.db.collectibleMetadata.upsert({
+				where: {
+					tokenId_collectionAddress_collectionChain: {
+						tokenId: input.tokenId,
+						collectionAddress: input.address,
+						collectionChain: input.chain
 					}
-				})
-
-			return await ctx.db.openseaCollectibleMetadata.create({
-				data: {
+				},
+				create: {
+					tokenId: input.tokenId,
+					collectionAddress: input.address,
+					collectionChain: input.chain,
 					traits,
-					color,
-					collectibleId: input.id
+					color
+				},
+				update: {
+					traits,
+					color
 				}
 			})
 		})

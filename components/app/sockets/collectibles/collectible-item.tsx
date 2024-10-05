@@ -18,10 +18,10 @@ export const SocketCollectibleItem: FC<{
 			style={{
 				paddingTop: "100%"
 			}}
-			onClick={() => frame(`${collection.slug}-${collectible?.contract}-${collectible?.identifier}`)}
+			onClick={() => frame(`${collection.address}-${collection.chain}-${collectible?.tokenId}`)}
 		>
 			<Image
-				src={collectible?.displayImageUrl || collection.imageUrl}
+				src={collectible?.imageUrl || collection.iconUrl || ""}
 				alt={collectible?.name ?? ""}
 				fill
 				style={{

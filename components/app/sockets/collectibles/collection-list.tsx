@@ -37,11 +37,12 @@ export const SocketCollectionList: FC<
 			collectible =>
 				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.description.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
+				// collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.collectibles.some(
 					collectionCollectible =>
-						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
-						(collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
+						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase())
+					// ||
+					// (collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
 				)
 		)
 

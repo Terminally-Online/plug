@@ -3,7 +3,7 @@ import { FC, useState } from "react"
 import { RouterOutputs } from "@/server/client"
 
 import { Accordion, CollectibleFrame, Image } from "@/components"
-import { getChainImage } from "@/lib"
+import { formatTitle, getChainImage } from "@/lib"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 
@@ -35,7 +35,7 @@ export const SocketCollectionItem: FC<{
 					<div className="flex w-full flex-row items-center gap-4">
 						<div className="relative h-10 min-w-10">
 							<Image
-								src={collection.imageUrl}
+								src={collection.iconUrl ?? ""}
 								alt={collection.name}
 								className="absolute left-1/2 h-48 w-48 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 								width={140}
@@ -45,7 +45,7 @@ export const SocketCollectionItem: FC<{
 							<div
 								className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
 								style={{
-									backgroundImage: `url(${collection.imageUrl})`,
+									backgroundImage: `url(${collection.iconUrl})`,
 									backgroundSize: "cover",
 									backgroundPosition: "center",
 									backgroundRepeat: "no-repeat"
@@ -54,7 +54,7 @@ export const SocketCollectionItem: FC<{
 						</div>
 
 						<div className="flex w-min flex-col truncate overflow-ellipsis">
-							<p className="truncate font-bold">{collection.name}</p>
+							<p className="truncate font-bold">{formatTitle(collection.name.toLowerCase())}</p>
 							<div className="flex w-max flex-row items-center gap-2">
 								<Image
 									src={getChainImage(collection.chain)}
@@ -76,7 +76,7 @@ export const SocketCollectionItem: FC<{
 			{collection &&
 				collection.collectibles.map(collectible => (
 					<CollectibleFrame
-						key={`${collection.slug}-${collectible?.contract}-${collectible?.identifier}`}
+						key={`${collection.address}-${collection.chain}-${collectible.tokenId}`}
 						index={index}
 						collection={collection}
 						collectible={collectible}
