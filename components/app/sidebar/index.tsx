@@ -29,14 +29,30 @@ const ConsoleSidebarAction: FC<
 		>
 			<div
 				className={cn(
-					"group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
+					"relative group flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 					isActive && "bg-grayscale-0 hover:bg-white",
 					isPrimary &&
-						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white shadow-[0_0_16px_rgba(0,255,0,1)] group-hover:shadow-[0_0_8px_rgba(0,255,0,1)]"
+					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
 				)}
 			>
+				{isPrimary && <>
+					<div className={cn(
+						"absolute inset-0 shadow-[inset_-4px_0_4px_0_rgba(255,255,255,.3)] rounded-sm",
+					)} />
+					<div className={cn(
+						"absolute inset-0 shadow-[inset_4px_0_4px_0_rgba(255,255,255,.3)] rounded-sm",
+					)} />
+					<div className={cn(
+						"absolute inset-0 shadow-[inset_0_4px_4px_0_rgba(255,255,255,.3)] rounded-sm",
+					)} />
+					<div className={cn(
+						"absolute inset-0 shadow-[inset_0_-4px_4px_0_rgba(255,255,255,.3)] rounded-sm",
+					)} />
+				</>}
+
 				{icon}
 			</div>
+
 			<p
 				className={cn(
 					"mr-auto whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out",
@@ -106,12 +122,12 @@ const ConsoleSidebarPane = () => {
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									) : is.authenticating && session?.user.id ?(
+									) : is.authenticating && session?.user.id ? (
 										<User
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									): (
+									) : (
 										<ScanFace
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"

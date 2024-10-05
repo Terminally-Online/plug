@@ -41,9 +41,9 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 			/>
 
 			{debouncedSearch === "" && (
-				<div className="my-auto flex flex-col items-center">
+				<div className="my-auto flex flex-col items-center gap-2">
 					<p className="font-bold">Submit your search.</p>
-					<p className="mb-4 max-w-[320px] text-center opacity-60">
+					<p className="mb-4 max-w-[320px] text-center opacity-40 font-bold text-sm">
 						Here you can search for everything from plugs, tokens, collectibles, and more.
 					</p>
 				</div>
