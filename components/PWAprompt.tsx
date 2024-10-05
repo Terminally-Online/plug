@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { isWebIOS, isWebAndroid } from '@/lib/utils/platform';
 
+// Add this type declaration at the top of your file or in a separate .d.ts file
+declare global {
+  interface WindowEventMap {
+    beforeinstallprompt: Event;
+  }
+}
+
 const PWAPrompt: React.FC = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -12,7 +19,7 @@ const PWAPrompt: React.FC = () => {
       setShowPrompt(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
