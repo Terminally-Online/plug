@@ -196,7 +196,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	if (!socket || !session?.user.id) return null
 
 	return (
-		<div className="flex h-full flex-col gap-4 overflow-hidden text-center">
+		<div className="flex h-full flex-col gap-4 overflow-y-scroll text-center">
 			<div className="flex flex-row items-center gap-8 px-4 py-4">
 				<div className="relative max-w-[64px]">
 					{avatar ? (
