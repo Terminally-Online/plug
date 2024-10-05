@@ -1,8 +1,11 @@
 import { useSession } from "next-auth/react"
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 
-import { Avatar, Counter, Image } from "@/components"
-import { cn, formatAddress } from "@/lib"
+import { AnimatePresence, motion } from "framer-motion"
+import { Heart, PawPrintIcon } from "lucide-react"
+
+import { Avatar, Button, Counter, Image } from "@/components"
+import { cn, formatAddress, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state"
 
 const stats = [
@@ -79,8 +82,11 @@ const ProfileStat: FC<{
 	)
 }
 
-const ProfileStats: FC<{ onHover: (index: number | undefined) => void }> = ({ onHover }) => {
+const ProfileStats = () => {
+	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
+
 	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
+	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
 
 	return (
 		<>
@@ -93,7 +99,7 @@ const ProfileStats: FC<{ onHover: (index: number | undefined) => void }> = ({ on
 							isActive={i === stats.length - 1}
 							stats={stats[i]}
 							max={max}
-							onHover={onHover}
+							onHover={setHoveredPeriod}
 						/>
 					))}
 				</div>
@@ -102,48 +108,6 @@ const ProfileStats: FC<{ onHover: (index: number | undefined) => void }> = ({ on
 					<p className="font-bold opacity-40">10/13</p>
 				</div>
 			</div>
-		</>
-	)
-}
-
-export const ColumnProfile: FC<{ index: number }> = () => {
-	const { data: session } = useSession()
-	const { name, avatar, socket } = useSocket()
-	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
-
-	if (!socket || !session?.user.id) return null
-
-	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
-
-	return (
-		<div className="flex h-full flex-col gap-4 overflow-hidden py-4 text-center">
-			<div className="flex flex-row items-center gap-8 px-4 pb-4">
-				<div className="relative h-24 w-24">
-					{avatar ? (
-						<Image
-							src={avatar}
-							alt="ENS Avatar"
-							width={64}
-							height={64}
-							className="h-full w-full rounded-sm"
-						/>
-					) : (
-						<>
-							<div className="absolute blur-[80px] filter">
-								<Avatar name={socket?.id ?? ""} />
-							</div>
-							<Avatar name={socket?.id ?? ""} />
-						</>
-					)}
-				</div>
-
-				<div className="flex flex-col">
-					<p className="mr-auto text-lg font-bold">{name !== "" ? name : formatAddress(socket.id, 6)}</p>
-					<p className="mr-auto text-lg font-bold opacity-40">Joined: {new Date().toLocaleDateString()}</p>
-				</div>
-			</div>
-
-			<ProfileStats onHover={setHoveredPeriod} />
 
 			<div className="flex flex-col gap-2 px-4">
 				<div className="flex flex-row gap-2">
@@ -187,6 +151,101 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					</div>
 				</div>
 			</div>
+		</>
+	)
+}
+
+export const ColumnProfile: FC<{ index: number }> = () => {
+	const { data: session } = useSession()
+	const { name, avatar, socket } = useSocket()
+	const [iconIndex, setIconIndex] = useState(0)
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIconIndex(prev => (prev === 0 ? 1 : 0))
+		}, 3000) // Switch every 3 seconds
+
+		return () => clearInterval(interval)
+	}, [])
+
+	if (!socket || !session?.user.id) return null
+
+	return (
+		<div className="flex h-full flex-col gap-4 overflow-hidden text-center">
+			<div className="flex flex-row items-center gap-8 px-4 py-4">
+				<div className="relative max-w-[64px]">
+					{avatar ? (
+						<Image
+							src={avatar}
+							alt="ENS Avatar"
+							width={64}
+							height={64}
+							className="h-full w-full rounded-sm"
+						/>
+					) : (
+						<>
+							<div className="absolute blur-[80px] filter">
+								<Avatar name={socket?.id ?? ""} />
+							</div>
+							<Avatar name={socket?.id ?? ""} />
+						</>
+					)}
+				</div>
+
+				<div className="relative flex w-full flex-col">
+					<p className="mr-auto text-lg font-bold">
+						{name !== "" ? name : formatAddress(socket.socketAddress, 6)}
+					</p>
+					<p className="mr-auto flex w-full flex-row font-bold">
+						<span
+							className="mr-20"
+							style={{
+								...greenGradientStyle
+							}}
+						>
+							#123
+						</span>{" "}
+						<span className="opacity-40">{new Date().toLocaleDateString()}</span>
+					</p>
+				</div>
+			</div>
+
+			<div className="mx-4 flex min-h-52 flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16">
+				<div className="relative mb-4 h-[48px] w-[48px]">
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={iconIndex}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -10 }}
+							transition={{
+								duration: 0.5,
+								bounce: 0.5,
+								type: "spring"
+							}}
+							className="absolute inset-0"
+						>
+							{iconIndex === 0 ? (
+								<Heart size={48} className="opacity-40" />
+							) : (
+								<PawPrintIcon size={48} className="opacity-40" />
+							)}
+						</motion.div>
+					</AnimatePresence>
+				</div>
+				<p className="font-bold">Your companion is loading.</p>
+				<p className="mx-auto max-w-[220px] text-sm font-bold opacity-40">
+					As you build Plugs and have transations executed, the DNA of your companion will grow.
+				</p>
+			</div>
+
+			<div className="px-4">
+				<Button className="w-full" onClick={() => {}}>
+					Share Link
+				</Button>
+			</div>
+
+			<ProfileStats />
 		</div>
 	)
 }
