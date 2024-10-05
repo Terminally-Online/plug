@@ -141,8 +141,8 @@ const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full">
-							{is.authenticating && session?.user.id && <ColumnProfile index={0} />}
-							{is.authenticating && session?.user.id.startsWith("0x") === false && <ColumnAuthenticate index={0} />}
+							{session?.user.id.startsWith("0x") && <ColumnProfile index={0} />}
+							{session?.user.id.startsWith("0x") === false && <ColumnAuthenticate index={0} />}
 							{is.searching && <ColumnSearch index={0} className="px-4" />}
 							{is.viewingAs && <ColumnViewAs />}
 						</div>
