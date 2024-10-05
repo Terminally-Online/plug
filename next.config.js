@@ -97,4 +97,12 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 	enabled: process.env.ANALYZE === "true"
 })
 
-module.exports = withBundleAnalyzer(nextConfig)
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  scope: '/',
+  sw: 'service-worker.js',
+})
+
+module.exports = withPWA(withBundleAnalyzer(nextConfig))
