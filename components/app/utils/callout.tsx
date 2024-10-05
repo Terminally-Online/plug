@@ -92,7 +92,7 @@ const EmptySearch: FC<
 						&rsquo;.
 					</>
 				}
-				description="Your search returned no results."
+				description="Your search returned no results try something else or reset your search."
 				{...props}
 			>
 				<Button sizing="sm" onClick={() => handleSearch("")}>

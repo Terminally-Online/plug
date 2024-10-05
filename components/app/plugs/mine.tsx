@@ -50,7 +50,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	)
 
 	const visiblePlugs = useMemo(() => {
-		if (plugs === undefined || plugs.count === 0) return Array(12).fill(undefined)
+		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
 		return plugs.plugs
 	}, [plugs])
 
@@ -60,8 +60,8 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	})
 
 	return (
-		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
-			{plugs && plugs.plugs.length > 0 && (
+		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+			{(search !== "" || (plugs && plugs.plugs.length > 0)) && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
