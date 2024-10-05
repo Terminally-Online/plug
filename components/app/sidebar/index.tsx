@@ -37,16 +37,16 @@ const ConsoleSidebarAction: FC<
 			>
 				{isPrimary && <>
 					<div className={cn(
-						"absolute inset-0 shadow-[inset_-4px_0_4px_0_rgba(255,255,255,.3)] rounded-sm",
+						"absolute inset-0 shadow-[inset_-2px_0_2px_0_rgba(255,255,255,.3)] rounded-sm",
 					)} />
 					<div className={cn(
-						"absolute inset-0 shadow-[inset_4px_0_4px_0_rgba(255,255,255,.3)] rounded-sm",
+						"absolute inset-0 shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)] rounded-sm",
 					)} />
 					<div className={cn(
-						"absolute inset-0 shadow-[inset_0_4px_4px_0_rgba(255,255,255,.3)] rounded-sm",
+						"absolute inset-0 shadow-[inset_0_2px_2px_0_rgba(255,255,255,.3)] rounded-sm",
 					)} />
 					<div className={cn(
-						"absolute inset-0 shadow-[inset_0_-4px_4px_0_rgba(255,255,255,.3)] rounded-sm",
+						"absolute inset-0 shadow-[inset_0_-2px_2px_0_rgba(255,255,255,.3)] rounded-sm",
 					)} />
 				</>}
 
