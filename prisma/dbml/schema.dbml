@@ -35,6 +35,7 @@ Table Companion {
   name String [not null]
   feedCount Int [not null, default: 0]
   treatsFed Int [not null, default: 0]
+  streak Int [not null, default: 0]
   identity SocketIdentity [not null]
   socketId String [pk]
 }

@@ -70,20 +70,21 @@ model ENS {
 }
 
 model Companion {
-
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @default(now()) @updatedAt
     lastFeedAt DateTime?
 
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name String
-    feedCount  Int @default(0)
-    treatsFed Int @default(0)
+    name      String
+    feedCount Int    @default(0)
+    treatsFed Int    @default(0)
+    streak    Int    @default(0)
+
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
@@ -91,7 +92,6 @@ model Companion {
     socketId String         @id
 
     @@index([name])
-
 }
 
 model SocketIdentity {
@@ -100,7 +100,7 @@ model SocketIdentity {
     // ---------------------------------------------------------------------------
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
-    
+
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------

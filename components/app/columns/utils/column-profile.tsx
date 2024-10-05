@@ -7,7 +7,7 @@ import { Carrot, Clock, Egg, Heart, PawPrintIcon, Sun } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Avatar, Button, Counter, DateSince, Image } from "@/components"
-import { cn, formatAddress, greenGradientStyle } from "@/lib"
+import { cn, formatAddress, greenGradientStyle, sunGradientStyle } from "@/lib"
 import { useSocket } from "@/state"
 
 const stats = [
@@ -195,6 +195,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 		feedCount: number
 		treatsFed: number
 		lastFeedAt: Date | null
+		streak: number
 		socketId: string
 	}>()
 
@@ -270,20 +271,30 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					<p className="mr-auto text-lg font-bold">
 						{name !== "" ? name : formatAddress(socket.socketAddress, 6)}
 					</p>
-					<p className="mr-auto flex w-full flex-row font-bold">
-						<span
-							className="mr-20"
+				</div>
+			</div>
+
+			<div className="relative mx-4 flex min-h-96 flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16">
+				<div className="absolute left-4 right-4 top-4">
+					<div className="flex w-full flex-row items-center justify-between gap-2">
+						<p
+							className="flex w-full flex-row text-right font-bold"
 							style={{
 								...greenGradientStyle
 							}}
 						>
 							#123
-						</span>{" "}
-					</p>
+						</p>
+						<p
+							className="w-max whitespace-nowrap font-bold"
+							style={{
+								...sunGradientStyle
+							}}
+						>
+							{feed?.streak ?? socket?.identity?.companion?.streak} day streak
+						</p>
+					</div>
 				</div>
-			</div>
-
-			<div className="relative mx-4 flex min-h-96 flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16">
 				<div className="relative mb-4 h-[48px] w-[48px]">
 					<AnimatePresence mode="wait">
 						<motion.div
@@ -332,9 +343,8 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 				</p>
 
 				<div className="absolute bottom-0 left-0 right-0 m-4 flex flex-row justify-between gap-2">
-					<p className="relative flex flex-row gap-2 font-bold text-opacity-40">
-						<Carrot size={24} className="opacity-40" />
-						Treats:
+					<p className="relative flex flex-row items-center gap-2 font-bold opacity-40">
+						<Carrot size={24} className="h-4 w-4 min-w-4 opacity-40" />
 						<Counter count={feed?.treatsFed ?? socket?.identity?.companion?.treatsFed ?? 0} />
 						{treatsAnimation && (
 							<motion.span
@@ -349,9 +359,8 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 							</motion.span>
 						)}
 					</p>
-					<p className="flex flex-row gap-2 font-bold opacity-40">
-						<Clock size={24} className="opacity-40" />
-						Age:
+					<p className="flex flex-row items-center gap-2 font-bold opacity-40">
+						<Clock size={24} className="h-4 w-4 opacity-40" />
 						<DateSince date={socket?.createdAt ?? new Date()} ago={false} />
 					</p>
 				</div>

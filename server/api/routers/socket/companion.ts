@@ -6,13 +6,14 @@ import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const companion = createTRPCRouter({
 	feed: anonymousProtectedProcedure.mutation(async ({ ctx }) => {
-		// TODO: This will error out when one does not exist.
 		const existingCompanion = await ctx.db.companion.findUnique({
 			where: { socketId: ctx.session.address }
 		})
 
+		const now = new Date()
+
 		if (existingCompanion && existingCompanion.lastFeedAt) {
-			const timeSinceLastFeed = new Date().getTime() - existingCompanion.lastFeedAt.getTime()
+			const timeSinceLastFeed = now.getTime() - existingCompanion.lastFeedAt.getTime()
 			if (timeSinceLastFeed < 24 * 60 * 60 * 1000) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
@@ -22,23 +23,36 @@ export const companion = createTRPCRouter({
 		}
 
 		const treatsToFeed = Math.floor(Math.random() * 5 + 2 + Math.random() > 0.95 ? 20 * Math.random() * 0.3 : 0) + 2
-		// TODO: Already doing date calculations -- Might as well keep track of their streak
-		// TODO: I don't know if this is actually the right way to see if the times are 24 hours within another.
-		// const streaking = Number(new Date().toISOString()) - Number(existingCompanion?.lastFeedAt.toISOString()) > 24 * 60 * 60 * 1000
-		// const streak = existingCompanion.streak++
+
+		let newStreak = 1
+		if (existingCompanion && existingCompanion.lastFeedAt) {
+			const daysSinceLastFeed = Math.floor(
+				(now.getTime() - existingCompanion.lastFeedAt.getTime()) / (24 * 60 * 60 * 1000)
+			)
+			if (daysSinceLastFeed === 1) {
+				newStreak = existingCompanion.streak + 1
+			} else if (daysSinceLastFeed > 1) {
+				newStreak = 1
+			} else {
+				newStreak = existingCompanion.streak
+			}
+		}
 
 		return await ctx.db.companion.upsert({
 			where: { socketId: ctx.session.address },
 			update: {
 				feedCount: { increment: 1 },
 				treatsFed: { increment: treatsToFeed },
-				lastFeedAt: new Date()
+				lastFeedAt: now,
+				streak: newStreak
 			},
 			create: {
 				socketId: ctx.session.address,
 				name: "New Companion",
 				feedCount: 1,
-				treatsFed: treatsToFeed
+				treatsFed: treatsToFeed,
+				lastFeedAt: now,
+				streak: 1
 			}
 		})
 	})

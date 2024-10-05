@@ -35,7 +35,6 @@ module.exports = {
 				"plug-green": "#00E100",
 				"plug-yellow": "#A3F700",
 				"plug-red": "#FF0000",
-
 				"sun-orange": "#FFA800",
 				"sun-yellow": "#FAFF00",
 				"ocean-blue": "#4E7FFD",

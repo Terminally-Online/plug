@@ -26,3 +26,9 @@ export const greenGradientStyle = {
 	WebkitBackgroundClip: "text",
 	WebkitTextFillColor: "transparent"
 }
+
+export const sunGradientStyle = {
+	background: "linear-gradient(30deg, #FFA800, #FAFF00)",
+	WebkitBackgroundClip: "text",
+	WebkitTextFillColor: "transparent"
+}

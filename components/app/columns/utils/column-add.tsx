@@ -1,10 +1,9 @@
 import { useMemo } from "react"
 
-import { getAddress } from "viem"
-
 import { Plus } from "lucide-react"
 
 import { Button } from "@/components"
+import { cn } from "@/lib"
 import { useColumns } from "@/state"
 
 export const ColumnAdd = () => {
@@ -18,7 +17,10 @@ export const ColumnAdd = () => {
 
 	return (
 		<div
-			className="relative my-2 mr-2 flex select-none items-center justify-center rounded-lg border-[1px] border-grayscale-100 bg-grayscale-0 p-4"
+			className={cn(
+				"relative my-2 mr-2 flex select-none items-center justify-center rounded-lg border-[1px] border-grayscale-100 bg-grayscale-0 p-4",
+				columns.length === 1 && "ml-2"
+			)}
 			style={{ minWidth: `${380}px` }}
 		>
 			<Button
