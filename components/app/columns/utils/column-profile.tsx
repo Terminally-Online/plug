@@ -84,9 +84,14 @@ const ProfileStat: FC<{
 
 const ProfileStats = () => {
 	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
+	const [toggledStats, setToggledStats] = useState<boolean[]>([false, false, false, false])
 
 	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
+
+	const handleToggle = (statIndex: number) => {
+		setToggledStats(prev => [...prev.slice(0, statIndex), !prev[statIndex], ...prev.slice(statIndex + 1)])
+	}
 
 	return (
 		<>
@@ -97,7 +102,7 @@ const ProfileStats = () => {
 							key={i}
 							index={i}
 							isActive={i === stats.length - 1}
-							stats={stats[i]}
+							stats={stats[i].map((stat, j) => (toggledStats[j] ? null : stat))}
 							max={max}
 							onHover={setHoveredPeriod}
 						/>
@@ -111,7 +116,12 @@ const ProfileStats = () => {
 
 			<div className="flex flex-col gap-2 px-4">
 				<div className="flex flex-row gap-2">
-					<div className="flex w-full flex-col items-start justify-center rounded-md bg-grayscale-0 px-6 py-4 text-left">
+					<div
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
+							toggledStats[0] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+						}`}
+						onClick={() => handleToggle(0)}
+					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[0]} />
 						</p>
@@ -120,7 +130,12 @@ const ProfileStats = () => {
 							Users
 						</p>
 					</div>
-					<div className="flex w-full flex-col items-start justify-center rounded-md bg-grayscale-0 px-6 py-4 text-left">
+					<div
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
+							toggledStats[1] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+						}`}
+						onClick={() => handleToggle(1)}
+					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[1]} />
 						</p>
@@ -131,7 +146,12 @@ const ProfileStats = () => {
 					</div>
 				</div>
 				<div className="flex flex-row gap-2">
-					<div className="flex w-full flex-col items-start justify-center rounded-md bg-grayscale-0 px-6 py-4 text-left">
+					<div
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
+							toggledStats[2] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+						}`}
+						onClick={() => handleToggle(2)}
+					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[2]} />
 						</p>
@@ -140,7 +160,12 @@ const ProfileStats = () => {
 							Views
 						</p>
 					</div>
-					<div className="flex w-full flex-col items-start justify-center rounded-md bg-grayscale-0 px-6 py-4 text-left">
+					<div
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
+							toggledStats[3] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+						}`}
+						onClick={() => handleToggle(3)}
+					>
 						<p className="text-[32px] font-bold">
 							<Counter count={currentStats[3]} />
 						</p>
