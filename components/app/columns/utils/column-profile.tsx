@@ -187,7 +187,18 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	const { name, avatar, socket } = useSocket()
 	const [iconIndex, setIconIndex] = useState(0)
 
-	const feedMutation = api.socket.companion.feed.useMutation()
+	const feedMutation = api.socket.companion.feed.useMutation({
+		onMutate: () => {
+			setTimeSinceFeed(0) // Reset the time since feed to 0 onMutate
+		},
+		onSuccess: data => {
+			setTreatsAnimation({
+				key: Date.now(),
+				count: data.treatsFed - (socket?.identity?.companion?.treatsFed ?? 0)
+			})
+			setFeed(data)
+		}
+	}) 
 	const [feed, setFeed] = useState<{
 		createdAt: Date
 		updatedAt: Date
@@ -375,17 +386,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					)}
 					onClick={
 						canFeed
-							? () =>
-									feedMutation.mutate(undefined, {
-										onSuccess: data => {
-											setTimeSinceFeed(0) // Reset the time since feed to 0 onSuccess
-											setTreatsAnimation({
-												key: Date.now(),
-												count: data.treatsFed - (socket?.identity?.companion?.treatsFed ?? 0)
-											})
-											setFeed(data)
-										}
-									})
+							? () => feedMutation.mutate()
 							: () => {}
 					}
 					disabled={feedMutation.isLoading || !canFeed}
