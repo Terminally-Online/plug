@@ -46,6 +46,10 @@ const PlugApp: FC<
 > = ({ Component, pageProps }) => {
 	const getLayout = Component.getLayout ?? (page => page)
 
+	useEffect(() => {
+		registerServiceWorker()
+	}, [])
+
 	return (
 		<>
 			<style jsx global>
@@ -59,6 +63,7 @@ const PlugApp: FC<
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}
+			<PWAPrompt />
 		</>
 	)
 }
