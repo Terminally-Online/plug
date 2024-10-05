@@ -37,7 +37,7 @@
 		"@trpc/react-query": "^10.45.2",
 		"@trpc/server": "^10.45.2",
 		"@vercel/og": "^0.6.3",
-		"abitype": "^1.0.2",
+		"abitype": "^1.0.6",
 		"axios": "^1.7.7",
 		"blockies-react-svg": "^0.0.13",
 		"boring-avatars": "^1.10.2",
