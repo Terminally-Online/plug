@@ -1,4 +1,4 @@
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
@@ -28,10 +28,11 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
+	const { data: session } = useSession()
 	const { socket } = useSocket()
 
 	// useEffect(() => {
-	// 	if (socket) return
+	// 	if (session?.user.id) return
 	//
 	// 	signIn("credentials", {
 	// 		message: "0x0",
