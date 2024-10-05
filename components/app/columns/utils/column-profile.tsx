@@ -243,9 +243,6 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					)}
 				</div>
 
-				<pre className="text-[12px]">{JSON.stringify(socket, null, 2)}</pre>
-				<p>{canFeed ? "canFeed" : "cannotFeed"}</p>
-
 				<div className="relative flex w-full flex-col">
 					<p className="mr-auto text-lg font-bold">
 						{name !== "" ? name : formatAddress(socket.socketAddress, 6)}
