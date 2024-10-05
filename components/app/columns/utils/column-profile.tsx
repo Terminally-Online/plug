@@ -215,7 +215,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	)
 
 	const [hours, minutes, seconds] = useMemo(() => {
-		const timeUntilFeed = (24 * 60 * 60 * 1000 - timeSinceFeed) / 1000
+		const timeUntilFeed = Math.max(24 * 60 * 60 * 1000 - timeSinceFeed,0) / 1000 // ensure timeUntilFeed is not negative
 
 		return [
 			String(Math.floor(timeUntilFeed / 3600)).padStart(2, "0"),
@@ -378,6 +378,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 							? () =>
 									feedMutation.mutate(undefined, {
 										onSuccess: data => {
+											setTimeSinceFeed(0) // Reset the time since feed to 0 onSuccess
 											setTreatsAnimation({
 												key: Date.now(),
 												count: data.treatsFed - (socket?.identity?.companion?.treatsFed ?? 0)
