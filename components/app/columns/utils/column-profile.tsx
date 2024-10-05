@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 import React, { FC, useEffect, useMemo, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Carrot, Clock, Heart, PawPrintIcon } from "lucide-react"
+import { Activity, Carrot, Clock, Egg, Heart, PawPrintIcon, Sun } from "lucide-react"
 
 import { api } from "@/server/client"
 
@@ -206,19 +206,42 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 		return () => clearInterval(interval)
 	}, [])
 
+	const [timeSinceFeed, setTimeSinceFeed] = useState(
+		Number(new Date().getTime()) - Number(socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
+	)
+
+	const timeUntilFeed = useMemo(() => {
+		return (24 * 60 * 60 * 1000 - timeSinceFeed) / 1000
+	}, [timeSinceFeed])
+
+	const [hours, minutes, seconds] = useMemo(() => {
+		const time = timeUntilFeed
+		return [
+			String(Math.floor(time / 3600)).padStart(2, "0"),
+			String(Math.floor((time % 3600) / 60)).padStart(2, "0"),
+			String(Math.floor(time % 60)).padStart(2, "0")
+		]
+	}, [timeUntilFeed])
+
 	const canFeed = useMemo(() => {
 		if (!socket && !feed) return false
-		if ((socket?.identity?.companion?.lastFeedAt === null && !feed) || (feed && feed.lastFeedAt === null))
-			return true
 
-		return (
-			Number(new Date().toISOString()) -
-				Number(
-					feed?.lastFeedAt?.toISOString() ?? socket?.identity?.companion?.lastFeedAt?.toISOString() ?? "0"
-				) >=
-			24 * 60 * 60 * 1000
-		)
-	}, [socket, feed])
+		return timeSinceFeed >= 24 * 60 * 60 * 1000
+	}, [socket, feed, timeSinceFeed])
+
+	// update the timeSinceFeed every second
+	// if the feed is null, then the feed was never fed
+	useEffect(() => {
+		if (!socket) return
+
+		const interval = setInterval(() => {
+			setTimeSinceFeed(
+				Number(new Date().getTime()) - Number(socket?.identity?.companion?.lastFeedAt?.getTime() || "0")
+			)
+		}, 1000)
+
+		return () => clearInterval(interval)
+	}, [socket])
 
 	if (!socket || !session?.user.id) return null
 
@@ -279,14 +302,22 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 							{iconIndex === 0 ? (
 								<Heart size={48} className="opacity-40" />
 							) : (
-								<PawPrintIcon size={48} className="opacity-40" />
+								<>
+									{canFeed ? (
+										<PawPrintIcon size={48} className="opacity-40" />
+									) : (
+										<Egg size={48} className="opacity-40" />
+									)}
+								</>
 							)}
 						</motion.div>
 					</AnimatePresence>
 				</div>
-				<p className="font-bold">Your companion is loading.</p>
-				<p className="mx-auto max-w-[220px] text-sm font-bold opacity-40">
-					As you build Plugs and execute transactions , the DNA of your companion will grow.
+				<p className="font-bold">{canFeed ? "Feed your companion." : "Your companion is incubating."}</p>
+				<p className="mx-auto max-w-[240px] text-sm font-bold opacity-40">
+					{canFeed
+						? "Feed your companion to boost the growth of their DNA."
+						: "As you interact with protocols, increase your stats below, and feed your companion, the DNA will grow."}
 				</p>
 				<div className="absolute bottom-0 left-0 right-0 m-4 flex flex-row justify-between gap-2">
 					<p className="flex flex-row gap-2 font-bold opacity-40">
@@ -305,7 +336,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 			<div className="flex flex-row gap-2 px-4">
 				<Button
 					variant="secondary"
-					className="w-max"
+					className={cn("w-max", canFeed === false && "cursor-auto bg-grayscale-0 hover:bg-grayscale-0")}
 					onClick={
 						canFeed
 							? () =>
@@ -316,7 +347,15 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 					}
 					disabled={feedMutation.isLoading || !canFeed}
 				>
-					{feedMutation.isLoading ? "..." : canFeed ? "Feed" : "Already fed"}
+					{feedMutation.isLoading ? (
+						"..."
+					) : canFeed ? (
+						"Feed"
+					) : (
+						<span className="tabular-nums">
+							<Counter count={`${hours}:${minutes}:${seconds}`} />
+						</span>
+					)}
 				</Button>
 				<Button className="w-full" onClick={() => {}}>
 					Share Link

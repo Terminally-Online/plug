@@ -70,16 +70,15 @@ const formatForDisplay = (input: number | string, formatDecimals: boolean, decim
 	} else if (typeof input === "string" && isDate(input)) {
 		return input.split("").reverse()
 	}
-	return []
+
+	return input.split("").reverse()
 }
 
 const MinusColumn = () => <span>-</span>
-
 const CommaColumn = () => <span>,</span>
-
 const DecimalColumn = () => <span>.</span>
-
 const SlashColumn = () => <span>/</span>
+const ColonColumn = () => <span>:</span>
 
 const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	const [y, setY] = useState(0)
@@ -130,6 +129,8 @@ export const Counter: FC<
 					<CommaColumn key={index} />
 				) : number === "/" ? (
 					<SlashColumn key={index} />
+				) : number === ":" ? (
+					<ColonColumn key={index} />
 				) : (
 					<NumberColumn key={index} digit={number} />
 				)
