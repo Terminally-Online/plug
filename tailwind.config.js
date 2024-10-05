@@ -38,6 +38,10 @@ module.exports = {
 
 				"sun-orange": "#FFA800",
 				"sun-yellow": "#FAFF00",
+				"ocean-blue": "#4E7FFD",
+				"ocean-purple": "#9E62FF",
+				"pink-pink": "#F94EFD",
+				"pink-purple": "#FD4ECC",
 
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
