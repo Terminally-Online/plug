@@ -1,18 +1,17 @@
 import type { AppProps } from "next/app"
 import localFont from "next/font/local"
 import { FC } from "react"
+import { useEffect } from "react"
 
 import { api } from "@/server/client"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
+import PwaPrompt from "@/components/pwaPrompt"
 import { GTM_ID, NextPageWithLayout } from "@/lib"
+import { registerServiceWorker } from "@/lib/pwa"
 
 import "./styles.css"
-
-import { useEffect } from "react"
-import { registerServiceWorker } from "@/lib/pwa"
-import PwaPrompt from "@/components/pwaPrompt"
 
 const satoshi = localFont({
 	src: [

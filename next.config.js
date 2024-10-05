@@ -83,13 +83,6 @@ const nextConfig = {
 			// "wagmi",
 			// "lucide-react"
 		]
-	},
-	pwa: {
-		dest: 'public',
-		disable: process.env.NODE_ENV === 'development',
-		register: true,
-		scope: '/',
-		sw: 'service-worker.js',
 	}
 }
 
@@ -102,4 +95,5 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development'
 })
 
+// Correct way to apply multiple wrappers
 module.exports = withPWA(withBundleAnalyzer(nextConfig))

@@ -198,7 +198,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 			})
 			setFeed(data)
 		}
-	}) 
+	})
 	const [feed, setFeed] = useState<{
 		createdAt: Date
 		updatedAt: Date
@@ -226,7 +226,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 	)
 
 	const [hours, minutes, seconds] = useMemo(() => {
-		const timeUntilFeed = Math.max(24 * 60 * 60 * 1000 - timeSinceFeed,0) / 1000
+		const timeUntilFeed = Math.max(24 * 60 * 60 * 1000 - timeSinceFeed, 0) / 1000
 
 		return [
 			String(Math.floor(timeUntilFeed / 3600)).padStart(2, "0"),
@@ -384,11 +384,7 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 						"w-max",
 						canFeed === false && "cursor-auto bg-grayscale-0 hover:bg-grayscale-0 hover:text-opacity-60"
 					)}
-					onClick={
-						canFeed
-							? () => feedMutation.mutate()
-							: () => {}
-					}
+					onClick={canFeed ? () => feedMutation.mutate() : () => {}}
 					disabled={feedMutation.isLoading || !canFeed}
 				>
 					{feedMutation.isLoading ? (
