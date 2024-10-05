@@ -208,7 +208,8 @@ export const ColumnProfile: FC<{ index: number }> = () => {
 
 	const canFeed = useMemo(() => {
 		if (!socket && !feed) return false
-		if (socket?.identity?.companion?.lastFeedAt === null || (feed && feed.lastFeedAt === null)) return true
+		if ((socket?.identity?.companion?.lastFeedAt === null && !feed) || (feed && feed.lastFeedAt === null))
+			return true
 
 		return (
 			Number(new Date().toISOString()) -
