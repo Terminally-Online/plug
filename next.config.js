@@ -86,10 +86,13 @@ const nextConfig = {
 	}
 }
 
-const withPWA = require('next-pwa')({
-	dest: 'public',
+const withPWA = require("next-pwa")({
+	dest: "public",
+	cacheOnFrontEndNav: true,
+	reloadOnOnline: true,
 	scope: "/app",
-	disable: process.env.NODE_ENV === 'development',
+	// disable: process.env.NODE_ENV === 'development',
+	disable: false,
 	skipWaiting: true
 })
 

@@ -22,7 +22,10 @@ export const VIEW_KEYS = {
 	PROFILE: "PROFILE",
 
 	// Admin views
-	ADMIN: "ADMIN"
+	ADMIN: "ADMIN",
+
+	// Temporal views
+	APPLICATION: "APPLICATION"
 }
 
 const DEMO_VIEW_AS = "0x62180042606624f02d8a130da8a3171e9b33894d"

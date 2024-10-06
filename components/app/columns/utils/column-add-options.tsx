@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
-import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, User, Wallet } from "lucide-react"
+import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, Star, User, Wallet } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle, VIEW_KEYS } from "@/lib"
@@ -26,6 +26,11 @@ const ANONYMOUS_OPTIONS: Options = [
 ]
 
 const OPTIONS: Options = [
+	{
+		label: "APPLICATION",
+		description: "Save Plug as an app to your device.",
+		icon: <Star size={14} className="opacity-40" />
+	},
 	...ANONYMOUS_OPTIONS,
 	{
 		label: "ACTIVITY",

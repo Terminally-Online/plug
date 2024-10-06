@@ -8,6 +8,7 @@ import {
 	Avatar,
 	Button,
 	ColumnAddOptions,
+	ColumnApplication,
 	ConsoleAdmin,
 	Header,
 	Image,
@@ -214,6 +215,8 @@ export const ConsoleColumn: FC<{
 									<SocketPositionList index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ADMIN ? (
 									<ConsoleAdmin index={index} className="px-4 pt-4" />
+								) : key === VIEW_KEYS.APPLICATION ? (
+									<ColumnApplication index={index} className="pt-4" />
 								) : (
 									<React.Fragment></React.Fragment>
 								)}
