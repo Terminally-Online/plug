@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes } from "react"
 
-export const ColumnAlerts: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = ({ id }) => {
+export const ColumnAlerts: FC<HTMLAttributes<HTMLDivElement> & { id: string }> = () => {
 	return (
 		<div className="flex h-full flex-col items-center gap-2">
 			<div className="my-auto text-center">

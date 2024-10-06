@@ -1,6 +1,7 @@
+import Image from "next/image"
 import { FC } from "react"
 
-import { Image, LandingContainer } from "@/components"
+import { LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const LandingFooter: FC = () => {

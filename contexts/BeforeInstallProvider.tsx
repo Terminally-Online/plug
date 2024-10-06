@@ -5,7 +5,6 @@ import { isBrowser } from "react-device-detect"
  * This interface is experimental.
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent/BeforeInstallPromptEvent
- *
  */
 interface BeforeInstallPromptEvent extends Event {
 	/**

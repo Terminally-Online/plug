@@ -7,7 +7,6 @@ import { api } from "@/server/client"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-// import PwaPrompt from "@/components/shared/pwa"
 import { GTM_ID, NextPageWithLayout } from "@/lib"
 
 import "./styles.css"
@@ -63,7 +62,6 @@ const PlugApp: FC<
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}
-			{/* <PwaPrompt /> */}
 		</React.Fragment>
 	)
 }
