@@ -135,9 +135,9 @@ model UserSocket {
     // One-to-many 
     // ---------------------------------------------------------------------------
     workflow     Workflow[]
-    collectibles OpenseaCollectibleCache[]
     balances     ImplementationBalance[]
     positions    PositionCache[]
+    collectibles CollectibleCache[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -335,111 +335,107 @@ model PositionCache {
     socketId String     @id
 }
 
-model OpenseaCollection {
+model Collection {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
-    slug      String   @id @unique
+    address   String
+    chain     String
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    collection              String
-    name                    String
-    description             String
-    imageUrl                String
-    bannerImageUrl          String
-    owner                   String
-    category                String
-    isDisabled              Boolean
-    isNsfw                  Boolean
-    traitOffersEnabled      Boolean
-    collectionOffersEnabled Boolean
-    openseaUrl              String
-    projectUrl              String
-    wikiUrl                 String
-    discordUrl              String
-    telegramUrl             String
-    twitterUsername         String
-    instagramUsername       String
-    totalSupply             Int
-    chain                   String
+    name              String
+    description       String
+    iconUrl           String?
+    openseaUrl        String?
+    projectUrl        String?
+    wikiUrl           String?
+    discordUrl        String?
+    telegramUrl       String?
+    twitterUsername   String?
+    instagramUsername String?
 
     // ---------------------------------------------------------------------------
     // One-to-many
     // ---------------------------------------------------------------------------
-    collectibles OpenseaCollectible[]
+    collectibles Collectible[]
 
     // ---------------------------------------------------------------------------
     // Indexes
     // ---------------------------------------------------------------------------
-    @@index([slug, chain])
+    @@id([address, chain])
 }
 
-model OpenseaCollectibleMetadata {
+model CollectibleMetadata {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    traits Json[]
-    color  String?
+    tokenId           String
+    collectionAddress String
+    collectionChain   String
+    traits            Json[]
+    color             String?
 
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    collectible   OpenseaCollectible @relation(fields: [collectibleId], references: [id], onDelete: Cascade)
-    collectibleId String             @unique
+    // collectible Collectible[]
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@id([tokenId, collectionAddress, collectionChain])
 }
 
-model OpenseaCollectible {
+model Collectible {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
-    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    identifier          String
-    contract            String
-    tokenStandard       String
-    name                String?
-    description         String?
-    imageUrl            String?
-    displayImageUrl     String?
-    displayAnimationUrl String?
-    metadataUrl         String?
-    openseaUrl          String
-    isDisabled          Boolean
-    isNsfw              Boolean
-    owner               String
+    tokenId    String
+    amount     String
+    name       String
+    interface  String
+    previewUrl String?
+    imageUrl   String?
+    videoUrl   String?
+    isSpam     Boolean
 
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    metadata OpenseaCollectibleMetadata?
+    // CollectibleMetadata CollectibleMetadata? @relation(fields: [tokenId, collectionAddress, collectionChain], references: [tokenId, collectionAddress, collectionChain])
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    collection     OpenseaCollection       @relation(fields: [collectionSlug], references: [slug])
-    collectionSlug String
-    cache          OpenseaCollectibleCache @relation(fields: [cacheSocketId, cacheChain], references: [socketId, chain], onDelete: Cascade)
-    cacheSocketId  String
-    cacheChain     String
+    collection        Collection       @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
+    collectionAddress String
+    collectionChain   String
+    cache             CollectibleCache @relation(fields: [cacheSocketId], references: [socketId])
+    cacheSocketId     String
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@id([cacheSocketId, tokenId, collectionAddress, collectionChain])
 }
 
-model OpenseaCollectibleCache {
+model CollectibleCache {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
@@ -447,25 +443,15 @@ model OpenseaCollectibleCache {
     updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
-    // Fields
-    // ---------------------------------------------------------------------------
-    chain String
-
-    // ---------------------------------------------------------------------------
     // One-to-many
     // ---------------------------------------------------------------------------
-    collectibles OpenseaCollectible[]
+    collectibles Collectible[]
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
     socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
-    socketId String
-
-    // ---------------------------------------------------------------------------
-    // Identification
-    // ---------------------------------------------------------------------------
-    @@id([socketId, chain])
+    socketId String     @id
 }
 
 model FeatureRequest {

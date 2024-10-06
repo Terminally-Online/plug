@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 
 import { TriangleAlert } from "lucide-react"
 
@@ -13,14 +13,42 @@ export const CollectibleImage: FC<{
 }> = ({ video, image = "", fallbackImage = "", name = "", size = "md" }) => {
 	const [videoError, setVideoError] = useState(false)
 	const [imageError, setImageError] = useState(false)
+	const [videoLoaded, setVideoLoaded] = useState(false)
+	const videoRef = useRef<HTMLVideoElement>(null)
+
+	useEffect(() => {
+		if (videoRef.current) {
+			videoRef.current.addEventListener("loadeddata", () => setVideoLoaded(true))
+		}
+	}, [])
 
 	return (
 		<div className="relative h-full w-full">
-			{video && videoError === false ? (
-				<>
+			{video ? (
+				<React.Fragment>
+					{!videoLoaded && image && !imageError && (
+						<>
+							<Image
+								src={image}
+								alt={name}
+								className="mb-4 h-full w-full rounded-lg object-cover blur-2xl"
+								width={1200}
+								height={1200}
+							/>
+							<Image
+								src={image}
+								alt={name}
+								className="absolute top-0 mb-4 h-full w-full rounded-lg object-cover"
+								width={1200}
+								height={1200}
+								onError={() => setImageError(true)}
+							/>
+						</>
+					)}
 					<video
+						ref={videoRef}
 						src={video}
-						className="absolute z-[-1] h-full w-full rounded-lg object-cover blur-2xl"
+						className={`absolute z-[-1] h-full w-full rounded-lg object-cover blur-2xl ${videoLoaded ? "" : "hidden"}`}
 						autoPlay
 						playsInline
 						loop
@@ -28,15 +56,18 @@ export const CollectibleImage: FC<{
 					/>
 					<video
 						src={video}
-						className="h-full w-full rounded-lg object-cover"
+						className={`h-full w-full rounded-lg object-cover ${videoLoaded ? "" : "hidden"}`}
 						autoPlay
 						playsInline
 						loop
 						muted
-						onError={() => setVideoError(true)}
+						onError={() => {
+							setVideoError(true)
+							setVideoLoaded(false)
+						}}
 					/>
-				</>
-			) : image && imageError === false ? (
+				</React.Fragment>
+			) : image && !imageError ? (
 				<>
 					<Image
 						src={image}
@@ -44,6 +75,7 @@ export const CollectibleImage: FC<{
 						className="mb-4 h-full w-full rounded-lg object-cover blur-2xl"
 						width={1200}
 						height={1200}
+						quality={10}
 					/>
 					<Image
 						src={image}
@@ -51,6 +83,8 @@ export const CollectibleImage: FC<{
 						className="absolute top-0 mb-4 h-full w-full rounded-lg object-cover"
 						width={1200}
 						height={1200}
+						quality={100}
+						priority={true}
 						onError={() => setImageError(true)}
 					/>
 				</>

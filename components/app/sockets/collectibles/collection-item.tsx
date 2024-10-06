@@ -1,9 +1,9 @@
-import { FC, useState } from "react"
+import React, { FC, useState } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Accordion, CollectibleFrame, Image } from "@/components"
-import { getChainImage } from "@/lib"
+import { Accordion, Image } from "@/components"
+import { formatTitle, getChainImage } from "@/lib"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 
@@ -18,70 +18,58 @@ export const SocketCollectionItem: FC<{
 	if (error) return null
 
 	return (
-		<>
-			<Accordion
-				loading={collection === undefined}
-				className="text-left"
-				expanded={expanded || searched}
-				onExpand={collection === undefined || searched ? () => {} : () => setExpanded(!expanded)}
-				accordion={collection && <SocketCollectibleGrid index={index} collection={collection} />}
-			>
-				{collection === undefined ? (
-					<div className="invisible">
-						<p>.</p>
-						<p>.</p>
+		<Accordion
+			loading={collection === undefined}
+			className="text-left"
+			expanded={expanded || searched}
+			onExpand={collection === undefined || searched ? () => {} : () => setExpanded(!expanded)}
+			accordion={collection && <SocketCollectibleGrid index={index} collection={collection} />}
+		>
+			{collection === undefined ? (
+				<div className="invisible">
+					<p>.</p>
+					<p>.</p>
+				</div>
+			) : (
+				<div className="flex w-full flex-row items-center gap-4">
+					<div className="relative h-10 min-w-10">
+						<Image
+							src={collection.iconUrl ?? ""}
+							alt={collection.name}
+							className="absolute left-1/2 h-48 w-48 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							width={140}
+							height={140}
+							onError={() => setError(true)}
+						/>
+						<div
+							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+							style={{
+								backgroundImage: `url(${collection.iconUrl})`,
+								backgroundSize: "cover",
+								backgroundPosition: "center",
+								backgroundRepeat: "no-repeat"
+							}}
+						/>
 					</div>
-				) : (
-					<div className="flex w-full flex-row items-center gap-4">
-						<div className="relative h-10 min-w-10">
+
+					<div className="flex w-min flex-col truncate overflow-ellipsis">
+						<p className="truncate font-bold">{formatTitle(collection.name.toLowerCase())}</p>
+						<div className="flex w-max flex-row items-center gap-2">
 							<Image
-								src={collection.imageUrl}
+								src={getChainImage(collection.chain)}
 								alt={collection.name}
-								className="absolute left-1/2 h-48 w-48 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
-								width={140}
-								height={140}
-								onError={() => setError(true)}
+								className="z-1 relative h-4 w-4 rounded-full bg-grayscale-100"
+								width={48}
+								height={48}
 							/>
-							<div
-								className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
-								style={{
-									backgroundImage: `url(${collection.imageUrl})`,
-									backgroundSize: "cover",
-									backgroundPosition: "center",
-									backgroundRepeat: "no-repeat"
-								}}
-							/>
-						</div>
-
-						<div className="flex w-min flex-col truncate overflow-ellipsis">
-							<p className="truncate font-bold">{collection.name}</p>
-							<div className="flex w-max flex-row items-center gap-2">
-								<Image
-									src={getChainImage(collection.chain)}
-									alt={collection.name}
-									className="z-1 relative h-4 w-4 rounded-full bg-grayscale-100"
-									width={48}
-									height={48}
-								/>
-								<p className="text-sm font-bold opacity-40">
-									{collection.collectibles.length} Token
-									{collection.collectibles.length > 1 && "s"}
-								</p>
-							</div>
+							<p className="text-sm font-bold opacity-40">
+								{collection.collectibles.length} Token
+								{collection.collectibles.length > 1 && "s"}
+							</p>
 						</div>
 					</div>
-				)}
-			</Accordion>
-
-			{collection &&
-				collection.collectibles.map(collectible => (
-					<CollectibleFrame
-						key={`${collection.slug}-${collectible?.contract}-${collectible?.identifier}`}
-						index={index}
-						collection={collection}
-						collectible={collectible}
-					/>
-				))}
-		</>
+				</div>
+			)}
+		</Accordion>
 	)
 }

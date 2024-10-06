@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react"
+import React, { FC, useMemo, useState } from "react"
 
 import { ExternalLink, EyeOff } from "lucide-react"
 
@@ -66,7 +66,7 @@ export const PositionFrame: FC<{
 			hasChildrenPadding={false}
 			hasOverlay
 		>
-			<>
+			<React.Fragment>
 				{keys.length > 0 && (
 					<SocketTokenPriceChart
 						enabled={isFrame}
@@ -206,7 +206,7 @@ export const PositionFrame: FC<{
 						</div>
 					))}
 				</div>
-			</>
+			</React.Fragment>
 		</Frame>
 	)
 }

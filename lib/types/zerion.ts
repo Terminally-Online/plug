@@ -79,3 +79,81 @@ export type ZerionPositions = {
 		}
 	}>
 }
+
+export type ZerionCollectibles = {
+	links: {
+		self: string
+		next: string
+	}
+	data: Array<{
+		type: string
+		id: string
+		attributes: {
+			changed_at: string
+			amount: string
+			price: number
+			value: number
+			nft_info: {
+				contract_address: string
+				token_id: string
+				name: string
+				interface: string
+				content: {
+					preview: {
+						url: string
+					}
+					detail: {
+						url: string
+					}
+					video?: {
+						url: string
+					}
+				}
+				flags: {
+					is_spam: boolean
+				}
+			}
+			collection_info: {
+				name: string
+				description: string
+				content: {
+					icon: {
+						url: string
+					}
+					banner: {
+						url: string
+					}
+				}
+			}
+		}
+		relationships: {
+			chain: {
+				links: {
+					related: string
+				}
+				data: {
+					type: string
+					id: string
+				}
+			}
+			nft: {
+				data: {
+					type: string
+					id: string
+				}
+			}
+			nft_collection: {
+				data: {
+					type: string
+					id: string
+				}
+			}
+			wallet_nft_collection: {
+				data: {
+					type: string
+					id: string
+				}
+			}
+		}
+	}>
+}

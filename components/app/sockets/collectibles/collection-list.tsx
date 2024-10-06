@@ -37,11 +37,12 @@ export const SocketCollectionList: FC<
 			collectible =>
 				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.description.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
+				// collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.collectibles.some(
 					collectionCollectible =>
-						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
-						(collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
+						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase())
+					// ||
+					// (collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
 				)
 		)
 
@@ -84,6 +85,19 @@ export const SocketCollectionList: FC<
 				isViewing="collectibles"
 				isReceivable={true}
 			/>
+
+			{visibleCollectibles.map(
+				collection =>
+					collection &&
+					collection.collectibles.map(collectible => (
+						<CollectibleFrame
+							key={`${collection.address}-${collection.chain}-${collectible.tokenId}`}
+							index={index}
+							collection={collection}
+							collectible={collectible}
+						/>
+					))
+			)}
 		</div>
 	)
 }

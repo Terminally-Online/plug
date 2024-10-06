@@ -59,9 +59,9 @@ Table UserSocket {
   socketAddress String [not null]
   identity SocketIdentity
   workflow Workflow [not null]
-  collectibles OpenseaCollectibleCache [not null]
   balances ImplementationBalance [not null]
   positions PositionCache [not null]
+  collectibles CollectibleCache [not null]
 }
 
 Table Workflow {
@@ -172,79 +172,70 @@ Table PositionCache {
   socketId String [pk]
 }
 
-Table OpenseaCollection {
-  slug String [pk]
+Table Collection {
+  address String [not null]
+  chain String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  collection String [not null]
   name String [not null]
   description String [not null]
-  imageUrl String [not null]
-  bannerImageUrl String [not null]
-  owner String [not null]
-  category String [not null]
-  isDisabled Boolean [not null]
-  isNsfw Boolean [not null]
-  traitOffersEnabled Boolean [not null]
-  collectionOffersEnabled Boolean [not null]
-  openseaUrl String [not null]
-  projectUrl String [not null]
-  wikiUrl String [not null]
-  discordUrl String [not null]
-  telegramUrl String [not null]
-  twitterUsername String [not null]
-  instagramUsername String [not null]
-  totalSupply Int [not null]
-  chain String [not null]
-  collectibles OpenseaCollectible [not null]
-}
-
-Table OpenseaCollectibleMetadata {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  traits Json[] [not null]
-  color String
-  collectible OpenseaCollectible [not null]
-  collectibleId String [unique, not null]
-}
-
-Table OpenseaCollectible {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  identifier String [not null]
-  contract String [not null]
-  tokenStandard String [not null]
-  name String
-  description String
-  imageUrl String
-  displayImageUrl String
-  displayAnimationUrl String
-  metadataUrl String
-  openseaUrl String [not null]
-  isDisabled Boolean [not null]
-  isNsfw Boolean [not null]
-  owner String [not null]
-  metadata OpenseaCollectibleMetadata
-  collection OpenseaCollection [not null]
-  collectionSlug String [not null]
-  cache OpenseaCollectibleCache [not null]
-  cacheSocketId String [not null]
-  cacheChain String [not null]
-}
-
-Table OpenseaCollectibleCache {
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  chain String [not null]
-  collectibles OpenseaCollectible [not null]
-  socket UserSocket [not null]
-  socketId String [not null]
+  iconUrl String
+  openseaUrl String
+  projectUrl String
+  wikiUrl String
+  discordUrl String
+  telegramUrl String
+  twitterUsername String
+  instagramUsername String
+  collectibles Collectible [not null]
 
   indexes {
-    (socketId, chain) [pk]
+    (address, chain) [pk]
   }
+}
+
+Table CollectibleMetadata {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  tokenId String [not null]
+  collectionAddress String [not null]
+  collectionChain String [not null]
+  traits Json[] [not null]
+  color String
+
+  indexes {
+    (tokenId, collectionAddress, collectionChain) [pk]
+  }
+}
+
+Table Collectible {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  tokenId String [not null]
+  amount String [not null]
+  name String [not null]
+  interface String [not null]
+  previewUrl String
+  imageUrl String
+  videoUrl String
+  isSpam Boolean [not null]
+  collection Collection [not null]
+  collectionAddress String [not null]
+  collectionChain String [not null]
+  cache CollectibleCache [not null]
+  cacheSocketId String [not null]
+
+  indexes {
+    (cacheSocketId, tokenId, collectionAddress, collectionChain) [pk]
+  }
+}
+
+Table CollectibleCache {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  collectibles Collectible [not null]
+  socket UserSocket [not null]
+  socketId String [pk]
 }
 
 Table FeatureRequest {
@@ -290,10 +281,8 @@ Ref: Position.cacheId > PositionCache.socketId [delete: Cascade]
 
 Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
 
-Ref: OpenseaCollectibleMetadata.collectibleId - OpenseaCollectible.id [delete: Cascade]
+Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, chain)
 
-Ref: OpenseaCollectible.collectionSlug > OpenseaCollection.slug
+Ref: Collectible.cacheSocketId > CollectibleCache.socketId
 
-Ref: OpenseaCollectible.(cacheSocketId, cacheChain) > OpenseaCollectibleCache.(socketId, chain) [delete: Cascade]
-
-Ref: OpenseaCollectibleCache.socketId > UserSocket.id [delete: Cascade]
+Ref: CollectibleCache.socketId > UserSocket.id [delete: Cascade]
