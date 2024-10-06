@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 
 import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
 
@@ -31,12 +31,11 @@ const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_W
 export const ConsoleColumn: FC<{
 	column: Column
 }> = ({ column }) => {
-	const { key, index, item, from, width } = column
-
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { socket } = useSocket()
-	const { navigate, resize, remove, frame } = useColumns(index)
+	const { navigate, resize, remove, frame } = useColumns(column.index)
+	const { key, index, item } = column
 
 	const { plug, handle } = usePlugs(item)
 
@@ -47,7 +46,7 @@ export const ConsoleColumn: FC<{
 			if (!resizeRef.current || !isResizing) return
 
 			resize({
-				index,
+				index: column.index,
 				width: getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left)
 			})
 		}
@@ -65,11 +64,11 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [index, isResizing, resize])
+	}, [column.index, isResizing, resize])
 
 	return (
 		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
-			<Draggable draggableId={`${index}-${key}`} index={index}>
+			<Draggable draggableId={`${column.index}-${column.key}`} index={column.index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
@@ -77,7 +76,7 @@ export const ConsoleColumn: FC<{
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
-							width: `${width}px`
+							width: `${column.width}px`
 						}}
 					>
 						<div
@@ -102,13 +101,13 @@ export const ConsoleColumn: FC<{
 												/>
 											</Button>
 
-											{from && (
+											{column.from && (
 												<Button
 													variant="secondary"
 													onClick={() =>
 														navigate({
-															index,
-															key: from
+															index: column.index,
+															key: column.from
 														})
 													}
 													className="rounded-sm p-1"
@@ -150,7 +149,7 @@ export const ConsoleColumn: FC<{
 													{formatTitle(
 														plug
 															? plug.name
-															: (key?.replace("_", " ").toLowerCase() ?? "ERROR")
+															: (column.key?.replace("_", " ").toLowerCase() ?? "ERROR")
 													)}
 												</p>
 											</div>
@@ -163,8 +162,8 @@ export const ConsoleColumn: FC<{
 														onClick={() =>
 															handle.plug.fork({
 																plug: plug.id,
-																index,
-																from: key
+																index: column.index,
+																from: column.key
 															})
 														}
 													>
@@ -174,7 +173,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => frame(`${index}-${item}-manage`)}
+														onClick={() => frame(`${column.index}-${column.item}-manage`)}
 													>
 														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -182,7 +181,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => remove(index)}
+														onClick={() => remove(column.index)}
 													>
 														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -191,7 +190,7 @@ export const ConsoleColumn: FC<{
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => remove(index) : undefined}
+									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
@@ -204,7 +203,7 @@ export const ConsoleColumn: FC<{
 								) : key === VIEW_KEYS.MY_PLUGS ? (
 									<PlugsMine index={index} className="pt-4" />
 								) : key === VIEW_KEYS.PLUG ? (
-									<Plug index={index} item={item} from={from} className="px-4 pt-4" />
+									<Plug index={index} item={item} from={column.from} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.ACTIVITY ? (
 									<SocketActivity index={index} className="px-4 pt-4" />
 								) : key === VIEW_KEYS.TOKENS ? (
@@ -216,7 +215,7 @@ export const ConsoleColumn: FC<{
 								) : key === VIEW_KEYS.ADMIN ? (
 									<ConsoleAdmin index={index} className="px-4 pt-4" />
 								) : (
-									<></>
+									<React.Fragment></React.Fragment>
 								)}
 							</div>
 						</div>

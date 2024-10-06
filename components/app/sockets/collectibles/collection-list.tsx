@@ -85,6 +85,19 @@ export const SocketCollectionList: FC<
 				isViewing="collectibles"
 				isReceivable={true}
 			/>
+
+			{visibleCollectibles.map(
+				collection =>
+					collection &&
+					collection.collectibles.map(collectible => (
+						<CollectibleFrame
+							key={`${collection.address}-${collection.chain}-${collectible.tokenId}`}
+							index={index}
+							collection={collection}
+							collectible={collectible}
+						/>
+					))
+			)}
 		</div>
 	)
 }

@@ -135,7 +135,7 @@ export const useColumns = (index?: number, key?: string) => {
 				)
 			)
 		},
-		[updateColumns]
+		[updateColumns, key, index]
 	)
 
 	const column = useMemo(
@@ -153,7 +153,7 @@ export const useColumns = (index?: number, key?: string) => {
 		if (column === undefined) return false
 
 		return column.frame === key
-	}, [column])
+	}, [column, key])
 
 	return {
 		columns,
