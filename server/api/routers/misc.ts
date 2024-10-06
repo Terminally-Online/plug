@@ -34,7 +34,7 @@ export const misc = createTRPCRouter({
 
 		const collectibles = ctx.session.user.anonymous
 			? []
-			: await ctx.db.openseaCollection.findMany({
+			: await ctx.db.collection.findMany({
 					where: {
 						AND: [
 							{
@@ -49,19 +49,19 @@ export const misc = createTRPCRouter({
 															contains: input,
 															mode: "insensitive"
 														}
-													},
-													{
-														description: {
-															contains: input,
-															mode: "insensitive"
-														}
-													},
-													{
-														cacheChain: {
-															contains: input,
-															mode: "insensitive"
-														}
 													}
+													// {
+													// 	description: {
+													// 		contains: input,
+													// 		mode: "insensitive"
+													// 	}
+													// },
+													// {
+													// 	cacheChain: {
+													// 		contains: input,
+													// 		mode: "insensitive"
+													// 	}
+													// }
 												]
 											}
 										}
@@ -93,19 +93,19 @@ export const misc = createTRPCRouter({
 											contains: input,
 											mode: "insensitive"
 										}
-									},
-									{
-										description: {
-											contains: input,
-											mode: "insensitive"
-										}
-									},
-									{
-										cacheChain: {
-											contains: input,
-											mode: "insensitive"
-										}
 									}
+									// {
+									// 	description: {
+									// 		contains: input,
+									// 		mode: "insensitive"
+									// 	}
+									// },
+									// {
+									// 	cacheChain: {
+									// 		contains: input,
+									// 		mode: "insensitive"
+									// 	}
+									// }
 								]
 							}
 						}
