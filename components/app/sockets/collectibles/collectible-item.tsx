@@ -1,9 +1,10 @@
 import Image from "next/image"
-import { FC } from "react"
+import { FC, useState } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
 import { useColumns } from "@/state"
+import { cn } from "@/lib"
 
 export const SocketCollectibleItem: FC<{
 	index: number
@@ -11,6 +12,8 @@ export const SocketCollectibleItem: FC<{
 	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
 	const { frame } = useColumns(index)
+
+	const [loading, setLoading] = useState(true)
 
 	return (
 		<div
@@ -28,7 +31,13 @@ export const SocketCollectibleItem: FC<{
 					objectFit: "cover",
 					objectPosition: "center"
 				}}
-				className="rounded-md"
+				className={cn("rounded-md",
+					loading
+						? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
+						: "transition-all duration-200 ease-in-out",
+					loading === false ? "cursor-pointer" : "cursor-default",
+				)}
+				onLoad={() => setLoading(false)}
 			/>
 		</div>
 	)

@@ -49,9 +49,7 @@ export const CollectibleFrame: FC<{
 			chain: collectible.collectionChain,
 			tokenId: collectible.tokenId
 		},
-		{
-			staleTime: Infinity
-		}
+		{ enabled: isFrame }
 	)
 
 	const [expanded, setExpanded] = useState(false)

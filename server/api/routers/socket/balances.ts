@@ -68,9 +68,20 @@ export const balances = createTRPCRouter({
 
 			if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
+			const collectible = await ctx.db.collectible.findFirst({
+				where: {
+					tokenId: input.tokenId,
+					collectionAddress: input.address,
+					collectionChain: input.chain
+				},
+				include: { collection: true }
+			})
+
+			if (collectible === null) throw new TRPCError({ code: "NOT_FOUND" })
+
 			const traits = response.data.nft.traits === null ? [] : response.data.nft.traits
-			// const color = await getDominantColor(collectible.displayImageUrl ?? collectible.collection.imageUrl)
-			const color = "#000000"
+			const colorUrl = collectible.previewUrl ?? collectible.collection.iconUrl ?? ""
+			const color = await getDominantColor(colorUrl)
 
 			return await ctx.db.collectibleMetadata.upsert({
 				where: {
