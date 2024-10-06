@@ -1,13 +1,13 @@
 import type { AppProps } from "next/app"
 import localFont from "next/font/local"
-import { FC } from "react"
+import React, { FC } from "react"
 import { useEffect } from "react"
 
 import { api } from "@/server/client"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-import PwaPrompt from "@/components/pwaPrompt"
+// import PwaPrompt from "@/components/shared/pwa"
 import { GTM_ID, NextPageWithLayout } from "@/lib"
 import { registerServiceWorker } from "@/lib/pwa"
 
@@ -50,7 +50,7 @@ const PlugApp: FC<
 	}, [])
 
 	return (
-		<>
+		<React.Fragment>
 			<style jsx global>
 				{`
 					* {
@@ -62,8 +62,8 @@ const PlugApp: FC<
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}
-			<PwaPrompt />
-		</>
+			{/* <PwaPrompt /> */}
+		</React.Fragment>
 	)
 }
 
