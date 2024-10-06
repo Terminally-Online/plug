@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app"
 import localFont from "next/font/local"
+import Head from "next/head"
 import React, { FC } from "react"
-import { useEffect } from "react"
 
 import { api } from "@/server/client"
 
@@ -9,7 +9,6 @@ import { GoogleTagManager } from "@next/third-parties/google"
 
 // import PwaPrompt from "@/components/shared/pwa"
 import { GTM_ID, NextPageWithLayout } from "@/lib"
-import { registerServiceWorker } from "@/lib/pwa"
 
 import "./styles.css"
 
@@ -45,10 +44,6 @@ const PlugApp: FC<
 > = ({ Component, pageProps }) => {
 	const getLayout = Component.getLayout ?? (page => page)
 
-	useEffect(() => {
-		registerServiceWorker()
-	}, [])
-
 	return (
 		<React.Fragment>
 			<style jsx global>
@@ -59,6 +54,12 @@ const PlugApp: FC<
 				`}
 			</style>
 
+			<Head>
+				<meta
+					name="viewport"
+					content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+				/>
+			</Head>
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}

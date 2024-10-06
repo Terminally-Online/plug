@@ -19,5 +19,5 @@
 	"start_url": "/",
 	"scope": "/",
 	"description": "Automate your transactions on every popular Ethereum based blockchain.",
-	"orientation": "portrait-primary"
+	"orientation": "portrait"
 }
