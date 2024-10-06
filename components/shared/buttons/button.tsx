@@ -65,7 +65,7 @@ export const Button: FC<Props> = ({
 						/>
 						<div
 							className={cn(
-								"absolute inset-0 ",
+								"absolute inset-0",
 								sizing === "sm" && "shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)]",
 								sizing !== "sm" && "shadow-[inset_4px_0_4px_0_rgba(255,255,255,.3)]",
 								sizing === "sm" && "rounded-sm",

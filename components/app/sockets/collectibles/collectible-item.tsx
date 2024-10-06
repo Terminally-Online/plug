@@ -3,8 +3,8 @@ import { FC, useState } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { useColumns } from "@/state"
 import { cn } from "@/lib"
+import { useColumns } from "@/state"
 
 export const SocketCollectibleItem: FC<{
 	index: number
@@ -31,11 +31,12 @@ export const SocketCollectibleItem: FC<{
 					objectFit: "cover",
 					objectPosition: "center"
 				}}
-				className={cn("rounded-md",
+				className={cn(
+					"rounded-md",
 					loading
 						? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
 						: "transition-all duration-200 ease-in-out",
-					loading === false ? "cursor-pointer" : "cursor-default",
+					loading === false ? "cursor-pointer" : "cursor-default"
 				)}
 				onLoad={() => setLoading(false)}
 			/>
