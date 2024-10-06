@@ -171,7 +171,7 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
-	const isLoading = connection.status === 'loading' && connection.variables?.connector === connector
+	const isLoading = connection.isLoading && connection.variables?.connector === connector
 	const isRecent = connector.id === useRecentConnectorId()
 	const isDetected = connector.isInjected as boolean
 	// TODO(#389): Remove isIFrame check when we can update wagmi to version >= 2.9.4
