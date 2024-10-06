@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react"
 import { isAndroid, isIOS, isMacOs, isWindows, osName } from "react-device-detect"
 
 import { motion } from "framer-motion"
-import { LoaderCircle, Plus } from "lucide-react"
+import { ArrowDownCircleIcon, LoaderCircle, Plus } from "lucide-react"
 
 import { Button } from "@/components/shared"
+import { useBeforeInstall } from "@/contexts"
 import { cn } from "@/lib"
 
 type Instructions = Record<"macOS" | "iOS" | "android" | "linux" | "windows", InstructionStep[]>
@@ -84,42 +85,13 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 	className,
 	...props
 }) => {
-	const [prompt, setPrompt] = useState<any>(null)
-	const [isAdding, setIsAdding] = useState(false)
+	const beforeInstall = useBeforeInstall()
 
-	const handleInstall = () => {
-		console.log("in handle install")
-		if (!prompt) return
-		console.log("after prompt")
+	if (!beforeInstall) return null
 
-		setIsAdding(true)
-		prompt.prompt()
-		prompt.userChoice.then((choiceResult: { outcome: string }) => {
-			if (choiceResult.outcome === "accepted") {
-				console.log("User accepted the A2HS prompt")
-			} else {
-				console.log("User dismissed the A2HS prompt")
-			}
-			setPrompt(null)
-			setIsAdding(false)
-		})
-	}
+	const osInstructions = getInstructions()
 
-	useEffect(() => {
-		const handleBeforeInstallPrompt = (event: any) => {
-			event.preventDefault()
-			setPrompt(event)
-			// TODO: If the app is already a native (PWA) app we should add the option to column-add-options.
-			// if(!window.matchMedia("(display-mode: standalone)").matches) {
-			// }
-		}
-
-		window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-
-		return () => {
-			window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-		}
-	}, [])
+	if (osInstructions.length === 0) return null
 
 	return (
 		<div className={cn("flex h-full items-center justify-center overflow-x-hidden", className)} {...props}>
@@ -156,13 +128,13 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 					</motion.svg>
 				</motion.div>
 
-				<div className="absolute inset-0 z-[20] flex flex-col items-center justify-center px-4 text-center">
-					<h2 className="mb-4 flex flex-wrap gap-4 text-2xl">
+				<div className="absolute inset-0 z-[20] flex flex-col items-center justify-center gap-2 px-4 text-center">
+					<h2 className="mb-2 flex h-4 flex-wrap gap-4 text-xl">
 						Add
 						<motion.span
 							className="relative cursor-pointer"
-							initial={{ y: -20 }}
-							animate={{ y: 0 }}
+							initial={{ y: -25 }}
+							animate={{ y: -5 }}
 							transition={{
 								y: {
 									duration: 0.6,
@@ -171,7 +143,13 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 									ease: "easeIn"
 								}
 							}}
-							onClick={handleInstall}
+							onClick={
+								beforeInstall.isNativePromptAvailable
+									? async () => {
+											await beforeInstall.prompt()
+										}
+									: undefined
+							}
 						>
 							<Image
 								className="absolute left-0 top-1/2 h-16 w-16 -translate-y-1/2 blur-lg filter"
@@ -190,17 +168,31 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 						</motion.span>
 						to your dock.
 					</h2>
-					<p className="mb-6 max-w-[300px] text-sm opacity-40">
-						Adding an application to your home screen and dock will keep your onchain activity.
-					</p>
 
-					<div className="max-w-[300px] text-sm opacity-40">
-						{getInstructions().map(({ step }, index) => (
-							<span key={index} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
-								{step}
-							</span>
-						))}
-					</div>
+					{beforeInstall.isNativePromptAvailable ? (
+						<>
+							<p className="mb-4 max-w-[300px] text-sm opacity-40">
+								Create a shortcut to manage your onchain activity in just one click away at all times.
+							</p>
+							<Button
+								className="truncate"
+								sizing="sm"
+								onClick={async () => {
+									await beforeInstall.prompt()
+								}}
+							>
+								Install
+							</Button>
+						</>
+					) : (
+						<div className="max-w-[300px] text-sm opacity-40">
+							{getInstructions().map(({ step }, index) => (
+								<span key={index} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+									{step}
+								</span>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

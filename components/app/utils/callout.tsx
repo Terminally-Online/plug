@@ -11,9 +11,12 @@ const Base: FC<
 		description?: JSX.Element | string
 	}
 > = ({ title, description, children, className, ...props }) => (
-	<div className={cn("flex h-full flex-col items-center justify-center text-center font-bold", className)} {...props}>
-		<p className="max-w-[280px]">{title}</p>
-		{description && <p className="mt-2 max-w-[300px] text-sm text-black text-opacity-40">{description}</p>}
+	<div
+		className={cn("flex h-full flex-col items-center justify-center gap-2 text-center font-bold", className)}
+		{...props}
+	>
+		<p className="max-w-[280px] text-xl">{title}</p>
+		{description && <p className="max-w-[300px] text-sm text-black text-opacity-40">{description}</p>}
 		{children && <div className="mt-4 flex flex-row gap-2">{children}</div>}
 	</div>
 )
