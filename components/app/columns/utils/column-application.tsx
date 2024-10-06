@@ -8,6 +8,7 @@ import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/shared"
 import { useBeforeInstall } from "@/contexts"
 import { cn } from "@/lib"
+import { Flag, useFlags } from "@/state"
 
 type Instructions = Record<
 	"macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome",
@@ -91,6 +92,8 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 	...props
 }) => {
 	const beforeInstall = useBeforeInstall()
+	const { handleFlag } = useFlags()
+
 	const [currentStep, setCurrentStep] = useState(0)
 
 	if (!beforeInstall) return null
@@ -224,6 +227,12 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 									</>
 								)}
 							</div>
+							<p
+								className="mt-8 cursor-pointer text-sm opacity-40 hover:opacity-100"
+								onClick={() => handleFlag(Flag.SHOW_PWA, false)}
+							>
+								Never show this again.
+							</p>
 						</div>
 					)}
 				</div>

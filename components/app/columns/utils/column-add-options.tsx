@@ -1,10 +1,10 @@
-import { FC, HTMLAttributes, PropsWithChildren } from "react"
+import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
 
 import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, Star, User, Wallet } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { Flag, useColumns, useFlags, useSocket } from "@/state"
 
 type Options = Array<{
 	label: keyof typeof VIEW_KEYS
@@ -74,11 +74,25 @@ export const ColumnAddOptions: FC<
 			index: number
 		}>
 > = ({ index, className, ...props }) => {
+	const { flags } = useFlags()
 	const { socket } = useSocket()
 	const { navigate } = useColumns()
 
+	const flagOptions = useMemo(() => {
+		const options = []
+
+		if (flags[Flag.SHOW_PWA])
+			options.push({
+				label: "Application",
+				description: "Install Plug as an app on your device.",
+				icon: <Star className="h-4 w-4" />
+			})
+
+		return options
+	}, [flags])
+
 	const isAdmin = socket?.admin ?? false
-	const options = isAdmin ? ADMIN_OPTIONS : OPTIONS
+	const options = isAdmin ? ADMIN_OPTIONS : [...ANONYMOUS_OPTIONS, ...flagOptions, ...OPTIONS]
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
