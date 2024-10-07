@@ -65,9 +65,9 @@ const instructions = {
 		"Type the name that you want to use for the web app, then click Add"
 	],
 	chrome: [
-		"Click the three-dot menu in the top right corner",
-		"Select 'More tools' > 'Create shortcut'",
-		"Check 'Open as window' and click 'Create'"
+		"Click the three-dot menu in the top right corner to open the options menu.",
+		"Select 'More tools' > 'Create shortcut'. to open the shortcut creation menu.",
+		"Finish by checking 'Open as window' and clicking 'Create' to install the app."
 	]
 } satisfies Instructions
 
@@ -200,8 +200,8 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 							</Button>
 						</>
 					) : (
-						<div className="flex max-w-[300px] flex-col gap-4 text-sm text-black/40">
-							<span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+						<div className="flex max-w-[300px] flex-col gap-4 text-sm">
+							<span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-black/40">
 								{osInstructions[currentStep]}
 							</span>
 							<div className="flex justify-center gap-2">
@@ -214,7 +214,7 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 										{currentStep > 0 && (
 											<Button
 												variant="secondary"
-												className="w-max"
+												className="w-max bg-white"
 												sizing="sm"
 												onClick={() => setCurrentStep(prev => prev - 1)}
 											>
