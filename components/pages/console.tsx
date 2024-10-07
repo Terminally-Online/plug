@@ -27,21 +27,21 @@ const DesktopPage = () => {
 	)
 }
 
-export const ConsolePage = ({ session }: { session: Session | null }) => {
+export const ConsolePage = () => {
 	const { md } = useMediaQuery()
+	const { data: session } = useSession({
+		required: true,
+		onUnauthenticated: () =>
+			signIn("credentials", {
+				message: "0x0",
+				signature: "0x0",
+				chainId: 0,
+				redirect: true
+			})
+	})
+	const { socket } = useSocket()
 
-	useEffect(() => {
-		if (session?.user.id) return
-
-		signIn("credentials", {
-			message: "0x0",
-			signature: "0x0",
-			chainId: 0,
-			redirect: true
-		})
-	}, [session])
-
-	if (!session?.user.id)
+	if (!session?.user.id || !socket)
 		return (
 			<div className="absolute bottom-0 left-0 right-0 top-0 flex h-screen w-screen items-center justify-center">
 				<LoaderCircle size={24} className="animate-spin opacity-60" />

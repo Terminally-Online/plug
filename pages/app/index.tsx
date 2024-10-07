@@ -19,7 +19,7 @@ export default function Page({ session }: { session: Session | null }) {
 					<DataProvider>
 						<PlugProvider>
 							<BeforeInstallProvider>
-								<ConsolePage session={session} />
+								<ConsolePage />
 							</BeforeInstallProvider>
 						</PlugProvider>
 					</DataProvider>
