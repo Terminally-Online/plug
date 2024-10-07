@@ -4,6 +4,7 @@ export enum RPCType {
 	Public = "public",
 	Private = "private",
 	PublicAlt = "public_alternative",
+	ServerOnly = "server",
 	AppOnly = "app"
 }
 

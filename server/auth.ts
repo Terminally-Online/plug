@@ -3,11 +3,9 @@ import { type DefaultSession, getServerSession, type NextAuthOptions } from "nex
 import CredentialsProvider from "next-auth/providers/credentials"
 import { getCsrfToken } from "next-auth/react"
 
-import { createPublicClient, extractChain, http } from "viem"
 import { parseSiweMessage } from "viem/siwe"
 
-import { chainsArray } from "@/lib/constants"
-import { RPCType } from "@/lib/types"
+import { createClient } from "@/lib"
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {
@@ -65,18 +63,10 @@ export const authOptions: NextAuthOptions = {
 				try {
 					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
 
-					const chain = extractChain({
-						chains: chainsArray,
-						id: Number(credentials.chainId)
-					})
-
-					const publicClient = createPublicClient({
-						chain,
-						transport: http(chain.rpcUrls[RPCType.AppOnly].http[0])
-					})
-					console.log("Created public client")
-
-					const valid = await publicClient.verifySiweMessage({
+					console.log("Creating client")
+					const client = createClient(Number(credentials.chainId))
+					console.log("Created client")
+					const valid = await client.verifySiweMessage({
 						message: credentials.message,
 						signature: credentials.signature as `0x${string}`,
 						domain: nextAuthUrl.host,
@@ -85,7 +75,6 @@ export const authOptions: NextAuthOptions = {
 						})
 					})
 					console.log("Verified message")
-
 					if (valid) {
 						const address = parseSiweMessage(credentials.message).address as string
 						return { id: address }

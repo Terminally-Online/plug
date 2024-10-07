@@ -1,9 +1,23 @@
+import { createPublicClient, extractChain, http } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
 
 import { Chain, RPCType } from "@/lib/types"
 
 export enum ChainIds {
 	Mainnet = mainnet.id
+}
+
+const getAppRPCs = (prefix: string) => {
+	return {
+		[RPCType.ServerOnly]: {
+			http: [`https://${prefix}.g.alchemy.com/v2/${process.env.PRIVATE_ALCHEMY_API_KEY}`],
+			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${process.env.PRIVATE_ALCHEMY_API_KEY}`]
+		},
+		[RPCType.AppOnly]: {
+			http: [`https://${prefix}.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_APP_ONLY_ALCHEMY_API_KEY}`],
+			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_APP_ONLY_ALCHEMY_API_KEY}`]
+		}
+	}
 }
 
 export const chains: Record<ChainIds, Chain> = {
@@ -14,10 +28,7 @@ export const chains: Record<ChainIds, Chain> = {
 		logo: "/blockchain/ethereum.png",
 		rpcUrls: {
 			...mainnet.rpcUrls,
-			[RPCType.AppOnly]: {
-				http: [`https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`],
-				webSocket: [`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`]
-			}
+			...getAppRPCs("eth-mainnet")
 		}
 	} as const satisfies Chain,
 	[optimism.id]: {
@@ -27,10 +38,7 @@ export const chains: Record<ChainIds, Chain> = {
 		logo: "/blockchain/optimism.png",
 		rpcUrls: {
 			...optimism.rpcUrls,
-			[RPCType.AppOnly]: {
-				http: [`https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`],
-				webSocket: [`wss://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`]
-			}
+			...getAppRPCs("opt-mainnet")
 		}
 	} as const satisfies Chain,
 	[base.id]: {
@@ -40,10 +48,7 @@ export const chains: Record<ChainIds, Chain> = {
 		logo: "/blockchain/base.png",
 		rpcUrls: {
 			...base.rpcUrls,
-			[RPCType.AppOnly]: {
-				http: [`https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`],
-				webSocket: [`wss://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`]
-			}
+			...getAppRPCs("base-mainnet")
 		}
 	} as const satisfies Chain
 }
@@ -51,3 +56,15 @@ export const chains: Record<ChainIds, Chain> = {
 export const chainsArray = Object.values(chains)
 
 export type ChainId = keyof typeof chains
+
+export const createClient = (chainId: ChainId, serverOnly = true) => {
+	const chain = extractChain({
+		chains: chainsArray,
+		id: chainId
+	})
+
+	return createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls[serverOnly ? RPCType.ServerOnly : RPCType.AppOnly].http[0])
+	})
+}
