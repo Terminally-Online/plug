@@ -6,6 +6,7 @@ import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
 import { ChainIds, chains } from "@/lib/constants/chains"
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
+import { RPCType } from "@/lib/types/chain"
 
 declare module "wagmi" {
 	interface Register {
@@ -42,7 +43,7 @@ export const wagmiConfig = createConfig({
 			chain,
 			batch: { multicall: true },
 			pollingInterval: 12_000,
-			transport: http(chain.rpcUrls.appOnly.http[0])
+			transport: http(chain.rpcUrls[RPCType.AppOnly].http[0])
 		})
 	}
 })
