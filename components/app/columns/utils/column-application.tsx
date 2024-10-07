@@ -1,112 +1,24 @@
 import Image from "next/image"
 import React, { useState } from "react"
-import { isAndroid, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
 import { motion } from "framer-motion"
-import { ChevronRight } from "lucide-react"
 
 import { Button } from "@/components/shared"
 import { useBeforeInstall } from "@/contexts"
 import { cn } from "@/lib"
 import { Flag, useFlags } from "@/state"
 
-type Instructions = Record<
-	"macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome",
-	(string | JSX.Element)[]
->
-
-const instructions = {
-	android: ["Open this page in Chrome"],
-	windows: ["Open this page in Edge"],
-	linux: ["Open this page in Chromium or Chrome"],
-	iOS: [
-		"Open this page in Safari",
-		<span key="ios-share" className="flex items-center">
-			Click the Share button
-			<Image
-				className="mx-1 inline-block h-4 w-4 opacity-60"
-				src="/misc/ios-share-icon.svg"
-				alt="apple-share-icon"
-				width={48}
-				height={48}
-			/>
-			in the Safari toolbar, then choose Add to home screen
-		</span>,
-		"Type the name that you want to use for the web app, then click Add."
-	],
-	macOS: [
-		"Open this page in Safari or Chrome. Arc does not support native apps on macOS.",
-		<span key="macos-share" className="items-center">
-			From the menu bar, choose File <ChevronRight size={14} className="mb-1 inline-block h-4 w-4" /> Add to Dock.
-			Or click the Share button
-			<Image
-				className="mx-1 mb-1 inline-block h-4 w-4 opacity-60"
-				src="/misc/ios-share-icon.svg"
-				alt="apple-share-icon"
-				width={48}
-				height={48}
-			/>
-			in the Safari toolbar, then choose Add to Dock
-		</span>,
-		"Type the name that you want to use for the web app, then click Add"
-	],
-	safari: [
-		<span key="safari-share" className="items-center">
-			Click the Share button
-			<Image
-				className="mx-1 mb-1 inline-block h-4 w-4 opacity-60"
-				src="/misc/ios-share-icon.svg"
-				alt="apple-share-icon"
-				width={48}
-				height={48}
-			/>
-			in the Safari toolbar, then choose Add to Dock
-		</span>,
-		"Type the name that you want to use for the web app, then click Add"
-	],
-	chrome: [
-		"Click the three-dot menu in the top right corner to open the options menu.",
-		"Select 'More tools' > 'Create shortcut'. to open the shortcut creation menu.",
-		"Finish by checking 'Open as window' and clicking 'Create' to install the app."
-	]
-} satisfies Instructions
-
-function getInstructions() {
-	if (isMacOs) {
-		if (isSafari) return instructions.safari
-		if (isChrome) return instructions.chrome
-		// NOTE: If the user is on Arc, the app will not be installed due to lack of support.
-		return instructions.macOS
-	}
-	if (isIOS) return instructions.iOS
-	if (isAndroid) return instructions.android
-	if (osName === "Linux") return instructions.linux
-	if (isWindows) return instructions.windows
-
-	return []
-}
-
 export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
 	className,
 	...props
 }) => {
-	const beforeInstall = useBeforeInstall()
+	const { prompt, isNativePromptAvailable, instructions } = useBeforeInstall()
 	const { handleFlag } = useFlags()
 
 	const [currentStep, setCurrentStep] = useState(0)
 
-	if (!beforeInstall) return null
-
-	const osInstructions = getInstructions()
-
-	if (osInstructions.length === 0) return null
-
-	const handleNext = () => {
-		if (currentStep < osInstructions.length - 1) {
-			setCurrentStep(currentStep + 1)
-		}
-	}
+	if (instructions.length === 0) return null
 
 	return (
 		<div className={cn("flex h-full items-center justify-center overflow-x-hidden", className)} {...props}>
@@ -158,13 +70,7 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 									ease: "easeIn"
 								}
 							}}
-							onClick={
-								beforeInstall.isNativePromptAvailable
-									? async () => {
-											await beforeInstall.prompt()
-										}
-									: undefined
-							}
+							onClick={isNativePromptAvailable && prompt ? async () => await prompt?.() : undefined}
 						>
 							<Image
 								className="absolute left-0 top-1/2 h-16 w-16 -translate-y-1/2 blur-lg filter"
@@ -184,28 +90,23 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 						to your dock.
 					</h2>
 
-					{beforeInstall.isNativePromptAvailable ? (
+					{isNativePromptAvailable && prompt ? (
 						<>
 							<p className="mb-4 max-w-[300px] text-sm opacity-40">
 								Create a shortcut to manage your onchain activity in just one click away at all times.
 							</p>
-							<Button
-								className="truncate"
-								sizing="sm"
-								onClick={async () => {
-									await beforeInstall.prompt()
-								}}
-							>
+							<Button className="truncate" sizing="sm" onClick={async () => await prompt?.()}>
 								Install
 							</Button>
 						</>
 					) : (
 						<div className="flex max-w-[300px] flex-col gap-4 text-sm">
-							<span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-black/40">
-								{osInstructions[currentStep]}
-							</span>
+							<p className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-black/40">
+								{instructions[currentStep]}
+							</p>
+
 							<div className="flex justify-center gap-2">
-								{currentStep === osInstructions.length - 1 ? (
+								{currentStep === instructions.length - 1 ? (
 									<Button className="w-max" sizing="sm" onClick={() => setCurrentStep(0)}>
 										Done
 									</Button>
@@ -221,7 +122,15 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 												Back
 											</Button>
 										)}
-										<Button className="w-max" sizing="sm" onClick={handleNext}>
+										<Button
+											className="w-max"
+											sizing="sm"
+											onClick={() => {
+												if (currentStep < instructions.length - 1) {
+													setCurrentStep(currentStep + 1)
+												}
+											}}
+										>
 											Next
 										</Button>
 									</>
