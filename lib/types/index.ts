@@ -1,6 +1,4 @@
 export * from "./blockchain"
 export * from "./chain"
 export * from "./columns"
-export * from "./next"
-export * from "./page"
 export * from "./zerion"

@@ -7,7 +7,7 @@ import { api } from "@/server/client"
 
 import { GoogleTagManager } from "@next/third-parties/google"
 
-import { GTM_ID, NextPageWithLayout } from "@/lib"
+import { GTM_ID } from "@/lib"
 
 import "./styles.css"
 
@@ -36,13 +36,7 @@ const satoshi = localFont({
 	variable: "--font-satoshi"
 })
 
-const PlugApp: FC<
-	AppProps & {
-		Component: NextPageWithLayout
-	}
-> = ({ Component, pageProps }) => {
-	const getLayout = Component.getLayout ?? (page => page)
-
+const PlugApp: FC<AppProps> = ({ Component, pageProps }) => {
 	return (
 		<>
 			<style jsx global>
@@ -61,7 +55,7 @@ const PlugApp: FC<
 			</Head>
 			<GoogleTagManager gtmId={GTM_ID} />
 
-			{getLayout(<Component {...pageProps} />)}
+			<Component {...pageProps} />
 		</>
 	)
 }
