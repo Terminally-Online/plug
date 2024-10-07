@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { createContext, useContext, useSyncExternalStore } from "react"
+import React, { createContext, useContext, useSyncExternalStore } from "react"
 import { isAndroid, isBrowser, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
 import { ChevronRight } from "lucide-react"
@@ -140,11 +140,6 @@ function subscribeToBeforeInstallPrompt(callback: () => void) {
 	}
 }
 
-/**
- * Use it in root.tsx
- * Wrap `<Outlet />` with `<AppInstallManagerProvider>`
- *
- */
 export const BeforeInstallProvider = ({ children }: { children: React.ReactElement }) => {
 	const appInstallManager = useSyncExternalStore(
 		subscribeToBeforeInstallPrompt,
@@ -152,8 +147,6 @@ export const BeforeInstallProvider = ({ children }: { children: React.ReactEleme
 		() => null
 	)
 
-	// 🚨 Some chrome based browsers don't support prompt to install even if they support the event.
-	// [21/10/2023] : ❌ Arc Browser
 	const isArcBrowser = useSyncExternalStore(
 		subscribeToLoad,
 		() => checkIsArcBrowser(),
@@ -176,21 +169,6 @@ export const BeforeInstallProvider = ({ children }: { children: React.ReactEleme
 	)
 }
 
-/**
- * Use `BeforeInstallPromptEvent.prompt` to prompt the user to install the PWA.
- * If the PWA is already installed by the current browser, `available` will always be false and `prompt` will always be null.
- *
- * [21/10/2023]
- *
- * ❌ On Safari and Firefox, `available` will always be false and `prompt` will always be null.
- * These the browser does not support prompt to install, `beforeinstallprompt` event is not fired.
- * https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent#browser_compatibility
- *
- * 🤷‍♂️ Arc Browser, even if it's based on Chromium, doesn't support prompt to install.
- * `prompt` never moves from pending to resolved.
- *
- * @returns the BeforeInstallPromptEvent if available
- */
 export const useBeforeInstall = () => {
 	const context = useContext(AppInstallManagerContext)
 

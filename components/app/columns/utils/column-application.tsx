@@ -1,12 +1,12 @@
 import Image from "next/image"
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
 
 import { Button } from "@/components/shared"
 import { useBeforeInstall } from "@/contexts"
 import { cn } from "@/lib"
-import { Flag, useFlags } from "@/state"
+import { Flag, useColumns, useFlags } from "@/state"
 
 export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
@@ -15,8 +15,18 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 }) => {
 	const { prompt, isNativePromptAvailable, instructions } = useBeforeInstall()
 	const { handleFlag } = useFlags()
+	const { remove } = useColumns()
 
 	const [currentStep, setCurrentStep] = useState(0)
+
+	const handleClose = useCallback(() => {
+		// Update the user flag that is stored in localStorage so that we do not
+		// re-prompt the user to install the PWA on the next visit.
+		handleFlag(Flag.SHOW_PWA, false)
+
+		// Remove the column from the DOM.
+		remove(index)
+	}, [index, remove, handleFlag])
 
 	if (instructions.length === 0) return null
 
@@ -107,7 +117,7 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 
 							<div className="flex justify-center gap-2">
 								{currentStep === instructions.length - 1 ? (
-									<Button className="w-max" sizing="sm" onClick={() => setCurrentStep(0)}>
+									<Button className="w-max" sizing="sm" onClick={handleClose}>
 										Done
 									</Button>
 								) : (
@@ -137,8 +147,8 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 								)}
 							</div>
 							<p
-								className="mt-8 cursor-pointer text-sm opacity-40 hover:opacity-100"
-								onClick={() => handleFlag(Flag.SHOW_PWA, false)}
+								className="mt-8 cursor-pointer text-sm opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
+								onClick={handleClose}
 							>
 								Never show this again.
 							</p>

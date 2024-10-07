@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
 
-import { Activity, Cable, Coins, ImageIcon, Landmark, PiggyBank, ShieldAlert, Star, User, Wallet } from "lucide-react"
+import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, ShieldAlert, Star, User } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle, VIEW_KEYS } from "@/lib"
@@ -16,7 +16,7 @@ const ANONYMOUS_OPTIONS: Options = [
 	{
 		label: "DISCOVER",
 		description: "Discover curated and community Plugs.",
-		icon: <Cable size={14} className="opacity-40" />
+		icon: <Globe size={14} className="opacity-40" />
 	},
 	{
 		label: "MY_PLUGS",
@@ -26,12 +26,6 @@ const ANONYMOUS_OPTIONS: Options = [
 ]
 
 const OPTIONS: Options = [
-	{
-		label: "APPLICATION",
-		description: "Save Plug as an app to your device.",
-		icon: <Star size={14} className="opacity-40" />
-	},
-	...ANONYMOUS_OPTIONS,
 	{
 		label: "ACTIVITY",
 		description: "View the simulations and runs of your Plugs.",
@@ -74,25 +68,25 @@ export const ColumnAddOptions: FC<
 			index: number
 		}>
 > = ({ index, className, ...props }) => {
-	const { flags } = useFlags()
+	const { getFlag } = useFlags()
 	const { socket } = useSocket()
 	const { navigate } = useColumns()
 
 	const flagOptions = useMemo(() => {
 		const options = []
 
-		if (flags[Flag.SHOW_PWA])
+		if (getFlag(Flag.SHOW_PWA))
 			options.push({
 				label: "Application",
 				description: "Install Plug as an app on your device.",
-				icon: <Star className="h-4 w-4" />
+				icon: <Star size={14} className="opacity-40" />
 			})
 
 		return options
-	}, [flags])
+	}, [getFlag])
 
 	const isAdmin = socket?.admin ?? false
-	const options = isAdmin ? ADMIN_OPTIONS : [...ANONYMOUS_OPTIONS, ...flagOptions, ...OPTIONS]
+	const options = isAdmin ? ADMIN_OPTIONS : [...flagOptions, ...ANONYMOUS_OPTIONS, ...OPTIONS]
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
