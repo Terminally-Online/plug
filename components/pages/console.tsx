@@ -1,6 +1,4 @@
-import { Session } from "next-auth"
 import { signIn, useSession } from "next-auth/react"
-import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
@@ -29,6 +27,19 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
+	// NOTE: This makes the session required for the console page. When the user does
+	// not have a session, they will be automatically logged into an anonymous account.
+	// This enables users to maintain their session through reloads, and on log out,
+	// automatically roll over back to an anonymous account maintaining the local
+	// console state they already have in their `localStorage`.
+	// ...
+	// New user → Anonymous Session → Phantom Socket
+	// Wallet user → Connect Wallet → Sign Message → Authenticated Session → Socket
+	// Existing user → Existing Session → Socket
+	// ...
+	// We have to include the socket in the loading state because the socket is a dependency
+	// to render the console page. Therefore, until both the session and a socket, whether
+	// anonymous or authenticated, are available, we will show a loading state.
 	const { data: session } = useSession({
 		required: true,
 		onUnauthenticated: () =>
