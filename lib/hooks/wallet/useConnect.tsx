@@ -99,8 +99,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 								message,
 								signature,
 								chainId,
-								redirect: true,
-								callbackUrl: "/app/"
+								redirect: true
 							})
 
 							setAuthenticationResponse(authenticationResponse)
@@ -116,6 +115,8 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 					}
 				)
 			} catch (e) {
+				console.error("Authentication error", e)
+
 				setAuthenticationLoading(false)
 
 				connection.reset()

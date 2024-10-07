@@ -6,12 +6,12 @@ import { ConsolePage } from "@/components/pages/console"
 import { BeforeInstallProvider, DataProvider, PlugProvider, WalletProvider } from "@/contexts"
 import { ConnectionProvider } from "@/lib"
 
-Page.getInitialProps = async (ctx: NextPageContext) => {
-	const session = await getSession(ctx)
-	return { session }
+export const getServerSideProps = async (context: NextPageContext) => {
+	const session = await getSession(context)
+	return { props: { session } }
 }
 
-function Page({ session }: { session: Session | null }) {
+export default function Page({ session }: { session: Session | null }) {
 	return (
 		<SessionProvider session={session}>
 			<WalletProvider>
@@ -19,7 +19,7 @@ function Page({ session }: { session: Session | null }) {
 					<DataProvider>
 						<PlugProvider>
 							<BeforeInstallProvider>
-								<ConsolePage />
+								<ConsolePage session={session} />
 							</BeforeInstallProvider>
 						</PlugProvider>
 					</DataProvider>
@@ -28,5 +28,3 @@ function Page({ session }: { session: Session | null }) {
 		</SessionProvider>
 	)
 }
-
-export default Page
