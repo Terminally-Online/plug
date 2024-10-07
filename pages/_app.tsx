@@ -44,7 +44,7 @@ const PlugApp: FC<
 	const getLayout = Component.getLayout ?? (page => page)
 
 	return (
-		<React.Fragment>
+		<>
 			<style jsx global>
 				{`
 					* {
@@ -62,7 +62,7 @@ const PlugApp: FC<
 			<GoogleTagManager gtmId={GTM_ID} />
 
 			{getLayout(<Component {...pageProps} />)}
-		</React.Fragment>
+		</>
 	)
 }
 

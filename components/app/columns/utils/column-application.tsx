@@ -1,5 +1,5 @@
 import Image from "next/image"
-import React, { useCallback, useState } from "react"
+import { FC, HTMLAttributes, useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
 
@@ -8,7 +8,7 @@ import { useBeforeInstall } from "@/contexts"
 import { cn } from "@/lib"
 import { Flag, useColumns, useFlags } from "@/state"
 
-export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & { index: number }> = ({
+export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
 	className,
 	...props
@@ -20,11 +20,7 @@ export const ColumnApplication: React.FC<React.HTMLAttributes<HTMLDivElement> & 
 	const [currentStep, setCurrentStep] = useState(0)
 
 	const handleClose = useCallback(() => {
-		// Update the user flag that is stored in localStorage so that we do not
-		// re-prompt the user to install the PWA on the next visit.
 		handleFlag(Flag.SHOW_PWA, false)
-
-		// Remove the column from the DOM.
 		remove(index)
 	}, [index, remove, handleFlag])
 

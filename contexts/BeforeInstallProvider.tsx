@@ -2,49 +2,66 @@ import Image from "next/image"
 import React, { createContext, useContext, useSyncExternalStore } from "react"
 import { isAndroid, isBrowser, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
-import { ChevronRight } from "lucide-react"
+type OSType = "macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome" | "arc"
+type Instructions = Record<OSType, (string | JSX.Element)[]>
 
-type Instructions = Record<
-	"macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome" | "arc",
-	(string | JSX.Element)[]
->
+const SHARE_ICON_PATH = "/misc/ios-share-icon.svg"
 
-const instructions = {
-	android: ["Open this page in Chrome"],
-	windows: ["Open this page in Edge"],
-	linux: ["Open this page in Chromium or Chrome"],
+const instructions: Instructions = {
+	android: [
+		"Open this page in Google Chrome",
+		"Tap the three-dot menu in the top right corner",
+		"Select 'Add to Home screen'",
+		"Tap 'Add' to confirm"
+	],
+	windows: [
+		"Open this page in Microsoft Edge",
+		"Click the '...' menu in the top right corner",
+		"Select 'Apps' > 'Install this site as an app'",
+		"Click 'Install' to confirm"
+	],
+	linux: [
+		"Open this page in Google Chrome or Chromium",
+		"Click the three-dot menu in the top right corner",
+		"Select 'More tools' > 'Create shortcut'",
+		"Check 'Open as window' and click 'Create'"
+	],
 	iOS: [
 		"Open this page in Safari",
 		<span key="ios-share" className="flex items-center">
-			Click the Share button
+			Tap the Share button
 			<Image
 				className="mx-1 inline-block h-4 w-4 opacity-60"
-				src="/misc/ios-share-icon.svg"
+				src={SHARE_ICON_PATH}
 				alt="apple-share-icon"
 				width={48}
 				height={48}
 			/>
-			in the Safari toolbar, then choose Add to home screen
+			at the bottom of the screen
 		</span>,
-		"Type the name that you want to use for the web app, then click Add."
+		"Scroll down and tap 'Add to Home Screen'",
+		"Tap 'Add' in the top right corner to confirm"
 	],
 	macOS: [
-		"Open this page in Safari or Chrome. Arc does not support native apps on macOS.",
+		"Open this page in Safari or Google Chrome",
 		<span key="macos-share" className="items-center">
-			From the menu bar, choose File <ChevronRight size={14} className="mb-1 inline-block h-4 w-4" /> Add to Dock.
-			Or click the Share button
+			Click the Share button
 			<Image
 				className="mx-1 mb-1 inline-block h-4 w-4 opacity-60"
-				src="/misc/ios-share-icon.svg"
+				src={SHARE_ICON_PATH}
 				alt="apple-share-icon"
 				width={48}
 				height={48}
 			/>
-			in the Safari toolbar, then choose Add to Dock
+			in the toolbar
 		</span>,
-		"Type the name that you want to use for the web app, then click Add"
+		"Select 'Add to Dock' from the menu",
+		"Click 'Add' to confirm"
 	],
-	arc: ["Open this page in Safari or Chrome. Arc does not support native apps on macOS."],
+	arc: [
+		"Arc browser does not support installing web apps",
+		"Please use Safari or Chrome on macOS instead"
+	],
 	safari: [
 		<span key="safari-share" className="items-center">
 			Click the Share button
@@ -55,18 +72,20 @@ const instructions = {
 				width={48}
 				height={48}
 			/>
-			in the Safari toolbar, then choose Add to Dock
+			in the toolbar
 		</span>,
-		"Type the name that you want to use for the web app, then click Add"
+		"Select 'Add to Dock' from the menu",
+		"Click 'Add' to confirm"
 	],
 	chrome: [
-		"Click the three-dot menu in the top right corner to open the options menu.",
-		"Select 'More tools' > 'Create shortcut'. to open the shortcut creation menu.",
-		"Finish by checking 'Open as window' and clicking 'Create' to install the app."
+		"Click the three-dot menu in the top right corner",
+		"Select 'More tools' > 'Create shortcut'",
+		"Check 'Open as window'",
+		"Click 'Create' to install the app"
 	]
 } satisfies Instructions
 
-const getInstructions = (isArcBrowser: boolean) => {
+const getInstructions = (isArcBrowser: boolean): (string | JSX.Element)[] => {
 	if (isMacOs) {
 		if (isArcBrowser) return instructions.arc
 		if (isSafari) return instructions.safari
@@ -88,7 +107,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 type UserChoice = { outcome: "accepted" | "dismissed"; platform: string }
 
-type AppInstallManager = {
+interface AppInstallManager {
 	prompt?: (() => Promise<UserChoice>) | null
 	isNativePromptAvailable?: boolean
 	isArcBrowser: boolean
@@ -104,13 +123,12 @@ const appInstallManagerStore: AppInstallManager = {
 
 const AppInstallManagerContext = createContext<AppInstallManager | null>(null)
 
-const checkIsArcBrowser = () => {
-	return window.getComputedStyle(document.documentElement).getPropertyValue("--arc-palette-title") ? true : false
+const checkIsArcBrowser = (): boolean => {
+	return !!window.getComputedStyle(document.documentElement).getPropertyValue("--arc-palette-title")
 }
 
-const subscribeToLoad = (callback: () => void) => {
-	async function delayCallback() {
-		// delay the callback to be sure everything is loaded
+const subscribeToLoad = (callback: () => void): () => void => {
+	const delayCallback = async (): Promise<void> => {
 		await new Promise(resolve => setTimeout(resolve, 1000))
 		callback()
 	}
@@ -122,14 +140,11 @@ const subscribeToLoad = (callback: () => void) => {
 	}
 }
 
-function subscribeToBeforeInstallPrompt(callback: () => void) {
-	function saveInstallPrompt(event: Event) {
+const subscribeToBeforeInstallPrompt = (callback: () => void): () => void => {
+	const saveInstallPrompt = (event: Event): void => {
 		event.preventDefault()
-
 		appInstallManagerStore.prompt = (event as BeforeInstallPromptEvent).prompt.bind(event)
-
 		appInstallManagerStore.isNativePromptAvailable = true
-
 		callback()
 	}
 
@@ -140,7 +155,7 @@ function subscribeToBeforeInstallPrompt(callback: () => void) {
 	}
 }
 
-export const BeforeInstallProvider = ({ children }: { children: React.ReactElement }) => {
+export const BeforeInstallProvider: React.FC<{ children: React.ReactElement }> = ({ children }) => {
 	const appInstallManager = useSyncExternalStore(
 		subscribeToBeforeInstallPrompt,
 		() => appInstallManagerStore,
@@ -149,15 +164,13 @@ export const BeforeInstallProvider = ({ children }: { children: React.ReactEleme
 
 	const isArcBrowser = useSyncExternalStore(
 		subscribeToLoad,
-		() => checkIsArcBrowser(),
+		checkIsArcBrowser,
 		() => false
 	)
 
-	if (appInstallManager) {
-		if (isArcBrowser) {
-			appInstallManager.prompt = null
-			appInstallManager.isNativePromptAvailable = false
-		}
+	if (appInstallManager && isArcBrowser) {
+		appInstallManager.prompt = null
+		appInstallManager.isNativePromptAvailable = false
 	}
 
 	const instructions = getInstructions(isArcBrowser)
@@ -169,11 +182,11 @@ export const BeforeInstallProvider = ({ children }: { children: React.ReactEleme
 	)
 }
 
-export const useBeforeInstall = () => {
+export const useBeforeInstall = (): AppInstallManager => {
 	const context = useContext(AppInstallManagerContext)
 
 	if (isBrowser && context === undefined) {
-		throw new Error(`useAppInstallManager must be used within a XProvider.`)
+		throw new Error('useBeforeInstall must be used within a BeforeInstallProvider.')
 	}
 
 	return context ?? appInstallManagerStore
