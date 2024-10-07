@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import Image from "next/image"
 import { FC, HTMLAttributes, useCallback, useState } from "react"
 
@@ -5,7 +6,7 @@ import { motion } from "framer-motion"
 
 import { Button } from "@/components/shared"
 import { useBeforeInstall } from "@/contexts"
-import { cn } from "@/lib"
+import { cn, GTM_EVENTS, useAnalytics } from "@/lib"
 import { Flag, useColumns, useFlags } from "@/state"
 
 export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
@@ -13,16 +14,24 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 	className,
 	...props
 }) => {
+	const { data: session } = useSession()
 	const { prompt, isNativePromptAvailable, instructions } = useBeforeInstall()
 	const { handleFlag } = useFlags()
 	const { remove } = useColumns()
 
+	const handlePWAInstall = useAnalytics(GTM_EVENTS.CTA_CLICKED, session?.user?.id, true, "/")
+
 	const [currentStep, setCurrentStep] = useState(0)
 
-	const handleClose = useCallback(() => {
-		handleFlag(Flag.SHOW_PWA, false)
-		remove(index)
-	}, [index, remove, handleFlag])
+	const handleClose = useCallback(
+		(added: boolean = false) => {
+			if (added) handlePWAInstall()
+
+			handleFlag(Flag.SHOW_PWA, false)
+			remove(index)
+		},
+		[index, remove, handleFlag]
+	)
 
 	if (instructions.length === 0) return null
 
@@ -113,7 +122,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 
 							<div className="flex justify-center gap-2">
 								{currentStep === instructions.length - 1 ? (
-									<Button className="w-max" sizing="sm" onClick={handleClose}>
+									<Button className="w-max" sizing="sm" onClick={() => handleClose(true)}>
 										Done
 									</Button>
 								) : (
@@ -144,7 +153,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 							</div>
 							<p
 								className="mt-8 cursor-pointer text-sm opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
-								onClick={handleClose}
+								onClick={() => handleClose(false)}
 							>
 								Never show this again.
 							</p>
