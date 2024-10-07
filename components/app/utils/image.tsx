@@ -2,7 +2,7 @@ import NextImage from "next/image"
 import { FC, HTMLAttributes, Ref } from "react"
 
 const loader = ({ src, width }: { src: string; width: number }) => {
-	if (src.startsWith("data:image")) {
+	if (src.includes("data:image")) {
 		const byteString = atob(src.split(",")[1])
 		const mimeString = src.split(",")[0].split(":")[1].split(";")[0]
 		const ab = new ArrayBuffer(byteString.length)
@@ -30,7 +30,7 @@ export const Image: FC<
 > = ({ src, width, height, alt, ...props }) => {
 	return (
 		<NextImage
-			loader={({ src, width }) => loader({ src, width })}
+			loader={loader}
 			src={src}
 			width={width}
 			height={height}
