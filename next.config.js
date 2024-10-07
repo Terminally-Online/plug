@@ -70,19 +70,7 @@ const nextConfig = {
 		return config
 	},
 	experimental: {
-		optimizePackageImports: [
-			// "./components",
-			// "./lib",
-			// "./state",
-			// "./server",
-			// "framer-motion",
-			// "viem",
-			// "viem/chains",
-			// "viem/ens",
-			// "viem/siwe",
-			// "wagmi",
-			// "lucide-react"
-		]
+		optimizePackageImports: []
 	}
 }
 
@@ -91,7 +79,7 @@ const withPWA = require("next-pwa")({
 	cacheOnFrontEndNav: true,
 	reloadOnOnline: true,
 	scope: "/app",
-	// disable: process.env.NODE_ENV === 'development',
+	disable: process.env.NODE_ENV === "development",
 	disable: false,
 	skipWaiting: true
 })
