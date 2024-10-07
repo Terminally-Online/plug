@@ -146,7 +146,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 												}
 											}}
 										>
-											Next
+											Continue
 										</Button>
 									</>
 								)}
