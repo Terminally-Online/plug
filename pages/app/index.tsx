@@ -16,7 +16,7 @@ export default function Page({ session }: { session: Session | null }) {
 		<SessionProvider session={session}>
 			<WalletProvider>
 				<ConnectionProvider>
-					<DataProvider>
+					<DataProvider session={session}>
 						<PlugProvider>
 							<BeforeInstallProvider>
 								<ConsolePage />

@@ -99,7 +99,8 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 								message,
 								signature,
 								chainId,
-								redirect: true
+								redirect: true,
+								callbackUrl: `${window.location.origin}/app`
 							})
 
 							setAuthenticationResponse(authenticationResponse)

@@ -197,7 +197,7 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 								{
 									onSuccess: data => {
 										updateRecentConnectorId(connector.id)
-										prove(index, from, data.accounts[0])
+										// prove(index, from, data.accounts[0])
 									}
 								}
 							)
