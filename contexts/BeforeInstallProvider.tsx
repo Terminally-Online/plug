@@ -1,5 +1,5 @@
 import Image from "next/image"
-import React, { createContext, useContext, useSyncExternalStore } from "react"
+import { createContext, FC, ReactElement, useContext, useMemo, useSyncExternalStore } from "react"
 import { isAndroid, isBrowser, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
 type OSType = "macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome" | "arc"
@@ -73,24 +73,21 @@ const instructions: Instructions = {
 	]
 } satisfies Instructions
 
-const getInstructions = React.useMemo(() => {
-	const memoizedGetInstructions = (isArcBrowser: boolean): (string | JSX.Element)[] => {
-		if (isMacOs) {
-			if (isArcBrowser) return instructions.arc
-			if (isSafari) return instructions.safari
-			if (isChrome) return instructions.chrome
-			return instructions.macOS
-		}
-
-		if (isIOS) return instructions.iOS
-		if (isAndroid) return instructions.android
-		if (osName === "Linux") return instructions.linux
-		if (isWindows) return instructions.windows
-
-		return []
+const getInstructions = (isArcBrowser: boolean): (string | JSX.Element)[] => {
+	if (isMacOs) {
+		if (isArcBrowser) return instructions.arc
+		if (isSafari) return instructions.safari
+		if (isChrome) return instructions.chrome
+		return instructions.macOS
 	}
-	return memoizedGetInstructions
-}, [])
+
+	if (isIOS) return instructions.iOS
+	if (isAndroid) return instructions.android
+	if (osName === "Linux") return instructions.linux
+	if (isWindows) return instructions.windows
+
+	return []
+}
 
 interface BeforeInstallPromptEvent extends Event {
 	prompt(): Promise<UserChoice>
@@ -118,7 +115,7 @@ const checkIsArcBrowser = (): boolean => {
 	return !!window.getComputedStyle(document.documentElement).getPropertyValue("--arc-palette-title")
 }
 
-const subscribeToLoad = React.useCallback((callback: () => void): (() => void) => {
+const subscribeToLoad = (callback: () => void): (() => void) => {
 	const delayCallback = async (): Promise<void> => {
 		await new Promise(resolve => setTimeout(resolve, 1000))
 		callback()
@@ -129,9 +126,9 @@ const subscribeToLoad = React.useCallback((callback: () => void): (() => void) =
 	return () => {
 		window.removeEventListener("load", delayCallback)
 	}
-}, [])
+}
 
-const subscribeToBeforeInstallPrompt = React.useCallback((callback: () => void): (() => void) => {
+const subscribeToBeforeInstallPrompt = (callback: () => void): (() => void) => {
 	const saveInstallPrompt = (event: Event): void => {
 		event.preventDefault()
 		appInstallManagerStore.prompt = (event as BeforeInstallPromptEvent).prompt.bind(event)
@@ -144,9 +141,9 @@ const subscribeToBeforeInstallPrompt = React.useCallback((callback: () => void):
 	return () => {
 		window.removeEventListener("beforeinstallprompt", saveInstallPrompt)
 	}
-}, [])
+}
 
-export const BeforeInstallProvider: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+export const BeforeInstallProvider: FC<{ children: ReactElement }> = ({ children }) => {
 	const appInstallManager = useSyncExternalStore(
 		subscribeToBeforeInstallPrompt,
 		() => appInstallManagerStore,
@@ -155,7 +152,7 @@ export const BeforeInstallProvider: React.FC<{ children: React.ReactElement }> =
 
 	const isArcBrowser = useSyncExternalStore(subscribeToLoad, checkIsArcBrowser, () => false)
 
-	const memoizedAppInstallManager = React.useMemo(() => {
+	const memoizedAppInstallManager = useMemo(() => {
 		if (appInstallManager && isArcBrowser) {
 			return {
 				...appInstallManager,
@@ -166,9 +163,9 @@ export const BeforeInstallProvider: React.FC<{ children: React.ReactElement }> =
 		return appInstallManager
 	}, [appInstallManager, isArcBrowser])
 
-	const instructions = React.useMemo(() => getInstructions(isArcBrowser), [getInstructions, isArcBrowser])
+	const instructions = useMemo(() => getInstructions(isArcBrowser), [getInstructions, isArcBrowser])
 
-	const contextValue = React.useMemo(
+	const contextValue = useMemo(
 		() => ({
 			...memoizedAppInstallManager,
 			isArcBrowser,

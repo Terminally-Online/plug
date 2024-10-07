@@ -30,7 +30,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 			handleFlag(Flag.SHOW_PWA, false)
 			remove(index)
 		},
-		[index, remove, handleFlag]
+		[index, remove, handleFlag, handlePWAInstall]
 	)
 
 	if (instructions.length === 0) return null
