@@ -21,8 +21,8 @@ import {
 	SocketTokenList
 } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, Column, formatTitle, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { cardColors, cn, Column, formatTitle } from "@/lib"
+import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 380
 const MAX_COLUMN_WIDTH = 620
@@ -197,25 +197,25 @@ export const ConsoleColumn: FC<{
 							</div>
 
 							<div className="h-full overflow-y-scroll">
-								{key === VIEW_KEYS.ADD ? (
+								{key === COLUMN_KEYS.ADD ? (
 									<ColumnAddOptions index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.DISCOVER ? (
+								) : key === COLUMN_KEYS.DISCOVER ? (
 									<PlugsDiscover index={index} className="pt-4" />
-								) : key === VIEW_KEYS.MY_PLUGS ? (
+								) : key === COLUMN_KEYS.MY_PLUGS ? (
 									<PlugsMine index={index} className="pt-4" />
-								) : key === VIEW_KEYS.PLUG ? (
+								) : key === COLUMN_KEYS.PLUG ? (
 									<Plug index={index} item={item} from={column.from} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.ACTIVITY ? (
+								) : key === COLUMN_KEYS.ACTIVITY ? (
 									<SocketActivity index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.TOKENS ? (
+								) : key === COLUMN_KEYS.TOKENS ? (
 									<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.COLLECTIBLES ? (
+								) : key === COLUMN_KEYS.COLLECTIBLES ? (
 									<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.POSITIONS ? (
+								) : key === COLUMN_KEYS.POSITIONS ? (
 									<SocketPositionList index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.ADMIN ? (
+								) : key === COLUMN_KEYS.ADMIN ? (
 									<ConsoleAdmin index={index} className="px-4 pt-4" />
-								) : key === VIEW_KEYS.APPLICATION ? (
+								) : key === COLUMN_KEYS.APPLICATION ? (
 									<ColumnApplication index={index} className="pt-4" />
 								) : (
 									<React.Fragment></React.Fragment>

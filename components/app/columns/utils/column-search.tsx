@@ -5,8 +5,9 @@ import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
-import { cn, greenGradientStyle, VIEW_KEYS } from "@/lib"
+import { cn, greenGradientStyle } from "@/lib"
 import { useDebounce } from "@/lib/hooks"
+import { COLUMN_KEYS } from "@/state"
 
 export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
@@ -104,7 +105,7 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 
 							<PlugGrid
 								index={index}
-								from={VIEW_KEYS.SEARCH}
+								from={""}
 								plugs={expanded.includes("plugs") ? results.plugs : results.plugs.slice(0, 6)}
 							/>
 						</div>

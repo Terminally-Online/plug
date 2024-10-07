@@ -6,10 +6,10 @@ import { MinimalUserSocketModel, UserSocketModel } from "@/prisma/types"
 import { api } from "@/server/client"
 
 import { Accordion, Avatar, Image, Search } from "@/components"
-import { Column, formatAddress, formatTitle, useDebounce, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { Column, formatAddress, formatTitle, useDebounce } from "@/lib"
+import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
-const EXCLUDED_KEYS = [VIEW_KEYS.HOME, VIEW_KEYS.VIEW_AS, VIEW_KEYS.ADD, VIEW_KEYS.PLUG]
+const EXCLUDED_KEYS = [COLUMN_KEYS.HOME, COLUMN_KEYS.ADD, COLUMN_KEYS.PLUG]
 
 export const ColumnViewAs = () => {
 	const { socket } = useSocket()

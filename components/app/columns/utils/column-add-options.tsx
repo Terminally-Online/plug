@@ -3,11 +3,11 @@ import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
 import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, ShieldAlert, Star, User } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
-import { cn, formatTitle, VIEW_KEYS } from "@/lib"
-import { Flag, useColumns, useFlags, useSocket } from "@/state"
+import { cn, formatTitle } from "@/lib"
+import { COLUMN_KEYS, Flag, useColumns, useFlags, useSocket } from "@/state"
 
 type Options = Array<{
-	label: keyof typeof VIEW_KEYS
+	label: keyof typeof COLUMN_KEYS
 	description: string
 	icon: JSX.Element
 }>

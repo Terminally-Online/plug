@@ -5,8 +5,7 @@ import { useDisconnect } from "wagmi"
 import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Counter, Frame, Image, StatCard } from "@/components"
-import { MOBILE_INDEX } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { MOBILE_INDEX, useColumns, useSocket } from "@/state"
 
 // NOTE: This is only accessible on the mobile view so the index will always be -1.
 export const AccountFrame = () => {

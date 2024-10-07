@@ -3,8 +3,7 @@ import { AnimatePresence } from "framer-motion"
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
-import { MOBILE_INDEX } from "@/lib"
-import { useColumns } from "@/state"
+import { MOBILE_INDEX, useColumns } from "@/state"
 
 export const ConsoleColumnRow = () => {
 	const { columns, move } = useColumns()

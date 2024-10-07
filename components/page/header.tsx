@@ -6,8 +6,8 @@ import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Container, Header, Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, formatAddress, formatTimeSince, formatTitle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/lib"
+import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSocket } from "@/state"
 
 const HomePageHeader = () => {
 	const { column, navigate, frame } = useColumns(MOBILE_INDEX)
@@ -49,12 +49,12 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"text-lg font-bold transition-all duration-200 ease-in-out",
-							column.key !== VIEW_KEYS.HOME ? "opacity-40 hover:opacity-100" : ""
+							column.key !== COLUMN_KEYS.HOME ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
 							navigate({
 								index: -1,
-								key: VIEW_KEYS.HOME
+								key: COLUMN_KEYS.HOME
 							})
 						}
 					>
@@ -64,12 +64,12 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"mr-auto text-lg font-bold transition-all duration-200 ease-in-out",
-							column.key !== VIEW_KEYS.ACTIVITY ? "opacity-40 hover:opacity-100" : ""
+							column.key !== COLUMN_KEYS.ACTIVITY ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
 							navigate({
 								index: -1,
-								key: VIEW_KEYS.ACTIVITY
+								key: COLUMN_KEYS.ACTIVITY
 							})
 						}
 					>
@@ -170,7 +170,7 @@ const DynamicPageHeader = () => {
 						onClick={() =>
 							navigate({
 								index: -1,
-								key: column?.from ?? VIEW_KEYS.HOME
+								key: column?.from ?? COLUMN_KEYS.HOME
 							})
 						}
 					>
@@ -179,7 +179,7 @@ const DynamicPageHeader = () => {
 
 					<Button
 						className="mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
-						onClick={() => navigate({ index: -1, key: VIEW_KEYS.ACTIVITY })}
+						onClick={() => navigate({ index: -1, key: COLUMN_KEYS.ACTIVITY })}
 					>
 						{formatTitle(column?.key.toLowerCase() ?? "")}
 					</Button>
@@ -196,9 +196,9 @@ export const PageHeader = () => {
 
 	return (
 		<Container>
-			{[VIEW_KEYS.HOME, VIEW_KEYS.ACTIVITY].includes(column?.key ?? "") ? (
+			{[COLUMN_KEYS.HOME, COLUMN_KEYS.ACTIVITY].includes(column?.key ?? "") ? (
 				<HomePageHeader />
-			) : column?.key === VIEW_KEYS.PLUG ? (
+			) : column?.key === COLUMN_KEYS.PLUG ? (
 				<PlugHeader />
 			) : (
 				<DynamicPageHeader />

@@ -2,8 +2,8 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
 import { usePlugs } from "@/contexts"
-import { cn, greenGradientStyle, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
-import { useColumns, useSidebar, useSocket } from "@/state"
+import { cn, greenGradientStyle } from "@/lib"
+import { MOBILE_INDEX, useColumns, useSidebar, useSocket } from "@/state"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {

@@ -2,6 +2,8 @@ import { useAtomValue } from "jotai"
 
 import { atomWithStorage } from "jotai/utils"
 
+// TODO: This should be moved to state/connectors.ts
+
 export const CONNECTION = {
 	WALLET_CONNECT_CONNECTOR_ID: "walletConnect",
 	UNISWAP_WALLET_CONNECT_CONNECTOR_ID: "uniswapWalletConnect",

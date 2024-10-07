@@ -5,8 +5,8 @@ import { SearchIcon } from "lucide-react"
 
 import { ActionsFrame, ActionView, Button, ExecuteFrame, ManagePlugFrame, Search, ShareFrame } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cn, MOBILE_INDEX } from "@/lib"
-import { useColumns } from "@/state"
+import { cn } from "@/lib"
+import { MOBILE_INDEX, useColumns } from "@/state"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
 	index = -1,

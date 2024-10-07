@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, useEffect, useMemo, useState } from "react"
+import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
@@ -8,8 +8,8 @@ import { api } from "@/server/client"
 import { Workflow } from "@prisma/client"
 
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
-import { cn, useSearch, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { cn, useSearch } from "@/lib"
+import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -52,7 +52,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const visiblePlugs = useMemo(() => {
 		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
 		return plugs.plugs
-	}, [plugs])
+	}, [plugs, search])
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
 		if (!plugs || isLoading || latest < 0.8) return
@@ -82,7 +82,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 			/>
 
 			<Container>
-				<PlugGrid index={index} className="mb-4" from={VIEW_KEYS.MY_PLUGS} plugs={visiblePlugs} />
+				<PlugGrid index={index} className="mb-4" from={COLUMN_KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
 			<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />

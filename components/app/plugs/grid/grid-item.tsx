@@ -3,8 +3,8 @@ import { FC } from "react"
 import { Workflow } from "@/server/api/routers/plug"
 
 import { Accordion } from "@/components/shared"
-import { colors, formatTitle, VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { colors, formatTitle } from "@/lib"
+import { COLUMN_KEYS, useColumns } from "@/state"
 
 type Props = { index: number; from: string; plug: Workflow | undefined }
 
@@ -20,7 +20,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 					? () =>
 							navigate({
 								index,
-								key: VIEW_KEYS.PLUG,
+								key: COLUMN_KEYS.PLUG,
 								item: plug.id,
 								from
 							})

@@ -5,8 +5,7 @@ import { PlugZap, Puzzle } from "lucide-react"
 import { api } from "@/server/client"
 
 import { Callout, Header, PlugGrid } from "@/components"
-import { VIEW_KEYS } from "@/lib"
-import { useColumns } from "@/state"
+import { COLUMN_KEYS, useColumns } from "@/state"
 
 const Discover: FC<{ index: number }> = ({ index }) => {
 	const { navigate } = useColumns(index)
@@ -30,15 +29,15 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 				nextOnClick={() =>
 					navigate({
 						index,
-						key: VIEW_KEYS.DISCOVER,
-						from: VIEW_KEYS.HOME
+						key: COLUMN_KEYS.DISCOVER,
+						from: COLUMN_KEYS.HOME
 					})
 				}
 				nextLabel="See All"
 			/>
 
 			<Callout.EmptyPlugs className="my-24" index={index} isEmpty={plugs !== undefined && plugs.length === 0} />
-			<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={visiblePlugs} />
+			<PlugGrid index={index} from={COLUMN_KEYS.HOME} plugs={visiblePlugs} />
 		</div>
 	)
 }
@@ -65,15 +64,15 @@ const Mine: FC<{ index: number }> = ({ index }) => {
 				nextOnClick={() =>
 					navigate({
 						index,
-						key: VIEW_KEYS.MY_PLUGS,
-						from: VIEW_KEYS.HOME
+						key: COLUMN_KEYS.MY_PLUGS,
+						from: COLUMN_KEYS.HOME
 					})
 				}
 				nextLabel="See All"
 			/>
 
 			<Callout.EmptyPlugs className="my-24" index={index} isEmpty={plugs !== undefined && plugs.length === 0} />
-			<PlugGrid index={index} from={VIEW_KEYS.HOME} plugs={visiblePlugs} />
+			<PlugGrid index={index} from={COLUMN_KEYS.HOME} plugs={visiblePlugs} />
 		</div>
 	)
 }

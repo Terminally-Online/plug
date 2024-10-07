@@ -5,7 +5,6 @@ export * from "./chains"
 export * from "./colors"
 export * from "./routes"
 export * from "./tokens"
-export * from "./views"
 export * from "./wallet"
 
 export const tags = [

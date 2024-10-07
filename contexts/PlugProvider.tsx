@@ -5,8 +5,8 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffec
 import { Workflow } from "@/server/api/routers/plug"
 import { api } from "@/server/client"
 
-import { categories, actions as staticActions, tags, VIEW_KEYS } from "@/lib/constants"
-import { useColumns } from "@/state"
+import { categories, actions as staticActions, tags } from "@/lib/constants"
+import { COLUMN_KEYS, useColumns } from "@/state"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 
@@ -90,13 +90,13 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 			if (data.index === 0)
 				add({
 					index: data.index,
-					key: VIEW_KEYS.PLUG,
+					key: COLUMN_KEYS.PLUG,
 					from: data.from,
 					item: data.plug.id
 				})
 			else if (data.index)
 				navigate({
-					key: VIEW_KEYS.PLUG,
+					key: COLUMN_KEYS.PLUG,
 					index: data.index,
 					from: data.from,
 					item: data.plug.id
@@ -145,7 +145,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 					setPlugs(prev => prev.filter(plug => plug.id !== data.plug))
 					navigate({
 						index: data.index,
-						key: data.from || VIEW_KEYS.MY_PLUGS
+						key: data.from || COLUMN_KEYS.MY_PLUGS
 					})
 				}
 			}),

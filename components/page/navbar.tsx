@@ -6,8 +6,8 @@ import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
 import { Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cn, MOBILE_INDEX, VIEW_KEYS } from "@/lib"
-import { useColumns, useSocket } from "@/state"
+import { cn } from "@/lib"
+import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSocket } from "@/state"
 
 export const PageNavbar = () => {
 	const { data: session } = useSession()
@@ -22,28 +22,28 @@ export const PageNavbar = () => {
 			<div className="relative z-[11] flex flex-row items-center justify-between gap-2 px-8 py-4">
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.HOME })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.HOME })}
 				>
 					<HousePlug
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === VIEW_KEYS.HOME && "text-opacity-100"
+							column?.key === COLUMN_KEYS.HOME && "text-opacity-100"
 						)}
 					/>
 				</button>
-				<button
+				{/*<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.SEARCH })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.SEARCH })}
 				>
 					<Search
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === VIEW_KEYS.SEARCH && "text-opacity-100"
+							column?.key === COLUMN_KEYS.SEARCH && "text-opacity-100"
 						)}
 					/>
-				</button>
+				</button>*/}
 				<button
 					className="group flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-plug-green to-plug-yellow"
 					onClick={() => handle.plug.add({ index: MOBILE_INDEX })}
@@ -55,19 +55,19 @@ export const PageNavbar = () => {
 				</button>
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.ACTIVITY })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.ACTIVITY })}
 				>
 					<Bell
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === VIEW_KEYS.ACTIVITY && "text-opacity-100"
+							column?.key === COLUMN_KEYS.ACTIVITY && "text-opacity-100"
 						)}
 					/>
 				</button>
 				<button
 					className="group h-8 w-8"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: VIEW_KEYS.PROFILE })}
+					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.PROFILE })}
 				>
 					{session && (
 						<button

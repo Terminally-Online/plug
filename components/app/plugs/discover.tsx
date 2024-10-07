@@ -1,14 +1,12 @@
-import { FC, HTMLAttributes, useEffect, useMemo, useState } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
-import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
 import { api } from "@/server/client"
 
-import { Workflow } from "@prisma/client"
-
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
-import { cn, useSearch, VIEW_KEYS } from "@/lib"
+import { cn, useSearch } from "@/lib"
+import { COLUMN_KEYS } from "@/state"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -48,7 +46,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 			/>
 
 			<Container>
-				<PlugGrid index={index} className="mb-4" from={VIEW_KEYS.DISCOVER} plugs={visiblePlugs} />
+				<PlugGrid index={index} className="mb-4" from={COLUMN_KEYS.DISCOVER} plugs={visiblePlugs} />
 			</Container>
 
 			<Callout.EmptyPlugs index={index} isEmpty={(search === "" && plugs && plugs.length === 0) || false} />

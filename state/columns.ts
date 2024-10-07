@@ -4,14 +4,53 @@ import { MinimalUserSocketModel } from "@/prisma/types"
 
 import { useAtom } from "jotai"
 
-import { Column, DEFAULT_VIEWS } from "@/lib"
+import { Column } from "@/lib"
 import { useSocket } from "@/state"
 
 import { atomWithStorage } from "jotai/utils"
 
-const DEFAULT_COLUMN_WIDTH = 420
+export const MOBILE_INDEX = -1
+export const DEMO_VIEW_AS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
-const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_VIEWS)
+export const COLUMN_KEYS = {
+	// Anonymous views
+	HOME: "HOME",
+	AUTHENTICATE: "AUTHENTICATE",
+	ADD: "ADD",
+	PLUGS: "PLUGS",
+	DISCOVER: "DISCOVER",
+	MY_PLUGS: "MY_PLUGS",
+	PLUG: "PLUG",
+	ALERTS: "ALERTS",
+
+	// Authenticated views
+	ACTIVITY: "ACTIVITY",
+	ASSETS: "ASSETS",
+	TOKENS: "TOKENS",
+	COLLECTIBLES: "COLLECTIBLES",
+	POSITIONS: "POSITIONS",
+	EARNINGS: "EARNINGS",
+	SETTINGS: "SETTINGS",
+	PROFILE: "PROFILE",
+
+	// Admin views
+	ADMIN: "ADMIN",
+
+	// Temporal views
+	APPLICATION: "APPLICATION"
+}
+
+export const DEFAULT_COLUMN_WIDTH = 420
+export const DEFAULT_COLUMNS = [
+	{ key: COLUMN_KEYS.HOME, index: -1 },
+	{ key: COLUMN_KEYS.DISCOVER, index: 0 },
+	{ key: COLUMN_KEYS.MY_PLUGS, index: 1 },
+	{ key: COLUMN_KEYS.ACTIVITY, index: 2 },
+	{ key: COLUMN_KEYS.TOKENS, index: 3 }
+].map(column => ({ ...column, width: DEFAULT_COLUMN_WIDTH }))
+export const DEFAULT_DEMO_COLUMNS = DEFAULT_COLUMNS.map(column => ({ ...column, viewAsId: DEMO_VIEW_AS }))
+
+const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_COLUMNS)
 export const useColumns = (index?: number, key?: string) => {
 	const { socket } = useSocket()
 
