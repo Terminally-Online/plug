@@ -1,3 +1,4 @@
+import { Session } from "next-auth"
 import { useSession } from "next-auth/react"
 import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
 
@@ -60,7 +61,7 @@ export const PlugContext = createContext<{
 	}
 })
 
-export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
+export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ session, children }) => {
 	const { columns, add, navigate } = useColumns()
 
 	const [search, handleSearch] = useState("")
@@ -74,7 +75,7 @@ export const PlugProvider: FC<PropsWithChildren> = ({ children }) => {
 		[]
 
 	const { data: apiPlugs } = api.plug.get.useQuery(ids, {
-		enabled: ids.length > 0 ? true : false
+		enabled: session && ids.length > 0 ? true : false
 	})
 
 	const [plugs, setPlugs] = useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs || [])

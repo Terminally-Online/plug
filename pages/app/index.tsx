@@ -14,17 +14,17 @@ export const getServerSideProps = async (context: NextPageContext) => {
 export default function Page({ session }: { session: Session | null }) {
 	return (
 		<SessionProvider session={session}>
-			<WalletProvider>
-				<ConnectionProvider>
-					<DataProvider session={session}>
-						<PlugProvider>
-							<BeforeInstallProvider>
+			<BeforeInstallProvider>
+				<WalletProvider>
+					<ConnectionProvider>
+						<DataProvider session={session}>
+							<PlugProvider session={session}>
 								<ConsolePage />
-							</BeforeInstallProvider>
-						</PlugProvider>
-					</DataProvider>
-				</ConnectionProvider>
-			</WalletProvider>
+							</PlugProvider>
+						</DataProvider>
+					</ConnectionProvider>
+				</WalletProvider>
+			</BeforeInstallProvider>
 		</SessionProvider>
 	)
 }

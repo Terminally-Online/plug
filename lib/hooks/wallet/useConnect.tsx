@@ -95,6 +95,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 							setAuthenticationLoading(true)
 							setAuthenticationResponse(undefined)
 
+							console.log("Authenticating...")
 							const authenticationResponse = await signIn("credentials", {
 								message,
 								signature,
@@ -102,11 +103,13 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 								redirect: true,
 								callbackUrl: `${window.location.origin}/app`
 							})
+							console.log("Authenticated", authenticationResponse)
 
 							setAuthenticationResponse(authenticationResponse)
 							navigate({ index, key: from })
 						},
-						onError: (_, account) => {
+						onError: (e, account) => {
+							console.error("Authentication error", e)
 							if (account.connector) account.connector.disconnect()
 
 							connection.reset()
@@ -116,8 +119,6 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 					}
 				)
 			} catch (e) {
-				console.error("Authentication error", e)
-
 				setAuthenticationLoading(false)
 
 				connection.reset()
