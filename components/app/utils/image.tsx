@@ -1,10 +1,10 @@
 import NextImage from "next/image"
 import { FC, HTMLAttributes, Ref } from "react"
 
-const loader = ({ src }: { src: string }) => {
+const loader = ({ src, width }: { src: string; width: number }) => {
 	if (src.startsWith("data:image")) {
-		const byteString = atob(src)
-		const mimeString = byteString.split("")[0]
+		const byteString = atob(src.split(",")[1])
+		const mimeString = src.split(",")[0].split(":")[1].split(";")[0]
 		const ab = new ArrayBuffer(byteString.length)
 		const ia = new Uint8Array(ab)
 		for (let i = 0; i < byteString.length; i++) {
@@ -13,7 +13,7 @@ const loader = ({ src }: { src: string }) => {
 		const blob = new Blob([ab], { type: mimeString })
 		return URL.createObjectURL(blob)
 	}
-	return src
+	return `${src}${src.includes("?") ? "&" : "?"}w=${width}`
 }
 
 export const Image: FC<
@@ -30,7 +30,7 @@ export const Image: FC<
 > = ({ src, width, height, alt, ...props }) => {
 	return (
 		<NextImage
-			loader={loader}
+			loader={({ src, width }) => loader({ src, width })}
 			src={src}
 			width={width}
 			height={height}
