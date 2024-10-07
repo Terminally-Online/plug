@@ -27,17 +27,15 @@ export const Image: FC<
 		quality?: number
 		blurSrc?: string
 	}
-> = ({ src, width, height, alt, ...props }) => {
-	return (
-		<NextImage
-			loader={loader}
-			src={src}
-			width={width}
-			height={height}
-			alt={alt}
-			placeholder={props.blurSrc ? "blur" : "empty"}
-			blurDataURL={props.blurSrc}
-			{...props}
-		/>
-	)
-}
+> = ({ src, width, height, alt, ...props }) => (
+	<NextImage
+		loader={loader}
+		src={src}
+		width={width}
+		height={height}
+		alt={alt}
+		placeholder={props.blurSrc ? "blur" : "empty"}
+		blurDataURL={props.blurSrc}
+		{...props}
+	/>
+)

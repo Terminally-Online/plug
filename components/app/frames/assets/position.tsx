@@ -5,7 +5,7 @@ import { ExternalLink, EyeOff } from "lucide-react"
 import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, Image, SocketTokenPriceChart, TokenImage } from "@/components"
-import { cn, formatTitle, getChainImage, getTextColor } from "@/lib"
+import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { useColumns } from "@/state"
 
 export const PositionFrame: FC<{
@@ -166,7 +166,7 @@ export const PositionFrame: FC<{
 
 													<div className="relative flex flex-row items-center justify-between gap-2 text-sm text-black/40">
 														<Image
-															src={getChainImage(position.chain)}
+															src={chains[getChainId(position.chain)].logo}
 															alt={position.chain}
 															className="h-4 w-4 rounded-full"
 															width={24}

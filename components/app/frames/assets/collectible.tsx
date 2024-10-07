@@ -21,6 +21,7 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { CollectibleImage, Frame, Image } from "@/components"
 import {
+	chains,
 	cn,
 	formatAddress,
 	formatLongString,
@@ -28,7 +29,6 @@ import {
 	formatTokenStandard,
 	getBlockExplorerAddress,
 	getChainId,
-	getChainImage,
 	getTextColor
 } from "@/lib"
 import { useColumns } from "@/state"
@@ -202,7 +202,7 @@ export const CollectibleFrame: FC<{
 							<span className="flex flex-row items-center gap-4">
 								<Image
 									className="h-4 w-4"
-									src={getChainImage(collection.chain)}
+									src={chains[getChainId(collection.chain)].logo}
 									alt={collection.chain}
 									width={24}
 									height={24}

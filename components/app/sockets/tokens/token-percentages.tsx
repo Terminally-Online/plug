@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { getChainColor } from "@/lib"
+import { chains, getChainId } from "@/lib"
 
 const SIZE = 14
 const RADIUS = 50
@@ -33,7 +33,7 @@ export const SocketTokenPercentages: FC<{
 							key={index}
 							r={RADIUS}
 							fill="transparent"
-							stroke={getChainColor(implementation.chain)}
+							stroke={chains[getChainId(implementation.chain)].color}
 							strokeWidth="20"
 							strokeDasharray={dashArray}
 							transform={`rotate(${-90 + rotation})`}

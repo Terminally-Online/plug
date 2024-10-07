@@ -1,7 +1,3 @@
-import { chains } from "@/lib"
-
-export type ChainId = (typeof chains)[number]["id"]
-
 interface ProviderRpcError extends Error {
 	message: string
 	code: number

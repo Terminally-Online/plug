@@ -3,7 +3,7 @@ import React, { FC, useState } from "react"
 import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Image } from "@/components"
-import { formatTitle, getChainImage } from "@/lib"
+import { chains, formatTitle, getChainId } from "@/lib"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 
@@ -56,7 +56,7 @@ export const SocketCollectionItem: FC<{
 						<p className="truncate font-bold">{formatTitle(collection.name.toLowerCase())}</p>
 						<div className="flex w-max flex-row items-center gap-2">
 							<Image
-								src={getChainImage(collection.chain)}
+								src={chains[getChainId(collection.chain)].logo}
 								alt={collection.name}
 								className="z-1 relative h-4 w-4 rounded-full bg-grayscale-100"
 								width={48}

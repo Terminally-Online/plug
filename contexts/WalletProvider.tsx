@@ -1,28 +1,17 @@
 import { FC, PropsWithChildren } from "react"
 
 import { createClient } from "viem"
-import {
-	arbitrum,
-	avalanche,
-	base,
-	blast,
-	bsc,
-	celo,
-	gnosis,
-	linea,
-	mainnet,
-	mantle,
-	mode,
-	optimism,
-	polygon,
-	scroll,
-	zkSync,
-	zora
-} from "viem/chains"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
+import { ChainIds, chains } from "@/lib/constants/chains"
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
+
+declare module "wagmi" {
+	interface Register {
+		config: typeof wagmiConfig
+	}
+}
 
 export const WALLETCONNECT_PARAMS = {
 	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1",
@@ -35,33 +24,8 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
-export const wagmiChains = [
-	mainnet,
-	base,
-	optimism,
-	arbitrum,
-	avalanche,
-	blast,
-	bsc,
-	celo,
-	gnosis,
-	linea,
-	polygon,
-	scroll,
-	mantle,
-	mode,
-	zora,
-	zkSync
-] as const
-
-declare module "wagmi" {
-	interface Register {
-		config: typeof wagmiConfig
-	}
-}
-
 export const wagmiConfig = createConfig({
-	chains: wagmiChains,
+	chains: [chains[ChainIds.Mainnet]],
 	connectors: [
 		injectedWithFallback(),
 		walletConnect(WALLETCONNECT_PARAMS),
@@ -78,8 +42,7 @@ export const wagmiConfig = createConfig({
 			chain,
 			batch: { multicall: true },
 			pollingInterval: 12_000,
-			// TODO(#402): Update this to be an appOnly provider.
-			transport: http(chain.rpcUrls.default.http[0])
+			transport: http(chain.rpcUrls.appOnly.http[0])
 		})
 	}
 })

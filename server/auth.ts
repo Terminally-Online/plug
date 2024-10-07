@@ -6,7 +6,8 @@ import { getCsrfToken } from "next-auth/react"
 import { createPublicClient, extractChain, http } from "viem"
 import { parseSiweMessage } from "viem/siwe"
 
-import { wagmiChains } from "@/contexts"
+import { chainsArray } from "@/lib/constants"
+import { RPCType } from "@/lib/types"
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {
@@ -44,6 +45,8 @@ export const authOptions: NextAuthOptions = {
 			async authorize(credentials, req) {
 				if (!credentials?.message || !credentials?.signature || !credentials?.chainId) return null
 
+				console.log("Verifying credentials")
+
 				const unauthenticatedPairs = ["0x0", "0xdemo"]
 				if (
 					unauthenticatedPairs.includes(credentials.message) ||
@@ -62,14 +65,16 @@ export const authOptions: NextAuthOptions = {
 				try {
 					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
 
-					const publicClient = createPublicClient({
-						chain: extractChain({
-							chains: wagmiChains,
-							//@ts-expect-error -- Viem strictness is an unneeded burden here.
-							id: Number(credentials.chainId)
-						}),
-						transport: http()
+					const chain = extractChain({
+						chains: chainsArray,
+						id: Number(credentials.chainId)
 					})
+
+					const publicClient = createPublicClient({
+						chain,
+						transport: http(chain.rpcUrls[RPCType.AppOnly].http[0])
+					})
+					console.log("Created public client")
 
 					const valid = await publicClient.verifySiweMessage({
 						message: credentials.message,
@@ -79,6 +84,7 @@ export const authOptions: NextAuthOptions = {
 							req: { headers: req.headers }
 						})
 					})
+					console.log("Verified message")
 
 					if (valid) {
 						const address = parseSiweMessage(credentials.message).address as string

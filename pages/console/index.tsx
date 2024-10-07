@@ -16,7 +16,7 @@ const Page = () => {
 	// 		redirect: false
 	// 	})
 	// }, [socket])
-	
+
 	return (
 		<div className="min-w-screen flex w-full flex-row overflow-visible">
 			<ConsoleSidebar />

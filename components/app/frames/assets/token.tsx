@@ -5,7 +5,7 @@ import { MapIcon, Send } from "lucide-react"
 import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
-import { cn, formatTitle, getBlockExplorerAddress, getChainId, getChainImage, getTextColor } from "@/lib"
+import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId, getTextColor } from "@/lib"
 import { useColumns } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
@@ -192,7 +192,7 @@ export const TokenFrame: FC<{
 				{token.implementations.map((implementation, index) => (
 					<div key={index} className="flex flex-row items-center gap-4">
 						<Image
-							src={getChainImage(implementation.chain)}
+							src={chains[getChainId(implementation.chain)].logo}
 							alt={implementation.chain}
 							className="h-4 w-4 rounded-full"
 							width={24}
@@ -232,7 +232,7 @@ export const TokenFrame: FC<{
 						>
 							{token.implementations.length > 1 ? (
 								<Image
-									src={getChainImage(implementation.chain)}
+									src={chains[getChainId(implementation.chain)].logo}
 									alt={implementation.chain}
 									className="h-4 w-4 rounded-full"
 									width={24}
