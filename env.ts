@@ -24,7 +24,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_EARLY_ACCESS: z
 			.string()
 			.optional()
-			.default("false")
+			.default("true")
 			.transform(val => val === "true"),
 		NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
 		NEXT_PUBLIC_ALCHEMY_KEY: z.string()
