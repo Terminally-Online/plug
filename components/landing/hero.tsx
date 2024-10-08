@@ -66,8 +66,7 @@ export const Hero = () => {
 									delay: 0.15
 								}}
 							>
-								Human designed, bot executed transactions that kick your onchain activity into high
-								gear. Adopt and create strategies that deliver the results you want in seconds.
+								Designed to let you do more with less, Plug gives you a single interface to manage, composte, and execute all your transactions and holdings in one place.
 							</motion.p>
 
 							<Button
