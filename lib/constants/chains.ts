@@ -10,10 +10,6 @@ export enum ChainIds {
 
 const getAppRPCs = (prefix: string) => {
 	return {
-		[RPCType.ServerOnly]: {
-			http: [`https://${prefix}.g.alchemy.com/v2/${env.ALCHEMY_KEY}`],
-			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${env.ALCHEMY_KEY}`]
-		},
 		[RPCType.AppOnly]: {
 			http: [`https://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`],
 			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`]
@@ -58,7 +54,7 @@ export const chainsArray = Object.values(chains)
 
 export type ChainId = keyof typeof chains
 
-export const createClient = (chainId: ChainId, serverOnly = true) => {
+export const createClient = (chainId: ChainId) => {
 	const chain = extractChain({
 		chains: chainsArray,
 		id: chainId
@@ -66,6 +62,6 @@ export const createClient = (chainId: ChainId, serverOnly = true) => {
 
 	return createPublicClient({
 		chain,
-		transport: http(chain.rpcUrls[serverOnly ? RPCType.ServerOnly : RPCType.AppOnly].http[0])
+		transport: http(chain.rpcUrls[RPCType.AppOnly].http[0])
 	})
 }
