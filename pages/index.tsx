@@ -5,7 +5,7 @@ import { Blocks, CallToAction, Hero, LandingFooter, Light, Transactions, Vision 
 const Page = () => (
 	<>
 		<Head>
-			<title>Plug</title>
+			<title>&quot;If This, Then That&quot; for Ethereum transactions.</title>
 		</Head>
 
 		<div className="overflow-x-hidden">

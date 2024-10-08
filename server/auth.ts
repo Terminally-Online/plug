@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
 				}
 
 				try {
-					const nextAuthUrl = new URL(env.NEXT_AUTH_URL || "")
+					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
 
 					console.log("Creating client")
 					const client = createClient(Number(credentials.chainId))
@@ -117,7 +117,7 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		strategy: "jwt"
 	},
-	secret: env.NEXT_AUTH_SECRET
+	secret: process.env.NEXTAUTH_SECRET
 }
 
 export const getServerAuthSession = (ctx: {

@@ -8,8 +8,8 @@ config()
 export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().startsWith("postgresql://"),
-		NEXT_AUTH_URL: z.string().startsWith("http"),
-		NEXT_AUTH_SECRET: z.string(),
+		NEXTAUTH_URL: z.string().startsWith("http"),
+		NEXTAUTH_SECRET: z.string(),
 		OPENSEA_KEY: z.string(),
 		ZERION_KEY: z.string(),
 		PORT: z.string().optional().default("3000").transform(Number),
@@ -21,14 +21,18 @@ export const env = createEnv({
 	client: {
 		NEXT_PUBLIC_APP_URL: z.string().optional().default("http://localhost:3000"),
 		NEXT_PUBLIC_WS_URL: z.string().optional().default("ws://localhost:3001"),
-		NEXT_PUBLIC_EARLY_ACCESS: z.string().optional().default("false").transform(Boolean),
+		NEXT_PUBLIC_EARLY_ACCESS: z
+			.string()
+			.optional()
+			.default("false")
+			.transform(val => val === "true"),
 		NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
 		NEXT_PUBLIC_ALCHEMY_KEY: z.string()
 	},
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
-		NEXT_AUTH_URL: process.env.NEXT_AUTH_URL,
-		NEXT_AUTH_SECRET: process.env.NEXT_AUTH_SECRET,
+		NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+		NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 		OPENSEA_KEY: process.env.OPENSEA_KEY,
 		ZERION_KEY: process.env.ZERION_KEY,
 		PORT: process.env.PORT,

@@ -7,8 +7,6 @@ import { createServer } from "node:http"
 import { parse } from "node:url"
 import { WebSocketServer } from "ws"
 
-import { env } from "@/env"
-
 import { appRouter } from "./api/root"
 import { createInnerTRPCContext } from "./api/trpc"
 
@@ -46,7 +44,9 @@ void app.prepare().then(() => {
 		})
 	})
 
-	server.listen(env.PORT)
+	server.listen(process.env.PORT)
 
-	console.log(`> Server listening at http://localhost:${env.PORT} as ${dev ? "development" : process.env.NODE_ENV}`)
+	console.log(
+		`> Server listening at http://localhost:${process.env.PORT} as ${dev ? "development" : process.env.NODE_ENV}`
+	)
 })
