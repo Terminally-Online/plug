@@ -51,7 +51,7 @@ export const Hero = () => {
 								}}
 								transition={{ duration: 0.3 }}
 							>
-								Supernatural returns with unparalleled control.
+								&quot;If This, Then That&quot; for Ethereum transactions.
 							</motion.h1>
 
 							<motion.p
