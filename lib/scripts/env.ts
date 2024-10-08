@@ -1,5 +1,8 @@
 import * as crypto from "crypto"
 import * as fs from "fs"
+import { config } from "dotenv"
+
+config()
 
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
 	? crypto.scryptSync(process.env.ENCRYPTION_KEY, "salt", 32)
