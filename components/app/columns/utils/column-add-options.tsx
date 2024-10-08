@@ -73,11 +73,11 @@ export const ColumnAddOptions: FC<
 	const { navigate } = useColumns()
 
 	const flagOptions = useMemo(() => {
-		const options = []
+		const options: Options = []
 
 		if (getFlag(Flag.SHOW_PWA))
 			options.push({
-				label: "Application",
+				label: "APPLICATION",
 				description: "Install Plug as an app on your device.",
 				icon: <Star size={14} className="opacity-40" />
 			})
