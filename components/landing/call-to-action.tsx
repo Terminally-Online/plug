@@ -3,6 +3,7 @@ import { FC } from "react"
 import { motion } from "framer-motion"
 
 import { Button } from "@/components"
+import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 import { HeroShapes } from "./shapes"
@@ -14,7 +15,7 @@ export const CallToAction: FC<{
 }> = ({ text, description }) => {
 	const handleNavigate = useAnalytics(
 		GTM_EVENTS.CTA_CLICKED,
-		process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? routes.app : routes.earlyAccess
+		env.NEXT_PUBLIC_EARLY_ACCESS ? routes.earlyAccess : routes.app
 	)
 
 	return (

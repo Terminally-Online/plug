@@ -1,8 +1,7 @@
-const MINUTE = 60 * 1000
-const HOUR = 60 * MINUTE
+import { env } from "@/env"
 
 export const getAPIKey = () => {
-	const keys = process.env.OPENSEA_API_KEY?.split(",")
+	const keys = env.OPENSEA_KEY?.split(",")
 	return keys?.[Math.floor(Math.random() * keys.length)]
 }
 

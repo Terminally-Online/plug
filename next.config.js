@@ -1,5 +1,3 @@
-/** @type {import('next').NextConfig} */
-
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 
 const remotePatterns = [
@@ -40,6 +38,7 @@ const headers = [
 	}
 ]
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
 	poweredByHeader: false,
 	trailingSlash: true,
@@ -71,7 +70,8 @@ const nextConfig = {
 	},
 	experimental: {
 		optimizePackageImports: []
-	}
+	},
+	transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"]
 }
 
 const withPWA = require("next-pwa")({

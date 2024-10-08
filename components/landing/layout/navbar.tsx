@@ -3,12 +3,13 @@ import { FC } from "react"
 import { Book, Twitter } from "lucide-react"
 
 import { Button, Image, LandingContainer } from "@/components"
+import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const Navbar: FC = () => {
 	const handleCallToAction = useAnalytics(
 		GTM_EVENTS.CTA_CLICKED,
-		process.env.NEXT_PUBLIC_EARLY_ACCESS === "false" ? routes.app : routes.earlyAccess
+		env.NEXT_PUBLIC_EARLY_ACCESS ? routes.earlyAccess : routes.app
 	)
 
 	return (

@@ -1,6 +1,7 @@
 import { createPublicClient, extractChain, http } from "viem"
 import { base, mainnet, optimism } from "viem/chains"
 
+import { env } from "@/env"
 import { Chain, RPCType } from "@/lib/types"
 
 export enum ChainIds {
@@ -10,12 +11,12 @@ export enum ChainIds {
 const getAppRPCs = (prefix: string) => {
 	return {
 		[RPCType.ServerOnly]: {
-			http: [`https://${prefix}.g.alchemy.com/v2/${process.env.PRIVATE_ALCHEMY_API_KEY}`],
-			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${process.env.PRIVATE_ALCHEMY_API_KEY}`]
+			http: [`https://${prefix}.g.alchemy.com/v2/${env.ALCHEMY_KEY}`],
+			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${env.ALCHEMY_KEY}`]
 		},
 		[RPCType.AppOnly]: {
-			http: [`https://${prefix}.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_APP_ONLY_ALCHEMY_API_KEY}`],
-			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_APP_ONLY_ALCHEMY_API_KEY}`]
+			http: [`https://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`],
+			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`]
 		}
 	}
 }

@@ -4,6 +4,7 @@ import { createClient } from "viem"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
+import { env } from "@/env"
 import { ChainIds, chains } from "@/lib/constants/chains"
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
 import { RPCType } from "@/lib/types/chain"
@@ -15,7 +16,7 @@ declare module "wagmi" {
 }
 
 export const WALLETCONNECT_PARAMS = {
-	projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID || "b17c8bdfe7719b0f3551627ff43a0af1",
+	projectId: env.NEXT_PUBLIC_WALLETCONNECT_ID,
 	metadata: {
 		name: "Plug",
 		description: '"IF This, Then That" for Ethereum blockchains and protocols.',

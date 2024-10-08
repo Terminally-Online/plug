@@ -4,6 +4,8 @@ import { type AppRouter } from "@/server/api/root"
 
 import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
 
+import { env } from "@/env"
+
 export const getBaseUrl = () => {
 	// browser should use relative url
 	if (typeof window !== "undefined") return ""
@@ -11,12 +13,12 @@ export const getBaseUrl = () => {
 	// SSR should use vercel url
 	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
 
-	const envUrl = process.env.NEXT_PUBLIC_APP_URL
+	const envUrl = env.NEXT_PUBLIC_APP_URL
 
 	if (envUrl) return envUrl
 
 	// dev SSR should use localhost
-	return `http://localhost:${process.env.PORT ?? 3000}`
+	return `http://localhost:${env.PORT}`
 }
 
 function getEndingLink(ctx: NextPageContext | undefined) {
@@ -35,7 +37,7 @@ function getEndingLink(ctx: NextPageContext | undefined) {
 		})
 	}
 	const client = createWSClient({
-		url: process.env.NEXT_PUBLIC_WS_URL || `ws://localhost:3001`
+		url: env.NEXT_PUBLIC_WS_URL
 	})
 	return wsLink<AppRouter>({
 		client

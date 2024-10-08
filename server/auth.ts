@@ -5,6 +5,7 @@ import { getCsrfToken } from "next-auth/react"
 
 import { parseSiweMessage } from "viem/siwe"
 
+import { env } from "@/env"
 import { createClient } from "@/lib"
 
 declare module "next-auth" {
@@ -61,7 +62,7 @@ export const authOptions: NextAuthOptions = {
 				}
 
 				try {
-					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
+					const nextAuthUrl = new URL(env.NEXT_AUTH_URL || "")
 
 					console.log("Creating client")
 					const client = createClient(Number(credentials.chainId))
@@ -116,7 +117,7 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		strategy: "jwt"
 	},
-	secret: process.env.NEXT_AUTH_SECRET
+	secret: env.NEXT_AUTH_SECRET
 }
 
 export const getServerAuthSession = (ctx: {

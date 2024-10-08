@@ -1,5 +1,7 @@
 import { exec } from "child_process"
 
+import { env } from "@/env"
+
 import { version } from "../../package.json"
 
 const outputString = `   ◍ Plug PostgreSQL Database ${version}`
@@ -26,9 +28,9 @@ function startDatabase(containerName: string, databaseName: string, databasePass
 	)
 }
 
-const containerName = process.env.CONTAINER_NAME ?? "postgres"
-const databaseName = process.env.DATABASE_NAME ?? "postgres"
-const databasePort = process.env.DATABASE_PORT ?? "5434"
-const databasePassword = process.env.DATABASE_PASSWORD ?? "postgres"
-
-startDatabase(containerName, databaseName, databasePassword, databasePort)
+startDatabase(
+	env.DOCKER_CONTAINER_NAME,
+	env.DOCKER_DATABASE_NAME,
+	env.DOCKER_DATABASE_PASSWORD,
+	env.DOCKER_DATABASE_PORT
+)

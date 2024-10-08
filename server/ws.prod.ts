@@ -7,10 +7,11 @@ import { createServer } from "node:http"
 import { parse } from "node:url"
 import { WebSocketServer } from "ws"
 
+import { env } from "@/env"
+
 import { appRouter } from "./api/root"
 import { createInnerTRPCContext } from "./api/trpc"
 
-const port = parseInt(process.env.PORT || "3000", 10)
 const dev = process.env.NODE_ENV !== "production"
 const app = next({ dev })
 const handle = app.getRequestHandler()
@@ -45,7 +46,7 @@ void app.prepare().then(() => {
 		})
 	})
 
-	server.listen(port)
+	server.listen(env.PORT)
 
-	console.log(`> Server listening at http://localhost:${port} as ${dev ? "development" : process.env.NODE_ENV}`)
+	console.log(`> Server listening at http://localhost:${env.PORT} as ${dev ? "development" : process.env.NODE_ENV}`)
 })
