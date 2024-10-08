@@ -1,9 +1,12 @@
 import * as crypto from "crypto"
 import * as fs from "fs"
 
-const ENCRYPTION_KEY = crypto.scryptSync(process.env.ENCRYPTION_KEY ?? "your-super-secret-key", "salt", 32)
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
+	? crypto.scryptSync(process.env.ENCRYPTION_KEY, "salt", 32)
+	: undefined
 
-export const encrypt = (text: string): string => {
+export const encrypt = (text: string) => {
+	if (!ENCRYPTION_KEY) return
 	const iv = crypto.randomBytes(16)
 	const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY), iv)
 	let encrypted = cipher.update(text)
@@ -11,7 +14,8 @@ export const encrypt = (text: string): string => {
 	return iv.toString("hex") + ":" + encrypted.toString("hex")
 }
 
-export const decrypt = (text: string): string => {
+export const decrypt = (text: string) => {
+	if (!ENCRYPTION_KEY) return
 	const textParts = text.split(":")
 	const iv = Buffer.from(textParts.shift()!, "hex")
 	const encryptedText = Buffer.from(textParts.join(":"), "hex")
@@ -24,6 +28,7 @@ export const decrypt = (text: string): string => {
 const encryptEnvFile = () => {
 	const envContent = fs.readFileSync(".env", "utf8")
 	const encryptedContent = encrypt(envContent)
+	if (!encryptedContent) return
 	fs.writeFileSync(".env.encrypted", encryptedContent)
 	console.log("Encrypted .env file created as .env.encrypted")
 }
@@ -31,6 +36,7 @@ const encryptEnvFile = () => {
 const decryptEnvFile = () => {
 	const encryptedContent = fs.readFileSync(".env.encrypted", "utf8")
 	const decryptedContent = decrypt(encryptedContent)
+	if (!decryptedContent) return
 	fs.writeFileSync(".env", decryptedContent)
 	console.log(".env file created from decrypted content")
 }
