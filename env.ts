@@ -10,7 +10,6 @@ export const env = createEnv({
 		NEXT_AUTH_URL: z.string().startsWith("http"),
 		NEXT_AUTH_SECRET: z.string(),
 		DATABASE_URL: z.string().startsWith("postgresql://"),
-		ALCHEMY_KEY: z.string(),
 		OPENSEA_KEY: z.string(),
 		ZERION_KEY: z.string(),
 		PORT: z.string().optional().default("3000").transform(Number),
@@ -30,7 +29,6 @@ export const env = createEnv({
 		NEXT_AUTH_URL: process.env.NEXT_AUTH_URL,
 		NEXT_AUTH_SECRET: process.env.NEXT_AUTH_SECRET,
 		DATABASE_URL: process.env.DATABASE_URL,
-		ALCHEMY_KEY: process.env.ALCHEMY_KEY,
 		OPENSEA_KEY: process.env.OPENSEA_KEY,
 		ZERION_KEY: process.env.ZERION_KEY,
 		PORT: process.env.PORT,
@@ -45,5 +43,6 @@ export const env = createEnv({
 		NEXT_PUBLIC_ALCHEMY_KEY: process.env.NEXT_PUBLIC_ALCHEMY_KEY
 	},
 	emptyStringAsUndefined: true,
-	isServer: typeof window === "undefined"
+	isServer: typeof window === "undefined",
+	skipValidation: process.env.GITHUB_ACTIONS === "true"
 })
