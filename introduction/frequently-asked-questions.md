@@ -52,7 +52,7 @@ Effectively everything. Due to the generalized nature of our architecture there 
 
 When the flywheel is spinning hard. No sooner. No later. A critical piece of having a functional token ecosystem is to have a mechanism that provides persistent value accrual. Today, that remains the north star for all tokenization conversations.
 
-## Why haven't you built you built X yet?
+## Why haven't you built X yet?
 
 We build what users benefit from most. Please don't assume if we haven't implemented something yet it is due to a lack of interest. We index very highly on active feedback and requests from our users. If you have a feature or protocol integration request (**and even general feedback**) [please reach out and tell us](https://twitter.com/onplug_io).
 
