@@ -9,10 +9,16 @@ import (
 	"solver/types"
 	"solver/utils"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
+
+var tokenTypeToABI = map[int]func() (*abi.ABI, error){
+	20:   erc_20.Erc20MetaData.GetAbi,
+	721:  erc_721.Erc721MetaData.GetAbi,
+	1155: erc_1155.Erc1155MetaData.GetAbi,
+}
 
 /*
 ApproveInputs represents the inputs for the Approve action which supports ERC20, ERC721 and ERC1155.
@@ -54,40 +60,38 @@ func (i *ApproveInputsImpl) Validate() error {
 		if i.Approved != nil {
 			return utils.ErrInvalidField("approved", "must not be provided for ERC20 tokens")
 		}
-
 	case 721:
-		if i.Amount != nil {
-			return utils.ErrInvalidField("amount", "must not be provided for ERC721 tokens")
-		}
-		if i.TokenId == nil && i.Approved == nil {
-			return utils.ErrInvalidField("tokenId or approved", "either tokenId or approved must be provided for ERC721 tokens")
-		}
-		if i.TokenId != nil && i.Approved != nil {
-			return utils.ErrInvalidField("tokenId and approved", "only one of tokenId or approved should be provided for ERC721 tokens")
-		}
-		if i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) <= 0 {
-			return utils.ErrInvalidField("tokenId", "must be greater than 0 for ERC721 tokens")
-		}
-
+		fallthrough
 	case 1155:
-		if i.TokenId != nil {
-			return utils.ErrInvalidField("tokenId", "must not be provided for ERC1155 tokens")
-		}
 		if i.Amount != nil {
-			return utils.ErrInvalidField("amount", "must not be provided for ERC1155 tokens")
+			return utils.ErrInvalidField("amount", "must not be provided for ERC721/ERC1155 tokens")
 		}
-		if i.Approved == nil {
-			return utils.ErrInvalidField("approved", "must be provided for ERC1155 tokens")
+		if i.Type == 721 {
+			if i.TokenId == nil && i.Approved == nil {
+				return utils.ErrInvalidField("tokenId or approved", "either tokenId or approved must be provided for ERC721 tokens")
+			}
+			if i.TokenId != nil && i.Approved != nil {
+				return utils.ErrInvalidField("tokenId and approved", "only one of tokenId or approved should be provided for ERC721 tokens")
+			}
+			if i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) <= 0 {
+				return utils.ErrInvalidField("tokenId", "must be greater than 0 for ERC721 tokens")
+			}
+		} else {
+			if i.TokenId != nil {
+				return utils.ErrInvalidField("tokenId", "must not be provided for ERC1155 tokens")
+			}
+			if i.Approved == nil {
+				return utils.ErrInvalidField("approved", "must be provided for ERC1155 tokens")
+			}
 		}
-
 	default:
 		return utils.ErrInvalidTokenStandard("type", i.Type)
 	}
 
-	if (i.Amount != nil && i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0) { 
+	if i.Amount != nil && i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amount", i.Amount.String())
 	}
-	if (i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) >= 0 && i.TokenId.Cmp(utils.Uint256Max) > 0) { 
+	if i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) >= 0 && i.TokenId.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("tokenId", i.TokenId.String())
 	}
 
@@ -95,82 +99,43 @@ func (i *ApproveInputsImpl) Validate() error {
 }
 
 func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
-	var approve *ethtypes.Transaction
-	var err error
+	tokenAbi, err := tokenTypeToABI[i.Type]()
+	if err != nil {
+		return nil, utils.ErrContractFailed(i.Token)
+	}
+
+	var methodName string
+	var args []interface{}
+
 	switch i.Type {
 	case 20:
-		approve, err = i.BuildERC20Approve(provider, from)
+		methodName = "approve"
+		args = []interface{}{common.HexToAddress(i.Spender), i.Amount}
 	case 721:
-		approve, err = i.BuildERC721Approve(provider, from)
+		if i.TokenId == nil {
+			methodName = "setApprovalForAll"
+			args = []interface{}{common.HexToAddress(i.Spender), *i.Approved}
+		} else {
+			methodName = "approve"
+			args = []interface{}{common.HexToAddress(i.Spender), i.TokenId}
+		}
 	case 1155:
-		approve, err = i.BuildERC1155Approve(provider, from)
+		methodName = "setApprovalForAll"
+		args = []interface{}{common.HexToAddress(i.Spender), *i.Approved}
 	default:
 		return nil, utils.ErrInvalidTokenStandard("type", i.Type)
 	}
+
+	data, err := tokenAbi.Pack(methodName, args...)
 	if err != nil {
-		return nil, err
+		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
 	return []*types.Transaction{{
-		Transaction: "0x" + hex.EncodeToString(approve.Data()), 
-		To: approve.To().Hex(), 
-		Value: approve.Value(), 
+		Transaction: "0x" + hex.EncodeToString(data),
+		To:          i.Token,
+		Value:       new(big.Int).SetUint64(0),
 	}}, nil
-}
-
-func (i *ApproveInputsImpl) BuildERC20Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc_20.NewErc20(common.HexToAddress(i.Token), provider)
-	if err != nil {
-		return nil, utils.ErrContractFailed(i.Token)
-	}
-
-	return contract.Approve(
-		utils.BuildTransactionOpts(from, big.NewInt(0)),
-		common.HexToAddress(i.Spender),
-		i.Amount,
-	)
-}
-
-/*
-BuildERC721Approve builds an approve transaction for ERC721 tokens based on the inputs provided without
-explicit definition of the function to call. As the standard supports both singular token approvals and
-batched token approvals, this function will build the appropriate transaction based on the inputs.
-
-When a tokenId is not provided, the transaction will be a SetApprovalForAll transaction -- thus becoming
-reliant on `Approved` provided in the inputs. Otherwise, it will be an Approve transaction.
-*/
-func (i *ApproveInputsImpl) BuildERC721Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc_721.NewErc721(common.HexToAddress(i.Token), provider)
-	if err != nil {
-		return nil, utils.ErrContractFailed(i.Token)
-	}
-
-	if i.TokenId == nil {
-		return contract.SetApprovalForAll(
-			utils.BuildTransactionOpts(from, big.NewInt(0)),
-			common.HexToAddress(i.Spender),
-			*i.Approved,
-		)
-	}
-
-	return contract.Approve(
-		utils.BuildTransactionOpts(from, big.NewInt(0)),
-		common.HexToAddress(i.Spender),
-		i.TokenId,
-	)
-}
-
-func (i *ApproveInputsImpl) BuildERC1155Approve(provider *ethclient.Client, from string) (*ethtypes.Transaction, error) {
-	contract, err := erc_1155.NewErc1155(common.HexToAddress(i.Token), provider)
-	if err != nil {
-		return nil, utils.ErrContractFailed(i.Token)
-	}
-
-	return contract.SetApprovalForAll(
-		utils.BuildTransactionOpts(from, big.NewInt(0)),
-		common.HexToAddress(i.Spender),
-		*i.Approved,
-	)
 }
 
 func (b *ApproveInputsImpl) GetType() int         { return b.Type }

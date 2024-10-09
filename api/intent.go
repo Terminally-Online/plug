@@ -126,7 +126,6 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	intentResponse := intent.IntentResponse{
-		Request:   intentRequest,
 		Plugs:     *plugs,
 		Signature: "0x" + common.Bytes2Hex(signature),
 	}

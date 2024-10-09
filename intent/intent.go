@@ -36,7 +36,6 @@ type Plugs struct {
 }
 
 type IntentResponse struct {
-	Request   IntentRequest `json:"request"`
 	Plugs     Plugs         `json:"plugs"`
 	Signature string        `json:"signature"`
 }
