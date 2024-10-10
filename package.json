@@ -81,7 +81,7 @@
 		"@tailwindcss/typography": "^0.5.13",
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
 		"@types/matter-js": "^0.19.7",
-		"@types/node": "^20.12.11",
+		"@types/node": "^22.7.5",
 		"@types/react": "^18.3.11",
 		"@types/recharts": "^1.8.29",
 		"@types/ws": "^8.5.10",
