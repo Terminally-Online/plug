@@ -108,3 +108,72 @@ export const formatTokenStandard = (tokenStandard: string) => {
 			return tokenStandard
 	}
 }
+
+const isDate = (input: string) => input.includes("/")
+
+export const formatForDisplay = (input: number | string, formatDecimals: boolean, decimals?: number) => {
+	if (typeof input === "number") {
+		const absCount = Math.abs(input)
+		let formattedNumber: string[]
+
+		if (formatDecimals) {
+			if (Number.isInteger(absCount) && decimals === undefined) {
+				// For whole numbers without specified decimals, don't add decimal places
+				formattedNumber = absCount.toLocaleString("en-US").split("")
+			} else {
+				// Convert to string to preserve all decimal places
+				let stringNumber = absCount.toString()
+
+				let decimalPlacesToKeep: number
+
+				if (decimals !== undefined) {
+					// Use the manually specified number of decimal places
+					decimalPlacesToKeep = decimals
+				} else {
+					// Find the index of the first non-zero digit after decimal point
+					const decimalIndex = stringNumber.indexOf(".")
+					let significantDigitIndex = decimalIndex + 1
+					while (stringNumber[significantDigitIndex] === "0") {
+						significantDigitIndex++
+					}
+
+					// Calculate how many decimal places to keep
+					decimalPlacesToKeep = Math.max(3, significantDigitIndex - decimalIndex + 2)
+				}
+
+				// Round to the calculated number of decimal places
+				const rounded = Number(absCount.toFixed(decimalPlacesToKeep))
+
+				// Format the number, ensuring at least 2 decimal places or the targetDecimals
+				let formatted = rounded.toFixed(Math.max(2, decimalPlacesToKeep))
+
+				// Trim trailing zeros, but keep at least 2 decimal places or the targetDecimals
+				if (decimals === undefined) {
+					formatted = formatted.replace(/\.?0+$/, "")
+					if (formatted.includes(".") && formatted.split(".")[1].length < 2) {
+						formatted += "0"
+					}
+				}
+
+				formattedNumber = Number(formatted)
+					.toLocaleString("en-US", {
+						maximumFractionDigits: 20
+					})
+					.split("")
+			}
+		} else {
+			formattedNumber = absCount
+				.toLocaleString("en-US", {
+					maximumFractionDigits: 20
+				})
+				.split("")
+		}
+
+		if (input < 0) formattedNumber.unshift("-")
+		return formattedNumber.reverse()
+	} else if (typeof input === "string" && isDate(input)) {
+		return input.split("").reverse()
+	}
+
+	return input.split("").reverse()
+}

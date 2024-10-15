@@ -15,7 +15,7 @@ export const TokenFrame: FC<{
 	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 }> = ({ index, tokenIndex, token }) => {
-	const { isFrame } = useColumns(index, `${tokenIndex}-token`)
+	const { column, isFrame, frame } = useColumns(index, `${tokenIndex}-token`)
 
 	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{
@@ -145,6 +145,7 @@ export const TokenFrame: FC<{
 						backgroundColor: color ?? "",
 						color: textColor
 					}}
+					onClick={() => frame(`${token.symbol}-transfer-send`)}
 				>
 					<Send size={14} className="opacity-60" />
 					Send

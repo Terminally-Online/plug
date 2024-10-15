@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react"
+import Image from "next/image"
+import { FC, useEffect, useMemo, useState } from "react"
 
 import { isAddress, zeroAddress } from "viem"
 import { useAccount, useEnsAddress, useEnsAvatar } from "wagmi"
@@ -16,9 +17,11 @@ import {
 	Wallet
 } from "lucide-react"
 
-import { Button, Frame, Search, SocketTokenList } from "@/components"
-import { formatTitle, getChainId } from "@/lib"
-import { useSocket } from "@/state"
+import { RouterOutputs } from "@/server/client"
+
+import { Button, Counter, Frame, Search, SocketTokenList, TokenImage } from "@/components"
+import { chains, formatTitle, getChainId, TOKENS } from "@/lib"
+import { useColumns, useSocket } from "@/state"
 
 const DEFAULT_TRANSFER = {
 	token: undefined,
@@ -27,38 +30,24 @@ const DEFAULT_TRANSFER = {
 	to: undefined
 }
 
-export const TransferFrame = () => {
-	// const [transfer, setTransfer] = useState<{
-	// 	action?: "receive" | "send"
-	// 	token?: NonNullable<typeof tokens>[number]
-	// 	chain?: NonNullable<typeof tokens>[number]["chains"][0]
-	// 	amount?: string | undefined
-	// 	to?: string
-	// }>(DEFAULT_TRANSFER)
-	const [advanced, setAdvanced] = useState(false)
+export const TransferFrame: FC<{
+	index: number
+	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+}> = ({ index, token }) => {
+	const { column, isFrame, frame } = useColumns(index, `${token?.symbol}-transfer`)
 
-	const { address } = useAccount()
-	const { socket } = useSocket()
+	const [transfer, setTransfer] = useState<{
+		action?: "receive" | "send"
+		token?: typeof token
+		// chain?: NonNullable<typeof tokens>[number]["chains"][0]
+		amount?: string | undefined
+		to?: string
+	}>(DEFAULT_TRANSFER)
+	// const [advanced, setAdvanced] = useState(false)
 
-	// const fromAddress =
-	// 	(transfer.action !== undefined
-	// 		? // Depositing tokens from wallet into Socket.
-	// 			transfer.action === "receive"
-	// 			? address
-	// 			: // Withdrawing tokens from Socket into wallet.
-	// 				socket?.socketAddress
-	// 		: "") || ""
-
-	// const { tokens } = useBalances()
-
-	// NOTE: This is not used currently, but it will be for the transaction functionality so leaving it here until then.
-	// const toAddress =
-	// 	(transfer.to !== undefined
-	// 		? transfer.to
-	// 		: fromAddress === socket?.socketAddress
-	// 			? address
-	// 			: socket?.socketAddress) || ""
-
+	// const { address } = useAccount()
+	// const { socket } = useSocket()
+	//
 	// const { data: ensAddress } = useEnsAddress({
 	// 	name: transfer.to ?? zeroAddress
 	// })
@@ -67,41 +56,97 @@ export const TransferFrame = () => {
 	// })
 
 	// const transferValid = useMemo(() => {
-	// 	if (transfer.amount === undefined || transfer.amount === "0")
-	// 		return [false, "Enter Amount"]
+	// 	if (transfer.amount === undefined || transfer.amount === "0") return [false, "Enter Amount"]
 	// 	if (isNaN(Number(transfer.amount))) return [false, "Invalid Amount"]
 	// 	if (transfer.to !== undefined && transfer.to !== "") {
 	// 		if (transfer.to.startsWith("0x")) {
 	// 			if (!isAddress(transfer.to)) return [false, "Invalid Address"]
 	// 		} else {
-	// 			if (!ensAddress === undefined || ensAddress === null)
-	// 				return [false, "Invalid ENS"]
+	// 			if (!ensAddress === undefined || ensAddress === null) return [false, "Invalid ENS"]
 	// 		}
 	// 	}
-	// 	if (Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0))
-	// 		return [false, "Insufficient Balance"]
-
+	// 	if (Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0)) return [false, "Insufficient Balance"]
+	//
 	// 	return [true, transfer.action === "send" ? "Withdraw" : "Deposit"]
 	// }, [ensAddress, transfer])
 
-	// useEffect(() => {
-	// 	if (transferVisible === false) setTransfer(DEFAULT_TRANSFER)
-	// }, [transferVisible])
+	useEffect(() => {
+		if (isFrame === false) setTransfer(DEFAULT_TRANSFER)
+	}, [isFrame])
+
+	if (!token || !column) return null
 
 	return (
 		<>
-			{/* <Frame
-				className="z-[2]"
-				icon={<ArrowLeftRight size={18} />}
-				label="Choose Transfer Direction"
-				visible={isFrame}
+			<Frame
+				icon={
+					<div className="relative h-8 w-10">
+						<TokenImage
+							logo={
+								token?.icon ||
+								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+							}
+							symbol={token.symbol}
+							size="sm"
+							// handleColor={setColor}
+						/>
+					</div>
+				}
+				label={`Transfer ${token.symbol}`}
+				visible={column.frame === `${token.symbol}-transfer-send`}
+				hasChildrenPadding={false}
 			>
+				<div className="flex flex-col gap-4 pb-4">
+					<div className="mx-6 flex flex-col gap-4">
+						<Search
+							icon={<User size={14} className="opacity-40" />}
+							placeholder="Recipient"
+							search={transfer.amount?.toString() ?? ""}
+						/>
+					</div>
+
+					<div className="flex flex-col gap-2">
+						{token.implementations.map((implementation, index) => (
+							<div
+								key={index}
+								className="relative mr-6 flex items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
+							>
+								<div className="flex w-full flex-row">
+									<div className="flex flex-row items-center gap-4 px-2">
+										<TokenImage
+											logo={chains[getChainId(implementation.chain)].logo}
+											symbol={token.symbol}
+											size="sm"
+										/>
+
+										<p className="font-bold">{formatTitle(implementation.chain)}</p>
+									</div>
+									<div className="ml-auto flex flex-col items-center px-2">
+										<p className="ml-auto flex flex-row font-bold tabular-nums">
+											<Counter count={implementation.balance} />
+										</p>
+										<p className="ml-auto flex w-max flex-row gap-2 text-sm font-bold tabular-nums opacity-40">
+											of <Counter count={implementation.balance} />
+										</p>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+
+					<div className="mx-6 flex flex-col gap-4">
+						<Button className="w-full" onClick={() => {}}>
+							Confirm
+						</Button>
+					</div>
+				</div>
+			</Frame>
+
+			{/* <Frame icon={<ArrowLeftRight size={18} />} label="Choose Transfer Direction" visible={isFrame}>
 				<div className="flex flex-col gap-4">
 					<button
 						className="group flex flex-col gap-2 text-left"
-						onClick={() =>
-							setTransfer({ ...transfer, action: "receive" })
-						}
+						onClick={() => setTransfer({ ...transfer, action: "receive" })}
 					>
 						<div className="flex w-full flex-row gap-2">
 							<div className="flex w-full flex-row items-center gap-2">
@@ -119,12 +164,11 @@ export const TransferFrame = () => {
 									})
 								}
 							>
-								<ArrowRight size={14} className="ml-auto " />
+								<ArrowRight size={14} className="ml-auto" />
 							</Button>
 						</div>
 						<p className="max-w-[85%] opacity-60">
-							Deposit assets into your Socket from your connected
-							wallet.
+							Deposit assets into your Socket from your connected wallet.
 						</p>
 					</button>
 
@@ -132,76 +176,58 @@ export const TransferFrame = () => {
 
 					<button
 						className="group flex flex-col gap-2 text-left"
-						onClick={() =>
-							setTransfer({ ...transfer, action: "send" })
-						}
+						onClick={() => setTransfer({ ...transfer, action: "send" })}
 					>
 						<div className="flex w-full flex-row gap-2">
 							<div className="flex w-full flex-row items-center gap-2">
-								<SquareArrowDownRight
-									size={14}
-									className="rotate-[270deg]"
-								/>
+								<SquareArrowDownRight size={14} className="rotate-[270deg]" />
 								<p className="font-bold">From Socket</p>
 							</div>
 
 							<Button
 								variant="secondary"
 								className="p-1 group-hover:bg-grayscale-100"
-								onClick={() =>
-									setTransfer({ ...transfer, action: "send" })
-								}
+								onClick={() => setTransfer({ ...transfer, action: "send" })}
 							>
 								<ArrowRight size={14} className="ml-auto" />
 							</Button>
 						</div>
 						<p className="max-w-[85%] opacity-60">
-							Withdraw assets from your Socket to your connected
-							wallet.
+							Withdraw assets from your Socket to your connected wallet.
 						</p>
 					</button>
 				</div>
-			</Frame>
+			</Frame>*/}
 
-			<Frame
+			{/*<Frame
 				className="scrollbar-hide z-[3] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={
 					transfer.action === "send" ? (
-						<SquareArrowDownRight
-							size={14}
-							className="rotate-[270deg]"
-						/>
+						<SquareArrowDownRight size={14} className="rotate-[270deg]" />
 					) : (
 						<SquareArrowDownRight size={14} />
 					)
 				}
 				label={`${transfer.action === "send" ? "Withdraw" : "Deposit"} Token`}
-				visible={
-					transfer.action !== undefined &&
-					transfer.token === undefined
-				}
-				handleBack={() =>
-					setTransfer({ ...transfer, action: undefined })
-				}
+				visible={transfer.action !== undefined && transfer.token === undefined}
+				handleBack={() => setTransfer({ ...transfer, action: undefined })}
 			>
 				<div className="flex h-full min-h-[280px] flex-col gap-4">
 					<SocketTokenList
 						// balances={balances}
-						handleSelect={(
-							token: NonNullable<typeof tokens>[number]
-						) => setTransfer({ ...transfer, token })}
+						handleSelect={(token: NonNullable<typeof tokens>[number]) =>
+							setTransfer({ ...transfer, token })
+						}
 					/>
 				</div>
-			</Frame>
+			</Frame>*/}
 
-			<Frame
+			{/*<Frame
 				className="scrollbar-hide z-[4] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={<Globe size={14} />}
 				label={`${transfer.action === "send" ? "Withdraw" : "Deposit"} On`}
 				visible={transfer.token !== undefined}
-				handleBack={() =>
-					setTransfer({ ...transfer, token: undefined })
-				}
+				handleBack={() => setTransfer({ ...transfer, token: undefined })}
 				hasOverlay={true}
 			>
 				{transfer.token && (
@@ -211,9 +237,7 @@ export const TransferFrame = () => {
 								<button
 									key={index}
 									className="group flex w-full cursor-pointer flex-row gap-2"
-									onClick={() =>
-										setTransfer({ ...transfer, chain })
-									}
+									onClick={() => setTransfer({ ...transfer, chain })}
 								>
 									<div className="flex w-full flex-row items-center gap-2">
 										<Image
@@ -223,35 +247,25 @@ export const TransferFrame = () => {
 											width={48}
 											height={48}
 										/>
-										<p className="mr-auto font-bold">
-											{formatTitle(chain.chain)}
-										</p>
+										<p className="mr-auto font-bold">{formatTitle(chain.chain)}</p>
 
 										<p className="ml-auto flex flex-row items-center gap-2 tabular-nums">
-											<span className="opacity-60">
-												{chain.balance.toLocaleString()}
-											</span>
+											<span className="opacity-60">{chain.balance.toLocaleString()}</span>
 											<Image
 												className="h-4 w-4 rounded-full"
 												src={transfer.token?.logo ?? ""}
-												alt={
-													transfer.token?.symbol ?? ""
-												}
+												alt={transfer.token?.symbol ?? ""}
 												width={48}
 												height={48}
 											/>
-											<span className="opacity-60">
-												{transfer.token?.symbol ?? ""}
-											</span>
+											<span className="opacity-60">{transfer.token?.symbol ?? ""}</span>
 										</p>
 									</div>
 
 									<Button
 										variant="secondary"
 										className="p-1 group-hover:bg-grayscale-100"
-										onClick={() =>
-											setTransfer({ ...transfer, chain })
-										}
+										onClick={() => setTransfer({ ...transfer, chain })}
 									>
 										<ChevronRight size={14} />
 									</Button>
@@ -282,9 +296,7 @@ export const TransferFrame = () => {
 							icon={<Wallet size={14} />}
 							placeholder="Amount"
 							search={transfer.amount?.toString() ?? ""}
-							handleSearch={(amount: string) =>
-								setTransfer({ ...transfer, amount })
-							}
+							handleSearch={(amount: string) => setTransfer({ ...transfer, amount })}
 						>
 							<span className="flex w-max flex-row items-center gap-2">
 								<Image
@@ -320,10 +332,7 @@ export const TransferFrame = () => {
 								className="p-1 group-hover:bg-grayscale-100"
 								onClick={() => setAdvanced(!advanced)}
 							>
-								<motion.div
-									animate={{ rotate: advanced ? 180 : 0 }}
-									transition={{ duration: 0.2 }}
-								>
+								<motion.div animate={{ rotate: advanced ? 180 : 0 }} transition={{ duration: 0.2 }}>
 									<ChevronDown size={14} />
 								</motion.div>
 							</Button>
@@ -361,8 +370,7 @@ export const TransferFrame = () => {
 
 					<Button
 						variant={
-							Number(transfer.amount ?? 0) >
-								Number(transfer.token?.balance ?? 0) ||
+							Number(transfer.amount ?? 0) > Number(transfer.token?.balance ?? 0) ||
 							transferValid[0] === false
 								? "disabled"
 								: "primary"
@@ -375,7 +383,7 @@ export const TransferFrame = () => {
 						{transferValid[1]}
 					</Button>
 				</div>
-			</Frame> */}
+			</Frame>*/}
 		</>
 	)
 }

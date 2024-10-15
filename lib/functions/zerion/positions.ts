@@ -406,7 +406,7 @@ const findPositions = async (socketId: string, search: string = "") => {
 	}
 }
 
-export const getPositions = async (address: string, search?: string, chains = ["ethereum"]) => {
+export const getPositions = async (address: string, search?: string, chains = ["ethereum", "optimism", "base"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})

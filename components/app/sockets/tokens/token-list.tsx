@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Animate, Callout, Search, SocketTokenItem, TokenFrame } from "@/components"
+import { Animate, Callout, Search, SocketTokenItem, TokenFrame, TransferFrame } from "@/components"
 import { cn } from "@/lib"
 import { useColumns, useHoldings, useSocket } from "@/state"
 
@@ -79,7 +79,12 @@ export const SocketTokenList: FC<
 			/>
 
 			{visibleTokens.map((token, tokenIndex) => {
-				return <TokenFrame key={tokenIndex} index={index} tokenIndex={tokenIndex} token={token} />
+				return (
+					<>
+						<TokenFrame key={tokenIndex} index={index} tokenIndex={tokenIndex} token={token} />
+						<TransferFrame key={`${tokenIndex}-transfer`} index={index} token={token} />
+					</>
+				)
 			})}
 		</div>
 	)
