@@ -41,6 +41,7 @@ export const TransferFrame: FC<{
 	}
 
 	const handleAmountChange = (value: string, index: number) => {
+		console.log(value === "", value, index)
 		const parsedValue = parseFloat(value)
 		if (!isNaN(parsedValue)) {
 			const maxBalance = token.implementations[index].balance
@@ -267,7 +268,7 @@ export const TransferFrame: FC<{
 							<p className="flex flex-row font-bold tabular-nums text-black/40">11 seconds</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:text-black/60"
-								onClick={handleMaxClick}
+								onClick={dragPercentage < 100 ? handleMaxClick : undefined}
 								style={{ color: dragPercentage < 100 ? color : undefined }}
 							>
 								Max
