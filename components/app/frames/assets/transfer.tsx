@@ -23,27 +23,21 @@ export const TransferFrame: FC<{
 	const { column } = useColumns(index, `${token?.symbol}-transfer`)
 	const [dragPercentage, setDragPercentage] = useState(100)
 	const containerRef = useRef<HTMLDivElement>(null)
-	const [editingImplementation, setEditingImplementation] = useState<number | null>(null)
 	const [totalDollarValue, setTotalDollarValue] = useState<number>(0)
 	const [color, setColor] = useState("")
 	const [isPreciseAmount, setIsPreciseAmount] = useState<boolean>(false)
 	const [preciseAmount, setPreciseAmount] = useState<string>("")
 
-	const [transfer, setTransfer] = useState<{
-		action?: "receive" | "send"
-		token?: typeof token
-		amount?: string | undefined
-		to?: string
-	}>(DEFAULT_TRANSFER)
-
 	const textColor = getTextColor(color ?? "#ffffff")
 
 	const handleAmountClick = (index: number) => {
-		setIsPreciseAmount(!isPreciseAmount)
-		if (!isPreciseAmount) {
-			const currentAmount = (token.implementations[index].balance * dragPercentage) / 100
-			setPreciseAmount(formatForDisplay(currentAmount, true).toString())
-		}
+		setIsPreciseAmount(prev => {
+			if (!prev) {
+				const currentAmount = (token.implementations[index].balance * dragPercentage) / 100
+				setPreciseAmount(formatForDisplay(currentAmount, true).toString())
+			}
+			return !prev
+		})
 	}
 
 	const handleAmountChange = (value: string, index: number) => {
@@ -55,7 +49,6 @@ export const TransferFrame: FC<{
 
 			setPreciseAmount(clampedValue.toString())
 			setDragPercentage(newPercentage)
-			setEditingImplementation(null)
 
 			const newTotalDollarValue = token.implementations.reduce((total, implementation, i) => {
 				const amount = i === index ? clampedValue : (implementation.balance * newPercentage) / 100
@@ -69,15 +62,28 @@ export const TransferFrame: FC<{
 
 	const handleDragStart = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		e.preventDefault()
+
+		console.log("handleDragStart")
+
 		const activeElement = document.activeElement as HTMLElement
 		if (activeElement && activeElement.tagName === "INPUT") {
 			activeElement.blur()
 		}
 
-		setIsPreciseAmount(false)
+		const startX = e.clientX
+		let hasDragged = false
 
 		const handleDrag = (e: MouseEvent) => {
-			if (containerRef.current) {
+			const currentX = e.clientX
+			const diff = Math.abs(currentX - startX)
+
+			if (diff > 5) {
+				// 5px threshold
+				hasDragged = true
+				setIsPreciseAmount(false)
+			}
+
+			if (hasDragged && containerRef.current) {
 				const rect = containerRef.current.getBoundingClientRect()
 				const x = e.clientX - rect.left
 				const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
@@ -101,6 +107,7 @@ export const TransferFrame: FC<{
 				return total + implementation.balance * (token.price ?? 0)
 			}, 0)
 		)
+		setIsPreciseAmount(true)
 	}, [token])
 
 	useEffect(() => {
@@ -181,35 +188,39 @@ export const TransferFrame: FC<{
 												</div>
 											</div>
 										</div>
+
 										<div
 											className="ml-auto flex cursor-pointer flex-col items-end px-2"
 											onClick={() => handleAmountClick(index)}
 										>
 											<div
 												className={cn(
-													"h-full min-w-24 items-center justify-center text-right",
-													isPreciseAmount && "flex"
+													"pointer-events-none flex h-full min-w-32 flex-col items-center justify-center text-right"
 												)}
 											>
-												<input
-													type="number"
-													value={preciseAmount}
-													onChange={e => handleAmountChange(e.target.value, index)}
-													className="sr-only"
-													onBlur={() => {
-														const newAmount = parseFloat(preciseAmount)
-														if (!isNaN(newAmount)) {
-															handleAmountChange(preciseAmount, index)
+												{isPreciseAmount && (
+													<input
+														type="number"
+														value={preciseAmount}
+														onChange={e => handleAmountChange(e.target.value, index)}
+														onFocus={() =>
+															setPreciseAmount(
+																((implementation.balance * dragPercentage) / 100)
+																	.toFixed(3)
+																	.toString()
+															)
 														}
-														setIsPreciseAmount(false)
-													}}
-												/>
+														className="sr-only pointer-events-none"
+														autoFocus
+													/>
+												)}
 
 												<p
 													className={cn(
-														"my-auto ml-auto font-bold tabular-nums",
-														isPreciseAmount && "text-xl"
+														"my-auto ml-auto flex flex-row font-bold tabular-nums"
+														// isPreciseAmount && "text-xl"
 													)}
+													style={{ color: isPreciseAmount ? color : undefined }}
 												>
 													<Counter
 														count={
@@ -217,22 +228,37 @@ export const TransferFrame: FC<{
 																? parseFloat(preciseAmount)
 																: (implementation.balance * dragPercentage) / 100
 														}
+														decimals={isPreciseAmount ? 3 : undefined}
 													/>
+
+													{isPreciseAmount && (
+														<div
+															className="ml-2 h-full w-[4px] animate-pulse rounded-full"
+															style={{ backgroundColor: color }}
+														/>
+													)}
 												</p>
 
 												{!isPreciseAmount && (
-													<p className="flex w-24 flex-row text-right text-sm font-bold tabular-nums opacity-40">
-														<span className="ml-auto">$</span>
-														<Counter count={totalDollarValue} decimals={2} />
-													</p>
+													<>
+														<p className="ml-auto flex text-sm font-bold tabular-nums text-black/40">
+															<span className="ml-auto">$</span>
+															<Counter count={totalDollarValue} decimals={2} />
+														</p>
+													</>
 												)}
 											</div>
 										</div>
 									</div>
+
 									<div
-										className="absolute inset-0 z-[-1] bg-grayscale-100"
+										className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg bg-grayscale-100"
 										style={{ width: `${dragPercentage}%` }}
-									/>
+									>
+										<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
+										<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
+										<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
+									</div>
 								</div>
 							))}
 						</div>
