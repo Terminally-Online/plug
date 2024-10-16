@@ -79,6 +79,7 @@ export const TransferFrame: FC<{
 	return (
 		<>
 			<Frame
+				index={0}
 				icon={
 					<div className="relative h-8 w-10">
 						<TokenImage
