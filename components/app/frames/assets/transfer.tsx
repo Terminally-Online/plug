@@ -252,7 +252,7 @@ export const TransferFrame: FC<{
 						/>
 					</div>
 				}
-				label="Transfer"
+				label="Transfer Amount"
 				visible={column.frame === `${token.symbol}-transfer-send`}
 				handleBack={() => frame(`${token.symbol}-token`)}
 				hasChildrenPadding={false}
