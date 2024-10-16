@@ -70,13 +70,16 @@ export const SocketCollectionList: FC<
 				handleSearch={handleSearch}
 			/>
 
-			<Animate.List>
+			<div className="flex flex-col gap-2">
 				{visibleCollectibles.map((collection, collectionIndex) => (
-					<Animate.ListItem key={collectionIndex}>
-						<SocketCollectionItem index={index} collection={collection} searched={search !== ""} />
-					</Animate.ListItem>
+					<SocketCollectionItem
+						key={collectionIndex}
+						index={index}
+						collection={collection}
+						searched={search !== ""}
+					/>
 				))}
-			</Animate.List>
+			</div>
 
 			<Callout.Anonymous index={index} viewing="collectibles" isAbsolute={true} />
 			<Callout.EmptyAssets
