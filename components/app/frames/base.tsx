@@ -9,7 +9,7 @@ import { useColumns } from "@/state"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
-		index?: number
+		index: number
 		label: string
 		visible: boolean
 		icon?: JSX.Element

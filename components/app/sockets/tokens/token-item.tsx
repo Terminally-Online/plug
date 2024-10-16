@@ -8,10 +8,9 @@ import { useColumns } from "@/state"
 
 export const SocketTokenItem: React.FC<{
 	index: number
-	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = ({ index, tokenIndex, token }) => {
-	const { frame } = useColumns(index, `${tokenIndex}-token`)
+}> = ({ index, token }) => {
+	const { frame } = useColumns(index, `${token?.symbol}-token`)
 
 	return (
 		<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => frame()}>

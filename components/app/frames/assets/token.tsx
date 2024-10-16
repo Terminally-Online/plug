@@ -12,10 +12,9 @@ import { TokenImage } from "../../sockets/tokens/token-image"
 
 export const TokenFrame: FC<{
 	index: number
-	tokenIndex: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = ({ index, tokenIndex, token }) => {
-	const { column, isFrame, frame } = useColumns(index, `${tokenIndex}-token`)
+}> = ({ index, token }) => {
+	const { column, isFrame, frame } = useColumns(index, `${token?.symbol}-token`)
 
 	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{

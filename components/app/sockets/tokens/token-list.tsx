@@ -65,7 +65,7 @@ export const SocketTokenList: FC<
 			<Animate.List>
 				{visibleTokens.map((token, tokenIndex) => (
 					<Animate.ListItem key={tokenIndex}>
-						<SocketTokenItem index={index} tokenIndex={tokenIndex} token={token} />
+						<SocketTokenItem index={index} token={token} />
 					</Animate.ListItem>
 				))}
 			</Animate.List>
@@ -78,14 +78,12 @@ export const SocketTokenList: FC<
 				isReceivable={true}
 			/>
 
-			{visibleTokens.map((token, tokenIndex) => {
-				return (
-					<>
-						<TokenFrame key={tokenIndex} index={index} tokenIndex={tokenIndex} token={token} />
-						<TransferFrame key={`${tokenIndex}-transfer`} index={index} token={token} />
-					</>
-				)
-			})}
+			{visibleTokens.map((token, tokenIndex) => (
+				<>
+					<TokenFrame key={tokenIndex} index={index} token={token} />
+					<TransferFrame key={`${tokenIndex}-transfer-send`} index={index} token={token} />
+				</>
+			))}
 		</div>
 	)
 }
