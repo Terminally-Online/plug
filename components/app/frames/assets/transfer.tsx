@@ -84,18 +84,21 @@ const ImplementationComponent: FC<{
 	)
 
 	const handleAmountChange = (value: string) => {
-		const parsedValue = parseFloat(value)
-		if (value === "") {
+		const numericValue = value.replace(/[^0-9.]/g, '');
+		const parsedValue = parseFloat(numericValue);
+
+		if (numericValue === "") {
 			onPreciseAmountChange(index, "0")
 		} else if (!isNaN(parsedValue)) {
 			const maxBalance = implementation.balance
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
 			const newPercentage = (clampedValue / maxBalance) * 100
 
-			onPreciseAmountChange(index, value.endsWith(".") ? `${clampedValue}.` : clampedValue.toString())
+			const formattedValue = numericValue.includes('.') ? numericValue.split('.')[0] + '.' + numericValue.split('.')[1].slice(0, 18) : clampedValue.toString()
+			onPreciseAmountChange(index, formattedValue)
 			onDragPercentageChange(index, newPercentage)
 		} else {
-			onPreciseAmountChange(index, value)
+			onPreciseAmountChange(index, numericValue)
 		}
 	}
 
@@ -134,6 +137,8 @@ const ImplementationComponent: FC<{
 						</div>
 					</div>
 				</div>
+
+				{preciseAmount.toString()}
 
 				<div className="ml-auto flex-col items-end px-2">
 					<div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
