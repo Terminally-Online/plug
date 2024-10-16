@@ -46,14 +46,14 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install
 
+            - name: Install Vercel CLI
+              run: npm install --global vercel@latest
+            - name: Pull Vercel Environment Information
+              run: vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+
             - name: 🧪 Build
               run: pnpm build
-              env:
-                  NEXTAUTH_SECRET: supersecretauthpassword
-                  NEXTAPP_URL: http://localhost:3000
-                  NEXTWS_URL: ws://localhost:3001
-                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
-                  NEXTWALLETCONNECT_ID: getyourownplease
+
     deploy:
         name: 🚀 Deploy
         runs-on: ubuntu-latest
