@@ -138,8 +138,6 @@ const ImplementationComponent: FC<{
 					</div>
 				</div>
 
-				{preciseAmount.toString()}
-
 				<div className="ml-auto flex-col items-end px-2">
 					<div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
 						{isPrecise && (
