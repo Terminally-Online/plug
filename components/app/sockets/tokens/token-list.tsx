@@ -62,13 +62,11 @@ export const SocketTokenList: FC<
 				handleSearch={handleSearch}
 			/>
 
-			<Animate.List>
+			<div className="flex flex-col gap-2">
 				{visibleTokens.map((token, tokenIndex) => (
-					<Animate.ListItem key={tokenIndex}>
-						<SocketTokenItem index={index} token={token} />
-					</Animate.ListItem>
+					<SocketTokenItem key={tokenIndex} index={index} token={token} />
 				))}
-			</Animate.List>
+			</div>
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets
@@ -77,13 +75,6 @@ export const SocketTokenList: FC<
 				isViewing="tokens"
 				isReceivable={true}
 			/>
-
-			{visibleTokens.map((token, tokenIndex) => (
-				<>
-					<TokenFrame key={tokenIndex} index={index} token={token} />
-					<TransferFrame key={`${tokenIndex}-transfer-send`} index={index} token={token} />
-				</>
-			))}
 		</div>
 	)
 }
