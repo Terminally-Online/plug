@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useCallback, useEffect, useRef, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
@@ -202,12 +202,10 @@ export const TransferAmountFrame: FC<{
 	const [dragPercentages, setDragPercentages] = useState<number[]>([])
 	const [preciseAmounts, setPreciseAmounts] = useState<string[]>([])
 
-	useEffect(() => {
-		if (token) {
-			setDragPercentages(new Array(token.implementations.length).fill(0))
-			setPreciseAmounts(new Array(token.implementations.length).fill("0"))
-		}
-	}, [token])
+	const isReady = useMemo(
+		() => token && column && preciseAmounts.some(amount => parseFloat(amount) > 0),
+		[token, column, preciseAmounts]
+	)
 
 	const handleDragPercentageChange = useCallback((index: number, percentage: number) => {
 		setDragPercentages(prev => {
@@ -233,6 +231,13 @@ export const TransferAmountFrame: FC<{
 			setPreciseAmounts(newPreciseAmounts)
 		}
 	}, [token, dragPercentages])
+
+	useEffect(() => {
+		if (token) {
+			setDragPercentages(new Array(token.implementations.length).fill(0))
+			setPreciseAmounts(new Array(token.implementations.length).fill("0"))
+		}
+	}, [token])
 
 	if (!token || !column) return null
 
@@ -290,13 +295,18 @@ export const TransferAmountFrame: FC<{
 
 					<div className="mx-6 flex flex-col gap-4">
 						<button
-							className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105"
+							className={cn(
+								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
+								isReady === false && "bg-white"
+							)}
 							style={{
-								backgroundColor: color ?? "",
-								color: textColor
+								backgroundColor: isReady ? color : "#FFFFFF",
+								color: isReady ? textColor : color,
+								borderColor: isReady ? "#FFFFFF" : color
 							}}
+							disabled={isReady === false}
 						>
-							Confirm
+							{isReady ? "Confirm" : "Enter Amount"}
 						</button>
 					</div>
 				</div>
