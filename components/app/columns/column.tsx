@@ -41,22 +41,19 @@ export const ConsoleColumn: FC<{
 	const { plug, handle } = usePlugs(item)
 
 	const [isResizing, setIsResizing] = useState(false)
-	const [localWidth, setLocalWidth] = useState(column.width)
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			const newWidth = getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left)
-			setLocalWidth(newWidth)
+			resize({
+				index: column.index,
+				width: getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left)
+			})
 		}
 
 		const handleMouseUp = () => {
 			setIsResizing(false)
-			resize({
-				index: column.index,
-				width: localWidth
-			})
 		}
 
 		if (isResizing) {
@@ -68,11 +65,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [column.index, isResizing, resize, localWidth])
-
-	useEffect(() => {
-		setLocalWidth(column.width)
-	}, [column.width])
+	}, [column.index, isResizing, resize])
 
 	return (
 		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
@@ -84,7 +77,7 @@ export const ConsoleColumn: FC<{
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
-							width: `${localWidth}px`
+							width: `${column.width}px`
 						}}
 					>
 						<div
