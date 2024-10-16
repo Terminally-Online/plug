@@ -65,8 +65,7 @@ export const Frame: FC<Props> = ({
 							md ? "absolute" : "fixed",
 							"inset-0 top-auto max-h-[80vh] w-full overflow-y-auto overflow-x-hidden rounded-t-lg bg-white",
 							className,
-							"z-[41]",
-							index !== -1 && "rounded-b-lg"
+							"z-[41]"
 						)}
 					>
 						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 bg-white px-6 py-4">
