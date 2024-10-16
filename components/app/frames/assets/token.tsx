@@ -13,10 +13,11 @@ import { TokenImage } from "../../sockets/tokens/token-image"
 export const TokenFrame: FC<{
 	index: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = ({ index, token }) => {
-	const { column, isFrame, frame } = useColumns(index, `${token?.symbol}-token`)
+	color: string
+	textColor: string
+}> = ({ index, token, color, textColor }) => {
+	const { isFrame, frame } = useColumns(index, `${token?.symbol}-token`)
 
-	const [color, setColor] = useState("")
 	const [header, setHeader] = useState<{
 		title?: string
 		change?: Array<number>
@@ -32,8 +33,6 @@ export const TokenFrame: FC<{
 		  }
 		| undefined
 	>()
-
-	const textColor = getTextColor(color ?? "#ffffff")
 
 	const change = useMemo(() => {
 		if (!token) return undefined
@@ -81,7 +80,6 @@ export const TokenFrame: FC<{
 						}
 						symbol={token.symbol}
 						size="sm"
-						handleColor={setColor}
 					/>
 				</div>
 			}
