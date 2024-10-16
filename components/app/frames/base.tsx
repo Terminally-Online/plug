@@ -37,7 +37,7 @@ export const Frame: FC<Props> = ({
 	return (
 		<AnimatePresence>
 			{visible ? (
-				<div>
+				<>
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -89,7 +89,7 @@ export const Frame: FC<Props> = ({
 
 						<div className={cn(hasChildrenPadding && "overflow-hidden px-6 py-8")}>{children}</div>
 					</motion.div>
-				</div>
+				</>
 			) : null}
 		</AnimatePresence>
 	)
