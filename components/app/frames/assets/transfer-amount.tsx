@@ -197,7 +197,7 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { column, frame } = useColumns(index, `${token?.symbol}-transfer-send`)
+	const { isFrame, column, frame } = useColumns(index, `${token?.symbol}-transfer-amount`)
 
 	const [dragPercentages, setDragPercentages] = useState<number[]>([])
 	const [preciseAmounts, setPreciseAmounts] = useState<string[]>([])
@@ -258,8 +258,8 @@ export const TransferAmountFrame: FC<{
 					</div>
 				}
 				label="Transfer Amount"
-				visible={column.frame === `${token.symbol}-transfer-send`}
-				handleBack={() => frame(`${token.symbol}-token`)}
+				visible={isFrame}
+				handleBack={() => frame(`${token.symbol}-transfer-recipient`)}
 				hasChildrenPadding={false}
 				hasOverlay
 			>

@@ -87,7 +87,8 @@ export const Frame: FC<Props> = ({
 							/>
 						</div>
 
-						<div className={cn(hasChildrenPadding && "overflow-hidden px-6 py-8")}>{children}</div>
+						{children}
+						{/*<div className={cn(hasChildrenPadding && "overflow-hidden px-6 py-8")}>{children}</div>*/}
 					</motion.div>
 				</>
 			) : null}

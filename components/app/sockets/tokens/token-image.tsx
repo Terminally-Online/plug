@@ -1,15 +1,17 @@
 import Image from "next/image"
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, HTMLAttributes, useEffect, useRef, useState } from "react"
 
-import { getAssetColor } from "@/lib"
+import { cn, getAssetColor } from "@/lib"
 
-export const TokenImage: FC<{
-	logo?: string
-	symbol?: string
-	size?: "xs" | "sm" | "md"
-	blur?: boolean
-	handleColor?: (color: string) => void
-}> = ({ logo = "", symbol = "", size = "md", blur = true, handleColor }) => {
+export const TokenImage: FC<
+	HTMLAttributes<HTMLDivElement> & {
+		logo?: string
+		symbol?: string
+		size?: "xs" | "sm" | "md"
+		blur?: boolean
+		handleColor?: (color: string) => void
+	}
+> = ({ logo = "", symbol = "", size = "md", blur = true, handleColor, className, ...props }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	const imgRef = useRef<HTMLImageElement>(null)
 
@@ -103,11 +105,12 @@ export const TokenImage: FC<{
 
 	return (
 		<div
-			className="relative"
+			className={cn("relative", className)}
 			style={{
 				width: `${dimensions.content}rem`,
 				height: `${dimensions.content}rem`
 			}}
+			{...props}
 		>
 			<canvas ref={canvasRef} style={{ display: "none" }} />
 

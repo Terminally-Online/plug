@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 export const useDebounce = (
 	initial: string,
 	delay = 250,
-	callback = (data: string) => {}
+	callback = (_: string) => {}
 ): [string, string, (value: string) => void, React.MutableRefObject<string>] => {
 	const pathname = usePathname()
 

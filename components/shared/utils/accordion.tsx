@@ -38,7 +38,7 @@ export const Accordion: FC<Props> = ({
 				loading
 					? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
 					: "transition-all duration-200 ease-in-out",
-				loading === false && expanded === false && "bg-white hover:border-white hover:bg-grayscale-0/80",
+				loading === false && expanded === false && "bg-white hover:border-white hover:bg-grayscale-0",
 				loading === false ? "cursor-pointer" : "cursor-default",
 				className
 			)}

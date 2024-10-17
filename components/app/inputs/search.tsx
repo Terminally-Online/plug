@@ -58,12 +58,12 @@ export const Search: FC<Props> = ({
 	}, [textArea, ref])
 
 	return (
-		<div className={cn("flex flex-col gap-2", className)}>
+		<div className={cn("group flex flex-col gap-2", className)}>
 			<div
 				className={cn(
-					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-white bg-grayscale-0 p-4 px-6 transition-colors duration-200 ease-in-out hover:border-grayscale-100 hover:bg-white",
+					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-white bg-grayscale-0 p-4 px-6 transition-colors duration-200 ease-in-out hover:border-grayscale-0 hover:bg-white",
 					textArea ? "rounded-lg" : "rounded-[16px]",
-					search && "border-grayscale-100 bg-white"
+					search && "border-grayscale-0 bg-white"
 				)}
 				onClick={handleOnClick ? () => handleOnClick() : () => ref.current?.focus()}
 			>
@@ -73,7 +73,7 @@ export const Search: FC<Props> = ({
 						ref={ref as RefObject<HTMLInputElement>}
 						type="text"
 						placeholder={placeholder}
-						className="w-full cursor-pointer bg-transparent outline-none"
+						className="w-full cursor-pointer bg-transparent font-bold opacity-40 outline-none group-hover:opacity-100"
 						value={search}
 						onChange={e => (handleSearch ? handleSearch(e.target.value) : null)}
 					/>
@@ -81,7 +81,7 @@ export const Search: FC<Props> = ({
 					<textarea
 						ref={ref as RefObject<HTMLTextAreaElement>}
 						placeholder={placeholder}
-						className="max-h-[40vh] w-full cursor-pointer bg-transparent outline-none"
+						className="max-h-[40vh] w-full cursor-pointer bg-transparent font-bold opacity-40 outline-none group-hover:opacity-100"
 						value={search}
 						onChange={e => (handleSearch ? handleChange(e) : null)}
 					/>
@@ -101,7 +101,7 @@ export const Search: FC<Props> = ({
 									ease: "easeInOut"
 								}}
 							>
-								<X size={14} className="opacity-60" />
+								<X size={14} className="opacity-40" />
 							</motion.button>
 						)}
 					</AnimatePresence>

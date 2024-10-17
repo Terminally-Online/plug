@@ -142,7 +142,7 @@ export const TokenFrame: FC<{
 						backgroundColor: color ?? "",
 						color: textColor
 					}}
-					onClick={() => frame(`${token.symbol}-transfer-send`)}
+					onClick={() => frame(`${token.symbol}-transfer-recipient`)}
 				>
 					<Send size={14} className="opacity-60" />
 					Send
