@@ -7,6 +7,8 @@ import { Counter, Frame, TokenImage } from "@/components"
 import { chains, cn, getChainId, getTextColor } from "@/lib"
 import { useColumns } from "@/state"
 
+import { TransferRecipient } from "./transfer-recipient"
+
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
 >["tokens"][number]["implementations"][number]
@@ -194,9 +196,10 @@ const ImplementationComponent: FC<{
 export const TransferAmountFrame: FC<{
 	index: number
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+	recipient: string
 	color: string
 	textColor: string
-}> = ({ index, token, color, textColor }) => {
+}> = ({ index, token, recipient, color, textColor }) => {
 	const { isFrame, column, frame } = useColumns(index, `${token?.symbol}-transfer-amount`)
 
 	const [dragPercentages, setDragPercentages] = useState<number[]>([])
@@ -264,6 +267,12 @@ export const TransferAmountFrame: FC<{
 				hasOverlay
 			>
 				<div className="mb-4 flex flex-col gap-4">
+					<div className="px-6">
+						<TransferRecipient
+							address={recipient}
+							handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
+						/>
+					</div>
 					<div className="flex flex-col gap-2">
 						<div className="flex flex-col gap-2">
 							{token.implementations.map((implementation, index) => (

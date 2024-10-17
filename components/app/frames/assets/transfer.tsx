@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 
 import { RouterOutputs } from "@/server/client"
 
@@ -15,6 +15,10 @@ export const TransferFrame: FC<{
 }> = ({ index, token, color, textColor }) => {
 	const [recipient, debouncedRecipient, setRecipient] = useDebounce("")
 
+	const handleRecipient = (recipient: string) => {
+		setRecipient(recipient.trim())
+	}
+
 	return (
 		<>
 			<TransferRecipientFrame
@@ -22,9 +26,15 @@ export const TransferFrame: FC<{
 				token={token}
 				recipient={recipient}
 				debouncedRecipient={debouncedRecipient}
-				handleRecipient={setRecipient}
+				handleRecipient={handleRecipient}
 			/>
-			<TransferAmountFrame index={index} token={token} color={color} textColor={textColor} />
+			<TransferAmountFrame
+				index={index}
+				token={token}
+				recipient={recipient}
+				color={color}
+				textColor={textColor}
+			/>
 		</>
 	)
 }

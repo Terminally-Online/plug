@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC } from "react"
+import { FC, HTMLAttributes } from "react"
 
 import { isAddress, zeroAddress } from "viem"
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
@@ -9,11 +9,12 @@ import { SearchIcon } from "lucide-react"
 import { RouterOutputs } from "@/server/client"
 
 import { Accordion, Avatar, Frame, Search, TokenImage } from "@/components"
-import { formatAddress, getChainId, useConnect } from "@/lib"
+import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib"
 import { useColumns, useRecipients } from "@/state"
 
 const formatRecipientInput = (input: string): string => {
 	if (!input) return ""
+	if (isAddress(input)) return input
 	if (input.startsWith("0x") === false && isAddress(`0x${input}`)) return `0x${input}`
 	if (isAddress(input) === false && input.endsWith(".eth") === false) {
 		if (input.endsWith(".et")) return `${input}h`
@@ -24,7 +25,15 @@ const formatRecipientInput = (input: string): string => {
 	return input
 }
 
-const Recipient: FC<{ address: string; handleSelect: (address: string) => void }> = ({ address, handleSelect }) => {
+export const TransferRecipient: FC<
+	HTMLAttributes<HTMLDivElement> & {
+		isRecent?: boolean
+		address: string
+		handleSelect: (address: string) => void
+	}
+> = ({ isRecent = false, address, handleSelect, className }) => {
+	const { account } = useConnect()
+
 	const { data: ensAddress } = useEnsAddress({
 		name: address,
 		query: {
@@ -48,8 +57,26 @@ const Recipient: FC<{ address: string; handleSelect: (address: string) => void }
 		}
 	})
 
+	const isConnected = account.address === address
+
+	const Badge = () => {
+		if (isRecent)
+			return (
+				<p className="rounded-md bg-plug-green/10 px-2 py-1 text-sm">
+					<span style={{ ...greenGradientStyle }}>Recent</span>
+				</p>
+			)
+		if (isConnected)
+			return (
+				<p className="rounded-md bg-grayscale-0 px-2 py-1 text-sm">
+					<span className="opacity-40">Connected</span>
+				</p>
+			)
+		return null
+	}
+
 	return (
-		<Accordion onExpand={() => handleSelect(address)}>
+		<Accordion className={className} onExpand={() => handleSelect(address)}>
 			<div className="flex flex-row items-center gap-4">
 				<div className="relative h-10 w-10 min-w-10 rounded-sm">
 					{ensAvatar ? (
@@ -71,14 +98,14 @@ const Recipient: FC<{ address: string; handleSelect: (address: string) => void }
 						</>
 					) : (
 						<>
-							<div className="absolute left-0 top-0 blur-xl filter">
+							<div className="absolute left-0 top-1/2 blur-lg filter">
 								<Avatar name={address} className="rounded-sm" />
 							</div>
 							<Avatar name={address} className="rounded-sm" />
 						</>
 					)}
 				</div>
-				<div className="flex w-max flex-col text-left">
+				<div className="flex w-max flex-col truncate overflow-ellipsis text-left">
 					<p className="font-bold">
 						{isFetching && isFetched === false
 							? "Loading..."
@@ -97,6 +124,9 @@ const Recipient: FC<{ address: string; handleSelect: (address: string) => void }
 									? formatAddress(ensAddress ?? address)
 									: "External account"}
 					</p>
+				</div>
+				<div className="my-auto ml-auto w-max font-bold">
+					<Badge />
 				</div>
 			</div>
 		</Accordion>
@@ -121,8 +151,13 @@ export const TransferRecipientFrame: FC<{
 		`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
 
 	const handleSelect = (address: string) => {
-		handleRecent(address)
-		handleRecipient("")
+		if (address !== account.address) handleRecent(address)
+		// NOTE: Normally it would make sense to clear the recipient here, but we
+		//       we want to keep the recipient in the input so that the user can
+		//       go to the next step while still being able to go back as well.
+		handleRecipient(address)
+		// NOTE: Update the frame to go the next step when a recipient is selected.
+		frame(`${token.symbol}-transfer-amount`)
 	}
 
 	if (!token) return null
@@ -151,13 +186,20 @@ export const TransferRecipientFrame: FC<{
 					clear
 				/>
 
-				<Recipient address={formattedRecipient} handleSelect={handleSelect} />
-				<Recipient address={account.address as string} handleSelect={handleSelect} />
+				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
+				<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
 
 				{recipients.length > 0 ? (
 					recipients
 						.slice(0, 5)
-						.map(recipient => <Recipient key={recipient} address={recipient} handleSelect={handleSelect} />)
+						.map(recipient => (
+							<TransferRecipient
+								key={recipient}
+								address={recipient}
+								handleSelect={handleSelect}
+								isRecent
+							/>
+						))
 				) : (
 					<p className="mx-auto my-24 max-w-[320px] text-sm font-bold opacity-40">
 						Recently used recipients will appear here.
