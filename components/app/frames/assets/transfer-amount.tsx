@@ -291,7 +291,16 @@ export const TransferAmountFrame: FC<{
 						</div>
 
 						<div className="flex flex-row items-center justify-between gap-4 px-6">
-							<p className="flex flex-row font-bold tabular-nums text-black/40">11 seconds</p>
+							<p className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<Image
+									src={chains[1].logo}
+									alt={"ethereum"}
+									className="mr-2 h-4 w-4 rounded-full"
+									width={24}
+									height={24}
+								/>
+								$0.50
+							</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
 								onClick={handleMaxClick}
@@ -315,7 +324,7 @@ export const TransferAmountFrame: FC<{
 							}}
 							disabled={isReady === false}
 						>
-							{isReady ? "Confirm" : "Enter Amount"}
+							{isReady ? "Send" : "Enter Amount"}
 						</button>
 					</div>
 				</div>

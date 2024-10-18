@@ -57,8 +57,6 @@ export const TransferRecipient: FC<
 		}
 	})
 
-	const isConnected = account.address === address
-
 	const Badge = () => {
 		if (isRecent)
 			return (
@@ -66,7 +64,7 @@ export const TransferRecipient: FC<
 					<span style={{ ...greenGradientStyle }}>Recent</span>
 				</p>
 			)
-		if (isConnected)
+		if (account.address === address)
 			return (
 				<p className="rounded-md bg-grayscale-0 px-2 py-1 text-sm">
 					<span className="opacity-40">Connected</span>
@@ -157,7 +155,7 @@ export const TransferRecipientFrame: FC<{
 		//       go to the next step while still being able to go back as well.
 		handleRecipient(address)
 		// NOTE: Update the frame to go the next step when a recipient is selected.
-		frame(`${token.symbol}-transfer-amount`)
+		if (address !== "") frame(`${token.symbol}-transfer-amount`)
 	}
 
 	if (!token) return null
@@ -187,11 +185,14 @@ export const TransferRecipientFrame: FC<{
 				/>
 
 				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
-				<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
+				{recipient !== account.address && (
+					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
+				)}
 
 				{recipients.length > 0 ? (
 					recipients
-						.slice(0, 5)
+						.filter(recipient => recipient !== "")
+						.slice(0, recipient === account.address ? 6 : 5)
 						.map(recipient => (
 							<TransferRecipient
 								key={recipient}
