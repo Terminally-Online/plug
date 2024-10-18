@@ -6,7 +6,7 @@ import { atomWithStorage } from "jotai/utils"
 
 interface SidebarState {
 	expanded: boolean
-	activePane: "authenticating" | "searching" | "viewingAs" | null
+	activePane: "authenticating" | "searching" | "stats" | "companion" | null
 	width: number
 }
 
@@ -53,14 +53,18 @@ export const useSidebar = () => {
 			...sidebarState,
 			authenticating: sidebarState.activePane === "authenticating",
 			searching: sidebarState.activePane === "searching",
-			viewingAs: sidebarState.activePane === "viewingAs"
+			stats: sidebarState.activePane === "stats",
+			companion: sidebarState.activePane === "companion"
 		},
 		width,
 		handleActivePane: useCallback((newPane: SidebarState["activePane"]) => setActivePane(newPane), [setActivePane]),
 		toggleExpanded: useCallback(() => toggleExpanded(), [toggleExpanded]),
-		toggleAuthenticating: useCallback(() => setActivePane("authenticating"), [setActivePane]),
-		toggleSearching: useCallback(() => setActivePane("searching"), [setActivePane]),
-		toggleViewingAs: useCallback(() => setActivePane("viewingAs"), [setActivePane]),
+		handleSidebar: useCallback(
+			(pane: SidebarState["activePane"]) => {
+				setActivePane(pane)
+			},
+			[setActivePane]
+		),
 		resize: useCallback((newWidth: number) => setWidth(newWidth), [setWidth])
 	}
 }

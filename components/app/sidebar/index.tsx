@@ -2,9 +2,31 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
-import { Eye, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, User, X } from "lucide-react"
+import {
+	Cat,
+	ChartBar,
+	Eye,
+	LogOut,
+	PanelRightOpen,
+	Plus,
+	ScanFace,
+	Search,
+	SearchIcon,
+	User,
+	Wallet,
+	X
+} from "lucide-react"
 
-import { Avatar, ColumnAuthenticate, ColumnProfile, ColumnSearch, ColumnViewAs, Header, Image } from "@/components"
+import {
+	Avatar,
+	ColumnAuthenticate,
+	ColumnCompanion,
+	ColumnProfile,
+	ColumnSearch,
+	ColumnStats,
+	Header,
+	Image
+} from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
@@ -109,7 +131,7 @@ const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || is.viewingAs || is.searching) && (
+			{(is.authenticating || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
@@ -120,13 +142,15 @@ const ConsoleSidebarPane = () => {
 						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
 							<Header
 								label={
-									is.viewingAs
-										? "View As"
-										: is.searching
-											? "Search"
-											: session?.user.id
-												? "Profile"
-												: "Login"
+									is.companion
+										? "Companion"
+										: is.stats
+											? "Stats"
+											: is.searching
+												? "Search"
+												: session?.user.id
+													? "Wallet"
+													: "Login"
 								}
 								size="md"
 								icon={
@@ -135,13 +159,13 @@ const ConsoleSidebarPane = () => {
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									) : is.viewingAs ? (
-										<Eye
+									) : is.stats ? (
+										<ChartBar
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
 									) : is.authenticating && session?.user.id ? (
-										<User
+										<Wallet
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
@@ -161,8 +185,10 @@ const ConsoleSidebarPane = () => {
 						<div className="h-full">
 							{is.searching ? (
 								<ColumnSearch index={0} className="px-4" />
-							) : is.viewingAs ? (
-								<ColumnViewAs />
+							) : is.stats ? (
+								<ColumnStats index={0} />
+							) : is.companion ? (
+								<ColumnCompanion index={0} />
 							) : session?.user.id.startsWith("0x") ? (
 								<ColumnProfile index={0} />
 							) : session?.user.id.startsWith("0x") === false ? (
@@ -195,7 +221,7 @@ export const ConsoleSidebar = () => {
 
 	const { avatar, socket } = useSocket()
 	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
-	const { is, toggleExpanded, toggleAuthenticating, toggleSearching, toggleViewingAs } = useSidebar()
+	const { is, toggleExpanded, handleSidebar } = useSidebar()
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
@@ -204,7 +230,7 @@ export const ConsoleSidebar = () => {
 					{session && (
 						<button
 							className="relative mx-4 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
-							onClick={() => toggleAuthenticating()}
+							onClick={() => handleSidebar("authenticating")}
 						>
 							<motion.div
 								initial={{ opacity: 0 }}
@@ -250,20 +276,33 @@ export const ConsoleSidebar = () => {
 						title="Search"
 						isExpanded={is.expanded}
 						isActive={is.searching}
-						onClick={toggleSearching}
+						onClick={() => handleSidebar("searching")}
 					/>
 
 					<ConsoleSidebarAction
 						icon={
-							<Eye
+							<ChartBar
 								size={14}
 								className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
 							/>
 						}
-						title="View As"
+						title="Stats"
 						isExpanded={is.expanded}
-						isActive={is.viewingAs}
-						onClick={toggleViewingAs}
+						isActive={is.stats}
+						onClick={() => handleSidebar("stats")}
+					/>
+
+					<ConsoleSidebarAction
+						icon={
+							<Cat
+								size={14}
+								className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+							/>
+						}
+						title="Companion"
+						isExpanded={is.expanded}
+						isActive={is.companion}
+						onClick={() => handleSidebar("companion")}
 					/>
 				</div>
 
