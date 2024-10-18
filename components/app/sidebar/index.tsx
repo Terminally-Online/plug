@@ -21,9 +21,9 @@ import {
 	Avatar,
 	ColumnAuthenticate,
 	ColumnCompanion,
-	ColumnProfile,
 	ColumnSearch,
 	ColumnStats,
+	ColumnWallet,
 	Header,
 	Image
 } from "@/components"
@@ -190,7 +190,7 @@ const ConsoleSidebarPane = () => {
 							) : is.companion ? (
 								<ColumnCompanion index={0} />
 							) : session?.user.id.startsWith("0x") ? (
-								<ColumnProfile index={0} />
+								<ColumnWallet index={0} />
 							) : session?.user.id.startsWith("0x") === false ? (
 								<ColumnAuthenticate index={0} />
 							) : (
