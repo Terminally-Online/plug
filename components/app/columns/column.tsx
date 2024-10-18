@@ -21,7 +21,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, Column, formatTitle } from "@/lib"
+import { cardColors, cn, Column as ColumnType, formatTitle } from "@/lib"
 import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 380
@@ -29,8 +29,8 @@ const MAX_COLUMN_WIDTH = 620
 
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
-export const ConsoleColumn: FC<{
-	column: Column
+const Column: FC<{
+	column: ColumnType
 }> = ({ column }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
@@ -40,20 +40,23 @@ export const ConsoleColumn: FC<{
 
 	const { plug, handle } = usePlugs(item)
 
+	const [width, setWidth] = useState(column.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
 
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
-			resize({
-				index: column.index,
-				width: getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left)
-			})
+			setWidth(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left))
 		}
 
 		const handleMouseUp = () => {
 			setIsResizing(false)
+
+			resize({
+				index: column.index,
+				width
+			})
 		}
 
 		if (isResizing) {
@@ -65,7 +68,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [column.index, isResizing, resize])
+	}, [column.index, width, isResizing, resize])
 
 	return (
 		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
@@ -77,7 +80,7 @@ export const ConsoleColumn: FC<{
 						{...provided.draggableProps}
 						style={{
 							...provided.draggableProps.style,
-							width: `${column.width}px`
+							width: `${width}px`
 						}}
 					>
 						<div
@@ -240,3 +243,7 @@ export const ConsoleColumn: FC<{
 		</div>
 	)
 }
+
+Column.displayName = "ConsoleColumn"
+
+export const ConsoleColumn = React.memo(Column)
