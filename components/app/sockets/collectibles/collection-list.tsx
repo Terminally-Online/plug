@@ -27,8 +27,8 @@ export const SocketCollectionList: FC<
 
 	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
 		if (
-			(isAnonymous && isExternal === false) ||
 			collectibles === undefined ||
+			(isAnonymous && isExternal === false) ||
 			(search === "" && collectibles.length === 0)
 		)
 			return Array(5).fill(undefined)
@@ -37,12 +37,8 @@ export const SocketCollectionList: FC<
 			collectible =>
 				collectible.name.toLowerCase().includes(search.toLowerCase()) ||
 				collectible.description.toLowerCase().includes(search.toLowerCase()) ||
-				// collectible.collection.toLowerCase().includes(search.toLowerCase()) ||
-				collectible.collectibles.some(
-					collectionCollectible =>
-						(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase())
-					// ||
-					// (collectionCollectible.description ?? "").toLowerCase().includes(search.toLowerCase())
+				collectible.collectibles.some(collectionCollectible =>
+					(collectionCollectible.name ?? "").toLowerCase().includes(search.toLowerCase())
 				)
 		)
 
@@ -76,7 +72,7 @@ export const SocketCollectionList: FC<
 						key={collectionIndex}
 						index={index}
 						collection={collection}
-						searched={search !== ""}
+						searched={false}
 					/>
 				))}
 			</div>
