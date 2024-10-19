@@ -10,18 +10,9 @@ import { getCollectibles, getPositions } from "@/lib/functions/zerion"
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const balances = createTRPCRouter({
-	collectibles: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		if (input) return await getCollectibles(input)
-
-		const socket = await ctx.db.userSocket.findFirst({
-			where: { id: ctx.session.address },
-			...SOCKET_BASE_QUERY
-		})
-
-		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-		return await getCollectibles(socket.socketAddress)
-	}),
+	collectibles: anonymousProtectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input, ctx }) => await getCollectibles(ctx.session.address, input)),
 	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
 		if (input) return await getPositions(input)
 

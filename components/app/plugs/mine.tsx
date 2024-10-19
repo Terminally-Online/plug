@@ -51,6 +51,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	const visiblePlugs = useMemo(() => {
 		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
+
 		return plugs.plugs
 	}, [plugs, search])
 

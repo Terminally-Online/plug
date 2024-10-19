@@ -17,9 +17,9 @@ export const SocketCollectionList: FC<
 		isColumn?: boolean
 	}
 > = ({ index, columnCollectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous } = useSocket()
+	const { isAnonymous, socket } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { collectibles: apiCollectibles } = useHoldings(column?.viewAs?.socketAddress)
+	const { collectibles: apiCollectibles } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
 
 	const collectibles = columnCollectibles ?? apiCollectibles
 

@@ -13,35 +13,30 @@ export const MOBILE_INDEX = -1
 export const DEMO_VIEW_AS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 export const COLUMN_KEYS = {
-	// Anonymous views
-	HOME: "HOME",
-	AUTHENTICATE: "AUTHENTICATE",
-	ADD: "ADD",
-	PLUGS: "PLUGS",
-	DISCOVER: "DISCOVER",
-	MY_PLUGS: "MY_PLUGS",
-	PLUG: "PLUG",
-	ALERTS: "ALERTS",
-
-	// Authenticated views
 	ACTIVITY: "ACTIVITY",
-	ASSETS: "ASSETS",
-	TOKENS: "TOKENS",
-	COLLECTIBLES: "COLLECTIBLES",
-	POSITIONS: "POSITIONS",
-	EARNINGS: "EARNINGS",
-	SETTINGS: "SETTINGS",
-	PROFILE: "PROFILE",
-
-	// Admin views
+	ADD: "ADD",
 	ADMIN: "ADMIN",
-
-	// Temporal views
-	APPLICATION: "APPLICATION"
+	ALERTS: "ALERTS",
+	APPLICATION: "APPLICATION",
+	ASSETS: "ASSETS",
+	AUTHENTICATE: "AUTHENTICATE",
+	COLLECTIBLES: "COLLECTIBLES",
+	DISCOVER: "DISCOVER",
+	EARNINGS: "EARNINGS",
+	HOME: "HOME",
+	MY_PLUGS: "MY_PLUGS",
+	PANE: "PANE",
+	PLUG: "PLUG",
+	PLUGS: "PLUGS",
+	POSITIONS: "POSITIONS",
+	PROFILE: "PROFILE",
+	SETTINGS: "SETTINGS",
+	TOKENS: "TOKENS"
 }
 
 export const DEFAULT_COLUMN_WIDTH = 420
 export const DEFAULT_COLUMNS = [
+	{ key: COLUMN_KEYS.PANE, index: -2 },
 	{ key: COLUMN_KEYS.HOME, index: -1 },
 	{ key: COLUMN_KEYS.DISCOVER, index: 0 },
 	{ key: COLUMN_KEYS.MY_PLUGS, index: 1 },
@@ -50,11 +45,15 @@ export const DEFAULT_COLUMNS = [
 ].map(column => ({ ...column, width: DEFAULT_COLUMN_WIDTH }))
 export const DEFAULT_DEMO_COLUMNS = DEFAULT_COLUMNS.map(column => ({ ...column, viewAsId: DEMO_VIEW_AS }))
 
+const COLUMN_OFFSET = DEFAULT_COLUMNS.filter(column => column.index < 0).length
+
 const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_COLUMNS)
 export const useColumns = (index?: number, key?: string) => {
 	const { socket } = useSocket()
 
 	const [columns, setColumns] = useAtom(columnsAtom)
+
+	// setColumns(DEFAULT_COLUMNS)
 
 	const updateColumns = useCallback((updater: (prev: Column[]) => Column[]) => setColumns(updater), [setColumns])
 
@@ -77,11 +76,11 @@ export const useColumns = (index?: number, key?: string) => {
 				} as Column
 				const updatedColumns = [...prev]
 				if (index !== undefined) {
-					updatedColumns.splice(index + 1, 0, newColumn)
+					updatedColumns.splice(index + COLUMN_OFFSET, 0, newColumn)
 				} else {
 					updatedColumns.push(newColumn)
 				}
-				return updatedColumns.map((col, idx) => ({ ...col, index: idx - 1 }))
+				return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
 			})
 		},
 		[updateColumns]
@@ -112,8 +111,7 @@ export const useColumns = (index?: number, key?: string) => {
 				prev
 					.filter(col => col.index !== index)
 					.sort((a, b) => a.index - b.index)
-					// NOTE: Account for the mobile index always being -1.
-					.map((col, idx) => ({ ...col, index: idx - 1 }))
+					.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
 			),
 		[updateColumns]
 	)
@@ -127,9 +125,9 @@ export const useColumns = (index?: number, key?: string) => {
 		({ from, to }: { from: number; to: number }) =>
 			updateColumns(prev => {
 				const updatedColumns = [...prev]
-				const [movedColumn] = updatedColumns.splice(from + 1, 1)
-				updatedColumns.splice(to + 1, 0, movedColumn)
-				return updatedColumns.map((col, idx) => ({ ...col, index: idx - 1 }))
+				const [movedColumn] = updatedColumns.splice(from + COLUMN_OFFSET, 1)
+				updatedColumns.splice(to + COLUMN_OFFSET, 0, movedColumn)
+				return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
 			}),
 		[updateColumns]
 	)

@@ -190,13 +190,11 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<Animate.List>
+			<div className="flex flex-col gap-2">
 				{visibleActivities.map((activity, activityIndex) => (
-					<Animate.ListItem key={activityIndex}>
-						<ActivityItem index={index} activityIndex={activityIndex} activity={activity} />
-					</Animate.ListItem>
+					<ActivityItem key={activityIndex} index={index} activityIndex={activityIndex} activity={activity} />
 				))}
-			</Animate.List>
+			</div>
 
 			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
 

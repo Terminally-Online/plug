@@ -223,19 +223,20 @@ Table Collectible {
   collectionAddress String [not null]
   collectionChain String [not null]
   cache CollectibleCache [not null]
-  cacheSocketId String [not null]
+  cacheId String [not null]
 
   indexes {
-    (cacheSocketId, tokenId, collectionAddress, collectionChain) [pk]
+    (cacheId, tokenId, collectionAddress, collectionChain) [pk]
   }
 }
 
 Table CollectibleCache {
+  id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   collectibles Collectible [not null]
   socket UserSocket [not null]
-  socketId String [pk]
+  socketId String [not null]
 }
 
 Table FeatureRequest {
@@ -283,6 +284,6 @@ Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
 
 Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, chain)
 
-Ref: Collectible.cacheSocketId > CollectibleCache.socketId
+Ref: Collectible.cacheId > CollectibleCache.id
 
 Ref: CollectibleCache.socketId > UserSocket.id [delete: Cascade]

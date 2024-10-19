@@ -71,13 +71,11 @@ export const SocketPositionList: FC<
 				handleSearch={handleSearch}
 			/>
 
-			<Animate.List>
+			<div className="flex flex-col gap-2">
 				{visibilePositions.map((protocol, positionIndex) => (
-					<Animate.ListItem key={positionIndex}>
-						<SocketPositionItem index={index} protocol={protocol} />
-					</Animate.ListItem>
+					<SocketPositionItem key={positionIndex} index={index} protocol={protocol} />
 				))}
-			</Animate.List>
+			</div>
 
 			<Callout.Anonymous index={index} viewing="positions" isAbsolute={true} />
 			<Callout.EmptyAssets

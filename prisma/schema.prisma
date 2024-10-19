@@ -426,19 +426,20 @@ model Collectible {
     collection        Collection       @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
     collectionAddress String
     collectionChain   String
-    cache             CollectibleCache @relation(fields: [cacheSocketId], references: [socketId])
-    cacheSocketId     String
+    cache             CollectibleCache @relation(fields: [cacheId], references: [id])
+    cacheId           String
 
     // ---------------------------------------------------------------------------
     // Indexes
     // ---------------------------------------------------------------------------
-    @@id([cacheSocketId, tokenId, collectionAddress, collectionChain])
+    @@id([cacheId, tokenId, collectionAddress, collectionChain])
 }
 
 model CollectibleCache {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
@@ -451,7 +452,7 @@ model CollectibleCache {
     // Many-to-one
     // ---------------------------------------------------------------------------
     socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
-    socketId String     @id
+    socketId String
 }
 
 model FeatureRequest {

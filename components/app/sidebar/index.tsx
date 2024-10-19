@@ -182,7 +182,7 @@ const ConsoleSidebarPane = () => {
 							/>
 						</div>
 
-						<div className="h-full">
+						<div className="relative h-full">
 							{is.searching ? (
 								<ColumnSearch index={0} className="px-4" />
 							) : is.stats ? (

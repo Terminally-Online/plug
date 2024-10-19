@@ -29,7 +29,7 @@ const Anonymous: FC<
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
 	const { isAnonymous } = useSocket()
-	const { toggleViewingAs, toggleAuthenticating } = useSidebar()
+	const { handleSidebar } = useSidebar()
 	const { isExternal } = useColumns(index)
 
 	if (isAnonymous === false || isExternal === true) return null
@@ -51,10 +51,7 @@ const Anonymous: FC<
 				description={`To view ${viewing} you must authenticate a wallet or select an account to view as.`}
 				{...props}
 			>
-				<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
-					View As
-				</Button>
-				<Button sizing="sm" onClick={() => toggleAuthenticating()}>
+				<Button sizing="sm" onClick={() => handleSidebar("authenticating")}>
 					Login
 				</Button>
 			</Base>
@@ -110,12 +107,10 @@ const EmptyAssets: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
 		isEmpty: boolean
-		isViewing: string
-		isReceivable: boolean
+		isViewing?: string
+		isReceivable?: boolean
 	}
-> = ({ index, isEmpty, isViewing, isReceivable, className, ...props }) => {
-	const { toggleViewingAs } = useSidebar()
-
+> = ({ index, isEmpty, isViewing = "assets", isReceivable = false, className, ...props }) => {
 	if (isEmpty === false) return null
 
 	return (
@@ -133,14 +128,9 @@ const EmptyAssets: FC<
 				description={`When this account has ${isViewing} they will appear here.`}
 				{...props}
 			>
-				{index !== MOBILE_INDEX && (
-					<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
-						View As
-					</Button>
-				)}
 				{isReceivable && (
 					<Button sizing="sm" onClick={() => {}}>
-						Receive
+						Deposit
 					</Button>
 				)}
 			</Base>
@@ -155,7 +145,6 @@ const EmptyPlugs: FC<
 	}
 > = ({ index, isEmpty, className, ...props }) => {
 	const { handle } = usePlugs()
-	const { toggleViewingAs } = useSidebar()
 	const { column } = useColumns(index)
 
 	if (!column || isEmpty === false) return null
@@ -175,11 +164,6 @@ const EmptyPlugs: FC<
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
 			>
-				{index !== MOBILE_INDEX && (
-					<Button variant="secondary" sizing="sm" onClick={() => toggleViewingAs()}>
-						View As
-					</Button>
-				)}
 				<Button sizing="sm" onClick={() => handle.plug.add({ index, from: column.key })}>
 					Create
 				</Button>

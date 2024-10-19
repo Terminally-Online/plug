@@ -25,7 +25,7 @@ export const ConsoleColumnRow = () => {
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
 							<AnimatePresence>
 								{columns
-									.filter(column => column.index !== MOBILE_INDEX)
+									.filter(column => column.index >= 0)
 									.sort((a, b) => a.index - b.index)
 									.map(column => (
 										<ConsoleColumn key={column.index} column={column} />
