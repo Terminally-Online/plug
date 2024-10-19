@@ -7,7 +7,6 @@ import { api } from "@/server/client"
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle } from "@/lib"
 import { useDebounce } from "@/lib/hooks"
-import { COLUMN_KEYS } from "@/state"
 
 export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,

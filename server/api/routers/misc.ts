@@ -18,6 +18,12 @@ export const misc = createTRPCRouter({
 			})
 		}),
 	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
+		const socket = await ctx.db.userSocket.findFirst({
+			where: { id: ctx.session.address }
+		})
+
+		if (socket === null) return { plugs: [], tokens: [], collectibles: [] }
+
 		// TODO(#403): Handle private plugs and exclude them while combining the self-results.
 		const plugs = await ctx.db.workflow.findMany({
 			where: {
@@ -30,7 +36,11 @@ export const misc = createTRPCRouter({
 			orderBy: { updatedAt: "desc" }
 		})
 
-		const { tokens } = ctx.session.user.anonymous ? { tokens: [] } : await getPositions(ctx.session.address, input)
+		const { tokens } = ctx.session.user.anonymous
+			? { tokens: [] }
+			: await getPositions(ctx.session.address, socket.socketAddress, input)
+
+		const cacheId = `${ctx.session.address}-${socket.socketAddress}`
 
 		const collectibles = ctx.session.user.anonymous
 			? []
@@ -42,7 +52,7 @@ export const misc = createTRPCRouter({
 									{
 										collectibles: {
 											some: {
-												cacheSocketId: ctx.session.address,
+												cacheId,
 												OR: [
 													{
 														name: {
@@ -77,7 +87,7 @@ export const misc = createTRPCRouter({
 							{
 								collectibles: {
 									some: {
-										cacheSocketId: ctx.session.address
+										cacheId
 									}
 								}
 							}
@@ -86,7 +96,7 @@ export const misc = createTRPCRouter({
 					include: {
 						collectibles: {
 							where: {
-								cacheSocketId: ctx.session.address,
+								cacheId,
 								OR: [
 									{
 										name: {
