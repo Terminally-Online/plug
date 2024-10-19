@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Animate, Callout, Search, SocketTokenItem, TokenFrame, TransferFrame } from "@/components"
+import { Callout, Search, SocketTokenItem } from "@/components"
 import { cn } from "@/lib"
 import { useColumns, useHoldings, useSocket } from "@/state"
 
@@ -17,9 +17,9 @@ export const SocketTokenList: FC<
 		isColumn?: boolean
 	}
 > = ({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
-	const { isAnonymous } = useSocket()
+	const { isAnonymous, socket } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { tokens: apiTokens } = useHoldings(column?.viewAs?.socketAddress)
+	const { tokens: apiTokens } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
 
 	const tokens = columnTokens ?? apiTokens
 

@@ -30,60 +30,64 @@ export const TokenImage: FC<
 		const color = getAssetColor(symbol)
 
 		const getImageColor = () => {
-			const canvas = canvasRef.current
-			const img = imgRef.current
-			const ctx = canvas?.getContext("2d")
+			try {
+				const canvas = canvasRef.current
+				const img = imgRef.current
+				const ctx = canvas?.getContext("2d")
 
-			if (!ctx || !canvas || !img) return color
+				if (!ctx || !canvas || !img) return color
 
-			canvas.width = img.naturalWidth
-			canvas.height = img.naturalHeight
-			ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight)
+				canvas.width = img.naturalWidth
+				canvas.height = img.naturalHeight
+				ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight)
 
-			const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-			const data = imageData.data
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+				const data = imageData.data
 
-			const colorCounts: Record<string, number> = {}
-			const dominantColors: Array<{ color: string; count: number }> = []
+				const colorCounts: Record<string, number> = {}
+				const dominantColors: Array<{ color: string; count: number }> = []
 
-			for (let i = 0; i < data.length; i += 4) {
-				const r = data[i]
-				const g = data[i + 1]
-				const b = data[i + 2]
-				const rgb = `${Math.floor(r / 10) * 10},${Math.floor(g / 10) * 10},${Math.floor(b / 10) * 10}`
+				for (let i = 0; i < data.length; i += 4) {
+					const r = data[i]
+					const g = data[i + 1]
+					const b = data[i + 2]
+					const rgb = `${Math.floor(r / 10) * 10},${Math.floor(g / 10) * 10},${Math.floor(b / 10) * 10}`
 
-				if (colorCounts[rgb]) {
-					colorCounts[rgb]++
-				} else {
-					colorCounts[rgb] = 1
+					if (colorCounts[rgb]) {
+						colorCounts[rgb]++
+					} else {
+						colorCounts[rgb] = 1
+					}
 				}
+
+				for (const [rgb, count] of Object.entries(colorCounts)) {
+					dominantColors.push({ color: `rgb(${rgb})`, count })
+				}
+
+				dominantColors.sort((a, b) => b.count - a.count)
+
+				const isReadable = (color: string) => {
+					const rgb = color.match(/\d+/g)
+					if (!rgb) return false
+					const [r, g, b] = rgb.map(Number)
+					const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+					return luminance < 0.7
+				}
+
+				const readableColors = dominantColors.filter(({ color }) => isReadable(color))
+
+				if (readableColors.length > 0) {
+					const nonBlackColor = readableColors.find(({ color }) => {
+						const [r, g, b] = color.match(/\d+/g)!.map(Number)
+						return r > 20 || g > 20 || b > 20
+					})
+					return nonBlackColor ? nonBlackColor.color : readableColors[0].color
+				}
+
+				return color
+			} catch (e) {
+				return color
 			}
-
-			for (const [rgb, count] of Object.entries(colorCounts)) {
-				dominantColors.push({ color: `rgb(${rgb})`, count })
-			}
-
-			dominantColors.sort((a, b) => b.count - a.count)
-
-			const isReadable = (color: string) => {
-				const rgb = color.match(/\d+/g)
-				if (!rgb) return false
-				const [r, g, b] = rgb.map(Number)
-				const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-				return luminance < 0.7
-			}
-
-			const readableColors = dominantColors.filter(({ color }) => isReadable(color))
-
-			if (readableColors.length > 0) {
-				const nonBlackColor = readableColors.find(({ color }) => {
-					const [r, g, b] = color.match(/\d+/g)!.map(Number)
-					return r > 20 || g > 20 || b > 20
-				})
-				return nonBlackColor ? nonBlackColor.color : readableColors[0].color
-			}
-
-			return color
 		}
 
 		const img = imgRef.current

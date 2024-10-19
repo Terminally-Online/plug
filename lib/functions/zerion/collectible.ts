@@ -128,7 +128,7 @@ const findCollectibles = async (cacheId?: string) => {
 }
 
 /**
- * Retrieves collectibles for a given address and socket address.
+ * Retrieves collectibles for a given address or socket address.
  * @throws {TRPCError} Throws a NOT_FOUND error if the socket is not found.
  * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
  */
@@ -142,7 +142,6 @@ export const getCollectibles = async (
 	})
 
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-
 	if (socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
 
 	// NOTE: The user can retrieve collectibles for their own address as well as the

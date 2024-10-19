@@ -2,19 +2,23 @@ import { useCallback, useEffect } from "react"
 
 import { api, RouterOutputs } from "@/server/client"
 
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 
 import { useSocket } from "./authentication"
-import { atomFamily } from "jotai/utils"
+import { atomFamily, atomWithStorage } from "jotai/utils"
 
 type Balances = RouterOutputs["socket"]["balances"]
 
 const CACHE_DURATION = 5 * 60 * 1000
 
-const collectiblesFamily = atomFamily((address: string) => atom<Balances["collectibles"]>([]))
-const positionsFamily = atomFamily((address: string) => atom<Balances["positions"]>({ tokens: [], protocols: [] }))
+const collectiblesFamily = atomFamily((address: string) =>
+	atomWithStorage<Balances["collectibles"]>(`plug.positions.collectibles.${address}`, [])
+)
+const positionsFamily = atomFamily((address: string) =>
+	atomWithStorage<Balances["positions"]>(`plug.positions.positions.${address}`, { tokens: [], protocols: [] })
+)
 const lastUpdateCacheFamily = atomFamily((address: string) =>
-	atom<{ positions: number; collectibles: number }>({
+	atomWithStorage<{ positions: number; collectibles: number }>(`plug.positions.lastUpdated.${address}`, {
 		positions: 0,
 		collectibles: 0
 	})
@@ -90,7 +94,7 @@ export const useHoldings = (providedAddress?: string) => {
 	const { socket } = useSocket()
 	const address = providedAddress || socket?.socketAddress || ""
 
-	const { isLoading, refetch } = useFetchHoldings(address)
+	const { isLoading, refetch: refetchHoldings } = useFetchHoldings(address ?? socket?.socketAddress)
 
 	const collectibles = useAtomValue(collectiblesFamily(address))
 	const positions = useAtomValue(positionsFamily(address))
@@ -101,6 +105,6 @@ export const useHoldings = (providedAddress?: string) => {
 		tokens: positions.tokens,
 		protocols: positions.protocols,
 		isLoading,
-		refetch
+		refetchHoldings
 	}
 }

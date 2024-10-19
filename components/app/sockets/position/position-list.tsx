@@ -4,7 +4,7 @@ import { SearchIcon } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Animate, Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
+import { Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { cn } from "@/lib"
 import { useColumns, useHoldings, useSocket } from "@/state"
 
@@ -16,9 +16,9 @@ export const SocketPositionList: FC<
 		isColumn?: boolean
 	}
 > = ({ index, columnProtocols, expanded, isColumn = true, className, ...props }) => {
-	const { isAnonymous } = useSocket()
+	const { isAnonymous, socket } = useSocket()
 	const { column, isExternal } = useColumns(index)
-	const { protocols: apiProtocols } = useHoldings(column?.viewAs?.socketAddress)
+	const { protocols: apiProtocols } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
 
 	const protocols = columnProtocols ?? apiProtocols
 

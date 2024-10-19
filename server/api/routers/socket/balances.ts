@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 import { z } from "zod"
 
-import { getAPIKey, SOCKET_BASE_QUERY } from "@/lib"
+import { getAPIKey} from "@/lib"
 import { getCollectibles, getPositions } from "@/lib/functions/zerion"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
@@ -13,18 +13,9 @@ export const balances = createTRPCRouter({
 	collectibles: anonymousProtectedProcedure
 		.input(z.string().optional())
 		.query(async ({ input, ctx }) => await getCollectibles(ctx.session.address, input)),
-	positions: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		if (input) return await getPositions(input)
-
-		const socket = await ctx.db.userSocket.findFirst({
-			where: { id: ctx.session.address },
-			...SOCKET_BASE_QUERY
-		})
-
-		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-
-		return await getPositions(socket.socketAddress)
-	}),
+	positions: anonymousProtectedProcedure
+		.input(z.string().optional())
+		.query(async ({ input, ctx }) => await getPositions(ctx.session.address, input)),
 	metadata: anonymousProtectedProcedure
 		.input(
 			z.object({

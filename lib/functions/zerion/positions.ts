@@ -34,12 +34,11 @@ const prohibitedNameInclusions = [
 const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
 
 const MINUTE = 60 * 1000
-const HOUR = 60 * MINUTE
-const POSITIONS_CACHE_TIME = 12 * HOUR
+const POSITIONS_CACHE_TIME = 60 * MINUTE
 
-const getZerionPositions = async (socketId: string, socketAddress: string, chains: string[]) => {
+const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
 	const response = await axios.get(
-		`https://api.zerion.io/v1/wallets/${socketAddress}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
+		`https://api.zerion.io/v1/wallets/${socketAddress ?? socketId}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
 			headers: {
 				accept: "application/json",
@@ -54,8 +53,6 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 
 	await db.$transaction(async tx => {
 		const positions = data.data
-
-		// Create the protocols for positions that are DeFi based.
 		await tx.protocol.createMany({
 			data: positions
 				.map(position => {
@@ -129,10 +126,11 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 			skipDuplicates: true
 		})
 
-		// Make sure the position cache exists in the database.
+		const id = `${socketId}-${socketAddress}`
 		await tx.positionCache.upsert({
-			where: { socketId },
+			where: { id },
 			create: {
+				id,
 				socketId
 			},
 			update: {
@@ -146,7 +144,7 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 		//       We should really only be deleting the ones that the user no
 		//       longer has.
 		await tx.implementationBalance.deleteMany({
-			where: { socketId }
+			where: { cacheId: id }
 		})
 
 		// Update the balances for every fungible position that is held.
@@ -167,16 +165,13 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 
 				if (!implementationContract) return
 
+				const implementationBalanceId = `${id}-${implementationChain}-${implementationContract}`
 				await tx.implementationBalance.upsert({
 					where: {
-						socketId_implementationChain_implementationContract: {
-							socketId,
-							implementationChain,
-							implementationContract
-						}
+						id: implementationBalanceId
 					},
 					create: {
-						socketId,
+						cacheId: id,
 						implementationChain,
 						implementationContract,
 						balance
@@ -189,10 +184,8 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 		)
 
 		const defi = positions.filter(position => position.attributes.position_type !== "wallet")
-
-		// Update all of the positions into the cache.
 		await tx.positionCache.update({
-			where: { socketId },
+			where: { id },
 			data: {
 				updatedAt: new Date(),
 				positions: {
@@ -200,9 +193,9 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 						const { attributes, relationships } = position
 
 						return {
-							where: { id: `${socketId}-${position.id}` },
+							where: { id: `${id}-${position.id}` },
 							create: {
-								id: `${socketId}-${position.id}`,
+								id: `${id}-${position.id}`,
 								chain: relationships.chain.data.id,
 								type: attributes.position_type,
 								balance: attributes.quantity.float,
@@ -216,9 +209,9 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 						}
 					}),
 					deleteMany: {
-						cacheId: socketId,
+						cacheId: id,
 						id: {
-							notIn: defi.map(position => `${socketId}-${position.id}`)
+							notIn: defi.map(position => `${id}-${position.id}`)
 						}
 					}
 				}
@@ -227,7 +220,7 @@ const getZerionPositions = async (socketId: string, socketAddress: string, chain
 	})
 }
 
-const findPositions = async (socketId: string, search: string = "") => {
+const findPositions = async (id: string, search: string = "") => {
 	const tokens = await db.fungible.findMany({
 		where: {
 			AND: [
@@ -263,7 +256,7 @@ const findPositions = async (socketId: string, search: string = "") => {
 				},
 				{
 					implementations: {
-						some: { balances: { some: { socketId, balance: { gt: 0 } } } }
+						some: { balances: { some: { cacheId: id, balance: { gt: 0 } } } }
 					}
 				}
 			]
@@ -274,7 +267,7 @@ const findPositions = async (socketId: string, search: string = "") => {
 			icon: true,
 			verified: true,
 			implementations: {
-				where: { balances: { some: { socketId, balance: { gt: 0 } } } },
+				where: { balances: { some: { cacheId: id, balance: { gt: 0 } } } },
 				omit: {
 					createdAt: true,
 					updatedAt: true,
@@ -283,7 +276,7 @@ const findPositions = async (socketId: string, search: string = "") => {
 				},
 				include: {
 					balances: {
-						where: { socketId, balance: { gt: 0 } },
+						where: { cacheId: id, balance: { gt: 0 } },
 						select: {
 							balance: true
 						}
@@ -295,12 +288,12 @@ const findPositions = async (socketId: string, search: string = "") => {
 
 	const protocols = await db.protocol.findMany({
 		where: {
-			positions: { some: { cacheId: socketId } }
+			positions: { some: { cacheId: id } }
 		},
 		omit: { createdAt: true, updatedAt: true },
 		include: {
 			positions: {
-				where: { cacheId: socketId },
+				where: { cacheId: id },
 				omit: {
 					id: true,
 					createdAt: true,
@@ -406,26 +399,38 @@ const findPositions = async (socketId: string, search: string = "") => {
 	}
 }
 
-export const getPositions = async (address: string, search?: string, chains = ["ethereum", "optimism", "base"]) => {
+/**
+ * Retrieves fungible positions for a given address or socket address.
+ * @throws {TRPCError} Throws a NOT_FOUND error if the socket is not found.
+ * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
+ */
+export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["ethereum"]) => {
+	console.log("getPositions", address, socketAddress, search, chains)
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})
 
-	if (!socket)
-		return {
-			tokens: [],
-			protocols: []
-		}
+	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+	if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
+	console.log("getPositions", address, socketAddress, search, chains)
 
+	// NOTE: The user can retrieve positions for their own address as well as the
+	// address of their socket. To power this, we store both caches relative to the user
+	// socket that was created once the user is authenticated.
+	// ...
+	// Wallet: `0x612...49d-`.
+	// Socket: `0x612...49d-0x524...c3b`.
+	// ...
+	// This method while a bit less readable, it confirms that we only ever enable users
+	// to retrieve collectibles for their own address as well as the address of their socket.
+	const id = `${socket.id}-${socketAddress}`
 	const cachedPositions = await db.positionCache.findUnique({
-		where: { socketId: socket.id },
+		where: { id },
 		select: { updatedAt: true }
 	})
 
-	if (cachedPositions && cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
-		return await findPositions(socket.id, search)
+	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
+		await getZerionPositions(chains, socket.id, socket.socketAddress)
 
-	await getZerionPositions(socket.id, socket.socketAddress, chains)
-
-	return await findPositions(socket.id, search)
+	return await findPositions(id, search)
 }

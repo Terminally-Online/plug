@@ -135,7 +135,6 @@ model UserSocket {
     // One-to-many 
     // ---------------------------------------------------------------------------
     workflow     Workflow[]
-    balances     ImplementationBalance[]
     positions    PositionCache[]
     collectibles CollectibleCache[]
 
@@ -212,7 +211,7 @@ model Protocol {
     positions Position[]
 }
 
-model ImplementationBalance {
+model Fungible {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
@@ -222,18 +221,18 @@ model ImplementationBalance {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    balance Float
+    name     String
+    symbol   String
+    icon     String?
+    verified Boolean
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    implementation         Implementation @relation(fields: [implementationChain, implementationContract], references: [chain, contract])
-    implementationChain    String
-    implementationContract String
-    socket                 UserSocket     @relation(fields: [socketId], references: [id])
-    socketId               String
+    implementations Implementation[]
+    positions       Position[]
 
-    @@id([socketId, implementationChain, implementationContract])
+    @@id([name, symbol])
 }
 
 model Implementation {
@@ -265,28 +264,27 @@ model Implementation {
     @@id([chain, contract])
 }
 
-model Fungible {
+model ImplementationBalance {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name     String
-    symbol   String
-    icon     String?
-    verified Boolean
+    balance Float
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    implementations Implementation[]
-    positions       Position[]
-
-    @@id([name, symbol])
+    implementation         Implementation @relation(fields: [implementationChain, implementationContract], references: [chain, contract])
+    implementationChain    String
+    implementationContract String
+    cache                  PositionCache  @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+    cacheId                String
 }
 
 model Position {
@@ -312,7 +310,7 @@ model Position {
     fungibleSymbol String
     protocol       Protocol?     @relation(fields: [protocolName], references: [name], onDelete: Cascade)
     protocolName   String?
-    cache          PositionCache @relation(fields: [cacheId], references: [socketId], onDelete: Cascade)
+    cache          PositionCache @relation(fields: [cacheId], references: [id], onDelete: Cascade)
     cacheId        String
 }
 
@@ -320,19 +318,21 @@ model PositionCache {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
     // ---------------------------------------------------------------------------
     // One-to-many
     // ---------------------------------------------------------------------------
+    balances  ImplementationBalance[]
     positions Position[]
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
     socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
-    socketId String     @id
+    socketId String
 }
 
 model Collection {
