@@ -12,10 +12,9 @@ func SetupRouter() *mux.Router {
 
 	r.Use(JsonContentTypeMiddleware)
 
-	intent := r.PathPrefix("/intent").Subrouter()
-	intent.HandleFunc("", api.GetIntent).Methods("POST")
-
-	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/intent", api.GetIntent).Methods("POST")
+	r.HandleFunc("/payment", api.GetPayment).Methods("GET", "POST")
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Catch-all hit: %s %s", r.Method, r.URL.Path)
 		http.Error(w, "Not found", http.StatusNotFound)
 	})
@@ -29,5 +28,4 @@ func JsonContentTypeMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-
 
