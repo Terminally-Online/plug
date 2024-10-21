@@ -6,9 +6,20 @@ import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenL
 import { cn } from "@/lib"
 import { useColumns, useHoldings, useSocket } from "@/state"
 
-export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number; address?: string }> = ({
+export const SocketAssets: FC<
+	HTMLAttributes<HTMLDivElement> & {
+		index?: number
+		address?: string
+		hasTokens?: boolean
+		hasPositions?: boolean
+		hasCollectibles?: boolean
+	}
+> = ({
 	index = -1,
 	address,
+	hasTokens = false,
+	hasPositions = false,
+	hasCollectibles = false,
 	className,
 	...props
 }) => {
@@ -26,11 +37,11 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number;
 
 			{isAnonymous === false && (
 				<>
-					{tokens.length > 0 && (
+					{hasTokens && tokens.length > 0 && (
 						<SocketTokenList className="h-max" index={index} expanded={true} isColumn={false} />
 					)}
 
-					{protocols.length > 0 && (
+					{hasPositions && protocols.length > 0 && (
 						<>
 							<Header
 								size="sm"
@@ -41,7 +52,7 @@ export const SocketAssets: FC<HTMLAttributes<HTMLDivElement> & { index?: number;
 						</>
 					)}
 
-					{collectibles.length > 0 && (
+					{hasCollectibles && collectibles.length > 0 && (
 						<>
 							<Header
 								size="sm"

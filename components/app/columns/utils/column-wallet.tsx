@@ -13,7 +13,7 @@ export const ColumnWallet: FC<{ index: number }> = () => {
 
 	return (
 		<div className="flex h-full flex-col gap-4 overflow-y-scroll p-4 text-center">
-			<SocketAssets index={-2} address={session?.user.id} />
+			<SocketAssets index={-2} address={session?.user.id} hasTokens hasCollectibles />
 		</div>
 	)
 }

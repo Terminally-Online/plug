@@ -1,11 +1,11 @@
 import { FC, useMemo, useState } from "react"
 
-import { MapIcon, Send } from "lucide-react"
+import { ArrowDownFromLine, MapIcon, Send } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
-import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId, getTextColor } from "@/lib"
+import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
 import { useColumns } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
@@ -142,10 +142,21 @@ export const TokenFrame: FC<{
 						backgroundColor: color ?? "",
 						color: textColor
 					}}
-					onClick={() => frame(`${token.symbol}-transfer-recipient`)}
+					onClick={() =>
+						frame(index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`)
+					}
 				>
-					<Send size={14} className="opacity-60" />
-					Send
+					{index === -2 ? (
+						<>
+							<ArrowDownFromLine size={14} className="opacity-60" />
+							Deposit
+						</>
+					) : (
+						<>
+							<Send size={14} className="opacity-60" />
+							Send
+						</>
+					)}
 				</button>
 			</div>
 

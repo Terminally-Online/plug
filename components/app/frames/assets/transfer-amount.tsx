@@ -5,7 +5,7 @@ import { RouterOutputs } from "@/server/client"
 
 import { Counter, Frame, TokenImage } from "@/components"
 import { chains, cn, getChainId, getTextColor } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumns, useSocket } from "@/state"
 
 import { TransferRecipient } from "./transfer-recipient"
 
@@ -200,10 +200,16 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, recipient, color, textColor }) => {
-	const { isFrame, column, frame } = useColumns(index, `${token?.symbol}-transfer-amount`)
+	const { socket } = useSocket()
+	const { isFrame, column, frame } = useColumns(
+		index,
+		index === -2 ? `${token?.symbol}-transfer-deposit` : `${token?.symbol}-transfer-amount`
+	)
 
 	const [dragPercentages, setDragPercentages] = useState<number[]>([])
 	const [preciseAmounts, setPreciseAmounts] = useState<string[]>([])
+
+	const to = index === -2 ? socket?.socketAddress : recipient
 
 	const isReady = useMemo(
 		() => token && column && preciseAmounts.some(amount => parseFloat(amount) > 0),
@@ -260,19 +266,21 @@ export const TransferAmountFrame: FC<{
 						/>
 					</div>
 				}
-				label="Transfer Amount"
+				label={`${index === -2 ? "Deposit" : "Transfer"} Amount`}
 				visible={isFrame}
-				handleBack={() => frame(`${token.symbol}-transfer-recipient`)}
+				handleBack={index !== -2 ? () => frame(`${token.symbol}-transfer-recipient`) : undefined}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
 				<div className="mb-4 flex flex-col gap-4">
-					<div className="px-6">
-						<TransferRecipient
-							address={recipient}
-							handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
-						/>
-					</div>
+					{index !== -2 && (
+						<div className="px-6">
+							<TransferRecipient
+								address={recipient}
+								handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
+							/>
+						</div>
+					)}
 					<div className="flex flex-col gap-2">
 						<div className="flex flex-col gap-2">
 							{token.implementations.map((implementation, index) => (
@@ -324,7 +332,7 @@ export const TransferAmountFrame: FC<{
 							}}
 							disabled={isReady === false}
 						>
-							{isReady ? "Send" : "Enter Amount"}
+							{isReady ? (index === -2 ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>
