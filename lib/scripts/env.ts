@@ -45,7 +45,9 @@ const decryptEnvFile = () => {
 }
 
 const command = process.argv[2]
-if (command === "encrypt") {
+if (process.env.ENCRYPTION_KEY === "" || process.env.ENCRYPTION_KEY === "github-action") {
+	console.log("Skipping encryption and decryption.")
+} else if (command === "encrypt") {
 	encryptEnvFile()
 } else if (command === "decrypt") {
 	decryptEnvFile()
