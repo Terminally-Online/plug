@@ -22,14 +22,14 @@ export const jobs = createTRPCRouter({
 			}
 		})
 	}),
-	fetchMetadata: apiKeyProcedure
-		.input(z.object({ count: z.number().min(1).max(100) }))
+	collectibleMetadata: apiKeyProcedure
+		.input(z.object({ count: z.number().min(1).max(100) }).nullish())
 		.mutation(async ({ input, ctx }) => {
 			const collectiblesWithoutMetadata = await ctx.db.collectible.findMany({
 				where: {
 					collectibleMetadata: null
 				},
-				take: input.count,
+				take: input ? input.count : 50,
 				include: {
 					collection: true
 				}
@@ -37,15 +37,17 @@ export const jobs = createTRPCRouter({
 
 			const results = await Promise.all(
 				collectiblesWithoutMetadata.map(async collectible => {
+					const token = {
+						address: collectible.collectionAddress,
+						chain: collectible.collectionChain,
+						tokenId: collectible.tokenId
+					}
+
 					try {
-						const metadata = await getMetadataForToken({
-							address: collectible.collectionAddress,
-							chain: collectible.collectionChain,
-							tokenId: collectible.tokenId
-						})
-						return { success: true, tokenId: collectible.tokenId, metadata }
+						await getMetadataForToken(token)
+						return { success: true, token }
 					} catch (error) {
-						return { success: false, tokenId: collectible.tokenId, error: (error as Error).message }
+						return { success: false, token }
 					}
 				})
 			)
