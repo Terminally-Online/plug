@@ -110,3 +110,24 @@ export const protectedProcedure = t.procedure.use(
 		})
 	})
 )
+
+// Add the new API key procedure
+export const apiKeyProcedure = t.procedure.use(
+	t.middleware(({ ctx, next }) => {
+		const apiKey = ctx.req.headers['x-api-key']
+
+		if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "Invalid API key"
+			})
+		}
+
+		return next({
+			ctx: {
+				// Add any additional context you might need
+				isAdmin: true
+			}
+		})
+	})
+)
