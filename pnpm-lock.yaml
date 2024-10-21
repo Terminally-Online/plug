@@ -5802,9 +5802,9 @@ packages:
     resolution: {integrity: sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==}
     engines: {node: '>=0.10.0'}
 
-  secp256k1@5.0.0:
-    resolution: {integrity: sha512-TKWX8xvoGHrxVdqbYeZM9w+izTF4b9z3NhSaDkdn81btvuh+ivbIMGT/zQvDtTFWhRlThpoz6LEYTr7n8A5GcA==}
-    engines: {node: '>=14.0.0'}
+  secp256k1@5.0.1:
+    resolution: {integrity: sha512-lDFs9AAIaWP9UCdtWrotXWWF9t8PWgQDcxqgAnpM9rMqxb3Oaq2J0thzPVSxBwdJgyQtkU/sYtFtbM1RSt/iYA==}
+    engines: {node: '>=18.0.0'}
 
   selfsigned@2.4.1:
     resolution: {integrity: sha512-th5B4L2U+eGLq1TVh7zNRGBapioSORUeymIydxgFpwww9d2qyKvtuPU2jJuHvYAwwqi2Y596QBL3eEqcPEYL8Q==}
@@ -10824,7 +10824,7 @@ snapshots:
     dependencies:
       '@types/secp256k1': 4.0.6
       futoin-hkdf: 1.5.3
-      secp256k1: 5.0.0
+      secp256k1: 5.0.1
 
   ee-first@1.1.1: {}
 
@@ -13698,7 +13698,7 @@ snapshots:
 
   screenfull@5.2.0: {}
 
-  secp256k1@5.0.0:
+  secp256k1@5.0.1:
     dependencies:
       elliptic: 6.5.7
       node-addon-api: 5.1.0
