@@ -64,8 +64,6 @@ export const jobs = createTRPCRouter({
 					}
 				})
 
-				console.log(`Deleted ${deletedUsers.count} UserSockets`)
-
 				return {
 					success: true,
 					deletedCollectibles: deletedCollectibles.count,
