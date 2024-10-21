@@ -388,7 +388,7 @@ model CollectibleMetadata {
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    // collectible Collectible[]
+    collectible Collectible[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -418,7 +418,7 @@ model Collectible {
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    // CollectibleMetadata CollectibleMetadata? @relation(fields: [tokenId, collectionAddress, collectionChain], references: [tokenId, collectionAddress, collectionChain])
+    collectibleMetadata CollectibleMetadata? @relation(fields: [tokenId, collectionAddress, collectionChain], references: [tokenId, collectionAddress, collectionChain])
 
     // ---------------------------------------------------------------------------
     // Many-to-one

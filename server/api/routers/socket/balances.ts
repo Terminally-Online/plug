@@ -23,18 +23,12 @@ export const balances = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			try {
+			if (input.type === "ERC20") throw new TRPCError({ code: "NOT_IMPLEMENTED" })
 				return await getMetadataForToken(ctx.db, {
 					type: input.type,
 					address: input.address,
 					chain: input.chain,
 					tokenId: input.tokenId
 				})
-			} catch (error) {
-				if (error instanceof TRPCError) {
-					throw error
-				}
-				throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
-			}
 		})
 })
