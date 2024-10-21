@@ -279,7 +279,7 @@ export const ConsoleSidebar = () => {
 						onClick={toggleExpanded}
 					/>
 
-					{account.address && (
+					{(account.address || session?.user.id) && (
 						<ConsoleSidebarAction
 							className={cn(is.expanded && "pr-16")}
 							icon={
