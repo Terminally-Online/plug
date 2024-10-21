@@ -183,7 +183,8 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 					<Button
 						className={cn(
 							"w-full",
-							canFeed === false && "cursor-auto bg-grayscale-0 hover:bg-grayscale-0 hover:text-opacity-60"
+							canFeed === false &&
+								"flex cursor-auto items-center justify-center bg-grayscale-0 text-center hover:bg-grayscale-0 hover:text-opacity-60"
 						)}
 						onClick={canFeed ? () => feedMutation.mutate() : () => {}}
 						disabled={feedMutation.isLoading || !canFeed}
