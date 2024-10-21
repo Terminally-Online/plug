@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server"
+
 import { z } from "zod"
 
 import { getCollectibles, getPositions } from "@/lib/functions/zerion"
@@ -24,11 +25,11 @@ export const balances = createTRPCRouter({
 		)
 		.query(async ({ input, ctx }) => {
 			if (input.type === "ERC20") throw new TRPCError({ code: "NOT_IMPLEMENTED" })
-				return await getMetadataForToken(ctx.db, {
-					type: input.type,
-					address: input.address,
-					chain: input.chain,
-					tokenId: input.tokenId
-				})
+
+			return await getMetadataForToken({
+				address: input.address,
+				chain: input.chain,
+				tokenId: input.tokenId
+			})
 		})
 })

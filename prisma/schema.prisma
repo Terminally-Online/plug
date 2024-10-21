@@ -418,7 +418,10 @@ model Collectible {
     // ---------------------------------------------------------------------------
     // One-to-one
     // ---------------------------------------------------------------------------
-    collectibleMetadata CollectibleMetadata? @relation(fields: [tokenId, collectionAddress, collectionChain], references: [tokenId, collectionAddress, collectionChain])
+    collectibleMetadata CollectibleMetadata? @relation(fields: [metadataTokenId, metadataAddress, metadataChain], references: [tokenId, collectionAddress, collectionChain])
+    metadataTokenId String?
+    metadataAddress String?
+    metadataChain String?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

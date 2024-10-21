@@ -219,6 +219,9 @@ Table Collectible {
   videoUrl String
   isSpam Boolean [not null]
   collectibleMetadata CollectibleMetadata
+  metadataTokenId String
+  metadataAddress String
+  metadataChain String
   collection Collection [not null]
   collectionAddress String [not null]
   collectionChain String [not null]
@@ -282,7 +285,7 @@ Ref: Position.cacheId > PositionCache.id [delete: Cascade]
 
 Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
 
-Ref: Collectible.(tokenId, collectionAddress, collectionChain) > CollectibleMetadata.(tokenId, collectionAddress, collectionChain)
+Ref: Collectible.(metadataTokenId, metadataAddress, metadataChain) > CollectibleMetadata.(tokenId, collectionAddress, collectionChain)
 
 Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, chain)
 
