@@ -19,9 +19,6 @@ export const jobs = createTRPCRouter({
 			try {
 				const cutoffDate = new Date()
 				cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_OLDER_THAN_DAYS)
-
-				console.log(`Deleting anonymous users created before: ${cutoffDate.toISOString()}`)
-
 				// Find UserSockets to delete
 				const userSocketsToDelete = await prisma.userSocket.findMany({
 					where: {
@@ -39,7 +36,6 @@ export const jobs = createTRPCRouter({
 
 				const userSocketIds = userSocketsToDelete.map(u => u.id)
 
-				console.log(`Found ${userSocketIds.length} users matching the criteria`)
 
 				// Delete related Collectibles
 				const deletedCollectibles = await prisma.collectible.deleteMany({
@@ -51,9 +47,6 @@ export const jobs = createTRPCRouter({
 						}
 					}
 				})
-
-				console.log(`Deleted ${deletedCollectibles.count} related Collectibles`)
-
 				// Delete CollectibleCaches
 				const deletedCaches = await prisma.collectibleCache.deleteMany({
 					where: {
@@ -62,9 +55,6 @@ export const jobs = createTRPCRouter({
 						}
 					}
 				})
-
-				console.log(`Deleted ${deletedCaches.count} CollectibleCaches`)
-
 				// Delete UserSockets
 				const deletedUsers = await prisma.userSocket.deleteMany({
 					where: {
