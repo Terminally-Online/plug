@@ -8,12 +8,6 @@ import { Prisma } from "@prisma/client";
 const CLEANUP_OLDER_THAN_DAYS = 7;
 
 export const jobs = createTRPCRouter({
-  testAuth: apiKeyProcedure.query(() => {
-    return {
-      message: "API key authentication successful!",
-      timestamp: new Date().toISOString(),
-    };
-  }),
 
   cleanupAnonymousUsers: apiKeyProcedure.mutation(async ({ ctx }) => {
     const { db } = ctx;
