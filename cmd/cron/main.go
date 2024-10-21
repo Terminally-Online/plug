@@ -1,13 +1,21 @@
 package main
 
 import (
-	scheduler "github.com/robfig/cron"
 	"log"
 	"solver/cron"
+	"solver/utils"
 	"time"
+
+	"github.com/joho/godotenv"
+	scheduler "github.com/robfig/cron"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
+	}
+
 	location, err := time.LoadLocation("America/New_York")
 	if err != nil {
 		panic(err)

@@ -7,7 +7,7 @@ import (
 	"solver/utils"
 )
 
-type AnonymousUserPurgeResponse struct { 
+type CollectibleMetadataResponse struct { 
     Result struct {
         Data struct {
             JSON struct {
@@ -17,8 +17,9 @@ type AnonymousUserPurgeResponse struct {
     } `json:"result"`
 }
 
-func AnonymousUsers() {
-    url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.anonymous")
+func CollectibleMetadata() {
+    url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.collectibleMetadata")
+    log.Println(url)
     _, err := utils.MakeHTTPRequest(
         url,
         "POST",
@@ -28,7 +29,7 @@ func AnonymousUsers() {
         },
         nil,
         nil,
-        AnonymousUserPurgeResponse{},
+        CollectibleMetadataResponse{},
     )
     if err != nil {
         log.Println(err.Error())
