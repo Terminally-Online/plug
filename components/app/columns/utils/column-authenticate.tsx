@@ -174,8 +174,7 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 	const isLoading = connection.isLoading && connection.variables?.connector === connector
 	const isRecent = connector.id === useRecentConnectorId()
 	const isDetected = connector.isInjected as boolean
-	// TODO(#389): Remove isIFrame check when we can update wagmi to version >= 2.9.4
-	const isDisabled = Boolean(connection?.isLoading && !isIFramed())
+	const isDisabled = Boolean(connection?.isLoading)
 	const icon = CONNECTOR_ICON_OVERRIDE_MAP[connector.id] ?? connector.icon
 
 	const Badge = () => {
