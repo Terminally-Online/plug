@@ -16,7 +16,8 @@ export const env = createEnv({
 		DOCKER_CONTAINER_NAME: z.string().optional().default("postgres"),
 		DOCKER_DATABASE_NAME: z.string().optional().default("postgres"),
 		DOCKER_DATABASE_PORT: z.string().optional().default("5434"),
-		DOCKER_DATABASE_PASSWORD: z.string().optional().default("postgres")
+		DOCKER_DATABASE_PASSWORD: z.string().optional().default("postgres"),
+		ADMIN_API_KEY: z.string()
 	},
 	client: {
 		NEXT_PUBLIC_APP_URL: z.string().optional().default("http://localhost:3000"),
@@ -40,6 +41,7 @@ export const env = createEnv({
 		DOCKER_DATABASE_NAME: process.env.DOCKER_DATABASE_NAME,
 		DOCKER_DATABASE_PORT: process.env.DOCKER_DATABASE_PORT,
 		DOCKER_DATABASE_PASSWORD: process.env.DOCKER_DATABASE_PASSWORD,
+		ADMIN_API_KEY: process.env.ADMIN_API_KEY,
 		NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 		NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 		NEXT_PUBLIC_EARLY_ACCESS: process.env.NEXT_PUBLIC_EARLY_ACCESS,
