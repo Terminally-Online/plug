@@ -51,51 +51,6 @@ export const Button: FC<Props> = ({
 				className={cn(variants[variant], sizings[sizing], base, className)}
 				disabled={disabled}
 			>
-				{variant === "primary" && (
-					<>
-						<div
-							className={cn(
-								"absolute inset-0",
-								sizing === "sm" && "shadow-[inset_-2px_0_2px_0_rgba(255,255,255,.3)]",
-								sizing !== "sm" && "shadow-[inset_-4px_0_4px_0_rgba(255,255,255,.3)]",
-								sizing === "sm" && "rounded-sm",
-								sizing === "md" && "rounded-md",
-								sizing === "lg" && "rounded-lg"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0",
-								sizing === "sm" && "shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)]",
-								sizing !== "sm" && "shadow-[inset_4px_0_4px_0_rgba(255,255,255,.3)]",
-								sizing === "sm" && "rounded-sm",
-								sizing === "md" && "rounded-md",
-								sizing === "lg" && "rounded-lg"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0",
-								sizing === "sm" && "shadow-[inset_0_2px_2px_0_rgba(255,255,255,.3)]",
-								sizing !== "sm" && "shadow-[inset_0_4px_4px_0_rgba(255,255,255,.3)]",
-								sizing === "sm" && "rounded-sm",
-								sizing === "md" && "rounded-md",
-								sizing === "lg" && "rounded-lg"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0",
-								sizing === "sm" && "shadow-[inset_0_-2px_2px_0_rgba(255,255,255,.3)]",
-								sizing !== "sm" && "shadow-[inset_0_-4px_4px_0_rgba(255,255,255,.3)]",
-								sizing === "sm" && "rounded-sm",
-								sizing === "md" && "rounded-md",
-								sizing === "lg" && "rounded-lg"
-							)}
-						/>
-					</>
-				)}
-
 				{children}
 			</button>
 		)

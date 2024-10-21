@@ -57,31 +57,6 @@ const ConsoleSidebarAction: FC<
 						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
 				)}
 			>
-				{isPrimary && (
-					<>
-						<div
-							className={cn(
-								"absolute inset-0 rounded-sm shadow-[inset_-2px_0_2px_0_rgba(255,255,255,.3)]"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0 rounded-sm shadow-[inset_2px_0_2px_0_rgba(255,255,255,.3)]"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0 rounded-sm shadow-[inset_0_2px_2px_0_rgba(255,255,255,.3)]"
-							)}
-						/>
-						<div
-							className={cn(
-								"absolute inset-0 rounded-sm shadow-[inset_0_-2px_2px_0_rgba(255,255,255,.3)]"
-							)}
-						/>
-					</>
-				)}
-
 				{icon}
 			</div>
 
