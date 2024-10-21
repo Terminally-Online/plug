@@ -405,14 +405,12 @@ const findPositions = async (id: string, search: string = "") => {
  * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
  */
 export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["ethereum"]) => {
-	console.log("getPositions", address, socketAddress, search, chains)
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})
 
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 	if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
-	console.log("getPositions", address, socketAddress, search, chains)
 
 	// NOTE: The user can retrieve positions for their own address as well as the
 	// address of their socket. To power this, we store both caches relative to the user
