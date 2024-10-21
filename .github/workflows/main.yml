@@ -63,11 +63,11 @@ jobs:
                   NEXT_PUBLIC_ALCHEMY_KEY: github-action
 
             - name: 🔄 Install Vercel CLI
-              if: github.ref === 'refs/heads/main'
+              if: github.ref == 'refs/heads/main'
               run: pnpm install --global vercel@latest
 
             - name: 🔗 Pull Vercel Environment Information
-              if: github.ref === 'refs/heads/main'
+              if: github.ref == 'refs/heads/main'
               run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
