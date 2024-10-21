@@ -12,13 +12,13 @@ type Balances = RouterOutputs["socket"]["balances"]
 const CACHE_DURATION = 5 * 60 * 1000
 
 const collectiblesFamily = atomFamily((address: string) =>
-	atomWithStorage<Balances["collectibles"]>(`plug.positions.collectibles.${address}`, [])
+	atomWithStorage<Balances["collectibles"]>(`plug.collectibles.${address}`, [])
 )
 const positionsFamily = atomFamily((address: string) =>
-	atomWithStorage<Balances["positions"]>(`plug.positions.positions.${address}`, { tokens: [], protocols: [] })
+	atomWithStorage<Balances["positions"]>(`plug.positions.${address}`, { tokens: [], protocols: [] })
 )
 const lastUpdateCacheFamily = atomFamily((address: string) =>
-	atomWithStorage<{ positions: number; collectibles: number }>(`plug.positions.lastUpdated.${address}`, {
+	atomWithStorage<{ positions: number; collectibles: number }>(`plug.lastUpdated.${address}`, {
 		positions: 0,
 		collectibles: 0
 	})

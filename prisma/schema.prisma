@@ -166,7 +166,7 @@ model Workflow {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    socket   UserSocket @relation(fields: [socketId], references: [id])
+    socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String
 }
 
@@ -426,7 +426,7 @@ model Collectible {
     collection        Collection       @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
     collectionAddress String
     collectionChain   String
-    cache             CollectibleCache @relation(fields: [cacheId], references: [id])
+    cache             CollectibleCache @relation(fields: [cacheId], references: [id], onDelete: Cascade)
     cacheId           String
 
     // ---------------------------------------------------------------------------

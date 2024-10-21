@@ -34,14 +34,13 @@ export const SocketAssets: FC<
 				index={index}
 				isEmpty={[collectibles, tokens, protocols].every(basket => basket.length === 0)}
 			/>
-
 			{isAnonymous === false && (
 				<>
-					{hasTokens && tokens.length > 0 && (
+					{hasTokens && tokens && tokens.length > 0 && (
 						<SocketTokenList className="h-max" index={index} expanded={true} isColumn={false} />
 					)}
 
-					{hasPositions && protocols.length > 0 && (
+					{hasPositions && protocols && protocols.length > 0 && (
 						<>
 							<Header
 								size="sm"
@@ -52,7 +51,7 @@ export const SocketAssets: FC<
 						</>
 					)}
 
-					{hasCollectibles && collectibles.length > 0 && (
+					{hasCollectibles && collectibles && collectibles.length > 0 && (
 						<>
 							<Header
 								size="sm"
