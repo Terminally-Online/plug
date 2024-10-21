@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 import { z } from "zod"
 
-import { getAPIKey} from "@/lib"
+import { getAPIKey } from "@/lib"
 import { getCollectibles, getPositions } from "@/lib/functions/zerion"
 
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"

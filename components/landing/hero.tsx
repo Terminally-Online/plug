@@ -66,7 +66,8 @@ export const Hero = () => {
 									delay: 0.15
 								}}
 							>
-								Designed to let you do more with less, Plug gives you a single interface to manage, composte, and execute all your transactions and holdings in one place.
+								Designed to let you do more with less, Plug gives you a single interface to manage,
+								composte, and execute all your transactions and holdings in one place.
 							</motion.p>
 
 							<Button

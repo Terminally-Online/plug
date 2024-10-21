@@ -1,3 +1,4 @@
+import { NextApiRequest } from "next"
 import { type Session } from "next-auth"
 
 import { getServerAuthSession } from "@/server/auth"
@@ -11,13 +12,15 @@ import { ZodError } from "zod"
 
 interface CreateContextOptions {
 	session: Session | null
+	headers?: NextApiRequest["headers"]
 }
 
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createInnerTRPCContext = ({ session, headers }: CreateContextOptions) => {
 	return {
-		session: opts.session,
+		session,
 		db,
-		emitter
+		emitter,
+		headers
 	}
 }
 
@@ -25,13 +28,10 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 	const { req, res } = opts
 	const session = await getServerAuthSession({ req, res })
 
-	return {
-		...createInnerTRPCContext({
-			session
-		}),
-		req, // Add req to context for API key access
-		res
-	}
+	return createInnerTRPCContext({
+		session,
+		headers: req.headers
+	})
 }
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -118,7 +118,14 @@ export const protectedProcedure = t.procedure.use(
 // Add the new API key procedure
 export const apiKeyProcedure = t.procedure.use(
 	t.middleware(({ ctx, next }) => {
-		const apiKey = ctx.req.headers['x-api-key']
+		if (!ctx.headers) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "No headers found"
+			})
+		}
+
+		const apiKey = ctx.headers["x-api-key"]
 
 		if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
 			throw new TRPCError({
@@ -129,7 +136,6 @@ export const apiKeyProcedure = t.procedure.use(
 
 		return next({
 			ctx: {
-				// Add any additional context you might need
 				isAdmin: true
 			}
 		})
