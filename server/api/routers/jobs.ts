@@ -1,4 +1,4 @@
-// server/api/routers/admin.ts
+// server/api/routers/jobs.ts
 import { z } from "zod";
 import { apiKeyProcedure, createTRPCRouter } from "../trpc";
 import { TRPCError } from "@trpc/server";
@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client";
 // Set the cleanup period to 7 days
 const CLEANUP_OLDER_THAN_DAYS = 7;
 
-export const admin = createTRPCRouter({
+export const jobs = createTRPCRouter({
   testAuth: apiKeyProcedure.query(() => {
     return {
       message: "API key authentication successful!",
