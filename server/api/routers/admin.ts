@@ -110,35 +110,4 @@ export const admin = createTRPCRouter({
       }
     });
   }),
-
-  checkAnonymousUsers: apiKeyProcedure.query(async ({ ctx }) => {
-    const totalUsers = await ctx.db.userSocket.count();
-    const anonymousUsers = await ctx.db.userSocket.count({
-      where: {
-        id: {
-          startsWith: 'anonymous-'
-        }
-      }
-    });
-    const oldestAnonymousUser = await ctx.db.userSocket.findFirst({
-      where: {
-        id: {
-          startsWith: 'anonymous-'
-        }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      },
-      select: {
-        id: true,
-        createdAt: true
-      }
-    });
-
-    return {
-      totalUsers,
-      anonymousUsers,
-      oldestAnonymousUser
-    };
-  }),
 });
