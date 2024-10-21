@@ -46,31 +46,48 @@ jobs:
             - name: 📦 Install dependencies
               run: pnpm install
 
-            - name: Install Vercel CLI
+            - name: 🔥 Build Next (Not Deploying)
+              if: github.ref != 'refs/heads/main'
+              run: pnpm build
+              env:
+                  ENCRYPTION_KEY: github-action
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5434/postgres
+                  NEXTAUTH_URL: http://localhost:3000
+                  NEXTAUTH_SECRET: github-action
+                  OPENSEA_KEY: github-action
+                  ZERION_KEY: github-action
+                  NEXT_PUBLIC_EARLY_ACCESS: false
+                  NEXT_PUBLIC_APP_URL: http://localhost:3000
+                  NEXT_PUBLIC_WS_URL: ws://localhost:3001
+                  NEXT_PUBLIC_WALLETCONNECT_ID: github-action
+                  NEXT_PUBLIC_ALCHEMY_KEY: github-action
+
+            - name: 🔄 Install Vercel CLI
+              if: github.ref === 'refs/heads/main'
               run: pnpm install --global vercel@latest
 
-            - name: Pull Vercel Environment Information
-              if: github.ref != 'refs/heads/main'
+            - name: 🔗 Pull Vercel Environment Information
+              if: github.ref === 'refs/heads/main'
               run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            - name: Build Project Artifacts
-              if: github.ref != 'refs/heads/main'
+            - name: 🏗️ Build Project Artifacts
+              if: github.ref == 'refs/heads/main'
               run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            - name: Deploy Project Artifacts to Vercel
+            - name: 🚀 Deploy Project Artifacts to Vercel
               if: github.ref == 'refs/heads/main'
               run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            - name: Purge CloudFlare
+            - name: ☢️  Purge CloudFlare
               if: github.ref == 'refs/heads/main'
               run: |
                   curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
