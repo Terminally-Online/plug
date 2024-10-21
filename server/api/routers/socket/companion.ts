@@ -1,7 +1,5 @@
 import { TRPCError } from "@trpc/server"
 
-import { z } from "zod"
-
 import { anonymousProtectedProcedure, createTRPCRouter } from "../../trpc"
 
 export const companion = createTRPCRouter({
