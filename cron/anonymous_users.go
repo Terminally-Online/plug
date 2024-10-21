@@ -25,7 +25,7 @@ func AnonymousUsers() {
 		Timeout: 10 * time.Second,
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", apiURL, "jobs/anonymous"), nil)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", apiURL, "jobs.anonymous"), nil)
 	if err != nil {
 		log.Printf("Error creating request: %v", err)
 		return

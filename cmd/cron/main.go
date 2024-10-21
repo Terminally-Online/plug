@@ -1,27 +1,30 @@
 package main
 
 import (
-	"time"
 	scheduler "github.com/robfig/cron"
-    "solver/cron"
+	"log"
+	"solver/cron"
+	"time"
 )
 
-func main() { 
-    location, err := time.LoadLocation("America/New_York")
-    if err != nil {
-        panic(err)
-    }
-    cronJob := scheduler.NewWithLocation(location)
+func main() {
+	location, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		panic(err)
+	}
+	cronJob := scheduler.NewWithLocation(location)
 
-    for _, job := range cron.CronJobs {
-        err = cronJob.AddFunc(job.Schedule, job.Job)
-        if err != nil {
-            panic(err)
-        }
-    }
+	for _, job := range cron.CronJobs {
+		err = cronJob.AddFunc(job.Schedule, job.Job)
+		if err != nil {
+			panic(err)
+		}
+	}
 
-    cronJob.Start()
+	log.Printf("Running %d jobs...", len(cron.CronJobs))
 
-    // NOTE: Keeps the process running until it is killed.
-    select {}
+	cronJob.Start()
+
+	// NOTE: Keeps the process running until it is killed.
+	select {}
 }
