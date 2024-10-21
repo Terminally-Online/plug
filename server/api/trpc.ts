@@ -25,9 +25,13 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 	const { req, res } = opts
 	const session = await getServerAuthSession({ req, res })
 
-	return createInnerTRPCContext({
-		session
-	})
+	return {
+		...createInnerTRPCContext({
+			session
+		}),
+		req, // Add req to context for API key access
+		res
+	}
 }
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
