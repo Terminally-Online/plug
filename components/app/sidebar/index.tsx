@@ -2,20 +2,7 @@ import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { motion } from "framer-motion"
-import {
-	Cat,
-	ChartBar,
-	Eye,
-	LogOut,
-	PanelRightOpen,
-	Plus,
-	ScanFace,
-	Search,
-	SearchIcon,
-	User,
-	Wallet,
-	X
-} from "lucide-react"
+import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, Wallet, X } from "lucide-react"
 
 import {
 	Avatar,
@@ -30,8 +17,7 @@ import {
 import { usePlugs } from "@/contexts"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { useSocket } from "@/state"
-import { useSidebar } from "@/state/sidebar"
+import { useSidebar, useSocket } from "@/state"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
@@ -40,37 +26,35 @@ const ConsoleSidebarAction: FC<
 		isPrimary?: boolean
 		isActive?: boolean
 	}
-> = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => {
-	return (
+> = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
+	<div
+		className={cn(
+			"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-4 transition-all duration-200 ease-in-out",
+			className
+		)}
+		{...props}
+	>
 		<div
 			className={cn(
-				"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-4 transition-all duration-200 ease-in-out",
-				className
+				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
+				isActive && "bg-grayscale-0 hover:bg-white",
+				isPrimary &&
+					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
 			)}
-			{...props}
 		>
-			<div
-				className={cn(
-					"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
-					isActive && "bg-grayscale-0 hover:bg-white",
-					isPrimary &&
-						"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
-				)}
-			>
-				{icon}
-			</div>
-
-			<p
-				className={cn(
-					"mr-auto whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out",
-					isExpanded === false ? "hidden" : "group-hover:opacity-80"
-				)}
-			>
-				{isExpanded ? title : "."}
-			</p>
+			{icon}
 		</div>
-	)
-}
+
+		<p
+			className={cn(
+				"mr-auto whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out",
+				isExpanded === false ? "hidden" : "group-hover:opacity-80"
+			)}
+		>
+			{isExpanded ? title : "."}
+		</p>
+	</div>
+)
 
 const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
