@@ -53,7 +53,7 @@
 		"i18next": "23.16.0",
 		"jiti": "^2.3.3",
 		"jotai": "^2.9.3",
-		"lucide-react": "^0.452.0",
+		"lucide-react": "^0.453.0",
 		"next": "14.2.15",
 		"next-auth": "^4.24.7",
 		"next-pwa": "^5.6.0",
