@@ -118,16 +118,3 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-// func setupRouter() *mux.Router {
-// 	r := mux.NewRouter()
-// 	r.HandleFunc("/paymaster", handleGasCompensation).Methods("GET", "POST")
-// 	return r
-// }
-//
-// func main() {
-// 	router := setupRouter()
-// 	log.Println("Starting server on :8080")
-// 	log.Fatal(http.ListenAndServe(":8080", router))
-// }
-//
