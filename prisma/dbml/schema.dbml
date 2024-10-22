@@ -200,6 +200,7 @@ Table CollectibleMetadata {
   collectionChain String [not null]
   traits Json[] [not null]
   color String
+  collectible Collectible [not null]
 
   indexes {
     (tokenId, collectionAddress, collectionChain) [pk]
@@ -217,6 +218,10 @@ Table Collectible {
   imageUrl String
   videoUrl String
   isSpam Boolean [not null]
+  collectibleMetadata CollectibleMetadata
+  metadataTokenId String
+  metadataAddress String
+  metadataChain String
   collection Collection [not null]
   collectionAddress String [not null]
   collectionChain String [not null]
@@ -279,6 +284,8 @@ Ref: Position.protocolName > Protocol.name [delete: Cascade]
 Ref: Position.cacheId > PositionCache.id [delete: Cascade]
 
 Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
+
+Ref: Collectible.(metadataTokenId, metadataAddress, metadataChain) > CollectibleMetadata.(tokenId, collectionAddress, collectionChain)
 
 Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, chain)
 
