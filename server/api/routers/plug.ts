@@ -183,8 +183,6 @@ export const plug = createTRPCRouter({
 	add: anonymousProtectedProcedure
 		.input(z.object({ index: z.number().optional(), from: z.string().optional() }).optional())
 		.mutation(async ({ input, ctx }) => {
-			console.log("in add", input)
-
 			try {
 				const plug = await ctx.db.workflow.create({
 					data: {
