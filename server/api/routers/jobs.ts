@@ -77,17 +77,18 @@ export const jobs = createTRPCRouter({
 		})
 	}),
 	simulateNext: apiKeyProcedure
-		.input(z.object({ count: z.number().optional().default(50) }))
-		.mutation(async ({ ctx }) => {
+		.input(z.object({ count: z.number() }).nullish())
+		.mutation(async ({ input, ctx }) => {
 			const now = new Date()
 
-			const dueWorkflows = await ctx.db.$transaction(async tx => {
+			return await ctx.db.$transaction(async tx => {
 				const workflows = await tx.workflow.findMany({
 					where: {
 						nextSimulationAt: {
 							lte: now
 						}
-					}
+					},
+					take: input?.count ?? 100
 				})
 
 				await Promise.all(
@@ -103,7 +104,5 @@ export const jobs = createTRPCRouter({
 
 				return workflows
 			})
-
-			return dueWorkflows
 		})
 })
