@@ -1,3 +1,5 @@
+import { TEMPORARY_ADDRESS } from "@/server/api/routers/socket"
+
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
@@ -26,11 +28,13 @@ const seedSockets = async () => {
 		}
 	]
 
+	const socketAddress = TEMPORARY_ADDRESS
+
 	for (const socket of DEFAULT_SOCKETS) {
 		await prisma.userSocket.upsert({
 			where: { id: socket.address },
 			update: {
-				socketAddress: socket.address,
+				socketAddress,
 				identity: {
 					upsert: {
 						create: {
@@ -60,7 +64,7 @@ const seedSockets = async () => {
 			},
 			create: {
 				id: socket.address,
-				socketAddress: socket.address,
+				socketAddress,
 				identity: {
 					create: {
 						ens: {

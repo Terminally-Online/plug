@@ -11,7 +11,7 @@ import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { balances } from "./balances"
 import { companion } from "./companion"
 
-const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
+export const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
 
 const client = createClient(mainnet.id)
