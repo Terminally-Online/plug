@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server"
+
 import { z } from "zod"
 
 import { getMetadataForToken } from "@/lib/opensea/metadata"
@@ -53,5 +55,55 @@ export const jobs = createTRPCRouter({
 			)
 
 			return results
+		}),
+	simulate: apiKeyProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+		return await ctx.db.$transaction(async tx => {
+			const workflow = await tx.workflow.findUnique({
+				where: {
+					id: input.id
+				}
+			})
+
+			if (workflow === null) throw new TRPCError({ code: "NOT_FOUND" })
+
+			return await tx.workflow.update({
+				where: {
+					id: workflow.id
+				},
+				data: {
+					nextSimulationAt: new Date(Date.now() + workflow.frequency * 60 * 1000)
+				}
+			})
+		})
+	}),
+	simulateNext: apiKeyProcedure
+		.input(z.object({ count: z.number().optional().default(50) }))
+		.mutation(async ({ ctx }) => {
+			const now = new Date()
+
+			const dueWorkflows = await ctx.db.$transaction(async tx => {
+				const workflows = await tx.workflow.findMany({
+					where: {
+						nextSimulationAt: {
+							lte: now
+						}
+					}
+				})
+
+				await Promise.all(
+					workflows.map(workflow =>
+						tx.workflow.update({
+							where: { id: workflow.id },
+							data: {
+								nextSimulationAt: new Date(now.getTime() + workflow.frequency * 60 * 1000)
+							}
+						})
+					)
+				)
+
+				return workflows
+			})
+
+			return dueWorkflows
 		})
 })

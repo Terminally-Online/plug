@@ -155,19 +155,62 @@ model Workflow {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name             String   @default("Untitled Plug")
-    isCurated        Boolean  @default(false)
-    isPrivate        Boolean  @default(false)
-    actions          String   @default("[]")
+    name             String    @default("Untitled Plug")
+    isCurated        Boolean   @default(false)
+    isPrivate        Boolean   @default(false)
+    actions          String    @default("[]")
     color            String
     tags             String[]
     workflowForkedId String?
+    frequency        Int       @default(10)
+    nextSimulationAt DateTime  @default(now())
 
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
     socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId String
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    simulations Simulation[]
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@index([nextSimulationAt])
+}
+
+model Simulation {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    status      String
+    result      Json?
+    error       String?
+    gasEstimate Float?
+    startedAt   DateTime?
+    completedAt DateTime?
+
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflowId String
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@index([workflowId])
+    @@index([status])
 }
 
 model TokenPrice {
@@ -419,9 +462,9 @@ model Collectible {
     // One-to-one
     // ---------------------------------------------------------------------------
     collectibleMetadata CollectibleMetadata? @relation(fields: [metadataTokenId, metadataAddress, metadataChain], references: [tokenId, collectionAddress, collectionChain])
-    metadataTokenId String?
-    metadataAddress String?
-    metadataChain String?
+    metadataTokenId     String?
+    metadataAddress     String?
+    metadataChain       String?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

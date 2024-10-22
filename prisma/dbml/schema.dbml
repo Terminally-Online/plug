@@ -74,8 +74,25 @@ Table Workflow {
   color String [not null]
   tags String[] [not null]
   workflowForkedId String
+  frequency Int [not null, default: 10]
+  nextSimulationAt DateTime [default: `now()`, not null]
   socket UserSocket [not null]
   socketId String [not null]
+  simulations Simulation [not null]
+}
+
+Table Simulation {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  status String [not null]
+  result Json
+  error String
+  gasEstimate Float
+  startedAt DateTime
+  completedAt DateTime
+  workflow Workflow [not null]
+  workflowId String [not null]
 }
 
 Table TokenPrice {
@@ -270,6 +287,8 @@ Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
+
+Ref: Simulation.workflowId > Workflow.id [delete: Cascade]
 
 Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 
