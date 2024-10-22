@@ -7,11 +7,16 @@ import (
 	"solver/utils"
 )
 
-type CollectibleMetadataResponse struct { 
+type CollectibleMetadataResponse struct {
     Result struct {
         Data struct {
-            JSON struct {
-                Count int `json:"count"`
+            JSON []struct {
+                Success bool `json:"success"`
+                Token   struct {
+                    Address string `json:"address"`
+                    Chain   string `json:"chain"`
+                    TokenId string `json:"tokenId"`
+                } `json:"token"`
             } `json:"json"`
         } `json:"data"`
     } `json:"result"`
@@ -19,7 +24,6 @@ type CollectibleMetadataResponse struct {
 
 func CollectibleMetadata() {
     url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.collectibleMetadata")
-    log.Println(url)
     _, err := utils.MakeHTTPRequest(
         url,
         "POST",

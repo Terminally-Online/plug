@@ -3,10 +3,11 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"math"
 	"net/http"
+	"solver/utils"
 	"strconv"
+	"strings"
 )
 
 type GasCompensationRequest struct {
@@ -15,9 +16,7 @@ type GasCompensationRequest struct {
 	GasPrice int64  `json:"gas_price"`
 }
 
-type GasCompensationResponse map[string]GasDetails
-
-type GasDetails struct {
+type GasCompensationResponse map[string]struct {
 	Amount string `json:"amount"`
 	Value  string `json:"value"`
 }
@@ -30,69 +29,74 @@ type PriceResponse struct {
 }
 
 const (
-	NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+	ETHEREUM = "ethereum:0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 )
 
-func fetchTokenPrices(token string) (float64, float64, int, error) {
-	ethAddress := fmt.Sprintf("ethereum:%s", NATIVE_TOKEN_ADDRESS)
-	url := fmt.Sprintf("https://coins.llama.fi/prices/current/%s,%s?searchWidth=4h", ethAddress, token)
-
-	resp, err := http.Get(url)
+func fetchTokenPrices(tokens ...string) (map[string]struct {
+	Price    float64
+	Decimals int
+}, error) {
+	url := fmt.Sprintf("https://coins.llama.fi/prices/current/%s,%s?searchWidth=4h", ETHEREUM, strings.Join(tokens, ","))
+	response, err := utils.MakeHTTPRequest(
+		url,
+		"GET",
+		map[string]string{
+			"Content-Type": "application/json",
+		},
+		nil,
+		nil,
+		PriceResponse{},
+	)
 	if err != nil {
-		return 0, 0, 0, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, 0, 0, err
-	}
-
-	var priceResp PriceResponse
-	err = json.Unmarshal(body, &priceResp)
-	if err != nil {
-		return 0, 0, 0, err
+		return nil, err
 	}
 
-	ethPrice := priceResp.Coins[ethAddress].Price
-	tokenPrice := priceResp.Coins[token].Price
-	tokenDecimals := priceResp.Coins[token].Decimals
+	result := make(map[string]struct {
+		Price    float64
+		Decimals int
+	})
 
-	return ethPrice, tokenPrice, tokenDecimals, nil
+	for _, token := range append(tokens, ETHEREUM) {
+		result[token] = struct {
+			Price    float64
+			Decimals int
+		}{
+			Price:    response.Coins[token].Price,
+			Decimals: response.Coins[token].Decimals,
+		}
+	}
+
+	return result, nil
 }
 
 func GetPayment(w http.ResponseWriter, r *http.Request) {
 	var req GasCompensationRequest
 
-	if r.Method == "GET" {
-		gas, err := strconv.ParseInt(r.URL.Query().Get("gas"), 10, 64)
-		if err != nil {
-			http.Error(w, "Invalid gas", http.StatusBadRequest)
-			return
-		}
-		gasPrice, err := strconv.ParseInt(r.URL.Query().Get("gas_price"), 10, 64)
-		if err != nil {
-			http.Error(w, "Invalid gas_price", http.StatusBadRequest)
-			return
-		}
-		req = GasCompensationRequest{
-			Token:    r.URL.Query().Get("token"),
-			Gas:      gas,
-			GasPrice: gasPrice,
-		}
-	} else {
-		err := json.NewDecoder(r.Body).Decode(&req)
-		if err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
+	gas, err := strconv.ParseInt(r.URL.Query().Get("gas"), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid gas", http.StatusBadRequest)
+		return
+	}
+	gasPrice, err := strconv.ParseInt(r.URL.Query().Get("gas_price"), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid gas_price", http.StatusBadRequest)
+		return
+	}
+	req = GasCompensationRequest{
+		Token:    r.URL.Query().Get("token"),
+		Gas:      gas,
+		GasPrice: gasPrice,
 	}
 
-	ethPrice, tokenPrice, tokenDecimals, err := fetchTokenPrices(req.Token)
+	prices, err := fetchTokenPrices(req.Token)
 	if err != nil {
 		http.Error(w, "Error fetching token prices: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	ethPrice := prices[ETHEREUM].Price
+	tokenPrice := prices[req.Token].Price
+	tokenDecimals := prices[req.Token].Decimals
 
 	gasPriceWei := float64(req.GasPrice) * 1e9
 	ethAmountWei := float64(req.Gas) * gasPriceWei
@@ -101,7 +105,7 @@ func GetPayment(w http.ResponseWriter, r *http.Request) {
 	tokenAmount := (ethUSD / tokenPrice) * math.Pow10(tokenDecimals)
 
 	resp := GasCompensationResponse{
-		fmt.Sprintf("ethereum:%s", NATIVE_TOKEN_ADDRESS): {
+		ETHEREUM: {
 			Amount: fmt.Sprintf("%.0f", ethAmountWei),
 			Value:  fmt.Sprintf("%.2f", ethUSD),
 		},
