@@ -33,7 +33,7 @@ export const Accordion: FC<Props> = ({
 	return (
 		<button
 			className={cn(
-				"group relative flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 outline-none",
+				"group flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-0 outline-none",
 				expanded && "bg-grayscale-0 hover:bg-white",
 				loading
 					? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
@@ -53,9 +53,9 @@ export const Accordion: FC<Props> = ({
 				{accordion && <AccordionContent expanded={expanded}>{accordion}</AccordionContent>}
 			</div>
 
-			<div className="absolute inset-0 rounded-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
-			<div className="absolute inset-0 rounded-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
-			<div className="absolute inset-0 rounded-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
+			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
+			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
+			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
 		</button>
 	)
 }

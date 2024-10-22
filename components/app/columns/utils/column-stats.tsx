@@ -1,8 +1,8 @@
 import { useSession } from "next-auth/react"
 import React, { FC, useState } from "react"
 
-import { Avatar, Button, Counter, Image } from "@/components"
-import { cn, formatAddress } from "@/lib"
+import { Button, Counter } from "@/components"
+import { cn } from "@/lib"
 import { useSocket } from "@/state"
 
 const stats = [
@@ -95,9 +95,8 @@ const ProfileStats = () => {
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row gap-2">
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[0] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[0] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							}`}
 						onClick={() => handleToggle(0)}
 					>
 						<p className="text-[32px] font-bold">
@@ -109,9 +108,8 @@ const ProfileStats = () => {
 						</p>
 					</div>
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[1] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[1] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							}`}
 						onClick={() => handleToggle(1)}
 					>
 						<p className="text-[32px] font-bold">
@@ -125,9 +123,8 @@ const ProfileStats = () => {
 				</div>
 				<div className="flex flex-row gap-2">
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[2] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[2] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							}`}
 						onClick={() => handleToggle(2)}
 					>
 						<p className="text-[32px] font-bold">
@@ -139,9 +136,8 @@ const ProfileStats = () => {
 						</p>
 					</div>
 					<div
-						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[3] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
-						}`}
+						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${toggledStats[3] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							}`}
 						onClick={() => handleToggle(3)}
 					>
 						<p className="text-[32px] font-bold">
@@ -186,7 +182,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 	return (
 		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
 			<ProfileStats />
-			<Button className="w-full" onClick={() => {}}>
+			<Button className="w-full" onClick={() => { }}>
 				Share Link
 			</Button>
 		</div>
