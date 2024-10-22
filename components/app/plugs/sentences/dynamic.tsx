@@ -69,13 +69,11 @@ export const DynamicFragment: FC<{
 	const handleValue = (value: Value) => {
 		const hasChanged =
 			value instanceof Object && actions[actionIndex].values[parentIndex] instanceof Object
-				? // @ts-ignore -- Don't know why this is necessary or how to resolve it, but it is.
-					value.value !== actions[index].values[parentIndex].value
-				: value !== actions[actionIndex].values[parentIndex]
-
-		// If the value is the same as the current value, then we don't need
-		// to update the database with a non-changing value.
-		if (hasChanged === true)
+				? // @ts-ignore
+				  value.value !== actions[actionIndex].values[parentIndex].value
+				: value !== actions[actionIndex].values[parentIndex];
+	
+		if (hasChanged) {
 			handle.action.edit({
 				id: plug?.id,
 				actions: JSON.stringify(
@@ -83,28 +81,41 @@ export const DynamicFragment: FC<{
 						...action,
 						values: action.values.map((actionValue, valueIndex) => {
 							if (actionIndex === nestedActionIndex) {
-								// If it is the action and fragment we are editing, return
-								// the new value and save it to the database.
-								if (valueIndex === parentIndex) return value
-
-								// If it is the action, but another fragment depends on the one that is changing,
-								// then we need to set the value to undefined if the value is actually changing.
-								// If the value is not changing, then we can just return the original value.
-								const [childIndex] = getIndexes(dynamic[actionIndex][valueIndex])
-
-								if (parentIndex === childIndex) return undefined
+								// If this is the value being changed
+								if (valueIndex === parentIndex) return value;
+	
+								// Check for dependencies using dynamic fragments
+								const fragment = dynamic[actionIndex][valueIndex];
+								if (!fragment) return actionValue;
+	
+								// Get dependency info for this value
+								const [thisChildIndex, thisParentIndex] = getIndexes(fragment);
+	
+								// Reset this value if:
+								// 1. It directly depends on the changed value (parentIndex matches childIndex)
+								// 2. It depends on any value that we're resetting (recursive dependency)
+								const shouldReset = 
+									// Direct dependency on the changed value
+									parentIndex === thisChildIndex ||
+									// Indirect dependency through another value that's being reset
+									action.values.some((_, idx) => {
+										if (idx === valueIndex) return false;
+										const [depChildIndex] = getIndexes(dynamic[actionIndex][idx]);
+										return depChildIndex === thisChildIndex && 
+											   (idx === parentIndex || action.values[idx] === undefined);
+									});
+	
+								return shouldReset ? undefined : actionValue;
 							}
-
-							// If the action is not the one we are editing, return the
-							// original value that is already in the array.
-							return actionValue
-						})
+	
+							return actionValue;
+						}),
 					}))
-				)
-			})
-
-		// If the value selected was from a list of options, close the frame.
-		if (value instanceof Object) frame()
+				),
+			});
+		}
+	
+		if (value instanceof Object) frame();
 	}
 
 	if (plug === undefined || actions === undefined) return null
