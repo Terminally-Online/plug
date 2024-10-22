@@ -137,14 +137,13 @@ export const DynamicFragment: FC<{
 
 			<Frame
 				index={index}
-				className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
 				icon={
 					<Image
 						src={category.image}
 						alt={action.categoryName}
 						width={24}
 						height={24}
-						className="rounded-md"
+						className="rounded-sm"
 					/>
 				}
 				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
@@ -182,13 +181,12 @@ export const DynamicFragment: FC<{
 										{formatTitle(option.label)}
 									</div>
 
-									<Button
-										variant="secondary"
-										className="ml-auto p-1 group-hover:bg-grayscale-100"
+									<div
+										className="ml-auto p-1 group-hover:bg-grayscale-100 border-[1px] border-grayscale-100 rounded-sm flex items-center justify-center"
 										onClick={() => handleValue(option)}
 									>
-										<ChevronRight size={14} className="float-right" />
-									</Button>
+										<ChevronRight size={14} className="opacity-40" />
+									</div>
 								</button>
 							))}
 						</div>
