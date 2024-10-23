@@ -23,7 +23,7 @@ func AnonymousUsers() {
         url,
         "POST",
         map[string]string{
-            "Content-Type": "application/json",
+            "Content-Type": "aplication/json",
             "X-API-Key": os.Getenv("PLUG_APP_API_KEY"),
         },
         nil,

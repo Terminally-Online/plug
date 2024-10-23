@@ -2,9 +2,11 @@ package router
 
 import (
 	"log"
-	"github.com/gorilla/mux"
 	"net/http"
 	"solver/api"
+	"solver/intent"
+
+	"github.com/gorilla/mux"
 )
 
 func SetupRouter() *mux.Router {
@@ -12,7 +14,8 @@ func SetupRouter() *mux.Router {
 
 	r.Use(JsonContentTypeMiddleware)
 
-	r.HandleFunc("/intent", api.GetIntent).Methods("POST")
+	r.HandleFunc("/intent", intent.Get).Methods("GET")
+	r.HandleFunc("/intent", intent.Post).Methods("POST")
 	r.HandleFunc("/payment", api.GetPayment).Methods("GET")
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Catch-all hit: %s %s", r.Method, r.URL.Path)

@@ -1,4 +1,4 @@
-package api
+package intent
 
 import (
 	"encoding/json"
@@ -6,23 +6,48 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"time"
-
-	"solver/intent"
 	"solver/types"
 	"solver/utils"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
-func getPlugs(w http.ResponseWriter, provider *ethclient.Client, intentRequest intent.IntentRequest) (*intent.Plugs, error) {
+type PostIntentRequest struct {
+	ChainId int            `json:"chainId"`
+	From    string         `json:"from"`
+	Solver  *string        `json:"solver"`
+	Actions []types.Action `json:"actions"`
+}
+
+type PostIntentResponse struct {
+	Plugs     types.Intent         `json:"plugs"`
+	Signature string        `json:"signature"`
+}
+
+func (i PostIntentRequest) Validate() error {
+	if !utils.IsSupportedChain(i.ChainId) {
+		return utils.ErrInvalidChainId("chainId", i.ChainId)
+	}
+
+	if !utils.IsAddress(i.From) {
+		return utils.ErrInvalidAddress("from", i.From)
+	}
+
+	if len(i.Actions) < utils.MinActions || len(i.Actions) > utils.MaxActions {
+		return utils.ErrInvalidArrayLength("actions", &utils.MinActions, &utils.MaxActions)
+	}
+
+	return nil
+}
+
+func getIntent(w http.ResponseWriter, provider *ethclient.Client, intentRequest PostIntentRequest) (*types.Intent, error) {
 	var transactions []types.Transaction
 	for _, action := range intentRequest.Actions {
-		inputs, err := intent.ParseAction(action)
+		inputs, err := ParseAction(action)
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
@@ -37,7 +62,7 @@ func getPlugs(w http.ResponseWriter, provider *ethclient.Client, intentRequest i
 		}
 	}
 
-	plugs := intent.Plugs{
+	plugs := types.Intent{
 		Socket:       intentRequest.From,
 		Transactions: transactions,
 	}
@@ -82,8 +107,8 @@ func getPlugs(w http.ResponseWriter, provider *ethclient.Client, intentRequest i
 	return &plugs, nil
 }
 
-func GetIntent(w http.ResponseWriter, r *http.Request) {
-	var intentRequest intent.IntentRequest
+func Post(w http.ResponseWriter, r *http.Request) {
+	var intentRequest PostIntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&intentRequest); err != nil {
 		utils.Error(w, utils.ServerError{Message: "Invalid request payload"}, http.StatusBadRequest)
 		return
@@ -99,7 +124,7 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("failed to connect to Ethereum node: %v", err)
 	}
 
-	plugs, err := getPlugs(w, provider, intentRequest)
+	plugs, err := getIntent(w, provider, intentRequest)
 	if err != nil {
 		utils.Error(w, err, http.StatusBadRequest)
 		return
@@ -125,7 +150,7 @@ func GetIntent(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	intentResponse := intent.IntentResponse{
+	intentResponse := PostIntentResponse{
 		Plugs:     *plugs,
 		Signature: "0x" + common.Bytes2Hex(signature),
 	}
