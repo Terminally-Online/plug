@@ -61,6 +61,7 @@ Table UserSocket {
   workflow Workflow [not null]
   positions PositionCache [not null]
   collectibles CollectibleCache [not null]
+  queuedWorkflows QueuedWorkflow [not null]
 }
 
 Table Workflow {
@@ -79,6 +80,20 @@ Table Workflow {
   socket UserSocket [not null]
   socketId String [not null]
   simulations Simulation [not null]
+  queuedWorkflows QueuedWorkflow [not null]
+}
+
+Table QueuedWorkflow {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  frequency Int [not null, default: 0]
+  workflow Workflow [not null]
+  workflowId String [not null]
+  socket UserSocket [not null]
+  socketId String [not null]
 }
 
 Table Simulation {
@@ -287,6 +302,10 @@ Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
+
+Ref: QueuedWorkflow.workflowId > Workflow.id [delete: Cascade]
+
+Ref: QueuedWorkflow.socketId > UserSocket.id [delete: Cascade]
 
 Ref: Simulation.workflowId > Workflow.id [delete: Cascade]
 

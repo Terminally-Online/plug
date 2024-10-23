@@ -70,9 +70,9 @@ export const DynamicFragment: FC<{
 		const hasChanged =
 			value instanceof Object && actions[actionIndex].values[parentIndex] instanceof Object
 				? // @ts-ignore
-				  value.value !== actions[actionIndex].values[parentIndex].value
-				: value !== actions[actionIndex].values[parentIndex];
-	
+					value.value !== actions[actionIndex].values[parentIndex].value
+				: value !== actions[actionIndex].values[parentIndex]
+
 		if (hasChanged) {
 			handle.action.edit({
 				id: plug?.id,
@@ -82,40 +82,42 @@ export const DynamicFragment: FC<{
 						values: action.values.map((actionValue, valueIndex) => {
 							if (actionIndex === nestedActionIndex) {
 								// If this is the value being changed
-								if (valueIndex === parentIndex) return value;
-	
+								if (valueIndex === parentIndex) return value
+
 								// Check for dependencies using dynamic fragments
-								const fragment = dynamic[actionIndex][valueIndex];
-								if (!fragment) return actionValue;
-	
+								const fragment = dynamic[actionIndex][valueIndex]
+								if (!fragment) return actionValue
+
 								// Get dependency info for this value
-								const [thisChildIndex, thisParentIndex] = getIndexes(fragment);
-	
+								const [thisChildIndex, thisParentIndex] = getIndexes(fragment)
+
 								// Reset this value if:
 								// 1. It directly depends on the changed value (parentIndex matches childIndex)
 								// 2. It depends on any value that we're resetting (recursive dependency)
-								const shouldReset = 
+								const shouldReset =
 									// Direct dependency on the changed value
 									parentIndex === thisChildIndex ||
 									// Indirect dependency through another value that's being reset
 									action.values.some((_, idx) => {
-										if (idx === valueIndex) return false;
-										const [depChildIndex] = getIndexes(dynamic[actionIndex][idx]);
-										return depChildIndex === thisChildIndex && 
-											   (idx === parentIndex || action.values[idx] === undefined);
-									});
-	
-								return shouldReset ? undefined : actionValue;
+										if (idx === valueIndex) return false
+										const [depChildIndex] = getIndexes(dynamic[actionIndex][idx])
+										return (
+											depChildIndex === thisChildIndex &&
+											(idx === parentIndex || action.values[idx] === undefined)
+										)
+									})
+
+								return shouldReset ? undefined : actionValue
 							}
-	
-							return actionValue;
-						}),
+
+							return actionValue
+						})
 					}))
-				),
-			});
+				)
+			})
 		}
-	
-		if (value instanceof Object) frame();
+
+		if (value instanceof Object) frame()
 	}
 
 	if (plug === undefined || actions === undefined) return null
@@ -182,7 +184,7 @@ export const DynamicFragment: FC<{
 									</div>
 
 									<div
-										className="ml-auto p-1 group-hover:bg-grayscale-100 border-[1px] border-grayscale-100 rounded-sm flex items-center justify-center"
+										className="ml-auto flex items-center justify-center rounded-sm border-[1px] border-grayscale-100 p-1 group-hover:bg-grayscale-100"
 										onClick={() => handleValue(option)}
 									>
 										<ChevronRight size={14} className="opacity-40" />

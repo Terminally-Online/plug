@@ -76,33 +76,38 @@ export const jobs = createTRPCRouter({
 			})
 		})
 	}),
-	simulateNext: apiKeyProcedure
-		.input(z.object({ count: z.number() }).nullish())
-		.mutation(async ({ input, ctx }) => {
-			const now = new Date()
+	simulateNext: apiKeyProcedure.input(z.object({ count: z.number() }).nullish()).mutation(async ({ input, ctx }) => {
+		const now = new Date()
 
-			return await ctx.db.$transaction(async tx => {
-				const workflows = await tx.workflow.findMany({
-					where: {
-						nextSimulationAt: {
-							lte: now
-						}
-					},
-					take: input?.count ?? 100
-				})
-
-				await Promise.all(
-					workflows.map(workflow =>
-						tx.workflow.update({
-							where: { id: workflow.id },
-							data: {
-								nextSimulationAt: new Date(now.getTime() + workflow.frequency * 60 * 1000)
-							}
-						})
-					)
-				)
-
-				return workflows
+		return await ctx.db.$transaction(async tx => {
+			const workflows = await tx.workflow.findMany({
+				where: {
+					nextSimulationAt: {
+						lte: now
+					}
+				},
+				take: input?.count ?? 100,
+				select: { id: true, actions: true, socket: { select: { id: true, socketAddress: true } } }
 			})
+
+			const parsedWorkflows = workflows.map(workflow => ({
+				...workflow,
+				actions: JSON.parse(workflow.actions as string)
+			}))
+
+			// TODO: Uncomment this when we are ready to save simulation results.
+			// await Promise.all(
+			// 	workflows.map(workflow =>
+			// 		tx.workflow.update({
+			// 			where: { id: workflow.id },
+			// 			data: {
+			// 				nextSimulationAt: new Date(now.getTime() + workflow.frequency * 60 * 1000)
+			// 			}
+			// 		})
+			// 	)
+			// )
+
+			return parsedWorkflows
 		})
+	})
 })

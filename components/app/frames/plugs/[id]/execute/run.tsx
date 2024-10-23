@@ -35,16 +35,17 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-60">Run On</span>
-					{chains.map(chain => (
-						<Image
-							key={chain}
-							className="ml-[-20px] h-6 w-6"
-							src={`/blockchain/${chain}.png`}
-							alt={chain}
-							width={24}
-							height={24}
-						/>
-					))}
+					{/* {chains.map(chain => (
+                        <Image
+                            key={chain}
+                            className="ml-[-20px] h-6 w-6"
+                            src={`/blockchain/${chain}.png`}
+                            alt={chain}
+                            width={24}
+                            height={24}
+                        />
+                    ))} */}
+					<Image className="h-6 w-6" src="/blockchain/ethereum.png" alt="Ethereum" width={24} height={24} />
 				</p>
 
 				<p className="flex font-bold">
@@ -55,7 +56,7 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					</span>
 				</p>
 
-				<Button className="mt-4 w-full" onClick={() => frame(`running-${prevFrame}`)}>
+				<Button className="mt-4 w-full" onClick={() => frame("running")}>
 					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
 				</Button>
 			</div>

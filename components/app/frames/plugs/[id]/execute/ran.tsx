@@ -13,7 +13,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 
 	const prevFrame = "NOT_IMPLEMENTED" as string
 
-	const label = isFrame ? (prevFrame === "schedule" ? "Intent Signed" : "Transaction Ran") : ""
+	const label = isFrame ? (prevFrame === "schedule" ? "Intent Signed" : "Transaction Queued") : ""
 
 	if (!plug) return null
 
@@ -32,9 +32,8 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 						{plug.name}
 					</span>{" "}
 					<span className="opacity-60">
-						{prevFrame === "schedule"
-							? "intent successfully signed. When all the constraints of your Plug are met, your transaction will be automatically submitted."
-							: "transaction was successfully submit. Your balances have updated and you can now resume editing your Plug."}
+						intent was successfully signed. When all the constraints of your Plug are met, your transaction
+						will be automatically executed.
 					</span>
 				</p>
 
@@ -51,9 +50,9 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 				</p>
 
 				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">{prevFrame === "schedule" ? "Signed For" : "Ran on"}</span>
+					<span className="mr-auto opacity-60">{prevFrame === "schedule" ? "Signed For" : "Queued on"}</span>
 
-					{chains.map(chain => (
+					{/* {chains.map(chain => (
 						<Image
 							key={chain}
 							className="ml-[-20px] h-6 w-6"
@@ -62,7 +61,8 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 							width={32}
 							height={32}
 						/>
-					))}
+					))} */}
+					<Image className="h-6 w-6" src="/blockchain/ethereum.png" alt="Ethereum" width={32} height={32} />
 				</p>
 
 				{prevFrame !== "schedule" && (

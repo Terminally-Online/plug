@@ -137,6 +137,7 @@ model UserSocket {
     workflow     Workflow[]
     positions    PositionCache[]
     collectibles CollectibleCache[]
+    queuedWorkflows QueuedWorkflow[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -175,11 +176,42 @@ model Workflow {
     // One-to-many
     // ---------------------------------------------------------------------------
     simulations Simulation[]
+    queuedWorkflows QueuedWorkflow[]
 
     // ---------------------------------------------------------------------------
     // Indexes
     // ---------------------------------------------------------------------------
     @@index([nextSimulationAt])
+}
+
+model QueuedWorkflow {
+    // ---------------------------------------------------------------------------
+    // Core
+    // ---------------------------------------------------------------------------
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    // ---------------------------------------------------------------------------
+    // Fields
+    // ---------------------------------------------------------------------------
+    startDate DateTime
+    endDate   DateTime?
+    frequency Int      @default(0) // 0=never, 1=daily, 7=weekly, etc.
+    
+    // ---------------------------------------------------------------------------
+    // Many-to-one
+    // ---------------------------------------------------------------------------
+    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflowId String
+    socket     UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+    socketId   String
+
+    // ---------------------------------------------------------------------------
+    // Indexes
+    // ---------------------------------------------------------------------------
+    @@index([workflowId])
+    @@index([startDate])
 }
 
 model Simulation {

@@ -1,11 +1,11 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 
 import { Clock } from "lucide-react"
 
 import { Button, Frame } from "@/components"
 import { useColumns } from "@/state"
 
-const frequencies = [
+export const frequencies = [
 	{ label: "Never", value: "0" },
 	{ label: "Daily", value: "1" },
 	{ label: "Weekly", value: "7" },
@@ -14,10 +14,11 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
+export const RecurringFrame: FC<{ index: number; handleRepeats: (repeats: (typeof frequencies)[0]) => void }> = ({
+	index,
+	handleRepeats
+}) => {
 	const { isFrame, frame } = useColumns(index, "recurring")
-
-	const [_, setFrequency] = useState<(typeof frequencies)[0]>(frequencies[0])
 
 	return (
 		<Frame
@@ -35,7 +36,7 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 						key={frequency.label}
 						variant="secondary"
 						onClick={() => {
-							setFrequency(frequency)
+							handleRepeats(frequency)
 							frame("schedule")
 						}}
 					>
