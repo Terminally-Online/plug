@@ -4,8 +4,6 @@ import (
 	"encoding/hex"
 	"math/big"
 	"solver/protocols/aave_v2"
-	"solver/protocols/aave_v3"
-	"solver/protocols/yearn_v3"
 	"solver/types"
 	"solver/utils"
 
@@ -28,22 +26,31 @@ func (i *DepositInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+	if i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 	return nil
 }
 
-func (i *DepositInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *DepositInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	switch i.Protocol {
+	case aave_v2.Key:
+		return aave_v2.GetDeposit(i, provider, chainId)
+	default:
+		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
+	}
+}
+
+func (i *DepositInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var deposit []*ethtypes.Transaction
 	var err error
 	switch i.Protocol {
 	case aave_v2.Key:
 		deposit, err = aave_v2.BuildDeposit(i, provider, chainId, from)
-	case aave_v3.Key:
-		deposit, err = aave_v3.BuildDeposit(i, provider, chainId, from)
-	case yearn_v3.Key:
-		deposit, err = yearn_v3.BuildDeposit(i, provider, chainId, from)
+	// case aave_v3.Key:
+	// 	deposit, err = aave_v3.BuildDeposit(i, provider, chainId, from)
+	// case yearn_v3.Key:
+	// 	deposit, err = yearn_v3.BuildDeposit(i, provider, chainId, from)
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}

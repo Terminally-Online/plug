@@ -87,16 +87,21 @@ func (i *TransferFromInputsImpl) Validate() error {
 		return utils.ErrInvalidTokenStandard("type", i.Type)
 	}
 
-	if (i.Amount != nil && i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0) { 
+	if i.Amount != nil && i.Amount.Cmp(big.NewInt(0)) >= 0 && i.Amount.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amount", i.Amount.String())
 	}
-	if (i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) >= 0 && i.TokenId.Cmp(utils.Uint256Max) > 0) { 
+	if i.TokenId != nil && i.TokenId.Cmp(big.NewInt(0)) >= 0 && i.TokenId.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("tokenId", i.TokenId.String())
 	}
 
 	return nil
 }
-func (i *TransferFromInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+
+func (i *TransferFromInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return nil, utils.ErrNotImplemented("TransferFromInputsImpl.Get")
+}
+
+func (i *TransferFromInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var transferFrom *ethtypes.Transaction
 	var err error
 	switch i.Type {

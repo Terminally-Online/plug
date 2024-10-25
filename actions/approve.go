@@ -98,7 +98,11 @@ func (i *ApproveInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *ApproveInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *ApproveInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return nil, utils.ErrNotImplemented("ApproveInputsImpl.Get")
+}
+
+func (i *ApproveInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	tokenAbi, err := tokenTypeToABI[i.Type]()
 	if err != nil {
 		return nil, utils.ErrContractFailed(i.Token)

@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"math/big"
 	"solver/protocols/aave_v2"
-	"solver/protocols/aave_v3"
 	"solver/types"
 	"solver/utils"
 
@@ -26,20 +25,27 @@ func (i *BorrowInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if (i.AmountOut.Cmp(big.NewInt(0)) >= 0 && i.AmountOut.Cmp(utils.Uint256Max) > 0) { 
+	if i.AmountOut.Cmp(big.NewInt(0)) >= 0 && i.AmountOut.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amountOut", i.AmountOut.String())
 	}
 	return nil
 }
 
-func (i *BorrowInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *BorrowInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	switch i.Protocol {
+	case aave_v2.Key:
+		return aave_v2.GetBorrow(i, provider, chainId)
+	default:
+		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
+	}
+}
+
+func (i *BorrowInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var borrow *ethtypes.Transaction
 	var err error
 	switch i.Protocol {
 	case aave_v2.Key:
-		borrow, err = aave_v2.BuildBorrow(i, provider, chainId, from)
-	case aave_v3.Key:
-		borrow, err = aave_v3.BuildBorrow(i, provider, chainId, from)
+		borrow, err = aave_v2.PostBorrow(i, provider, chainId, from)
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}

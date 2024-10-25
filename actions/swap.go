@@ -23,17 +23,24 @@ func (i *SwapInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenOut) {
 		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
 	}
-	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+	if i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
-	if (i.Slippage.Cmp(big.NewInt(0)) >= 0 && i.Slippage.Cmp(utils.Uint256Max) > 0) { 
+	if i.Slippage.Cmp(big.NewInt(0)) >= 0 && i.Slippage.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("slippage", i.Slippage.String())
 	}
 
 	return nil
 }
 
-func (i *SwapInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *SwapInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	switch i.Protocol {
+	default:
+		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
+	}
+}
+
+func (i *SwapInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	switch i.Protocol {
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)

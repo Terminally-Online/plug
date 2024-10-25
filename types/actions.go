@@ -7,11 +7,25 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-/*
-Action represents a generic action with its type and inputs. This is the
-standard shape for a new action to be added to the intent that will be parsed,
-built and sent back to the caller of the endpoint.
-*/
+type ActionSchema struct {
+	Protocol string               `json:"protocol"`
+	Type     string               `json:"type"`
+	Values   []ActionSchemaValues `json:"values"`
+}
+
+type ActionSchemaValues struct {
+	Label   string                     `json:"label"`
+	Type    string                     `json:"type"`
+	Options *[]ActionSchemaValueOption `json:"options"`
+}
+
+type ActionSchemaValueOption struct {
+	Label     string  `json:"label"`
+	Value     string  `json:"value"`
+	Icon      *string `json:"icon"`
+	Connector *int    `json:"connector"`
+}
+
 type Action struct {
 	Type   string          `json:"type"`
 	Inputs json.RawMessage `json:"inputs"`
@@ -25,7 +39,8 @@ type Transaction struct {
 
 type ActionInputs interface {
 	Validate() error
-	Build(provider *ethclient.Client, chainId int, from string) ([]*Transaction, error)
+	Get(provider *ethclient.Client, chainId int) (*ActionSchema, error)
+	Post(provider *ethclient.Client, chainId int, from string) ([]*Transaction, error)
 }
 
 type ApproveInputs interface {

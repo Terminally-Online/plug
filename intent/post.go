@@ -24,8 +24,8 @@ type PostIntentRequest struct {
 }
 
 type PostIntentResponse struct {
-	Plugs     types.Intent         `json:"plugs"`
-	Signature string        `json:"signature"`
+	Plugs     types.Intent `json:"plugs"`
+	Signature string       `json:"signature"`
 }
 
 func (i PostIntentRequest) Validate() error {
@@ -44,20 +44,20 @@ func (i PostIntentRequest) Validate() error {
 	return nil
 }
 
-func getIntent(w http.ResponseWriter, provider *ethclient.Client, intentRequest PostIntentRequest) (*types.Intent, error) {
+func postIntent(w http.ResponseWriter, provider *ethclient.Client, intentRequest PostIntentRequest) (*types.Intent, error) {
 	var transactions []types.Transaction
 	for _, action := range intentRequest.Actions {
-		inputs, err := ParseAction(action)
+		inputs, err := ValidateActionInputs(action)
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 
-		deposit, err := inputs.Build(provider, intentRequest.ChainId, intentRequest.From)
+		action, err := inputs.Post(provider, intentRequest.ChainId, intentRequest.From)
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 
-		for _, tx := range deposit {
+		for _, tx := range action {
 			transactions = append(transactions, *tx)
 		}
 	}
@@ -124,7 +124,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("failed to connect to Ethereum node: %v", err)
 	}
 
-	plugs, err := getIntent(w, provider, intentRequest)
+	plugs, err := postIntent(w, provider, intentRequest)
 	if err != nil {
 		utils.Error(w, err, http.StatusBadRequest)
 		return

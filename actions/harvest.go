@@ -19,7 +19,14 @@ func (i *HarvestInputsImpl) Validate() error {
 	return nil
 }
 
-func (i *HarvestInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *HarvestInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	switch i.Protocol {
+	default:
+		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
+	}
+}
+
+func (i *HarvestInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	switch i.Protocol {
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)

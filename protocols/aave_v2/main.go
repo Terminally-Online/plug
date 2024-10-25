@@ -19,6 +19,23 @@ var (
 	interestRateMode = new(big.Int).SetUint64(2)
 )
 
+func GetDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return &types.ActionSchema{
+		Protocol: Key,
+		Type:     "deposit",
+		Values: []types.ActionSchemaValues{
+			{
+				Label: "tokenOut",
+				Type:  "address",
+			},
+			{
+				Label: "amountOut",
+				Type:  "uint256",
+			},
+		},
+	}, nil
+}
+
 func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
 	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
 	if err != nil {
@@ -35,7 +52,24 @@ func BuildDeposit(i types.DepositInputs, provider *ethclient.Client, chainId int
 	return []*ethtypes.Transaction{deposit}, err
 }
 
-func BuildBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
+func GetBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return &types.ActionSchema{
+		Protocol: Key,
+		Type:     "borrow",
+		Values: []types.ActionSchemaValues{
+			{
+				Label: "tokenOut",
+				Type:  "address",
+			},
+			{
+				Label: "amountOut",
+				Type:  "uint256",
+			},
+		},
+	}, nil
+}
+
+func PostBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(address)
@@ -51,7 +85,24 @@ func BuildBorrow(i types.BorrowInputs, provider *ethclient.Client, chainId int, 
 	)
 }
 
-func BuildRedeem(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
+func GetRedeem(i types.RedeemInputs, provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return &types.ActionSchema{
+		Protocol: Key,
+		Type:     "redeem",
+		Values: []types.ActionSchemaValues{
+			{
+				Label: "tokenOut",
+				Type:  "address",
+			},
+			{
+				Label: "amountOut",
+				Type:  "uint256",
+			},
+		},
+	}, nil
+}
+
+func PostRedeem(i types.RedeemInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
 	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(address)
@@ -66,7 +117,24 @@ func BuildRedeem(i types.RepayInputs, provider *ethclient.Client, chainId int, f
 	return []*ethtypes.Transaction{redeem}, err
 }
 
-func BuildRepay(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
+func GetRepay(i types.RepayInputs, provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return &types.ActionSchema{
+		Protocol: Key,
+		Type:     "repay",
+		Values: []types.ActionSchemaValues{
+			{
+				Label: "tokenOut",
+				Type:  "address",
+			},
+			{
+				Label: "amountOut",
+				Type:  "uint256",
+			},
+		},
+	}, nil
+}
+
+func PostRepay(i types.RepayInputs, provider *ethclient.Client, chainId int, from string) (*ethtypes.Transaction, error) {
 	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
 	if err != nil {
 		return nil, utils.ErrContractFailed(address)

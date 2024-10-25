@@ -64,14 +64,18 @@ func (i *RouteInputsImpl) Validate() error {
 	if !utils.IsUint(i.AmountIn.String(), 256) {
 		return utils.ErrInvalidUint("amountIn", i.AmountIn.String(), 256)
 	}
-	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+	if i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 
 	return nil
 }
 
-func (i *RouteInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *RouteInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	return nil, utils.ErrNotImplemented("RouteInputsImpl.Get")
+}
+
+func (i *RouteInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	baseURL, err := url.Parse(baseAPIURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse base URL: %w", err)

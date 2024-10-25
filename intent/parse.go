@@ -7,11 +7,9 @@ import (
 	"solver/types"
 )
 
-func ParseType(action types.Action) (types.ActionInputs, error) {
+func GetActionInputs(actionInputsType string) (types.ActionInputs, error) {
 	var inputs types.ActionInputs
-
-	switch action.Type {
-	// Standard based actions that do not require a protocol
+	switch actionInputsType {
 	case "approve":
 		inputs = &actions.ApproveInputsImpl{}
 	case "transfer":
@@ -20,7 +18,8 @@ func ParseType(action types.Action) (types.ActionInputs, error) {
 		inputs = &actions.TransferFromInputsImpl{}
 	case "route":
 		inputs = &actions.RouteInputsImpl{}
-	// Contract based actions that require a protocol
+	case "swap":
+		inputs = &actions.SwapInputsImpl{}
 	case "borrow":
 		inputs = &actions.BorrowInputsImpl{}
 	case "deposit":
@@ -31,28 +30,25 @@ func ParseType(action types.Action) (types.ActionInputs, error) {
 		inputs = &actions.RedeemInputsImpl{}
 	case "repay":
 		inputs = &actions.RepayInputsImpl{}
-	case "swap":
-		inputs = &actions.SwapInputsImpl{}
 	default:
-		return nil, fmt.Errorf("unknown action type: %s", action.Type)
+		return nil, fmt.Errorf("unknown action type: %s", actionInputsType)
 	}
-
 	return inputs, nil
 }
 
-func ParseAction(action types.Action) (types.ActionInputs, error) {
-	inputs, err := ParseType(action)
+func ValidateActionInputs(action types.Action) (types.ActionInputs, error) {
+	inputsReference, err := GetActionInputs(action.Type)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := json.Unmarshal(action.Inputs, inputs); err != nil {
+	if err := json.Unmarshal(action.Inputs, inputsReference); err != nil {
 		return nil, fmt.Errorf("failed to parse inputs for action %s: %v", action.Type, err)
 	}
 
-	if err := inputs.Validate(); err != nil {
+	if err := inputsReference.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid inputs for action %s: %v", action.Type, err)
 	}
 
-	return inputs, nil
+	return inputsReference, nil
 }

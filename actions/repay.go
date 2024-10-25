@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"math/big"
 	"solver/protocols/aave_v2"
-	"solver/protocols/aave_v3"
 	"solver/types"
 	"solver/utils"
 
@@ -22,21 +21,30 @@ func (i *RepayInputsImpl) Validate() error {
 	if !utils.IsAddress(i.TokenIn) {
 		return utils.ErrInvalidAddress("tokenIn", i.TokenIn)
 	}
-	if (i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0) { 
+	if i.AmountIn.Cmp(big.NewInt(0)) >= 0 && i.AmountIn.Cmp(utils.Uint256Max) > 0 {
 		return utils.ErrInvalidField("amountIn", i.AmountIn.String())
 	}
 
 	return nil
 }
 
-func (i *RepayInputsImpl) Build(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (i *RepayInputsImpl) Get(provider *ethclient.Client, chainId int) (*types.ActionSchema, error) {
+	switch i.Protocol {
+	case aave_v2.Key:
+		return aave_v2.GetRepay(i, provider, chainId)
+	default:
+		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
+	}
+}
+
+func (i *RepayInputsImpl) Post(provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
 	var repay *ethtypes.Transaction
 	var err error
 	switch i.Protocol {
 	case aave_v2.Key:
-		repay, err = aave_v2.BuildRepay(i, provider, chainId, from)
-	case aave_v3.Key:
-		repay, err = aave_v3.BuildRepay(i, provider, chainId, from)
+		repay, err = aave_v2.PostRepay(i, provider, chainId, from)
+	// case aave_v3.Key:
+	// 	repay, err = aave_v3.BuildRepay(i, provider, chainId, from)
 	default:
 		return nil, utils.ErrInvalidProtocol("protocol", i.Protocol)
 	}
