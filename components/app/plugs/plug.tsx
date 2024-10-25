@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useEffect } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -19,6 +19,19 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	const { plug } = usePlugs(item)
 
 	const own = plug !== undefined && session && session.address === plug.socketId
+
+	useEffect(() => {
+		// Clear schedule data when mounting Plug component
+		if (item) {
+			const executeFrame = document.getElementById(`execute-frame-${index}`)
+			if (executeFrame) {
+				const clearSchedule = (executeFrame as any).clearSchedule
+				if (typeof clearSchedule === 'function') {
+					clearSchedule()
+				}
+			}
+		}
+	}, [item, index])
 
 	if (!plug) return null
 

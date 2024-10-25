@@ -4,65 +4,88 @@ import { ActionPreview, Button, Frame, Image } from "@/components"
 import { useColumns } from "@/state"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { api } from "@/server/client"
+import { DateRange } from "react-day-picker"
 
-export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, frame } = useColumns(index, "run")
-	const { plug, chains } = usePlugs(item)
-	const prevFrame = useColumns(index - 1, "key")
+export const RunFrame: FC<{
+    index: number
+    item: string
+    scheduleData: { date: DateRange | undefined; repeats: { value: string } } | null
+    clearSchedule: () => void
+}> = ({ index, item, scheduleData, clearSchedule }) => {
+    const { isFrame, frame } = useColumns(index, "run")
+    const { plug, chains } = usePlugs(item)
+    const prevFrame = useColumns(index - 1, "key")
 
-	const handleBack =
-		prevFrame !== "schedule"
-			? chains.length === 1
-				? undefined
-				: () => frame(`chain-${prevFrame}`)
-			: () => frame(`schedule`)
+    const queueMutation = api.plug.action.queue.useMutation()
 
-	const handleSubmit = () => {
-		// Here you might want to trigger the actual execution of the workflow
-		// This could involve calling a different API endpoint or mutation
-		frame("running")
-	}
+    const handleBack =
+        prevFrame !== "schedule"
+            ? chains.length === 1
+                ? undefined
+                : () => {
+                    clearSchedule()
+                    frame(`chain-${prevFrame}`)
+                  }
+            : () => frame(`schedule`)
 
-	return (
-		<Frame
-			index={index}
-			className="z-[2]"
-			handleBack={handleBack}
-			icon={<Eye size={18} />}
-			label={prevFrame === "schedule" ? "Intent Preview" : "Transaction Preview"}
-			visible={isFrame}
-			hasOverlay={true}
-		>
-			<div className="flex flex-col gap-2">
-				<p className="font-bold opacity-60">Actions</p>
-				<ActionPreview index={index} item={item} />
+    const handleSubmit = async () => {
+        if (!plug) return
 
-				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">Run On</span>
-					{chains.map(chain => (
-						<Image
-							key={chain}
-							className="ml-[-20px] h-6 w-6"
-							src={`/blockchain/${chain}.png`}
-							alt={chain}
-							width={24}
-							height={24}
-						/>
-					))}
-				</p>
+        try {
+            await queueMutation.mutateAsync({
+                workflowId: plug.id,
+                startAt: scheduleData ? scheduleData.date?.from : new Date(),
+                endAt: scheduleData?.date?.to,
+                frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
+            })
+            clearSchedule()
+            frame("running")
+        } catch (error) {
+            console.error("Failed to queue workflow:", error)
+            // Handle error (e.g., show error message to user)
+        }
+    }
 
-				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">Fee</span>
-					<span className="flex flex-row gap-2">
-						<span className="opacity-40">0.0011 ETH</span>
-						<span>$4.19</span>
-					</span>
-				</p>
+    return (
+        <Frame
+            index={index}
+            className="z-[2]"
+            handleBack={handleBack}
+            icon={<Eye size={18} />}
+            label={prevFrame === "schedule" ? "Intent Preview" : "Transaction Preview"}
+            visible={isFrame}
+            hasOverlay={true}
+        >
+            <div className="flex flex-col gap-2">
+                <p className="font-bold opacity-60">Actions</p>
+                <ActionPreview index={index} item={item} />
 
-				<Button className="mt-4 w-full" onClick={handleSubmit}>
-					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
-				</Button>
-			</div>
-		</Frame>
-	)
+                <p className="flex font-bold">
+                    <span className="mr-auto opacity-60">Run On</span>
+                    {chains.map(chain => (
+                        <Image
+                            key={chain}
+                            className="ml-[-20px] h-6 w-6"
+                            src={`/blockchain/${chain}.png`}
+                            alt={chain}
+                            width={24}
+                            height={24}
+                        />
+                    ))}
+                </p>
+
+                <p className="flex font-bold">
+                    <span className="mr-auto opacity-60">Fee</span>
+                    <span className="flex flex-row gap-2">
+                        <span className="opacity-40">0.0011 ETH</span>
+                        <span>$4.19</span>
+                    </span>
+                </p>
+
+                <Button className="mt-4 w-full" onClick={handleSubmit}>
+                    {prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
+                </Button>
+            </div>
+        </Frame>
+    )
 }

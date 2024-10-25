@@ -5,7 +5,6 @@ import { Button, Dropdown, Frame } from "@/components"
 import { cn, formatDate } from "@/lib"
 import { useColumns } from "@/state"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { api } from "@/server/client"
 
 const frequencies = [
 	{ label: "Never", value: "0" },
@@ -16,38 +15,25 @@ const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const ScheduleFrame: FC<{ index: number; item: string; repeats: (typeof frequencies)[0] }> = ({
-	index,
-	item,
-	repeats
-}) => {
+export const ScheduleFrame: FC<{
+	index: number
+	item: string
+	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
+	setScheduleData: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
+	repeats: (typeof frequencies)[0]
+}> = ({ index, item, scheduleData, setScheduleData, repeats }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
 	const { plug } = usePlugs(item)
-	const [date, setDate] = useState<DateRange | undefined>({
-		from: undefined,
-		to: undefined
-	})
-
-	const queueMutation = api.action.queue.useMutation()
+	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
 
 	const handleDateSelect = (selectedDate: DateRange | undefined) => {
 		setDate(selectedDate)
 	}
 
-	const handleNext = async () => {
-		if (date?.from && plug) {
-			try {
-				await queueMutation.mutateAsync({
-					workflowId: plug.id,
-					startAt: date.from,
-					endAt: date.to,
-					frequency: parseInt(repeats.value)
-				})
-				frame("run")
-			} catch (error) {
-				console.error("Failed to queue workflow:", error)
-				// Handle error (e.g., show error message to user)
-			}
+	const handleNext = () => {
+		if (date?.from) {
+			setScheduleData({ date, repeats })
+			frame("run")
 		}
 	}
 
