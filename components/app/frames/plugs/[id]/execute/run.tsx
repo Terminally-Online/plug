@@ -16,6 +16,8 @@ export const RunFrame: FC<{
 	clearSchedule: () => void
 }> = ({ index, item, scheduleData, clearSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "run")
+	const { plug, chains } = usePlugs(item)
+
 
 	useEffect(() => {
 		if (!isFrame) {
@@ -23,8 +25,6 @@ export const RunFrame: FC<{
 		}
 	}, [isFrame, clearSchedule, scheduleData])
 
-
-	const { plug, chains } = usePlugs(item)
 	const prevFrame = "NOT_IMPLEMENTED" as string
 
 	const queueMutation = api.plug.action.queue.useMutation()
