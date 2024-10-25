@@ -32,18 +32,14 @@ export const RunFrame: FC<{
 	const handleSubmit = async () => {
 		if (!plug) return
 
-		try {
-			await queueMutation.mutateAsync({
-				workflowId: plug.id,
-				startAt: scheduleData?.date?.from ?? new Date(),
-				endAt: scheduleData?.date?.to ?? undefined,
-				frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
-			})
-			clearSchedule()
-			frame("running")
-		} catch (error) {
-			console.error("Failed to queue workflow:", error)
-		}
+		await queueMutation.mutateAsync({
+			workflowId: plug.id,
+			startAt: scheduleData?.date?.from ?? new Date(),
+			endAt: scheduleData?.date?.to ?? undefined,
+			frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
+		})
+		clearSchedule()
+		frame("running")
 	}
 
 	return (
