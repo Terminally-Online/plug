@@ -39,7 +39,7 @@ export const PlugContext = createContext<{
 			fork: (data: { plug: string; index: number; from: string }) => void
 		}
 		action: {
-			edit: (data: { id?: string; actions: string }) => void
+			edit: (data: { id: string; actions: string }) => void
 		}
 	}
 }>({

@@ -1,11 +1,11 @@
 import { FC, useState } from "react"
 import { DateRange, DayPicker } from "react-day-picker"
-
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
-
 import { Button, Dropdown, Frame } from "@/components"
 import { cn, formatDate } from "@/lib"
 import { useColumns } from "@/state"
+import { usePlugs } from "@/contexts/PlugProvider"
+import { api } from "@/server/client"
 
 const frequencies = [
 	{ label: "Never", value: "0" },
@@ -18,20 +18,40 @@ const frequencies = [
 
 export const ScheduleFrame: FC<{ index: number; item: string; repeats: (typeof frequencies)[0] }> = ({
 	index,
+	item,
 	repeats
 }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
-	// const { chains } = usePlugs(item)
-
+	const { plug } = usePlugs(item)
 	const [date, setDate] = useState<DateRange | undefined>({
 		from: undefined,
 		to: undefined
 	})
 
-	const handleBack =
-		// chainsAvailable.length === 1
-		// 	? undefined
-		() => frame("chain-schedule")
+	const queueMutation = api.action.queue.useMutation()
+
+	const handleDateSelect = (selectedDate: DateRange | undefined) => {
+		setDate(selectedDate)
+	}
+
+	const handleNext = async () => {
+		if (date?.from && plug) {
+			try {
+				await queueMutation.mutateAsync({
+					workflowId: plug.id,
+					startAt: date.from,
+					endAt: date.to,
+					frequency: parseInt(repeats.value)
+				})
+				frame("run")
+			} catch (error) {
+				console.error("Failed to queue workflow:", error)
+				// Handle error (e.g., show error message to user)
+			}
+		}
+	}
+
+	const handleBack = () => frame("chain-schedule")
 
 	return (
 		<Frame
@@ -73,7 +93,7 @@ export const ScheduleFrame: FC<{ index: number; item: string; repeats: (typeof f
 				<DayPicker
 					mode="range"
 					selected={date}
-					onSelect={setDate}
+					onSelect={handleDateSelect}
 					showOutsideDays
 					fixedWeeks
 					weekStartsOn={1}
@@ -128,7 +148,7 @@ export const ScheduleFrame: FC<{ index: number; item: string; repeats: (typeof f
 				<Button
 					variant={date && date.from ? "primary" : "disabled"}
 					className="mt-4 w-full"
-					onClick={() => frame("run")} // Changed this line
+					onClick={handleNext}
 					disabled={!date || !date.from}
 				>
 					{date && date.from ? "Next" : "Select a Date"}

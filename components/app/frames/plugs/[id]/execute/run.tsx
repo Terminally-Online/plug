@@ -1,16 +1,14 @@
 import { FC } from "react"
-
 import { Eye } from "lucide-react"
-
 import { ActionPreview, Button, Frame, Image } from "@/components"
-import { usePlugs } from "@/contexts"
 import { useColumns } from "@/state"
+import { usePlugs } from "@/contexts/PlugProvider"
+import { api } from "@/server/client"
 
 export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, frame } = useColumns(index, "run")
-	const { chains } = usePlugs(item)
-
-	const prevFrame = "NOT_IMPLEMENTED" as string
+	const { plug, chains } = usePlugs(item)
+	const prevFrame = useColumns(index - 1, "key")
 
 	const handleBack =
 		prevFrame !== "schedule"
@@ -18,6 +16,12 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 				? undefined
 				: () => frame(`chain-${prevFrame}`)
 			: () => frame(`schedule`)
+
+	const handleSubmit = () => {
+		// Here you might want to trigger the actual execution of the workflow
+		// This could involve calling a different API endpoint or mutation
+		frame("running")
+	}
 
 	return (
 		<Frame
@@ -35,17 +39,16 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-60">Run On</span>
-					{/* {chains.map(chain => (
-                        <Image
-                            key={chain}
-                            className="ml-[-20px] h-6 w-6"
-                            src={`/blockchain/${chain}.png`}
-                            alt={chain}
-                            width={24}
-                            height={24}
-                        />
-                    ))} */}
-					<Image className="h-6 w-6" src="/blockchain/ethereum.png" alt="Ethereum" width={24} height={24} />
+					{chains.map(chain => (
+						<Image
+							key={chain}
+							className="ml-[-20px] h-6 w-6"
+							src={`/blockchain/${chain}.png`}
+							alt={chain}
+							width={24}
+							height={24}
+						/>
+					))}
 				</p>
 
 				<p className="flex font-bold">
@@ -56,7 +59,7 @@ export const RunFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					</span>
 				</p>
 
-				<Button className="mt-4 w-full" onClick={() => frame("running")}>
+				<Button className="mt-4 w-full" onClick={handleSubmit}>
 					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
 				</Button>
 			</div>

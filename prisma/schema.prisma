@@ -164,7 +164,6 @@ model Workflow {
     tags             String[]
     workflowForkedId String?
     frequency        Int       @default(10)
-    nextSimulationAt DateTime  @default(now())
 
     // ---------------------------------------------------------------------------
     // Many-to-one
@@ -177,11 +176,6 @@ model Workflow {
     // ---------------------------------------------------------------------------
     simulations Simulation[]
     queuedWorkflows QueuedWorkflow[]
-
-    // ---------------------------------------------------------------------------
-    // Indexes
-    // ---------------------------------------------------------------------------
-    @@index([nextSimulationAt])
 }
 
 model QueuedWorkflow {
@@ -195,9 +189,10 @@ model QueuedWorkflow {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    startDate DateTime
-    endDate   DateTime?
+    startAt DateTime
+    endAt   DateTime?
     frequency Int      @default(0) // 0=never, 1=daily, 7=weekly, etc.
+    nextSimulationAt DateTime @default(now())
     
     // ---------------------------------------------------------------------------
     // Many-to-one
@@ -211,7 +206,8 @@ model QueuedWorkflow {
     // Indexes
     // ---------------------------------------------------------------------------
     @@index([workflowId])
-    @@index([startDate])
+    @@index([startAt])
+    @@index([nextSimulationAt])
 }
 
 model Simulation {

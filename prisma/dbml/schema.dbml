@@ -76,7 +76,6 @@ Table Workflow {
   tags String[] [not null]
   workflowForkedId String
   frequency Int [not null, default: 10]
-  nextSimulationAt DateTime [default: `now()`, not null]
   socket UserSocket [not null]
   socketId String [not null]
   simulations Simulation [not null]
@@ -87,9 +86,10 @@ Table QueuedWorkflow {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  startDate DateTime [not null]
-  endDate DateTime
+  startAt DateTime [not null]
+  endAt DateTime
   frequency Int [not null, default: 0]
+  nextSimulationAt DateTime [default: `now()`, not null]
   workflow Workflow [not null]
   workflowId String [not null]
   socket UserSocket [not null]
