@@ -18,15 +18,11 @@ export const RunFrame: FC<{
 	const { isFrame, frame } = useColumns(index, "run")
 
 	useEffect(() => {
-		console.log("RunFrame effect triggered", { isFrame, scheduleData })
 		if (!isFrame) {
-			console.log("Clearing schedule from RunFrame")
 			clearSchedule()
 		}
 	}, [isFrame, clearSchedule, scheduleData])
 
-	// Also log in main render
-	console.log("RunFrame render", { isFrame, scheduleData })
 
 	const { plug, chains } = usePlugs(item)
 	const prevFrame = "NOT_IMPLEMENTED" as string
