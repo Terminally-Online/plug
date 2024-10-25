@@ -17,7 +17,6 @@ type Props = React.HTMLAttributes<HTMLDivElement> &
 		hasOverlay?: boolean
 		hasChildrenPadding?: boolean
 		next?: JSX.Element
-		clearSchedule?: () => void
 	}
 
 export const Frame: FC<Props> = ({
@@ -30,17 +29,11 @@ export const Frame: FC<Props> = ({
 	hasChildrenPadding = true,
 	children,
 	className,
-	next,
-	clearSchedule
+	next
 }) => {
 	const { md } = useMediaQuery()
 	const { frame } = useColumns(index)
 
-	useEffect(() => {
-		if (!visible && clearSchedule) {
-			clearSchedule()
-		}
-	}, [visible, clearSchedule])
 
 	return (
 		<AnimatePresence>
