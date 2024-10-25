@@ -28,7 +28,6 @@ export const PlugContext = createContext<{
 
 	search: string
 	tag: (typeof tags)[number]
-
 	handle: {
 		search: (data: string) => void
 		tag: (data: (typeof tags)[number]) => void
@@ -37,6 +36,7 @@ export const PlugContext = createContext<{
 			edit: (data: { id: string } & WorkflowData) => void
 			delete: (data: { plug: string; index: number; from?: string | null }) => void
 			fork: (data: { plug: string; index: number; from: string }) => void
+			queue: (data: { workflowId: string; startAt: Date; endAt?: Date; frequency?: number }) => void
 		}
 		action: {
 			edit: (data: { id?: string; actions: string }) => void
@@ -53,7 +53,8 @@ export const PlugContext = createContext<{
 			add: () => {},
 			edit: () => {},
 			delete: () => {},
-			fork: () => {}
+			fork: () => {},
+			queue: () => {}
 		},
 		action: {
 			edit: () => {}
@@ -151,7 +152,36 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 			}),
 			fork: api.plug.fork.useMutation({
 				onSuccess: data => handleCreate(data)
-			})
+			}),
+			queue: api.plug.action.queue.useMutation({
+				onMutate: (data) => {
+				  setPlugs((prev) =>
+					prev.map((p) =>
+					  p.id === data.workflowId
+						? {
+							...p,
+							queuedAt: new Date(),
+							frequency: data.frequency ?? p.frequency,
+							updatedAt: new Date()
+						  }
+						: p
+					)
+				  )
+				},
+				onSuccess: (data) => {
+				  setPlugs((prev) =>
+					prev.map((p) =>
+					  p.id === data.id
+						? {
+							...p,
+							...data,
+							updatedAt: new Date()
+						  }
+						: p
+					)
+				  )
+				}
+			  })
 		},
 		action: {
 			edit: api.plug.action.edit.useMutation({
@@ -191,7 +221,9 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 						add: data => handle.plug.add.mutate(data),
 						edit: data => handle.plug.edit.mutate(data),
 						delete: data => handle.plug.delete.mutate(data),
-						fork: data => handle.plug.fork.mutate(data)
+						fork: data => handle.plug.fork.mutate(data),
+						queue: (data) => handle.plug.queue.mutate(data)
+
 					},
 					action: {
 						edit: data => handle.action.edit.mutate(data)

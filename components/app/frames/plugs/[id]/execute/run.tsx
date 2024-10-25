@@ -1,9 +1,7 @@
-import { FC, useEffect } from "react"
+import { FC, useEffect, useCallback } from "react"
 import { DateRange } from "react-day-picker"
 
 import { Eye } from "lucide-react"
-
-import { api } from "@/server/client"
 
 import { ActionPreview, Button, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
@@ -16,7 +14,7 @@ export const RunFrame: FC<{
 	clearSchedule: () => void
 }> = ({ index, item, scheduleData, clearSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "run")
-	const { plug, chains } = usePlugs(item)
+	const { plug, handle } = usePlugs(item)
 
 
 	useEffect(() => {
@@ -27,20 +25,23 @@ export const RunFrame: FC<{
 
 	const prevFrame = "NOT_IMPLEMENTED" as string
 
-	const queueMutation = api.plug.action.queue.useMutation()
 
-	const handleSubmit = async () => {
+
+	const handleSubmit = useCallback(async () => {
 		if (!plug) return
-
-		await queueMutation.mutateAsync({
-			workflowId: plug.id,
-			startAt: scheduleData?.date?.from ?? new Date(),
-			endAt: scheduleData?.date?.to ?? undefined,
-			frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
+	  
+		// Call the queue mutation
+		handle.plug.queue({
+		  workflowId: plug.id,
+		  startAt: scheduleData?.date?.from ?? new Date(),
+		  endAt: scheduleData?.date?.to ?? undefined,
+		  frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
 		})
+		
 		clearSchedule()
 		frame("running")
-	}
+	  }, [plug, scheduleData, handle.plug.queue, clearSchedule, frame])
+
 
 	return (
 		<Frame
