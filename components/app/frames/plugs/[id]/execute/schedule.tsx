@@ -39,13 +39,11 @@ export const ScheduleFrame: FC<{
 		}
 	}
 
-	// const handleBack = () => frame("chain-schedule")
 
 	return (
 		<Frame
 			index={index}
 			className="z-[2]"
-			// handleBack={handleBack}
 			icon={<CalendarPlus size={18} />}
 			label="Choose Availability"
 			visible={isFrame}

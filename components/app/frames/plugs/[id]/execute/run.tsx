@@ -29,16 +29,6 @@ export const RunFrame: FC<{
 
 	const queueMutation = api.plug.action.queue.useMutation()
 
-	// const handleBack =
-	// 	prevFrame !== "schedule"
-	// 		? chains.length === 1
-	// 			? undefined
-	// 			: () => {
-	// 					clearSchedule()
-	// 					frame(`chain-${prevFrame}`)
-	// 				}
-	// 		: () => frame(`schedule`)
-
 	const handleSubmit = async () => {
 		if (!plug) return
 
@@ -53,7 +43,6 @@ export const RunFrame: FC<{
 			frame("running")
 		} catch (error) {
 			console.error("Failed to queue workflow:", error)
-			// Handle error (e.g., show error message to user)
 		}
 	}
 
@@ -61,7 +50,6 @@ export const RunFrame: FC<{
 		<Frame
 			index={index}
 			className="z-[2]"
-			// handleBack={handleBack}
 			icon={<Eye size={18} />}
 			label={prevFrame === "schedule" ? "Intent Preview" : "Transaction Preview"}
 			visible={isFrame}
