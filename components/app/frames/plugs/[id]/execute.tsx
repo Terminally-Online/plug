@@ -12,7 +12,6 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 	const [repeats, setRepeats] = useState<(typeof frequencies)[0]>(frequencies[0])
 	const [scheduleData, setScheduleData] = useState<{
 		date: DateRange | undefined
-		repeats: (typeof frequencies)[0]
 	} | null>(null)
 
 	const clearSchedule = () => setScheduleData(null)
@@ -28,7 +27,7 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 				repeats={repeats}
 			/>
 			<RecurringFrame index={index} handleRepeats={setRepeats} />
-			<RunFrame index={index} item={item} scheduleData={scheduleData} clearSchedule={clearSchedule} />
+			<RunFrame index={index} item={item} scheduleData={scheduleData} repeats={repeats} clearSchedule={clearSchedule} />
 			<RunningFrame index={index} item={item} />
 			<RanFrame index={index} item={item} />
 		</>
