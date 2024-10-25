@@ -58,20 +58,26 @@ export const jobs = createTRPCRouter({
 		}),
 	simulate: apiKeyProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		return await ctx.db.$transaction(async tx => {
-			const workflow = await tx.workflow.findUnique({
+			const queuedWorkflow = await tx.queuedWorkflow.findUnique({
 				where: {
 					id: input.id
+				},
+				include: {
+					workflow: true
 				}
 			})
 
-			if (workflow === null) throw new TRPCError({ code: "NOT_FOUND" })
+			if (queuedWorkflow === null) throw new TRPCError({ code: "NOT_FOUND" })
 
-			return await tx.workflow.update({
+			const now = new Date()
+			const nextSimulationAt = new Date(now.getTime() + queuedWorkflow.frequency * 60 * 1000)
+
+			return await tx.queuedWorkflow.update({
 				where: {
-					id: workflow.id
+					id: queuedWorkflow.id
 				},
 				data: {
-					nextSimulationAt: new Date(Date.now() + workflow.frequency * 60 * 1000)
+					nextSimulationAt
 				}
 			})
 		})
@@ -80,34 +86,40 @@ export const jobs = createTRPCRouter({
 		const now = new Date()
 
 		return await ctx.db.$transaction(async tx => {
-			const workflows = await tx.workflow.findMany({
+			const queuedWorkflows = await tx.queuedWorkflow.findMany({
 				where: {
 					nextSimulationAt: {
 						lte: now
 					}
 				},
 				take: input?.count ?? 100,
-				select: { id: true, actions: true, socket: { select: { id: true, socketAddress: true } } }
+				select: {
+					id: true,
+					workflow: { select: { actions: true, socket: { select: { id: true, socketAddress: true } } } }
+				}
 			})
 
-			const parsedWorkflows = workflows.map(workflow => ({
-				...workflow,
-				actions: JSON.parse(workflow.actions as string)
+			const parsedQueuedWorkflows = queuedWorkflows.map(queuedWorkflow => ({
+				...queuedWorkflow,
+				workflow: {
+					...queuedWorkflow.workflow,
+					actions: JSON.parse(queuedWorkflow.workflow.actions as string)
+				}
 			}))
 
 			// TODO: Uncomment this when we are ready to save simulation results.
 			// await Promise.all(
-			// 	workflows.map(workflow =>
-			// 		tx.workflow.update({
-			// 			where: { id: workflow.id },
+			// 	queuedWorkflows.map(queuedWorkflow =>
+			// 		tx.queuedWorkflow.update({
+			// 			where: { id: queuedWorkflow.id },
 			// 			data: {
-			// 				nextSimulationAt: new Date(now.getTime() + workflow.frequency * 60 * 1000)
+			// 				nextSimulationAt: new Date(now.getTime() + queuedWorkflow.frequency * 60 * 1000)
 			// 			}
 			// 		})
 			// 	)
 			// )
 
-			return parsedWorkflows
+			return parsedQueuedWorkflows
 		})
 	})
 })

@@ -26,7 +26,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 			const executeFrame = document.getElementById(`execute-frame-${index}`)
 			if (executeFrame) {
 				const clearSchedule = (executeFrame as any).clearSchedule
-				if (typeof clearSchedule === 'function') {
+				if (typeof clearSchedule === "function") {
 					clearSchedule()
 				}
 			}

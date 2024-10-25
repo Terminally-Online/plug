@@ -1,10 +1,12 @@
 import { FC, useState } from "react"
 import { DateRange, DayPicker } from "react-day-picker"
+
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
+
 import { Button, Dropdown, Frame } from "@/components"
+import { usePlugs } from "@/contexts/PlugProvider"
 import { cn, formatDate } from "@/lib"
 import { useColumns } from "@/state"
-import { usePlugs } from "@/contexts/PlugProvider"
 
 const frequencies = [
 	{ label: "Never", value: "0" },

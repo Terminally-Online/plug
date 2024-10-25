@@ -75,7 +75,7 @@ export const DynamicFragment: FC<{
 
 		if (hasChanged) {
 			handle.action.edit({
-				id: plug?.id,
+				id: plug?.id ?? "", // Provide an empty string as default
 				actions: JSON.stringify(
 					actions.map((action, nestedActionIndex) => ({
 						...action,

@@ -9,28 +9,28 @@ import { RunningFrame } from "./execute/running"
 import { ScheduleFrame } from "./execute/schedule"
 
 export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-    const [repeats, setRepeats] = useState<(typeof frequencies)[0]>(frequencies[0])
-    const [scheduleData, setScheduleData] = useState<{
-        date: DateRange | undefined
-        repeats: (typeof frequencies)[0]
-    } | null>(null)
+	const [repeats, setRepeats] = useState<(typeof frequencies)[0]>(frequencies[0])
+	const [scheduleData, setScheduleData] = useState<{
+		date: DateRange | undefined
+		repeats: (typeof frequencies)[0]
+	} | null>(null)
 
-    const clearSchedule = () => setScheduleData(null)
+	const clearSchedule = () => setScheduleData(null)
 
-    return (
-        <>
-            <ChainFrame index={index} item={item} />
-            <ScheduleFrame
-                index={index}
-                item={item}
-                scheduleData={scheduleData}
-                setScheduleData={setScheduleData}
-                repeats={repeats}
-            />
-            <RecurringFrame index={index} handleRepeats={setRepeats} />
-            <RunFrame index={index} item={item} scheduleData={scheduleData} clearSchedule={clearSchedule} />
-            <RunningFrame index={index} item={item} />
-            <RanFrame index={index} item={item} />
-        </>
-    )
+	return (
+		<>
+			<ChainFrame index={index} item={item} />
+			<ScheduleFrame
+				index={index}
+				item={item}
+				scheduleData={scheduleData}
+				setScheduleData={setScheduleData}
+				repeats={repeats}
+			/>
+			<RecurringFrame index={index} handleRepeats={setRepeats} />
+			<RunFrame index={index} item={item} scheduleData={scheduleData} clearSchedule={clearSchedule} />
+			<RunningFrame index={index} item={item} />
+			<RanFrame index={index} item={item} />
+		</>
+	)
 }
