@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"solver/router"
+	"solver/solver"
 	"solver/utils"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -14,7 +16,10 @@ func main() {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
 	}
 
-	router := router.SetupRouter()
+	// Initialize solver with protocols
+	solver := solver.New()
+
+	router := router.SetupRouter(solver)
 	log.Println("Server is running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -1,26 +1,24 @@
 package router
 
 import (
-	"log"
 	"net/http"
 	"solver/api"
 	"solver/intent"
+	"solver/solver"
 
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter() *mux.Router {
+func SetupRouter(solver *solver.Solver) *mux.Router {
 	r := mux.NewRouter()
-
 	r.Use(JsonContentTypeMiddleware)
 
-	r.HandleFunc("/intent", intent.Get).Methods("GET")
-	r.HandleFunc("/intent", intent.Post).Methods("POST")
+	// Create intent handler with solver
+	intentHandler := intent.NewHandler(solver)
+
+	r.HandleFunc("/intent", intentHandler.Get).Methods("GET")
+	r.HandleFunc("/intent", intentHandler.Post).Methods("POST")
 	r.HandleFunc("/payment", api.GetPayment).Methods("GET")
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Catch-all hit: %s %s", r.Method, r.URL.Path)
-		http.Error(w, "Not found", http.StatusNotFound)
-	})
 
 	return r
 }
@@ -31,4 +29,3 @@ func JsonContentTypeMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-
