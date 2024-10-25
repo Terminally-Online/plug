@@ -25,7 +25,6 @@ export const ScheduleFrame: FC<{
 	repeats: (typeof frequencies)[0]
 }> = ({ index, item, scheduleData, setScheduleData, repeats }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
-	const { plug } = usePlugs(item)
 	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
 
 	const handleDateSelect = (selectedDate: DateRange | undefined) => {
