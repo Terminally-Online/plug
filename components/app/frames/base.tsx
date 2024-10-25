@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren, useEffect } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
@@ -17,6 +17,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> &
 		hasOverlay?: boolean
 		hasChildrenPadding?: boolean
 		next?: JSX.Element
+		clearSchedule?: () => void
 	}
 
 export const Frame: FC<Props> = ({
@@ -29,10 +30,17 @@ export const Frame: FC<Props> = ({
 	hasChildrenPadding = true,
 	children,
 	className,
-	next
+	next,
+	clearSchedule
 }) => {
 	const { md } = useMediaQuery()
 	const { frame } = useColumns(index)
+
+	useEffect(() => {
+		if (!visible && clearSchedule) {
+			clearSchedule()
+		}
+	}, [visible, clearSchedule])
 
 	return (
 		<AnimatePresence>

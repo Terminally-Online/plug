@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { Eye } from "lucide-react"
 import { ActionPreview, Button, Frame, Image } from "@/components"
 import { useColumns } from "@/state"
@@ -13,6 +13,18 @@ export const RunFrame: FC<{
     clearSchedule: () => void
 }> = ({ index, item, scheduleData, clearSchedule }) => {
     const { isFrame, frame } = useColumns(index, "run")
+    
+    useEffect(() => {
+        console.log("RunFrame effect triggered", { isFrame, scheduleData })
+        if (!isFrame) {
+            console.log("Clearing schedule from RunFrame")
+            clearSchedule()
+        }
+    }, [isFrame, clearSchedule, scheduleData])
+
+    // Also log in main render
+    console.log("RunFrame render", { isFrame, scheduleData })
+    
     const { plug, chains } = usePlugs(item)
     const prevFrame = useColumns(index - 1, "key")
 
