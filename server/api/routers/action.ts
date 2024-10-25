@@ -1,4 +1,4 @@
-import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, protectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
@@ -52,7 +52,7 @@ export const action = createTRPCRouter({
 			}
 		}),
 
-	queue: anonymousProtectedProcedure
+	queue: protectedProcedure
 		.input(
 			z.object({
 				workflowId: z.string(),
