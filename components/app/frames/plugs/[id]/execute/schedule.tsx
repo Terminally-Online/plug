@@ -27,9 +27,6 @@ export const ScheduleFrame: FC<{
 	const { isFrame, frame } = useColumns(index, "schedule")
 	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
 
-	const handleDateSelect = (selectedDate: DateRange | undefined) => {
-		setDate(selectedDate)
-	}
 
 	const handleNext = () => {
 		if (date?.from) {
@@ -78,7 +75,7 @@ export const ScheduleFrame: FC<{
 				<DayPicker
 					mode="range"
 					selected={date}
-					onSelect={handleDateSelect}
+					onSelect={setDate}
 					showOutsideDays
 					fixedWeeks
 					weekStartsOn={1}
