@@ -77,16 +77,14 @@ export const RunFrame: FC<{
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-60">Run On</span>
-					{chains.map(chain => (
-						<Image
-							key={chain}
-							className="ml-[-20px] h-6 w-6"
-							src={`/blockchain/${chain}.png`}
-							alt={chain}
-							width={24}
-							height={24}
-						/>
-					))}
+					{/* TODO: ADD CHAIN FUNCTIONALITY BACK */}
+					<Image
+						className="ml-[-20px] h-6 w-6"
+						src={`/blockchain/ethereum.png`}
+						alt="ethereum"
+						width={24}
+						height={24}
+					/>
 				</p>
 
 				<p className="flex font-bold">
