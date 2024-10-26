@@ -12,7 +12,6 @@ import (
 
 var (
 	address          = utils.Mainnet.References["aave_v2"]["pool"]
-	hexAddress       = common.HexToAddress(address)
 	interestRateMode = new(big.Int).SetUint64(2)
 )
 
