@@ -1,5 +1,19 @@
 ![Plug solver banner](/plug-solver.png)
 
+This Solver repository functions as the primary backend for onchain transactions and Plug action metadata.
+
+Contained within this repository are the following endpoints:
+
+```ml
+solver
+├─ intent — "Primary endpoint for building intents & transactions."
+│   ├─ GET — "Schema definition of the associated action."
+│   └─ POST — "Transaction definition of a bundle of actions."
+└─ paymaster — "Convert gas costs to comparable ERC20 balances and values."
+```
+
+Powering this a lot of logic is going on behind the scenes. Adjusting any piece of this code is not recommended at this time.
+
 ## Generating Contract Bindings
 
 For all contract interactions we build an interface binding that streamlines the act of onchain transaction preparation and execution. For this, we utilize the [abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) tool from the Ethereum Go client.
