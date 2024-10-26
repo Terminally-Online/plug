@@ -1,4 +1,4 @@
-import { anonymousProtectedProcedure, protectedProcedure, createTRPCRouter } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"

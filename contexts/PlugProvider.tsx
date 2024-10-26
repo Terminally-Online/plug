@@ -154,34 +154,34 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 				onSuccess: data => handleCreate(data)
 			}),
 			queue: api.plug.action.queue.useMutation({
-				onMutate: (data) => {
-				  setPlugs((prev) =>
-					prev.map((p) =>
-					  p.id === data.workflowId
-						? {
-							...p,
-							queuedAt: new Date(),
-							frequency: data.frequency ?? p.frequency,
-							updatedAt: new Date()
-						  }
-						: p
+				onMutate: data => {
+					setPlugs(prev =>
+						prev.map(p =>
+							p.id === data.workflowId
+								? {
+										...p,
+										queuedAt: new Date(),
+										frequency: data.frequency ?? p.frequency,
+										updatedAt: new Date()
+									}
+								: p
+						)
 					)
-				  )
 				},
-				onSuccess: (data) => {
-				  setPlugs((prev) =>
-					prev.map((p) =>
-					  p.id === data.id
-						? {
-							...p,
-							...data,
-							updatedAt: new Date()
-						  }
-						: p
+				onSuccess: data => {
+					setPlugs(prev =>
+						prev.map(p =>
+							p.id === data.id
+								? {
+										...p,
+										...data,
+										updatedAt: new Date()
+									}
+								: p
+						)
 					)
-				  )
 				}
-			  })
+			})
 		},
 		action: {
 			edit: api.plug.action.edit.useMutation({
@@ -222,8 +222,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 						edit: data => handle.plug.edit.mutate(data),
 						delete: data => handle.plug.delete.mutate(data),
 						fork: data => handle.plug.fork.mutate(data),
-						queue: (data) => handle.plug.queue.mutate(data)
-
+						queue: data => handle.plug.queue.mutate(data)
 					},
 					action: {
 						edit: data => handle.action.edit.mutate(data)

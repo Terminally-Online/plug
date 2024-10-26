@@ -34,7 +34,6 @@ export const Frame: FC<Props> = ({
 	const { md } = useMediaQuery()
 	const { frame } = useColumns(index)
 
-
 	return (
 		<AnimatePresence>
 			{visible ? (

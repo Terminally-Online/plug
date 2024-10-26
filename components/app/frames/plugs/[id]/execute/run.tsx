@@ -1,4 +1,4 @@
-import { FC, useEffect, useCallback } from "react"
+import { FC, useCallback, useEffect } from "react"
 import { DateRange } from "react-day-picker"
 
 import { Eye } from "lucide-react"
@@ -7,15 +7,16 @@ import { ActionPreview, Button, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
 import { useColumns } from "@/state"
 
+import { frequencies } from "./recurring"
+
 export const RunFrame: FC<{
 	index: number
 	item: string
-	scheduleData: { date: DateRange | undefined; repeats: { value: string } } | null
+	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
 	clearSchedule: () => void
 }> = ({ index, item, scheduleData, clearSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "run")
 	const { plug, handle } = usePlugs(item)
-
 
 	useEffect(() => {
 		if (!isFrame) {
@@ -25,23 +26,23 @@ export const RunFrame: FC<{
 
 	const prevFrame = "NOT_IMPLEMENTED" as string
 
-
-
-	const handleSubmit = useCallback(async () => {
+	const handleRun = useCallback(() => {
 		if (!plug) return
-	  
-		// Call the queue mutation
-		handle.plug.queue({
-		  workflowId: plug.id,
-		  startAt: scheduleData?.date?.from ?? new Date(),
-		  endAt: scheduleData?.date?.to ?? undefined,
-		  frequency: scheduleData ? parseInt(scheduleData.repeats.value) : -1
-		})
-		
+
+		if (scheduleData?.date?.from) {
+			handle.plug.queue({
+				workflowId: plug.id,
+				startAt: scheduleData.date.from,
+				endAt: scheduleData.date.to,
+				frequency: parseInt(scheduleData.repeats.value)
+			})
+		} else {
+			// Immediate execution logic
+		}
+
 		clearSchedule()
 		frame("running")
-	  }, [plug, scheduleData, handle.plug.queue, clearSchedule, frame])
-
+	}, [plug, scheduleData, handle.plug.queue, clearSchedule, frame])
 
 	return (
 		<Frame
@@ -76,7 +77,7 @@ export const RunFrame: FC<{
 					</span>
 				</p>
 
-				<Button className="mt-4 w-full" onClick={handleSubmit}>
+				<Button className="mt-4 w-full" onClick={handleRun}>
 					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
 				</Button>
 			</div>

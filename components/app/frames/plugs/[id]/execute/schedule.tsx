@@ -22,19 +22,16 @@ export const ScheduleFrame: FC<{
 	item: string
 	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
 	setScheduleData: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
-	repeats: (typeof frequencies)[0]
-}> = ({ index, item, scheduleData, setScheduleData, repeats }) => {
+}> = ({ index, item, scheduleData, setScheduleData }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
 	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
 
-
 	const handleNext = () => {
 		if (date?.from) {
-			setScheduleData({ date, repeats })
+			setScheduleData({ date, repeats: scheduleData?.repeats || frequencies[0] })
 			frame("run")
 		}
 	}
-
 
 	return (
 		<Frame
@@ -122,7 +119,7 @@ export const ScheduleFrame: FC<{
 				<Dropdown
 					icon={<Clock size={14} className="opacity-60" />}
 					placeholder="Repeats"
-					value={repeats.label}
+					value={scheduleData?.repeats.label || "Never"}
 					options={frequencies}
 					handleClick={() => frame("recurring")}
 				/>
