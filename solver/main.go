@@ -2,6 +2,7 @@ package solver
 
 import (
 	"fmt"
+
 	"solver/protocols"
 	"solver/protocols/aave_v2"
 	"solver/types"

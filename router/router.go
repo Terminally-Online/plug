@@ -2,8 +2,8 @@ package router
 
 import (
 	"net/http"
-	"solver/api"
 	"solver/intent"
+	"solver/paymaster"
 	"solver/solver"
 
 	"github.com/gorilla/mux"
@@ -17,7 +17,7 @@ func SetupRouter(solver *solver.Solver) *mux.Router {
 
 	r.HandleFunc("/intent", intentHandler.Get).Methods("GET")
 	r.HandleFunc("/intent", intentHandler.Post).Methods("POST")
-	r.HandleFunc("/payment", api.GetPayment).Methods("GET")
+	r.HandleFunc("/payment", paymaster.Get).Methods("GET")
 
 	return r
 }

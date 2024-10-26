@@ -1,4 +1,4 @@
-package api
+package paymaster
 
 import (
 	"encoding/json"
@@ -69,7 +69,7 @@ func fetchTokenPrices(tokens ...string) (map[string]struct {
 	return result, nil
 }
 
-func GetPayment(w http.ResponseWriter, r *http.Request) {
+func Get(w http.ResponseWriter, r *http.Request) {
 	var req GasCompensationRequest
 
 	gas, err := strconv.ParseInt(r.URL.Query().Get("gas"), 10, 64)
