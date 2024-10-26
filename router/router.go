@@ -13,7 +13,6 @@ func SetupRouter(solver *solver.Solver) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(JsonContentTypeMiddleware)
 
-	// Create intent handler with solver
 	intentHandler := intent.NewHandler(solver)
 
 	r.HandleFunc("/intent", intentHandler.Get).Methods("GET")

@@ -3,13 +3,16 @@ package types
 type Action string
 
 const (
-	ActionDeposit Action = "DEPOSIT"
-	ActionBorrow  Action = "BORROW"
+	ActionDeposit Action = "deposit"
+	ActionBorrow  Action = "borrow"
+	ActionRedeem  Action = "redeem"
+	ActionRepay   Action = "repay"
 )
 
 type Protocol string
 
 const (
-	ProtocolAave     Protocol = "AAVE"
-	ProtocolCompound Protocol = "COMPOUND"
+	ProtocolAaveV2  Protocol = "aave_v2"
+	ProtocolAaveV3  Protocol = "aave_v3"
+	ProtocolYearnV3 Protocol = "yearn_v3"
 )

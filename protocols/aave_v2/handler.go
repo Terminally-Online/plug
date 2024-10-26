@@ -1,7 +1,20 @@
 package aave_v2
 
 import (
+	"math/big"
+	"solver/bindings/aave_v2_pool"
 	"solver/types"
+	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+var (
+	address          = utils.Mainnet.References["aave_v2"]["pool"]
+	hexAddress       = common.HexToAddress(address)
+	interestRateMode = new(big.Int).SetUint64(2)
 )
 
 type Handler struct {
@@ -11,13 +24,12 @@ type Handler struct {
 
 func New() *Handler {
 	h := &Handler{}
-	h.initSchemas()
-	return h
+	return h.init()
 }
 
-func (h *Handler) initSchemas() {
+func (h *Handler) init() *Handler {
 	h.depositSchema = types.ActionSchema{
-		Protocol: types.ProtocolAave,
+		Protocol: types.ProtocolAaveV2,
 		Schema: types.Schema{
 			Fields: []types.SchemaField{
 				{
@@ -28,7 +40,7 @@ func (h *Handler) initSchemas() {
 						{
 							Value:       "0x6b175474e89094c44da98b954eedeac495271d0f",
 							Label:       "DAI",
-							Description: "Dai Stablecoin",
+							Description: "Dah Stablecoin",
 						},
 						{
 							Value:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -48,7 +60,7 @@ func (h *Handler) initSchemas() {
 	}
 
 	h.borrowSchema = types.ActionSchema{
-		Protocol: types.ProtocolAave,
+		Protocol: types.ProtocolAaveV2,
 		Schema: types.Schema{
 			Fields: []types.SchemaField{
 				{
@@ -59,7 +71,7 @@ func (h *Handler) initSchemas() {
 						{
 							Value:       "0x6b175474e89094c44da98b954eedeac495271d0f",
 							Label:       "DAI",
-							Description: "Dai Stablecoin",
+							Description: "Dah Stablecoin",
 						},
 					},
 				},
@@ -67,61 +79,57 @@ func (h *Handler) initSchemas() {
 			Required: []string{"tokenToBorrow", "amount"},
 		},
 	}
+
+	return h
 }
 
 func (h *Handler) SupportedActions() []types.Action {
 	return []types.Action{types.ActionDeposit, types.ActionBorrow}
 }
 
+func (h *Handler) SupportedChains() []int {
+	return []int{1}
+}
+
 func (h *Handler) HandleGetDeposit() types.ActionSchema {
-	return types.ActionSchema{
-		Protocol: types.ProtocolAave,
-		Schema: types.Schema{
-			Fields: []types.SchemaField{
-				{
-					Name:        "tokenIn",
-					Type:        "address",
-					Description: "Token to deposit",
-					Options: []types.Option{
-						{
-							Value:       "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label:       "DAI",
-							Description: "Dai Stablecoin",
-						},
-						{
-							Value:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-							Label:       "WETH",
-							Description: "Wrapped Ether",
-						},
-					},
-				},
-				{
-					Name:        "amountIn",
-					Type:        "uint256",
-					Description: "Amount to deposit in wei",
-				},
-			},
-			Required: []string{"tokenIn", "amountIn"},
-		},
+	return h.depositSchema
+}
+
+func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
+	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
+	if err != nil {
+		return nil, utils.ErrContractFailed(address)
 	}
+
+	deposit, err := contract.Deposit(
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
+		common.HexToAddress(inputs.TokenOut),
+		&inputs.AmountIn,
+		common.HexToAddress(from),
+		uint16(0),
+	)
+
+	return []*ethtypes.Transaction{deposit}, err
 }
 
 func (h *Handler) HandleGetBorrow() types.ActionSchema {
 	return h.borrowSchema
 }
 
-func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs) (*types.Transaction, error) {
-	// Implement Aave deposit logic
-	return &types.Transaction{
-		To: inputs.Target,
-		// Add other transaction details
-	}, nil
-}
+func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
+	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
+	if err != nil {
+		return nil, utils.ErrContractFailed(address)
+	}
 
-func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs) (*types.Transaction, error) {
-	// Implement Aave borrow logic
-	return &types.Transaction{
-		To: inputs.Target,
-		// Add other transaction details
-	}, nil
+	borrow, err := contract.Borrow(
+		utils.BuildTransactionOpts(from, big.NewInt(0)),
+		common.HexToAddress(inputs.TokenOut),
+		&inputs.AmountOut,
+		interestRateMode,
+		uint16(0),
+		common.HexToAddress(from),
+	)
+
+	return []*ethtypes.Transaction{borrow}, err
 }

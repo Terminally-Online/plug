@@ -1,3 +1,4 @@
+// File: intent/handler.go
 package intent
 
 import (
@@ -5,6 +6,7 @@ import (
 	"net/http"
 	"solver/solver"
 	"solver/types"
+	"solver/utils"
 )
 
 type Handler struct {
@@ -17,24 +19,22 @@ func NewHandler(solver *solver.Solver) *Handler {
 	}
 }
 
-// Get handles GET requests to /intent
-// Returns schema for specified action and protocol
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	action := r.URL.Query().Get("action")
 	if action == "" {
-		http.Error(w, "action parameter is required", http.StatusBadRequest)
+		utils.MakeHttpError(w, "action parameter is required", http.StatusBadRequest)
 		return
 	}
 
 	protocol := r.URL.Query().Get("protocol")
 	if protocol == "" {
-		http.Error(w, "protocol parameter is required", http.StatusBadRequest)
+		utils.MakeHttpError(w, "protocol parameter is required", http.StatusBadRequest)
 		return
 	}
 
 	handler, exists := h.solver.GetProtocolHandler(types.Protocol(protocol))
 	if !exists {
-		http.Error(w, "unsupported protocol", http.StatusBadRequest)
+		utils.MakeHttpError(w, "unsupported protocol", http.StatusBadRequest)
 		return
 	}
 
@@ -45,69 +45,75 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	case types.ActionBorrow:
 		schema = handler.HandleGetBorrow()
 	default:
-		http.Error(w, "unsupported action", http.StatusBadRequest)
+		utils.MakeHttpError(w, "unsupported action", http.StatusBadRequest)
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(schema); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-// IntentRequest represents the incoming POST request structure
 type IntentRequest struct {
-	Action types.Action    `json:"action"`
-	Inputs json.RawMessage `json:"inputs"`
+	Action  types.Action    `json:"action"`
+	ChainId int             `json:"chainId"`
+	From    string          `json:"from"`
+	Inputs  json.RawMessage `json:"inputs"`
 }
 
-// Post handles POST requests to /intent
-// Builds and returns a transaction based on the provided action and inputs
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	var req IntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+    if req.ChainId == 0 {
+        utils.MakeHttpError(w, "chainId is required", http.StatusBadRequest)
+        return
+    }
+    if req.From == "" {
+        utils.MakeHttpError(w, "from address is required", http.StatusBadRequest)
+        return
+    }
 
 	var actionInputs types.ActionInputs
 	switch req.Action {
 	case types.ActionDeposit:
 		var depositInputs types.DepositInputs
 		if err := json.Unmarshal(req.Inputs, &depositInputs); err != nil {
-			http.Error(w, "invalid deposit inputs: "+err.Error(), http.StatusBadRequest)
+			utils.MakeHttpError(w, "invalid deposit inputs: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 		actionInputs = &depositInputs
-
 	case types.ActionBorrow:
 		var borrowInputs types.BorrowInputs
 		if err := json.Unmarshal(req.Inputs, &borrowInputs); err != nil {
-			http.Error(w, "invalid borrow inputs: "+err.Error(), http.StatusBadRequest)
+			utils.MakeHttpError(w, "invalid borrow inputs: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 		actionInputs = &borrowInputs
 
 	default:
-		http.Error(w, "unsupported action", http.StatusBadRequest)
+		utils.MakeHttpError(w, "unsupported action", http.StatusBadRequest)
 		return
 	}
 
-	// Validate inputs
 	if err := actionInputs.Validate(); err != nil {
-		http.Error(w, "invalid inputs: "+err.Error(), http.StatusBadRequest)
+		utils.MakeHttpError(w, "invalid inputs: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Build transaction
-	tx, err := h.solver.BuildTransaction(req.Action, actionInputs)
+	transaction, err := h.solver.BuildTransaction(req.Action, actionInputs, req.ChainId, req.From)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(tx); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := json.NewEncoder(w).Encode(transaction); err != nil {
+		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
+

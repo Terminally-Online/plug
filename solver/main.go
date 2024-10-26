@@ -5,6 +5,9 @@ import (
 	"solver/protocols"
 	"solver/protocols/aave_v2"
 	"solver/types"
+	"solver/utils"
+
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
 type Solver struct {
@@ -14,8 +17,7 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		protocols: map[types.Protocol]protocols.ProtocolHandler{
-			types.ProtocolAave: aave_v2.New(),
-			// types.ProtocolCompound: compound.New(),
+			types.ProtocolAaveV2: aave_v2.New(),
 		},
 	}
 }
@@ -68,8 +70,7 @@ func (s *Solver) GetActionSchema(action types.Action) ([]types.ActionSchema, err
 	return schemas, nil
 }
 
-func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs) (*types.Transaction, error) {
-	// Validate inputs first
+func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs, chainId int, from string) ([]*ethtypes.Transaction, error) {
 	if err := inputs.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid inputs: %w", err)
 	}
@@ -80,8 +81,18 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
 		return nil, fmt.Errorf("unsupported protocol: %s", protocol)
 	}
 
-	// Verify protocol supports this action
 	supported := false
+	for _, supportedChain := range handler.SupportedChains() {
+		if supportedChain == chainId {
+			supported = true
+			break
+		}
+	}
+	if !supported {
+		return nil, fmt.Errorf("chain %d not supported by protocol %s", chainId, protocol)
+	}
+
+	supported = false
 	for _, a := range handler.SupportedActions() {
 		if a == action {
 			supported = true
@@ -92,19 +103,36 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
 		return nil, fmt.Errorf("action %s not supported by protocol %s", action, protocol)
 	}
 
+	provider, err := utils.GetProvider(chainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to Ethereum node: %v", err)
+	}
+
 	switch action {
 	case types.ActionDeposit:
 		depositInputs, ok := inputs.(*types.DepositInputs)
 		if !ok {
 			return nil, fmt.Errorf("invalid input type for deposit action")
 		}
-		return handler.HandlePostDeposit(depositInputs)
+		return handler.HandlePostDeposit(depositInputs, provider, chainId, from)
 	case types.ActionBorrow:
 		borrowInputs, ok := inputs.(*types.BorrowInputs)
 		if !ok {
 			return nil, fmt.Errorf("invalid input type for borrow action")
 		}
-		return handler.HandlePostBorrow(borrowInputs)
+		return handler.HandlePostBorrow(borrowInputs, provider, chainId, from)
+	// case types.ActionRedeem:
+	// 	redeemInputs, ok := inputs.(*types.RedeemInputs)
+	// 	if !ok {
+	// 		return nil, fmt.Errorf("invalid input type for redeem action")
+	// 	}
+	// 	return handler.HandlePostRedeem(redeemInputs, provider, chainId, from)
+	// case types.ActionRepay:
+	// 	redeemInputs, ok := inputs.(*types.RepayInputs)
+	// 	if !ok {
+	// 		return nil, fmt.Errorf("invalid input type for redeem action")
+	// 	}
+	// 	return handler.HandlePostRepay(redeemInputs)
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
@@ -114,22 +142,3 @@ func (s *Solver) GetProtocolHandler(protocol types.Protocol) (protocols.Protocol
 	handler, exists := s.protocols[protocol]
 	return handler, exists
 }
-
-// func Example() {
-// 	solver := New()
-
-// 	// Protocol must be specified in inputs
-// 	inputs := &types.DepositInputs{
-// 		BaseInputs: types.BaseInputs{
-// 			Protocol: types.ProtocolAave, // Required
-// 		},
-// 		TokenIn:  "0x...",
-// 		TokenOut: "0x...",
-// 		AmountIn: *big.NewInt(1000000),
-// 	}
-
-// 	_, err := solver.BuildTransaction(types.ActionDeposit, inputs)
-// 	if err != nil {
-// 		// Handle error
-// 	}
-// }

@@ -2,17 +2,18 @@ package protocols
 
 import (
 	"solver/types"
+
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-// ProtocolHandler interface with both GET and POST operations
 type ProtocolHandler interface {
 	SupportedActions() []types.Action
+	SupportedChains() []int
 
-	// POST handlers - execute actions
-	HandlePostDeposit(inputs *types.DepositInputs) (*types.Transaction, error)
-	HandlePostBorrow(inputs *types.BorrowInputs) (*types.Transaction, error)
-
-	// GET handlers - return schemas
 	HandleGetDeposit() types.ActionSchema
+	HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error)
+
 	HandleGetBorrow() types.ActionSchema
+	HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error)
 }
