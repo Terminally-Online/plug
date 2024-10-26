@@ -27,29 +27,27 @@ export const action = createTRPCRouter({
 	edit: anonymousProtectedProcedure
 		.input(
 			z.object({
-				id: z.string(),
+				id: z.string().optional(),
 				actions: z.string()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			try {
-				const tags = getTags(input.actions)
+			if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-				const plug = await ctx.db.workflow.update({
-					where: { id: input.id, socketId: ctx.session.address },
-					data: {
-						actions: input.actions,
-						tags,
-						updatedAt: new Date()
-					}
-				})
+			const tags = getTags(input.actions)
 
-				ctx.emitter.emit(events.edit, plug)
+			const plug = await ctx.db.workflow.update({
+				where: { id: input.id, socketId: ctx.session.address },
+				data: {
+					actions: input.actions,
+					tags,
+					updatedAt: new Date()
+				}
+			})
 
-				return plug
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+			ctx.emitter.emit(events.edit, plug)
+
+			return plug
 		}),
 
 	queue: protectedProcedure
