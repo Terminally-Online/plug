@@ -1,213 +1,68 @@
-import { useSession } from "next-auth/react"
 import { FC, HTMLAttributes, useMemo } from "react"
-
-import { ActivityItem, Animate, Callout } from "@/components"
+import { useSession } from "next-auth/react"
 import { cn } from "@/lib"
 import { useColumns, useSocket } from "@/state"
-
+import { api } from "@/server/client"
+import { Callout } from "@/components"
+import { ActivityItem } from "./activity-item"
 import { ActivityFrame } from "../../frames/sockets/activity"
 
-const activities = [
-	{
-		text: "Lend ETH with High APY",
-		color: "blue",
-		status: "success",
-		time: "12s ago"
-	},
-	{
-		text: "Buy Beta When Majors Move",
-		color: "green",
-		status: "success",
-		time: "3m ago"
-	},
-	{
-		text: "Exit Aave When Below 10% APY",
-
-		color: "blue",
-		status: "success",
-		time: "1h ago"
-	},
-	{
-		text: "Manage Aave Position",
-		color: "blue",
-		status: "success",
-		time: "2h ago"
-	},
-	{
-		text: "Lend ETH with High APY",
-		color: "blue",
-		status: "success",
-		time: "3h ago"
-	},
-	{
-		text: "Balance Gearbox",
-		color: "orange",
-		status: "success",
-		time: "6h ago"
-	},
-	{
-		text: "Get Tip Allowance & Auto-Compound ENJOY Rewards",
-		color: "cyan",
-		status: "success",
-		time: "9h ago"
-	},
-	{
-		text: "Borrow on Aave",
-		color: "blue",
-		status: "warning",
-		time: "16h ago"
-	},
-	{
-		text: "Lend ETH with High APY",
-		color: "blue",
-		status: "error",
-		time: "1d ago"
-	},
-	{
-		text: "Bridge to Optimism, Base, and Bera",
-		color: "red",
-		status: "success",
-		time: "2d ago"
-	},
-	{
-		text: "Bid on Noun with Yellow Glasses",
-		color: "yellow",
-		status: "warning",
-		time: "2d ago"
-	},
-	{
-		text: "Fill Ethena Liquidity Cap to Limit",
-		color: "green",
-		status: "success",
-		time: "2d ago"
-	},
-	{
-		text: "Renew ENS Annually at Low Gas",
-		color: "green",
-		status: "success",
-		time: "2d ago"
-	},
-	{
-		text: "Enter Yearn If Above 50%",
-		color: "blue",
-		status: "success",
-		time: "2d ago"
-	},
-	{
-		text: "Borrow on Gearbox",
-		color: "orange",
-		status: "success",
-		time: "3d ago"
-	},
-	{
-		text: "Top-Up Gearbox Loan Health Factor",
-		color: "orange",
-		status: "success",
-		time: "3d ago"
-	},
-	{
-		text: "Exit Aave When Below 10% APY",
-		color: "blue",
-		status: "success",
-		time: "3d ago"
-	},
-	{
-		text: "Lend ETH with High APY",
-		color: "blue",
-		status: "success",
-		time: "3d ago"
-	},
-	{
-		text: "Bid on Noun with Yellow Glasses",
-		color: "yellow",
-		status: "warning",
-		time: "3d ago"
-	},
-	{
-		text: "Bid on Noun with Yellow Glasses",
-		color: "yellow",
-		status: "warning",
-		time: "4d ago"
-	},
-	{
-		text: "Borrow on Gearbox",
-		color: "orange",
-		status: "success",
-		time: "4d ago"
-	},
-	{
-		text: "Top-Up Gearbox Loan Health Factor",
-		color: "orange",
-		status: "success",
-		time: "4d ago"
-	},
-	{
-		text: "Bid on Noun with Yellow Glasses",
-		color: "yellow",
-		status: "warning",
-		time: "5d ago"
-	},
-	{
-		text: "Lend ETH with High APY",
-		color: "green",
-		status: "success",
-		time: "5d ago"
-	},
-	{
-		text: "Bid on Noun with Yellow Glasses",
-		color: "yellow",
-		status: "warning",
-		time: "6d ago"
-	},
-	{
-		text: "Get Tip Allowance & Auto-Compound ENJOY Rewards",
-		color: "blue",
-		status: "success",
-		time: "8d ago"
-	},
-	{
-		text: "Top-Up Gearbox Loan Health Factor",
-		color: "orange",
-		status: "error",
-		time: "11d ago"
-	}
-]
-
 export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
-	index = -1,
-	className,
-	...props
+    index = -1,
+    className,
+    ...props
 }) => {
-	const { data: session } = useSession()
-	const { isAnonymous } = useSocket()
-	const { isExternal } = useColumns(index)
+    const { data: session } = useSession()
+    const { isAnonymous } = useSocket()
+    const { isExternal } = useColumns(index)
 
-	const visibleActivities = useMemo(() => {
-		if (!session || (isAnonymous && isExternal === false)) return Array(10).fill(undefined)
+    const { data: queuedWorkflows, isLoading } = api.plug.action.getQueued.useQuery(
+        undefined,
+        {
+            enabled: Boolean(session?.address) && (!isAnonymous || isExternal)
+        }
+    )
 
-		return activities
-	}, [session, isAnonymous, isExternal])
+    const visibleActivities = useMemo(() => {
+        if (!session || (isAnonymous && isExternal === false)) {
+            return Array(10).fill(undefined)
+        }
 
-	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			<div className="flex flex-col gap-2">
-				{visibleActivities.map((activity, activityIndex) => (
-					<ActivityItem key={activityIndex} index={index} activityIndex={activityIndex} activity={activity} />
-				))}
-			</div>
+        if (isLoading) {
+            return Array(10).fill(undefined)
+        }
 
-			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
+        return queuedWorkflows || []
+    }, [queuedWorkflows, session, isAnonymous, isExternal, isLoading])
 
-			{visibleActivities
-				.filter(activity => Boolean(activity))
-				.map((activity, activityIndex) => (
-					<ActivityFrame
-						key={activityIndex}
-						index={index}
-						activityIndex={activityIndex}
-						activity={{ name: activity.text, status }}
-					/>
-				))}
-		</div>
-	)
+    return (
+        <div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+            <div className="flex flex-col gap-2">
+                {visibleActivities.map((activity, activityIndex) => (
+                    <ActivityItem
+                        key={activity?.id || activityIndex}
+                        id={`${index}-${activityIndex}-activity`}
+                        index={activityIndex}
+                        activity={activity}
+                    />
+                ))}
+            </div>
+
+            <Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
+
+            {visibleActivities
+                .filter(activity => Boolean(activity))
+                .map((activity, activityIndex) => (
+                    <ActivityFrame
+                        key={activity?.id || activityIndex}
+                        index={index}
+                        activityIndex={activityIndex}
+                        activity={{
+                            name: activity?.text || '',
+                            status: 'pending'
+                        }}
+                    />
+                ))}
+        </div>
+    )
 }

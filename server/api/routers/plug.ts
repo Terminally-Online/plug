@@ -1,14 +1,10 @@
-import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
+import { z } from "zod"
+import { anonymousProtectedProcedure, protectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 import { observable } from "@trpc/server/observable"
-
-import { z } from "zod"
-
 import { Prisma } from "@prisma/client"
-
 import { colors } from "@/lib"
-
-import { action } from "./action"
+import { action as actionRouter } from "./action"  // Import the action router
 
 const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
@@ -17,7 +13,9 @@ export const events = {
 	add: "add-plug",
 	rename: "rename-plug",
 	edit: "edit-plug",
-	delete: "delete-plug"
+	delete: "delete-plug",
+	queue: "queue-plug",     // Add queue event
+	getQueued: "get-queued-workflows"  // Add getQueued event
 } as const
 
 const subscription = (event: string) =>
@@ -275,5 +273,7 @@ export const plug = createTRPCRouter({
 	onAdd: subscription(events.add),
 	onEdit: subscription(events.edit),
 	onDelete: subscription(events.delete),
-	action
+	
+	// Include the imported action router
+	action: actionRouter
 })

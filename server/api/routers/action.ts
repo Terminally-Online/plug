@@ -7,7 +7,8 @@ import { categories } from "@/lib"
 
 export const events = {
 	edit: "edit-plug",
-	queue: "queue-plug"
+	queue: "queue-plug",
+	getQueued: "get-queued-workflows"
 } as const
 
 const getTags = (actions: string) => {
@@ -50,7 +51,32 @@ export const action = createTRPCRouter({
 			return plug
 		}),
 
-	queue: protectedProcedure
+	getQueued: protectedProcedure.query(async ({ ctx }) => {
+		try {
+			const queuedWorkflows = await ctx.db.queuedWorkflow.findMany({
+				where: { socketId: ctx.session.address },
+				orderBy: { startAt: 'desc' },
+				include: { workflow: true }
+			});
+			
+			return queuedWorkflows.map(qw => ({
+				id: qw.id,
+				text: qw.workflow.name || 'Unnamed Workflow',
+				status: 'pending',
+				time: qw.startAt.toISOString(),
+				color: 'blue'
+			}));
+		} catch (error) {
+			console.error('Error fetching queued workflows:', error);
+			throw new TRPCError({
+				code: 'INTERNAL_SERVER_ERROR',
+				message: 'Failed to fetch queued workflows',
+				cause: error
+			});
+		}
+	}),
+
+	queue: anonymousProtectedProcedure
 		.input(
 			z.object({
 				workflowId: z.string(),
@@ -60,29 +86,44 @@ export const action = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const { workflowId, startAt, endAt, frequency } = input
-
 			const workflow = await ctx.db.workflow.findUnique({
-				where: { id: workflowId, socketId: ctx.session.address }
-			})
+				where: { 
+					id: input.workflowId, 
+					socketId: ctx.session.address 
+				}
+			});
 
 			if (!workflow) {
-				throw new TRPCError({ code: "NOT_FOUND", message: "Workflow not found" })
+				throw new TRPCError({ 
+					code: "NOT_FOUND", 
+					message: "Workflow not found" 
+				});
 			}
 
 			const queuedWorkflow = await ctx.db.queuedWorkflow.create({
 				data: {
-					workflowId,
+					workflowId: input.workflowId,
 					socketId: ctx.session.address,
-					startAt,
-					endAt,
-					frequency,
-					nextSimulationAt: startAt
+					startAt: input.startAt,
+					endAt: input.endAt,
+					frequency: input.frequency,
+					nextSimulationAt: input.startAt
+				},
+				include: {
+					workflow: true
 				}
-			})
+			});
 
-			ctx.emitter.emit(events.queue, queuedWorkflow)
+			const activityEvent = {
+				id: queuedWorkflow.id,
+				text: workflow.name || 'Unnamed Workflow',
+				status: 'pending',
+				time: queuedWorkflow.startAt.toISOString(),
+				color: 'blue'
+			};
 
-			return queuedWorkflow
+			ctx.emitter.emit(events.queue, activityEvent);
+
+			return queuedWorkflow;
 		})
 })
