@@ -7,7 +7,6 @@ import (
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -38,14 +37,12 @@ func (h *Handler) init() *Handler {
 					Description: "Token to deposit",
 					Options: []types.Option{
 						{
-							Value:       "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label:       "DAI",
-							Description: "Dah Stablecoin",
+							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
+							Label: "DAI",
 						},
 						{
-							Value:       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-							Label:       "WETH",
-							Description: "Wrapped Ether",
+							Value: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+							Label: "WETH",
 						},
 					},
 				},
@@ -69,9 +66,8 @@ func (h *Handler) init() *Handler {
 					Description: "Token to borrow",
 					Options: []types.Option{
 						{
-							Value:       "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label:       "DAI",
-							Description: "Dah Stablecoin",
+							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
+							Label: "DAI",
 						},
 					},
 				},
@@ -95,41 +91,40 @@ func (h *Handler) HandleGetDeposit() types.ActionSchema {
 	return h.depositSchema
 }
 
-func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
-	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
+func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrContractFailed(address)
+		return nil, utils.ErrABIFailed("AaveV2Pool")
 	}
 
-	deposit, err := contract.Deposit(
-		utils.BuildTransactionOpts(from, big.NewInt(0)),
-		common.HexToAddress(inputs.TokenOut),
-		&inputs.AmountIn,
-		common.HexToAddress(from),
-		uint16(0),
-	)
+	calldata, err := poolAbi.Pack("deposit", common.HexToAddress(inputs.TokenOut), inputs.AmountIn, common.HexToAddress(from), uint16(0))
+	if err != nil {
+		return nil, utils.ErrTransactionFailed(err.Error())
+	}
 
-	return []*ethtypes.Transaction{deposit}, err
+	return []*types.Transaction{{
+		To:   address,
+		Data: "0x" + common.Bytes2Hex(calldata),
+	}}, nil
 }
 
 func (h *Handler) HandleGetBorrow() types.ActionSchema {
 	return h.borrowSchema
 }
 
-func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*ethtypes.Transaction, error) {
-	contract, err := aave_v2_pool.NewAaveV2Pool(hexAddress, provider)
+func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrContractFailed(address)
+		return nil, utils.ErrABIFailed("AaveV2Pool")
 	}
 
-	borrow, err := contract.Borrow(
-		utils.BuildTransactionOpts(from, big.NewInt(0)),
-		common.HexToAddress(inputs.TokenOut),
-		&inputs.AmountOut,
-		interestRateMode,
-		uint16(0),
-		common.HexToAddress(from),
-	)
+	calldata, err := poolAbi.Pack("borrow", common.HexToAddress(inputs.TokenOut), inputs.AmountOut, interestRateMode, uint16(0), from)
+	if err != nil {
+		return nil, utils.ErrTransactionFailed(err.Error())
+	}
 
-	return []*ethtypes.Transaction{borrow}, err
+	return []*types.Transaction{{
+		To:   address,
+		Data: "0x" + common.Bytes2Hex(calldata),
+	}}, err
 }

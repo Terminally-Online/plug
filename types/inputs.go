@@ -18,10 +18,10 @@ type ActionInputs interface {
 
 type DepositInputs struct {
 	BaseInputs
-	TokenIn  string  `json:"tokenIn"`  // Address of the token to send (deposit).
-	TokenOut string  `json:"tokenOut"` // Address of the token to receive (withdraw).
-	AmountIn big.Int `json:"amountIn"` // Raw amount to send (deposit).
-	Target   *string `json:"target"`   // Address of smart contract to interact with.
+	TokenIn  string   `json:"tokenIn"`  // Address of the token to send (deposit).
+	TokenOut string   `json:"tokenOut"` // Address of the token to receive (withdraw).
+	AmountIn *big.Int `json:"amountIn"` // Raw amount to send (deposit).
+	Target   *string  `json:"target"`   // Address of smart contract to interact with.
 }
 
 func (i *DepositInputs) Validate() error {
@@ -43,9 +43,9 @@ func (i *DepositInputs) GetProtocol() Protocol {
 
 type BorrowInputs struct {
 	BaseInputs
-	Collateral string  `json:"collateral"` // Address of the collateral token (supplied).
-	TokenOut   string  `json:"tokenOut"`   // Address of the token to receive (borrow).
-	AmountOut  big.Int `json:"amountOut"`  // Raw amount of tokens to borrow.
+	Collateral string   `json:"collateral"` // Address of the collateral token (supplied).
+	TokenOut   string   `json:"tokenOut"`   // Address of the token to receive (borrow).
+	AmountOut  *big.Int `json:"amountOut"`  // Raw amount of tokens to borrow.
 }
 
 func (i *BorrowInputs) Validate() error {

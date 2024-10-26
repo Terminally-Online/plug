@@ -13,9 +13,9 @@ type SchemaField struct {
 }
 
 type Option struct {
-	Value       string `json:"value"`
-	Label       string `json:"label"`
-	Description string `json:"description,omitempty"`
+	Value string `json:"value"`
+	Label string `json:"label"`
+	Icon  string `json:"icon,omitempty"`
 }
 
 type ActionSchema struct {

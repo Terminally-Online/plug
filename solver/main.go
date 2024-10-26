@@ -7,8 +7,6 @@ import (
 	"solver/protocols/aave_v2"
 	"solver/types"
 	"solver/utils"
-
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
 type Solver struct {
@@ -71,7 +69,7 @@ func (s *Solver) GetActionSchema(action types.Action) ([]types.ActionSchema, err
 	return schemas, nil
 }
 
-func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs, chainId int, from string) ([]*ethtypes.Transaction, error) {
+func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs, chainId int, from string) ([]*types.Transaction, error) {
 	if err := inputs.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid inputs: %w", err)
 	}
