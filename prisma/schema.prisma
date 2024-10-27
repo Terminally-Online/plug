@@ -137,7 +137,7 @@ model UserSocket {
     workflow     Workflow[]
     positions    PositionCache[]
     collectibles CollectibleCache[]
-    queuedWorkflows QueuedWorkflow[]
+    queuedWorkflows Execution[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -175,10 +175,10 @@ model Workflow {
     // One-to-many
     // ---------------------------------------------------------------------------
     simulations Simulation[]
-    queuedWorkflows QueuedWorkflow[]
+    executions Execution[]
 }
 
-model QueuedWorkflow {
+model Execution {
     // ---------------------------------------------------------------------------
     // Core
     // ---------------------------------------------------------------------------

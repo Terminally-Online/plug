@@ -61,7 +61,7 @@ Table UserSocket {
   workflow Workflow [not null]
   positions PositionCache [not null]
   collectibles CollectibleCache [not null]
-  queuedWorkflows QueuedWorkflow [not null]
+  queuedWorkflows Execution [not null]
 }
 
 Table Workflow {
@@ -79,10 +79,10 @@ Table Workflow {
   socket UserSocket [not null]
   socketId String [not null]
   simulations Simulation [not null]
-  queuedWorkflows QueuedWorkflow [not null]
+  queuedWorkflows Execution [not null]
 }
 
-Table QueuedWorkflow {
+Table Execution {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -303,9 +303,9 @@ Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 
-Ref: QueuedWorkflow.workflowId > Workflow.id [delete: Cascade]
+Ref: Execution.workflowId > Workflow.id [delete: Cascade]
 
-Ref: QueuedWorkflow.socketId > UserSocket.id [delete: Cascade]
+Ref: Execution.socketId > UserSocket.id [delete: Cascade]
 
 Ref: Simulation.workflowId > Workflow.id [delete: Cascade]
 

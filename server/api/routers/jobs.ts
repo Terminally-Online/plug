@@ -58,7 +58,7 @@ export const jobs = createTRPCRouter({
 		}),
 	simulate: apiKeyProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		return await ctx.db.$transaction(async tx => {
-			const queuedWorkflow = await tx.queuedWorkflow.findUnique({
+			const execution = await tx.execution.findUnique({
 				where: {
 					id: input.id
 				},
@@ -67,14 +67,14 @@ export const jobs = createTRPCRouter({
 				}
 			})
 
-			if (queuedWorkflow === null) throw new TRPCError({ code: "NOT_FOUND" })
+			if (execution === null) throw new TRPCError({ code: "NOT_FOUND" })
 
 			const now = new Date()
-			const nextSimulationAt = new Date(now.getTime() + queuedWorkflow.frequency * 60 * 1000)
+			const nextSimulationAt = new Date(now.getTime() + execution.frequency * 60 * 1000)
 
-			return await tx.queuedWorkflow.update({
+			return await tx.execution.update({
 				where: {
-					id: queuedWorkflow.id
+					id: execution.id
 				},
 				data: {
 					nextSimulationAt
@@ -86,7 +86,7 @@ export const jobs = createTRPCRouter({
 		const now = new Date()
 
 		return await ctx.db.$transaction(async tx => {
-			const queuedWorkflows = await tx.queuedWorkflow.findMany({
+			const executions = await tx.execution.findMany({
 				where: {
 					nextSimulationAt: {
 						lte: now
@@ -99,7 +99,7 @@ export const jobs = createTRPCRouter({
 				}
 			})
 
-			const parsedQueuedWorkflows = queuedWorkflows.map(queuedWorkflow => ({
+			const parsedQueuedWorkflows = executions.map(queuedWorkflow => ({
 				...queuedWorkflow,
 				workflow: {
 					...queuedWorkflow.workflow,

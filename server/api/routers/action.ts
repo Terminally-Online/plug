@@ -8,12 +8,12 @@ import { Prisma } from "@prisma/client"
 
 import { categories } from "@/lib"
 
-const queuedWorkflow = Prisma.validator<Prisma.QueuedWorkflowDefaultArgs>()({
+const execution = Prisma.validator<Prisma.ExecutionDefaultArgs>()({
 	include: {
 		workflow: true
 	}
 })
-export type QueuedWorkflow = Prisma.QueuedWorkflowGetPayload<typeof queuedWorkflow>
+export type Execution = Prisma.ExecutionGetPayload<typeof execution>
 
 export const events = {
 	edit: "edit-plug",
@@ -34,9 +34,9 @@ const getTags = (actions: string) => {
 }
 
 const subscription = (event: string) =>
-	anonymousProtectedProcedure.subscription(async ({ ctx }) => {
-		return observable<QueuedWorkflow>(emit => {
-			const handleSubscription = (data: QueuedWorkflow) => {
+	protectedProcedure.subscription(async ({ ctx }) => {
+		return observable<Execution>(emit => {
+			const handleSubscription = (data: Execution) => {
 				emit.next(data)
 			}
 
@@ -74,14 +74,14 @@ export const action = createTRPCRouter({
 		}),
 
 	activity: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.queuedWorkflow.findMany({
+		return await ctx.db.execution.findMany({
 			where: { socketId: ctx.session.address },
 			orderBy: { createdAt: "desc" },
 			include: { workflow: true }
 		})
 	}),
 
-	queue: anonymousProtectedProcedure
+	queue: protectedProcedure
 		.input(
 			z.object({
 				workflowId: z.string(),
@@ -100,7 +100,7 @@ export const action = createTRPCRouter({
 
 			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
 
-			const queuedWorkflow = await ctx.db.queuedWorkflow.create({
+			const queuedWorkflow = await ctx.db.execution.create({
 				data: {
 					workflowId: input.workflowId,
 					socketId: ctx.session.address,
