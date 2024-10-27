@@ -1,2 +1,2 @@
-export { ActivityItem } from "./activity-item"
-export { SocketActivity } from "./activity"
+export * from "./activity-item"
+export * from "./activity-list"

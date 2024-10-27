@@ -1,20 +1,19 @@
 import { FC } from "react"
 
-import { AlertCircle, CheckCircle, Clock, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, Clock, Loader, XCircle } from "lucide-react"
 
 import { RouterOutputs } from "@/server/client"
 
-import { Accordion, Counter, DateSince } from "@/components"
-import { formatTitle } from "@/lib"
+import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
 import { useColumns } from "@/state"
 
-export const getStatusIcon = (status: string) => {
+const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 	switch (status) {
 		case "pending":
 			return (
 				<div className="relative h-10 min-w-10">
 					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
-					<Clock
+					<Loader
 						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
 						size={16}
 					/>
@@ -52,43 +51,48 @@ export const getStatusIcon = (status: string) => {
 			)
 	}
 }
-
 export const ActivityItem: FC<{
-	id: string
 	index: number
-	activity: RouterOutputs["plug"]["action"]["activity"][number]
+	activity: RouterOutputs["plug"]["action"]["activity"][number] | undefined
 }> = ({ index, activity }) => {
-	const { frame } = useColumns(index, `activity-${index}`)
+	const { frame } = useColumns(index, `${activity?.id}-activity`)
 
 	return (
-		<Accordion loading={activity === undefined} onExpand={() => frame()}>
-			{activity === undefined ? (
-				<div className="invisible">
-					<p>.</p>
-					<p>.</p>
-				</div>
-			) : (
-				<div className="flex w-full flex-row">
-					{getStatusIcon("pending")}
-					<div className="relative flex w-full flex-col overflow-hidden">
-						<div className="flex flex-row items-center justify-between gap-2 font-bold">
-							<p className="mr-2 truncate overflow-ellipsis whitespace-nowrap">
-								{activity.workflow.name}
-							</p>
-							<div className="flex-shrink-0">
-								<DateSince date={new Date(activity.createdAt)} />
+		<>
+			<Accordion loading={activity === undefined} onExpand={() => frame()}>
+				{activity === undefined ? (
+					<div className="invisible">
+						<p>.</p>
+						<p>.</p>
+					</div>
+				) : (
+					<div className="flex w-full flex-row">
+						<ActivityIcon status="pending" />
+
+						<div className="relative flex w-full flex-col overflow-hidden">
+							<div className="flex flex-row items-center justify-between gap-2 font-bold">
+								<p className="mr-2 truncate overflow-ellipsis whitespace-nowrap">
+									{activity.workflow.name}
+								</p>
+								<div className="flex-shrink-0">
+									<DateSince date={new Date(activity.createdAt)} />
+								</div>
+							</div>
+							<div className="flex w-full flex-row items-center justify-between text-sm font-bold text-black text-opacity-40">
+								<p>Pending</p>
+								{/*<p>{formatTitle(activity.status)}</p>*/}
+								<p className="flex flex-row gap-2">
+									<Counter count={activity.startAt.toLocaleDateString()} />
+									<span className="opacity-60">→</span>
+									{activity.endAt ? <Counter count={activity.endAt.toLocaleDateString()} /> : "∞"}
+								</p>
 							</div>
 						</div>
-						<div className="flex w-full flex-row items-center justify-between text-sm font-bold text-black text-opacity-40">
-							<p>Pending</p>
-							{/*<p>{formatTitle(activity.status)}</p>*/}
-							<p>
-								<Counter count={new Date(activity.createdAt).toLocaleDateString()} />
-							</p>
-						</div>
 					</div>
-				</div>
-			)}
-		</Accordion>
+				)}
+			</Accordion>
+
+			{activity && <ExecutionFrame index={index} icon={<ActivityIcon status="pending" />} activity={activity} />}
+		</>
 	)
 }

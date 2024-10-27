@@ -4,7 +4,6 @@ import { DateRange, DayPicker } from "react-day-picker"
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Button, Dropdown, Frame } from "@/components"
-import { usePlugs } from "@/contexts/PlugProvider"
 import { cn, formatDate } from "@/lib"
 import { useColumns } from "@/state"
 
@@ -22,7 +21,7 @@ export const ScheduleFrame: FC<{
 	item: string
 	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
 	setScheduleData: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
-}> = ({ index, item, scheduleData, setScheduleData }) => {
+}> = ({ index, scheduleData, setScheduleData }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
 	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
 

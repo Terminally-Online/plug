@@ -6,7 +6,6 @@ import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
 import { useColumns, useSocket } from "@/state"
 
-import { ActivityFrame } from "../../frames/sockets/activity"
 import { ActivityItem } from "./activity-item"
 
 export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
@@ -27,32 +26,18 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
+
 			<div className="flex flex-col gap-2">
 				{visibleActivities.map((activity, activityIndex) => (
 					<ActivityItem
 						key={activity?.id || activityIndex}
 						id={`${index}-${activityIndex}-activity`}
-						index={activityIndex}
+						index={index}
 						activity={activity}
 					/>
 				))}
 			</div>
-
-			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
-
-			{visibleActivities
-				.filter(activity => Boolean(activity))
-				.map((activity, activityIndex) => (
-					<ActivityFrame
-						key={activity?.id || activityIndex}
-						index={index}
-						activityIndex={activityIndex}
-						activity={{
-							name: activity?.text || "",
-							status: "pending"
-						}}
-					/>
-				))}
 		</div>
 	)
 }
