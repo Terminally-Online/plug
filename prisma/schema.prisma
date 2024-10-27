@@ -173,8 +173,7 @@ model Workflow {
     // ---------------------------------------------------------------------------
     // One-to-many
     // ---------------------------------------------------------------------------
-    simulations Simulation[]
-    executions  Execution[]
+    executions Execution[]
 }
 
 model Execution {
@@ -192,6 +191,11 @@ model Execution {
     endAt            DateTime?
     frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
     nextSimulationAt DateTime  @default(now())
+
+    // ---------------------------------------------------------------------------
+    // One-to-many
+    // ---------------------------------------------------------------------------
+    simulations Simulation[]
 
     // ---------------------------------------------------------------------------
     // Many-to-one
@@ -228,14 +232,8 @@ model Simulation {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-    workflowId String
-
-    // ---------------------------------------------------------------------------
-    // Indexes
-    // ---------------------------------------------------------------------------
-    @@index([workflowId])
-    @@index([status])
+    execution   Execution @relation(fields: [executionId], references: [id])
+    executionId String
 }
 
 model TokenPrice {

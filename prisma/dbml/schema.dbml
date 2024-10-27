@@ -77,7 +77,6 @@ Table Workflow {
   frequency Int [not null, default: 10]
   socket UserSocket [not null]
   socketId String [not null]
-  simulations Simulation [not null]
   executions Execution [not null]
 }
 
@@ -89,6 +88,7 @@ Table Execution {
   endAt DateTime
   frequency Int [not null, default: 0]
   nextSimulationAt DateTime [default: `now()`, not null]
+  simulations Simulation [not null]
   workflow Workflow [not null]
   workflowId String [not null]
 }
@@ -103,8 +103,8 @@ Table Simulation {
   gasEstimate Float
   startedAt DateTime
   completedAt DateTime
-  workflow Workflow [not null]
-  workflowId String [not null]
+  execution Execution [not null]
+  executionId String [not null]
 }
 
 Table TokenPrice {
@@ -302,7 +302,7 @@ Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 
 Ref: Execution.workflowId > Workflow.id [delete: Cascade]
 
-Ref: Simulation.workflowId > Workflow.id [delete: Cascade]
+Ref: Simulation.executionId > Execution.id
 
 Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 
