@@ -53,7 +53,7 @@ export const DateSince: FC<
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>
 			{timeSince.unit}
-			{ago && <>ago</>}
+			{ago && <span className="ml-1">ago</span>}
 		</p>
 	)
 }
