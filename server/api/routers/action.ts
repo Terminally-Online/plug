@@ -75,7 +75,7 @@ export const action = createTRPCRouter({
 
 	activity: protectedProcedure.query(async ({ ctx }) => {
 		return await ctx.db.execution.findMany({
-			where: { socketId: ctx.session.address },
+			where: { workflow: { socketId: ctx.session.address } },
 			orderBy: { createdAt: "desc" },
 			include: { workflow: true }
 		})
@@ -100,10 +100,9 @@ export const action = createTRPCRouter({
 
 			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
 
-			const queuedWorkflow = await ctx.db.execution.create({
+			const execution = await ctx.db.execution.create({
 				data: {
 					workflowId: input.workflowId,
-					socketId: ctx.session.address,
 					startAt: input.startAt,
 					endAt: input.endAt,
 					frequency: input.frequency,
@@ -114,9 +113,9 @@ export const action = createTRPCRouter({
 				}
 			})
 
-			ctx.emitter.emit(events.queue, queuedWorkflow)
+			ctx.emitter.emit(events.queue, execution)
 
-			return queuedWorkflow
+			return execution
 		}),
 
 	onActivity: subscription(events.queue)

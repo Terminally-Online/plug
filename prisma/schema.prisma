@@ -134,10 +134,9 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // One-to-many 
     // ---------------------------------------------------------------------------
-    workflow        Workflow[]
-    positions       PositionCache[]
-    collectibles    CollectibleCache[]
-    queuedWorkflows Execution[]
+    workflow     Workflow[]
+    positions    PositionCache[]
+    collectibles CollectibleCache[]
 
     // ---------------------------------------------------------------------------
     // Indexes
@@ -197,10 +196,8 @@ model Execution {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    workflow   Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
     workflowId String
-    socket     UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
-    socketId   String
 
     // ---------------------------------------------------------------------------
     // Indexes
