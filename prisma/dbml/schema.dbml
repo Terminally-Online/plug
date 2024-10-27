@@ -79,7 +79,7 @@ Table Workflow {
   socket UserSocket [not null]
   socketId String [not null]
   simulations Simulation [not null]
-  queuedWorkflows Execution [not null]
+  executions Execution [not null]
 }
 
 Table Execution {

@@ -134,9 +134,9 @@ model UserSocket {
     // ---------------------------------------------------------------------------
     // One-to-many 
     // ---------------------------------------------------------------------------
-    workflow     Workflow[]
-    positions    PositionCache[]
-    collectibles CollectibleCache[]
+    workflow        Workflow[]
+    positions       PositionCache[]
+    collectibles    CollectibleCache[]
     queuedWorkflows Execution[]
 
     // ---------------------------------------------------------------------------
@@ -156,14 +156,14 @@ model Workflow {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    name             String    @default("Untitled Plug")
-    isCurated        Boolean   @default(false)
-    isPrivate        Boolean   @default(false)
-    actions          String    @default("[]")
+    name             String   @default("Untitled Plug")
+    isCurated        Boolean  @default(false)
+    isPrivate        Boolean  @default(false)
+    actions          String   @default("[]")
     color            String
     tags             String[]
     workflowForkedId String?
-    frequency        Int       @default(10)
+    frequency        Int      @default(10)
 
     // ---------------------------------------------------------------------------
     // Many-to-one
@@ -175,7 +175,7 @@ model Workflow {
     // One-to-many
     // ---------------------------------------------------------------------------
     simulations Simulation[]
-    executions Execution[]
+    executions  Execution[]
 }
 
 model Execution {
@@ -189,15 +189,15 @@ model Execution {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    startAt DateTime
-    endAt   DateTime?
-    frequency Int      @default(0) // 0=never, 1=daily, 7=weekly, etc.
-    nextSimulationAt DateTime @default(now())
-    
+    startAt          DateTime
+    endAt            DateTime?
+    frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
+    nextSimulationAt DateTime  @default(now())
+
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+    workflow   Workflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
     workflowId String
     socket     UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
     socketId   String

@@ -23,7 +23,7 @@ export const balances = createTRPCRouter({
 				chain: z.string()
 			})
 		)
-		.query(async ({ input, ctx }) => {
+		.query(async ({ input }) => {
 			if (input.type === "ERC20") throw new TRPCError({ code: "NOT_IMPLEMENTED" })
 
 			return await getMetadataForToken({

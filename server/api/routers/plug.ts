@@ -36,7 +36,6 @@ const subscription = (event: string) =>
 
 export const plug = createTRPCRouter({
 	get: publicProcedure.input(z.array(z.string())).query(async ({ input, ctx }) => {
-		console.log(ctx?.session?.user)
 		return await ctx.db.workflow.findMany({
 			where: {
 				id: { in: input },
