@@ -76,7 +76,8 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		[]
 
 	const { data: apiPlugs } = api.plug.get.useQuery(ids, {
-		enabled: session && ids.length > 0 ? true : false
+		enabled: session && ids.length > 0 ? true : false,
+		onSuccess: data => setPlugs(prev => (prev ? data.map(plug => prev.find(p => p.id === plug.id) ?? plug) : data))
 	})
 
 	const [plugs, setPlugs] = useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs || [])
@@ -201,12 +202,6 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 			})
 		}
 	}
-
-	useEffect(() => {
-		if (!apiPlugs) return
-
-		setPlugs(prev => (prev ? apiPlugs.map(plug => prev.find(p => p.id === plug.id) ?? plug) : apiPlugs))
-	}, [apiPlugs])
 
 	return (
 		<PlugContext.Provider
