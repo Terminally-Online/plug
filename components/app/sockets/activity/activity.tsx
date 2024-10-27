@@ -39,20 +39,6 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 			</div>
 
 			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
-
-			{visibleActivities
-				.filter(activity => Boolean(activity))
-				.map((activity, activityIndex) => (
-					<ActivityFrame
-						key={activity?.id || activityIndex}
-						index={index}
-						activityIndex={activityIndex}
-						activity={{
-							name: activity?.text || "",
-							status: "pending"
-						}}
-					/>
-				))}
 		</div>
 	)
 }

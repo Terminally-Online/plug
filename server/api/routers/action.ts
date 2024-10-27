@@ -1,11 +1,19 @@
 import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
+import { observable } from "@trpc/server/observable"
 
 import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
 import { categories } from "@/lib"
+
+const queuedWorkflow = Prisma.validator<Prisma.QueuedWorkflowDefaultArgs>()({
+	include: {
+		workflow: true
+	}
+})
+export type QueuedWorkflow = Prisma.QueuedWorkflowGetPayload<typeof queuedWorkflow>
 
 export const events = {
 	edit: "edit-plug",
@@ -24,6 +32,19 @@ const getTags = (actions: string) => {
 		)
 	)
 }
+
+const subscription = (event: string) =>
+	anonymousProtectedProcedure.subscription(async ({ ctx }) => {
+		return observable<QueuedWorkflow>(emit => {
+			const handleSubscription = (data: QueuedWorkflow) => {
+				emit.next(data)
+			}
+
+			ctx.emitter.on(event, handleSubscription)
+
+			return () => ctx.emitter.off(event, handleSubscription)
+		})
+	})
 
 export const action = createTRPCRouter({
 	edit: anonymousProtectedProcedure
@@ -52,20 +73,12 @@ export const action = createTRPCRouter({
 			return plug
 		}),
 
-	getQueued: protectedProcedure.query(async ({ ctx }) => {
-		const queuedWorkflows = await ctx.db.queuedWorkflow.findMany({
+	activity: protectedProcedure.query(async ({ ctx }) => {
+		return await ctx.db.queuedWorkflow.findMany({
 			where: { socketId: ctx.session.address },
 			orderBy: { startAt: "desc" },
 			include: { workflow: true }
 		})
-
-		return queuedWorkflows.map(qw => ({
-			id: qw.id,
-			text: qw.workflow.name || "Unnamed Workflow",
-			status: "pending",
-			time: qw.startAt.toISOString(),
-			color: "blue"
-		}))
 	}),
 
 	queue: anonymousProtectedProcedure
@@ -85,12 +98,7 @@ export const action = createTRPCRouter({
 				}
 			})
 
-			if (!workflow) {
-				throw new TRPCError({
-					code: "NOT_FOUND",
-					message: "Workflow not found"
-				})
-			}
+			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
 
 			const queuedWorkflow = await ctx.db.queuedWorkflow.create({
 				data: {
@@ -106,16 +114,10 @@ export const action = createTRPCRouter({
 				}
 			})
 
-			const activityEvent = {
-				id: queuedWorkflow.id,
-				text: workflow.name || "Unnamed Workflow",
-				status: "pending",
-				time: queuedWorkflow.startAt.toISOString(),
-				color: "blue"
-			}
-
-			ctx.emitter.emit(events.queue, activityEvent)
+			ctx.emitter.emit(events.queue, queuedWorkflow)
 
 			return queuedWorkflow
-		})
+		}),
+
+	onActivity: subscription(events.queue)
 })
