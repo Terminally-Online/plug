@@ -3,12 +3,13 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
+import { Prisma } from "@prisma/client"
+
 import { categories } from "@/lib"
 
 export const events = {
 	edit: "edit-plug",
-	queue: "queue-plug",
-	getQueued: "get-queued-workflows"
+	queue: "queue-plug"
 } as const
 
 const getTags = (actions: string) => {
@@ -52,28 +53,19 @@ export const action = createTRPCRouter({
 		}),
 
 	getQueued: protectedProcedure.query(async ({ ctx }) => {
-		try {
-			const queuedWorkflows = await ctx.db.queuedWorkflow.findMany({
-				where: { socketId: ctx.session.address },
-				orderBy: { startAt: 'desc' },
-				include: { workflow: true }
-			});
-			
-			return queuedWorkflows.map(qw => ({
-				id: qw.id,
-				text: qw.workflow.name || 'Unnamed Workflow',
-				status: 'pending',
-				time: qw.startAt.toISOString(),
-				color: 'blue'
-			}));
-		} catch (error) {
-			console.error('Error fetching queued workflows:', error);
-			throw new TRPCError({
-				code: 'INTERNAL_SERVER_ERROR',
-				message: 'Failed to fetch queued workflows',
-				cause: error
-			});
-		}
+		const queuedWorkflows = await ctx.db.queuedWorkflow.findMany({
+			where: { socketId: ctx.session.address },
+			orderBy: { startAt: "desc" },
+			include: { workflow: true }
+		})
+
+		return queuedWorkflows.map(qw => ({
+			id: qw.id,
+			text: qw.workflow.name || "Unnamed Workflow",
+			status: "pending",
+			time: qw.startAt.toISOString(),
+			color: "blue"
+		}))
 	}),
 
 	queue: anonymousProtectedProcedure
@@ -87,17 +79,17 @@ export const action = createTRPCRouter({
 		)
 		.mutation(async ({ input, ctx }) => {
 			const workflow = await ctx.db.workflow.findUnique({
-				where: { 
-					id: input.workflowId, 
-					socketId: ctx.session.address 
+				where: {
+					id: input.workflowId,
+					socketId: ctx.session.address
 				}
-			});
+			})
 
 			if (!workflow) {
-				throw new TRPCError({ 
-					code: "NOT_FOUND", 
-					message: "Workflow not found" 
-				});
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Workflow not found"
+				})
 			}
 
 			const queuedWorkflow = await ctx.db.queuedWorkflow.create({
@@ -112,18 +104,18 @@ export const action = createTRPCRouter({
 				include: {
 					workflow: true
 				}
-			});
+			})
 
 			const activityEvent = {
 				id: queuedWorkflow.id,
-				text: workflow.name || 'Unnamed Workflow',
-				status: 'pending',
+				text: workflow.name || "Unnamed Workflow",
+				status: "pending",
 				time: queuedWorkflow.startAt.toISOString(),
-				color: 'blue'
-			};
+				color: "blue"
+			}
 
-			ctx.emitter.emit(events.queue, activityEvent);
+			ctx.emitter.emit(events.queue, activityEvent)
 
-			return queuedWorkflow;
+			return queuedWorkflow
 		})
 })

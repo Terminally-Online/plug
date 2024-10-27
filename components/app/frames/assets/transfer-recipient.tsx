@@ -31,13 +31,13 @@ export const TransferRecipient: FC<
 		address: string
 		handleSelect: (address: string) => void
 	}
-> = ({ isRecent = false, address, handleSelect, className }) => {
+> = ({ isRecent = false, address = "", handleSelect, className }) => {
 	const { account } = useConnect()
 
 	const { data: ensAddress } = useEnsAddress({
 		name: address,
 		query: {
-			enabled: address.endsWith("eth")
+			enabled: address?.endsWith("eth") || false
 		}
 	})
 	const {
@@ -47,13 +47,13 @@ export const TransferRecipient: FC<
 	} = useEnsName({
 		address: ensAddress ?? (address as `0x${string}`),
 		query: {
-			enabled: (ensAddress ?? address).startsWith("0x") === true
+			enabled: (ensAddress ?? address ?? "").startsWith("0x") === true
 		}
 	})
 	const { data: ensAvatar } = useEnsAvatar({
 		name: ensName ?? "",
 		query: {
-			enabled: ensName !== undefined || address.endsWith(".eth")
+			enabled: ensName !== undefined || address?.endsWith(".eth") || false
 		}
 	})
 

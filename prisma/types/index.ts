@@ -88,20 +88,6 @@ const positionCacheModel = Prisma.validator<Prisma.PositionCacheDefaultArgs>()({
 export type PositionCacheModel = Prisma.PositionCacheGetPayload<typeof positionCacheModel>
 
 // ---------------------------------------------------------------------------
-// Collectibles
-// ---------------------------------------------------------------------------
-// const openseaCollectionModel = Prisma.validator<Prisma.OpenseaCollectionDefaultArgs>()({})
-// export type OpenseaCollectionModel = Prisma.OpenseaCollectionGetPayload<typeof openseaCollectionModel>
-// const openseaCollectibleModel = Prisma.validator<Prisma.OpenseaCollectibleDefaultArgs>()({
-// 	include: { collection: true }
-// })
-// export type OpenseaCollectibleModel = Prisma.OpenseaCollectibleGetPayload<typeof openseaCollectibleModel>
-// const openseaCollectibleCacheModel = Prisma.validator<Prisma.OpenseaCollectibleCacheDefaultArgs>()({
-// 	include: { collectibles: { include: { collection: true } } }
-// })
-// export type OpenseaCollectibleCacheModel = Prisma.OpenseaCollectibleCacheGetPayload<typeof openseaCollectibleCacheModel>
-
-// ---------------------------------------------------------------------------
 // Plugs
 // ---------------------------------------------------------------------------
 const workflowModel = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
