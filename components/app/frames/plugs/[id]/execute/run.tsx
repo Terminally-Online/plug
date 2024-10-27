@@ -42,7 +42,7 @@ export const RunFrame: FC<{
 
 		clearSchedule()
 		frame("running")
-	}, [plug, scheduleData, handle.plug.queue, clearSchedule, frame])
+	}, [plug, scheduleData, clearSchedule, frame, handle.plug])
 
 	return (
 		<Frame
@@ -54,11 +54,10 @@ export const RunFrame: FC<{
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-2">
-				<p className="font-bold opacity-60">Actions</p>
-				<ActionPreview index={index} item={item} />
+				<ActionPreview index={index} item={item} review={true} />
 
 				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">Run On</span>
+					<span className="mr-auto opacity-40">Run On</span>
 					{/* TODO: ADD CHAIN FUNCTIONALITY BACK */}
 					<Image
 						className="ml-[-20px] h-6 w-6"
@@ -70,7 +69,7 @@ export const RunFrame: FC<{
 				</p>
 
 				<p className="flex font-bold">
-					<span className="mr-auto opacity-60">Fee</span>
+					<span className="mr-auto opacity-40">Fee</span>
 					<span className="flex flex-row gap-2">
 						<span className="opacity-40">0.0011 ETH</span>
 						<span>$4.19</span>

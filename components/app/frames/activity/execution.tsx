@@ -4,7 +4,7 @@ import { Bell, Calendar, Pause, Play, Sparkle, TestTubeDiagonal } from "lucide-r
 
 import { RouterOutputs } from "@/server/client"
 
-import { Counter, Frame } from "@/components"
+import { ActionPreview, Counter, Frame } from "@/components"
 import { useColumns } from "@/state"
 
 export const ExecutionFrame: FC<{
@@ -16,6 +16,8 @@ export const ExecutionFrame: FC<{
 
 	return (
 		<Frame index={index} icon={icon} label={activity.workflow.name} visible={isFrame} hasOverlay={true}>
+			<ActionPreview index={index} item={activity.workflow.id} />
+
 			<div className="mb-2 flex flex-row items-center gap-4">
 				<p className="font-bold opacity-40">Details</p>
 				<div className="h-[2px] w-full bg-grayscale-100" />

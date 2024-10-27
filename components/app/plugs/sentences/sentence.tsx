@@ -23,24 +23,22 @@ export const Sentence: FC<{
 			<Accordion className="hover:cursor-auto hover:border-grayscale-100 hover:bg-white">
 				<div className={cn("flex flex-row items-center font-bold")}>
 					<p className="flex w-full flex-wrap items-center gap-[4px]">
-						{preview === false && (
-							<div className="relative h-6 w-10">
-								<Image
-									className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
-									src={categories[categoryName].image}
-									alt={`Icon for ${categoryName}`}
-									width={64}
-									height={64}
-								/>
-								<Image
-									className="absolute mr-2 h-6 w-6 rounded-sm"
-									src={categories[categoryName].image}
-									alt={`Icon for ${categoryName}`}
-									width={64}
-									height={64}
-								/>
-							</div>
-						)}
+						<div className="relative h-6 w-10">
+							<Image
+								className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
+								src={categories[categoryName].image}
+								alt={`Icon for ${categoryName}`}
+								width={64}
+								height={64}
+							/>
+							<Image
+								className="absolute mr-2 h-6 w-6 rounded-sm"
+								src={categories[categoryName].image}
+								alt={`Icon for ${categoryName}`}
+								width={64}
+								height={64}
+							/>
+						</div>
 
 						<Fragments index={index} item={item} actionIndex={actionIndex} />
 					</p>
@@ -62,7 +60,9 @@ export const Sentence: FC<{
 				</div>
 			</Accordion>
 
-			{actionIndex < actions.length - 1 && <div className="mx-auto h-2 w-[2px] bg-grayscale-0" />}
+			{preview === false && actionIndex < actions.length - 1 && (
+				<div className="mx-auto h-2 w-[2px] bg-grayscale-0" />
+			)}
 		</>
 	)
 }
