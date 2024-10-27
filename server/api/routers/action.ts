@@ -76,7 +76,7 @@ export const action = createTRPCRouter({
 	activity: protectedProcedure.query(async ({ ctx }) => {
 		return await ctx.db.queuedWorkflow.findMany({
 			where: { socketId: ctx.session.address },
-			orderBy: { startAt: "desc" },
+			orderBy: { createdAt: "desc" },
 			include: { workflow: true }
 		})
 	}),
