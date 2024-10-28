@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-import { AlertCircle, CheckCircle, Loader, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
 import { formatTitle } from "@/lib"
@@ -15,6 +15,16 @@ const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
 					<Loader
 						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
+						size={16}
+					/>
+				</div>
+			)
+		case "paused":
+			return (
+				<div className="relative h-10 min-w-10">
+					<div className="absolute mt-8 h-48 w-10 rounded-full bg-grayscale-400 blur-2xl filter" />
+					<Pause
+						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-grayscale-400"
 						size={16}
 					/>
 				</div>
