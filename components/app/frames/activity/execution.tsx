@@ -78,7 +78,7 @@ export const ExecutionFrame: FC<{
 							<TestTubeDiagonal size={18} className="opacity-20" />
 							<span className="opacity-40">Next Simulation</span>
 						</span>{" "}
-						<TimeUntil date={new Date(Date.now() + 60 * 1000)} />
+						<TimeUntil date={activity.nextSimulationAt} />
 					</p>
 				</div>
 			</div>
