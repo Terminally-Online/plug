@@ -24,9 +24,9 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 			// NOTE: If the activity item is already in the list, update its state.
 			if (activities.find(activity => activity.id === data.id)) {
 				setActivities(prev => prev.map(activity => (activity.id === data.id ? data : activity)))
+			} else {
+				setActivities(prev => (prev ? [data, ...prev] : [data]))
 			}
-
-			setActivities(prev => (prev ? [data, ...prev] : [data]))
 		}
 	})
 
@@ -36,7 +36,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 				setActivities(prev =>
 					prev.map(activity =>
 						activity.id === data.id
-							? { ...activity, status: activity.status.trim() === "pending" ? "pending" : "paused" }
+							? { ...activity, status: activity.status.trim() !== "pending" ? "pending" : "paused" }
 							: activity
 					)
 				)

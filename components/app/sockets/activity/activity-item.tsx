@@ -3,6 +3,7 @@ import { FC } from "react"
 import { AlertCircle, CheckCircle, Clock, Loader, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
+import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
@@ -66,7 +67,7 @@ export const ActivityItem: FC<{
 					</div>
 				) : (
 					<div className="flex w-full flex-row">
-						<ActivityIcon status="pending" />
+						<ActivityIcon status={activity.status} />
 
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -78,8 +79,7 @@ export const ActivityItem: FC<{
 								</div>
 							</div>
 							<div className="flex w-full flex-row items-center justify-between text-sm font-bold text-black text-opacity-40">
-								<p>Pending</p>
-								{/*<p>{formatTitle(activity.status)}</p>*/}
+								<p>{formatTitle(activity.status)}</p>
 								<p className="flex flex-row gap-2">
 									<Counter count={activity.startAt.toLocaleDateString()} />
 									<span className="opacity-60">→</span>
