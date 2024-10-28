@@ -45,13 +45,13 @@ export const Sentence: FC<
 							/>
 						</div>
 
-						<Fragments index={index} item={item} actionIndex={actionIndex} />
+						<Fragments index={index} item={item} actionIndex={actionIndex} preview={preview} />
 					</p>
 
 					{preview === false && own && (
 						<Button
 							variant="secondary"
-							className="mb-auto ml-4 mt-[4px] p-1"
+							className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
 							onClick={() =>
 								handle.action.edit({
 									id: plug.id,
@@ -59,7 +59,7 @@ export const Sentence: FC<
 								})
 							}
 						>
-							<X size={14} />
+							<X size={14} className="opacity-60" />
 						</Button>
 					)}
 				</div>

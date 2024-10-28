@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { ChevronRight, CircleHelp } from "lucide-react"
 
-import { Button, Frame, Image, Search } from "@/components"
+import { Frame, Image, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
 import { categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
 import { useColumns } from "@/state"
@@ -13,7 +13,8 @@ export const DynamicFragment: FC<{
 	index: number
 	actionIndex: number
 	fragmentIndex: number
-}> = ({ index, item, actionIndex, fragmentIndex }) => {
+	preview: boolean
+}> = ({ index, item, actionIndex, fragmentIndex, preview }) => {
 	const { data: session } = useSession()
 	const { isFrame, frame } = useColumns(index, `${index}-${actionIndex}-${fragmentIndex}`)
 	const { plug, actions, fragments, dynamic, handle } = usePlugs(item)
@@ -39,6 +40,8 @@ export const DynamicFragment: FC<{
 
 		return value instanceof Object ? formatTitle(value.label).toLowerCase() : value
 	}, [action, parentIndex, inputName])
+
+	const isReady = action && Boolean(action.values[parentIndex])
 
 	const options: Array<Option> | undefined = useMemo(() => {
 		if (!action.values || !staticAction.options) return undefined
@@ -89,7 +92,7 @@ export const DynamicFragment: FC<{
 								if (!fragment) return actionValue
 
 								// Get dependency info for this value
-								const [thisChildIndex, thisParentIndex] = getIndexes(fragment)
+								const [thisChildIndex] = getIndexes(fragment)
 
 								// Reset this value if:
 								// 1. It directly depends on the changed value (parentIndex matches childIndex)
@@ -126,11 +129,15 @@ export const DynamicFragment: FC<{
 		<>
 			<button
 				className={cn(
-					"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold text-plug-green transition-all duration-200 ease-in-out",
+					"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
+					preview && isReady === false ? "text-plug-red" : "text-plug-green",
 					own === true ? "cursor-pointer" : "cursor-default"
 				)}
 				style={{
-					background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
+					background:
+						preview && isReady === false
+							? "linear-gradient(to right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
+							: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 				}}
 				onClick={() => (own ? frame() : undefined)}
 			>

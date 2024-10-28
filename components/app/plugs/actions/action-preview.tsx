@@ -4,12 +4,7 @@ import { Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn } from "@/lib"
 
-const SentenceReview: FC<{ index: number; item: string; actionIndex: number; review: boolean }> = ({
-	index,
-	item,
-	actionIndex,
-	review
-}) => {
+const SentenceReview: FC<{ index: number; item: string; actionIndex: number }> = ({ index, item, actionIndex }) => {
 	const { plug, actions } = usePlugs(item)
 
 	const isReady = useMemo(
@@ -18,39 +13,25 @@ const SentenceReview: FC<{ index: number; item: string; actionIndex: number; rev
 	)
 
 	return (
-		<>
-			<Sentence
-				className={cn(
-					isReady ? "border-plug-green hover:border-plug-green" : "border-plug-red hover:border-plug-red"
-				)}
-				index={index}
-				item={item}
-				actionIndex={actionIndex}
-				preview={true}
-			/>
-
-			{review && (
-				<p className={cn("mt-1 text-sm font-bold", isReady ? "opacity-40" : "text-plug-red")}>
-					{isReady ? "Ready" : "Missing required values"}
-				</p>
+		<Sentence
+			className={cn(
+				isReady ? "border-plug-green hover:border-plug-green" : "border-plug-red hover:border-plug-red"
 			)}
-		</>
+			index={index}
+			item={item}
+			actionIndex={actionIndex}
+			preview={true}
+		/>
 	)
 }
 
-export const ActionPreview: FC<{ index: number; item: string; review?: boolean }> = ({
-	index,
-	item,
-	review = false
-}) => {
+export const ActionPreview: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { actions } = usePlugs(item)
 
 	return (
 		<div className="flex flex-col gap-2">
 			{actions.map((_, actionIndex) => (
-				<div key={actionIndex} className="relative z-[4] flex flex-col">
-					<SentenceReview index={index} item={item} actionIndex={actionIndex} review={review} />
-				</div>
+				<SentenceReview key={actionIndex} index={index} item={item} actionIndex={actionIndex} />
 			))}
 		</div>
 	)

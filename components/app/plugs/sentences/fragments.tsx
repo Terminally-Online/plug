@@ -7,7 +7,8 @@ export const Fragments: FC<{
 	index: number
 	item: string
 	actionIndex: number
-}> = ({ index, item, actionIndex }) => {
+	preview: boolean
+}> = ({ index, item, actionIndex, preview }) => {
 	const { fragments } = usePlugs(item)
 
 	return (
@@ -20,6 +21,7 @@ export const Fragments: FC<{
 						index={index}
 						actionIndex={actionIndex}
 						fragmentIndex={fragmentIndex}
+						preview={preview}
 					/>
 				) : (
 					<StaticFragment
