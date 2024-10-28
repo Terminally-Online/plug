@@ -26,7 +26,6 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 			<ScheduleFrame index={index} item={item} scheduleData={scheduleData} setScheduleData={setScheduleData} />
 			<RecurringFrame index={index} handleRepeats={handleRepeats} />
 			<RunFrame index={index} item={item} scheduleData={scheduleData} clearSchedule={clearSchedule} />
-			<RunningFrame index={index} item={item} />
 			<RanFrame index={index} item={item} />
 		</>
 	)

@@ -35,7 +35,7 @@ export const RunFrame: FC<{
 		})
 
 		clearSchedule()
-		frame("running")
+		frame("ran")
 	}, [plug, scheduleData, clearSchedule, frame, handle.plug])
 
 	useEffect(() => {

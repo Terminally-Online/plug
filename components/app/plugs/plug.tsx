@@ -45,11 +45,11 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 				)}
 
 				<div className="relative flex flex-row gap-2 px-4">
-					<Button variant="secondary" className="w-max bg-white" onClick={() => frame("run")}>
+					<Button variant="secondary" className="w-max bg-white py-4" onClick={() => frame("run")}>
 						Run
 					</Button>
 
-					<Button className="w-full" onClick={() => frame("schedule")}>
+					<Button className="w-full py-4" onClick={() => frame("schedule")}>
 						Schedule
 					</Button>
 				</div>
