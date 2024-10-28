@@ -1,14 +1,12 @@
 import { FC, useCallback, useEffect, useMemo } from "react"
 import { DateRange } from "react-day-picker"
 
-import { CircleDollarSign, Eye, Globe, Waypoints } from "lucide-react"
+import { CircleDollarSign, Eye, Waypoints } from "lucide-react"
 
 import { ActionPreview, Button, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { chains } from "@/lib"
+import { chains, frequencies } from "@/lib"
 import { useColumns } from "@/state"
-
-import { frequencies } from "./recurring"
 
 export const RunFrame: FC<{
 	index: number
