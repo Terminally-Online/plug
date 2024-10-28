@@ -15,10 +15,8 @@ export const Sentence: FC<
 		preview?: boolean
 	}
 > = ({ index, item, actionIndex, action, preview = false, className, ...props }) => {
-	const { plug, own, actions, handle } = usePlugs(item)
+	const { own, actions, handle } = usePlugs(item)
 	const { categoryName } = action
-
-	if (plug === undefined) return null
 
 	return (
 		<>
@@ -60,7 +58,7 @@ export const Sentence: FC<
 							className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
 							onClick={() =>
 								handle.action.edit({
-									id: plug.id,
+									id: item,
 									actions: JSON.stringify(actions.filter((_, i) => i !== actionIndex))
 								})
 							}

@@ -10,9 +10,7 @@ const SentenceReview: FC<{ index: number; item: string; actionIndex: number; act
 	actionIndex,
 	action
 }) => {
-	const { plug } = usePlugs(item)
-
-	const isReady = useMemo(() => plug && action.values.every(value => Boolean(value)), [plug, action])
+	const isReady = useMemo(() => action.values.every(value => Boolean(value)), [action])
 
 	return (
 		<Sentence

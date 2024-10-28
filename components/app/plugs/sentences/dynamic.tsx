@@ -122,8 +122,6 @@ export const DynamicFragment: FC<{
 		if (value instanceof Object) frame()
 	}
 
-	if (plug === undefined || actions === undefined) return null
-
 	return (
 		<>
 			<button
