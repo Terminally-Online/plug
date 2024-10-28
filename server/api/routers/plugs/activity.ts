@@ -82,7 +82,7 @@ export const activity = createTRPCRouter({
 
 		const toggled = await ctx.db.execution.update({
 			where: { id: input.id },
-			data: { status: execution.status.trim() !== "pending" ? "pending" : "paused" },
+			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
 			include: {
 				workflow: true,
 				simulations: true

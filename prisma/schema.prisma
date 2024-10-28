@@ -187,7 +187,7 @@ model Execution {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
-    status           String    @default("pending")
+    status           String    @default("active")
     actions          String    @default("[]")
     startAt          DateTime
     endAt            DateTime?

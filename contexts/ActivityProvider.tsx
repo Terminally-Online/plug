@@ -41,7 +41,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 				setActivities(prev =>
 					prev.map(activity =>
 						activity.id === data.id
-							? { ...activity, status: activity.status.trim() !== "pending" ? "pending" : "paused" }
+							? { ...activity, status: activity.status.trim() !== "active" ? "active" : "paused" }
 							: activity
 					)
 				)

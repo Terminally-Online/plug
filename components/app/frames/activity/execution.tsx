@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Trash, Waypoints } from "lucide-react"
 
-import { ActionPreview, Button, Counter, Frame, TimeUntil } from "@/components"
+import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
 import { chains, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
@@ -39,7 +39,7 @@ export const ExecutionFrame: FC<{
 						className="my-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 						onClick={() => handle.toggle({ id: activity.id })}
 					>
-						{activity.status === "pending" ? (
+						{activity.status === "active" ? (
 							<>
 								<Pause size={14} className="opacity-60" />
 								Pause
@@ -97,25 +97,57 @@ export const ExecutionFrame: FC<{
 							<Counter count={activity.endAt.toLocaleDateString()} />
 						</p>
 					)}
-					<p className="flex flex-row justify-between font-bold">
-						<span className="flex w-full flex-row items-center gap-4">
-							<TestTubeDiagonal size={18} className="opacity-20" />
-							<span className="opacity-40">Next Simulation</span>
-						</span>{" "}
-						<TimeUntil date={activity.nextSimulationAt} />
-					</p>
 				</div>
 
-				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
-					<p className="font-bold opacity-40">Simulations</p>
-					<div className="h-[2px] w-full bg-grayscale-100" />
-				</div>
-
-				{activity.simulations.length === 0 ? (
-					<p className="font-bold opacity-40">No simulations yet.</p>
-				) : (
-					<></>
+				{(activity.status !== "paused" || activity.simulations.length > 0) && (
+					<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+						<p className="font-bold opacity-40">Simulations</p>
+						<div className="h-[2px] w-full bg-grayscale-100" />
+					</div>
 				)}
+
+				{activity.status !== "paused" && (
+					<Accordion>
+						<div className="flex flex-row gap-2">
+							<ActivityIcon status="upcoming" />
+							<div className="flex w-full flex-col">
+								<div className="flex flex-row items-center justify-between gap-2 font-bold">
+									<p>
+										Simulation{" "}
+										<span className="opacity-40">(#{activity.simulations.length + 1})</span>
+									</p>
+									<TimeUntil date={activity.nextSimulationAt} />
+								</div>
+								<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
+									<p>Upcoming</p>
+									<p>
+										<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+									</p>
+								</div>
+							</div>
+						</div>
+					</Accordion>
+				)}
+
+				{activity.simulations.map((simulation, index) => (
+					<Accordion key={index}>
+						<div className="flex flex-row gap-2">
+							<ActivityIcon status={simulation.status} />
+							<div className="flex w-full flex-col">
+								<div className="flex flex-row items-center justify-between gap-2 font-bold">
+									<p>Simulation #{activity.simulations.length - index}</p>
+									<DateSince date={simulation.createdAt} />
+								</div>
+								<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
+									<p>{simulation.status}</p>
+									<p>
+										<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+									</p>
+								</div>
+							</div>
+						</div>
+					</Accordion>
+				))}
 			</div>
 		</Frame>
 	)

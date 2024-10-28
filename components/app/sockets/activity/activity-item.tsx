@@ -7,14 +7,24 @@ import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
-const ActivityIcon: FC<{ status: string }> = ({ status }) => {
+export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 	switch (status) {
-		case "pending":
+		case "upcoming":
 			return (
 				<div className="relative h-10 min-w-10">
 					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
 					<Loader
 						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
+						size={16}
+					/>
+				</div>
+			)
+		case "active":
+			return (
+				<div className="relative h-10 min-w-10">
+					<div className="absolute mt-8 h-48 w-10 rounded-full bg-plug-green blur-2xl filter" />
+					<CheckCircle
+						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green"
 						size={16}
 					/>
 				</div>
