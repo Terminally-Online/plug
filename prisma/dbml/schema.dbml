@@ -84,6 +84,7 @@ Table Execution {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  status String [not null, default: 'pending']
   actions String [not null, default: '[]']
   startAt DateTime [not null]
   endAt DateTime

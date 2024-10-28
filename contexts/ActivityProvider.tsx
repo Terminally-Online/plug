@@ -6,7 +6,8 @@ import { useSocket } from "@/state"
 export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
 	isLoading: boolean
-}>({ activities: [], isLoading: true })
+	handle: { toggle: (data: { id: string }) => void }
+}>({ activities: [], isLoading: true, handle: { toggle: () => {} } })
 
 export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { isAnonymous } = useSocket()
@@ -20,12 +21,30 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
 		onData: data => {
-			if (activities.find(activity => activity.id === data.id)) return
+			// NOTE: If the activity item is already in the list, update its state.
+			if (activities.find(activity => activity.id === data.id)) {
+				setActivities(prev => prev.map(activity => (activity.id === data.id ? data : activity)))
+			}
+
 			setActivities(prev => (prev ? [data, ...prev] : [data]))
 		}
 	})
 
-	return <ActivityContext.Provider value={{ activities, isLoading }}>{children}</ActivityContext.Provider>
+	const handle = {
+		toggle: api.plugs.activity.toggle.useMutation({
+			onMutate: () => {
+				console.log("toggle state")
+			}
+		})
+	}
+
+	return (
+		<ActivityContext.Provider
+			value={{ activities, isLoading, handle: { toggle: data => handle.toggle.mutate(data) } }}
+		>
+			{children}
+		</ActivityContext.Provider>
+	)
 }
 
 export const useActivities = () => {

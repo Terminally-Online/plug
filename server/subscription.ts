@@ -27,6 +27,6 @@ export const subscriptions = {
 		rename: "rename-plug",
 		edit: "edit-plug",
 		delete: "delete-plug",
-		queue: "queue-plug"
+		activity: "activity-plug"
 	}
 } as const

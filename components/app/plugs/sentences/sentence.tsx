@@ -16,7 +16,6 @@ export const Sentence: FC<
 	}
 > = ({ index, item, actionIndex, action, preview = false, className, ...props }) => {
 	const { plug, own, actions, handle } = usePlugs(item)
-
 	const { categoryName } = action
 
 	if (plug === undefined) return null

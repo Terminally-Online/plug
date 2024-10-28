@@ -62,7 +62,7 @@ export const activity = createTRPCRouter({
 					}
 				})
 
-				ctx.emitter.emit(subscriptions.plugs.queue, execution)
+				ctx.emitter.emit(subscriptions.plugs.activity, execution)
 
 				return execution
 			} catch (error) {
@@ -70,5 +70,26 @@ export const activity = createTRPCRouter({
 			}
 		}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.plugs.queue)
+	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+		const execution = await ctx.db.execution.findUnique({
+			where: { id: input.id },
+			include: { workflow: true }
+		})
+
+		if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
+
+		const toggled = await ctx.db.execution.update({
+			where: { id: input.id },
+			data: { status: execution.status !== "pending" ? "pending " : "paused" },
+			include: {
+				workflow: true
+			}
+		})
+
+		ctx.emitter.emit(subscriptions.plugs.activity, toggled)
+
+		return toggled
+	}),
+
+	onActivity: subscription<Execution>("protected", subscriptions.plugs.activity)
 })

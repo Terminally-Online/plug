@@ -1,10 +1,11 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Waypoints, X } from "lucide-react"
+import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Waypoints } from "lucide-react"
 
 import { ActionPreview, Button, Counter, Frame, TimeUntil } from "@/components"
-import { chains } from "@/lib"
+import { useActivities } from "@/contexts"
+import { chains, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
@@ -14,6 +15,7 @@ export const ExecutionFrame: FC<{
 	activity: RouterOutputs["plugs"]["activity"]["get"][number]
 }> = ({ index, icon, activity }) => {
 	const { isFrame } = useColumns(index, `${activity.id}-activity`)
+	const { handle } = useActivities()
 
 	const actions = useMemo(() => JSON.parse(activity.actions), [activity])
 
@@ -23,12 +25,21 @@ export const ExecutionFrame: FC<{
 				<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
 				<Button
-					variant="destructive"
+					variant="secondary"
 					className="my-4 flex flex-row items-center justify-center gap-2 py-4"
-					onClick={() => {}}
+					onClick={() => handle.toggle({ id: activity.id })}
 				>
-					<X size={14} className="opacity-60" />
-					Cancel
+					{activity.status === "pending" ? (
+						<>
+							<Pause size={14} className="opacity-60" />
+							Pause
+						</>
+					) : (
+						<>
+							<Play size={14} className="opacity-60" />
+							Resume
+						</>
+					)}
 				</Button>
 
 				<div className="mb-2 flex flex-row items-center gap-4">
@@ -42,7 +53,7 @@ export const ExecutionFrame: FC<{
 							<Bell size={18} className="opacity-20" />
 							<span className="opacity-40">Status</span>
 						</span>{" "}
-						Pending
+						{formatTitle(activity.status)}
 					</p>
 					<p className="flex w-full flex-row items-center gap-4 font-bold">
 						<Waypoints size={18} className="opacity-20" />
