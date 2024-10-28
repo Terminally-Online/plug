@@ -62,7 +62,7 @@ export const activity = createTRPCRouter({
 					}
 				})
 
-				ctx.emitter.emit(subscriptions.plugs.activity, execution)
+				ctx.emitter.emit(subscriptions.execution.update, execution)
 
 				return execution
 			} catch (error) {
@@ -86,10 +86,22 @@ export const activity = createTRPCRouter({
 			}
 		})
 
-		ctx.emitter.emit(subscriptions.plugs.activity, toggled)
+		ctx.emitter.emit(subscriptions.execution.update, toggled)
 
 		return toggled
 	}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.plugs.activity)
+	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+		const execution = await ctx.db.execution.delete({
+			where: { id: input.id },
+			include: { workflow: true }
+		})
+
+		ctx.emitter.emit(subscriptions.execution.delete, execution)
+
+		return execution
+	}),
+
+	onActivity: subscription<Execution>("protected", subscriptions.execution.update),
+	onDelete: subscription<Execution>("protected", subscriptions.execution.delete)
 })

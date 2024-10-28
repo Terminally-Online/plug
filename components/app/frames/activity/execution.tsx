@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Waypoints } from "lucide-react"
+import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Trash, Waypoints } from "lucide-react"
 
 import { ActionPreview, Button, Counter, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
@@ -24,23 +24,34 @@ export const ExecutionFrame: FC<{
 			<div className="flex flex-col">
 				<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
-				<Button
-					variant="secondary"
-					className="my-4 flex flex-row items-center justify-center gap-2 py-4"
-					onClick={() => handle.toggle({ id: activity.id })}
-				>
-					{activity.status === "pending" ? (
-						<>
-							<Pause size={14} className="opacity-60" />
-							Pause
-						</>
-					) : (
-						<>
-							<Play size={14} className="opacity-60" />
-							Resume
-						</>
-					)}
-				</Button>
+				<div className="flex flex-row items-center gap-2">
+					<Button
+						variant="destructive"
+						className="my-4 flex flex-row items-center justify-center gap-2 py-4"
+						onClick={() => handle.delete({ id: activity.id })}
+					>
+						<Trash size={14} className="opacity-60" />
+						Delete
+					</Button>
+
+					<Button
+						variant="secondary"
+						className="my-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+						onClick={() => handle.toggle({ id: activity.id })}
+					>
+						{activity.status === "pending" ? (
+							<>
+								<Pause size={14} className="opacity-60" />
+								Pause
+							</>
+						) : (
+							<>
+								<Play size={14} className="opacity-60" />
+								Resume
+							</>
+						)}
+					</Button>
+				</div>
 
 				<div className="mb-2 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Details</p>
