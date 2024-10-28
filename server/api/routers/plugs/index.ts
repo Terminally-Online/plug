@@ -1,40 +1,20 @@
-import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
-import { observable } from "@trpc/server/observable"
 
 import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
 import { colors } from "@/lib"
+import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
+import { subscription, subscriptions } from "@/server/subscription"
 
-import { action as actionRouter } from "./action"
+import { action } from "./action"
+import { activity } from "./activity"
 
 const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
 
-export const events = {
-	add: "add-plug",
-	rename: "rename-plug",
-	edit: "edit-plug",
-	delete: "delete-plug",
-	queue: "queue-plug"
-} as const
-
-const subscription = (event: string) =>
-	anonymousProtectedProcedure.subscription(async ({ ctx }) => {
-		return observable<Workflow>(emit => {
-			const handleSubscription = (data: Workflow) => {
-				emit.next(data)
-			}
-
-			ctx.emitter.on(event, handleSubscription)
-
-			return () => ctx.emitter.off(event, handleSubscription)
-		})
-	})
-
-export const plug = createTRPCRouter({
+export const plugs = createTRPCRouter({
 	get: publicProcedure.input(z.array(z.string())).query(async ({ input, ctx }) => {
 		return await ctx.db.workflow.findMany({
 			where: {
@@ -194,7 +174,7 @@ export const plug = createTRPCRouter({
 					}
 				})
 
-				ctx.emitter.emit(events.add, plug)
+				ctx.emitter.emit(subscriptions.plugs.add, plug)
 
 				return { plug, index: input?.index, from: input?.from }
 			} catch (error) {
@@ -221,7 +201,7 @@ export const plug = createTRPCRouter({
 					}
 				})
 
-				ctx.emitter.emit(events.add, plug)
+				ctx.emitter.emit(subscriptions.plugs.add, plug)
 
 				return { plug, index: input.index, from: input.from }
 			} catch (error) {
@@ -251,7 +231,7 @@ export const plug = createTRPCRouter({
 					data
 				})
 
-				ctx.emitter.emit(events.edit, plug)
+				ctx.emitter.emit(subscriptions.plugs.edit, plug)
 
 				return plug
 			} catch (error) {
@@ -268,13 +248,15 @@ export const plug = createTRPCRouter({
 				}
 			})
 
-			ctx.emitter.emit(events.delete, plug)
+			ctx.emitter.emit(subscriptions.plugs.delete, plug)
 
 			return { plug, index: input.index, from: input.from }
 		}),
-	onAdd: subscription(events.add),
-	onEdit: subscription(events.edit),
-	onDelete: subscription(events.delete),
 
-	action: actionRouter
+	onAdd: subscription<Workflow>("anonymous", subscriptions.plugs.add),
+	onEdit: subscription<Workflow>("anonymous", subscriptions.plugs.edit),
+	onDelete: subscription<Workflow>("anonymous", subscriptions.plugs.delete),
+
+	action,
+	activity
 })

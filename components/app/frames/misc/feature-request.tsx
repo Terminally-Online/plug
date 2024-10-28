@@ -2,9 +2,8 @@ import { FC, useState } from "react"
 
 import { Pen, Sparkle } from "lucide-react"
 
-import { api } from "@/server/client"
-
 import { Button, Frame, Search } from "@/components"
+import { api } from "@/server/client"
 import { useColumns } from "@/state"
 
 export const FeatureRequestFrame: FC<{ index: number }> = ({ index }) => {

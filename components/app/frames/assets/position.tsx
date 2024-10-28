@@ -2,10 +2,9 @@ import React, { FC, useMemo, useState } from "react"
 
 import { ExternalLink, EyeOff } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Counter, Frame, Image, SocketTokenPriceChart, TokenImage } from "@/components"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 export const PositionFrame: FC<{

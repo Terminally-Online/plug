@@ -1,9 +1,8 @@
 import React, { useState } from "react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Accordion, Counter, SocketTokenPercentages, TokenFrame, TokenImage, TransferFrame } from "@/components"
 import { cn, getChainId, getTextColor } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 const DEFAULT_TOKEN_COLOR = "#ffffff"

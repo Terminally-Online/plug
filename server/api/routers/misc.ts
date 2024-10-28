@@ -1,9 +1,8 @@
-import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
-import { getDominantColor } from "@/server/color"
-
 import { z } from "zod"
 
 import { getPositions } from "@/lib"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
+import { getDominantColor } from "@/server/color"
 
 export const misc = createTRPCRouter({
 	featureRequest: anonymousProtectedProcedure
@@ -17,6 +16,7 @@ export const misc = createTRPCRouter({
 				}
 			})
 		}),
+
 	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address }

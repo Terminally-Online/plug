@@ -1,11 +1,11 @@
 import { Session } from "next-auth"
 import { useSession } from "next-auth/react"
-import { ContextType, createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react"
+import { ContextType, createContext, FC, PropsWithChildren, useContext, useMemo, useState } from "react"
 
-import { Workflow } from "@/server/api/routers/plug"
-import { api } from "@/server/client"
+import { Workflow } from "@prisma/client"
 
 import { categories, actions as staticActions, tags } from "@/lib/constants"
+import { api } from "@/server/client"
 import { COLUMN_KEYS, useColumns } from "@/state"
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
@@ -75,7 +75,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 				.filter(column => Boolean(column)) as Array<string>)) ||
 		[]
 
-	const { data: apiPlugs } = api.plug.get.useQuery(ids, {
+	const { data: apiPlugs } = api.plugs.get.useQuery(ids, {
 		enabled: session && ids.length > 0 ? true : false,
 		onSuccess: data => setPlugs(prev => (prev ? data.map(plug => prev.find(p => p.id === plug.id) ?? plug) : data))
 	})
@@ -83,7 +83,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 	const [plugs, setPlugs] = useState<ContextType<typeof PlugContext>["plugs"]>(apiPlugs || [])
 
 	const handleCreate = (
-		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plug.add.useMutation>[0]>["onSuccess"]>>[0],
+		data: Parameters<NonNullable<NonNullable<Parameters<typeof api.plugs.add.useMutation>[0]>["onSuccess"]>>[0],
 		redirect = false
 	) => {
 		if (!plugs?.find(plug => plug.id === data.plug.id)) setPlugs(prev => spread(prev, data.plug))
@@ -105,11 +105,11 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 				})
 	}
 
-	api.plug.onAdd.useSubscription(undefined, {
+	api.plugs.onAdd.useSubscription(undefined, {
 		onData: data => handleCreate({ plug: data, index: undefined, from: undefined }, false)
 	})
 
-	api.plug.onEdit.useSubscription(undefined, {
+	api.plugs.onEdit.useSubscription(undefined, {
 		onData: data =>
 			setPlugs(prev =>
 				prev
@@ -118,16 +118,16 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 			)
 	})
 
-	api.plug.onDelete.useSubscription(undefined, {
+	api.plugs.onDelete.useSubscription(undefined, {
 		onData: (data: Workflow) => setPlugs(prev => (prev ? prev.filter(plug => plug.id !== data.id) : []))
 	})
 
 	const handle = {
 		plug: {
-			add: api.plug.add.useMutation({
+			add: api.plugs.add.useMutation({
 				onSuccess: data => handleCreate(data, true)
 			}),
-			edit: api.plug.edit.useMutation({
+			edit: api.plugs.edit.useMutation({
 				onMutate: data => {
 					setPlugs(prev =>
 						prev.map(p =>
@@ -142,7 +142,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 					)
 				}
 			}),
-			delete: api.plug.delete.useMutation({
+			delete: api.plugs.delete.useMutation({
 				onMutate: data => {
 					setPlugs(prev => prev.filter(plug => plug.id !== data.plug))
 					navigate({
@@ -151,10 +151,10 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 					})
 				}
 			}),
-			fork: api.plug.fork.useMutation({
+			fork: api.plugs.fork.useMutation({
 				onSuccess: data => handleCreate(data)
 			}),
-			queue: api.plug.action.queue.useMutation({
+			queue: api.plugs.activity.queue.useMutation({
 				onMutate: data => {
 					setPlugs(prev =>
 						prev.map(p =>
@@ -185,7 +185,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 			})
 		},
 		action: {
-			edit: api.plug.action.edit.useMutation({
+			edit: api.plugs.action.edit.useMutation({
 				onMutate: data => {
 					setPlugs(previous =>
 						previous.map(p =>

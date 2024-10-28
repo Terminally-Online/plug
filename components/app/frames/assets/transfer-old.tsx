@@ -17,10 +17,9 @@ import {
 	Wallet
 } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Button, Counter, Frame, Search, SocketTokenList, TokenImage } from "@/components"
 import { chains, formatTitle, getChainId, TOKENS } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns, useSocket } from "@/state"
 
 const DEFAULT_TRANSFER = {

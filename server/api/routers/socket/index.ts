@@ -1,12 +1,12 @@
 import { mainnet } from "viem/chains"
 import { normalize } from "viem/ens"
 
-import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
 import { companion } from "./companion"
@@ -123,6 +123,7 @@ export const socket = createTRPCRouter({
 
 		return socket
 	}),
+
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {
@@ -183,6 +184,7 @@ export const socket = createTRPCRouter({
 				...SOCKET_BASE_QUERY
 			})
 		}),
+
 	balances,
 	companion
 })

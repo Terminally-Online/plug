@@ -2,15 +2,14 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { PlugZap, Puzzle } from "lucide-react"
 
-import { api } from "@/server/client"
-
 import { Callout, Header, PlugGrid } from "@/components"
+import { api } from "@/server/client"
 import { COLUMN_KEYS, useColumns } from "@/state"
 
 const Discover: FC<{ index: number }> = ({ index }) => {
 	const { navigate } = useColumns(index)
 
-	const { data: plugs, isLoading } = api.plug.all.useQuery({
+	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "others",
 		limit: 4
 	})
@@ -45,7 +44,7 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 const Mine: FC<{ index: number }> = ({ index }) => {
 	const { navigate } = useColumns(index)
 
-	const { data: plugs, isLoading } = api.plug.all.useQuery({
+	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "mine",
 		limit: 12
 	})

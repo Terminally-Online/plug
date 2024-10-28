@@ -1,9 +1,8 @@
 import { FC } from "react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Accordion, Counter, Image } from "@/components"
 import { cn } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 export const SocketPositionItem: FC<{

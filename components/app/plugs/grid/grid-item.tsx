@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-import { Workflow } from "@/server/api/routers/plug"
+import { Workflow } from "@prisma/client"
 
 import { Accordion } from "@/components/shared"
 import { colors, formatTitle } from "@/lib"

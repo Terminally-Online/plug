@@ -1,10 +1,9 @@
 import { Session } from "next-auth"
 import { createContext, FC, PropsWithChildren } from "react"
 
-import { api } from "@/server/client"
-
 import { useSetAtom } from "jotai"
 
+import { api } from "@/server/client"
 import { socketModelAtom } from "@/state"
 
 export const DataContext = createContext({

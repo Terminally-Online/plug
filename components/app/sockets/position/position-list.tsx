@@ -2,10 +2,9 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { cn } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns, useHoldings, useSocket } from "@/state"
 
 export const SocketPositionList: FC<

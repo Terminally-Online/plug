@@ -1,10 +1,10 @@
-import { getDominantColor } from "@/server/color"
-import { db } from "@/server/db"
 import { TRPCError } from "@trpc/server"
 
 import axios from "axios"
 
 import { getAPIKey } from "@/lib"
+import { getDominantColor } from "@/server/color"
+import { db } from "@/server/db"
 
 export const getMetadataForToken = async ({
 	address,

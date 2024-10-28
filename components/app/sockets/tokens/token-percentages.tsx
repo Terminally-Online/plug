@@ -1,8 +1,7 @@
 import { FC } from "react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { chains, getChainId } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 const SIZE = 14
 const RADIUS = 50

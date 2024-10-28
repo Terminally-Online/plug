@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react"
 
-import { api, RouterOutputs } from "@/server/client"
-
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
+
+import { api, RouterOutputs } from "@/server/client"
 
 import { useSocket } from "./authentication"
 import { atomFamily, atomWithStorage } from "jotai/utils"

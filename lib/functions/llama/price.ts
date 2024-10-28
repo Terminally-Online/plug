@@ -1,6 +1,6 @@
-import { db } from "@/server/db"
-
 import axios from "axios"
+
+import { db } from "@/server/db"
 
 const PRICE_CACHE_TIME = 3 * 60 * 1000
 

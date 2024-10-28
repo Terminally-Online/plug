@@ -1,10 +1,9 @@
 import { NextPageContext } from "next"
 
-import { type AppRouter } from "@/server/api/root"
-
 import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
 
 import { env } from "@/env"
+import { type AppRouter } from "@/server/api/root"
 
 export const getBaseUrl = () => {
 	if (typeof window !== "undefined") return ""

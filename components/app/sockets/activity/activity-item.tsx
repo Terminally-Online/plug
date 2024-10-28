@@ -2,9 +2,8 @@ import { FC } from "react"
 
 import { AlertCircle, CheckCircle, Clock, Loader, XCircle } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
+import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 const ActivityIcon: FC<{ status: string }> = ({ status }) => {
@@ -53,7 +52,7 @@ const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 }
 export const ActivityItem: FC<{
 	index: number
-	activity: RouterOutputs["plug"]["action"]["activity"][number] | undefined
+	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 }> = ({ index, activity }) => {
 	const { frame } = useColumns(index, `${activity?.id}-activity`)
 

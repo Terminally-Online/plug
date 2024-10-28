@@ -3,12 +3,11 @@ import { FC, HTMLAttributes, useMemo, useState } from "react"
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
-import { api } from "@/server/client"
-
 import { Workflow } from "@prisma/client"
 
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
 import { cn, useSearch } from "@/lib"
+import { api } from "@/server/client"
 import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
@@ -28,7 +27,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	const representative = isExternal && column && column.viewAs ? column.viewAs : socket?.id
 
-	const { fetchNextPage, isLoading } = api.plug.infinite.useInfiniteQuery(
+	const { fetchNextPage, isLoading } = api.plugs.infinite.useInfiniteQuery(
 		{
 			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : socket?.id,
 			search,

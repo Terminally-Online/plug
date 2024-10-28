@@ -6,10 +6,9 @@ import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
 
 import { SearchIcon } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Accordion, Avatar, Frame, Search, TokenImage } from "@/components"
 import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns, useRecipients } from "@/state"
 
 const formatRecipientInput = (input: string): string => {

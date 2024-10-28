@@ -2,10 +2,9 @@ import { FC, useMemo, useState } from "react"
 
 import { ArrowDownFromLine, MapIcon, Send } from "lucide-react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"

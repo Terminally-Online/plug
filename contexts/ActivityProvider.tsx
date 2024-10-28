@@ -1,25 +1,24 @@
 import { ContextType, createContext, FC, PropsWithChildren, useContext, useState } from "react"
 
 import { api, RouterOutputs } from "@/server/client"
-
 import { useSocket } from "@/state"
 
 export const ActivityContext = createContext<{
-	activities: RouterOutputs["plug"]["action"]["activity"]
+	activities: RouterOutputs["plugs"]["activity"]["get"]
 	isLoading: boolean
 }>({ activities: [], isLoading: true })
 
 export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { isAnonymous } = useSocket()
 
-	const { isLoading } = api.plug.action.activity.useQuery(undefined, {
+	const { isLoading } = api.plugs.activity.get.useQuery(undefined, {
 		enabled: isAnonymous === false,
 		onSuccess: data => setActivities(data)
 	})
 
 	const [activities, setActivities] = useState<ContextType<typeof ActivityContext>["activities"]>([])
 
-	api.plug.action.onActivity.useSubscription(undefined, {
+	api.plugs.activity.onActivity.useSubscription(undefined, {
 		onData: data => {
 			if (activities.find(activity => activity.id === data.id)) return
 			setActivities(prev => (prev ? [data, ...prev] : [data]))

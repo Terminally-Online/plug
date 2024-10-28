@@ -1,9 +1,8 @@
 import React, { FC, useState } from "react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { Accordion, Image } from "@/components"
 import { chains, formatTitle, getChainId } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 import { SocketCollectibleGrid } from "./collectible-grid"
 

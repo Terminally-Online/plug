@@ -1,9 +1,9 @@
-import { db } from "@/server/db"
 import { TRPCError } from "@trpc/server"
 
 import axios from "axios"
 
 import { ZerionCollectibles } from "@/lib/types"
+import { db } from "@/server/db"
 
 import { getZerionApiKey } from "./authentication"
 

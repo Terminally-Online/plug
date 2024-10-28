@@ -4,14 +4,14 @@ import { Workflow } from "@prisma/client"
 
 import { Animate, PlugGridItem } from "@/components"
 
-type Props = React.HTMLAttributes<HTMLDivElement> & {
-	index: number
-	from: string
-	plugs: Array<Workflow | undefined> | undefined
-	count?: number
-}
-
-export const PlugGrid: FC<Props> = ({ index, from, plugs, count, ...props }) => {
+export const PlugGrid: FC<
+	React.HTMLAttributes<HTMLDivElement> & {
+		index: number
+		from: string
+		plugs: Array<Workflow | undefined> | undefined
+		count?: number
+	}
+> = ({ index, from, plugs, count, ...props }) => {
 	if (plugs === undefined) return null
 
 	return (

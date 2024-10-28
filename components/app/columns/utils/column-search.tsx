@@ -2,11 +2,10 @@ import { FC, HTMLAttributes, useState } from "react"
 
 import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
-import { api } from "@/server/client"
-
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle } from "@/lib"
 import { useDebounce } from "@/lib/hooks"
+import { api } from "@/server/client"
 
 export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,

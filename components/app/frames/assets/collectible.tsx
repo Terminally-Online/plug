@@ -17,8 +17,6 @@ import {
 	Waypoints
 } from "lucide-react"
 
-import { api, RouterOutputs } from "@/server/client"
-
 import { CollectibleImage, Frame, Image } from "@/components"
 import {
 	chains,
@@ -31,6 +29,7 @@ import {
 	getChainId,
 	getTextColor
 } from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
 type Traits = Array<{ trait_type: string; value: string }>

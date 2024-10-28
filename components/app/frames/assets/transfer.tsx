@@ -1,8 +1,7 @@
 import { FC } from "react"
 
-import { RouterOutputs } from "@/server/client"
-
 import { useDebounce } from "@/lib"
+import { RouterOutputs } from "@/server/client"
 
 import { TransferAmountFrame } from "./transfer-amount"
 import { TransferRecipientFrame } from "./transfer-recipient"

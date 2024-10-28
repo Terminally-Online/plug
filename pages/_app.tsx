@@ -3,11 +3,10 @@ import localFont from "next/font/local"
 import Head from "next/head"
 import React, { FC } from "react"
 
-import { api } from "@/server/client"
-
 import { GoogleTagManager } from "@next/third-parties/google"
 
 import { GTM_ID } from "@/lib"
+import { api } from "@/server/client"
 
 import "./styles.css"
 

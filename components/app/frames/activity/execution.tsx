@@ -11,7 +11,7 @@ import { useColumns } from "@/state"
 export const ExecutionFrame: FC<{
 	index: number
 	icon: JSX.Element
-	activity: RouterOutputs["plug"]["action"]["activity"][number]
+	activity: RouterOutputs["plugs"]["activity"]["get"][number]
 }> = ({ index, icon, activity }) => {
 	const { isFrame } = useColumns(index, `${activity.id}-activity`)
 

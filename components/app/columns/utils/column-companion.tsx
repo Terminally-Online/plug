@@ -4,10 +4,9 @@ import React, { FC, HTMLAttributes, useEffect, useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Carrot, Clock, Egg, Heart, PawPrintIcon } from "lucide-react"
 
-import { api } from "@/server/client"
-
 import { Button, Counter, DateSince } from "@/components"
 import { cn, greenGradientStyle, sunGradientStyle } from "@/lib"
+import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
 export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index }) => {
