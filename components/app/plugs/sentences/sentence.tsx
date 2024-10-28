@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, HTMLAttributes } from "react"
 
 import { X } from "lucide-react"
 
@@ -6,12 +6,14 @@ import { Accordion, Button, Fragments, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { categories, cn } from "@/lib"
 
-export const Sentence: FC<{
-	index: number
-	item: string
-	actionIndex: number
-	preview?: boolean
-}> = ({ index, item, actionIndex, preview = false }) => {
+export const Sentence: FC<
+	HTMLAttributes<HTMLButtonElement> & {
+		index: number
+		item: string
+		actionIndex: number
+		preview?: boolean
+	}
+> = ({ index, item, actionIndex, preview = false, className, ...props }) => {
 	const { plug, own, actions, handle } = usePlugs(item)
 
 	const { categoryName } = actions[actionIndex]
@@ -20,7 +22,10 @@ export const Sentence: FC<{
 
 	return (
 		<>
-			<Accordion className="hover:cursor-auto hover:border-grayscale-100 hover:bg-white">
+			<Accordion
+				className={cn("hover:cursor-auto hover:border-grayscale-100 hover:bg-white", className)}
+				{...props}
+			>
 				<div className={cn("flex flex-row items-center font-bold")}>
 					<p className="flex w-full flex-wrap items-center gap-[4px]">
 						<div className="relative h-6 w-10">

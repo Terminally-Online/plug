@@ -63,17 +63,17 @@ export const Search: FC<Props> = ({
 				className={cn(
 					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-white bg-grayscale-0 p-4 px-6 transition-colors duration-200 ease-in-out hover:border-grayscale-0 hover:bg-white",
 					textArea ? "rounded-lg" : "rounded-[16px]",
-					search && "border-grayscale-0 bg-white"
+					search && "border-grayscale-100 bg-white"
 				)}
 				onClick={handleOnClick ? () => handleOnClick() : () => ref.current?.focus()}
 			>
-				<div className={cn("w-max", textArea && "mb-auto mt-1")}>{icon}</div>
+				<div className={cn("w-max opacity-40", textArea && "mb-auto mt-1")}>{icon}</div>
 				{textArea === false ? (
 					<input
 						ref={ref as RefObject<HTMLInputElement>}
 						type="text"
 						placeholder={placeholder}
-						className="w-full cursor-pointer bg-transparent font-bold opacity-40 outline-none group-hover:opacity-100"
+						className="w-full cursor-pointer bg-transparent font-bold outline-none"
 						value={search}
 						onChange={e => (handleSearch ? handleSearch(e.target.value) : null)}
 					/>

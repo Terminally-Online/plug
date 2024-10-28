@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from "react"
+import { FC, useCallback, useEffect, useMemo } from "react"
 import { DateRange } from "react-day-picker"
 
 import { Eye } from "lucide-react"
@@ -16,47 +16,44 @@ export const RunFrame: FC<{
 	clearSchedule: () => void
 }> = ({ index, item, scheduleData, clearSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "run")
-	const { plug, handle } = usePlugs(item)
+	const { plug, actions, handle } = usePlugs(item)
 
-	useEffect(() => {
-		if (!isFrame) {
-			clearSchedule()
-		}
-	}, [isFrame, clearSchedule, scheduleData])
-
-	const prevFrame = "NOT_IMPLEMENTED" as string
+	const isReady = useMemo(
+		() => plug && actions && actions.every(action => action.values.every(value => Boolean(value))),
+		[plug, actions]
+	)
 
 	const handleRun = useCallback(() => {
 		if (!plug) return
 
-		if (scheduleData?.date?.from) {
-			handle.plug.queue({
-				workflowId: plug.id,
-				startAt: scheduleData.date.from,
-				endAt: scheduleData.date.to,
-				frequency: parseInt(scheduleData.repeats.value)
-			})
-		} else {
-			// Immediate execution logic
-		}
+		handle.plug.queue({
+			workflowId: plug.id,
+			startAt: scheduleData?.date?.from ?? new Date(),
+			endAt: scheduleData?.date?.to ?? new Date(),
+			frequency: parseInt(scheduleData?.repeats?.value ?? "0")
+		})
 
 		clearSchedule()
 		frame("running")
 	}, [plug, scheduleData, clearSchedule, frame, handle.plug])
+
+	useEffect(() => {
+		if (!isFrame) clearSchedule()
+	}, [isFrame, clearSchedule])
 
 	return (
 		<Frame
 			index={index}
 			className="z-[2]"
 			icon={<Eye size={18} />}
-			label={prevFrame === "schedule" ? "Intent Preview" : "Transaction Preview"}
+			label="Preview"
 			visible={isFrame}
 			hasOverlay={true}
 		>
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col">
 				<ActionPreview index={index} item={item} review={true} />
 
-				<p className="flex font-bold">
+				<p className="mt-2 flex font-bold">
 					<span className="mr-auto opacity-40">Run On</span>
 					<Image
 						className="ml-[-20px] h-6 w-6"
@@ -75,8 +72,13 @@ export const RunFrame: FC<{
 					</span>
 				</p>
 
-				<Button className="mt-4 w-full" onClick={handleRun}>
-					{prevFrame === "schedule" ? "Sign Intent" : "Submit Transaction"}
+				<Button
+					variant={isReady ? "primary" : "disabled"}
+					className="mt-4 w-full py-4"
+					onClick={handleRun}
+					disabled={!isReady}
+				>
+					{isReady ? "Run" : "Missing required values"}
 				</Button>
 			</div>
 		</Frame>

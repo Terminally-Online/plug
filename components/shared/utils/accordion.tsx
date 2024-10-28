@@ -52,10 +52,6 @@ export const Accordion: FC<Props> = ({
 
 				{accordion && <AccordionContent expanded={expanded}>{accordion}</AccordionContent>}
 			</div>
-
-			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
-			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
-			<div className="pointer-events-none absolute inset-0 rounded-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
 		</button>
 	)
 }

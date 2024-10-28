@@ -2,7 +2,6 @@ import { FC } from "react"
 
 import { DynamicFragment, StaticFragment } from "@/components"
 import { ACTION_REGEX, usePlugs } from "@/contexts"
-import { useColumns } from "@/state"
 
 export const Fragments: FC<{
 	index: number
