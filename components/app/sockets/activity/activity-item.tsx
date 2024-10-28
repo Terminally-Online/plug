@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-import { AlertCircle, CheckCircle, Clock, Loader, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, Loader, XCircle } from "lucide-react"
 
 import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
 import { formatTitle } from "@/lib"
@@ -51,6 +51,7 @@ const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 			)
 	}
 }
+
 export const ActivityItem: FC<{
 	index: number
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
@@ -91,7 +92,9 @@ export const ActivityItem: FC<{
 				)}
 			</Accordion>
 
-			{activity && <ExecutionFrame index={index} icon={<ActivityIcon status="pending" />} activity={activity} />}
+			{activity && (
+				<ExecutionFrame index={index} icon={<ActivityIcon status={activity.status} />} activity={activity} />
+			)}
 		</>
 	)
 }
