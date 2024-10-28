@@ -110,6 +110,12 @@ export const ExecutionFrame: FC<{
 					<p className="font-bold opacity-40">Simulations</p>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
+
+				{activity.simulations.length === 0 ? (
+					<p className="font-bold opacity-40">No simulations yet.</p>
+				) : (
+					<></>
+				)}
 			</div>
 		</Frame>
 	)

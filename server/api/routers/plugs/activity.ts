@@ -9,7 +9,8 @@ import { subscription, subscriptions } from "@/server/subscription"
 
 const execution = Prisma.validator<Prisma.ExecutionDefaultArgs>()({
 	include: {
-		workflow: true
+		workflow: true,
+		simulations: true
 	}
 })
 export type Execution = Prisma.ExecutionGetPayload<typeof execution>
@@ -19,7 +20,7 @@ export const activity = createTRPCRouter({
 		return await ctx.db.execution.findMany({
 			where: { workflow: { socketId: ctx.session.address } },
 			orderBy: { createdAt: "desc" },
-			include: { workflow: true }
+			include: { workflow: true, simulations: true }
 		})
 	}),
 
@@ -58,7 +59,8 @@ export const activity = createTRPCRouter({
 						nextSimulationAt: input.startAt
 					},
 					include: {
-						workflow: true
+						workflow: true,
+						simulations: true
 					}
 				})
 
@@ -82,7 +84,8 @@ export const activity = createTRPCRouter({
 			where: { id: input.id },
 			data: { status: execution.status.trim() !== "pending" ? "pending" : "paused" },
 			include: {
-				workflow: true
+				workflow: true,
+				simulations: true
 			}
 		})
 
@@ -93,8 +96,7 @@ export const activity = createTRPCRouter({
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const execution = await ctx.db.execution.delete({
-			where: { id: input.id },
-			include: { workflow: true }
+			where: { id: input.id }
 		})
 
 		ctx.emitter.emit(subscriptions.execution.delete, execution)
