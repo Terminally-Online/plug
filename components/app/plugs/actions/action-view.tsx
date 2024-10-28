@@ -58,8 +58,8 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 		<div className="mb-72 flex flex-col">
 			<Callout.EmptyPlug index={index} isEmpty={actions.length === 0} />
 
-			{actions.map((_, actionIndex) => (
-				<Sentence key={index} index={index} item={item} actionIndex={actionIndex} />
+			{actions.map((action, actionIndex) => (
+				<Sentence key={index} index={index} item={item} actionIndex={actionIndex} action={action} />
 			))}
 
 			{own && (

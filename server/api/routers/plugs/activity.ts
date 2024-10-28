@@ -42,22 +42,32 @@ export const activity = createTRPCRouter({
 
 			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
 
-			const execution = await ctx.db.execution.create({
-				data: {
-					workflowId: input.workflowId,
-					startAt: input.startAt,
-					endAt: input.endAt,
-					frequency: input.frequency,
-					nextSimulationAt: input.startAt
-				},
-				include: {
-					workflow: true
-				}
-			})
+			// NOTE: We have a try/catch here so that if someone posts in invalid JSON, we don't
+			// crash the server and instead return the proper 400 (Bad Request) error. We do not
+			// need to utilize the parsed JSON here because we are only using it to validate the
+			// JSON string will be fine when sent to the Solver backend.
+			try {
+				JSON.parse(workflow.actions)
+				const execution = await ctx.db.execution.create({
+					data: {
+						workflowId: input.workflowId,
+						actions: workflow.actions,
+						startAt: input.startAt,
+						endAt: input.endAt,
+						frequency: input.frequency,
+						nextSimulationAt: input.startAt
+					},
+					include: {
+						workflow: true
+					}
+				})
 
-			ctx.emitter.emit(subscriptions.plugs.queue, execution)
+				ctx.emitter.emit(subscriptions.plugs.queue, execution)
 
-			return execution
+				return execution
+			} catch (error) {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		}),
 
 	onActivity: subscription<Execution>("protected", subscriptions.plugs.queue)

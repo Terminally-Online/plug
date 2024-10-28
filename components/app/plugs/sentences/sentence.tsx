@@ -4,21 +4,22 @@ import { X } from "lucide-react"
 
 import { Accordion, Button, Fragments, Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { categories, cn } from "@/lib"
+import { Action, categories, cn } from "@/lib"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
 		index: number
 		item: string
 		actionIndex: number
+		action: Action
 		preview?: boolean
 	}
-> = ({ index, item, actionIndex, preview = false, className, ...props }) => {
+> = ({ index, item, actionIndex, action, preview = false, className, ...props }) => {
 	const { plug, own, actions, handle } = usePlugs(item)
 
-	const { categoryName } = actions[actionIndex]
+	const { categoryName } = action
 
-	if (plug === undefined || actions === undefined) return null
+	if (plug === undefined) return null
 
 	return (
 		<>
@@ -45,7 +46,13 @@ export const Sentence: FC<
 							/>
 						</div>
 
-						<Fragments index={index} item={item} actionIndex={actionIndex} preview={preview} />
+						<Fragments
+							index={index}
+							item={item}
+							actionIndex={actionIndex}
+							action={action}
+							preview={preview}
+						/>
 					</p>
 
 					{preview === false && own && (

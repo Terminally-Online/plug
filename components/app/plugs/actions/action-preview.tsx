@@ -2,15 +2,17 @@ import { FC, useMemo } from "react"
 
 import { Sentence } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cn } from "@/lib"
+import { Action, Actions, cn } from "@/lib"
 
-const SentenceReview: FC<{ index: number; item: string; actionIndex: number }> = ({ index, item, actionIndex }) => {
-	const { plug, actions } = usePlugs(item)
+const SentenceReview: FC<{ index: number; item: string; actionIndex: number; action: Action }> = ({
+	index,
+	item,
+	actionIndex,
+	action
+}) => {
+	const { plug } = usePlugs(item)
 
-	const isReady = useMemo(
-		() => plug && actions && actions[actionIndex].values.every(value => Boolean(value)),
-		[plug, actions, actionIndex]
-	)
+	const isReady = useMemo(() => plug && action.values.every(value => Boolean(value)), [plug, action])
 
 	return (
 		<Sentence
@@ -20,18 +22,21 @@ const SentenceReview: FC<{ index: number; item: string; actionIndex: number }> =
 			index={index}
 			item={item}
 			actionIndex={actionIndex}
+			action={action}
 			preview={true}
 		/>
 	)
 }
 
-export const ActionPreview: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { actions } = usePlugs(item)
+export const ActionPreview: FC<{ index: number; item: string; actions?: Actions }> = ({ index, item, actions }) => {
+	const { actions: plugActions } = usePlugs(item)
+
+	actions = actions ?? plugActions
 
 	return (
 		<div className="flex flex-col gap-2">
-			{actions.map((_, actionIndex) => (
-				<SentenceReview key={actionIndex} index={index} item={item} actionIndex={actionIndex} />
+			{actions.map((action, actionIndex) => (
+				<SentenceReview key={actionIndex} index={index} item={item} actionIndex={actionIndex} action={action} />
 			))}
 		</div>
 	)

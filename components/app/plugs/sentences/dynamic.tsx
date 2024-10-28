@@ -5,7 +5,7 @@ import { ChevronRight, CircleHelp } from "lucide-react"
 
 import { Frame, Image, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
-import { categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
+import { Action, categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
 import { useColumns } from "@/state"
 
 export const DynamicFragment: FC<{
@@ -13,14 +13,14 @@ export const DynamicFragment: FC<{
 	index: number
 	actionIndex: number
 	fragmentIndex: number
+	action: Action
+	fragment: string
+	dynamic: string[]
 	preview: boolean
-}> = ({ index, item, actionIndex, fragmentIndex, preview }) => {
+}> = ({ index, item, actionIndex, fragmentIndex, action, fragment, dynamic, preview }) => {
 	const { data: session } = useSession()
-	const { isFrame, frame } = useColumns(index, `${index}-${actionIndex}-${fragmentIndex}`)
-	const { plug, actions, fragments, dynamic, handle } = usePlugs(item)
-
-	const action = actions[actionIndex]
-	const fragment = fragments[actionIndex][fragmentIndex]
+	const { isFrame, frame } = useColumns(index, `${actionIndex}-${fragmentIndex}`)
+	const { plug, actions, handle } = usePlugs(item)
 
 	const category = categories[action.categoryName]
 	const staticAction = staticActions[action.categoryName][action.actionName]
@@ -71,10 +71,9 @@ export const DynamicFragment: FC<{
 	//        upper index value.
 	const handleValue = (value: Value) => {
 		const hasChanged =
-			value instanceof Object && actions[actionIndex].values[parentIndex] instanceof Object
-				? // @ts-ignore
-					value.value !== actions[actionIndex].values[parentIndex].value
-				: value !== actions[actionIndex].values[parentIndex]
+			value instanceof Object && action.values[parentIndex] instanceof Object
+				? value.value !== action.values[parentIndex].value
+				: value !== action.values[parentIndex]
 
 		if (hasChanged) {
 			handle.action.edit({
@@ -88,7 +87,7 @@ export const DynamicFragment: FC<{
 								if (valueIndex === parentIndex) return value
 
 								// Check for dependencies using dynamic fragments
-								const fragment = dynamic[actionIndex][valueIndex]
+								const fragment = dynamic[valueIndex]
 								if (!fragment) return actionValue
 
 								// Get dependency info for this value
@@ -103,7 +102,7 @@ export const DynamicFragment: FC<{
 									// Indirect dependency through another value that's being reset
 									action.values.some((_, idx) => {
 										if (idx === valueIndex) return false
-										const [depChildIndex] = getIndexes(dynamic[actionIndex][idx])
+										const [depChildIndex] = getIndexes(dynamic[idx])
 										return (
 											depChildIndex === thisChildIndex &&
 											(idx === parentIndex || action.values[idx] === undefined)

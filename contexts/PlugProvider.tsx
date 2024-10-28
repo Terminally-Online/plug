@@ -4,7 +4,8 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useMemo,
 
 import { Workflow } from "@prisma/client"
 
-import { categories, actions as staticActions, tags } from "@/lib/constants"
+import { Actions } from "@/lib"
+import { categories, tags } from "@/lib/constants"
 import { api } from "@/server/client"
 import { COLUMN_KEYS, useColumns } from "@/state"
 
@@ -245,11 +246,7 @@ export const usePlugs = (id?: string) => {
 
 	const own = plug && session && session.address === plug.socketId
 
-	const actions: Array<{
-		categoryName: keyof typeof categories
-		actionName: keyof (typeof staticActions)[keyof typeof categories]
-		values: Array<Value>
-	}> = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
+	const actions: Actions = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
 
 	const chains = useMemo(() => {
 		if (!actions) return []
@@ -266,27 +263,11 @@ export const usePlugs = (id?: string) => {
 		return set ? Array.from(set) : []
 	}, [actions])
 
-	// Split all of the sentence fragments into an appropriate array based on the
-	// regex shape that enables the f-string like syntax.
-	const fragments = useMemo(() => {
-		return actions.map(action => {
-			const staticAction = staticActions[action.categoryName][action.actionName]
-
-			return staticAction ? (staticAction["sentence"].split(ACTION_REGEX) as string[]) : []
-		})
-	}, [actions])
-
-	const dynamic = useMemo(() => {
-		return fragments.map(sentence => sentence.filter(fragment => fragment.match(ACTION_REGEX)))
-	}, [fragments])
-
 	return {
 		...context,
 		plug,
 		own,
 		actions,
-		chains,
-		fragments,
-		dynamic
+		chains
 	}
 }

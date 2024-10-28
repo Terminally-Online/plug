@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC } from "react"
+import { FC, useMemo } from "react"
 
 import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Waypoints, X } from "lucide-react"
 
@@ -15,10 +15,12 @@ export const ExecutionFrame: FC<{
 }> = ({ index, icon, activity }) => {
 	const { isFrame } = useColumns(index, `${activity.id}-activity`)
 
+	const actions = useMemo(() => JSON.parse(activity.actions), [activity])
+
 	return (
 		<Frame index={index} icon={icon} label={activity.workflow.name} visible={isFrame} hasOverlay={true}>
 			<div className="flex flex-col">
-				<ActionPreview index={index} item={activity.workflow.id} />
+				<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
 				<Button
 					variant="destructive"

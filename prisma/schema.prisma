@@ -187,6 +187,7 @@ model Execution {
     // ---------------------------------------------------------------------------
     // Fields
     // ---------------------------------------------------------------------------
+    actions          String    @default("[]")
     startAt          DateTime
     endAt            DateTime?
     frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.

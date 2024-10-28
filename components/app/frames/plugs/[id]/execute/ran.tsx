@@ -11,8 +11,6 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 	const { isFrame } = useColumns(index, "ran")
 	const { plug } = usePlugs(item)
 
-	const prevFrame = "NOT_IMPLEMENTED" as string
-
 	if (!plug) return null
 
 	return (
