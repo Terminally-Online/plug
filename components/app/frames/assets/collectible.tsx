@@ -199,7 +199,7 @@ export const CollectibleFrame: FC<{
 						<p className="flex w-full flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
 							<span className="mr-auto opacity-40">Chain</span>
-							<span className="flex flex-row items-center gap-4">
+							<span className="flex flex-row items-center gap-2">
 								<Image
 									className="h-4 w-4"
 									src={chains[getChainId(collection.chain)].logo}

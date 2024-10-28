@@ -12,7 +12,7 @@
 		"^(react|next)(.*)$",
 		"^(@walletconnect|wagmi|viem|siwe)(.*)$",
 		"^(framer|lucide|boring-avatars)(.*)$",
-		"^(@trpc/server|@/server|@/prisma)(.*)$",
+		"^(@trpc/server|@/prisma)(.*)$",
 		"<THIRD_PARTY_MODULES>",
 		"^@[a-zA-Z]",
 		"^@/(.*)$",

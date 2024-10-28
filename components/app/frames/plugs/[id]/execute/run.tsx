@@ -58,7 +58,6 @@ export const RunFrame: FC<{
 
 				<p className="flex font-bold">
 					<span className="mr-auto opacity-40">Run On</span>
-					{/* TODO: ADD CHAIN FUNCTIONALITY BACK */}
 					<Image
 						className="ml-[-20px] h-6 w-6"
 						src={`/blockchain/ethereum.png`}
