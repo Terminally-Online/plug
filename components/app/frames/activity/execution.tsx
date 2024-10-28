@@ -5,7 +5,7 @@ import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Trash, Waypoints } from 
 
 import { ActionPreview, Button, Counter, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
-import { chains, formatTitle } from "@/lib"
+import { chains, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
@@ -66,6 +66,13 @@ export const ExecutionFrame: FC<{
 						</span>{" "}
 						{formatTitle(activity.status)}
 					</p>
+					<p className="flex flex-row justify-between font-bold">
+						<span className="flex w-full flex-row items-center gap-4">
+							<Calendar size={18} className="opacity-20" />
+							<span className="opacity-40">Frequency</span>
+						</span>{" "}
+						{formatFrequency(activity.frequency)}
+					</p>
 					<p className="flex w-full flex-row items-center gap-4 font-bold">
 						<Waypoints size={18} className="opacity-20" />
 						<span className="mr-auto opacity-40">Chain</span>
@@ -73,13 +80,6 @@ export const ExecutionFrame: FC<{
 							<Image className="h-4 w-4" src={chains[1].logo} alt="ethereum" width={24} height={24} />
 							Ethereum
 						</span>
-					</p>
-					<p className="flex flex-row justify-between font-bold">
-						<span className="flex w-full flex-row items-center gap-4">
-							<Calendar size={18} className="opacity-20" />
-							<span className="opacity-40">Scheduled At</span>
-						</span>{" "}
-						<Counter count={activity.createdAt.toLocaleDateString()} />
 					</p>
 					<p className="flex flex-row justify-between font-bold">
 						<span className="flex w-full flex-row items-center gap-4">
@@ -104,6 +104,11 @@ export const ExecutionFrame: FC<{
 						</span>{" "}
 						<TimeUntil date={activity.nextSimulationAt} />
 					</p>
+				</div>
+
+				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+					<p className="font-bold opacity-40">Simulations</p>
+					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
 			</div>
 		</Frame>

@@ -177,3 +177,17 @@ export const formatForDisplay = (input: number | string, formatDecimals: boolean
 
 	return input.split("").reverse()
 }
+
+export const frequencies = [
+	{ label: "Once", value: "0" },
+	{ label: "Daily", value: "1" },
+	{ label: "Weekly", value: "7" },
+	{ label: "Monthly", value: "30" },
+	{ label: "Quarterly", value: "90" },
+	{ label: "Yearly", value: "365" }
+]
+
+export const formatFrequency = (frequencyValue: number) => {
+	const frequencyIndex = frequencies.findIndex(frequency => parseInt(frequency.value) === frequencyValue)
+	return frequencies[frequencyIndex].label
+}

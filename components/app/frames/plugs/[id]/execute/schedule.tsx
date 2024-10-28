@@ -4,17 +4,8 @@ import { DateRange, DayPicker } from "react-day-picker"
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Button, Dropdown, Frame } from "@/components"
-import { cn, formatDate } from "@/lib"
+import { cn, formatDate, frequencies } from "@/lib"
 import { useColumns } from "@/state"
-
-const frequencies = [
-	{ label: "Never", value: "0" },
-	{ label: "Daily", value: "1" },
-	{ label: "Weekly", value: "7" },
-	{ label: "Monthly", value: "30" },
-	{ label: "Quarterly", value: "90" },
-	{ label: "Yearly", value: "365" }
-]
 
 export const ScheduleFrame: FC<{
 	index: number
@@ -117,8 +108,8 @@ export const ScheduleFrame: FC<{
 
 				<Dropdown
 					icon={<Clock size={14} className="opacity-60" />}
-					placeholder="Repeats"
-					value={scheduleData?.repeats.label || "Never"}
+					placeholder="Frequency"
+					value={scheduleData?.repeats.label || "Once"}
 					options={frequencies}
 					handleClick={() => frame("recurring")}
 				/>

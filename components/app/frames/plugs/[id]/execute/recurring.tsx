@@ -3,16 +3,8 @@ import { FC } from "react"
 import { Clock } from "lucide-react"
 
 import { Button, Frame } from "@/components"
+import { frequencies } from "@/lib"
 import { useColumns } from "@/state"
-
-export const frequencies = [
-	{ label: "Never", value: "0" },
-	{ label: "Daily", value: "1" },
-	{ label: "Weekly", value: "7" },
-	{ label: "Monthly", value: "30" },
-	{ label: "Quarterly", value: "90" },
-	{ label: "Yearly", value: "365" }
-]
 
 export const RecurringFrame: FC<{ index: number; handleRepeats: (repeats: (typeof frequencies)[0]) => void }> = ({
 	index,
