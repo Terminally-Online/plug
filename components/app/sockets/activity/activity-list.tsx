@@ -30,12 +30,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 
 			<div className="flex flex-col gap-2">
 				{visibleActivities.map((activity, activityIndex) => (
-					<ActivityItem
-						key={activity?.id || activityIndex}
-						id={`${index}-${activityIndex}-activity`}
-						index={index}
-						activity={activity}
-					/>
+					<ActivityItem key={activity?.id || activityIndex} index={index} activity={activity} />
 				))}
 			</div>
 		</div>
