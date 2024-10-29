@@ -69,8 +69,13 @@ const createPDF = async (imagePaths: string[], outputPath: string) => {
   await fs.writeFile(outputPath, pdfBytes);
 };
 
-const deck = async (email: string, directory: string, template: string, output: string) => {
-    // Sort by the number in the file name instead of using a broken sorting algorithm
+const deck = async (
+  email: string,
+  directory: string,
+  template: string,
+  output: string
+) => {
+  // Sort by the number in the file name instead of using a broken sorting algorithm
   const files = (await fse.readdir(`./base/${directory}`))
     .filter((file) => file.endsWith(".png"))
     .sort((a, b) => {
@@ -115,10 +120,7 @@ const deck = async (email: string, directory: string, template: string, output: 
       (file) =>
         `./outputs/${
           email !== "" ? email : "default"
-        }/${directory}-images/${finalDeckHash}/${file.replace(
-          template,
-          ""
-        )}`
+        }/${directory}-images/${finalDeckHash}/${file.replace(template, "")}`
     ),
     `./outputs/${email !== "" ? email : "default"}/${output}.pdf`
   );
@@ -135,8 +137,7 @@ hash: ${finalDeckHash}`);
 
 const onePager = async (email: string) => {
   const links = {
-    chance: "https://calendly.com/chance-zyez/chance",
-    reka: "https://calendly.com/d/cp33-4v2-qn9/reka-chance",
+    chance: "https://calendly.com/chance-july/30min",
     drake: "https://calendly.com/d/ck7n-gng-zwv/chance-drake",
   };
 
@@ -249,9 +250,9 @@ const memo = async (email: string) => {
 };
 
 const main = async (email: string) => {
-  await deck(email, "vision", "Seed - Vision - ", "vision")
-  await deck(email, "boomer", "Seed - Boomer - ", "annotated-deck")
-  await deck(email, "boomer-slim", "Seed - Boomer - Slim - ", "deck")
+  await deck(email, "vision", "Seed - Vision - ", "vision");
+  await deck(email, "boomer", "Seed - Boomer - ", "annotated-deck");
+  await deck(email, "boomer-slim", "Seed - Boomer - Slim - ", "deck");
   await onePager(email);
   await memo(email);
 };
