@@ -82,24 +82,17 @@ export const simulation = createTRPCRouter({
 			return await ctx.db.$transaction(async tx => {
 				return await Promise.all(
 					input.map(async simulation => {
-						const { execution } = await tx.simulation.create({
+						const { id } = await tx.simulation.create({
 							data: {
 								status: simulation.status,
 								executionId: simulation.id
 							},
 							select: {
-								execution: {
-									include: {
-										workflow: true,
-										simulations: { orderBy: { createdAt: "desc" } }
-									}
-								}
+								id: true
 							}
 						})
 
-						ctx.emitter.emit(subscriptions.execution.update, execution)
-
-						return execution
+						return id
 					})
 				)
 			})
