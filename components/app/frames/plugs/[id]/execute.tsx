@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useState, useCallback } from "react"
 import { DateRange } from "react-day-picker"
 
 import { frequencies } from "@/lib"
@@ -13,20 +13,41 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 	const [scheduleData, setScheduleData] = useState<{
 		date: DateRange | undefined
 		repeats: (typeof frequencies)[0]
-	} | null>(null)
+	}>({
+		date: undefined,
+		repeats: frequencies[0]
+	})
 
-	const clearSchedule = () => setScheduleData(null)
+	const clearSchedule = useCallback(() => {
+		setScheduleData({
+			date: undefined,
+			repeats: frequencies[0]
+		})
+	}, [])
 
-	const handleRepeats = (repeats: (typeof frequencies)[0]) => {
-		setScheduleData(prev => (prev ? { ...prev, repeats } : { date: undefined, repeats }))
-	}
+	const handleRepeats = useCallback((repeats: (typeof frequencies)[0]) => {
+		setScheduleData(prev => ({
+			date: prev.date,
+			repeats
+		}))
+	}, [])
 
 	return (
 		<>
 			<ChainFrame index={index} item={item} />
-			<ScheduleFrame index={index} item={item} scheduleData={scheduleData} setScheduleData={setScheduleData} />
+			<ScheduleFrame 
+				index={index} 
+				item={item} 
+				scheduleData={scheduleData} 
+				setScheduleData={setScheduleData} 
+			/>
 			<RecurringFrame index={index} handleRepeats={handleRepeats} />
-			<RunFrame index={index} item={item} scheduleData={scheduleData} clearSchedule={clearSchedule} />
+			<RunFrame 
+				index={index} 
+				item={item} 
+				scheduleData={scheduleData} 
+				clearSchedule={clearSchedule} 
+			/>
 			<RanFrame index={index} item={item} />
 		</>
 	)
