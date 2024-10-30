@@ -177,7 +177,12 @@ export const DynamicFragment: FC<{
 											// @ts-ignore - Action value can be string | Option but really only Option
 											option.value === action.values[parentIndex]?.value
 										}
-										handleChange={() => handleValue(option)}
+										handleChange={() =>
+											handleValue(
+												// @ts-ignore - Action value can be string | Option but really only Option
+												option.value === action.values[parentIndex]?.value ? null : option
+											)
+										}
 									/>
 
 									<button
@@ -204,6 +209,12 @@ export const DynamicFragment: FC<{
 					)}
 
 					<Button
+						variant={
+							action.values[parentIndex] === "" ||
+							(options !== undefined && action.values[parentIndex] === null)
+								? "disabled"
+								: "primary"
+						}
 						className="py-4"
 						onClick={() => {
 							frame(
@@ -212,8 +223,17 @@ export const DynamicFragment: FC<{
 									: undefined
 							)
 						}}
+						disabled={
+							action.values[parentIndex] === "" ||
+							(options !== undefined && action.values[parentIndex] === null)
+						}
 					>
-						{action.values.length - 1 > dynamicIndex ? "Next" : "Done"}
+						{action.values[parentIndex] === "" ||
+						(options !== undefined && action.values[parentIndex] === null)
+							? "Missing required inputs"
+							: action.values.length - 1 > dynamicIndex
+								? "Next"
+								: "Done"}
 					</Button>
 				</div>
 			</Frame>
