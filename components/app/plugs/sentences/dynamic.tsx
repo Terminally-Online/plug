@@ -153,6 +153,8 @@ export const DynamicFragment: FC<{
 				}
 				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
 				visible={isFrame}
+				handleBack={dynamicIndex > 0 ? () => frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
+				hasOverlay
 			>
 				<div className="flex flex-col gap-4">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
