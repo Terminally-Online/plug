@@ -34,7 +34,7 @@ export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item 
 			<RunFrame
 				index={index}
 				item={item}
-				scheduleData={schedule}
+				schedule={schedule}
 				clearSchedule={() =>
 					setSchedule({
 						date: undefined,

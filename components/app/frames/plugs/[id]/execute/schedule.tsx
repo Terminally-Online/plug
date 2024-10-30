@@ -116,7 +116,7 @@ export const ScheduleFrame: FC<{
 
 				<Button
 					variant={date && date.from ? "primary" : "disabled"}
-					className="mt-4 w-full"
+					className="w-full py-4"
 					onClick={handleNext}
 					disabled={!date || !date.from}
 				>

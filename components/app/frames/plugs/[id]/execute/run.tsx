@@ -11,9 +11,9 @@ import { useColumns } from "@/state"
 export const RunFrame: FC<{
 	index: number
 	item: string
-	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
+	schedule: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
 	clearSchedule: () => void
-}> = ({ index, item, scheduleData, clearSchedule }) => {
+}> = ({ index, item, schedule, clearSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "run")
 	const { plug, actions, handle } = usePlugs(item)
 
@@ -27,14 +27,14 @@ export const RunFrame: FC<{
 
 		handle.plug.queue({
 			workflowId: plug.id,
-			startAt: scheduleData?.date?.from ?? new Date(),
-			endAt: scheduleData?.date?.to ?? new Date(),
-			frequency: parseInt(scheduleData?.repeats?.value ?? "0")
+			startAt: schedule?.date?.from ?? new Date(),
+			endAt: schedule?.date?.to ?? new Date(),
+			frequency: parseInt(schedule?.repeats?.value ?? "0")
 		})
 
 		clearSchedule()
 		frame("ran")
-	}, [plug, scheduleData, clearSchedule, frame, handle.plug])
+	}, [plug, schedule, clearSchedule, frame, handle.plug])
 
 	return (
 		<Frame
