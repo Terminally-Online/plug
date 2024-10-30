@@ -213,7 +213,7 @@ export const DynamicFragment: FC<{
 							)
 						}}
 					>
-						{action.values.length - 1 > dynamicIndex ? "Continue" : "Done"}
+						{action.values.length - 1 > dynamicIndex ? "Next" : "Done"}
 					</Button>
 				</div>
 			</Frame>
