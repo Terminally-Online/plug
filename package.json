@@ -56,7 +56,7 @@
 		"jotai": "^2.10.1",
 		"lucide-react": "^0.453.0",
 		"next": "14.2.15",
-		"next-auth": "^4.24.7",
+		"next-auth": "^4.24.10",
 		"next-pwa": "^5.6.0",
 		"qrcode-generator": "^1.4.4",
 		"react": "^18.2.0",
