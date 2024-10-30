@@ -10,15 +10,15 @@ import { useColumns } from "@/state"
 export const ScheduleFrame: FC<{
 	index: number
 	item: string
-	scheduleData: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
-	setScheduleData: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
-}> = ({ index, scheduleData, setScheduleData }) => {
+	schedule: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
+	onSchedule: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
+}> = ({ index, schedule, onSchedule }) => {
 	const { isFrame, frame } = useColumns(index, "schedule")
-	const [date, setDate] = useState<DateRange | undefined>(scheduleData?.date)
+	const [date, setDate] = useState<DateRange | undefined>(schedule?.date)
 
 	const handleNext = () => {
 		if (date?.from) {
-			setScheduleData({ date, repeats: scheduleData?.repeats || frequencies[0] })
+			onSchedule({ date, repeats: schedule?.repeats || frequencies[0] })
 			frame("run")
 		}
 	}
@@ -109,7 +109,7 @@ export const ScheduleFrame: FC<{
 				<Dropdown
 					icon={<Clock size={14} className="opacity-60" />}
 					placeholder="Frequency"
-					value={scheduleData?.repeats.label || "Once"}
+					value={schedule?.repeats.label || "Once"}
 					options={frequencies}
 					handleClick={() => frame("recurring")}
 				/>

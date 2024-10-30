@@ -36,10 +36,6 @@ export const RunFrame: FC<{
 		frame("ran")
 	}, [plug, scheduleData, clearSchedule, frame, handle.plug])
 
-	useEffect(() => {
-		if (!isFrame) clearSchedule()
-	}, [isFrame, clearSchedule])
-
 	return (
 		<Frame
 			index={index}
