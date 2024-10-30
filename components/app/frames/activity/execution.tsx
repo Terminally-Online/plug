@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Bell, Calendar, Pause, Play, TestTubeDiagonal, Trash, Waypoints } from "lucide-react"
+import { Bell, Calendar, Pause, Play, Trash, Waypoints } from "lucide-react"
 
 import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
@@ -106,48 +106,57 @@ export const ExecutionFrame: FC<{
 					</div>
 				)}
 
-				{activity.status !== "paused" && (
-					<Accordion>
-						<div className="flex flex-row gap-2">
-							<ActivityIcon status="upcoming" />
-							<div className="flex w-full flex-col">
-								<div className="flex flex-row items-center justify-between gap-2 font-bold">
-									<p>
-										Simulation{" "}
-										<span className="opacity-40">(#{activity.simulations.length + 1})</span>
-									</p>
-									<TimeUntil date={activity.nextSimulationAt} />
-								</div>
-								<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
-									<p>Upcoming</p>
-									<p>
-										<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
-									</p>
+				<div className="flex flex-col gap-2">
+					{activity.status !== "paused" && (
+						<Accordion>
+							<div className="flex flex-row gap-2">
+								<ActivityIcon status="upcoming" />
+								<div className="flex w-full flex-col">
+									<div className="flex flex-row items-center justify-between gap-2 font-bold">
+										<p>
+											Simulation{" "}
+											<span className="text-sm tabular-nums opacity-40">
+												(#{activity.simulations.length + 1})
+											</span>
+										</p>
+										<TimeUntil date={activity.nextSimulationAt} />
+									</div>
+									<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
+										<p>Upcoming</p>
+										<p>
+											<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
-					</Accordion>
-				)}
+						</Accordion>
+					)}
 
-				{activity.simulations.map((simulation, index) => (
-					<Accordion key={index}>
-						<div className="flex flex-row gap-2">
-							<ActivityIcon status={simulation.status} />
-							<div className="flex w-full flex-col">
-								<div className="flex flex-row items-center justify-between gap-2 font-bold">
-									<p>Simulation #{activity.simulations.length - index}</p>
-									<DateSince date={simulation.createdAt} />
-								</div>
-								<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
-									<p>{simulation.status}</p>
-									<p>
-										<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
-									</p>
+					{activity.simulations.map((simulation, index) => (
+						<Accordion key={index}>
+							<div className="flex flex-row gap-2">
+								<ActivityIcon status={simulation.status} />
+								<div className="flex w-full flex-col">
+									<div className="flex flex-row items-center justify-between gap-2 font-bold">
+										<p>
+											Simulation{" "}
+											<span className="text-sm tabular-nums opacity-40">
+												(#{activity.simulations.length - index})
+											</span>
+										</p>
+										<DateSince date={simulation.createdAt} />
+									</div>
+									<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
+										<p>{formatTitle(simulation.status)}</p>
+										<p>
+											<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
-					</Accordion>
-				))}
+						</Accordion>
+					))}
+				</div>
 			</div>
 		</Frame>
 	)

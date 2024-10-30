@@ -36,7 +36,6 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 		<>
 			<Frame
 				index={index}
-				className="scrollbar-hide z-[1] max-h-[85%] overflow-y-auto"
 				icon={<Blocks size={18} className="opacity-60" />}
 				label="Add Action"
 				visible={isFrame}

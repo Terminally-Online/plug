@@ -228,8 +228,6 @@ model Simulation {
     result      Json?
     error       String?
     gasEstimate Float?
-    startedAt   DateTime?
-    completedAt DateTime?
 
     // ---------------------------------------------------------------------------
     // Many-to-one

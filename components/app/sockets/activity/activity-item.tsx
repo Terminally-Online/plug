@@ -49,7 +49,7 @@ export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 					/>
 				</div>
 			)
-		case "error":
+		case "failure":
 			return (
 				<div className="relative h-10 min-w-10">
 					<div className="absolute mt-8 h-48 w-10 rounded-full bg-plug-red blur-2xl filter" />

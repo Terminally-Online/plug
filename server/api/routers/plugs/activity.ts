@@ -10,7 +10,7 @@ import { subscription, subscriptions } from "@/server/subscription"
 const execution = Prisma.validator<Prisma.ExecutionDefaultArgs>()({
 	include: {
 		workflow: true,
-		simulations: true
+		simulations: { orderBy: { createdAt: "desc" } }
 	}
 })
 export type Execution = Prisma.ExecutionGetPayload<typeof execution>
@@ -20,7 +20,7 @@ export const activity = createTRPCRouter({
 		return await ctx.db.execution.findMany({
 			where: { workflow: { socketId: ctx.session.address } },
 			orderBy: { createdAt: "desc" },
-			include: { workflow: true, simulations: true }
+			include: { workflow: true, simulations: { orderBy: { createdAt: "desc" } } }
 		})
 	}),
 
@@ -60,7 +60,7 @@ export const activity = createTRPCRouter({
 					},
 					include: {
 						workflow: true,
-						simulations: true
+						simulations: { orderBy: { createdAt: "desc" } }
 					}
 				})
 
@@ -85,7 +85,7 @@ export const activity = createTRPCRouter({
 			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
 			include: {
 				workflow: true,
-				simulations: true
+				simulations: { orderBy: { createdAt: "desc" } }
 			}
 		})
 
