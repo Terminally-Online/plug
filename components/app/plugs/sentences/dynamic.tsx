@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { FC, useMemo } from "react"
 
-import { ChevronRight, CircleHelp } from "lucide-react"
+import { CircleHelp } from "lucide-react"
 
 import { Button, Checkbox, Frame, Image, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
@@ -13,13 +13,14 @@ export const DynamicFragment: FC<{
 	index: number
 	actionIndex: number
 	fragmentIndex: number
+	dynamicIndex: number
 	action: Action
 	fragment: string
 	dynamic: string[]
 	preview: boolean
-}> = ({ index, item, actionIndex, fragmentIndex, action, fragment, dynamic, preview }) => {
+}> = ({ index, item, actionIndex, dynamicIndex, action, fragment, dynamic, preview }) => {
 	const { data: session } = useSession()
-	const { isFrame, frame } = useColumns(index, `${actionIndex}-${fragmentIndex}`)
+	const { isFrame, frame } = useColumns(index, `${actionIndex}-${dynamicIndex}`)
 	const { plug, actions, handle } = usePlugs(item)
 
 	const category = categories[action.categoryName]
@@ -205,10 +206,14 @@ export const DynamicFragment: FC<{
 					<Button
 						className="py-4"
 						onClick={() => {
-							if (options === undefined) frame()
+							frame(
+								dynamicIndex + 1 < action.values.length
+									? `${actionIndex}-${dynamicIndex + 1}`
+									: undefined
+							)
 						}}
 					>
-						{options === undefined ? "Done" : "Continue"}
+						{action.values.length - 1 > dynamicIndex ? "Continue" : "Done"}
 					</Button>
 				</div>
 			</Frame>

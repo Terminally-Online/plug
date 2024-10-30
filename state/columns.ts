@@ -53,8 +53,6 @@ export const useColumns = (index?: number, key?: string) => {
 
 	const [columns, setColumns] = useAtom(columnsAtom)
 
-	// setColumns(DEFAULT_COLUMNS)
-
 	const updateColumns = useCallback((updater: (prev: Column[]) => Column[]) => setColumns(updater), [setColumns])
 
 	/**
@@ -163,17 +161,14 @@ export const useColumns = (index?: number, key?: string) => {
 	 * @param index The index of the column to toggle the frame state in.
 	 * @param key The id of the frame to toggole.
 	 */
-	const frame = useCallback(
-		(columnKey?: string) => {
-			const frameKey = columnKey ?? key
-			updateColumns(prev =>
-				prev.map(col =>
-					col.index === index ? { ...col, frame: col.frame === frameKey ? undefined : frameKey } : col
-				)
+	const frame = (columnKey?: string) => {
+		const frameKey = columnKey || key
+		updateColumns(prev =>
+			prev.map(col =>
+				col.index === index ? { ...col, frame: col.frame === frameKey ? undefined : frameKey } : col
 			)
-		},
-		[updateColumns, key, index]
-	)
+		)
+	}
 
 	const column = useMemo(
 		() => (index !== undefined ? columns.find(column => column.index === index) : undefined),

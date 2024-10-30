@@ -15,7 +15,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { frame } = useColumns(index)
+	const { column, frame } = useColumns(index)
 	const { plug } = usePlugs(item)
 
 	const own = plug !== undefined && session && session.address === plug.socketId

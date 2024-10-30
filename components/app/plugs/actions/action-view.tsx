@@ -59,16 +59,22 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 			<Callout.EmptyPlug index={index} isEmpty={actions.length === 0} />
 
 			{actions.map((action, actionIndex) => (
-				<Sentence key={index} index={index} item={item} actionIndex={actionIndex} action={action} />
+				<Sentence
+					key={`${actionIndex}-sentence`}
+					index={index}
+					item={item}
+					actionIndex={actionIndex}
+					action={action}
+				/>
 			))}
 
 			{own && (
 				<div className="mt-12">
 					<h4 className="mb-2 font-bold opacity-40">Next Action Suggestions</h4>
 					<div className="flex flex-col gap-2">
-						{suggestions.map((suggestion, idx) => (
+						{suggestions.map((suggestion, suggestionIndex) => (
 							<Accordion
-								key={idx}
+								key={`${suggestionIndex}-suggestion`}
 								className="flex items-center gap-4 font-bold"
 								onExpand={() =>
 									handle.action.edit({

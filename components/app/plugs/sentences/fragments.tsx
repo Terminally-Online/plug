@@ -24,25 +24,30 @@ export const Fragments: FC<{
 		return fragments.filter(fragment => fragment.match(ACTION_REGEX))
 	}, [fragments])
 
+	let dynamicIndex = -1
+
 	return (
 		<>
-			{fragments.map((fragment, fragmentIndex) =>
-				fragment.match(ACTION_REGEX) ? (
-					<DynamicFragment
-						key={`${actionIndex}-${fragmentIndex}`}
-						item={item}
-						index={index}
-						actionIndex={actionIndex}
-						fragmentIndex={fragmentIndex}
-						fragment={fragment}
-						action={action}
-						dynamic={dynamic}
-						preview={preview}
-					/>
-				) : (
-					<StaticFragment key={`${actionIndex}-${fragmentIndex}`} fragment={fragment} />
-				)
-			)}
+			{fragments.map((fragment, fragmentIndex) => {
+				if (fragment.match(ACTION_REGEX)) {
+					dynamicIndex++
+					return (
+						<DynamicFragment
+							key={`${actionIndex}-${fragmentIndex}`}
+							item={item}
+							index={index}
+							actionIndex={actionIndex}
+							fragmentIndex={fragmentIndex}
+							dynamicIndex={dynamicIndex}
+							fragment={fragment}
+							action={action}
+							dynamic={dynamic}
+							preview={preview}
+						/>
+					)
+				}
+				return <StaticFragment key={`${actionIndex}-${fragmentIndex}`} fragment={fragment} />
+			})}
 		</>
 	)
 }
