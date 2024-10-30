@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { ChevronRight, CircleHelp } from "lucide-react"
 
-import { Frame, Image, Search } from "@/components"
+import { Button, Checkbox, Frame, Image, Search } from "@/components"
 import { Option, usePlugs, Value } from "@/contexts"
 import { Action, categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
 import { useColumns } from "@/state"
@@ -118,8 +118,6 @@ export const DynamicFragment: FC<{
 				)
 			})
 		}
-
-		if (value instanceof Object) frame()
 	}
 
 	return (
@@ -169,34 +167,49 @@ export const DynamicFragment: FC<{
 					{options !== undefined && (
 						<div className="flex w-full flex-col gap-2">
 							{options.map((option, optionIndex) => (
-								<button
+								<div
 									key={`${index}-${actionIndex}-${optionIndex}`}
-									className="group flex w-full items-center text-left font-bold"
-									onClick={() => handleValue(option)}
+									className="flex flex-row items-center gap-4"
 								>
-									<div className="flex flex-row items-center gap-4">
-										{option.imagePath && (
-											<Image
-												src={option.imagePath}
-												alt=""
-												width={64}
-												height={64}
-												className="w-6"
-											/>
-										)}
-										{formatTitle(option.label)}
-									</div>
+									<Checkbox
+										checked={
+											// @ts-ignore - Action value can be string | Option but really only Option
+											option.value === action.values[parentIndex]?.value
+										}
+										handleChange={() => handleValue(option)}
+									/>
 
-									<div
-										className="ml-auto flex items-center justify-center rounded-sm border-[1px] border-grayscale-100 p-1 group-hover:bg-grayscale-100"
+									<button
+										key={`${index}-${actionIndex}-${optionIndex}`}
+										className="group flex w-full items-center text-left font-bold"
 										onClick={() => handleValue(option)}
 									>
-										<ChevronRight size={14} className="opacity-40" />
-									</div>
-								</button>
+										<div className="flex flex-row items-center gap-4">
+											{option.imagePath && (
+												<Image
+													src={option.imagePath}
+													alt=""
+													width={64}
+													height={64}
+													className="w-6"
+												/>
+											)}
+											{formatTitle(option.label)}
+										</div>
+									</button>
+								</div>
 							))}
 						</div>
 					)}
+
+					<Button
+						className="py-4"
+						onClick={() => {
+							if (options === undefined) frame()
+						}}
+					>
+						{options === undefined ? "Done" : "Continue"}
+					</Button>
 				</div>
 			</Frame>
 		</>
