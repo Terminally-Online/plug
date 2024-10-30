@@ -143,16 +143,25 @@ export const DynamicFragment: FC<{
 			<Frame
 				index={index}
 				icon={
-					<Image
-						src={category.image}
-						alt={action.categoryName}
-						width={24}
-						height={24}
-						className="rounded-sm"
-					/>
+					<div className="relative h-10 min-w-10">
+						<Image
+							src={category.image}
+							alt={action.categoryName}
+							width={64}
+							height={64}
+							className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 rounded-sm blur-2xl filter"
+						/>
+						<Image
+							src={category.image}
+							alt={action.categoryName}
+							width={64}
+							height={64}
+							className="relative left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-sm"
+						/>
+					</div>
 				}
 				label={
-					<>
+					<span className="relative">
 						<span className="text-lg">
 							<span className={cn(action.values.length > 1 && "opacity-40")}>
 								{formatTitle(action.actionName)}
@@ -160,7 +169,7 @@ export const DynamicFragment: FC<{
 							</span>
 							{action.values.length > 1 && <span> {formatTitle(inputName)}</span>}
 						</span>
-					</>
+					</span>
 				}
 				visible={isFrame}
 				handleBack={dynamicIndex > 0 ? () => frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
