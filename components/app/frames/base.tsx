@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect } from "react"
+import { FC, PropsWithChildren } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
@@ -10,7 +10,7 @@ import { useColumns } from "@/state"
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
 		index: number
-		label: string
+		label: string | JSX.Element
 		visible: boolean
 		icon?: JSX.Element
 		handleBack?: () => void
@@ -78,6 +78,7 @@ export const Frame: FC<Props> = ({
 							<Header
 								variant="frame"
 								size="md"
+								className="h-10"
 								icon={icon}
 								label={label}
 								nextPadded={false}

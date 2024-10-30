@@ -151,7 +151,17 @@ export const DynamicFragment: FC<{
 						className="rounded-sm"
 					/>
 				}
-				label={`${formatTitle(action.actionName)}${action.values.length > 1 ? `: ${formatTitle(inputName)}` : ""}`}
+				label={
+					<>
+						<span className="text-lg">
+							<span className={cn(action.values.length > 1 && "opacity-40")}>
+								{formatTitle(action.actionName)}
+								{action.values.length > 1 && <span>:</span>}
+							</span>
+							{action.values.length > 1 && <span> {formatTitle(inputName)}</span>}
+						</span>
+					</>
+				}
 				visible={isFrame}
 				handleBack={dynamicIndex > 0 ? () => frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
 				hasOverlay
