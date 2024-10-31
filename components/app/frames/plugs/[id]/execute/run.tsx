@@ -11,7 +11,7 @@ export const RunFrame: FC<{
 	index: number
 	item: string
 }> = ({ index, item }) => {
-	const { column, isFrame, schedule } = useColumns(index, "run")
+	const { column, isFrame, frame } = useColumns(index, "run")
 	const { plug, actions, handle } = usePlugs(item)
 
 	const isReady = useMemo(
@@ -29,8 +29,8 @@ export const RunFrame: FC<{
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
-		schedule()
-	}, [column, schedule, handle.plug])
+		frame("ran")
+	}, [column, frame, handle.plug])
 
 	if (!column) return null
 
@@ -42,6 +42,7 @@ export const RunFrame: FC<{
 			label="Preview"
 			visible={isFrame}
 			hasOverlay={true}
+			handleBack={column.schedule ? () => frame("schedule") : undefined}
 		>
 			<div className="flex flex-col">
 				<ActionPreview index={index} item={item} />

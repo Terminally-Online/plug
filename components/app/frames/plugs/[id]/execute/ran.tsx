@@ -1,22 +1,21 @@
 import { FC, useEffect } from "react"
 
-import { CheckCircle, CircleDollarSign, Waypoints } from "lucide-react"
+import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
-import { Frame, Image } from "@/components"
+import { Counter, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts"
 import { chains } from "@/lib"
 import { useColumns } from "@/state"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, schedule } = useColumns(index, "ran")
+	const { column, isFrame, schedule } = useColumns(index, "ran")
 	const { plug } = usePlugs(item)
 
-	// NOTE: If a user has made it here the transaction / scheduling process has concluded.
 	useEffect(() => {
 		if (isFrame) schedule()
 	}, [isFrame, schedule])
 
-	if (!plug) return null
+	if (!plug || !column) return null
 
 	return (
 		<Frame
@@ -27,8 +26,8 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 			visible={isFrame}
 		>
 			<div className="flex flex-col">
-				<p className="mb-2">
-					<span className="opacity-60">The execution of</span>
+				<p className="mb-2 font-bold">
+					<span className="opacity-40">The run of</span>
 					<span
 						className="rounded-lg bg-gradient-to-tr px-2 py-1 font-bold"
 						style={{
@@ -38,13 +37,14 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					>
 						{plug.name}
 					</span>{" "}
-					<span className="opacity-60">
-						was successfully scheduled. The transaction will be automatically executed when it is ready.
+					<span className="opacity-40">
+						was successfully scheduled. Your intent will be regularly simulated and automatically executed
+						when as soon as it is ready.
 					</span>
 				</p>
 
-				<div className="my-2 flex flex-row items-center gap-4">
-					<p className="font-bold opacity-40">Details</p>
+				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+					<p className="font-bold opacity-40">Transaction</p>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
 
@@ -67,6 +67,43 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 						<span>$4.19</span>
 					</span>
 				</p>
+
+				{column.schedule && (
+					<>
+						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+							<p className="font-bold opacity-40">Schedule</p>
+							<div className="h-[2px] w-full bg-grayscale-100" />
+						</div>
+
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-full flex-row items-center gap-4">
+								<Calendar size={18} className="opacity-20" />
+								<span className="opacity-40">Frequency</span>
+							</span>{" "}
+							{column.schedule.repeats.label}
+						</p>
+
+						{column.schedule.date && column.schedule.date.from && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Play size={18} className="opacity-20" />
+									<span className="opacity-40">Start At</span>
+								</span>{" "}
+								<Counter count={column.schedule.date.from.toLocaleDateString()} />
+							</p>
+						)}
+
+						{column.schedule.date && column.schedule.date.to && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Pause size={18} className="opacity-20" />
+									<span className="opacity-40">Stop At</span>
+								</span>{" "}
+								<Counter count={column.schedule.date.to.toLocaleDateString()} />
+							</p>
+						)}
+					</>
+				)}
 			</div>
 		</Frame>
 	)
