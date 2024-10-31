@@ -140,6 +140,17 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
         {/* Amount Input for ERC1155 */}
         {isERC1155 && (
           <div className="relative z-[5] flex flex-col gap-2">
+            <div className="px-6">
+              <div className="flex flex-col gap-2">
+                <CollectibleImage
+                  video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
+                  image={collectible.imageUrl ?? undefined}
+                  fallbackImage={collection.iconUrl ?? undefined}
+                  name={collectible.name || collection.name}
+                />
+              </div>
+            </div>
+
             <div
               className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
               ref={containerRef}
@@ -237,9 +248,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
                   video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
                   image={collectible.imageUrl ?? undefined}
                   fallbackImage={collection.iconUrl ?? undefined}
-                  name={collectible.name || collection.name}
                 />
-                <p className="text-lg font-bold">{collectible.name || `${collection.name} #${collectible.tokenId}`}</p>
               </div>
             </div>
             
