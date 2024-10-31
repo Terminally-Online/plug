@@ -139,7 +139,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 
         {/* Amount Input for ERC1155 */}
         {isERC1155 && (
-          <div className="relative z-[5] flex flex-col gap-2">
+          <div className="relative z-[5] flex flex-col gap-4">
             <div className="px-6">
               <div className="flex flex-col gap-2">
                 <CollectibleImage
@@ -208,7 +208,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
               </div>
 
               <div
-                className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
+                className="absolute inset-0 z-[-2] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
                 style={{ width: `${dragPercentage}%`, backgroundColor: color }}
               >
                 <div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
@@ -241,7 +241,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 
         {/* NFT Preview */}
         {!isERC1155 && (
-          <div className="relative z-[1]">
+          <div className="relative z-[1] flex flex-col gap-4">
             <div className="px-6">
               <div className="flex flex-col gap-2">
                 <CollectibleImage
