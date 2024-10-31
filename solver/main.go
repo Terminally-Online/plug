@@ -98,22 +98,22 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
     case types.ActionRedeem:
         redeemInputs, ok := inputs.(*types.RedeemInputs)
         if !ok {
-            return nil, fmt.Errorf("invalid input type for borrow action")
+            return nil, fmt.Errorf("invalid input type for redeem action")
         }
         redeemHandler, ok := handler.(protocols.RedeemHandler)
         if !ok {
-            return nil, fmt.Errorf("protocol does not implement borrow handler")
+            return nil, fmt.Errorf("protocol does not implement redeem handler")
         }
         return redeemHandler.HandlePostRedeem(redeemInputs, provider, chainId, from)
 
     case types.ActionRepay:
         repayInputs, ok := inputs.(*types.RepayInputs)
         if !ok {
-            return nil, fmt.Errorf("invalid input type for borrow action")
+            return nil, fmt.Errorf("invalid input type for repay action")
         }
         repayHandler, ok := handler.(protocols.RepayHandler)
         if !ok {
-            return nil, fmt.Errorf("protocol does not implement borrow handler")
+            return nil, fmt.Errorf("protocol does not implement repay handler")
         }
         return repayHandler.HandlePostRepay(repayInputs, provider, chainId, from)
 

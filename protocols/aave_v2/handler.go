@@ -102,6 +102,26 @@ func (h *Handler) init() *Handler {
 		},
 	}
 
+	h.repaySchema = types.ActionSchema{
+		Protocol: types.ProtocolAaveV2,
+		Schema: types.Schema{
+			Fields: []types.SchemaField{
+				{
+					Name:        "tokenToBorrow",
+					Type:        "address",
+					Description: "Token to borrow",
+					Options: []types.Option{
+						{
+							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
+							Label: "DAI",
+						},
+					},
+				},
+			},
+			Required: []string{"tokenToBorrow", "amount"},
+		},
+	}
+
 	return h
 }
 
