@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
@@ -8,12 +8,8 @@ import { chains } from "@/lib"
 import { useColumns } from "@/state"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame, schedule } = useColumns(index, "ran")
+	const { column, isFrame } = useColumns(index, "ran")
 	const { plug } = usePlugs(item)
-
-	useEffect(() => {
-		if (isFrame) schedule()
-	}, [isFrame, schedule])
 
 	if (!plug || !column) return null
 
