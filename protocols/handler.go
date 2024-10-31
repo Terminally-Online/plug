@@ -6,13 +6,22 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-type ProtocolHandler interface {
-	SupportedActions() []types.Action
-	SupportedChains() []int
+type BaseProtocolHandler interface {
+    SupportedActions() []types.Action
+    SupportedChains() []int
+}
 
-	HandleGetDeposit() types.ActionSchema
-	HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error)
+type DepositHandler interface {
+    HandleGetDeposit() types.ActionSchema
+    HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error)
+}
 
-	HandleGetBorrow() types.ActionSchema
-	HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error)
+type BorrowHandler interface {
+    HandleGetBorrow() types.ActionSchema
+    HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error)
+}
+
+type Protocol struct {
+    Name string
+    SupportedChains []int
 }
