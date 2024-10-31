@@ -1,5 +1,5 @@
-import { FC, useCallback, useMemo, useState } from "react"
-import { Frame, CollectibleImage, TransferRecipient } from "@/components"
+import { FC, useCallback, useMemo, useState, useRef } from "react"
+import { Frame, CollectibleImage, TransferRecipient, Counter } from "@/components"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
@@ -31,23 +31,83 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
     `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
   )
 
-  // Initialize with "1" for both ERC721 and ERC1155
-  const [amount, setAmount] = useState("1")
-  
-  // Parse collectible amount as number for comparisons
   const maxAmount = parseInt(collectible.amount)
+  const [amount, setAmount] = useState("1")
+  const [dragPercentage, setDragPercentage] = useState((1 / maxAmount) * 100)
+  const [isPrecise, setIsPrecise] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault()
+
+      const activeElement = document.activeElement as HTMLElement
+      if (activeElement && activeElement.tagName === "INPUT") {
+        activeElement.blur()
+      }
+
+      const handleDrag = (e: MouseEvent) => {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect()
+          const x = e.clientX - rect.left
+          const rawPercentage = (x / rect.width)
+          
+          // Calculate the whole number amount based on the drag position
+          const newAmount = Math.max(0, Math.min(Math.round(maxAmount * rawPercentage), maxAmount))
+          
+          // Update amount first
+          setAmount(newAmount.toString())
+          
+          // Then calculate and set the percentage based on the selected amount
+          const newPercentage = (newAmount / maxAmount) * 100
+          setDragPercentage(newPercentage)
+        }
+      }
+
+      const handleDragEnd = () => {
+        document.removeEventListener("mousemove", handleDrag)
+        document.removeEventListener("mouseup", handleDragEnd)
+        if (inputRef.current) {
+          inputRef.current.focus()
+        }
+      }
+
+      document.addEventListener("mousemove", handleDrag)
+      document.addEventListener("mouseup", handleDragEnd)
+    },
+    [maxAmount]
+  )
+
+  const handleAmountChange = (value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, "")
+    
+    if (numericValue === "") {
+      setAmount("0")
+      setDragPercentage(0)
+    } else {
+      const parsedValue = parseInt(numericValue)
+      if (!isNaN(parsedValue)) {
+        const clampedValue = Math.min(Math.max(parsedValue, 0), maxAmount)
+        setAmount(clampedValue.toString())
+        // Calculate percentage based on the new amount
+        setDragPercentage((clampedValue / maxAmount) * 100)
+      }
+    }
+  }
+
+  const handleMaxClick = useCallback(() => {
+    if (isERC1155) {
+      setAmount(maxAmount.toString())
+      setDragPercentage(100)
+    }
+  }, [isERC1155, maxAmount])
   
   const isReady = useMemo(() => {
     if (!isERC1155) return true
     const numAmount = parseInt(amount)
     return !isNaN(numAmount) && numAmount > 0 && numAmount <= maxAmount
   }, [amount, isERC1155, maxAmount])
-
-  const handleMaxClick = useCallback(() => {
-    if (isERC1155) {
-      setAmount(collectible.amount)
-    }
-  }, [isERC1155, collectible.amount])
 
   return (
     <Frame
@@ -62,7 +122,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
           />
         </div>
       }
-      label={`Transfer ${collection.name} #${collectible.tokenId}`}
+      label={isERC1155 ? "Transfer Amount" : "Transfer NFT"}
       visible={isFrame}
       handleBack={() => frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)}
       hasChildrenPadding={false}
@@ -77,21 +137,77 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
           />
         </div>
 
-        {/* NFT Preview */}
-        <div className="px-6">
-          <CollectibleImage
-            video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
-            image={collectible.imageUrl}
-            fallbackImage={collection.iconUrl}
-            name={collectible.name || collection.name}
-          />
-        </div>
-
         {/* Amount Input for ERC1155 */}
         {isERC1155 && (
-          <div className="flex flex-col gap-2 px-6">
-            <div className="flex flex-row items-center justify-between">
-              <p className="font-bold opacity-40">Amount</p>
+          <div className="flex flex-col gap-2">
+            <div
+              className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
+              ref={containerRef}
+              onMouseDown={handleDragStart}
+              onMouseEnter={() => setIsPrecise(true)}
+              onMouseLeave={() => setIsPrecise(false)}
+            >
+              <div className="flex w-full flex-row">
+                <div className="flex flex-row items-center gap-4 px-2">
+                  <div className="h-8 w-8 min-w-8 overflow-hidden rounded-md">
+                    <CollectibleImage
+                      video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
+                      image={collectible.imageUrl ?? undefined}
+                      fallbackImage={collection.iconUrl ?? undefined}
+                      name={collectible.name || collection.name}
+                      size="sm"
+                    />
+                  </div>
+
+                  <div className="flex flex-col items-start">
+                    <p className="mr-auto font-bold">{`${collection.name} #${collectible.tokenId}`}</p>
+                    <p className="flex flex-row text-sm font-bold text-black/40">
+                      <Counter count={dragPercentage ?? 0} decimals={0} />%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="ml-auto flex-col items-end px-2">
+                  <div className="pointer-events-none relative flex h-full w-max min-w-32 flex-col items-center justify-center text-right">
+                    {isPrecise && (
+                      <input
+                        ref={inputRef}
+                        value={amount}
+                        onChange={e => handleAmountChange(e.target.value)}
+                        className="sr-only pointer-events-none absolute inset-0"
+                        autoFocus
+                      />
+                    )}
+
+                    <p
+                      className="my-auto ml-auto flex flex-row font-bold tabular-nums transition-all duration-200 ease-in-out"
+                      style={{ color: isPrecise ? color : undefined }}
+                    >
+                      <Counter count={amount ?? "0"} />
+
+                      {isPrecise && (
+                        <div
+                          className="absolute -right-2 bottom-3 top-3 w-[3px] animate-pulse rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
+                style={{ width: `${dragPercentage}%`, backgroundColor: color }}
+              >
+                <div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
+                <div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
+                <div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_-4px_4px_0_rgba(255,255,255,0.5)]" />
+              </div>
+            </div>
+
+            <div className="flex flex-row items-center justify-between gap-4 px-6">
+              <p className="font-bold opacity-40">Available: {collectible.amount}</p>
               <p
                 className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
                 onClick={handleMaxClick}
@@ -100,28 +216,21 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
                 Max
               </p>
             </div>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={amount}
-              onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, "")
-                if (value === "") {
-                  setAmount("")
-                  return
-                }
-                const parsed = parseInt(value)
-                if (!isNaN(parsed)) {
-                  setAmount(Math.min(parsed, maxAmount).toString())
-                }
-              }}
-              className="w-full rounded-lg border p-4 font-bold"
-              placeholder="Enter amount"
-            />
-            <p className="text-sm font-bold opacity-40">
-              Available: {collectible.amount}
-            </p>
+          </div>
+        )}
+
+        {/* NFT Preview - show for ERC721 with name below */}
+        {!isERC1155 && (
+          <div className="px-6">
+            <div className="flex flex-col gap-2">
+              <CollectibleImage
+                video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
+                image={collectible.imageUrl ?? undefined}
+                fallbackImage={collection.iconUrl ?? undefined}
+                name={collectible.name || collection.name}
+              />
+              <p className="text-lg font-bold">{collectible.name || `${collection.name} #${collectible.tokenId}`}</p>
+            </div>
           </div>
         )}
 
