@@ -23,7 +23,7 @@ type CollectibleMetadataResponse struct {
 }
 
 func CollectibleMetadata() {
-    url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.collectibleMetadata")
+    url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.maintenance.collectibleMetadata")
     _, err := utils.MakeHTTPRequest(
         url,
         "POST",

@@ -2,7 +2,27 @@
 
 This Solver repository functions as the primary backend for onchain transactions and Plug action metadata.
 
-Contained within this repository are the following endpoints:
+## Getting Started
+
+To run any piece of the app you will run `make <command>` where `<command>` is the name of the command you want to run:
+
+```ml
+commands
+├─ api — "Run the API server that enables endpoint access."
+├─ bindings — "Generate Go bindings for integrated contracts."
+├─ cron — "Run the regularly scheduled maintenance and simulation jobs."
+└─ references — "Retrieve contract ABIs from the block explorer for bindings."
+```
+
+## Cron Jobs
+
+The Plug stack relies on several cron jobs to run periodically that keep the system running smoothly and as responsive as possible. They are not detailed in depth as you should not need to make any adjustments, though you can find them in [cron/jobs.go](cron/jobs.go).
+
+A majority of these jobs are scheduled to keep the app running so you should always have the app running if you want to run the solver otherwise there will be no data that the solver can retrieve.
+
+## API Endpoints
+
+Contained within this repository are the following API endpoints:
 
 ```ml
 solver

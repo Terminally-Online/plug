@@ -17,4 +17,5 @@ type CronJob struct {
 var CronJobs = []CronJob{
 	{"0 0 0 * * *", AnonymousUsers},
 	{"0 */5 * * * *", CollectibleMetadata},
+	{"0 */10 * * * *", Simulations},
 }
