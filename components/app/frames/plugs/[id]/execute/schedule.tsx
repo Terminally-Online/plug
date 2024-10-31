@@ -25,38 +25,6 @@ export const ScheduleFrame: FC<{
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-4">
-				<div className="flex w-full flex-row items-center justify-between">
-					{column.schedule && column.schedule.date && column.schedule.date.from && (
-						<div
-							className="rounded-md bg-grayscale-100 p-1 px-2 font-bold text-plug-green"
-							style={{
-								background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
-							}}
-						>
-							{formatDate(
-								column.schedule.date && column.schedule.date.from
-									? column.schedule.date.from
-									: new Date()
-							)}
-						</div>
-					)}
-
-					{column.schedule && column.schedule.date && column.schedule.date.to && (
-						<ArrowRight size={14} className="opacity-40" />
-					)}
-
-					{column.schedule && column.schedule.date && column.schedule.date.to && (
-						<div
-							className="rounded-md bg-grayscale-100 p-1 px-2 font-bold text-plug-green"
-							style={{
-								background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
-							}}
-						>
-							{formatDate(column.schedule.date.to ?? new Date())}
-						</div>
-					)}
-				</div>
-
 				<DayPicker
 					mode="range"
 					selected={column?.schedule?.date}
