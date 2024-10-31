@@ -32,8 +32,8 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
   )
 
   const maxAmount = parseInt(collectible.amount)
-  const [amount, setAmount] = useState("1")
-  const [dragPercentage, setDragPercentage] = useState((1 / maxAmount) * 100)
+  const [amount, setAmount] = useState("0")
+  const [dragPercentage, setDragPercentage] = useState(0)
   const [isPrecise, setIsPrecise] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
