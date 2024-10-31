@@ -1,10 +1,10 @@
 import { FC } from "react"
 import { DayPicker } from "react-day-picker"
 
-import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
+import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Button, Dropdown, Frame } from "@/components"
-import { cn, formatDate, frequencies } from "@/lib"
+import { cn, frequencies } from "@/lib"
 import { useColumns } from "@/state"
 
 export const ScheduleFrame: FC<{
@@ -20,7 +20,7 @@ export const ScheduleFrame: FC<{
 			index={index}
 			className="z-[2]"
 			icon={<CalendarPlus size={18} className="opacity-40" />}
-			label="Choose Availability"
+			label="Schedule"
 			visible={isFrame}
 			hasOverlay={true}
 		>
