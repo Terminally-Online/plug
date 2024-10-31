@@ -39,8 +39,7 @@ export const ScheduleFrame: FC<{
 						"select-none",
 						column.schedule &&
 							column.schedule.date &&
-							(column.schedule.date.from || column.schedule.date.to) &&
-							"mt-4"
+							(column.schedule.date.from || column.schedule.date.to)
 					)}
 					classNames={{
 						months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
