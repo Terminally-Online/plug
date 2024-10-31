@@ -199,6 +199,13 @@ export const CollectibleFrame: FC<{
 								<span className="mr-auto opacity-40">Identifier</span>
 								{collectible.tokenId.length > 11 ? formatAddress(collectible.tokenId) : collectible.tokenId}
 							</p>
+							{collectible.interface === "ERC1155" && (
+								<p className="flex w-full flex-row items-center gap-4">
+									<Hash size={18} className="opacity-20" />
+									<span className="mr-auto opacity-40">Balance</span>
+									{collectible.amount}
+								</p>
+							)}
 							<p className="flex w-full flex-row items-center gap-4">
 								<Waypoints size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Chain</span>
