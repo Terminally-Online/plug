@@ -19,7 +19,7 @@ export const ScheduleFrame: FC<{
 		<Frame
 			index={index}
 			className="z-[2]"
-			icon={<CalendarPlus size={18} />}
+			icon={<CalendarPlus size={18} className="opacity-40" />}
 			label="Choose Availability"
 			visible={isFrame}
 			hasOverlay={true}

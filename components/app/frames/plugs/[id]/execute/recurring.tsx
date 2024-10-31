@@ -13,7 +13,7 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 		<Frame
 			index={index}
 			className="scrollbar-hide z-[2] max-h-[calc(100vh-80px)] overflow-y-auto"
-			icon={<Clock size={18} className="opacity-60" />}
+			icon={<Clock size={18} className="opacity-40" />}
 			label="Recurring Frequency"
 			visible={isFrame}
 			handleBack={() => frame("schedule")}
