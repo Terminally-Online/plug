@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useState, useRef } from "react"
-import { Frame, CollectibleImage, TransferRecipient, Counter } from "@/components"
-import { cn } from "@/lib"
+import { Frame, CollectibleImage, TransferRecipient, Counter, Image } from "@/components"
+import { cn, chains } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
@@ -128,9 +128,9 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
       hasChildrenPadding={false}
       hasOverlay
     >
-      <div className="mb-4 flex flex-col gap-4">
+      <div className="relative mb-4 flex flex-col gap-4">
         {/* Recipient Preview */}
-        <div className="px-6">
+        <div className="relative z-10 px-6">
           <TransferRecipient
             address={recipient}
             handleSelect={() => frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)}
@@ -139,7 +139,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 
         {/* Amount Input for ERC1155 */}
         {isERC1155 && (
-          <div className="flex flex-col gap-2">
+          <div className="relative z-[5] flex flex-col gap-2">
             <div
               className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
               ref={containerRef}
@@ -207,7 +207,16 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
             </div>
 
             <div className="flex flex-row items-center justify-between gap-4 px-6">
-              <p className="font-bold opacity-40">Available: {collectible.amount}</p>
+              <p className="flex flex-row items-center gap-1 font-bold tabular-nums">
+                <Image
+                  src={chains[1].logo}
+                  alt={"ethereum"}
+                  className="mr-2 h-4 w-4 rounded-full"
+                  width={24}
+                  height={24}
+                />
+                $0.50
+              </p>
               <p
                 className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
                 onClick={handleMaxClick}
@@ -219,23 +228,38 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
           </div>
         )}
 
-        {/* NFT Preview - show for ERC721 with name below */}
+        {/* NFT Preview */}
         {!isERC1155 && (
-          <div className="px-6">
-            <div className="flex flex-col gap-2">
-              <CollectibleImage
-                video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
-                image={collectible.imageUrl ?? undefined}
-                fallbackImage={collection.iconUrl ?? undefined}
-                name={collectible.name || collection.name}
-              />
-              <p className="text-lg font-bold">{collectible.name || `${collection.name} #${collectible.tokenId}`}</p>
+          <div className="relative z-[1]">
+            <div className="px-6">
+              <div className="flex flex-col gap-2">
+                <CollectibleImage
+                  video={collectible.videoUrl?.includes("mp4") ? collectible.videoUrl : undefined}
+                  image={collectible.imageUrl ?? undefined}
+                  fallbackImage={collection.iconUrl ?? undefined}
+                  name={collectible.name || collection.name}
+                />
+                <p className="text-lg font-bold">{collectible.name || `${collection.name} #${collectible.tokenId}`}</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-row items-center justify-between gap-4 px-6">
+              <p className="flex flex-row items-center gap-1 font-bold tabular-nums">
+                <Image
+                  src={chains[1].logo}
+                  alt={"ethereum"}
+                  className="mr-2 h-4 w-4 rounded-full"
+                  width={24}
+                  height={24}
+                />
+                $0.50
+              </p>
             </div>
           </div>
         )}
 
         {/* Transfer Button */}
-        <div className="mx-6">
+        <div className="relative z-20 mx-6">
           <button
             className={cn(
               "flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
@@ -248,7 +272,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
             }}
             disabled={!isReady}
           >
-            {isReady ? "Transfer" : "Enter Amount"}
+            {isReady ? "Send" : "Enter Amount"}
           </button>
         </div>
       </div>
