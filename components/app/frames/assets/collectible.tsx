@@ -31,6 +31,7 @@ import {
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
+
 import { TransferFrame } from "./transfer"
 
 type Traits = Array<{ trait_type: string; value: string }>
@@ -56,10 +57,7 @@ export const CollectibleFrame: FC<{
 
 	const textColor = getTextColor(metadata?.color ?? "#ffffff")
 
-	const { truncated } = formatLongString(
-		collection.description,
-		expanded === false ? 80 : undefined
-	)
+	const { truncated } = formatLongString(collection.description, expanded === false ? 80 : undefined)
 
 	useEffect(() => {
 		if (isFrame === false) setExpanded(false)
@@ -148,7 +146,10 @@ export const CollectibleFrame: FC<{
 				<div className="flex flex-row gap-2 px-6 pb-4">
 					<button
 						onClick={() => {
-							console.log("Navigating to transfer frame with path:", `${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+							console.log(
+								"Navigating to transfer frame with path:",
+								`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
+							)
 							frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
 						}}
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
@@ -197,7 +198,9 @@ export const CollectibleFrame: FC<{
 							<p className="flex w-full flex-row items-center gap-4">
 								<Hash size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Identifier</span>
-								{collectible.tokenId.length > 11 ? formatAddress(collectible.tokenId) : collectible.tokenId}
+								{collectible.tokenId.length > 11
+									? formatAddress(collectible.tokenId)
+									: collectible.tokenId}
 							</p>
 							{collectible.interface === "ERC1155" && (
 								<p className="flex w-full flex-row items-center gap-4">

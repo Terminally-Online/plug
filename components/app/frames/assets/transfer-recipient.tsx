@@ -11,6 +11,10 @@ import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib
 import { RouterOutputs } from "@/server/client"
 import { useColumns, useRecipients } from "@/state"
 
+type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+
 const formatRecipientInput = (input: string): string => {
 	if (!input) return ""
 	if (isAddress(input)) return input
@@ -207,11 +211,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 		<Frame
 			index={index}
 			className="min-h-[480px]"
-			icon={
-				<div className="relative h-8 w-10">
-					{icon}
-				</div>
-			}
+			icon={<div className="relative h-8 w-10">{icon}</div>}
 			label={token ? "Transfer Recipient" : `Transfer ${collection?.name} #${collectible?.tokenId}`}
 			visible={isFrame}
 			handleBack={handleBack}
@@ -228,17 +228,11 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				/>
 
 				{/* Current recipient */}
-				<TransferRecipient
-					address={formattedRecipient}
-					handleSelect={handleSelect}
-				/>
+				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
 
 				{/* Connected wallet (if not current recipient) */}
 				{recipient !== account.address && (
-					<TransferRecipient
-						address={account.address as string}
-						handleSelect={handleSelect}
-					/>
+					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
 				)}
 
 				{/* Recent recipients */}

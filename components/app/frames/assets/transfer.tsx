@@ -4,9 +4,8 @@ import { useDebounce } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { TransferAmountFrame } from "./transfer-amount"
+import { TransferNFTFrame } from "./transfer-nft"
 import { TransferRecipientFrame } from "./transfer-recipient"
-import { TransferNFTFrame } from "./transfer-nft" 
-
 
 type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
@@ -21,14 +20,7 @@ interface TransferFrameProps {
 	textColor: string
 }
 
-export const TransferFrame: FC<TransferFrameProps> = ({
-	index,
-	token,
-	collectible,
-	collection,
-	color,
-	textColor
-}) => {
+export const TransferFrame: FC<TransferFrameProps> = ({ index, token, collectible, collection, color, textColor }) => {
 	const [recipient, debouncedRecipient, setRecipient] = useDebounce("")
 
 	const handleRecipient = (recipient: string) => {
@@ -51,7 +43,7 @@ export const TransferFrame: FC<TransferFrameProps> = ({
 				debouncedRecipient={debouncedRecipient}
 				handleRecipient={handleRecipient}
 			/>
-			
+
 			{/* For ERC20 tokens, use existing amount frame */}
 			{token && (
 				<TransferAmountFrame
@@ -64,7 +56,7 @@ export const TransferFrame: FC<TransferFrameProps> = ({
 			)}
 
 			{/* For NFTs, use appropriate confirmation frame */}
-			{isNFT && (
+			{isNFT && collectible && collection && (
 				<TransferNFTFrame
 					index={index}
 					collectible={collectible}
