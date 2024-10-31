@@ -4,7 +4,7 @@ import { MinimalUserSocketModel } from "@/prisma/types"
 
 import { useAtom } from "jotai"
 
-import { Column } from "@/lib"
+import { Column, Schedule } from "@/lib"
 import { useSocket } from "@/state"
 
 import { atomWithStorage } from "jotai/utils"
@@ -47,7 +47,7 @@ export const DEFAULT_DEMO_COLUMNS = DEFAULT_COLUMNS.map(column => ({ ...column, 
 
 const COLUMN_OFFSET = DEFAULT_COLUMNS.filter(column => column.index < 0).length
 
-const columnsAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_COLUMNS)
+const columnsAtom = atomWithStorage<Array<Column>>("socketColumns", DEFAULT_COLUMNS)
 export const useColumns = (index?: number, key?: string) => {
 	const { socket } = useSocket()
 
@@ -170,6 +170,10 @@ export const useColumns = (index?: number, key?: string) => {
 		)
 	}
 
+	const schedule = (schedule?: Schedule) => {
+		updateColumns(prev => prev.map(col => (col.index === index ? { ...col, schedule } : col)))
+	}
+
 	const column = useMemo(
 		() => (index !== undefined ? columns.find(column => column.index === index) : undefined),
 		[columns, index]
@@ -198,6 +202,7 @@ export const useColumns = (index?: number, key?: string) => {
 		move,
 		resize,
 		as,
+		schedule,
 		frame
 	}
 }

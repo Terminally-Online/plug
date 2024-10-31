@@ -1,20 +1,17 @@
-import { FC, useCallback, useEffect, useMemo } from "react"
-import { DateRange } from "react-day-picker"
+import { FC, useCallback, useMemo } from "react"
 
-import { CircleDollarSign, Eye, Waypoints } from "lucide-react"
+import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
 
-import { ActionPreview, Button, Frame, Image } from "@/components"
+import { ActionPreview, Button, Counter, Frame, Image } from "@/components"
 import { usePlugs } from "@/contexts/PlugProvider"
-import { chains, frequencies } from "@/lib"
+import { chains } from "@/lib"
 import { useColumns } from "@/state"
 
 export const RunFrame: FC<{
 	index: number
 	item: string
-	schedule: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
-	clearSchedule: () => void
-}> = ({ index, item, schedule, clearSchedule }) => {
-	const { isFrame, frame } = useColumns(index, "run")
+}> = ({ index, item }) => {
+	const { column, isFrame, schedule } = useColumns(index, "run")
 	const { plug, actions, handle } = usePlugs(item)
 
 	const isReady = useMemo(
@@ -23,18 +20,19 @@ export const RunFrame: FC<{
 	)
 
 	const handleRun = useCallback(() => {
-		if (!plug) return
+		if (!column || !column.item) return
 
 		handle.plug.queue({
-			workflowId: plug.id,
-			startAt: schedule?.date?.from ?? new Date(),
-			endAt: schedule?.date?.to ?? new Date(),
-			frequency: parseInt(schedule?.repeats?.value ?? "0")
+			workflowId: column.item,
+			startAt: column.schedule?.date?.from ?? new Date(),
+			endAt: column.schedule?.date?.to ?? new Date(),
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
-		clearSchedule()
-		frame("ran")
-	}, [plug, schedule, clearSchedule, frame, handle.plug])
+		schedule()
+	}, [column, schedule, handle.plug])
+
+	if (!column) return null
 
 	return (
 		<Frame
@@ -49,7 +47,7 @@ export const RunFrame: FC<{
 				<ActionPreview index={index} item={item} />
 
 				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
-					<p className="font-bold opacity-40">Details</p>
+					<p className="font-bold opacity-40">Transaction</p>
 					<div className="h-[2px] w-full bg-grayscale-100" />
 				</div>
 
@@ -72,6 +70,43 @@ export const RunFrame: FC<{
 						<span>$4.19</span>
 					</span>
 				</p>
+
+				{column.schedule && (
+					<>
+						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+							<p className="font-bold opacity-40">Schedule</p>
+							<div className="h-[2px] w-full bg-grayscale-100" />
+						</div>
+
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-full flex-row items-center gap-4">
+								<Calendar size={18} className="opacity-20" />
+								<span className="opacity-40">Frequency</span>
+							</span>{" "}
+							{column.schedule.repeats.label}
+						</p>
+
+						{column.schedule.date && column.schedule.date.from && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Play size={18} className="opacity-20" />
+									<span className="opacity-40">Start At</span>
+								</span>{" "}
+								<Counter count={column.schedule.date.from.toLocaleDateString()} />
+							</p>
+						)}
+
+						{column.schedule.date && column.schedule.date.to && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Pause size={18} className="opacity-20" />
+									<span className="opacity-40">Stop At</span>
+								</span>{" "}
+								<Counter count={column.schedule.date.to.toLocaleDateString()} />
+							</p>
+						)}
+					</>
+				)}
 
 				<Button
 					variant={isReady ? "primary" : "disabled"}

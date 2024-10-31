@@ -6,11 +6,8 @@ import { Button, Frame } from "@/components"
 import { frequencies } from "@/lib"
 import { useColumns } from "@/state"
 
-export const RecurringFrame: FC<{ index: number; handleRepeats: (repeats: (typeof frequencies)[0]) => void }> = ({
-	index,
-	handleRepeats
-}) => {
-	const { isFrame, frame } = useColumns(index, "recurring")
+export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
+	const { column, isFrame, frame, schedule } = useColumns(index, "recurring")
 
 	return (
 		<Frame
@@ -27,8 +24,9 @@ export const RecurringFrame: FC<{ index: number; handleRepeats: (repeats: (typeo
 					<Button
 						key={frequency.label}
 						variant="secondary"
+						className="py-4"
 						onClick={() => {
-							handleRepeats(frequency)
+							schedule({ date: column?.schedule?.date, repeats: frequency })
 							frame("schedule")
 						}}
 					>

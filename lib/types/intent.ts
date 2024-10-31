@@ -1,4 +1,7 @@
+import { DateRange } from "react-day-picker"
+
 import { actions, categories } from "../constants"
+import { frequencies } from "../functions"
 
 export type Option = {
 	icon: JSX.Element | undefined
@@ -16,3 +19,8 @@ export type Action = {
 }
 
 export type Actions = Array<Action>
+
+export type Schedule = {
+	date: DateRange | undefined
+	repeats: (typeof frequencies)[0]
+}

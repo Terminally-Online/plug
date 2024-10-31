@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 
 import { CheckCircle, CircleDollarSign, Waypoints } from "lucide-react"
 
@@ -8,8 +8,13 @@ import { chains } from "@/lib"
 import { useColumns } from "@/state"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame } = useColumns(index, "ran")
+	const { isFrame, schedule } = useColumns(index, "ran")
 	const { plug } = usePlugs(item)
+
+	// NOTE: If a user has made it here the transaction / scheduling process has concluded.
+	useEffect(() => {
+		if (isFrame) schedule()
+	}, [isFrame, schedule])
 
 	if (!plug) return null
 

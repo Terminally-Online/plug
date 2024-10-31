@@ -1,5 +1,5 @@
-import { FC, useState } from "react"
-import { DateRange, DayPicker } from "react-day-picker"
+import { FC } from "react"
+import { DayPicker } from "react-day-picker"
 
 import { ArrowRight, CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
@@ -10,18 +10,10 @@ import { useColumns } from "@/state"
 export const ScheduleFrame: FC<{
 	index: number
 	item: string
-	schedule: { date: DateRange | undefined; repeats: (typeof frequencies)[0] } | null
-	onSchedule: (data: { date: DateRange | undefined; repeats: (typeof frequencies)[0] }) => void
-}> = ({ index, schedule, onSchedule }) => {
-	const { isFrame, frame } = useColumns(index, "schedule")
-	const [date, setDate] = useState<DateRange | undefined>(schedule?.date)
+}> = ({ index }) => {
+	const { column, isFrame, frame, schedule } = useColumns(index, "schedule")
 
-	const handleNext = () => {
-		if (date?.from) {
-			onSchedule({ date, repeats: schedule?.repeats || frequencies[0] })
-			frame("run")
-		}
-	}
+	if (!column) return null
 
 	return (
 		<Frame
@@ -34,42 +26,54 @@ export const ScheduleFrame: FC<{
 		>
 			<div className="flex flex-col gap-4">
 				<div className="flex w-full flex-row items-center justify-between">
-					{date && date.from && (
+					{column.schedule && column.schedule.date && column.schedule.date.from && (
 						<div
 							className="rounded-md bg-grayscale-100 p-1 px-2 font-bold text-plug-green"
 							style={{
 								background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 							}}
 						>
-							{formatDate(date && date.from ? date.from : new Date())}
+							{formatDate(
+								column.schedule.date && column.schedule.date.from
+									? column.schedule.date.from
+									: new Date()
+							)}
 						</div>
 					)}
 
-					{date && date.to && <ArrowRight size={14} className="opacity-40" />}
+					{column.schedule && column.schedule.date && column.schedule.date.to && (
+						<ArrowRight size={14} className="opacity-40" />
+					)}
 
-					{date && date.to && (
+					{column.schedule && column.schedule.date && column.schedule.date.to && (
 						<div
 							className="rounded-md bg-grayscale-100 p-1 px-2 font-bold text-plug-green"
 							style={{
 								background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 							}}
 						>
-							{formatDate(date.to ?? new Date())}
+							{formatDate(column.schedule.date.to ?? new Date())}
 						</div>
 					)}
 				</div>
 
 				<DayPicker
 					mode="range"
-					selected={date}
-					onSelect={setDate}
+					selected={column?.schedule?.date}
+					onSelect={date => schedule({ date, repeats: column?.schedule?.repeats || frequencies[0] })}
 					showOutsideDays
 					fixedWeeks
 					weekStartsOn={1}
 					disabled={{
 						before: new Date()
 					}}
-					className={cn("select-none", date && (date.from || date.to) && "mt-4")}
+					className={cn(
+						"select-none",
+						column.schedule &&
+							column.schedule.date &&
+							(column.schedule.date.from || column.schedule.date.to) &&
+							"mt-4"
+					)}
 					classNames={{
 						months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
 						month: "space-y-4 w-full",
@@ -109,18 +113,20 @@ export const ScheduleFrame: FC<{
 				<Dropdown
 					icon={<Clock size={14} className="opacity-60" />}
 					placeholder="Frequency"
-					value={schedule?.repeats.label || "Once"}
+					value={column.schedule?.repeats.label || "Once"}
 					options={frequencies}
 					handleClick={() => frame("recurring")}
 				/>
 
 				<Button
-					variant={date && date.from ? "primary" : "disabled"}
+					variant={
+						column.schedule && column.schedule.date && column.schedule.date.from ? "primary" : "disabled"
+					}
 					className="w-full py-4"
-					onClick={handleNext}
-					disabled={!date || !date.from}
+					onClick={() => frame("run")}
+					disabled={!column.schedule || !column.schedule.date || !column.schedule.date.from}
 				>
-					{date && date.from ? "Next" : "Select a Date"}
+					{column.schedule && column.schedule.date && column.schedule.date.from ? "Next" : "Select a Date"}
 				</Button>
 			</div>
 		</Frame>

@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, HTMLAttributes, useEffect } from "react"
+import { FC, HTMLAttributes } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -15,7 +15,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { column, frame } = useColumns(index)
+	const { frame, schedule } = useColumns(index)
 	const { plug } = usePlugs(item)
 
 	const own = plug !== undefined && session && session.address === plug.socketId
@@ -45,7 +45,14 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 				)}
 
 				<div className="relative flex flex-row gap-2 px-4">
-					<Button variant="secondary" className="w-max bg-white py-4" onClick={() => frame("run")}>
+					<Button
+						variant="secondary"
+						className="w-max bg-white py-4"
+						onClick={() => {
+							schedule()
+							frame("run")
+						}}
+					>
 						Run
 					</Button>
 
