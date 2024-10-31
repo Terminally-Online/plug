@@ -33,44 +33,6 @@ func (s *Solver) GetSupportedProtocols(action types.Action) []types.Protocol {
     return supported
 }
 
-func (s *Solver) GetActionSchema(action types.Action) ([]types.ActionSchema, error) {
-    schemas := make([]types.ActionSchema, 0)
-    
-    for _, handler := range s.protocols {
-        supported := false
-        for _, a := range handler.SupportedActions() {
-            if a == action {
-                supported = true
-                break
-            }
-        }
-        if !supported {
-            continue
-        }
-
-        var schema types.ActionSchema
-        switch action {
-        case types.ActionDeposit:
-            if depositHandler, ok := handler.(protocols.DepositHandler); ok {
-                schema = depositHandler.HandleGetDeposit()
-                schemas = append(schemas, schema)
-            }
-        case types.ActionBorrow:
-            if borrowHandler, ok := handler.(protocols.BorrowHandler); ok {
-                schema = borrowHandler.HandleGetBorrow()
-                schemas = append(schemas, schema)
-            }
-        default:
-            return nil, fmt.Errorf("unsupported action: %s", action)
-        }
-    }
-
-    if len(schemas) == 0 {
-        return nil, fmt.Errorf("no protocols support action: %s", action)
-    }
-    return schemas, nil
-}
-
 func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs, chainId int, from string) ([]*types.Transaction, error) {
     if err := inputs.Validate(); err != nil {
         return nil, fmt.Errorf("invalid inputs: %w", err)
@@ -94,7 +56,6 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
         return nil, fmt.Errorf("chain %d not supported by protocol %s", chainId, protocol)
     }
 
-    // Check action support
     supported = false
     for _, a := range handler.SupportedActions() {
         if a == action {
@@ -134,6 +95,28 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
         }
         return borrowHandler.HandlePostBorrow(borrowInputs, provider, chainId, from)
 
+    case types.ActionRedeem:
+        redeemInputs, ok := inputs.(*types.RedeemInputs)
+        if !ok {
+            return nil, fmt.Errorf("invalid input type for borrow action")
+        }
+        redeemHandler, ok := handler.(protocols.RedeemHandler)
+        if !ok {
+            return nil, fmt.Errorf("protocol does not implement borrow handler")
+        }
+        return redeemHandler.HandlePostRedeem(redeemInputs, provider, chainId, from)
+
+    case types.ActionRepay:
+        repayInputs, ok := inputs.(*types.RepayInputs)
+        if !ok {
+            return nil, fmt.Errorf("invalid input type for borrow action")
+        }
+        repayHandler, ok := handler.(protocols.RepayHandler)
+        if !ok {
+            return nil, fmt.Errorf("protocol does not implement borrow handler")
+        }
+        return repayHandler.HandlePostRepay(repayInputs, provider, chainId, from)
+
     default:
         return nil, fmt.Errorf("unsupported action: %s", action)
     }
@@ -144,8 +127,7 @@ func (s *Solver) GetProtocolHandler(protocol types.Protocol) (protocols.BaseProt
     return handler, exists
 }
 
-// Helper method to check if a protocol supports a specific action
-func (s *Solver) supportsAction(handler protocols.BaseProtocolHandler, action types.Action) bool {
+func (s *Solver) SupportsAction(handler protocols.BaseProtocolHandler, action types.Action) bool {
     for _, a := range handler.SupportedActions() {
         if a == action {
             return true
