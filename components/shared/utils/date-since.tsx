@@ -3,18 +3,22 @@ import { FC, HTMLAttributes, useEffect, useState } from "react"
 import { Counter } from "@/components"
 import { getTimeInterval } from "@/lib/functions/time"
 
+const calculateTimeSince = (date: Date) => {
+	const now = new Date()
+	const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+	return getTimeInterval(seconds)
+}
+
 export const DateSince: FC<{ date: Date; ago?: boolean } & HTMLAttributes<HTMLParagraphElement>> = ({
 	date,
 	ago = true,
 	...props
 }) => {
-	const [timeSince, setTimeSince] = useState(getTimeInterval(0))
+	const [timeSince, setTimeSince] = useState(calculateTimeSince(date))
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			const now = new Date()
-			const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-			setTimeSince(getTimeInterval(seconds))
+			setTimeSince(calculateTimeSince(date))
 		}, 1000)
 
 		return () => clearInterval(interval)
