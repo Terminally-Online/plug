@@ -130,34 +130,78 @@ export const TransferRecipient: FC<
 	)
 }
 
-export const TransferRecipientFrame: FC<{
+interface TransferRecipientFrameProps {
 	index: number
-	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+	token?: TokenType
+	collectible?: CollectibleType
+	collection?: CollectionType
 	recipient: string
 	debouncedRecipient: string
 	handleRecipient: (recipient: string) => void
-}> = ({ index, token, recipient, debouncedRecipient, handleRecipient }) => {
+}
+
+export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
+	index,
+	token,
+	collectible,
+	collection,
+	recipient,
+	debouncedRecipient,
+	handleRecipient
+}) => {
 	const formattedRecipient = formatRecipientInput(debouncedRecipient)
 
 	const { account } = useConnect()
-	const { isFrame, frame } = useColumns(index, `${token?.symbol}-transfer-recipient`)
+	const { isFrame, frame } = useColumns(
+		index,
+		token
+			? `${token.symbol}-transfer-recipient`
+			: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
+	)
 	const { recipients, handleRecent } = useRecipients(formattedRecipient)
 
-	const logo =
-		token?.icon ||
-		`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+	// Get appropriate icon/logo based on type
+	const icon = token ? (
+		<TokenImage
+			logo={
+				token.icon ||
+				`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+			}
+			symbol={token.symbol}
+			size="sm"
+		/>
+	) : (
+		<div
+			className="relative h-8 w-8 rounded-full bg-cover bg-center bg-no-repeat"
+			style={{
+				backgroundImage: `url(${collection?.iconUrl})`
+			}}
+		/>
+	)
 
 	const handleSelect = (address: string) => {
 		if (address !== account.address) handleRecent(address)
-		// NOTE: Normally it would make sense to clear the recipient here, but we
-		//       we want to keep the recipient in the input so that the user can
-		//       go to the next step while still being able to go back as well.
 		handleRecipient(address)
-		// NOTE: Update the frame to go the next step when a recipient is selected.
-		if (address !== "") frame(`${token.symbol}-transfer-amount`)
+
+		// Navigate to appropriate next frame
+		if (address !== "") {
+			if (token) {
+				frame(`${token.symbol}-transfer-amount`)
+			} else if (collectible && collection) {
+				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`)
+			}
+		}
 	}
 
-	if (!token) return null
+	const handleBack = () => {
+		if (token) {
+			frame(`${token.symbol}-token`)
+		} else if (collectible && collection) {
+			frame(`${collection.address}-${collection.chain}-${collectible.tokenId}`)
+		}
+	}
+
+	if (!token && !collectible) return null
 
 	return (
 		<Frame
@@ -165,12 +209,12 @@ export const TransferRecipientFrame: FC<{
 			className="min-h-[480px]"
 			icon={
 				<div className="relative h-8 w-10">
-					<TokenImage logo={logo} symbol={token.symbol} size="sm" />
+					{icon}
 				</div>
 			}
-			label="Transfer Recipient"
+			label={token ? "Transfer Recipient" : `Transfer ${collection?.name} #${collectible?.tokenId}`}
 			visible={isFrame}
-			handleBack={() => frame(`${token.symbol}-token`)}
+			handleBack={handleBack}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
@@ -183,11 +227,21 @@ export const TransferRecipientFrame: FC<{
 					clear
 				/>
 
-				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
+				{/* Current recipient */}
+				<TransferRecipient
+					address={formattedRecipient}
+					handleSelect={handleSelect}
+				/>
+
+				{/* Connected wallet (if not current recipient) */}
 				{recipient !== account.address && (
-					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
+					<TransferRecipient
+						address={account.address as string}
+						handleSelect={handleSelect}
+					/>
 				)}
 
+				{/* Recent recipients */}
 				{recipients.length > 0 ? (
 					recipients
 						.filter(recipient => recipient !== "")
