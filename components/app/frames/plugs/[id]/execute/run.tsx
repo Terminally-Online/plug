@@ -87,7 +87,7 @@ export const RunFrame: FC<{
 							{column.schedule.repeats.label}
 						</p>
 
-						{column.schedule.date && column.schedule.date.from && (
+						{column.schedule.date && column.schedule.date.from instanceof Date && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-full flex-row items-center gap-4">
 									<Play size={18} className="opacity-20" />
@@ -97,7 +97,7 @@ export const RunFrame: FC<{
 							</p>
 						)}
 
-						{column.schedule.date && column.schedule.date.to && (
+						{column.schedule.date && column.schedule.date.to instanceof Date && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-full flex-row items-center gap-4">
 									<Pause size={18} className="opacity-20" />
