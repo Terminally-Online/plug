@@ -7,7 +7,7 @@ import { Draggable } from "@hello-pangea/dnd"
 import {
 	Avatar,
 	Button,
-	ColumnAddOptions,
+	ColumnAdd,
 	ColumnApplication,
 	ConsoleAdmin,
 	Header,
@@ -201,7 +201,7 @@ const Column: FC<{
 
 							<div className="h-full overflow-y-scroll">
 								{key === COLUMN_KEYS.ADD ? (
-									<ColumnAddOptions index={index} className="px-4 pt-4" />
+									<ColumnAdd />
 								) : key === COLUMN_KEYS.DISCOVER ? (
 									<PlugsDiscover index={index} className="pt-4" />
 								) : key === COLUMN_KEYS.MY_PLUGS ? (

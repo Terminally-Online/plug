@@ -1,8 +1,9 @@
 import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
+
 import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, ShieldAlert, Star, User } from "lucide-react"
 
-import { Accordion } from "@/components/shared"
 import { Header } from "@/components"
+import { Accordion } from "@/components/shared"
 import { cn, formatTitle } from "@/lib"
 import { COLUMN_KEYS, Flag, useColumns, useFlags, useSocket } from "@/state"
 
@@ -93,9 +94,7 @@ export const ColumnAdd = () => {
 			<div className="relative z-[30] flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
 				<div className="flex w-full flex-row items-center px-6 py-4">
 					<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-						<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
-							Add Column
-						</p>
+						<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
 					</div>
 				</div>
 			</div>
@@ -103,8 +102,8 @@ export const ColumnAdd = () => {
 			<div className="h-full overflow-y-scroll">
 				<div className="flex h-full flex-col gap-2 p-4">
 					{options.map(option => (
-						<Accordion 
-							key={option.label} 
+						<Accordion
+							key={option.label}
 							onExpand={() => {
 								add({ key: option.label })
 							}}
