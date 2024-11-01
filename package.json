@@ -50,7 +50,7 @@
 		"boring-avatars": "^1.10.2",
 		"clsx": "^2.1.1",
 		"dotenv": "^16.4.5",
-		"framer-motion": "^11.11.8",
+		"framer-motion": "^11.11.11",
 		"i18next": "23.16.2",
 		"jiti": "^2.3.3",
 		"jotai": "^2.10.1",
