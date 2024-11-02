@@ -83,7 +83,7 @@ export const TransferRecipient: FC<
 					{ensAvatar ? (
 						<>
 							<Image
-								className="absolute left-0 left-1/2 top-1/2 h-16 w-48 -translate-x-1/2 blur-xl filter"
+								className="absolute left-0 left-1/2 top-1/2 h-12 w-48 -translate-x-1/2 blur-2xl filter"
 								src={ensAvatar}
 								alt="ENS Avatar"
 								width={240}

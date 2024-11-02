@@ -2,7 +2,7 @@ import Image from "next/image"
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { Counter, Frame, TokenImage } from "@/components"
-import { chains, cn, getChainId, getTextColor } from "@/lib"
+import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns, useSocket } from "@/state"
 
@@ -125,7 +125,7 @@ const ImplementationComponent: FC<{
 					/>
 
 					<div className="flex flex-col items-center">
-						<p className="mr-auto font-bold">{token.symbol}</p>
+						<p className="mr-auto font-bold">{formatTitle(token.symbol)}</p>
 						<div className="relative flex flex-row items-center gap-2">
 							<Image
 								className="h-4 w-4 rounded-full"
@@ -265,13 +265,13 @@ export const TransferAmountFrame: FC<{
 						/>
 					</div>
 				}
-				label={`${index === -2 ? "Deposit" : "Transfer"} Amount`}
+				label={`${index === -2 ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
 				handleBack={index !== -2 ? () => frame(`${token.symbol}-transfer-recipient`) : undefined}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
-				<div className="mb-4 flex flex-col gap-4">
+				<div className="mb-4 flex flex-col gap-2">
 					{index !== -2 && (
 						<div className="px-6">
 							<TransferRecipient
@@ -307,6 +307,7 @@ export const TransferAmountFrame: FC<{
 									height={24}
 								/>
 								$0.50
+								<span className="ml-auto pl-2 opacity-40">~11 secs</span>
 							</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
@@ -318,7 +319,7 @@ export const TransferAmountFrame: FC<{
 						</div>
 					</div>
 
-					<div className="mx-6 flex flex-col gap-4">
+					<div className="mx-6 mt-2 flex flex-col gap-4">
 						<button
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",

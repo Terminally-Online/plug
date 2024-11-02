@@ -1,17 +1,20 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, HTMLAttributes, useEffect, useRef, useState } from "react"
 
 import { TriangleAlert } from "lucide-react"
 
 import { Image } from "@/components"
+import { cn } from "@/lib"
 
-export const CollectibleImage: FC<{
-	video?: string
-	image?: string
-	fallbackImage?: string
-	name?: string
-	size?: "xs" | "sm" | "md"
-}> = ({ video, image = "", fallbackImage = "", name = "", size = "md" }) => {
-	const [videoError, setVideoError] = useState(false)
+export const CollectibleImage: FC<
+	HTMLAttributes<HTMLDivElement> & {
+		video?: string
+		image?: string
+		fallbackImage?: string
+		name?: string
+		size?: "xs" | "sm" | "md"
+	}
+> = ({ video, image = "", fallbackImage = "", name = "", size = "md", className, ...props }) => {
+	const [_, setVideoError] = useState(false)
 	const [imageError, setImageError] = useState(false)
 	const [videoLoaded, setVideoLoaded] = useState(false)
 	const videoRef = useRef<HTMLVideoElement>(null)
@@ -23,7 +26,7 @@ export const CollectibleImage: FC<{
 	}, [])
 
 	return (
-		<div className="relative h-full w-full">
+		<div className={cn("relative h-full w-full overflow-hidden rounded-lg", className)} {...props}>
 			{video ? (
 				<React.Fragment>
 					{!videoLoaded && image && !imageError && (
@@ -31,14 +34,14 @@ export const CollectibleImage: FC<{
 							<Image
 								src={image}
 								alt={name}
-								className="mb-4 h-full w-full rounded-lg object-cover blur-2xl"
+								className="mb-4 h-full w-full object-cover blur-2xl"
 								width={1200}
 								height={1200}
 							/>
 							<Image
 								src={image}
 								alt={name}
-								className="absolute top-0 mb-4 h-full w-full rounded-lg object-cover"
+								className="absolute top-0 mb-4 h-full w-full object-cover"
 								width={1200}
 								height={1200}
 								onError={() => setImageError(true)}
@@ -48,7 +51,7 @@ export const CollectibleImage: FC<{
 					<video
 						ref={videoRef}
 						src={video}
-						className={`absolute z-[-1] h-full w-full rounded-lg object-cover blur-2xl ${videoLoaded ? "" : "hidden"}`}
+						className={`absolute z-[-1] h-full w-full object-cover blur-2xl ${videoLoaded ? "" : "hidden"}`}
 						autoPlay
 						playsInline
 						loop
@@ -56,7 +59,7 @@ export const CollectibleImage: FC<{
 					/>
 					<video
 						src={video}
-						className={`h-full w-full rounded-lg object-cover ${videoLoaded ? "" : "hidden"}`}
+						className={`h-full w-full object-cover ${videoLoaded ? "" : "hidden"}`}
 						autoPlay
 						playsInline
 						loop
@@ -72,7 +75,7 @@ export const CollectibleImage: FC<{
 					<Image
 						src={image}
 						alt={name}
-						className="mb-4 h-full w-full rounded-lg object-cover blur-2xl"
+						className="mb-4 h-full w-full object-cover blur-2xl"
 						width={1200}
 						height={1200}
 						quality={10}
@@ -80,7 +83,7 @@ export const CollectibleImage: FC<{
 					<Image
 						src={image}
 						alt={name}
-						className="absolute top-0 mb-4 h-full w-full rounded-lg object-cover"
+						className="absolute top-0 mb-4 h-full w-full object-cover"
 						width={1200}
 						height={1200}
 						quality={100}
@@ -93,7 +96,7 @@ export const CollectibleImage: FC<{
 					<Image
 						src={fallbackImage}
 						alt={name}
-						className="mb-4 h-full w-full rounded-lg object-cover blur-2xl"
+						className="mb-4 h-full w-full object-cover blur-2xl"
 						width={1200}
 						height={1200}
 					/>
