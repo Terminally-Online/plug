@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { Workflow } from "@prisma/client"
 
-import { Animate, PlugGridItem } from "@/components"
+import { PlugGridItem } from "@/components"
 
 export const PlugGrid: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
@@ -16,13 +16,16 @@ export const PlugGrid: FC<
 
 	return (
 		<div {...props}>
-			<Animate.Grid>
+			<div
+				className="grid gap-2"
+				style={{
+					gridTemplateColumns: `repeat(auto-fit, minmax(220px, 1fr))`
+				}}
+			>
 				{plugs.slice(0, count || plugs.length).map((plug, plugIndex) => (
-					<Animate.ListItem key={plugIndex}>
-						<PlugGridItem index={index} from={from} plug={plug} />
-					</Animate.ListItem>
+					<PlugGridItem key={plugIndex} index={index} from={from} plug={plug} />
 				))}
-			</Animate.Grid>
+			</div>
 		</div>
 	)
 }

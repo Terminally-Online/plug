@@ -1,9 +1,7 @@
-import { AnimatePresence } from "framer-motion"
-
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
-import { MOBILE_INDEX, useColumns } from "@/state"
+import { useColumns } from "@/state"
 
 export const ConsoleColumnRow = () => {
 	const { columns, move } = useColumns()
@@ -23,14 +21,12 @@ export const ConsoleColumnRow = () => {
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
-							<AnimatePresence>
-								{columns
-									.filter(column => column.index >= 0)
-									.sort((a, b) => a.index - b.index)
-									.map(column => (
-										<ConsoleColumn key={column.index} column={column} />
-									))}
-							</AnimatePresence>
+							{columns
+								.filter(column => column.index >= 0)
+								.sort((a, b) => a.index - b.index)
+								.map(column => (
+									<ConsoleColumn key={Math.random() * 10e18} column={column} />
+								))}
 							{provided.placeholder}
 						</div>
 					)}

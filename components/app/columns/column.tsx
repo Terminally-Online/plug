@@ -44,6 +44,8 @@ const Column: FC<{
 	const [width, setWidth] = useState(column.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
 
+	useEffect(() => setWidth(column.width ?? 0), [column.width])
+
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
