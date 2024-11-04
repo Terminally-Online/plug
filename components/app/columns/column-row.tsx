@@ -25,7 +25,7 @@ export const ConsoleColumnRow = () => {
 								.filter(column => column.index >= 0)
 								.sort((a, b) => a.index - b.index)
 								.map(column => (
-									<ConsoleColumn key={Math.random() * 10e18} column={column} />
+									<ConsoleColumn key={`${column.index}-${column.key}`} column={column} />
 								))}
 							{provided.placeholder}
 						</div>
