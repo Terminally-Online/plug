@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"solver/protocols"
+	"solver/actions"
 	"solver/solver"
 	"solver/types"
 	"solver/utils"
@@ -29,77 +29,81 @@ type Handler struct {
 	actionHandlers map[types.Action]ActionHandler
 }
 
+type HandlerDefinition[T types.ActionInputs] struct {
+    GetSchema    func(actions.BaseProtocolHandler) types.ActionSchema
+    HandlerType  interface{} // Used for error messages
+    InputType    T           // Used for type inference
+}
+
+func createActionHandler[T types.ActionInputs](def HandlerDefinition[T]) ActionHandler {
+    return ActionHandler{
+        getSchema: func(h interface{}) types.ActionSchema {
+            return def.GetSchema(h.(actions.BaseProtocolHandler))
+        },
+        unmarshalInputs: func(data json.RawMessage) (types.ActionInputs, error) {
+            var inputs T
+            err := json.Unmarshal(data, &inputs)
+            return inputs, err
+        },
+        assertHandler: func(h interface{}) bool {
+            _, ok := h.(interface{ HandleGet() types.ActionSchema })
+            return ok
+        },
+        handlerErrorMsg: fmt.Sprintf("protocol does not implement %T", def.HandlerType),
+    }
+}
+
 func NewHandler(solver *solver.Solver) *Handler {
-	h := &Handler{
-		solver:         solver,
-		actionHandlers: make(map[types.Action]ActionHandler),
-	}
+    h := &Handler{
+        solver:         solver,
+        actionHandlers: make(map[types.Action]ActionHandler),
+    }
 
-	h.actionHandlers[types.ActionDeposit] = ActionHandler{
-		getSchema: func(h interface{}) types.ActionSchema {
-			return h.(protocols.DepositHandler).HandleGetDeposit()
-		},
-		unmarshalInputs: func(data json.RawMessage) (types.ActionInputs, error) {
-			var inputs types.DepositInputs
-			err := json.Unmarshal(data, &inputs)
-			return &inputs, err
-		},
-		assertHandler: func(h interface{}) bool {
-			_, ok := h.(protocols.DepositHandler)
-			return ok
-		},
-		handlerErrorMsg: "protocol does not implement deposit handler",
-	}
+    // Register all action handlers using the generic function
+    actionDefinitions := map[types.Action]interface{}{
+        types.ActionDeposit: HandlerDefinition[*types.DepositInputs]{
+            GetSchema:    func(h actions.BaseProtocolHandler) types.ActionSchema { return h.(actions.DepositHandler).HandleGetDeposit() },
+            HandlerType:  (*actions.DepositHandler)(nil),
+            InputType:    &types.DepositInputs{},
+        },
+        types.ActionBorrow: HandlerDefinition[*types.BorrowInputs]{
+            GetSchema:    func(h actions.BaseProtocolHandler) types.ActionSchema { return h.(actions.BorrowHandler).HandleGetBorrow() },
+            HandlerType:  (*actions.BorrowHandler)(nil),
+            InputType:    &types.BorrowInputs{},
+        },
+        types.ActionRedeem: HandlerDefinition[*types.RedeemInputs]{
+            GetSchema:    func(h actions.BaseProtocolHandler) types.ActionSchema { return h.(actions.RedeemHandler).HandleGetRedeem() },
+            HandlerType:  (*actions.RedeemHandler)(nil),
+            InputType:    &types.RedeemInputs{},
+        },
+        types.ActionRepay: HandlerDefinition[*types.RepayInputs]{
+            GetSchema:    func(h actions.BaseProtocolHandler) types.ActionSchema { return h.(actions.RepayHandler).HandleGetRepay() },
+            HandlerType:  (*actions.RepayHandler)(nil),
+            InputType:    &types.RepayInputs{},
+        },
+        types.ActionHarvest: HandlerDefinition[*types.HarvestInputs]{
+            GetSchema:    func(h actions.BaseProtocolHandler) types.ActionSchema { return h.(actions.HarvestHandler).HandleGetHarvest() },
+            HandlerType:  (*actions.HarvestHandler)(nil),
+            InputType:    &types.HarvestInputs{},
+        },
+    }
 
-	h.actionHandlers[types.ActionBorrow] = ActionHandler{
-		getSchema: func(h interface{}) types.ActionSchema {
-			return h.(protocols.BorrowHandler).HandleGetBorrow()
-		},
-		unmarshalInputs: func(data json.RawMessage) (types.ActionInputs, error) {
-			var inputs types.BorrowInputs
-			err := json.Unmarshal(data, &inputs)
-			return &inputs, err
-		},
-		assertHandler: func(h interface{}) bool {
-			_, ok := h.(protocols.BorrowHandler)
-			return ok
-		},
-		handlerErrorMsg: "protocol does not implement borrow handler",
-	}
+    for action, def := range actionDefinitions {
+        switch d := def.(type) {
+        case HandlerDefinition[*types.DepositInputs]:
+            h.actionHandlers[action] = createActionHandler(d)
+        case HandlerDefinition[*types.BorrowInputs]:
+            h.actionHandlers[action] = createActionHandler(d)
+        case HandlerDefinition[*types.RedeemInputs]:
+            h.actionHandlers[action] = createActionHandler(d)
+        case HandlerDefinition[*types.RepayInputs]:
+            h.actionHandlers[action] = createActionHandler(d)
+        case HandlerDefinition[*types.HarvestInputs]:
+            h.actionHandlers[action] = createActionHandler(d)
+        }
+    }
 
-	h.actionHandlers[types.ActionRedeem] = ActionHandler{
-		getSchema: func(h interface{}) types.ActionSchema {
-			return h.(protocols.RedeemHandler).HandleGetRedeem()
-		},
-		unmarshalInputs: func(data json.RawMessage) (types.ActionInputs, error) {
-			var inputs types.RedeemInputs
-			err := json.Unmarshal(data, &inputs)
-			return &inputs, err
-		},
-		assertHandler: func(h interface{}) bool {
-			_, ok := h.(protocols.RedeemHandler)
-			return ok
-		},
-		handlerErrorMsg: "protocol does not implement redeem handler",
-	}
-
-	h.actionHandlers[types.ActionRepay] = ActionHandler{
-		getSchema: func(h interface{}) types.ActionSchema {
-			return h.(protocols.RepayHandler).HandleGetRepay()
-		},
-		unmarshalInputs: func(data json.RawMessage) (types.ActionInputs, error) {
-			var inputs types.RepayInputs
-			err := json.Unmarshal(data, &inputs)
-			return &inputs, err
-		},
-		assertHandler: func(h interface{}) bool {
-			_, ok := h.(protocols.RepayHandler)
-			return ok
-		},
-		handlerErrorMsg: "protocol does not implement repay handler",
-	}
-
-	return h
+    return h
 }
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +188,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) IsActionSupported(protocol protocols.BaseProtocolHandler, action types.Action) bool {
+func (h *Handler) IsActionSupported(protocol actions.BaseProtocolHandler, action types.Action) bool {
 	for _, a := range protocol.SupportedActions() {
 		if a == action {
 			return true

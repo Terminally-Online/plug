@@ -13,7 +13,7 @@ type BaseInputs struct {
 
 type ActionInputs interface {
 	Validate() error
-	GetProtocol() Protocol
+	// GetProtocol() Protocol
 }
 
 type DepositInputs struct {
@@ -109,5 +109,21 @@ func (i *RepayInputs) Validate() error {
 }
 
 func (i *RepayInputs) GetProtocol() Protocol {
+	return i.Protocol
+}
+
+type HarvestInputs struct { 
+	BaseInputs
+	Token    string `json:"token"`    // Address of the token to harvest.
+}
+
+func (i *HarvestInputs) Validate() error {
+	if !utils.IsAddress(i.Token) {
+		return utils.ErrInvalidAddress("token", i.Token)
+	}
+	return nil
+}
+
+func (i *HarvestInputs) GetProtocol() Protocol {
 	return i.Protocol
 }

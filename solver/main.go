@@ -2,19 +2,19 @@ package solver
 
 import (
     "fmt"
-    "solver/protocols"
-    "solver/protocols/aave_v2"
+    "solver/actions"
+    "solver/actions/aave_v2"
     "solver/types"
     "solver/utils"
 )
 
 type Solver struct {
-    protocols map[types.Protocol]protocols.BaseProtocolHandler
+    protocols map[types.Protocol]actions.BaseProtocolHandler
 }
 
 func New() *Solver {
     return &Solver{
-        protocols: map[types.Protocol]protocols.BaseProtocolHandler{
+        protocols: map[types.Protocol]actions.BaseProtocolHandler{
             types.ProtocolAaveV2: aave_v2.New(),
         },
     }
@@ -72,62 +72,68 @@ func (s *Solver) BuildTransaction(action types.Action, inputs types.ActionInputs
         return nil, fmt.Errorf("failed to connect to Ethereum node: %v", err)
     }
 
+    params := actions.HandlerParams{
+        Provider: provider,
+        ChainId: chainId,
+        From: from,
+    }
+
     switch action {
     case types.ActionDeposit:
         depositInputs, ok := inputs.(*types.DepositInputs)
         if !ok {
             return nil, fmt.Errorf("invalid input type for deposit action")
         }
-        depositHandler, ok := handler.(protocols.DepositHandler)
+        depositHandler, ok := handler.(actions.DepositHandler)
         if !ok {
             return nil, fmt.Errorf("protocol does not implement deposit handler")
         }
-        return depositHandler.HandlePostDeposit(depositInputs, provider, chainId, from)
+        return depositHandler.HandlePostDeposit(depositInputs, params)
 
     case types.ActionBorrow:
         borrowInputs, ok := inputs.(*types.BorrowInputs)
         if !ok {
             return nil, fmt.Errorf("invalid input type for borrow action")
         }
-        borrowHandler, ok := handler.(protocols.BorrowHandler)
+        borrowHandler, ok := handler.(actions.BorrowHandler)
         if !ok {
             return nil, fmt.Errorf("protocol does not implement borrow handler")
         }
-        return borrowHandler.HandlePostBorrow(borrowInputs, provider, chainId, from)
+        return borrowHandler.HandlePostBorrow(borrowInputs, params)
 
     case types.ActionRedeem:
         redeemInputs, ok := inputs.(*types.RedeemInputs)
         if !ok {
             return nil, fmt.Errorf("invalid input type for redeem action")
         }
-        redeemHandler, ok := handler.(protocols.RedeemHandler)
+        redeemHandler, ok := handler.(actions.RedeemHandler)
         if !ok {
             return nil, fmt.Errorf("protocol does not implement redeem handler")
         }
-        return redeemHandler.HandlePostRedeem(redeemInputs, provider, chainId, from)
+        return redeemHandler.HandlePostRedeem(redeemInputs, params)
 
     case types.ActionRepay:
         repayInputs, ok := inputs.(*types.RepayInputs)
         if !ok {
             return nil, fmt.Errorf("invalid input type for repay action")
         }
-        repayHandler, ok := handler.(protocols.RepayHandler)
+        repayHandler, ok := handler.(actions.RepayHandler)
         if !ok {
             return nil, fmt.Errorf("protocol does not implement repay handler")
         }
-        return repayHandler.HandlePostRepay(repayInputs, provider, chainId, from)
+        return repayHandler.HandlePostRepay(repayInputs, params)
 
     default:
         return nil, fmt.Errorf("unsupported action: %s", action)
     }
 }
 
-func (s *Solver) GetProtocolHandler(protocol types.Protocol) (protocols.BaseProtocolHandler, bool) {
+func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtocolHandler, bool) {
     handler, exists := s.protocols[protocol]
     return handler, exists
 }
 
-func (s *Solver) SupportsAction(handler protocols.BaseProtocolHandler, action types.Action) bool {
+func (s *Solver) SupportsAction(handler actions.BaseProtocolHandler, action types.Action) bool {
     for _, a := range handler.SupportedActions() {
         if a == action {
             return true

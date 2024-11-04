@@ -5,7 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"solver/bindings/aave_v2_pool"
-	"solver/protocols"
+	"solver/actions"
 	"solver/types"
 	"solver/utils"
 )
@@ -20,16 +20,16 @@ type Handler struct {
 	borrowSchema  types.ActionSchema
 	redeemSchema  types.ActionSchema
     repaySchema   types.ActionSchema
-	protocols.Protocol
+	actions.Protocol
 }
 
-func New() protocols.BaseProtocolHandler {
+func New() actions.BaseProtocolHandler {
 	h := &Handler{}
 	return h.init()
 }
 
 func (h *Handler) init() *Handler {
-	h.Protocol = protocols.Protocol{
+	h.Protocol = actions.Protocol{
 		SupportedChains: []int{1},
 	}
 
