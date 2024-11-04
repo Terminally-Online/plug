@@ -88,7 +88,7 @@ export const ColumnAdd = () => {
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-2 mr-48 flex h-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white",
+				"relative my-2 mr-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white",
 				columns.length === 2 && "ml-2"
 			)}
 			style={{ minWidth: `${480}px` }}
