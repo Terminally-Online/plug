@@ -99,11 +99,11 @@ const Column: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											<Button variant="none" onClick={() => {}} className="rounded-sm p-1">
+											<p className="rounded-sm p-1">
 												{ADMIN_OPTIONS.find(option => option.label === column.key)?.icon ?? (
 													<Star size={14} className="opacity-40" />
 												)}
-											</Button>
+											</p>
 
 											{column.from && (
 												<Button
