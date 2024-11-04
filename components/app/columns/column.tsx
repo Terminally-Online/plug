@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { ChevronLeft, GitFork, Grip, Settings, X } from "lucide-react"
+import { ChevronLeft, GitFork, Grip, Settings, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
 import {
+	ADMIN_OPTIONS,
 	Avatar,
 	Button,
 	ColumnAdd,
@@ -99,10 +100,9 @@ const Column: FC<{
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
 											<Button variant="none" onClick={() => {}} className="rounded-sm p-1">
-												<Grip
-													size={14}
-													className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-												/>
+												{ADMIN_OPTIONS.find(option => option.label === column.key)?.icon ?? (
+													<Star size={14} className="opacity-40" />
+												)}
 											</Button>
 
 											{column.from && (

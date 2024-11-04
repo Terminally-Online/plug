@@ -13,7 +13,7 @@ type Options = Array<{
 	icon: JSX.Element
 }>
 
-const ANONYMOUS_OPTIONS: Options = [
+export const ANONYMOUS_OPTIONS: Options = [
 	{
 		label: "DISCOVER",
 		description: "Discover curated and community Plugs.",
@@ -26,7 +26,8 @@ const ANONYMOUS_OPTIONS: Options = [
 	}
 ]
 
-const OPTIONS: Options = [
+export const OPTIONS: Options = [
+	...ANONYMOUS_OPTIONS,
 	{
 		label: "ACTIVITY",
 		description: "View the simulations and runs of your Plugs.",
@@ -49,7 +50,7 @@ const OPTIONS: Options = [
 	}
 ] as const
 
-const ADMIN_OPTIONS: Options = [
+export const ADMIN_OPTIONS: Options = [
 	...OPTIONS,
 	{
 		label: "ADMIN",
@@ -82,18 +83,18 @@ export const ColumnAdd = () => {
 	}, [getFlag])
 
 	const isAdmin = socket?.admin ?? false
-	const options = isAdmin ? ADMIN_OPTIONS : [...flagOptions, ...ANONYMOUS_OPTIONS, ...OPTIONS]
+	const options = isAdmin ? ADMIN_OPTIONS : [...flagOptions, ...OPTIONS]
 
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-2 flex h-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white mr-48",
+				"relative my-2 mr-2 mr-48 flex h-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white",
 				columns.length === 2 && "ml-2"
 			)}
 			style={{ minWidth: `${480}px` }}
 		>
 			<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
-				<div className="flex w-full flex-row items-center px-6 py-4 gap-4">
+				<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
 					<Plus size={18} className="opacity-40" />
 					<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
 				</div>
