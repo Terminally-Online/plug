@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
 
-import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, ShieldAlert, Star, User } from "lucide-react"
+import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plus, ShieldAlert, Star, User } from "lucide-react"
 
 import { Header } from "@/components"
 import { Accordion } from "@/components/shared"
@@ -66,7 +66,7 @@ const ADMIN_OPTIONS: Options = [
 export const ColumnAdd = () => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
-	const { navigate, add } = useColumns()
+	const { columns, add } = useColumns()
 
 	const flagOptions = useMemo(() => {
 		const options: Options = []
@@ -87,15 +87,15 @@ export const ColumnAdd = () => {
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-2 flex h-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white"
+				"relative my-2 mr-2 flex h-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white mr-48",
+				columns.length === 2 && "ml-2"
 			)}
-			style={{ minWidth: `${380}px` }}
+			style={{ minWidth: `${480}px` }}
 		>
-			<div className="relative z-[30] flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
-				<div className="flex w-full flex-row items-center px-6 py-4">
-					<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-						<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
-					</div>
+			<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
+				<div className="flex w-full flex-row items-center px-6 py-4 gap-4">
+					<Plus size={18} className="opacity-40" />
+					<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
 				</div>
 			</div>
 
