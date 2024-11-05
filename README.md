@@ -2,7 +2,25 @@
 
 This Solver repository functions as the primary backend for onchain transactions and Plug action metadata.
 
+## Prerequisites
+
+- Go 1.23.x or later
+- Make
+- Environment variables (create a `.env` file in the root directory):
+  ```env
+  ALCHEMY_API_KEY=your_alchemy_api_key
+  ```
+
 ## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   go mod download
+   ```
+3. Create your `.env` file with the required environment variables
+
+## Running Processes
 
 To run any piece of the app you will run `make <command>` where `<command>` is the name of the command you want to run:
 
