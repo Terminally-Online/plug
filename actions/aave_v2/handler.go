@@ -1,13 +1,15 @@
 package aave_v2
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"encoding/json"
+	"fmt"
 	"math/big"
-	"solver/bindings/aave_v2_pool"
 	"solver/actions"
+	"solver/bindings/aave_v2_pool"
 	"solver/types"
 	"solver/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -16,109 +18,62 @@ var (
 )
 
 type Handler struct {
-	depositSchema types.ActionSchema
-	borrowSchema  types.ActionSchema
-	redeemSchema  types.ActionSchema
-    repaySchema   types.ActionSchema
+	schemas map[types.Action]types.ActionSchema
 	actions.Protocol
 }
 
 func New() actions.BaseProtocolHandler {
-	h := &Handler{}
+	h := &Handler{
+		schemas: make(map[types.Action]types.ActionSchema),
+		Protocol: actions.Protocol{
+			Name:            "Aave V2",
+			SupportedChains: []int{1}, // Ethereum mainnet
+		},
+	}
 	return h.init()
 }
 
 func (h *Handler) init() *Handler {
-	h.Protocol = actions.Protocol{
-		SupportedChains: []int{1},
-	}
-
-	h.depositSchema = types.ActionSchema{
+	h.schemas[types.ActionDeposit] = types.ActionSchema{
 		Protocol: types.ProtocolAaveV2,
 		Schema: types.Schema{
 			Fields: []types.SchemaField{
 				{
 					Name:        "tokenIn",
 					Type:        "address",
-					Description: "Token to deposit",
-					Options: []types.Option{
-						{
-							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label: "DAI",
-						},
-						{
-							Value: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-							Label: "WETH",
-						},
-					},
+					Description: "Address of the token to deposit",
+				},
+				{
+					Name:        "tokenOut",
+					Type:        "address",
+					Description: "Address of the aToken to receive",
 				},
 				{
 					Name:        "amountIn",
 					Type:        "uint256",
-					Description: "Amount to deposit in wei",
+					Description: "Amount of tokens to deposit",
 				},
 			},
-			Required: []string{"tokenIn", "amountIn"},
+			Required: []string{"tokenIn", "tokenOut", "amountIn"},
 		},
 	}
 
-	h.borrowSchema = types.ActionSchema{
+	h.schemas[types.ActionBorrow] = types.ActionSchema{
 		Protocol: types.ProtocolAaveV2,
 		Schema: types.Schema{
 			Fields: []types.SchemaField{
 				{
-					Name:        "tokenToBorrow",
+					Name:        "tokenOut",
 					Type:        "address",
-					Description: "Token to borrow",
-					Options: []types.Option{
-						{
-							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label: "DAI",
-						},
-					},
+					Description: "Address of the token to borrow",
 				},
-			},
-			Required: []string{"tokenToBorrow", "amount"},
-		},
-	}
-
-	h.redeemSchema = types.ActionSchema{
-		Protocol: types.ProtocolAaveV2,
-		Schema: types.Schema{
-			Fields: []types.SchemaField{
 				{
-					Name:        "tokenToBorrow",
-					Type:        "address",
-					Description: "Token to borrow",
-					Options: []types.Option{
-						{
-							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label: "DAI",
-						},
-					},
+					Name:        "amountOut",
+					Type:        "uint256",
+					Description: "Amount of tokens to borrow",
 				},
 			},
-			Required: []string{"tokenToBorrow", "amount"},
-		},
-	}
-
-	h.repaySchema = types.ActionSchema{
-		Protocol: types.ProtocolAaveV2,
-		Schema: types.Schema{
-			Fields: []types.SchemaField{
-				{
-					Name:        "tokenToBorrow",
-					Type:        "address",
-					Description: "Token to borrow",
-					Options: []types.Option{
-						{
-							Value: "0x6b175474e89094c44da98b954eedeac495271d0f",
-							Label: "DAI",
-						},
-					},
-				},
-			},
-			Required: []string{"tokenToBorrow", "amount"},
+			Required: []string{"tokenOut", "amountOut"},
 		},
 	}
 
@@ -126,18 +81,73 @@ func (h *Handler) init() *Handler {
 }
 
 func (h *Handler) SupportedActions() []types.Action {
-	return []types.Action{types.ActionDeposit, types.ActionBorrow, types.ActionRedeem, types.ActionRepay}
+	return []types.Action{
+		types.ActionDeposit,
+		types.ActionBorrow,
+	}
 }
 
 func (h *Handler) SupportedChains() []int {
 	return h.Protocol.SupportedChains
 }
 
-func (h *Handler) HandleGetDeposit() types.ActionSchema {
-	return h.depositSchema
+func (h *Handler) GetSchema(action types.Action) (types.ActionSchema, error) {
+	schema, exists := h.schemas[action]
+	if !exists {
+		return types.ActionSchema{}, fmt.Errorf("unsupported action: %s", action)
+	}
+	return schema, nil
 }
 
-func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (h *Handler) UnmarshalInputs(action types.Action, rawInputs json.RawMessage) (types.ActionInputs, error) {
+	switch action {
+	case types.ActionDeposit:
+		var inputs types.DepositInputs
+		if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
+		}
+		if err := inputs.Validate(); err != nil {
+			return nil, err
+		}
+		return &inputs, nil
+
+	case types.ActionBorrow:
+		var inputs types.BorrowInputs
+		if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal borrow inputs: %v", err)
+		}
+		if err := inputs.Validate(); err != nil {
+			return nil, err
+		}
+		return &inputs, nil
+
+	default:
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
+}
+
+func (h *Handler) GetTransaction(action types.Action, inputs types.ActionInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
+	switch action {
+	case types.ActionDeposit:
+		depositInputs, ok := inputs.(*types.DepositInputs)
+		if !ok {
+			return nil, fmt.Errorf("invalid input type for deposit action")
+		}
+		return h.handleDeposit(depositInputs, params)
+
+	case types.ActionBorrow:
+		borrowInputs, ok := inputs.(*types.BorrowInputs)
+		if !ok {
+			return nil, fmt.Errorf("invalid input type for borrow action")
+		}
+		return h.handleBorrow(borrowInputs, params)
+
+	default:
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
+}
+
+func (h *Handler) handleDeposit(inputs *types.DepositInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
 	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABIFailed("AaveV2Pool")
@@ -146,7 +156,7 @@ func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethcl
 	calldata, err := poolAbi.Pack("deposit",
 		common.HexToAddress(inputs.TokenOut),
 		inputs.AmountIn,
-		common.HexToAddress(from),
+		common.HexToAddress(params.From),
 		uint16(0))
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
@@ -158,11 +168,7 @@ func (h *Handler) HandlePostDeposit(inputs *types.DepositInputs, provider *ethcl
 	}}, nil
 }
 
-func (h *Handler) HandleGetBorrow() types.ActionSchema {
-	return h.borrowSchema
-}
-
-func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
+func (h *Handler) handleBorrow(inputs *types.BorrowInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
 	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABIFailed("AaveV2Pool")
@@ -173,58 +179,7 @@ func (h *Handler) HandlePostBorrow(inputs *types.BorrowInputs, provider *ethclie
 		inputs.AmountOut,
 		interestRateMode,
 		uint16(0),
-		from)
-	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
-	}
-
-	return []*types.Transaction{{
-		To:   address,
-		Data: "0x" + common.Bytes2Hex(calldata),
-	}}, err
-}
-
-func (h *Handler) HandleGetRedeem() types.ActionSchema {
-	return h.redeemSchema
-}
-
-func (h *Handler) HandlePostRedeem(inputs *types.RedeemInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
-	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV2Pool")
-	}
-
-	calldata, err := poolAbi.Pack("withdraw",
-		common.HexToAddress(inputs.TokenIn),
-		inputs.AmountIn,
-		common.HexToAddress(from),
-	)
-	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
-	}
-
-	return []*types.Transaction{{
-		To:   address,
-		Data: "0x" + common.Bytes2Hex(calldata),
-	}}, nil
-}
-
-func (h *Handler) HandleGetRepay() types.ActionSchema {
-	return h.repaySchema
-}
-
-func (h *Handler) HandlePostRepay(inputs *types.RepayInputs, provider *ethclient.Client, chainId int, from string) ([]*types.Transaction, error) {
-	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV2Pool")
-	}
-
-	calldata, err := poolAbi.Pack("repay",
-		common.HexToAddress(inputs.TokenIn),
-		inputs.AmountIn,
-		interestRateMode,
-		common.HexToAddress(from),
-	)
+		common.HexToAddress(params.From))
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}

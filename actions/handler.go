@@ -1,47 +1,28 @@
 package actions
 
 import (
-    "solver/types"
-    "github.com/ethereum/go-ethereum/ethclient"
+	"encoding/json"
+	"solver/types"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type HandlerParams struct {
-    Provider *ethclient.Client
-    ChainId  int
-    From     string
+	Provider *ethclient.Client
+	ChainId  int
+	From     string
 }
 
 type BaseProtocolHandler interface {
-    SupportedActions() []types.Action
-    SupportedChains() []int
-}
+	SupportedActions() []types.Action
+	SupportedChains() []int
 
-type DepositHandler interface {
-    HandleGetDeposit() types.ActionSchema
-    HandlePostDeposit(inputs *types.DepositInputs, params HandlerParams) ([]*types.Transaction, error)
-}
-
-type BorrowHandler interface {
-    HandleGetBorrow() types.ActionSchema
-    HandlePostBorrow(inputs *types.BorrowInputs, params HandlerParams) ([]*types.Transaction, error)
-}
-
-type RedeemHandler interface {
-    HandleGetRedeem() types.ActionSchema
-    HandlePostRedeem(inputs *types.RedeemInputs, params HandlerParams) ([]*types.Transaction, error)
-}
-
-type RepayHandler interface {
-    HandleGetRepay() types.ActionSchema
-    HandlePostRepay(inputs *types.RepayInputs, params HandlerParams) ([]*types.Transaction, error)
-}
-
-type HarvestHandler interface {
-    HandleGetHarvest() types.ActionSchema
-    HandlePostHarvest(inputs *types.HarvestInputs, params HandlerParams) ([]*types.Transaction, error)
+	GetSchema(action types.Action) (types.ActionSchema, error)
+	GetTransaction(action types.Action, inputs types.ActionInputs, params HandlerParams) ([]*types.Transaction, error)
+	UnmarshalInputs(action types.Action, rawInputs json.RawMessage) (types.ActionInputs, error)
 }
 
 type Protocol struct {
-    Name string
-    SupportedChains []int
+	Name            string
+	SupportedChains []int
 }

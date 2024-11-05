@@ -13,7 +13,7 @@ type BaseInputs struct {
 
 type ActionInputs interface {
 	Validate() error
-	// GetProtocol() Protocol
+	GetProtocol() Protocol
 }
 
 type DepositInputs struct {
