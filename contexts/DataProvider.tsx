@@ -4,11 +4,9 @@ import { createContext, FC, PropsWithChildren } from "react"
 import { useSetAtom } from "jotai"
 
 import { api } from "@/server/client"
-import { socketModelAtom } from "@/state"
+import { actionsAtom, socketModelAtom } from "@/state"
 
-export const DataContext = createContext({
-	refetch: () => {}
-})
+export const DataContext = createContext({})
 
 /**
  * This is the data layer for the application. It is implemented as a context for simplicity
@@ -17,19 +15,16 @@ export const DataContext = createContext({
  */
 export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ session, children }) => {
 	const setSocket = useSetAtom(socketModelAtom)
+	const setActions = useSetAtom(actionsAtom)
 
-	const { refetch } = api.socket.get.useQuery(undefined, {
+	api.socket.get.useQuery(undefined, {
 		enabled: session !== null,
 		onSuccess: data => setSocket(data)
 	})
 
-	return (
-		<DataContext.Provider
-			value={{
-				refetch
-			}}
-		>
-			{children}
-		</DataContext.Provider>
-	)
+	api.solver.actions.get.useQuery(undefined, {
+		onSuccess: data => setActions(data)
+	})
+
+	return <DataContext.Provider value={{}}>{children}</DataContext.Provider>
 }

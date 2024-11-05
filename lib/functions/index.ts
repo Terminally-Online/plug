@@ -1,5 +1,6 @@
 export * from "./llama"
 export * from "./opensea"
+export * from "./plug"
 export * from "./zerion"
 
 export * from "./api"

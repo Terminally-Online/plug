@@ -8,6 +8,7 @@ config()
 export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().startsWith("postgresql://"),
+		SOLVER_URL: z.string().startsWith("http"),
 		NEXTAUTH_URL: z.string().startsWith("http"),
 		NEXTAUTH_SECRET: z.string(),
 		OPENSEA_KEY: z.string(),
@@ -32,6 +33,7 @@ export const env = createEnv({
 	},
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
+		SOLVER_URL: process.env.SOLVER_URL,
 		NEXTAUTH_URL: process.env.NEXTAUTH_URL,
 		NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 		OPENSEA_KEY: process.env.OPENSEA_KEY,
