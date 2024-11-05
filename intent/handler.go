@@ -37,12 +37,12 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		for protocol, handler := range h.solver.GetProtocols() {
 			protocolSchema := types.ProtocolSchema{
 				Metadata: types.ProtocolMetadata{
-					Icon: handler.GetIcon(), // TODO: Add icon support
+					Icon: handler.GetIcon(),
 				},
 				Schema: make(map[types.Action]types.Schema),
 			}
 
-			for _, supportedAction := range handler.SupportedActions() {
+			for _, supportedAction := range handler.GetActions() {
 				schema, err := handler.GetSchema(supportedAction)
 				if err != nil {
 					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
@@ -74,7 +74,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			Schema: make(map[types.Action]types.Schema),
 		}
 
-		for _, supportedAction := range handler.SupportedActions() {
+		for _, supportedAction := range handler.GetActions() {
 			schema, err := handler.GetSchema(supportedAction)
 			if err != nil {
 				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)

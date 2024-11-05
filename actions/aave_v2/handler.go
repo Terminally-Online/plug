@@ -26,11 +26,12 @@ func New() actions.BaseProtocolHandler {
 	h := &Handler{
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
-			Name:            "Aave V2",
-			Icon:            "https://app.aave.com/favicon.ico",
-			SupportedChains: []int{1},
+			Name:   "Aave V2",
+			Icon:   "https://app.aave.com/favicon.ico",
+			Chains: []int{1},
 		},
 	}
+	h.Protocol.SchemaProvider = h
 	return h.init()
 }
 
@@ -66,15 +67,8 @@ func (h *Handler) init() *Handler {
 	return h
 }
 
-func (h *Handler) SupportedActions() []types.Action {
-	return []types.Action{
-		types.ActionDeposit,
-		types.ActionBorrow,
-	}
-}
-
-func (h *Handler) SupportedChains() []int {
-	return h.Protocol.SupportedChains
+func (h *Handler) GetSchemas() map[types.Action]types.Schema {
+	return h.schemas
 }
 
 func (h *Handler) GetSchema(action types.Action) (types.Schema, error) {

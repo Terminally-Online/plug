@@ -24,7 +24,7 @@ func New() *Solver {
 func (s *Solver) GetSupportedProtocols(action types.Action) []types.Protocol {
 	supported := make([]types.Protocol, 0)
 	for protocol, handler := range s.protocols {
-		for _, supportedAction := range handler.SupportedActions() {
+		for _, supportedAction := range handler.GetActions() {
 			if supportedAction == action {
 				supported = append(supported, protocol)
 				break
@@ -69,7 +69,7 @@ func (s *Solver) GetProtocols() map[types.Protocol]actions.BaseProtocolHandler {
 }
 
 func (s *Solver) SupportsAction(handler actions.BaseProtocolHandler, action types.Action) bool {
-	for _, a := range handler.SupportedActions() {
+	for _, a := range handler.GetActions() {
 		if a == action {
 			return true
 		}
