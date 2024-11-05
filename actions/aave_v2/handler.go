@@ -36,45 +36,12 @@ func New() actions.BaseProtocolHandler {
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionDeposit] = types.ActionSchema{
 		Protocol: types.ProtocolAaveV2,
-		Schema: types.Schema{
-			Fields: []types.SchemaField{
-				{
-					Name:        "tokenIn",
-					Type:        "address",
-					Description: "Address of the token to deposit",
-				},
-				{
-					Name:        "tokenOut",
-					Type:        "address",
-					Description: "Address of the aToken to receive",
-				},
-				{
-					Name:        "amountIn",
-					Type:        "uint256",
-					Description: "Amount of tokens to deposit",
-				},
-			},
-			Required: []string{"tokenIn", "tokenOut", "amountIn"},
-		},
+		Schema:   types.BaseDepositSchema,
 	}
 
 	h.schemas[types.ActionBorrow] = types.ActionSchema{
 		Protocol: types.ProtocolAaveV2,
-		Schema: types.Schema{
-			Fields: []types.SchemaField{
-				{
-					Name:        "tokenOut",
-					Type:        "address",
-					Description: "Address of the token to borrow",
-				},
-				{
-					Name:        "amountOut",
-					Type:        "uint256",
-					Description: "Amount of tokens to borrow",
-				},
-			},
-			Required: []string{"tokenOut", "amountOut"},
-		},
+		Schema:   types.BaseBorrowSchema,
 	}
 
 	return h
