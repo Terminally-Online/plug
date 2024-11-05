@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import { FC } from "react"
 import { DayPicker } from "react-day-picker"
 
@@ -11,6 +12,7 @@ export const ScheduleFrame: FC<{
 	index: number
 	item: string
 }> = ({ index }) => {
+	const { data: session } = useSession()
 	const { column, isFrame, frame, schedule } = useColumns(index, "schedule")
 
 	if (!column) return null
@@ -18,10 +20,9 @@ export const ScheduleFrame: FC<{
 	return (
 		<Frame
 			index={index}
-			className="z-[2]"
 			icon={<CalendarPlus size={18} className="opacity-40" />}
 			label="Schedule"
-			visible={isFrame}
+			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-4">

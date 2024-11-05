@@ -1,2 +1,3 @@
-export { AuthFrame } from "./auth"
-export { FeatureRequestFrame } from "./feature-request"
+export * from "./auth"
+export * from "./auth-required"
+export * from "./feature-request"

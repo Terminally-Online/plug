@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react"
 import { FC, useCallback, useMemo } from "react"
 
 import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
@@ -11,6 +12,7 @@ export const RunFrame: FC<{
 	index: number
 	item: string
 }> = ({ index, item }) => {
+	const { data: session } = useSession()
 	const { column, isFrame, frame } = useColumns(index, "run")
 	const { plug, actions, handle } = usePlugs(item)
 
@@ -40,7 +42,7 @@ export const RunFrame: FC<{
 			className="z-[2]"
 			icon={<Eye size={18} className="opacity-40" />}
 			label="Preview"
-			visible={isFrame}
+			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
 			handleBack={column.schedule ? () => frame("schedule") : undefined}
 		>

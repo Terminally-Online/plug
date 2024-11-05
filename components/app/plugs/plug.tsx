@@ -3,7 +3,16 @@ import { FC, HTMLAttributes } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { ActionsFrame, ActionView, Button, ExecuteFrame, ManagePlugFrame, Search, ShareFrame } from "@/components"
+import {
+	ActionsFrame,
+	ActionView,
+	AuthRequiredFrame,
+	Button,
+	ExecuteFrame,
+	ManagePlugFrame,
+	Search,
+	ShareFrame
+} from "@/components"
 import { usePlugs } from "@/contexts"
 import { cn } from "@/lib"
 import { MOBILE_INDEX, useColumns } from "@/state"
@@ -20,7 +29,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 
 	const own = plug !== undefined && session && session.address === plug.socketId
 
-	if (!plug) return null
+	if (!plug || !session) return null
 
 	return (
 		<div {...props}>
@@ -49,7 +58,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							schedule()
+							schedule() // NOTE: Clear the schedule when we have a one-off run use.
 							frame("run")
 						}}
 					>
@@ -64,6 +73,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 
 			{item && (
 				<>
+					<AuthRequiredFrame index={index} />
 					<ExecuteFrame index={index} item={item} />
 					<ManagePlugFrame index={index} item={item} from={from} />
 					<ActionsFrame index={index} item={item} />
