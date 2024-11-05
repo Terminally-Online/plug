@@ -99,7 +99,14 @@ func (h *Handler) GetSchema(action types.Action) (types.ActionSchema, error) {
 	return schema, nil
 }
 
-func (h *Handler) UnmarshalInputs(action types.Action, rawInputs json.RawMessage) (types.ActionInputs, error) {
+func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABIFailed("AaveV2Pool")
+	}
+
+	var calldata []byte
+
 	switch action {
 	case types.ActionDeposit:
 		var inputs types.DepositInputs
@@ -109,7 +116,12 @@ func (h *Handler) UnmarshalInputs(action types.Action, rawInputs json.RawMessage
 		if err := inputs.Validate(); err != nil {
 			return nil, err
 		}
-		return &inputs, nil
+
+		calldata, err = poolAbi.Pack("deposit",
+			common.HexToAddress(inputs.TokenOut),
+			inputs.AmountIn,
+			common.HexToAddress(params.From),
+			uint16(0))
 
 	case types.ActionBorrow:
 		var inputs types.BorrowInputs
@@ -119,67 +131,18 @@ func (h *Handler) UnmarshalInputs(action types.Action, rawInputs json.RawMessage
 		if err := inputs.Validate(); err != nil {
 			return nil, err
 		}
-		return &inputs, nil
+
+		calldata, err = poolAbi.Pack("borrow",
+			common.HexToAddress(inputs.TokenOut),
+			inputs.AmountOut,
+			interestRateMode,
+			uint16(0),
+			common.HexToAddress(params.From))
 
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
-}
 
-func (h *Handler) GetTransaction(action types.Action, inputs types.ActionInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
-	switch action {
-	case types.ActionDeposit:
-		depositInputs, ok := inputs.(*types.DepositInputs)
-		if !ok {
-			return nil, fmt.Errorf("invalid input type for deposit action")
-		}
-		return h.handleDeposit(depositInputs, params)
-
-	case types.ActionBorrow:
-		borrowInputs, ok := inputs.(*types.BorrowInputs)
-		if !ok {
-			return nil, fmt.Errorf("invalid input type for borrow action")
-		}
-		return h.handleBorrow(borrowInputs, params)
-
-	default:
-		return nil, fmt.Errorf("unsupported action: %s", action)
-	}
-}
-
-func (h *Handler) handleDeposit(inputs *types.DepositInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
-	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV2Pool")
-	}
-
-	calldata, err := poolAbi.Pack("deposit",
-		common.HexToAddress(inputs.TokenOut),
-		inputs.AmountIn,
-		common.HexToAddress(params.From),
-		uint16(0))
-	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
-	}
-
-	return []*types.Transaction{{
-		To:   address,
-		Data: "0x" + common.Bytes2Hex(calldata),
-	}}, nil
-}
-
-func (h *Handler) handleBorrow(inputs *types.BorrowInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
-	poolAbi, err := aave_v2_pool.AaveV2PoolMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV2Pool")
-	}
-
-	calldata, err := poolAbi.Pack("borrow",
-		common.HexToAddress(inputs.TokenOut),
-		inputs.AmountOut,
-		interestRateMode,
-		uint16(0),
-		common.HexToAddress(params.From))
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}

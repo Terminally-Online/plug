@@ -36,14 +36,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	supported := false
-	for _, a := range handler.SupportedActions() {
-		if a == action {
-			supported = true
-			break
-		}
-	}
-	if !supported {
+	if !h.solver.SupportsAction(handler, action) {
 		utils.MakeHttpError(w, fmt.Sprintf("action %s not supported by protocol %s", action, protocol), http.StatusBadRequest)
 		return
 	}
@@ -71,25 +64,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var baseInputs types.BaseInputs
-	if err := json.Unmarshal(req.Inputs, &baseInputs); err != nil {
-		utils.MakeHttpError(w, "failed to unmarshal base inputs: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	handler, exists := h.solver.GetProtocolHandler(baseInputs.Protocol)
-	if !exists {
-		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", baseInputs.Protocol), http.StatusBadRequest)
-		return
-	}
-
-	actionInputs, err := handler.UnmarshalInputs(req.Action, req.Inputs)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	transaction, err := h.solver.GetTransaction(req.Action, actionInputs, req.ChainId, req.From)
+	transaction, err := h.solver.GetTransaction(req.Action, req.Inputs, req.ChainId, req.From)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return

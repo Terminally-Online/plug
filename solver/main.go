@@ -1,6 +1,7 @@
 package solver
 
 import (
+	"encoding/json"
 	"fmt"
 	"solver/actions"
 	"solver/actions/aave_v2"
@@ -33,10 +34,15 @@ func (s *Solver) GetSupportedProtocols(action types.Action) []types.Protocol {
 	return supported
 }
 
-func (s *Solver) GetTransaction(action types.Action, inputs types.ActionInputs, chainId int, from string) ([]*types.Transaction, error) {
-	handler, exists := s.protocols[inputs.GetProtocol()]
+func (s *Solver) GetTransaction(action types.Action, rawInputs json.RawMessage, chainId int, from string) ([]*types.Transaction, error) {
+	var baseInputs types.BaseInputs
+	if err := json.Unmarshal(rawInputs, &baseInputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
+	}
+
+	handler, exists := s.protocols[baseInputs.Protocol]
 	if !exists {
-		return nil, fmt.Errorf("unsupported protocol: %s", inputs.GetProtocol())
+		return nil, fmt.Errorf("unsupported protocol: %s", baseInputs.Protocol)
 	}
 
 	provider, err := utils.GetProvider(chainId)
@@ -50,7 +56,7 @@ func (s *Solver) GetTransaction(action types.Action, inputs types.ActionInputs, 
 		From:     from,
 	}
 
-	return handler.GetTransaction(action, inputs, params)
+	return handler.GetTransaction(action, rawInputs, params)
 }
 
 func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtocolHandler, bool) {

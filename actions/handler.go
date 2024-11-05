@@ -16,10 +16,8 @@ type HandlerParams struct {
 type BaseProtocolHandler interface {
 	SupportedActions() []types.Action
 	SupportedChains() []int
-
 	GetSchema(action types.Action) (types.ActionSchema, error)
-	GetTransaction(action types.Action, inputs types.ActionInputs, params HandlerParams) ([]*types.Transaction, error)
-	UnmarshalInputs(action types.Action, rawInputs json.RawMessage) (types.ActionInputs, error)
+	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 
 type Protocol struct {
