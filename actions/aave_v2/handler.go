@@ -39,7 +39,33 @@ func (h *Handler) GetIcon() string {
 }
 
 func (h *Handler) init() *Handler {
-	h.schemas[types.ActionDeposit] = types.BaseDepositSchema
+	h.schemas[types.ActionDeposit] = types.Schema{
+		{
+			Name: "tokenIn",
+			Type: "address",
+			Options: []types.Option{
+				{
+					Value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+					Label: "WETH",
+					Icon:  "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+				},
+				{
+					Value: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+					Label: "DAI",
+					Icon:  "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+				},
+				{
+					Value: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+					Label: "USDC",
+					Icon:  "https://tokens.1inch.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+				},
+			},
+		},
+		{
+			Name: "amountIn",
+			Type: "uint256",
+		},
+	}
 	h.schemas[types.ActionBorrow] = types.BaseBorrowSchema
 	return h
 }
@@ -82,7 +108,7 @@ func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage,
 		}
 
 		calldata, err = poolAbi.Pack("deposit",
-			common.HexToAddress(inputs.TokenOut),
+			common.HexToAddress(inputs.TokenIn),
 			inputs.AmountIn,
 			common.HexToAddress(params.From),
 			uint16(0))
