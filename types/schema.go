@@ -9,7 +9,11 @@ type ProtocolSchema struct {
 	Schema   map[Action]Schema `json:"schema"`
 }
 
-type Schema []SchemaField
+type Option struct {
+	Value string `json:"value"`
+	Label string `json:"label"`
+	Icon  string `json:"icon,omitempty"`
+}
 
 type SchemaField struct {
 	Name    string   `json:"name"`
@@ -17,36 +21,41 @@ type SchemaField struct {
 	Options []Option `json:"options,omitempty"`
 }
 
-type Option struct {
-	Value string `json:"value"`
-	Label string `json:"label"`
-	Icon  string `json:"icon,omitempty"`
+type Schema struct {
+	Sentence string        `json:"sentence"`
+	Fields   []SchemaField `json:"fields,omitempty"`
 }
 
 var (
 	BaseDepositSchema = Schema{
-		{
-			Name: "tokenIn",
-			Type: "address",
-		},
-		{
-			Name: "tokenOut",
-			Type: "address",
-		},
-		{
-			Name: "amountIn",
-			Type: "uint256",
+		Sentence: "Deposit {0} {1}",
+		Fields: []SchemaField{
+			{
+				Name: "tokenIn",
+				Type: "address",
+			},
+			{
+				Name: "tokenOut",
+				Type: "address",
+			},
+			{
+				Name: "amountIn",
+				Type: "uint256",
+			},
 		},
 	}
 
 	BaseBorrowSchema = Schema{
-		{
-			Name: "tokenOut",
-			Type: "address",
-		},
-		{
-			Name: "amountOut",
-			Type: "uint256",
+		Sentence: "Borrow {0} {1}",
+		Fields: []SchemaField{
+			{
+				Name: "tokenOut",
+				Type: "address",
+			},
+			{
+				Name: "amountOut",
+				Type: "uint256",
+			},
 		},
 	}
 )

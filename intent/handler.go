@@ -48,7 +48,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 					return
 				}
-				protocolSchema.Schema[supportedAction] = schema
+				protocolSchema.Schema[supportedAction] = *schema
 			}
 			allSchemas[protocol] = protocolSchema
 		}
@@ -80,7 +80,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			protocolSchema.Schema[supportedAction] = schema
+			protocolSchema.Schema[supportedAction] = *schema
 		}
 
 		response := map[types.Protocol]types.ProtocolSchema{
@@ -110,7 +110,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			Icon: handler.GetIcon(),
 		},
 		Schema: map[types.Action]types.Schema{
-			action: schema,
+			action: *schema,
 		},
 	}
 

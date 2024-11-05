@@ -17,7 +17,7 @@ type BaseProtocolHandler interface {
 	GetIcon() string
 	GetActions() []types.Action
 	GetChains() []int
-	GetSchema(action types.Action) (types.Schema, error)
+	GetSchema(action types.Action) (*types.Schema, error)
 	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 

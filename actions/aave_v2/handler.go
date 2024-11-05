@@ -37,32 +37,36 @@ func New() actions.BaseProtocolHandler {
 
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionDeposit] = types.Schema{
-		{
-			Name: "tokenIn",
-			Type: "address",
-			Options: []types.Option{
-				{
-					Value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-					Label: "WETH",
-					Icon:  "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
-				},
-				{
-					Value: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-					Label: "DAI",
-					Icon:  "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
-				},
-				{
-					Value: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-					Label: "USDC",
-					Icon:  "https://tokens.1inch.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+		Sentence: "Deposit {0} {1}",
+		Fields: []types.SchemaField{
+			{
+				Name: "tokenIn",
+				Type: "address",
+				Options: []types.Option{
+					{
+						Value: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+						Label: "WETH",
+						Icon:  "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+					},
+					{
+						Value: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+						Label: "DAI",
+						Icon:  "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+					},
+					{
+						Value: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+						Label: "USDC",
+						Icon:  "https://tokens.1inch.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+					},
 				},
 			},
-		},
-		{
-			Name: "amountIn",
-			Type: "uint256",
+			{
+				Name: "amountIn",
+				Type: "uint256",
+			},
 		},
 	}
+
 	h.schemas[types.ActionBorrow] = types.BaseBorrowSchema
 	return h
 }
@@ -71,12 +75,12 @@ func (h *Handler) GetSchemas() map[types.Action]types.Schema {
 	return h.schemas
 }
 
-func (h *Handler) GetSchema(action types.Action) (types.Schema, error) {
+func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
 	schema, exists := h.schemas[action]
 	if !exists {
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
-	return schema, nil
+	return &schema, nil
 }
 
 func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
