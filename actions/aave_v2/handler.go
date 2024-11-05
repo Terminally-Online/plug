@@ -34,10 +34,6 @@ func New() actions.BaseProtocolHandler {
 	return h.init()
 }
 
-func (h *Handler) GetIcon() string {
-	return h.Protocol.Icon
-}
-
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionDeposit] = types.Schema{
 		{

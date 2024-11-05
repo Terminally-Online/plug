@@ -26,3 +26,7 @@ type Protocol struct {
 	Icon            string
 	SupportedChains []int
 }
+
+func (p Protocol) GetIcon() string {
+	return p.Icon
+}
