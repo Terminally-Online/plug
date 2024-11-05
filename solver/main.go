@@ -64,6 +64,10 @@ func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtoc
 	return handler, exists
 }
 
+func (s *Solver) GetProtocols() map[types.Protocol]actions.BaseProtocolHandler {
+	return s.protocols
+}
+
 func (s *Solver) SupportsAction(handler actions.BaseProtocolHandler, action types.Action) bool {
 	for _, a := range handler.SupportedActions() {
 		if a == action {

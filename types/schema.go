@@ -1,15 +1,20 @@
 package types
 
-type Schema struct {
-	Fields   []SchemaField `json:"fields"`
-	Required []string      `json:"required"`
+type ProtocolMetadata struct {
+	Icon string `json:"icon"`
 }
 
+type ProtocolSchema struct {
+	Metadata ProtocolMetadata  `json:"metadata"`
+	Schema   map[Action]Schema `json:"schema"`
+}
+
+type Schema []SchemaField
+
 type SchemaField struct {
-	Name        string   `json:"name"`
-	Type        string   `json:"type"`
-	Description string   `json:"description"`
-	Options     []Option `json:"options,omitempty"`
+	Name    string   `json:"name"`
+	Type    string   `json:"type"`
+	Options []Option `json:"options,omitempty"`
 }
 
 type Option struct {
@@ -18,46 +23,30 @@ type Option struct {
 	Icon  string `json:"icon,omitempty"`
 }
 
-type ActionSchema struct {
-	Protocol Protocol `json:"protocol"`
-	Schema   Schema   `json:"schema"`
-}
-
 var (
 	BaseDepositSchema = Schema{
-		Fields: []SchemaField{
-			{
-				Name:        "tokenIn",
-				Type:        "address",
-				Description: "Address of the token to deposit",
-			},
-			{
-				Name:        "tokenOut",
-				Type:        "address",
-				Description: "Address of the token to receive",
-			},
-			{
-				Name:        "amountIn",
-				Type:        "uint256",
-				Description: "Amount of tokens to deposit",
-			},
+		{
+			Name: "tokenIn",
+			Type: "address",
 		},
-		Required: []string{"tokenIn", "tokenOut", "amountIn"},
+		{
+			Name: "tokenOut",
+			Type: "address",
+		},
+		{
+			Name: "amountIn",
+			Type: "uint256",
+		},
 	}
 
 	BaseBorrowSchema = Schema{
-		Fields: []SchemaField{
-			{
-				Name:        "tokenOut",
-				Type:        "address",
-				Description: "Address of the token to borrow",
-			},
-			{
-				Name:        "amountOut",
-				Type:        "uint256",
-				Description: "Amount of tokens to borrow",
-			},
+		{
+			Name: "tokenOut",
+			Type: "address",
 		},
-		Required: []string{"tokenOut", "amountOut"},
+		{
+			Name: "amountOut",
+			Type: "uint256",
+		},
 	}
 )

@@ -28,8 +28,34 @@ func NewHandler(solver *solver.Solver) *Handler {
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
+	action := types.Action(r.URL.Query().Get("action"))
+
+	// Case 1: No protocol - return all schemas for all protocols
 	if protocol == "" {
-		utils.MakeHttpError(w, "protocol is required", http.StatusBadRequest)
+		allSchemas := make(map[types.Protocol]types.ProtocolSchema)
+
+		for protocol, handler := range h.solver.GetProtocols() {
+			protocolSchema := types.ProtocolSchema{
+				Metadata: types.ProtocolMetadata{
+					Icon: handler.GetIcon(), // TODO: Add icon support
+				},
+				Schema: make(map[types.Action]types.Schema),
+			}
+
+			for _, supportedAction := range handler.SupportedActions() {
+				schema, err := handler.GetSchema(supportedAction)
+				if err != nil {
+					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+				protocolSchema.Schema[supportedAction] = schema
+			}
+			allSchemas[protocol] = protocolSchema
+		}
+
+		if err := json.NewEncoder(w).Encode(allSchemas); err != nil {
+			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -39,24 +65,35 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	action := types.Action(r.URL.Query().Get("action"))
+	// Case 2: Protocol only - return all schemas for that protocol
 	if action == "" {
-		schemas := make(map[types.Action]types.ActionSchema)
+		protocolSchema := types.ProtocolSchema{
+			Metadata: types.ProtocolMetadata{
+				Icon: handler.GetIcon(),
+			},
+			Schema: make(map[types.Action]types.Schema),
+		}
+
 		for _, supportedAction := range handler.SupportedActions() {
 			schema, err := handler.GetSchema(supportedAction)
 			if err != nil {
 				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			schemas[supportedAction] = schema
+			protocolSchema.Schema[supportedAction] = schema
 		}
 
-		if err := json.NewEncoder(w).Encode(schemas); err != nil {
+		response := map[types.Protocol]types.ProtocolSchema{
+			types.Protocol(protocol): protocolSchema,
+		}
+
+		if err := json.NewEncoder(w).Encode(response); err != nil {
 			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
 
+	// Case 3: Protocol and action - return specific schema
 	if !h.solver.SupportsAction(handler, action) {
 		utils.MakeHttpError(w, fmt.Sprintf("action %s not supported by protocol %s", action, protocol), http.StatusBadRequest)
 		return
@@ -68,7 +105,20 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(schema); err != nil {
+	protocolSchema := types.ProtocolSchema{
+		Metadata: types.ProtocolMetadata{
+			Icon: handler.GetIcon(),
+		},
+		Schema: map[types.Action]types.Schema{
+			action: schema,
+		},
+	}
+
+	response := map[types.Protocol]types.ProtocolSchema{
+		types.Protocol(protocol): protocolSchema,
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 	}
 }

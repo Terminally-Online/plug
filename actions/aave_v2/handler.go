@@ -18,32 +18,29 @@ var (
 )
 
 type Handler struct {
-	schemas map[types.Action]types.ActionSchema
+	schemas map[types.Action]types.Schema
 	actions.Protocol
 }
 
 func New() actions.BaseProtocolHandler {
 	h := &Handler{
-		schemas: make(map[types.Action]types.ActionSchema),
+		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:            "Aave V2",
+			Icon:            "https://app.aave.com/favicon.ico",
 			SupportedChains: []int{1},
 		},
 	}
 	return h.init()
 }
 
+func (h *Handler) GetIcon() string {
+	return h.Protocol.Icon
+}
+
 func (h *Handler) init() *Handler {
-	h.schemas[types.ActionDeposit] = types.ActionSchema{
-		Protocol: types.ProtocolAaveV2,
-		Schema:   types.BaseDepositSchema,
-	}
-
-	h.schemas[types.ActionBorrow] = types.ActionSchema{
-		Protocol: types.ProtocolAaveV2,
-		Schema:   types.BaseBorrowSchema,
-	}
-
+	h.schemas[types.ActionDeposit] = types.BaseDepositSchema
+	h.schemas[types.ActionBorrow] = types.BaseBorrowSchema
 	return h
 }
 
@@ -58,10 +55,10 @@ func (h *Handler) SupportedChains() []int {
 	return h.Protocol.SupportedChains
 }
 
-func (h *Handler) GetSchema(action types.Action) (types.ActionSchema, error) {
+func (h *Handler) GetSchema(action types.Action) (types.Schema, error) {
 	schema, exists := h.schemas[action]
 	if !exists {
-		return types.ActionSchema{}, fmt.Errorf("unsupported action: %s", action)
+		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
 	return schema, nil
 }

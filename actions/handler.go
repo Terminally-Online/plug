@@ -14,13 +14,15 @@ type HandlerParams struct {
 }
 
 type BaseProtocolHandler interface {
+	GetIcon() string
 	SupportedActions() []types.Action
 	SupportedChains() []int
-	GetSchema(action types.Action) (types.ActionSchema, error)
+	GetSchema(action types.Action) (types.Schema, error)
 	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 
 type Protocol struct {
 	Name            string
+	Icon            string
 	SupportedChains []int
 }
