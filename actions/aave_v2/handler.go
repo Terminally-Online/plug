@@ -27,7 +27,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.ActionSchema),
 		Protocol: actions.Protocol{
 			Name:            "Aave V2",
-			SupportedChains: []int{1}, // Ethereum mainnet
+			SupportedChains: []int{1},
 		},
 	}
 	return h.init()

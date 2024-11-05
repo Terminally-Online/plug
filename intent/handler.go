@@ -27,12 +27,33 @@ func NewHandler(solver *solver.Solver) *Handler {
 }
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	action := types.Action(r.URL.Query().Get("action"))
 	protocol := r.URL.Query().Get("protocol")
+	if protocol == "" {
+		utils.MakeHttpError(w, "protocol is required", http.StatusBadRequest)
+		return
+	}
 
 	handler, exists := h.solver.GetProtocolHandler(types.Protocol(protocol))
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
+		return
+	}
+
+	action := types.Action(r.URL.Query().Get("action"))
+	if action == "" {
+		schemas := make(map[types.Action]types.ActionSchema)
+		for _, supportedAction := range handler.SupportedActions() {
+			schema, err := handler.GetSchema(supportedAction)
+			if err != nil {
+				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			schemas[supportedAction] = schema
+		}
+
+		if err := json.NewEncoder(w).Encode(schemas); err != nil {
+			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
