@@ -36,6 +36,7 @@ var (
 		References: map[string]map[string]string{
 			"aave_v3": {
 				"pool": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+				"ui_pool_data_provider": "0x194324C9Af7f56E22F1614dD82E18621cb9238E7",
 			},
 			"yearn_v3": {
 				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",

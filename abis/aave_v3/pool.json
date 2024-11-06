@@ -277,25 +277,6 @@
         "internalType": "address",
         "name": "user",
         "type": "address"
-      }
-    ],
-    "name": "RebalanceStableBorrowRate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "reserve",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
       },
       {
         "indexed": true,
@@ -317,6 +298,49 @@
       }
     ],
     "name": "Repay",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reserve",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "liquidityRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "stableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "variableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "liquidityIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "variableBorrowIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReserveDataUpdated",
     "type": "event"
   },
   {
@@ -443,31 +467,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "reserve",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum DataTypes.InterestRateMode",
-        "name": "interestRateMode",
-        "type": "uint8"
-      }
-    ],
-    "name": "SwapBorrowRateMode",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "user",
         "type": "address"
       },
@@ -579,19 +578,6 @@
   },
   {
     "inputs": [],
-    "name": "MAX_STABLE_RATE_BORROW_SIZE_PERCENT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "POOL_REVISION",
     "outputs": [
       {
@@ -690,22 +676,53 @@
             "type": "uint16"
           },
           {
-            "internalType": "address",
-            "name": "priceSource",
-            "type": "address"
-          },
-          {
             "internalType": "string",
             "name": "label",
             "type": "string"
           }
         ],
-        "internalType": "struct DataTypes.EModeCategory",
+        "internalType": "struct DataTypes.EModeCategoryBaseConfiguration",
         "name": "category",
         "type": "tuple"
       }
     ],
     "name": "configureEModeCategory",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint128",
+        "name": "borrowableBitmap",
+        "type": "uint128"
+      }
+    ],
+    "name": "configureEModeCategoryBorrowableBitmap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint128",
+        "name": "collateralBitmap",
+        "type": "uint128"
+      }
+    ],
+    "name": "configureEModeCategoryCollateralBitmap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -925,6 +942,80 @@
         "type": "uint8"
       }
     ],
+    "name": "getEModeCategoryBorrowableBitmap",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      }
+    ],
+    "name": "getEModeCategoryCollateralBitmap",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      }
+    ],
+    "name": "getEModeCategoryCollateralConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "ltv",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "liquidationThreshold",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "liquidationBonus",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct DataTypes.CollateralConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      }
+    ],
     "name": "getEModeCategoryData",
     "outputs": [
       {
@@ -955,9 +1046,28 @@
             "type": "string"
           }
         ],
-        "internalType": "struct DataTypes.EModeCategory",
+        "internalType": "struct DataTypes.EModeCategoryLegacy",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "id",
+        "type": "uint8"
+      }
+    ],
+    "name": "getEModeCategoryLabel",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -1202,7 +1312,7 @@
           },
           {
             "internalType": "uint128",
-            "name": "currentStableBorrowRate",
+            "name": "__deprecatedStableBorrowRate",
             "type": "uint128"
           },
           {
@@ -1227,7 +1337,7 @@
           },
           {
             "internalType": "address",
-            "name": "stableDebtTokenAddress",
+            "name": "__deprecatedStableDebtTokenAddress",
             "type": "address"
           },
           {
@@ -1468,11 +1578,6 @@
       },
       {
         "internalType": "address",
-        "name": "stableDebtAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "variableDebtAddress",
         "type": "address"
       },
@@ -1570,24 +1675,6 @@
       }
     ],
     "name": "mintUnbacked",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "rebalanceStableBorrowRate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1909,42 +1996,6 @@
       }
     ],
     "name": "supplyWithPermit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "interestRateMode",
-        "type": "uint256"
-      }
-    ],
-    "name": "swapBorrowRateMode",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "swapToVariable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
