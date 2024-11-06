@@ -6,6 +6,7 @@ const (
 	ActionDeposit      Action = "deposit"
 	ActionBorrow       Action = "borrow"
 	ActionRedeem       Action = "redeem"
+	ActionWithdraw     Action = "withdraw"
 	ActionRepay        Action = "repay"
 	ActionHarvest      Action = "harvest"
 	ActionTransfer     Action = "transfer"

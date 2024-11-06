@@ -91,6 +91,27 @@ func (i *RedeemInputs) GetProtocol() Protocol {
 	return i.Protocol
 }
 
+type WithdrawInputs struct {
+	BaseInputs
+	TokenOut  string  `json:"tokenOut"` // Address of the token to receive (redeeming for).
+	AmountOut big.Int `json:"amountIn"` // Raw amount of tokens to send.
+}
+
+func (i *WithdrawInputs) Validate() error {
+	if !utils.IsAddress(i.TokenOut) {
+		return utils.ErrInvalidAddress("tokenOut", i.TokenOut)
+	}
+	if i.AmountOut.Cmp(big.NewInt(0)) >= 0 && i.AmountOut.Cmp(utils.Uint256Max) > 0 {
+		return utils.ErrInvalidField("amountIn", i.AmountOut.String())
+	}
+
+	return nil
+}
+
+func (i *WithdrawInputs) GetProtocol() Protocol {
+	return i.Protocol
+}
+
 type RepayInputs struct {
 	BaseInputs
 	TokenIn  string  `json:"tokenIn"`  // Address of the token to repay.
@@ -112,9 +133,9 @@ func (i *RepayInputs) GetProtocol() Protocol {
 	return i.Protocol
 }
 
-type HarvestInputs struct { 
+type HarvestInputs struct {
 	BaseInputs
-	Token    string `json:"token"`    // Address of the token to harvest.
+	Token string `json:"token"` // Address of the token to harvest.
 }
 
 func (i *HarvestInputs) Validate() error {

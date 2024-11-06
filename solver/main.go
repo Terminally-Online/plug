@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/actions"
-	"solver/actions/aave_v2"
+	"solver/actions/aave_v3"
 	"solver/types"
 	"solver/utils"
 )
@@ -16,7 +16,7 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		protocols: map[types.Protocol]actions.BaseProtocolHandler{
-			types.ProtocolAaveV2: aave_v2.New(),
+			types.ProtocolAaveV3: aave_v3.New(),
 		},
 	}
 }
