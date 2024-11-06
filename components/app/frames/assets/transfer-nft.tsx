@@ -52,27 +52,27 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 
 			const handleDrag = (e: MouseEvent) => {
 				if (containerRef.current) {
-				  const rect = containerRef.current.getBoundingClientRect()
-				  const x = e.clientX - rect.left
-				  const rawPercentage = x / rect.width
-				  
-				  // First calculate what whole number we should be at
-				  const totalOptions = maxAmount + 1  // +1 because 0 is an option
-				  const stepSize = 1 / maxAmount      // Each whole number takes this much percentage
-				  
-				  // Calculate which step we're closest to
-				  const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
-				  
-				  // Convert back to percentage
-				  const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
-				  
-				  transfer(prev => ({
-					...prev,
-					percentage: snappedPercentage,
-					precise: nearestWholeNumber.toString()
-				  }))
+					const rect = containerRef.current.getBoundingClientRect()
+					const x = e.clientX - rect.left
+					const rawPercentage = x / rect.width
+
+					// First calculate what whole number we should be at
+					const totalOptions = maxAmount + 1 // +1 because 0 is an option
+					const stepSize = 1 / maxAmount // Each whole number takes this much percentage
+
+					// Calculate which step we're closest to
+					const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
+
+					// Convert back to percentage
+					const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
+
+					transfer(prev => ({
+						...prev,
+						percentage: snappedPercentage,
+						precise: nearestWholeNumber.toString()
+					}))
 				}
-			  }
+			}
 
 			const handleDragEnd = () => {
 				document.removeEventListener("mousemove", handleDrag)
@@ -142,7 +142,9 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 			}
 			label="Transfer"
 			visible={isFrame}
-			handleBack={() => frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)}
+			handleBack={() =>
+				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+			}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
