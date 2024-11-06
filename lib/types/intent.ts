@@ -13,8 +13,8 @@ export type Option = {
 export type Value = string | Option | undefined | null
 
 export type Action = {
-	categoryName: keyof typeof categories
-	actionName: keyof (typeof actions)[keyof typeof categories]
+	protocol: keyof typeof categories
+	action: keyof (typeof actions)[keyof typeof categories]
 	values: Array<Value>
 }
 
