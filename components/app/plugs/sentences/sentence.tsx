@@ -4,19 +4,22 @@ import { X } from "lucide-react"
 
 import { Accordion, Button, Fragments, Image } from "@/components"
 import { usePlugs } from "@/contexts"
-import { Action, categories, cn } from "@/lib"
+import { Action, ActionSchema, cn } from "@/lib"
+import { useActions } from "@/state"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
 		index: number
 		item: string
-		actionIndex: number
 		action: Action
+		actionIndex: number
 		preview?: boolean
 	}
-> = ({ index, item, actionIndex, action, preview = false, className, ...props }) => {
+> = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
 	const { own, actions, handle } = usePlugs(item)
-	const { categoryName } = action
+	const [solverActions] = useActions()
+
+	const actionSchema = solverActions[action.protocol]
 
 	return (
 		<>
@@ -29,15 +32,15 @@ export const Sentence: FC<
 						<div className="relative h-6 w-10">
 							<Image
 								className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
-								src={categories[categoryName].image}
-								alt={`Icon for ${categoryName}`}
+								src={actionSchema.metadata.icon}
+								alt={`Icon for ${action.protocol}`}
 								width={64}
 								height={64}
 							/>
 							<Image
 								className="absolute mr-2 h-6 w-6 rounded-sm"
-								src={categories[categoryName].image}
-								alt={`Icon for ${categoryName}`}
+								src={actionSchema.metadata.icon}
+								alt={`Icon for ${action.protocol}`}
 								width={64}
 								height={64}
 							/>
@@ -46,8 +49,8 @@ export const Sentence: FC<
 						<Fragments
 							index={index}
 							item={item}
-							actionIndex={actionIndex}
 							action={action}
+							actionIndex={actionIndex}
 							preview={preview}
 						/>
 					</p>

@@ -23,6 +23,8 @@ export const action = createTRPCRouter({
 			// TODO: We need to factor the tags based on the protocols/actions from the solver.
 			const tags: string[] = []
 
+			// TODO: Attempt a JSON parse on the actions to confirm it is valid before saving it to the database.
+
 			const plug = await ctx.db.workflow.update({
 				where: { id: input.id, socketId: ctx.session.address },
 				data: {

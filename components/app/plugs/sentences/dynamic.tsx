@@ -4,9 +4,9 @@ import { FC, useMemo } from "react"
 import { CircleHelp } from "lucide-react"
 
 import { Button, Checkbox, Frame, Image, Search } from "@/components"
-import { Option, usePlugs, Value } from "@/contexts"
-import { Action, categories, cn, formatInputName, formatTitle, getIndexes, actions as staticActions } from "@/lib"
-import { useColumns } from "@/state"
+import { usePlugs, Value } from "@/contexts"
+import { Action, cn, formatInputName, formatTitle, getIndexes } from "@/lib"
+import { useActions, useColumns } from "@/state"
 
 export const DynamicFragment: FC<{
 	item: string
@@ -18,21 +18,22 @@ export const DynamicFragment: FC<{
 	fragment: string
 	dynamic: string[]
 	preview: boolean
-}> = ({ index, item, actionIndex, dynamicIndex, action, fragment, dynamic, preview }) => {
+}> = ({ index, item, action, actionIndex, dynamicIndex, fragment, dynamic, preview }) => {
 	const { data: session } = useSession()
 	const { isFrame, frame } = useColumns(index, `${actionIndex}-${dynamicIndex}`)
 	const { plug, actions, handle } = usePlugs(item)
+	const [solverActions] = useActions()
 
-	const category = categories[action.categoryName]
-	const staticAction = staticActions[action.categoryName][action.actionName]
+	const protocol = solverActions[action.protocol]
+	const staticAction = protocol.schema[action.action]
 
-	const Icon = staticAction.icon || CircleHelp
+	const Icon = protocol.metadata.icon || CircleHelp
 
 	const own = plug && session && session.address === plug.socketId
 
 	const [childIndex, parentIndex] = useMemo(() => getIndexes(fragment), [fragment])
 
-	const inputName = formatInputName(staticAction.inputs[parentIndex]?.name)
+	const inputName = formatInputName(staticAction.fields[parentIndex]?.name)
 
 	const label = useMemo(() => {
 		const value = action.values[parentIndex]
@@ -44,21 +45,23 @@ export const DynamicFragment: FC<{
 
 	const isReady = action && Boolean(action.values[parentIndex])
 
-	const options: Array<Option> | undefined = useMemo(() => {
-		if (!action.values || !staticAction.options) return undefined
+	// const options: Array<Option> | undefined = useMemo(() => {
+	// 	if (!action.values || !staticAction.fields[parentIndex].options) return undefined
+	//
+	// 	if (childIndex === null) return (staticAction.fields[parentIndex].options as Array<Array<Option>>)[parentIndex]
+	//
+	// 	const childValue = action.values[childIndex]
+	//
+	// 	if (childValue === undefined || childValue instanceof Object === false) return undefined
+	//
+	// 	return (
+	// 		staticAction.options as Array<{
+	// 			[key: string]: Array<Option>
+	// 		}>
+	// 	)[parentIndex][childValue.value]
+	// }, [staticAction, childIndex, parentIndex, action])
 
-		if (childIndex === null) return (staticAction.options as Array<Array<Option>>)[parentIndex]
-
-		const childValue = action.values[childIndex]
-
-		if (childValue === undefined || childValue instanceof Object === false) return undefined
-
-		return (
-			staticAction.options as Array<{
-				[key: string]: Array<Option>
-			}>
-		)[parentIndex][childValue.value]
-	}, [staticAction, childIndex, parentIndex, action])
+	const options = undefined
 
 	// This loops through the fragments and updates the respective value based
 	// on the stringified index value of the fragment. This admittedly is a bit
@@ -145,15 +148,15 @@ export const DynamicFragment: FC<{
 				icon={
 					<div className="relative h-10 min-w-10">
 						<Image
-							src={category.image}
-							alt={action.categoryName}
+							src={protocol.metadata.icon}
+							alt={action.protocol}
 							width={64}
 							height={64}
 							className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 rounded-sm blur-2xl filter"
 						/>
 						<Image
-							src={category.image}
-							alt={action.categoryName}
+							src={protocol.metadata.icon}
+							alt={action.protocol}
 							width={64}
 							height={64}
 							className="relative left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-sm"
@@ -164,7 +167,7 @@ export const DynamicFragment: FC<{
 					<span className="relative">
 						<span className="text-lg">
 							<span className={cn(action.values.length > 1 && "opacity-40")}>
-								{formatTitle(action.actionName)}
+								{formatTitle(action.action)}
 								{action.values.length > 1 && <span>:</span>}
 							</span>
 							{action.values.length > 1 && <span> {formatTitle(inputName)}</span>}
@@ -178,7 +181,8 @@ export const DynamicFragment: FC<{
 				<div className="flex flex-col gap-4">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
-							icon={<Icon size={14} />}
+							// TODO: Use the image here.
+							// icon={<Icon size={14} />}
 							placeholder={formatTitle(inputName)}
 							// @ts-ignore
 							search={action.values[parentIndex]}

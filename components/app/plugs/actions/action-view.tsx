@@ -66,7 +66,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 				/>
 			))}
 
-			{own && (
+			{own && suggestions.length > 0 && (
 				<div className="mt-12">
 					<h4 className="mb-2 font-bold opacity-40">Suggestions</h4>
 					<div className="flex flex-col gap-2">

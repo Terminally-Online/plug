@@ -3,22 +3,20 @@ import { FC, useMemo } from "react"
 import { DynamicFragment, StaticFragment } from "@/components"
 import { ACTION_REGEX } from "@/contexts"
 import { Action } from "@/lib"
-import { actions as staticActions } from "@/lib/constants"
+import { useActions } from "@/state"
 
 export const Fragments: FC<{
 	index: number
 	item: string
-	actionIndex: number
 	action: Action
+	actionIndex: number
 	preview: boolean
-}> = ({ index, item, actionIndex, action, preview }) => {
-	// Split all of the sentence fragments into an appropriate array based on the
-	// regex shape that enables the f-string like syntax.
-	const fragments = useMemo(() => {
-		const staticAction = staticActions[action.categoryName][action.actionName]
+}> = ({ index, item, action, actionIndex, preview }) => {
+	const [actions] = useActions()
 
-		return staticAction ? (staticAction["sentence"].split(ACTION_REGEX) as string[]) : []
-	}, [action])
+	const fragments = useMemo(() => {
+		return actions[action.protocol].schema[action.action].sentence.split(ACTION_REGEX) as string[]
+	}, [actions, action])
 
 	const dynamic = useMemo(() => {
 		return fragments.filter(fragment => fragment.match(ACTION_REGEX))
