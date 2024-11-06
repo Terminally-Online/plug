@@ -41,7 +41,7 @@ export const CollectibleFrame: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { isFrame, frame } = useColumns(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
+	const { isFrame, frame, transfer } = useColumns(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery(
 		{
@@ -146,10 +146,7 @@ export const CollectibleFrame: FC<{
 				<div className="flex flex-row gap-2 px-6 pb-4">
 					<button
 						onClick={() => {
-							console.log(
-								"Navigating to transfer frame with path:",
-								`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
-							)
+							transfer({ percentage: 0, precise: "0", recipient: undefined })
 							frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
 						}}
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"

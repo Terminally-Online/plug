@@ -240,12 +240,12 @@ export const TransferAmountFrame: FC<{
 					)}
 					<div className="flex flex-col gap-2">
 						<div className="flex flex-col gap-2">
-							{token.implementations.map((implementation, index) => (
+							{token.implementations.map((implementation, implementationIndex) => (
 								<ImplementationComponent
-									key={index}
+									key={implementationIndex}
+									index={index}
 									implementation={implementation}
 									token={token}
-									index={index}
 									color={color}
 								/>
 							))}
