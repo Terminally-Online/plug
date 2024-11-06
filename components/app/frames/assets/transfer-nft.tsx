@@ -90,11 +90,25 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 
 	const handleAmountChange = (value: string) => {
 		const numericValue = value.replace(/[^0-9]/g, "")
+		const parsedValue = parseInt(numericValue)
 
 		if (numericValue === "") {
-			transfer(prev => ({ ...prev, precise: "0" }))
+			transfer(prev => ({ 
+				...prev, 
+				precise: "0",
+				percentage: 0 
+			}))
 		} else {
-			transfer(prev => ({ ...prev, precise: numericValue }))
+			const parsedValue = parseInt(numericValue)
+			const maxAmount = parseInt(collectible.amount)
+			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
+			const percentage = (clampedValue / maxAmount) * 100
+			
+			transfer(prev => ({ 
+				...prev, 
+				precise: clampedValue.toString(),
+				percentage
+			}))
 		}
 	}
 	const handleMaxClick = useCallback(() => {
@@ -228,7 +242,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 											{isPrecise && (
 												<input
 													ref={inputRef}
-													value={column?.transfer?.precise}
+													value={column?.transfer?.precise === "0" ? "" : column?.transfer?.precise}
 													onChange={e => handleAmountChange(e.target.value)}
 													className="sr-only pointer-events-none absolute inset-0"
 													autoFocus
