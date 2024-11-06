@@ -253,7 +253,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 								</div>
 
 								<div
-									className="absolute inset-0 z-[-2] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
+									className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
 									style={{ width: `${column?.transfer?.percentage}%`, backgroundColor: color }}
 								>
 									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
