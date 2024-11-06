@@ -18,7 +18,10 @@ This Solver repository functions as the primary backend for onchain transactions
    ```bash
    go mod download
    ```
-3. Create your `.env` file with the required environment variables
+3. Create your `.env` file and place the encryption key (alone) in it as:
+   ```env
+   ENCRYPTION_KEY=your_encryption_key
+   ```
 
 ## Running Processes
 

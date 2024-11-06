@@ -19,3 +19,9 @@ bindings:
 	make references
 	mkdir -p bindings
 	go run cmd/bindings/main.go
+
+env-encrypt:
+	go run cmd/env/main.go encrypt
+
+env-decrypt:
+	go run cmd/env/main.go decrypt

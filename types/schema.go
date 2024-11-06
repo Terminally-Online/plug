@@ -28,7 +28,7 @@ type Schema struct {
 
 var (
 	BaseDepositSchema = Schema{
-		Sentence: "Deposit {0} {1}",
+		Sentence: "Deposit {0} {1}.",
 		Fields: []SchemaField{
 			{
 				Name: "tokenIn",
@@ -46,7 +46,7 @@ var (
 	}
 
 	BaseBorrowSchema = Schema{
-		Sentence: "Borrow {0} {1}",
+		Sentence: "Borrow {0} {1}.",
 		Fields: []SchemaField{
 			{
 				Name: "tokenOut",

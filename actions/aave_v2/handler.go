@@ -37,7 +37,7 @@ func New() actions.BaseProtocolHandler {
 
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionDeposit] = types.Schema{
-		Sentence: "Deposit {0} {1}",
+		Sentence: "Deposit {0} {1}.",
 		Fields: []types.SchemaField{
 			{
 				Name: "tokenIn",
