@@ -248,26 +248,10 @@ export const usePlugs = (id?: string) => {
 
 	const actions: Actions = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
 
-	const chains = useMemo(() => {
-		if (!actions) return []
-
-		const set = actions
-			.map(action => new Set(categories[action.categoryName].chains))
-			// @ts-ignore -- Don't feel like properly typing this right now.
-			.reduce((acc, curr) => {
-				if (acc === null) return curr
-
-				return new Set([...acc].filter(chain => curr.has(chain)))
-			}, null)
-
-		return set ? Array.from(set) : []
-	}, [actions])
-
 	return {
 		...context,
 		plug,
 		own,
-		actions,
-		chains
+		actions
 	}
 }
