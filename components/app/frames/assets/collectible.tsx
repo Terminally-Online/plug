@@ -41,7 +41,10 @@ export const CollectibleFrame: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { isFrame, frame, transfer } = useColumns(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
+	const { isFrame, frame, transfer } = useColumns(
+		index,
+		`${collection.address}-${collection.chain}-${collectible?.tokenId}`
+	)
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery(
 		{
