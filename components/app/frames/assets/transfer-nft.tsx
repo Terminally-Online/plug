@@ -7,27 +7,14 @@ import { useColumns } from "@/state"
 
 import { TransferRecipient } from "./transfer-recipient"
 
-type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-
-type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-
-type TransferNFTFrameProps = {
+export const TransferNFTFrame: FC<{
 	index: number
-	collectible: CollectibleType
-	collection: CollectionType
+	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	color: string
 	textColor: string
 	isERC1155: boolean
-}
-
-export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
-	index,
-	collectible,
-	collection,
-	color,
-	textColor,
-	isERC1155
-}) => {
+}> = ({ index, collectible, collection, color, textColor, isERC1155 }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
@@ -85,19 +72,19 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 		const parsedValue = parseInt(numericValue)
 
 		if (numericValue === "") {
-			transfer(prev => ({ 
-				...prev, 
+			transfer(prev => ({
+				...prev,
 				precise: "0",
-				percentage: 0 
+				percentage: 0
 			}))
 		} else {
 			const parsedValue = parseInt(numericValue)
 			const maxAmount = parseInt(collectible.amount)
 			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
 			const percentage = (clampedValue / maxAmount) * 100
-			
-			transfer(prev => ({ 
-				...prev, 
+
+			transfer(prev => ({
+				...prev,
 				precise: clampedValue.toString(),
 				percentage
 			}))
@@ -234,7 +221,11 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 											{isPrecise && (
 												<input
 													ref={inputRef}
-													value={column?.transfer?.precise === "0" ? "" : column?.transfer?.precise}
+													value={
+														column?.transfer?.precise === "0"
+															? ""
+															: column?.transfer?.precise
+													}
 													onChange={e => handleAmountChange(e.target.value)}
 													className="sr-only pointer-events-none absolute inset-0"
 													autoFocus
