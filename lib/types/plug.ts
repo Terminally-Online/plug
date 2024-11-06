@@ -10,6 +10,7 @@ export type ActionSchema = {
 				type: string
 				options?: {
 					value: string
+					name: string
 					label: string
 					icon: string
 				}[]

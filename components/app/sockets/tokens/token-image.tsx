@@ -19,9 +19,9 @@ export const TokenImage: FC<
 	const [imageError, setImageError] = useState(false)
 
 	const dimensions = {
-		blur: size === "xs" ? 2 : size === "sm" ? 3 : 4,
-		imageBlur: size === "xs" ? 4 : size === "sm" ? 6 : 12,
-		content: size === "xs" ? 1 : size === "sm" ? 2 : 2.5
+		blur: size === "xs" ? 1 : size === "sm" ? 3 : 4,
+		imageBlur: size === "xs" ? 2 : size === "sm" ? 6 : 12,
+		content: size === "xs" ? 1.5 : size === "sm" ? 2 : 2.5
 	}
 
 	useEffect(() => {
@@ -139,7 +139,7 @@ export const TokenImage: FC<
 							minWidth: `${dimensions.content}rem`
 						}}
 					>
-						<span className="font-bold text-white">{symbol.slice(0, 1).toUpperCase()}</span>
+						<span className="text-xs font-bold text-white">{symbol.slice(0, 1).toUpperCase()}</span>
 					</div>
 				</>
 			) : (

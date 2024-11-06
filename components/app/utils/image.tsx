@@ -19,20 +19,20 @@ const loader = ({ src, width }: { src: string; width: number }) => {
 export const Image: FC<
 	React.PropsWithRef<HTMLAttributes<HTMLImageElement>> & {
 		src: string
-		width: number
-		height: number
 		alt: string
+		width?: number
+		height?: number
+		fill?: boolean
+		unoptimized?: boolean
 		ref?: Ref<HTMLImageElement>
 		priority?: boolean
 		quality?: number
 		blurSrc?: string
 	}
-> = ({ src, width, height, alt, ...props }) => (
+> = ({ src, alt, ...props }) => (
 	<NextImage
 		loader={loader}
 		src={src}
-		width={width}
-		height={height}
 		alt={alt}
 		placeholder={props.blurSrc ? "blur" : "empty"}
 		blurDataURL={props.blurSrc}

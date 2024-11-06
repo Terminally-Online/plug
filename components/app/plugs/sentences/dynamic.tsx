@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { CircleHelp, Hash } from "lucide-react"
 
-import { Button, Checkbox, Frame, Image, Search } from "@/components"
+import { Button, Checkbox, Frame, Image, Search, TokenImage } from "@/components"
 import { usePlugs, Value } from "@/contexts"
 import { Action, cn, formatInputName, formatTitle, getIndexes } from "@/lib"
 import { useActions, useColumns } from "@/state"
@@ -39,7 +39,7 @@ export const DynamicFragment: FC<{
 
 		if (!value || value === "") return inputName
 
-		return value instanceof Object ? formatTitle(value.label).toLowerCase() : value
+		return value instanceof Object ? value.label.toLowerCase() : value
 	}, [action, parentIndex, inputName])
 
 	const isReady = action && Boolean(action.values[parentIndex])
@@ -213,15 +213,29 @@ export const DynamicFragment: FC<{
 									>
 										<div className="flex flex-row items-center gap-4">
 											{option.icon && (
-												<Image
-													src={option.icon}
-													alt=""
-													width={64}
-													height={64}
-													className="w-6"
-												/>
+												<>
+													{option.icon.startsWith(
+														"https://token-icons.llamao.fi/icons/tokens/"
+													) ? (
+														<TokenImage
+															logo={option.icon}
+															symbol={option.label}
+															size="xs"
+															blur={false}
+														/>
+													) : (
+														<Image
+															src={option.icon}
+															alt=""
+															width={60}
+															height={60}
+															className="h-6 w-6 rounded-full"
+															unoptimized
+														/>
+													)}
+												</>
 											)}
-											{formatTitle(option.label)}
+											{option.name}
 										</div>
 									</button>
 								</div>

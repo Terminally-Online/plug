@@ -202,7 +202,7 @@ export const TokenFrame: FC<{
 						<Image
 							src={chains[getChainId(implementation.chain)].logo}
 							alt={implementation.chain}
-							className="h-4 w-4 rounded-full"
+							className="h-6 w-6 rounded-full"
 							width={24}
 							height={24}
 						/>
