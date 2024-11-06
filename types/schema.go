@@ -11,7 +11,9 @@ type ProtocolSchema struct {
 
 type Option struct {
 	Value string `json:"value"`
+	Name  string `json:"name"`
 	Label string `json:"label"`
+	Info  string `json:"info,omitempty"`
 	Icon  string `json:"icon,omitempty"`
 }
 
