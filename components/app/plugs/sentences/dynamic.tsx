@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { FC, useMemo } from "react"
 
-import { CircleHelp } from "lucide-react"
+import { CircleHelp, Hash } from "lucide-react"
 
 import { Button, Checkbox, Frame, Image, Search } from "@/components"
 import { usePlugs, Value } from "@/contexts"
@@ -27,8 +27,6 @@ export const DynamicFragment: FC<{
 	const protocol = solverActions[action.protocol]
 	const staticAction = protocol.schema[action.action]
 
-	const Icon = protocol.metadata.icon || CircleHelp
-
 	const own = plug && session && session.address === plug.socketId
 
 	const [childIndex, parentIndex] = useMemo(() => getIndexes(fragment), [fragment])
@@ -45,23 +43,21 @@ export const DynamicFragment: FC<{
 
 	const isReady = action && Boolean(action.values[parentIndex])
 
-	// const options: Array<Option> | undefined = useMemo(() => {
-	// 	if (!action.values || !staticAction.fields[parentIndex].options) return undefined
-	//
-	// 	if (childIndex === null) return (staticAction.fields[parentIndex].options as Array<Array<Option>>)[parentIndex]
-	//
-	// 	const childValue = action.values[childIndex]
-	//
-	// 	if (childValue === undefined || childValue instanceof Object === false) return undefined
-	//
-	// 	return (
-	// 		staticAction.options as Array<{
-	// 			[key: string]: Array<Option>
-	// 		}>
-	// 	)[parentIndex][childValue.value]
-	// }, [staticAction, childIndex, parentIndex, action])
+	const options = useMemo(() => {
+		if (!action.values || !staticAction.fields[parentIndex].options) return
 
-	const options = undefined
+		if (childIndex === null) return staticAction.fields[parentIndex].options
+
+		// TODO: (#586) This is not correct -- Need to implement and validate pointer function indexes.
+		// Right now we do not have any integrations that use pointers so we will come back to this later.
+		// const childValue = action.values[childIndex]
+		//
+		// if (childValue === undefined || childValue instanceof Object === false) return
+		//
+		// return undefined
+		//
+		// return staticAction.fields[parentIndex].options[childValue.value]
+	}, [staticAction, childIndex, parentIndex, action])
 
 	// This loops through the fragments and updates the respective value based
 	// on the stringified index value of the fragment. This admittedly is a bit
@@ -181,8 +177,7 @@ export const DynamicFragment: FC<{
 				<div className="flex flex-col gap-4">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
-							// TODO: Use the image here.
-							// icon={<Icon size={14} />}
+							icon={<Hash size={14} />}
 							placeholder={formatTitle(inputName)}
 							// @ts-ignore
 							search={action.values[parentIndex]}
@@ -216,9 +211,9 @@ export const DynamicFragment: FC<{
 										onClick={() => handleValue(option)}
 									>
 										<div className="flex flex-row items-center gap-4">
-											{option.imagePath && (
+											{option.icon && (
 												<Image
-													src={option.imagePath}
+													src={option.icon}
 													alt=""
 													width={64}
 													height={64}

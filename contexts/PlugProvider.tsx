@@ -16,10 +16,9 @@ export const ACTION_REGEX = /({\d+(?:=>\d+)?})/g
 type WorkflowData = Pick<Workflow, "name" | "color" | "isPrivate">
 
 export type Option = {
-	icon: JSX.Element | undefined
 	label: string
 	value: string | number
-	imagePath?: string
+	icon: string
 }
 
 export type Value = string | Option | undefined | null
