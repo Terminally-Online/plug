@@ -174,7 +174,7 @@ export const useColumns = (index?: number, key?: string) => {
 		updateColumns(prev => prev.map(col => (col.index === index ? { ...col, schedule } : col)))
 	}
 
-	const transfer = (updater: Transfer | ((prev: Transfer | undefined) => Transfer)) => {
+	const transfer = (updater: Transfer | undefined | ((prev: Transfer | undefined) => Transfer)) => {
 		updateColumns(prev =>
 			prev.map(col =>
 				col.index === index

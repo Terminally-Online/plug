@@ -18,12 +18,12 @@ const ImplementationComponent: FC<{
 	index: number
 	color: string
 }> = ({ implementation, token, index, color }) => {
+	const containerRef = useRef<HTMLDivElement>(null)
+	const inputRef = useRef<HTMLInputElement>(null)
+
 	const { column, transfer } = useColumns(index)
 
 	const [isPrecise, setIsPrecise] = useState(false)
-
-	const containerRef = useRef<HTMLDivElement>(null)
-	const inputRef = useRef<HTMLInputElement>(null)
 
 	const handleDragStart = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {

@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useEffect } from "react"
 
 import { isAddress, zeroAddress } from "viem"
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
