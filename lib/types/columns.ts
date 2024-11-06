@@ -1,6 +1,6 @@
 import { MinimalUserSocketModel } from "@/prisma/types"
 
-import { Schedule } from "@/lib"
+import { Schedule, Transfer } from "@/lib"
 
 export type Column = {
 	key: string
@@ -8,7 +8,8 @@ export type Column = {
 	width?: number
 	item?: string
 	from?: string
-	viewAs?: MinimalUserSocketModel
 	frame?: string
+	viewAs?: MinimalUserSocketModel
 	schedule?: Schedule
+	transfer?: Transfer
 }

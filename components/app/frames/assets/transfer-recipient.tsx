@@ -139,21 +139,12 @@ interface TransferRecipientFrameProps {
 	token?: TokenType
 	collectible?: CollectibleType
 	collection?: CollectionType
-	recipient: string
-	debouncedRecipient: string
-	handleRecipient: (recipient: string) => void
 }
 
-export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
-	index,
-	token,
-	collectible,
-	collection,
-	recipient,
-	debouncedRecipient,
-	handleRecipient
-}) => {
-	const formattedRecipient = formatRecipientInput(debouncedRecipient)
+export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
+	const { column, transfer } = useColumns(index)
+
+	const formattedRecipient = formatRecipientInput(column?.transfer?.recipient ?? "")
 
 	const { account } = useConnect()
 	const { isFrame, frame } = useColumns(
@@ -185,7 +176,11 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 
 	const handleSelect = (address: string) => {
 		if (address !== account.address) handleRecent(address)
-		handleRecipient(address)
+
+		transfer(prev => ({
+			...prev,
+			recipient: address
+		}))
 
 		// Navigate to appropriate next frame
 		if (address !== "") {
@@ -222,8 +217,8 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				<Search
 					icon={<SearchIcon size={14} className="opacity-60" />}
 					placeholder="Search addresses or ENS"
-					search={recipient}
-					handleSearch={handleRecipient}
+					search={column?.transfer?.recipient ?? ""}
+					handleSearch={recipient => transfer(prev => ({ ...prev, recipient }))}
 					clear
 				/>
 
@@ -231,7 +226,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
 
 				{/* Connected wallet (if not current recipient) */}
-				{recipient !== account.address && (
+				{column?.transfer?.recipient !== account.address && (
 					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
 				)}
 
@@ -239,7 +234,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				{recipients.length > 0 ? (
 					recipients
 						.filter(recipient => recipient !== "")
-						.slice(0, recipient === account.address ? 6 : 5)
+						.slice(0, column?.transfer?.recipient === account.address ? 6 : 5)
 						.map(recipient => (
 							<TransferRecipient
 								key={recipient}

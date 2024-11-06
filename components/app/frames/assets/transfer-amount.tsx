@@ -195,10 +195,9 @@ const ImplementationComponent: FC<{
 export const TransferAmountFrame: FC<{
 	index: number
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-	recipient: string
 	color: string
 	textColor: string
-}> = ({ index, token, recipient, color, textColor }) => {
+}> = ({ index, token, color, textColor }) => {
 	const { socket } = useSocket()
 	const { isFrame, column, frame } = useColumns(
 		index,
@@ -208,7 +207,7 @@ export const TransferAmountFrame: FC<{
 	const [dragPercentages, setDragPercentages] = useState<number[]>([])
 	const [preciseAmounts, setPreciseAmounts] = useState<string[]>([])
 
-	const to = index === -2 ? socket?.socketAddress : recipient
+	const to = index === -2 ? socket?.socketAddress : column?.transfer?.recipient
 
 	const isReady = useMemo(
 		() => token && column && preciseAmounts.some(amount => parseFloat(amount) > 0),
@@ -275,7 +274,7 @@ export const TransferAmountFrame: FC<{
 					{index !== -2 && (
 						<div className="px-6">
 							<TransferRecipient
-								address={recipient}
+								address={column?.transfer?.recipient ?? ""}
 								handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
 							/>
 						</div>

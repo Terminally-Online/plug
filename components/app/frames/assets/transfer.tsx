@@ -1,6 +1,5 @@
 import { FC } from "react"
 
-import { useDebounce } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
 import { TransferAmountFrame } from "./transfer-amount"
@@ -21,47 +20,20 @@ interface TransferFrameProps {
 }
 
 export const TransferFrame: FC<TransferFrameProps> = ({ index, token, collectible, collection, color, textColor }) => {
-	const [recipient, debouncedRecipient, setRecipient] = useDebounce("")
-
-	const handleRecipient = (recipient: string) => {
-		setRecipient(recipient.trim())
-	}
-
-	// Determine if we're dealing with an NFT and what type
 	const isNFT = Boolean(collectible && collection)
-	const isERC721 = isNFT && collectible?.interface === "ERC721"
 	const isERC1155 = isNFT && collectible?.interface === "ERC1155"
 
 	return (
 		<>
-			<TransferRecipientFrame
-				index={index}
-				token={token}
-				collectible={collectible}
-				collection={collection}
-				recipient={recipient}
-				debouncedRecipient={debouncedRecipient}
-				handleRecipient={handleRecipient}
-			/>
+			<TransferRecipientFrame index={index} token={token} collectible={collectible} collection={collection} />
 
-			{/* For ERC20 tokens, use existing amount frame */}
-			{token && (
-				<TransferAmountFrame
-					index={index}
-					token={token}
-					recipient={recipient}
-					color={color}
-					textColor={textColor}
-				/>
-			)}
+			{token && <TransferAmountFrame index={index} token={token} color={color} textColor={textColor} />}
 
-			{/* For NFTs, use appropriate confirmation frame */}
 			{isNFT && collectible && collection && (
 				<TransferNFTFrame
 					index={index}
 					collectible={collectible}
 					collection={collection}
-					recipient={recipient}
 					color={color}
 					textColor={textColor}
 					isERC1155={isERC1155}

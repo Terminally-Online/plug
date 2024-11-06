@@ -5,32 +5,18 @@ import { chains, cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
-type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-
-type TransferNFTFrameProps = {
+export const TransferNFTFrame: FC<{
 	index: number
-	collectible: CollectibleType
-	collection: CollectionType
-	recipient: string
+	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	color: string
 	textColor: string
 	isERC1155: boolean
-}
-
-export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
-	index,
-	collectible,
-	collection,
-	recipient,
-	color,
-	textColor,
-	isERC1155
-}) => {
+}> = ({ index, collectible, collection, color, textColor, isERC1155 }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
-	const { isFrame, frame } = useColumns(
+	const { column, isFrame, frame } = useColumns(
 		index,
 		`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
 	)
@@ -149,7 +135,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 				<div className="flex flex-col gap-2">
 					<div className="px-6">
 						<TransferRecipient
-							address={recipient}
+							address={column?.transfer?.recipient ?? ""}
 							handleSelect={() =>
 								frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
 							}
