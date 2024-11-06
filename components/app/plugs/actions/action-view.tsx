@@ -38,7 +38,6 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 		const protocolFrequency = getProtocolFrequency(actions)
 		const selectedActions = new Set(actions.map(action => `${action.protocol}-${action.action}`))
-
 		const mostRecentAction = actions[actions.length - 1]
 
 		return baseSuggestions
