@@ -3,7 +3,7 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 import { Button } from "@/components/shared"
 import { usePlugs } from "@/contexts"
 import { cn, greenGradientStyle } from "@/lib"
-import { MOBILE_INDEX, useColumns, useSidebar, useSocket } from "@/state"
+import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSidebar, useSocket } from "@/state"  // Add COLUMN_KEYS here
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -212,6 +212,8 @@ const EmptyActivity: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
+	const { navigate } = useColumns(index)
+
 	if (isEmpty === false) return null
 
 	return (
@@ -228,7 +230,14 @@ const EmptyActivity: FC<
 				title="No activity to show yet."
 				description="When you create and run Plugs, their activity will appear here."
 				{...props}
-			/>
+			>
+				<Button 
+					sizing="sm" 
+					onClick={() => navigate({ index, key: COLUMN_KEYS.DISCOVER })}
+				>
+					Discover Plugs
+				</Button>
+			</Base>
 		</>
 	)
 }
