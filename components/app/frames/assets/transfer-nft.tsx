@@ -55,15 +55,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
 					const rawPercentage = x / rect.width
-
-					// First calculate what whole number we should be at
-					const totalOptions = maxAmount + 1 // +1 because 0 is an option
-					const stepSize = 1 / maxAmount // Each whole number takes this much percentage
-
-					// Calculate which step we're closest to
 					const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
-
-					// Convert back to percentage
 					const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
 
 					transfer(prev => ({

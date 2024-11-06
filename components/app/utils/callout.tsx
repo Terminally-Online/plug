@@ -5,8 +5,6 @@ import { usePlugs } from "@/contexts"
 import { cn, greenGradientStyle } from "@/lib"
 import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSidebar, useSocket } from "@/state"
 
-// Add COLUMN_KEYS here
-
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
 		title: ReactNode | JSX.Element | string
@@ -234,7 +232,7 @@ const EmptyActivity: FC<
 				{...props}
 			>
 				<Button sizing="sm" onClick={() => navigate({ index, key: COLUMN_KEYS.DISCOVER })}>
-					Discover Plugs
+					Discover
 				</Button>
 			</Base>
 		</>
