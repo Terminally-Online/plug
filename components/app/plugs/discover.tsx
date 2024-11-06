@@ -23,7 +23,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 	}, [plugs])
 
 	return (
-		<div className={cn("relative flex h-full flex-col gap-2", className)} {...props}>
+		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
 			{plugs && plugs.length > 0 && (
 				<Container>
 					<Search
