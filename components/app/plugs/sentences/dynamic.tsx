@@ -22,6 +22,7 @@ export const DynamicFragment: FC<{
 	const { data: session } = useSession()
 	const { isFrame, frame } = useColumns(index, `${actionIndex}-${dynamicIndex}`)
 	const { plug, actions, handle } = usePlugs(item)
+
 	const [solverActions] = useActions()
 
 	const protocol = solverActions[action.protocol]
@@ -82,37 +83,37 @@ export const DynamicFragment: FC<{
 					actions.map((action, nestedActionIndex) => ({
 						...action,
 						values: action.values.map((actionValue, valueIndex) => {
-							if (actionIndex === nestedActionIndex) {
-								// If this is the value being changed
-								if (valueIndex === parentIndex) return value
+							if (actionIndex !== nestedActionIndex) return actionValue
 
-								// Check for dependencies using dynamic fragments
-								const fragment = dynamic[valueIndex]
-								if (!fragment) return actionValue
+							// If this is the value being changed
+							if (valueIndex === parentIndex) return value
 
-								// Get dependency info for this value
-								const [thisChildIndex] = getIndexes(fragment)
+							// Check for dependencies using dynamic fragments
+							const fragment = dynamic[valueIndex]
 
-								// Reset this value if:
-								// 1. It directly depends on the changed value (parentIndex matches childIndex)
-								// 2. It depends on any value that we're resetting (recursive dependency)
-								const shouldReset =
-									// Direct dependency on the changed value
-									parentIndex === thisChildIndex ||
-									// Indirect dependency through another value that's being reset
-									action.values.some((_, idx) => {
-										if (idx === valueIndex) return false
-										const [depChildIndex] = getIndexes(dynamic[idx])
-										return (
-											depChildIndex === thisChildIndex &&
-											(idx === parentIndex || action.values[idx] === undefined)
-										)
-									})
+							if (!fragment) return actionValue
 
-								return shouldReset ? undefined : actionValue
-							}
+							// Get dependency info for this value
+							const [thisChildIndex] = getIndexes(fragment)
 
-							return actionValue
+							// Reset this value if:
+							// 1. It directly depends on the changed value (parentIndex matches childIndex)
+							// 2. It depends on any value that we're resetting (recursive dependency)
+							const shouldReset =
+								// Direct dependency on the changed value
+								parentIndex === thisChildIndex ||
+								// Indirect dependency through another value that's being reset
+								action.values.some((_, idx) => {
+									if (idx === valueIndex) return false
+									const [depChildIndex] = getIndexes(dynamic[idx])
+									if (!depChildIndex || !thisChildIndex) return false
+									return (
+										depChildIndex === thisChildIndex &&
+										(idx === parentIndex || action.values[idx] === undefined)
+									)
+								})
+
+							return shouldReset ? undefined : actionValue
 						})
 					}))
 				)
