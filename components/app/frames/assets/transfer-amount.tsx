@@ -4,7 +4,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Counter, Frame, TokenImage } from "@/components"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns, useSocket } from "@/state"
+import { useColumns } from "@/state"
 
 import { TransferRecipient } from "./transfer-recipient"
 
@@ -17,21 +17,11 @@ const ImplementationComponent: FC<{
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 	index: number
 	color: string
-	dragPercentage: number
-	preciseAmount: string
-	onDragPercentageChange: (index: number, percentage: number) => void
-	onPreciseAmountChange: (index: number, amount: string) => void
-}> = ({
-	implementation,
-	token,
-	index,
-	color,
-	dragPercentage,
-	preciseAmount,
-	onDragPercentageChange,
-	onPreciseAmountChange
-}) => {
+}> = ({ implementation, token, index, color }) => {
+	const { column, transfer } = useColumns(index)
+
 	const [isPrecise, setIsPrecise] = useState(false)
+
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,7 +39,11 @@ const ImplementationComponent: FC<{
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
 					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
-					onDragPercentageChange(index, percentage)
+
+					transfer(prev => ({
+						...prev,
+						percentage
+					}))
 
 					const newAmount = (implementation.balance * percentage) / 100
 					const formattedAmount = newAmount.toFixed(20).replace(/\.?0+$/, "")
@@ -65,7 +59,11 @@ const ImplementationComponent: FC<{
 						}
 					}
 
-					onPreciseAmountChange(index, finalAmount)
+					transfer(prev => ({
+						...prev,
+						precise: finalAmount
+					}))
+
 					setIsPrecise(true)
 				}
 			}
@@ -81,7 +79,7 @@ const ImplementationComponent: FC<{
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[implementation, index, onDragPercentageChange, onPreciseAmountChange]
+		[implementation, transfer]
 	)
 
 	const handleAmountChange = (value: string) => {
@@ -89,19 +87,18 @@ const ImplementationComponent: FC<{
 		const parsedValue = parseFloat(numericValue)
 
 		if (numericValue === "") {
-			onPreciseAmountChange(index, "0")
+			transfer(prev => ({ ...prev, precise: "0" }))
 		} else if (!isNaN(parsedValue)) {
 			const maxBalance = implementation.balance
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
-			const newPercentage = (clampedValue / maxBalance) * 100
+			const percentage = (clampedValue / maxBalance) * 100
 
-			const formattedValue = numericValue.includes(".")
+			const precise = numericValue.includes(".")
 				? numericValue.split(".")[0] + "." + numericValue.split(".")[1].slice(0, 18)
 				: clampedValue.toString()
-			onPreciseAmountChange(index, formattedValue)
-			onDragPercentageChange(index, newPercentage)
+			transfer(prev => ({ ...prev, percentage, precise }))
 		} else {
-			onPreciseAmountChange(index, numericValue)
+			transfer(prev => ({ ...prev, precise: numericValue }))
 		}
 	}
 
@@ -135,7 +132,7 @@ const ImplementationComponent: FC<{
 								height={24}
 							/>
 							<p className="flex flex-row text-sm font-bold text-black/40">
-								<Counter count={dragPercentage ?? 0} decimals={0} />%
+								<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 							</p>
 						</div>
 					</div>
@@ -146,7 +143,7 @@ const ImplementationComponent: FC<{
 						{isPrecise && (
 							<input
 								ref={inputRef}
-								value={preciseAmount}
+								value={column?.transfer?.precise ?? 0}
 								onChange={e => handleAmountChange(e.target.value)}
 								className="sr-only pointer-events-none absolute inset-0"
 								autoFocus
@@ -157,7 +154,7 @@ const ImplementationComponent: FC<{
 							className="my-auto ml-auto flex flex-row font-bold tabular-nums transition-all duration-200 ease-in-out"
 							style={{ color: isPrecise ? color : undefined }}
 						>
-							<Counter count={preciseAmount ?? "0"} />
+							<Counter count={column?.transfer?.precise ?? "0"} />
 
 							{isPrecise && (
 								<div
@@ -171,7 +168,10 @@ const ImplementationComponent: FC<{
 							<p className="ml-auto flex text-sm font-bold tabular-nums text-black/40">
 								<span className="ml-auto">$</span>
 								<Counter
-									count={((implementation.balance * dragPercentage) / 100) * (token.price ?? 0)}
+									count={
+										((implementation.balance * (column?.transfer?.percentage ?? 0)) / 100) *
+										(token.price ?? 0)
+									}
 									decimals={2}
 								/>
 							</p>
@@ -182,7 +182,7 @@ const ImplementationComponent: FC<{
 
 			<div
 				className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
-				style={{ width: `${dragPercentage}%`, backgroundColor: color }}
+				style={{ width: `${column?.transfer?.percentage ?? 0}%`, backgroundColor: color }}
 			>
 				<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
 				<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
@@ -198,53 +198,12 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { socket } = useSocket()
-	const { isFrame, column, frame } = useColumns(
+	const { isFrame, column, frame, transfer } = useColumns(
 		index,
 		index === -2 ? `${token?.symbol}-transfer-deposit` : `${token?.symbol}-transfer-amount`
 	)
 
-	const [dragPercentages, setDragPercentages] = useState<number[]>([])
-	const [preciseAmounts, setPreciseAmounts] = useState<string[]>([])
-
-	const to = index === -2 ? socket?.socketAddress : column?.transfer?.recipient
-
-	const isReady = useMemo(
-		() => token && column && preciseAmounts.some(amount => parseFloat(amount) > 0),
-		[token, column, preciseAmounts]
-	)
-
-	const handleDragPercentageChange = useCallback((index: number, percentage: number) => {
-		setDragPercentages(prev => {
-			const newState = [...prev]
-			newState[index] = percentage
-			return newState
-		})
-	}, [])
-
-	const handlePreciseAmountChange = useCallback((index: number, amount: string) => {
-		setPreciseAmounts(prev => {
-			const newState = [...prev]
-			newState[index] = amount
-			return newState
-		})
-	}, [])
-
-	const handleMaxClick = useCallback(() => {
-		if (dragPercentages.some(p => p < 100)) {
-			const newDragPercentages = new Array(token.implementations.length).fill(100)
-			const newPreciseAmounts = token.implementations.map(impl => impl.balance.toString())
-			setDragPercentages(newDragPercentages)
-			setPreciseAmounts(newPreciseAmounts)
-		}
-	}, [token, dragPercentages])
-
-	useEffect(() => {
-		if (token) {
-			setDragPercentages(new Array(token.implementations.length).fill(0))
-			setPreciseAmounts(new Array(token.implementations.length).fill("0"))
-		}
-	}, [token])
+	const isReady = useMemo(() => token && column && parseFloat(column?.transfer?.precise ?? "0") > 0, [token, column])
 
 	if (!token || !column) return null
 
@@ -288,10 +247,6 @@ export const TransferAmountFrame: FC<{
 									token={token}
 									index={index}
 									color={color}
-									dragPercentage={dragPercentages[index]}
-									preciseAmount={preciseAmounts[index]}
-									onDragPercentageChange={handleDragPercentageChange}
-									onPreciseAmountChange={handlePreciseAmountChange}
 								/>
 							))}
 						</div>
@@ -310,8 +265,14 @@ export const TransferAmountFrame: FC<{
 							</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
-								onClick={handleMaxClick}
-								style={{ color: dragPercentages.some(p => p < 100) ? color : undefined }}
+								onClick={() =>
+									transfer(prev => ({
+										...prev,
+										percentage: 100,
+										precise: token?.implementations[0].balance.toString()
+									}))
+								}
+								style={{ color: (column?.transfer?.percentage ?? 0) < 100 ? color : undefined }}
 							>
 								Max
 							</p>

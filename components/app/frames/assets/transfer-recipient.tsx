@@ -142,20 +142,16 @@ interface TransferRecipientFrameProps {
 }
 
 export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
-	const { column, transfer } = useColumns(index)
-
-	const formattedRecipient = formatRecipientInput(column?.transfer?.recipient ?? "")
-
 	const { account } = useConnect()
-	const { isFrame, frame } = useColumns(
+	const { column, isFrame, frame, transfer } = useColumns(
 		index,
 		token
 			? `${token.symbol}-transfer-recipient`
 			: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
 	)
+	const formattedRecipient = formatRecipientInput(column?.transfer?.recipient ?? "")
 	const { recipients, handleRecent } = useRecipients(formattedRecipient)
 
-	// Get appropriate icon/logo based on type
 	const icon = token ? (
 		<TokenImage
 			logo={
@@ -182,7 +178,6 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 			recipient: address
 		}))
 
-		// Navigate to appropriate next frame
 		if (address !== "") {
 			if (token) {
 				frame(`${token.symbol}-transfer-amount`)

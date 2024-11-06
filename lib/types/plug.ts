@@ -52,6 +52,7 @@ export type Schedule = {
 
 export type Transfer = {
 	recipient?: string
-	amounts?: string[]
+	percentage?: number
+	precise?: string
 	tokenId?: string
 }
