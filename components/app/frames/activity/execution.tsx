@@ -1,20 +1,20 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Bell, Calendar, Pause, Play, Trash, Waypoints } from "lucide-react"
+import { Bell, Calendar, Eye, Pause, Play, Trash, Waypoints } from "lucide-react"
 
 import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
 import { chains, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { COLUMN_KEYS, useColumns } from "@/state"
 
 export const ExecutionFrame: FC<{
 	index: number
 	icon: JSX.Element
 	activity: RouterOutputs["plugs"]["activity"]["get"][number]
 }> = ({ index, icon, activity }) => {
-	const { isFrame } = useColumns(index, `${activity.id}-activity`)
+	const { isFrame, navigate } = useColumns(index, `${activity.id}-activity`)
 	const { handle } = useActivities()
 
 	const actions = useMemo(() => JSON.parse(activity.actions), [activity])
@@ -24,10 +24,23 @@ export const ExecutionFrame: FC<{
 			<div className="flex flex-col">
 				<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
-				<div className="flex flex-row items-center gap-2">
+				<Button
+					className="w-full my-4 flex flex-row items-center justify-center gap-2 py-4 mt-4 mb-2"
+					onClick={() => navigate({ 
+						index, 
+						key: COLUMN_KEYS.PLUG, 
+						item: activity.workflow.id, 
+						from: COLUMN_KEYS.ACTIVITY 
+					})}
+				>
+					<Eye size={14} className="opacity-60" />
+					View
+				</Button>
+
+				<div className="flex flex-row items-center gap-2 mb-4">
 					<Button
 						variant="destructive"
-						className="my-4 flex flex-row items-center justify-center gap-2 py-4"
+						className="flex flex-row items-center justify-center gap-2 py-4"
 						onClick={() => handle.delete({ id: activity.id })}
 					>
 						<Trash size={14} className="opacity-60" />
@@ -36,7 +49,7 @@ export const ExecutionFrame: FC<{
 
 					<Button
 						variant="secondary"
-						className="my-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+						className="flex w-full flex-row items-center justify-center gap-2 py-4"
 						onClick={() => handle.toggle({ id: activity.id })}
 					>
 						{activity.status === "active" ? (
