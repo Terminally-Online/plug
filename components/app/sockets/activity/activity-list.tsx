@@ -27,6 +27,7 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
 			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
+			<Callout.EmptyActivity index={index} isEmpty={!isAnonymous && activities?.length === 0} />
 
 			<div className="flex flex-col gap-2">
 				{visibleActivities.map((activity, activityIndex) => (

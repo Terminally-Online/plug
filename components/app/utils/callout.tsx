@@ -206,4 +206,39 @@ const EmptyPage: FC<PropsWithChildren> = () => (
 	</Base>
 )
 
-export const Callout = Object.assign(Base, { Anonymous, EmptySearch, EmptyAssets, EmptyPlugs, EmptyPlug, EmptyPage })
+const EmptyActivity: FC<
+	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		index: number
+		isEmpty: boolean
+	}
+> = ({ index, isEmpty, className, ...props }) => {
+	if (isEmpty === false) return null
+
+	return (
+		<>
+			<div
+				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				style={{
+					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+				}}
+			/>
+
+			<Base
+				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				title="No activity to show yet."
+				description="When you create and run Plugs, their activity will appear here."
+				{...props}
+			/>
+		</>
+	)
+}
+
+export const Callout = Object.assign(Base, {
+	Anonymous,
+	EmptySearch,
+	EmptyAssets,
+	EmptyPlugs,
+	EmptyPlug,
+	EmptyPage,
+	EmptyActivity
+})
