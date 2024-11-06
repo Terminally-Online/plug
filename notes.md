@@ -6,15 +6,16 @@
 -   So, simulations should only ever show the final outcome of the transaction that is built.
 
 -   This means we have three different outcomes:
+
     -   Success: The transaction is executed successfully
     -   Warning: The transaction was built and simulated, but not executed
     -   Failure: The transaction is not simulated successfully
 
-- In practice, as far as the user is concerned, the "simulation" is less a "simulation" and more a "run" of the transaction.
+-   In practice, as far as the user is concerned, the "simulation" is less a "simulation" and more a "run" of the transaction.
 
-- For each simulation, a user should be able to drill down into the simulation and related transaction.
-    - If it was a failure, the error should be displayed relative to each action.
-    - If it was a success, the transaction details should be displayed.
+-   For each simulation, a user should be able to drill down into the simulation and related transaction.
+    -   If it was a failure, the error should be displayed relative to each action.
+    -   If it was a success, the transaction details should be displayed.
 
 # Onboarding
 
@@ -69,7 +70,7 @@
     3. Very (self selecting as a poweruser) → Just let em cook
 
 2. "What things do you want to be doing most often?"
-    1. Give them a list of all the categories and they can toggle the ones they care about.
+    1. Give them a list of all the cohorts and they can toggle the ones they care about.
         - This will end up being used for curated release -- Having a curated segmentation enables the ability to have longer timelines on what is curated and what rolls through that segment. This also means that if we have an in-category Plug that peforms really well in-category, then it suggests there may be some correlation with other out-of-category users for a little exposure therapy.
         - It would be cool, if the category selections here even informed the plug that they are sandboxed into during the onboarding session.
             - Someone in DeFi is not going to care about Nouns as much even if it is possible to get an immediate click there.

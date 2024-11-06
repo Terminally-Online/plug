@@ -2,26 +2,12 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { categories } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 export const events = {
 	edit: "edit-plug",
 	queue: "queue-plug"
 } as const
-
-const getTags = (actions: string) => {
-	const parsed: Array<{ categoryName: string; actionName: string }> = JSON.parse(actions)
-
-	return Array.from(
-		new Set(
-			parsed
-				.map(action => action.categoryName)
-				.map(categoryName => categories[categoryName].tags)
-				.flat()
-		)
-	)
-}
 
 export const action = createTRPCRouter({
 	edit: anonymousProtectedProcedure
@@ -34,7 +20,8 @@ export const action = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-			const tags = getTags(input.actions)
+			// TODO: We need to factor the tags based on the protocols/actions from the solver.
+			const tags: string[] = []
 
 			const plug = await ctx.db.workflow.update({
 				where: { id: input.id, socketId: ctx.session.address },

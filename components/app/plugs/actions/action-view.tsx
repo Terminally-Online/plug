@@ -25,9 +25,9 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const baseSuggestions = useMemo(
 		() =>
 			Object.entries(solverActions).flatMap(([protocol, actions]) =>
-				Object.keys(actions.schema).map(actionName => ({
+				Object.keys(actions.schema).map(action => ({
 					protocol,
-					actionName
+					action
 				}))
 			),
 		[solverActions]
@@ -41,7 +41,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 		const mostRecentAction = actions[actions.length - 1]
 
 		return baseSuggestions
-			.filter(suggestion => !selectedActions.has(`${suggestion.protocol}-${suggestion.actionName}`))
+			.filter(suggestion => !selectedActions.has(`${suggestion.protocol}-${suggestion.action}`))
 			.sort((a, b) => {
 				if (a.protocol === mostRecentAction.protocol) return -1
 				if (b.protocol === mostRecentAction.protocol) return 1
@@ -81,7 +81,10 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 											...actions,
 											{
 												...suggestion,
-												values: getValues(suggestion.protocol, suggestion.actionName)
+												values: getValues(
+													solverActions[suggestion.protocol].schema[suggestion.action]
+														.sentence
+												)
 											}
 										])
 									})
@@ -105,7 +108,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 										/>
 									</div>
 									<p className="flex w-full flex-wrap items-center gap-[8px] truncate">
-										{formatTitle(suggestion.actionName)}
+										{formatTitle(suggestion.action)}
 									</p>
 								</div>
 							</Accordion>
