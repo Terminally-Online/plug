@@ -12,7 +12,7 @@ export const ActionItem: FC<{
 	action: ActionSchema
 	image?: boolean
 }> = ({ index, item, actionName, action }) => {
-	const { plug } = usePlugs(item)
+	const { plug, actions, handle } = usePlugs(item)
 	const { frame } = useColumns(index)
 
 	if (!plug) return null
@@ -20,17 +20,17 @@ export const ActionItem: FC<{
 	return (
 		<Accordion
 			onExpand={() => {
-				// handle.action.edit({
-				// 	id: plug.id,
-				// 	actions: JSON.stringify([
-				// 		...actions,
-				// 		{
-				// 			categoryName,
-				// 			actionName,
-				// 			values: getValues(categoryName, actionName)
-				// 		}
-				// 	])
-				// })
+				handle.action.edit({
+					id: plug.id,
+					actions: JSON.stringify([
+						...actions,
+						{
+							protocol: action.schema.protocol,
+							action: actionName,
+							values: getValues(action.schema[actionName].sentence)
+						}
+					])
+				})
 				frame()
 			}}
 		>

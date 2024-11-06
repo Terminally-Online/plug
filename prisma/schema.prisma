@@ -232,7 +232,7 @@ model Simulation {
     // ---------------------------------------------------------------------------
     // Many-to-one
     // ---------------------------------------------------------------------------
-    execution   Execution @relation(fields: [executionId], references: [id])
+    execution   Execution @relation(fields: [executionId], references: [id], onDelete: Cascade)
     executionId String
 }
 

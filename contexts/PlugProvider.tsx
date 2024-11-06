@@ -5,7 +5,7 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useMemo,
 import { Workflow } from "@prisma/client"
 
 import { Actions } from "@/lib"
-import { categories, tags } from "@/lib/constants"
+import { tags } from "@/lib/constants"
 import { api } from "@/server/client"
 import { COLUMN_KEYS, useColumns } from "@/state"
 
@@ -246,7 +246,15 @@ export const usePlugs = (id?: string) => {
 
 	const own = plug && session && session.address === plug.socketId
 
-	const actions: Actions = useMemo(() => (plug ? JSON.parse(plug.actions) : []), [plug])
+	const actions: Actions = useMemo(() => {
+		if (!plug) return []
+
+		try {
+			return JSON.parse(plug.actions)
+		} catch (error) {
+			return []
+		}
+	}, [plug])
 
 	return {
 		...context,

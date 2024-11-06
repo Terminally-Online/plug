@@ -302,7 +302,7 @@ Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 
 Ref: Execution.workflowId > Workflow.id [delete: Cascade]
 
-Ref: Simulation.executionId > Execution.id
+Ref: Simulation.executionId > Execution.id [delete: Cascade]
 
 Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 

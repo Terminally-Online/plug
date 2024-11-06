@@ -1,7 +1,6 @@
 import { getSession } from "next-auth/react"
 
 import { ACTION_REGEX } from "@/contexts"
-import { actions, categories } from "@/lib"
 
 export const isConnected = async (ctx: any, callback: () => any) => {
 	if (!(await getSession(ctx))) {
@@ -16,13 +15,8 @@ export const isConnected = async (ctx: any, callback: () => any) => {
 	return callback()
 }
 
-export const getValues = (
-	categoryName: keyof typeof categories,
-	actionName: keyof (typeof actions)[keyof typeof categories]
-) => {
-	const staticAction = actions[categoryName][actionName]
-
-	const fragments = staticAction ? (staticAction["sentence"].split(ACTION_REGEX) as string[]) : []
+export const getValues = (sentence: string) => {
+	const fragments = sentence.split(ACTION_REGEX) as string[]
 
 	const dynamic = fragments.filter(fragment => fragment.match(ACTION_REGEX))
 

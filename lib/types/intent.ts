@@ -1,7 +1,6 @@
 import { DateRange } from "react-day-picker"
 
-import { actions, categories } from "../constants"
-import { frequencies } from "../functions"
+import { frequencies } from "@/lib"
 
 export type Option = {
 	icon: JSX.Element | undefined
@@ -13,8 +12,8 @@ export type Option = {
 export type Value = string | Option | undefined | null
 
 export type Action = {
-	protocol: keyof typeof categories
-	action: keyof (typeof actions)[keyof typeof categories]
+	protocol: string
+	action: string
 	values: Array<Value>
 }
 
