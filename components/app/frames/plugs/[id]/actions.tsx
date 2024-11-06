@@ -42,7 +42,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			visible={isFrame}
 			hasChildrenPadding={false}
 		>
-			<div className="flex flex-col gap-2 px-6">
+			<div className="flex flex-col gap-4 px-6">
 				<Search
 					icon={<SearchIcon size={14} />}
 					placeholder="Search protocols and actions"
