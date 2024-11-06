@@ -212,7 +212,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 			index={index}
 			className="min-h-[480px]"
 			icon={<div className="relative h-8 w-10">{icon}</div>}
-			label={token ? "Transfer Recipient" : `Transfer ${collection?.name} #${collectible?.tokenId}`}
+			label="Transfer Recipient"
 			visible={isFrame}
 			handleBack={handleBack}
 			hasChildrenPadding={false}
