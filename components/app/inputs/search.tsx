@@ -61,7 +61,7 @@ export const Search: FC<Props> = ({
 		<div className={cn("group flex flex-col gap-2", className)}>
 			<div
 				className={cn(
-					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-white bg-grayscale-0 p-4 px-6 transition-colors duration-200 ease-in-out hover:border-grayscale-0 hover:bg-white",
+					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-white bg-grayscale-0 p-4 px-6 transition-colors duration-200 ease-in-out hover:border-grayscale-100 hover:bg-white",
 					textArea ? "rounded-lg" : "rounded-[16px]",
 					search && "border-grayscale-100 bg-white"
 				)}
