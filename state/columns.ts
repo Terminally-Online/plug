@@ -78,6 +78,18 @@ export const useColumns = (index?: number, key?: string) => {
 				} else {
 					updatedColumns.push(newColumn)
 				}
+
+				// After updating columns, scroll into view
+				requestAnimationFrame(() => {
+					const container = document.querySelector('.flex.h-full.flex-row.overflow-x-auto')
+					if (container) {
+						container.scrollTo({
+							left: container.scrollWidth,
+							behavior: 'smooth'
+						})
+					}
+				})
+
 				return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
 			})
 		},
