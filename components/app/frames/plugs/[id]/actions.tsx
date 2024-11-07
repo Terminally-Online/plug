@@ -1,14 +1,14 @@
 import { FC, useMemo } from "react"
-
 import { Blocks, SearchIcon } from "lucide-react"
-
 import { ActionItem, Frame, Search } from "@/components"
 import { useDebounce } from "@/lib"
 import { useActions, useColumns } from "@/state"
+import { usePlugs } from "@/contexts"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumns(index, `${index}-${item}-actions`)
 	const [actions] = useActions()
+	const { actions: plugActions } = usePlugs(item)
 
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
@@ -32,6 +32,10 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 		[actions, debouncedSearch]
 	)
 
+	// Force frame to be visible when there are no actions
+	const hasNoActions = plugActions.length === 0
+	const shouldShowFrame = hasNoActions || isFrame
+
 	if (!column) return null
 
 	return (
@@ -39,8 +43,10 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			index={index}
 			icon={<Blocks size={18} className="opacity-60" />}
 			label="Add Action"
-			visible={isFrame}
+			visible={shouldShowFrame}
 			hasChildrenPadding={false}
+			// Only allow closing if there are actions
+			handleClose={hasNoActions ? undefined : () => {}}
 		>
 			<div className="flex flex-col gap-4 px-6">
 				<Search
