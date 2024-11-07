@@ -64,36 +64,31 @@ export const useColumns = (index?: number, key?: string) => {
 	 */
 	const add = useCallback(
 		({ index, key, from, item }: Partial<Column>) => {
-			updateColumns(prev => {
-				const newColumn = {
-					key,
-					index: index ?? prev.length,
-					from,
-					item,
-					width: DEFAULT_COLUMN_WIDTH
-				} as Column
-				const updatedColumns = [...prev]
-				if (index !== undefined) {
-					updatedColumns.splice(index + COLUMN_OFFSET, 0, newColumn)
-				} else {
-					updatedColumns.push(newColumn)
-				}
-
-				requestAnimationFrame(() => {
-					const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
-					if (container) {
-						container.scrollTo({
-							left: container.scrollWidth,
-							behavior: "smooth"
-						})
-					}
+		  updateColumns(prev => {
+			const newColumn = {
+			  key,
+			  index: prev.length, // Always set index to array length for rightmost position
+			  from,
+			  item,
+			  width: DEFAULT_COLUMN_WIDTH
+			} as Column
+			const updatedColumns = [...prev, newColumn] // Push to end instead of splicing
+	  
+			requestAnimationFrame(() => {
+			  const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
+			  if (container) {
+				container.scrollTo({
+				  left: container.scrollWidth,
+				  behavior: "smooth"
 				})
-
-				return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
+			  }
 			})
+	  
+			return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMN_OFFSET }))
+		  })
 		},
 		[updateColumns]
-	)
+	  )
 
 	/**
 	 * Update the state (navigate within the context) of a column.
