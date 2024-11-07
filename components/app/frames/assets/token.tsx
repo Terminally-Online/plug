@@ -15,7 +15,7 @@ export const TokenFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, frame } = useColumns(index, `${token?.symbol}-token`)
+	const { isFrame, frame, transfer } = useColumns(index, `${token?.symbol}-token`)
 
 	const [header, setHeader] = useState<{
 		title?: string
@@ -141,9 +141,10 @@ export const TokenFrame: FC<{
 						backgroundColor: color ?? "",
 						color: textColor
 					}}
-					onClick={() =>
+					onClick={() => {
+						transfer(undefined)
 						frame(index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`)
-					}
+					}}
 				>
 					{index === -2 ? (
 						<>

@@ -1,6 +1,5 @@
 export * from "./blockchain"
 export * from "./chain"
 export * from "./columns"
-export * from "./intent"
 export * from "./plug"
 export * from "./zerion"

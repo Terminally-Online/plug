@@ -1,46 +1,38 @@
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
-import { Accordion, CollectibleImage, Counter, Frame, Image, TransferRecipient } from "@/components"
+import { Accordion, CollectibleImage, Counter, Frame, Image } from "@/components"
 import { chains, cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumns } from "@/state"
 
-type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
+import { TransferRecipient } from "./transfer-recipient"
 
-type TransferNFTFrameProps = {
+export const TransferNFTFrame: FC<{
 	index: number
-	collectible: CollectibleType
-	collection: CollectionType
-	recipient: string
+	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	color: string
 	textColor: string
 	isERC1155: boolean
-}
-
-export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
-	index,
-	collectible,
-	collection,
-	recipient,
-	color,
-	textColor,
-	isERC1155
-}) => {
+}> = ({ index, collectible, collection, color, textColor, isERC1155 }) => {
+	// Refs
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
+	// Column controls
 	const { isFrame, frame } = useColumns(
 		index,
 		`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
 	)
+	const { column, transfer } = useColumns(index)
 
-	const [amount, setAmount] = useState("0")
-	const [dragPercentage, setDragPercentage] = useState(0)
+	// Local state
 	const [isPrecise, setIsPrecise] = useState(false)
 
+	// Derived values
 	const maxAmount = parseInt(collectible.amount)
 
+	// Handlers
 	const handleDragStart = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			e.preventDefault()
@@ -55,13 +47,14 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
 					const rawPercentage = x / rect.width
+					const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
+					const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
 
-					const newAmount = Math.max(0, Math.min(Math.round(maxAmount * rawPercentage), maxAmount))
-
-					setAmount(newAmount.toString())
-
-					const newPercentage = (newAmount / maxAmount) * 100
-					setDragPercentage(newPercentage)
+					transfer(prev => ({
+						...prev,
+						percentage: snappedPercentage,
+						precise: nearestWholeNumber.toString()
+					}))
 				}
 			}
 
@@ -76,37 +69,48 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[maxAmount]
+		[maxAmount, transfer, containerRef]
 	)
 
 	const handleAmountChange = (value: string) => {
 		const numericValue = value.replace(/[^0-9]/g, "")
 
 		if (numericValue === "") {
-			setAmount("0")
-			setDragPercentage(0)
+			transfer(prev => ({
+				...prev,
+				precise: "0",
+				percentage: 0
+			}))
 		} else {
 			const parsedValue = parseInt(numericValue)
-			if (!isNaN(parsedValue)) {
-				const clampedValue = Math.min(Math.max(parsedValue, 0), maxAmount)
-				setAmount(clampedValue.toString())
-				setDragPercentage((clampedValue / maxAmount) * 100)
-			}
+			const maxAmount = parseInt(collectible.amount)
+			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
+			const percentage = (clampedValue / maxAmount) * 100
+
+			transfer(prev => ({
+				...prev,
+				precise: clampedValue.toString(),
+				percentage
+			}))
 		}
 	}
 
 	const handleMaxClick = useCallback(() => {
 		if (isERC1155) {
-			setAmount(maxAmount.toString())
-			setDragPercentage(100)
+			transfer(prev => ({
+				...prev,
+				percentage: 100,
+				precise: maxAmount.toString()
+			}))
 		}
-	}, [isERC1155, maxAmount])
+	}, [isERC1155, maxAmount, transfer])
 
+	// Computed values
 	const isReady = useMemo(() => {
 		if (!isERC1155) return true
-		const numAmount = parseInt(amount)
+		const numAmount = parseInt(column?.transfer?.precise ?? "0")
 		return !isNaN(numAmount) && numAmount > 0 && numAmount <= maxAmount
-	}, [amount, isERC1155, maxAmount])
+	}, [column?.transfer?.precise, isERC1155, maxAmount])
 
 	return (
 		<Frame
@@ -141,7 +145,9 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 			}
 			label="Transfer"
 			visible={isFrame}
-			handleBack={() => frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)}
+			handleBack={() =>
+				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+			}
 			hasChildrenPadding={false}
 			hasOverlay
 		>
@@ -149,7 +155,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 				<div className="flex flex-col gap-2">
 					<div className="px-6">
 						<TransferRecipient
-							address={recipient}
+							address={column?.transfer?.recipient ?? ""}
 							handleSelect={() =>
 								frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
 							}
@@ -215,7 +221,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 										<div className="flex flex-col">
 											<p className="mr-auto truncate overflow-ellipsis font-bold">{`${collectible.name}`}</p>
 											<p className="flex w-max flex-row text-sm font-bold text-black/40">
-												<Counter count={dragPercentage ?? 0} decimals={0} />%
+												<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 											</p>
 										</div>
 									</div>
@@ -225,7 +231,11 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 											{isPrecise && (
 												<input
 													ref={inputRef}
-													value={amount}
+													value={
+														column?.transfer?.precise === "0"
+															? ""
+															: column?.transfer?.precise
+													}
 													onChange={e => handleAmountChange(e.target.value)}
 													className="sr-only pointer-events-none absolute inset-0"
 													autoFocus
@@ -236,7 +246,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 												className="my-auto ml-auto flex flex-row font-bold tabular-nums transition-all duration-200 ease-in-out"
 												style={{ color: isPrecise ? color : undefined }}
 											>
-												<Counter count={amount ?? "0"} />
+												<Counter count={column?.transfer?.precise ?? "0"} />
 
 												{isPrecise && (
 													<div
@@ -250,8 +260,8 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 								</div>
 
 								<div
-									className="absolute inset-0 z-[-2] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
-									style={{ width: `${dragPercentage}%`, backgroundColor: color }}
+									className="absolute inset-0 z-[-1] min-w-4 rounded-r-lg opacity-20 blur-2xl filter"
+									style={{ width: `${column?.transfer?.percentage}%`, backgroundColor: color }}
 								>
 									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_4px_0_4px_0_rgba(255,255,255,.5)]" />
 									<div className="absolute inset-0 rounded-r-[16px] shadow-[inset_0_4px_4px_0_rgba(255,255,255,0.5)]" />
@@ -279,7 +289,7 @@ export const TransferNFTFrame: FC<TransferNFTFrameProps> = ({
 						<p
 							className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
 							onClick={handleMaxClick}
-							style={{ color: amount !== collectible.amount ? color : undefined }}
+							style={{ color: column?.transfer?.precise !== collectible.amount ? color : undefined }}
 						>
 							Max
 						</p>

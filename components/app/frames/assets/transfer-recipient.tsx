@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useEffect } from "react"
 
 import { isAddress, zeroAddress } from "viem"
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
@@ -139,32 +139,19 @@ interface TransferRecipientFrameProps {
 	token?: TokenType
 	collectible?: CollectibleType
 	collection?: CollectionType
-	recipient: string
-	debouncedRecipient: string
-	handleRecipient: (recipient: string) => void
 }
 
-export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
-	index,
-	token,
-	collectible,
-	collection,
-	recipient,
-	debouncedRecipient,
-	handleRecipient
-}) => {
-	const formattedRecipient = formatRecipientInput(debouncedRecipient)
-
+export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
 	const { account } = useConnect()
-	const { isFrame, frame } = useColumns(
+	const { column, isFrame, frame, transfer } = useColumns(
 		index,
 		token
 			? `${token.symbol}-transfer-recipient`
 			: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
 	)
+	const formattedRecipient = formatRecipientInput(column?.transfer?.recipient ?? "")
 	const { recipients, handleRecent } = useRecipients(formattedRecipient)
 
-	// Get appropriate icon/logo based on type
 	const icon = token ? (
 		<TokenImage
 			logo={
@@ -185,9 +172,12 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 
 	const handleSelect = (address: string) => {
 		if (address !== account.address) handleRecent(address)
-		handleRecipient(address)
 
-		// Navigate to appropriate next frame
+		transfer(prev => ({
+			...prev,
+			recipient: address
+		}))
+
 		if (address !== "") {
 			if (token) {
 				frame(`${token.symbol}-transfer-amount`)
@@ -222,8 +212,8 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				<Search
 					icon={<SearchIcon size={14} className="opacity-60" />}
 					placeholder="Search addresses or ENS"
-					search={recipient}
-					handleSearch={handleRecipient}
+					search={column?.transfer?.recipient ?? ""}
+					handleSearch={recipient => transfer(prev => ({ ...prev, recipient }))}
 					clear
 				/>
 
@@ -231,7 +221,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
 
 				{/* Connected wallet (if not current recipient) */}
-				{recipient !== account.address && (
+				{column?.transfer?.recipient !== account.address && (
 					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
 				)}
 
@@ -239,7 +229,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({
 				{recipients.length > 0 ? (
 					recipients
 						.filter(recipient => recipient !== "")
-						.slice(0, recipient === account.address ? 6 : 5)
+						.slice(0, column?.transfer?.recipient === account.address ? 6 : 5)
 						.map(recipient => (
 							<TransferRecipient
 								key={recipient}
