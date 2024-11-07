@@ -15,6 +15,7 @@ export const useRecipients = (recipient: string) => {
 
 	const handleRecent = useCallback(
 		(recipient: string) => {
+			if (recipient === "") return
 			setRecipients(prev => {
 				const newRecipients = [recipient, ...prev.filter(r => r !== recipient && r !== account.address)]
 				return newRecipients.slice(0, 10)
