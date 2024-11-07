@@ -82,8 +82,9 @@ export const useColumns = (index?: number, key?: string) => {
 				requestAnimationFrame(() => {
 					const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
 					if (container) {
+						const lastColumnOffset = container.scrollWidth - DEFAULT_COLUMN_WIDTH
 						container.scrollTo({
-							left: container.scrollWidth,
+							left: lastColumnOffset,
 							behavior: "smooth"
 						})
 					}
