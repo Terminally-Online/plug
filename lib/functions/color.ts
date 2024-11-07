@@ -1,5 +1,9 @@
+import { ASSET_COLORS } from "./blockchain"
+
 export const getTextColor = (backgroundColor: string) => {
 	let r: number, g: number, b: number
+
+	if (ASSET_COLORS.includes(backgroundColor)) return "#FFFFFF"
 
 	if (backgroundColor.startsWith("rgb")) {
 		const matches = backgroundColor.match(/\d+/g)

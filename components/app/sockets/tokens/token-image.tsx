@@ -102,10 +102,14 @@ export const TokenImage: FC<
 	}, [logo, symbol, imageColor])
 
 	useEffect(() => {
-		if (!handleColor || !imageColor) return
+		if (!handleColor) return
+
+		if (imageError) handleColor(getAssetColor(symbol))
+
+		if (!imageColor) return
 
 		handleColor(imageColor)
-	}, [imageColor, handleColor])
+	}, [symbol, imageError, imageColor, handleColor])
 
 	return (
 		<div
