@@ -25,19 +25,21 @@ export const ExecutionFrame: FC<{
 				<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
 				<Button
-					className="w-full my-4 flex flex-row items-center justify-center gap-2 py-4 mt-4 mb-2"
-					onClick={() => navigate({ 
-						index, 
-						key: COLUMN_KEYS.PLUG, 
-						item: activity.workflow.id, 
-						from: COLUMN_KEYS.ACTIVITY 
-					})}
+					className="my-4 mb-2 mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+					onClick={() =>
+						navigate({
+							index,
+							key: COLUMN_KEYS.PLUG,
+							item: activity.workflow.id,
+							from: COLUMN_KEYS.ACTIVITY
+						})
+					}
 				>
 					<Eye size={14} className="opacity-60" />
 					View
 				</Button>
 
-				<div className="flex flex-row items-center gap-2 mb-4">
+				<div className="mb-4 flex flex-row items-center gap-2">
 					<Button
 						variant="destructive"
 						className="flex flex-row items-center justify-center gap-2 py-4"

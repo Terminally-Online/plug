@@ -1,9 +1,11 @@
 import { FC, useMemo } from "react"
+
 import { Blocks, SearchIcon } from "lucide-react"
+
 import { ActionItem, Frame, Search } from "@/components"
+import { usePlugs } from "@/contexts"
 import { useDebounce } from "@/lib"
 import { useActions, useColumns } from "@/state"
-import { usePlugs } from "@/contexts"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumns(index, `${index}-${item}-actions`)
@@ -45,8 +47,6 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			label="Add Action"
 			visible={shouldShowFrame}
 			hasChildrenPadding={false}
-			// Only allow closing if there are actions
-			handleClose={hasNoActions ? undefined : () => {}}
 		>
 			<div className="flex flex-col gap-4 px-6">
 				<Search
