@@ -97,10 +97,10 @@ export const TransferNFTFrame: FC<{
 
 	const handleMaxClick = useCallback(() => {
 		if (isERC1155) {
-			transfer(prev => ({ 
-				...prev, 
-				percentage: 100, 
-				precise: maxAmount.toString() 
+			transfer(prev => ({
+				...prev,
+				percentage: 100,
+				precise: maxAmount.toString()
 			}))
 		}
 	}, [isERC1155, maxAmount, transfer])
