@@ -221,7 +221,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 				<TransferRecipient address={formattedRecipient} handleSelect={handleSelect} />
 
 				{/* Connected wallet (if not current recipient) */}
-				{column?.transfer?.recipient !== account.address && (
+				{account.address && column?.transfer?.recipient !== account.address && (
 					<TransferRecipient address={account.address as string} handleSelect={handleSelect} />
 				)}
 
