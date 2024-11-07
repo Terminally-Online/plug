@@ -76,7 +76,7 @@ export const ConsoleColumn: FC<{
 
 	return (
 		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
-			<Draggable draggableId={`${column.index}-${column.key}`} index={column.index}>
+			<Draggable draggableId={String(column.id)} index={column.index}>
 				{(provided, snapshot) => (
 					<div
 						ref={provided.innerRef}
