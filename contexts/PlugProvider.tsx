@@ -91,7 +91,7 @@ export const PlugProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		if (redirect)
 			if (data.index === 0)
 				add({
-					index: data.index,
+					index: columns[columns.length - 1].index + 1,
 					key: COLUMN_KEYS.PLUG,
 					from: data.from,
 					item: data.plug.id
