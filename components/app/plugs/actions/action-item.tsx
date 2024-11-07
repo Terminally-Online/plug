@@ -9,9 +9,10 @@ export const ActionItem: FC<{
 	index: number
 	item: string
 	actionName: string
+	protocol: string
 	action: ActionSchema
 	image?: boolean
-}> = ({ index, item, actionName, action }) => {
+}> = ({ index, item, protocol, actionName, action }) => {
 	const { plug, actions, handle } = usePlugs(item)
 	const { frame } = useColumns(index)
 
@@ -25,7 +26,7 @@ export const ActionItem: FC<{
 					actions: JSON.stringify([
 						...actions,
 						{
-							protocol: action.schema.protocol,
+							protocol,
 							action: actionName,
 							values: getValues(action.schema[actionName].sentence)
 						}

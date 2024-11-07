@@ -61,6 +61,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 								index={index}
 								item={item}
 								actionName={action}
+								protocol={protocol}
 								action={actions[protocol]}
 								image={true}
 							/>
