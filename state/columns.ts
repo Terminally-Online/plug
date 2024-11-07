@@ -79,13 +79,12 @@ export const useColumns = (index?: number, key?: string) => {
 					updatedColumns.push(newColumn)
 				}
 
-				// After updating columns, scroll into view
 				requestAnimationFrame(() => {
-					const container = document.querySelector('.flex.h-full.flex-row.overflow-x-auto')
+					const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
 					if (container) {
 						container.scrollTo({
 							left: container.scrollWidth,
-							behavior: 'smooth'
+							behavior: "smooth"
 						})
 					}
 				})
