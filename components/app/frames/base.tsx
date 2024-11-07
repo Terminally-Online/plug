@@ -57,6 +57,7 @@ export const Frame: FC<Props> = ({
 						)}
 						onClick={() => frame()}
 					/>
+
 					<motion.div
 						initial={{ y: "100%" }}
 						animate={{ y: 0 }}

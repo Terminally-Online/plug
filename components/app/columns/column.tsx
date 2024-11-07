@@ -22,7 +22,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { usePlugs } from "@/contexts"
-import { cardColors, cn, Column as ColumnType, formatTitle } from "@/lib"
+import { cardColors, cn, formatTitle } from "@/lib"
 import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 420
@@ -30,23 +30,22 @@ const MAX_COLUMN_WIDTH = 680
 
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
-const Column: FC<{
-	column: ColumnType
-}> = ({ column }) => {
+export const ConsoleColumn: FC<{
+	id: number
+}> = ({ id }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { socket } = useSocket()
-	const { navigate, resize, remove, frame } = useColumns(column.index)
-	const { key, index, item } = column
+	const { column, navigate, resize, remove, frame } = useColumns(id)
 
-	const { plug, handle } = usePlugs(item)
+	const { plug, handle } = usePlugs(column?.item ?? "")
 
-	const [width, setWidth] = useState(column.width ?? 0)
+	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
 
-	// useEffect(() => setWidth(column.width ?? 0), [column.width])
-
 	useEffect(() => {
+		if (!column) return
+
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!resizeRef.current || !isResizing) return
 
@@ -71,7 +70,9 @@ const Column: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [column.index, width, isResizing, resize])
+	}, [column, width, isResizing, resize])
+
+	if (!column) return null
 
 	return (
 		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
@@ -202,26 +203,31 @@ const Column: FC<{
 							</div>
 
 							<div className="h-full overflow-y-scroll">
-								{key === COLUMN_KEYS.ADD ? (
+								{column.key === COLUMN_KEYS.ADD ? (
 									<ColumnAdd />
-								) : key === COLUMN_KEYS.DISCOVER ? (
-									<PlugsDiscover index={index} className="pt-4" />
-								) : key === COLUMN_KEYS.MY_PLUGS ? (
-									<PlugsMine index={index} className="pt-4" />
-								) : key === COLUMN_KEYS.PLUG ? (
-									<Plug index={index} item={item} from={column.from} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.ACTIVITY ? (
-									<SocketActivity index={index} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.TOKENS ? (
-									<SocketTokenList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={index} expanded={true} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.POSITIONS ? (
-									<SocketPositionList index={index} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.ADMIN ? (
-									<ConsoleAdmin index={index} className="px-4 pt-4" />
-								) : key === COLUMN_KEYS.APPLICATION ? (
-									<ColumnApplication index={index} className="pt-4" />
+								) : column.key === COLUMN_KEYS.DISCOVER ? (
+									<PlugsDiscover index={column.index} className="pt-4" />
+								) : column.key === COLUMN_KEYS.MY_PLUGS ? (
+									<PlugsMine index={column.index} className="pt-4" />
+								) : column.key === COLUMN_KEYS.PLUG ? (
+									<Plug
+										index={column.index}
+										item={column.item}
+										from={column.from}
+										className="px-4 pt-4"
+									/>
+								) : column.key === COLUMN_KEYS.ACTIVITY ? (
+									<SocketActivity index={column.index} className="px-4 pt-4" />
+								) : column.key === COLUMN_KEYS.TOKENS ? (
+									<SocketTokenList index={column.index} expanded={true} className="px-4 pt-4" />
+								) : column.key === COLUMN_KEYS.COLLECTIBLES ? (
+									<SocketCollectionList index={column.index} expanded={true} className="px-4 pt-4" />
+								) : column.key === COLUMN_KEYS.POSITIONS ? (
+									<SocketPositionList index={column.index} className="px-4 pt-4" />
+								) : column.key === COLUMN_KEYS.ADMIN ? (
+									<ConsoleAdmin index={column.index} className="px-4 pt-4" />
+								) : column.key === COLUMN_KEYS.APPLICATION ? (
+									<ColumnApplication index={column.index} className="pt-4" />
 								) : (
 									<React.Fragment></React.Fragment>
 								)}
@@ -245,7 +251,3 @@ const Column: FC<{
 		</div>
 	)
 }
-
-Column.displayName = "ConsoleColumn"
-
-export const ConsoleColumn = React.memo(Column)

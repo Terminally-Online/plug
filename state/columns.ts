@@ -42,7 +42,7 @@ export const DEFAULT_COLUMNS = [
 	{ key: COLUMN_KEYS.MY_PLUGS, index: 1 },
 	{ key: COLUMN_KEYS.ACTIVITY, index: 2 },
 	{ key: COLUMN_KEYS.TOKENS, index: 3 }
-].map(column => ({ ...column, width: DEFAULT_COLUMN_WIDTH }))
+].map(column => ({ ...column, id: Math.random() * 1e18, width: DEFAULT_COLUMN_WIDTH }))
 export const DEFAULT_DEMO_COLUMNS = DEFAULT_COLUMNS.map(column => ({ ...column, viewAsId: DEMO_VIEW_AS }))
 
 const COLUMN_OFFSET = DEFAULT_COLUMNS.filter(column => column.index < 0).length
@@ -66,6 +66,7 @@ export const useColumns = (index?: number, key?: string) => {
 		({ index, key, from, item }: Partial<Column>) => {
 			updateColumns(prev => {
 				const newColumn = {
+					id: Math.random() * 1e18,
 					key,
 					index: index ?? prev.length,
 					from,
@@ -197,7 +198,7 @@ export const useColumns = (index?: number, key?: string) => {
 	}
 
 	const column = useMemo(
-		() => (index !== undefined ? columns.find(column => column.index === index) : undefined),
+		() => (index !== undefined ? columns.find(column => column.index === index || column.id === index) : undefined),
 		[columns, index]
 	)
 
