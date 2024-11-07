@@ -3,7 +3,7 @@ import { FC, useMemo } from "react"
 
 import { Hash } from "lucide-react"
 
-import { Button, Checkbox, Frame, Image, Search, TokenImage } from "@/components"
+import { Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
 import { usePlugs, Value } from "@/contexts"
 import { Action, cn, formatInputName, formatTitle, getIndexes } from "@/lib"
 import { useActions, useColumns } from "@/state"
@@ -149,7 +149,6 @@ export const DynamicFragment: FC<{
 				hasChildrenPadding={false}
 				scrollBehavior="partial"
 			>
-				{/* Scrollable content area */}
 				<div className="flex flex-col gap-2 overflow-y-auto px-6 pb-4">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
@@ -210,7 +209,11 @@ export const DynamicFragment: FC<{
 											</div>
 										)}
 										<span className="truncate">{option.name}</span>
-										<span className="ml-auto tabular-nums opacity-40">{option.info}</span>
+										{option.info && (
+											<span className="ml-auto tabular-nums opacity-40">
+												<Counter count={option.info} />
+											</span>
+										)}
 									</button>
 								</div>
 							))}
@@ -218,7 +221,6 @@ export const DynamicFragment: FC<{
 					)}
 				</div>
 
-				{/* Footer stays fixed */}
 				<div className="mt-auto bg-white">
 					<div className="relative">
 						<div className="absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />

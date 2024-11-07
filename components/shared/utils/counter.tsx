@@ -10,6 +10,9 @@ const CommaColumn = () => <span>,</span>
 const DecimalColumn = () => <span>.</span>
 const SlashColumn = () => <span>/</span>
 const ColonColumn = () => <span>:</span>
+const PercentColumn = () => <span>%</span>
+const LeftChevronColumn = () => <span>&lt;</span>
+const RightChevronColumn = () => <span>&gt;</span>
 
 const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	const [y, setY] = useState(0)
@@ -60,6 +63,12 @@ export const Counter: FC<
 					<CommaColumn key={index} />
 				) : number === "/" ? (
 					<SlashColumn key={index} />
+				) : number === "%" ? (
+					<PercentColumn key={index} />
+				) : number === "<" ? (
+					<LeftChevronColumn key={index} />
+				) : number === ">" ? (
+					<RightChevronColumn key={index} />
 				) : number === ":" ? (
 					<ColonColumn key={index} />
 				) : (
