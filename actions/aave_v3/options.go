@@ -7,6 +7,7 @@ import (
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/types"
 	"solver/utils"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -14,9 +15,18 @@ import (
 var (
 	uiPoolDataProviderAddress  = utils.Mainnet.References["aave_v3"]["ui_pool_data_provider"]
 	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
+	
+	reservesCache     []aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData
+	lastCacheUpdate   int64
+	cacheDuration     int64 = 300
 )
 
 func getReserves() ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
+	currentTime := time.Now().Unix()
+	if reservesCache != nil && (currentTime - lastCacheUpdate) < cacheDuration {
+		return reservesCache, nil
+	}
+	
 	provider, err := utils.GetProvider(1)
 	if err != nil {
 		return nil, err
@@ -33,6 +43,9 @@ func getReserves() ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3Aggrega
 	if err != nil {
 		return nil, err
 	}
+
+	reservesCache = reserves
+	lastCacheUpdate = currentTime
 
 	return reserves, nil
 }
@@ -62,10 +75,17 @@ func GetCollateralAssetOptions() ([]types.Option, error) {
 			continue
 		}
 
-		rate := new(big.Float).Quo(
+		rateFloat := new(big.Float).Quo(
 			new(big.Float).SetInt(reserve.LiquidityRate),
 			new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(25), nil)),
-		).Text('f', 2) + "%"
+		)
+		
+		var rate string
+		if rateFloat.Cmp(big.NewFloat(0)) > 0 && rateFloat.Cmp(big.NewFloat(0.01)) < 0 {
+			rate = "<0.01%"
+		} else {
+			rate = rateFloat.Text('f', 2) + "%"
+		}
 		options = append(options, types.Option{
 			Value: reserve.UnderlyingAsset.String(),
 			Label: reserve.Symbol,
@@ -90,10 +110,18 @@ func GetBorrowAssetOptions() ([]types.Option, error) {
 			continue
 		}
 
-		rate := new(big.Float).Quo(
+		rateFloat := new(big.Float).Quo(
 			new(big.Float).SetInt(reserve.VariableBorrowRate),
 			new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(25), nil)),
-		).Text('f', 2) + "%"
+		)
+		
+		var rate string
+		if rateFloat.Cmp(big.NewFloat(0)) > 0 && rateFloat.Cmp(big.NewFloat(0.01)) < 0 {
+			rate = "<0.01%"
+		} else {
+			rate = rateFloat.Text('f', 2) + "%"
+		}
+
 		options = append(options, types.Option{
 			Value: reserve.UnderlyingAsset.String(),
 			Label: reserve.Symbol,
