@@ -3,12 +3,14 @@ import { FC, useMemo } from "react"
 import { Blocks, SearchIcon } from "lucide-react"
 
 import { ActionItem, Frame, Search } from "@/components"
+import { usePlugs } from "@/contexts"
 import { useDebounce } from "@/lib"
 import { useActions, useColumns } from "@/state"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumns(index, `${index}-${item}-actions`)
 	const [actions] = useActions()
+	const { actions: plugActions } = usePlugs(item)
 
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 
@@ -39,7 +41,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			index={index}
 			icon={<Blocks size={18} className="opacity-60" />}
 			label="Add Action"
-			visible={isFrame}
+			visible={plugActions.length === 0 || isFrame}
 			hasChildrenPadding={false}
 		>
 			<div className="flex flex-col gap-4 px-6">
