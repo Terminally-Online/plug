@@ -34,10 +34,6 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 		[actions, debouncedSearch]
 	)
 
-	// Force frame to be visible when there are no actions
-	const hasNoActions = plugActions.length === 0
-	const shouldShowFrame = hasNoActions || isFrame
-
 	if (!column) return null
 
 	return (
@@ -45,7 +41,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			index={index}
 			icon={<Blocks size={18} className="opacity-60" />}
 			label="Add Action"
-			visible={shouldShowFrame}
+			visible={plugActions.length === 0 || isFrame}
 			hasChildrenPadding={false}
 		>
 			<div className="flex flex-col gap-4 px-6">
