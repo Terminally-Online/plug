@@ -3,14 +3,12 @@ import { FC, useMemo } from "react"
 import { Blocks, SearchIcon } from "lucide-react"
 
 import { ActionItem, Frame, Search } from "@/components"
-import { usePlugs } from "@/contexts"
 import { useDebounce } from "@/lib"
 import { useActions, useColumns } from "@/state"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumns(index, `${item}-actions`)
 	const [actions] = useActions()
-	const { actions: plugActions } = usePlugs(item)
 
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")
 

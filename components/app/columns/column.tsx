@@ -180,7 +180,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => frame(`${column.index}-${column.item}-manage`)}
+														onClick={() => frame(`${column.item}-manage`)}
 													>
 														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>

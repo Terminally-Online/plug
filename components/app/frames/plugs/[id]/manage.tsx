@@ -8,7 +8,7 @@ import { cardColors, useDebounce } from "@/lib"
 import { useColumns } from "@/state"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
-	const { isFrame } = useColumns(index, `${index}-${item}-manage`)
+	const { isFrame } = useColumns(index, `${item}-manage`)
 	const { plug, handle } = usePlugs(item)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
