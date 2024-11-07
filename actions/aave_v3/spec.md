@@ -19,15 +19,16 @@ When sending assets into the pool, a leading approval transaction is required so
 
 ## Scope
 
-| Name              | Type       | Supported | Implemented | Notes                                                                         |
-| :---------------- | :--------- | :-------: | :---------: | :---------------------------------------------------------------------------- |
-| Deposit           | Action     |    ✔︎    | 11/07/2024  | Requires an initial token approval                                            |
-| Borrow            | Action     |    ✔︎    | 11/07/2024  |                                                                               |
-| Repay             | Action     |    ✔︎    | 11/07/2024  | Requires an intial token approval                                             |
-| Redeem            | Action     |    ✔︎    | 11/07/2024  |                                                                               |
-| Health Factor     | Constraint |           |             | Preventive actions before liquidation risk increases                          |
-| APY               | Constraint |           |             | Automatically enter when rates are exceptionally high or exit when low        |
-| APY Differentials | Constraint |           |             | Automatically execute yield farming strategies when spreads become profitable |
+| Name                | Type       | Supported | Implemented | Notes                                                                         |
+| :------------------ | :--------- | :-------: | :---------: | :---------------------------------------------------------------------------- |
+| Deposit             | Action     |    ✔︎    | 11/07/2024  | Requires an initial token approval                                            |
+| Borrow              | Action     |    ✔︎    | 11/07/2024  |                                                                               |
+| Repay               | Action     |    ✔︎    | 11/07/2024  | Requires an intial token approval                                             |
+| Redeem (Withdraw)   | Action     |    ✔︎    | 11/07/2024  |                                                                               |
+| Health Factor       | Constraint |           |             | Preventive actions before liquidation risk increases                          |
+| APY                 | Constraint |           |             | Automatically enter when rates are exceptionally high or exit when low        |
+| APY Differentials   | Constraint |           |             | Automatically execute yield farming strategies when spreads become profitable |
+| Available Liquidity | Constraint |           |             | Automatically fill a gap to adjust rates / claim the last opportunity         |
 
 ### Deposit
 
