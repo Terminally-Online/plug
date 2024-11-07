@@ -17,6 +17,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> &
 		hasOverlay?: boolean
 		hasChildrenPadding?: boolean
 		next?: JSX.Element
+		scrollBehavior?: "content" | "partial"
 	}
 
 export const Frame: FC<Props> = ({
@@ -29,7 +30,8 @@ export const Frame: FC<Props> = ({
 	hasChildrenPadding = true,
 	children,
 	className,
-	next
+	next,
+	scrollBehavior = "content"
 }) => {
 	const { md } = useMediaQuery()
 	const { frame } = useColumns(index)
@@ -55,7 +57,6 @@ export const Frame: FC<Props> = ({
 						)}
 						onClick={() => frame()}
 					/>
-
 					<motion.div
 						initial={{ y: "100%" }}
 						animate={{ y: 0 }}
@@ -63,18 +64,18 @@ export const Frame: FC<Props> = ({
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							md ? "absolute" : "fixed",
-							"inset-0 top-auto max-h-[80vh] w-full overflow-y-auto overflow-x-hidden rounded-t-lg bg-white",
+							"inset-0 top-auto max-h-[80vh] w-full rounded-t-lg bg-white",
+							scrollBehavior === "content" && "overflow-y-auto overflow-x-hidden",
 							className,
 							"z-[41]"
 						)}
 					>
-						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden border-b-[1px] border-grayscale-100 bg-white px-6 py-4">
+						<div className="sticky top-0 z-[31] mb-4 flex flex-row items-center gap-2 overflow-hidden rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-6 py-4">
 							{handleBack && (
 								<Button variant="secondary" onClick={handleBack} className="mr-2 h-min rounded-sm p-1">
 									<ChevronLeft size={14} />
 								</Button>
 							)}
-
 							<Header
 								variant="frame"
 								size="md"
@@ -87,8 +88,14 @@ export const Frame: FC<Props> = ({
 								nextEmpty={next !== undefined}
 							/>
 						</div>
-
-						<div className={cn(hasChildrenPadding && "overflow-hidden px-6 pb-4")}>{children}</div>
+						<div
+							className={cn(
+								hasChildrenPadding && "px-6 pb-4",
+								scrollBehavior === "partial" && "flex max-h-[calc(80vh-5rem)] flex-col overflow-hidden"
+							)}
+						>
+							{children}
+						</div>
 					</motion.div>
 				</>
 			) : null}

@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { FC, useMemo } from "react"
 
-import { CircleHelp, Hash } from "lucide-react"
+import { Hash } from "lucide-react"
 
 import { Button, Checkbox, Frame, Image, Search, TokenImage } from "@/components"
 import { usePlugs, Value } from "@/contexts"
@@ -48,28 +48,8 @@ export const DynamicFragment: FC<{
 		if (!action.values || !staticAction.fields[parentIndex].options) return
 
 		if (childIndex === null) return staticAction.fields[parentIndex].options
-
-		// TODO: (#586) This is not correct -- Need to implement and validate pointer function indexes.
-		// Right now we do not have any integrations that use pointers so we will come back to this later.
-		// const childValue = action.values[childIndex]
-		//
-		// if (childValue === undefined || childValue instanceof Object === false) return
-		//
-		// return undefined
-		//
-		// return staticAction.fields[parentIndex].options[childValue.value]
 	}, [staticAction, childIndex, parentIndex, action])
 
-	// This loops through the fragments and updates the respective value based
-	// on the stringified index value of the fragment. This admittedly is a bit
-	// confusing to read on first glance, but it's a way to update child values
-	// when a parent value changes.
-	//
-	// Example:
-	// {0}    will update the value at index 0.
-	// {0=>1} will update the value at index 1 and set the value to undefined
-	//        when the value at index 0 changes which is signalled by the
-	//        upper index value.
 	const handleValue = (value: Value) => {
 		const hasChanged =
 			value instanceof Object && action.values[parentIndex] instanceof Object
@@ -85,24 +65,16 @@ export const DynamicFragment: FC<{
 						values: action.values.map((actionValue, valueIndex) => {
 							if (actionIndex !== nestedActionIndex) return actionValue
 
-							// If this is the value being changed
 							if (valueIndex === parentIndex) return value
 
-							// Check for dependencies using dynamic fragments
 							const fragment = dynamic[valueIndex]
 
 							if (!fragment) return actionValue
 
-							// Get dependency info for this value
 							const [thisChildIndex] = getIndexes(fragment)
 
-							// Reset this value if:
-							// 1. It directly depends on the changed value (parentIndex matches childIndex)
-							// 2. It depends on any value that we're resetting (recursive dependency)
 							const shouldReset =
-								// Direct dependency on the changed value
 								parentIndex === thisChildIndex ||
-								// Indirect dependency through another value that's being reset
 								action.values.some((_, idx) => {
 									if (idx === valueIndex) return false
 									const [depChildIndex] = getIndexes(dynamic[idx])
@@ -174,8 +146,11 @@ export const DynamicFragment: FC<{
 				visible={isFrame}
 				handleBack={dynamicIndex > 0 ? () => frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
 				hasOverlay
+				hasChildrenPadding={false}
+				scrollBehavior="partial"
 			>
-				<div className="flex flex-col gap-4">
+				{/* Scrollable content area */}
+				<div className="flex flex-col gap-2 overflow-y-auto px-6 pb-4">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
 							icon={<Hash size={14} />}
@@ -187,7 +162,7 @@ export const DynamicFragment: FC<{
 					)}
 
 					{options !== undefined && (
-						<div className="flex w-full flex-col gap-2">
+						<div className="mb-4 flex w-full flex-col gap-2">
 							{options.map((option, optionIndex) => (
 								<div
 									key={`${index}-${actionIndex}-${optionIndex}`}
@@ -195,12 +170,12 @@ export const DynamicFragment: FC<{
 								>
 									<Checkbox
 										checked={
-											// @ts-ignore - Action value can be string | Option but really only Option
+											// @ts-ignore
 											option.value === action.values[parentIndex]?.value
 										}
 										handleChange={() =>
 											handleValue(
-												// @ts-ignore - Action value can be string | Option but really only Option
+												// @ts-ignore
 												option.value === action.values[parentIndex]?.value ? null : option
 											)
 										}
@@ -241,34 +216,42 @@ export const DynamicFragment: FC<{
 							))}
 						</div>
 					)}
+				</div>
 
-					<Button
-						variant={
-							action.values[parentIndex] === "" ||
-							(options !== undefined && action.values[parentIndex] === null)
-								? "disabled"
-								: "primary"
-						}
-						className="py-4"
-						onClick={() => {
-							frame(
-								dynamicIndex + 1 < action.values.length
-									? `${actionIndex}-${dynamicIndex + 1}`
-									: undefined
-							)
-						}}
-						disabled={
-							action.values[parentIndex] === "" ||
-							(options !== undefined && action.values[parentIndex] === null)
-						}
-					>
-						{action.values[parentIndex] === "" ||
-						(options !== undefined && action.values[parentIndex] === null)
-							? "Missing required inputs"
-							: action.values.length - 1 > dynamicIndex
-								? "Next"
-								: "Done"}
-					</Button>
+				{/* Footer stays fixed */}
+				<div className="mt-auto bg-white">
+					<div className="relative">
+						<div className="absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
+						<div className="mb-4 px-6 pt-4">
+							<Button
+								variant={
+									action.values[parentIndex] === "" ||
+									(options !== undefined && action.values[parentIndex] === null)
+										? "disabled"
+										: "primary"
+								}
+								className="w-full py-4"
+								onClick={() => {
+									frame(
+										dynamicIndex + 1 < action.values.length
+											? `${actionIndex}-${dynamicIndex + 1}`
+											: undefined
+									)
+								}}
+								disabled={
+									action.values[parentIndex] === "" ||
+									(options !== undefined && action.values[parentIndex] === null)
+								}
+							>
+								{action.values[parentIndex] === "" ||
+								(options !== undefined && action.values[parentIndex] === null)
+									? "Choose an option"
+									: action.values.length - 1 > dynamicIndex
+										? "Next"
+										: "Done"}
+							</Button>
+						</div>
+					</div>
 				</div>
 			</Frame>
 		</>
