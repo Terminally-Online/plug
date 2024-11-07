@@ -49,7 +49,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						className="px-4 pt-16"
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search protocols and actions"
-						handleOnClick={() => frame(`${index}-${item}-actions`)}
+						handleOnClick={() => frame(`${item}-actions`)}
 					/>
 				)}
 

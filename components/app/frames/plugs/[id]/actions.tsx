@@ -8,7 +8,7 @@ import { useDebounce } from "@/lib"
 import { useActions, useColumns } from "@/state"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame } = useColumns(index, `${index}-${item}-actions`)
+	const { column, isFrame } = useColumns(index, `${item}-actions`)
 	const [actions] = useActions()
 	const { actions: plugActions } = usePlugs(item)
 
@@ -41,7 +41,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 			index={index}
 			icon={<Blocks size={18} className="opacity-60" />}
 			label="Add Action"
-			visible={plugActions.length === 0 || isFrame}
+			visible={isFrame}
 			hasChildrenPadding={false}
 		>
 			<div className="flex flex-col gap-4 px-6">
