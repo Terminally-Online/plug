@@ -67,12 +67,12 @@ export const useColumns = (index?: number, key?: string) => {
 		  updateColumns(prev => {
 			const newColumn = {
 			  key,
-			  index: prev.length, // Always set index to array length for rightmost position
+			  index: prev.length,
 			  from,
 			  item,
 			  width: DEFAULT_COLUMN_WIDTH
 			} as Column
-			const updatedColumns = [...prev, newColumn] // Push to end instead of splicing
+			const updatedColumns = [...prev, newColumn]
 	  
 			requestAnimationFrame(() => {
 			  const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
