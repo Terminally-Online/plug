@@ -12,6 +12,7 @@ export type ActionSchema = {
 					value: string
 					name: string
 					label: string
+					info?: string
 					icon: string
 				}[]
 			}[]

@@ -25,8 +25,8 @@ import { usePlugs } from "@/contexts"
 import { cardColors, cn, Column as ColumnType, formatTitle } from "@/lib"
 import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
 
-const MIN_COLUMN_WIDTH = 380
-const MAX_COLUMN_WIDTH = 620
+const MIN_COLUMN_WIDTH = 420
+const MAX_COLUMN_WIDTH = 680
 
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 

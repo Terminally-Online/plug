@@ -39,7 +39,7 @@ export const DynamicFragment: FC<{
 
 		if (!value || value === "") return inputName
 
-		return value instanceof Object ? value.label.toLowerCase() : value
+		return value instanceof Object ? value.label : value
 	}, [action, parentIndex, inputName])
 
 	const isReady = action && Boolean(action.values[parentIndex])
@@ -208,35 +208,34 @@ export const DynamicFragment: FC<{
 
 									<button
 										key={`${index}-${actionIndex}-${optionIndex}`}
-										className="group flex w-full items-center text-left font-bold"
+										className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
 										onClick={() => handleValue(option)}
 									>
-										<div className="flex flex-row items-center gap-4">
-											{option.icon && (
-												<>
-													{option.icon.startsWith(
-														"https://token-icons.llamao.fi/icons/tokens/"
-													) ? (
-														<TokenImage
-															logo={option.icon}
-															symbol={option.label}
-															size="xs"
-															blur={false}
-														/>
-													) : (
-														<Image
-															src={option.icon}
-															alt=""
-															width={60}
-															height={60}
-															className="h-6 w-6 rounded-full"
-															unoptimized
-														/>
-													)}
-												</>
-											)}
-											{option.name}
-										</div>
+										{option.icon && (
+											<div className="min-w-6">
+												{option.icon.startsWith(
+													"https://token-icons.llamao.fi/icons/tokens/"
+												) ? (
+													<TokenImage
+														logo={option.icon}
+														symbol={option.label}
+														size="xs"
+														blur={false}
+													/>
+												) : (
+													<Image
+														src={option.icon}
+														alt={option.label}
+														width={60}
+														height={60}
+														className="h-6 w-6 rounded-full"
+														unoptimized
+													/>
+												)}
+											</div>
+										)}
+										<span className="truncate">{option.name}</span>
+										<span className="ml-auto tabular-nums opacity-40">{option.info}</span>
 									</button>
 								</div>
 							))}
