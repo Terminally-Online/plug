@@ -69,7 +69,7 @@ export const TransferNFTFrame: FC<{
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[maxAmount]
+		[maxAmount, transfer, containerRef]
 	)
 
 	const handleAmountChange = (value: string) => {
@@ -103,7 +103,7 @@ export const TransferNFTFrame: FC<{
 				precise: maxAmount.toString() 
 			}))
 		}
-	}, [isERC1155, maxAmount])
+	}, [isERC1155, maxAmount, transfer])
 
 	// Computed values
 	const isReady = useMemo(() => {
