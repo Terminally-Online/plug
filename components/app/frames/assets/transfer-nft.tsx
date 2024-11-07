@@ -15,19 +15,24 @@ export const TransferNFTFrame: FC<{
 	textColor: string
 	isERC1155: boolean
 }> = ({ index, collectible, collection, color, textColor, isERC1155 }) => {
+	// Refs
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
+	// Column controls
 	const { isFrame, frame } = useColumns(
 		index,
 		`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
 	)
-
 	const { column, transfer } = useColumns(index)
+
+	// Local state
 	const [isPrecise, setIsPrecise] = useState(false)
 
+	// Derived values
 	const maxAmount = parseInt(collectible.amount)
 
+	// Handlers
 	const handleDragStart = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			e.preventDefault()
@@ -69,7 +74,6 @@ export const TransferNFTFrame: FC<{
 
 	const handleAmountChange = (value: string) => {
 		const numericValue = value.replace(/[^0-9]/g, "")
-		const parsedValue = parseInt(numericValue)
 
 		if (numericValue === "") {
 			transfer(prev => ({
@@ -90,12 +94,14 @@ export const TransferNFTFrame: FC<{
 			}))
 		}
 	}
+
 	const handleMaxClick = useCallback(() => {
 		if (isERC1155) {
 			transfer(prev => ({ ...prev, percentage: 100, precise: collectible.amount }))
 		}
 	}, [isERC1155, maxAmount])
 
+	// Computed values
 	const isReady = useMemo(() => {
 		if (!isERC1155) return true
 		const numAmount = parseInt(column?.transfer?.precise ?? "0")
