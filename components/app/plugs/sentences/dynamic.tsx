@@ -149,7 +149,7 @@ export const DynamicFragment: FC<{
 				hasChildrenPadding={false}
 				scrollBehavior="partial"
 			>
-				<div className="flex flex-col gap-2 overflow-y-auto px-6 pb-4">
+				<div className="flex flex-col gap-2 overflow-y-auto px-6">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
 							icon={<Hash size={14} />}
@@ -223,8 +223,10 @@ export const DynamicFragment: FC<{
 
 				<div className="mt-auto bg-white">
 					<div className="relative">
-						<div className="absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
-						<div className="mb-4 px-6 pt-4">
+						{options && options.length > 0 && (
+							<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
+						)}
+						<div className="mb-4 px-6">
 							<Button
 								variant={
 									action.values[parentIndex] === "" ||
