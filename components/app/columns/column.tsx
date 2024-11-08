@@ -31,12 +31,12 @@ const MAX_COLUMN_WIDTH = 680
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
 export const ConsoleColumn: FC<{
-	id: number
-}> = ({ id }) => {
+	index: number
+}> = ({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { socket } = useSocket()
-	const { column, navigate, resize, remove, frame } = useColumns(id)
+	const { column, navigate, resize, remove, frame } = useColumns(index)
 
 	const { plug, handle } = usePlugs(column?.item ?? "")
 
