@@ -29,11 +29,11 @@ export const SocketPositionItem: FC<{
 				<div className="flex w-full flex-row items-center gap-4">
 					<div className="relative h-10 min-w-10">
 						<Image
-							className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
+							className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full blur-2xl filter transition-all duration-200 ease-in-out"
 							src={protocol.icon}
 							alt=""
-							width={140}
-							height={140}
+							width={240}
+							height={240}
 						/>
 						<div
 							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
