@@ -35,14 +35,12 @@ export const SocketPositionItem: FC<{
 							width={240}
 							height={240}
 						/>
-						<div
+						<Image
 							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
-							style={{
-								backgroundImage: `url(${protocol.icon})`,
-								backgroundSize: "cover",
-								backgroundPosition: "center",
-								backgroundRepeat: "no-repeat"
-							}}
+							src={protocol.icon}
+							alt=""
+							width={240}
+							height={240}
 						/>
 					</div>
 
