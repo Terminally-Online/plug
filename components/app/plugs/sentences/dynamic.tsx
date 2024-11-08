@@ -152,6 +152,7 @@ export const DynamicFragment: FC<{
 				<div className="flex flex-col gap-2 overflow-y-auto px-6">
 					{options === undefined && action.values[parentIndex] instanceof Object === false && (
 						<Search
+							className="mb-4"
 							icon={<Hash size={14} />}
 							placeholder={formatTitle(inputName)}
 							// @ts-ignore
