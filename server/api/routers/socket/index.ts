@@ -210,6 +210,53 @@ export const socket = createTRPCRouter({
 		})
 	}),
 
+	getReferralStats: anonymousProtectedProcedure.query(async ({ ctx }) => {
+		const now = new Date()
+		
+		// Get the last 4 weeks
+		const periods = Array.from({ length: 4 }).map((_, i) => {
+			const date = new Date()
+			// Go back i weeks from now
+			date.setDate(now.getDate() - (i * 7))
+			return date
+		}).reverse()
+	
+		const referralCounts = await Promise.all(periods.map(async (date) => {
+			// Calculate start and end of the week
+			const startOfWeek = new Date(date)
+			startOfWeek.setDate(date.getDate() - date.getDay()) // Sunday
+			startOfWeek.setHours(0, 0, 0, 0)
+	
+			const endOfWeek = new Date(startOfWeek)
+			endOfWeek.setDate(startOfWeek.getDate() + 6) // Saturday
+			endOfWeek.setHours(23, 59, 59, 999)
+	
+			const count = await ctx.db.socketIdentity.count({
+				where: {
+					approvedAt: {
+						gte: startOfWeek,
+						lte: endOfWeek
+					},
+					referredBy: ctx.session.address
+				}
+			})
+	
+			return count
+		}))
+	
+		return {
+			counts: referralCounts,
+			periods: periods.map(date => {
+				const startOfWeek = new Date(date)
+				startOfWeek.setDate(date.getDate() - date.getDay())
+				return {
+					weekStart: startOfWeek.toISOString(),
+					weekEnd: new Date(startOfWeek.getTime() + (6 * 24 * 60 * 60 * 1000)).toISOString()
+				}
+			})
+		}
+	}),
+
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {

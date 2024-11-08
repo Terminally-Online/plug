@@ -1,15 +1,16 @@
 import { useSession } from "next-auth/react"
 import React, { FC, useState } from "react"
+import { api } from "@/server/client"
 
 import { Button, Counter } from "@/components"
 import { cn } from "@/lib"
 import { useSocket } from "@/state"
 
-const stats = [
-	[1900, 5123, 5200, 1234],
-	[1300, 3123, 500, 2123],
-	[927, 4123, 390, 1234],
-	[201, 523, 1233, 1230]
+const baseStats = [
+	[1900, 5123, 5200], // Users, Runs, Views
+	[1300, 3123, 500],
+	[927, 4123, 390],
+	[201, 523, 1233]
 ]
 
 const gradients = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
@@ -82,6 +83,13 @@ const ProfileStat: FC<{
 const ProfileStats = () => {
 	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
 	const [toggledStats, setToggledStats] = useState<boolean[]>([false, false, false, false])
+
+	const { data: referralData } = api.socket.getReferralStats.useQuery()
+
+	const stats = baseStats.map((period, index) => [
+		...period,
+		referralData?.counts[index] ?? 0
+	])
 
 	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
