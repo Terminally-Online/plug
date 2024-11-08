@@ -139,13 +139,13 @@ export const socket = createTRPCRouter({
 		.input(z.object({ referrerAddress: z.string() }))
 		.mutation(async ({ ctx, input }) => {
 			const client = createClient(mainnet.id)
-      
+
 			// Resolve ENS if the input isn't a hex address
 			let resolvedAddress = input.referrerAddress
-			if (!input.referrerAddress.startsWith('0x')) {
+			if (!resolvedAddress.startsWith('0x')) {
 				try {
-					const normalized = normalize(input.referrerAddress)
-					const resolved = await client.getEnsAddress({ 
+					const normalized = normalize(resolvedAddress)
+					const resolved = await client.getEnsAddress({
 						name: normalized,
 						universal: true
 					})
@@ -162,20 +162,23 @@ export const socket = createTRPCRouter({
 						message: "Could not resolve ENS name. Please try using the wallet address instead."
 					})
 				}
-			} else {
-				// Validate hex address format
-				if (!/^0x[a-fA-F0-9]{40}$/.test(input.referrerAddress)) {
-					throw new TRPCError({
-						code: "BAD_REQUEST",
-						message: "Please use a valid Ethereum address."
-					})
-				}
 			}
 
-			// Verify referrer exists and is approved
+			// Validate hex address format (allowing mixed case)
+			if (!/^0x[a-fA-F0-9]{40}$/i.test(resolvedAddress)) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Please use a valid Ethereum address."
+				})
+			}
+
+			// Verify referrer exists and is approved using case-insensitive query
 			const referrer = await ctx.db.socketIdentity.findFirst({
 				where: {
-					socketId: resolvedAddress.toLowerCase(),
+					socketId: {
+						equals: resolvedAddress,
+						mode: 'insensitive'
+					},
 					approvedAt: { not: null }
 				}
 			})
@@ -187,11 +190,12 @@ export const socket = createTRPCRouter({
 				})
 			}
 
+			// Use the original case from the database for the referredBy field
 			return ctx.db.socketIdentity.update({
 				where: { socketId: ctx.session.address },
 				data: {
 					approvedAt: new Date(),
-					referredBy: resolvedAddress.toLowerCase()
+					referredBy: referrer.socketId // Use the case from the database
 				}
 			})
 		}),
