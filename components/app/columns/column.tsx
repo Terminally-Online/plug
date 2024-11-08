@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { ChevronLeft, GitFork, Settings, Star, X } from "lucide-react"
+import { ChevronLeft, GitFork, PlugIcon, Settings, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -104,7 +104,13 @@ export const ConsoleColumn: FC<{
 										<div className="flex w-full flex-row items-center gap-4">
 											<p className="rounded-sm p-1">
 												{ADMIN_OPTIONS.find(option => option.label === column.key)?.icon ?? (
-													<Star size={14} className="opacity-40" />
+													<>
+														{column.key === COLUMN_KEYS.PLUG ? (
+															<PlugIcon size={14} className="opacity-40" />
+														) : (
+															<Star size={14} className="opacity-40" />
+														)}
+													</>
 												)}
 											</p>
 
