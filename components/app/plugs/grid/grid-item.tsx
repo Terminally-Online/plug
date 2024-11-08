@@ -30,7 +30,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 			className="relative flex min-h-[128px] w-full flex-col justify-end text-left"
 		>
 			<div
-				className="absolute -right-1/4 -top-3/4 h-full w-full rounded-full blur-[60px] filter"
+				className="absolute -bottom-full -left-1/4 h-full w-full rounded-full blur-[100px] filter"
 				style={{
 					backgroundColor: plug ? colors[plug.color as keyof typeof colors] : undefined
 				}}
