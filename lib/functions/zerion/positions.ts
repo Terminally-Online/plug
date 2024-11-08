@@ -81,13 +81,13 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 				}))
 
 			// If Zerion does not have an icon for the fungible, try to find a static token.
-			let icon = attributes.fungible_info.icon?.url
-			if (icon === undefined) {
+			let icon = attributes.fungible_info.icon?.url ?? "" // Initialize with empty string
+			if (!icon) {
 				const staticToken = TOKENS.find(t => t.symbol === attributes.fungible_info.symbol)
-				if (staticToken !== undefined) icon = staticToken.logoURI
+				if (staticToken?.logoURI) icon = staticToken.logoURI
 			}
-			// If we could not find it as a static token, try to find it from the llamas.
-			if (icon === undefined) {
+			// If we still don't have an icon, try to find it from the llamas.
+			if (!icon) {
 				const implementation = implementations.sort((a, b) => getChainId(b.chain) - getChainId(a.chain))[0]
 				icon = `https://token-icons.llamao.fi/icons/tokens/${getChainId(implementation.chain)}/${implementation.contract}?h=240&w=240`
 			}

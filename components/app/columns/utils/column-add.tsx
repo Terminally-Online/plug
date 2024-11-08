@@ -69,10 +69,6 @@ export const ColumnAdd = () => {
 	const { socket } = useSocket()
 	const { columns, add } = useColumns()
 
-	const isApproved = socket?.identity?.approvedAt !== null
-
-	if (!isApproved) return null
-
 	const flagOptions = useMemo(() => {
 		const options: Options = []
 
@@ -86,6 +82,9 @@ export const ColumnAdd = () => {
 		return options
 	}, [getFlag])
 
+	const isApproved = Boolean(socket?.identity?.approvedAt)
+	if (!isApproved) return null
+
 	const isAdmin = socket?.admin ?? false
 	const options = isAdmin ? ADMIN_OPTIONS : [...flagOptions, ...OPTIONS]
 
@@ -95,7 +94,7 @@ export const ColumnAdd = () => {
 				"relative my-2 mr-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white",
 				columns.length === 2 && "ml-2"
 			)}
-			style={{ minWidth: `${480}px` }}
+			style={{ minWidth: "480px" }}
 		>
 			<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
 				<div className="flex w-full flex-row items-center gap-4 px-6 py-4">

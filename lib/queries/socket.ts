@@ -26,7 +26,7 @@ export const SOCKET_BASE_INCLUDE = {
 			farcasterId: true
 		}
 	}
-} as const
+}
 
 export const SOCKET_BASE_QUERY = {
 	include: SOCKET_BASE_INCLUDE

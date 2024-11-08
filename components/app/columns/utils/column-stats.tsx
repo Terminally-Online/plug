@@ -1,9 +1,9 @@
 import { useSession } from "next-auth/react"
 import React, { FC, useState } from "react"
-import { api } from "@/server/client"
 
 import { Button, Counter } from "@/components"
 import { cn } from "@/lib"
+import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
 const baseStats = [
@@ -86,10 +86,7 @@ const ProfileStats = () => {
 
 	const { data: referralData } = api.socket.getReferralStats.useQuery()
 
-	const stats = baseStats.map((period, index) => [
-		...period,
-		referralData?.counts[index] ?? 0
-	])
+	const stats = baseStats.map((period, index) => [...period, referralData?.counts[index] ?? 0])
 
 	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
@@ -210,10 +207,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 			<ProfileStats />
 			<div className="flex flex-col gap-2">
 				<p className="text-sm text-grayscale-300">Refer users with your address</p>
-				<Button 
-					className="w-full truncate" 
-					onClick={handleCopy}
-				>
+				<Button className="w-full truncate" onClick={handleCopy}>
 					{copied ? "Copied!" : displayAddress}
 				</Button>
 			</div>

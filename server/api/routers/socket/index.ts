@@ -6,7 +6,8 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
-import { anonymousProtectedProcedure, protectedProcedure, createTRPCRouter } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+
 import { balances } from "./balances"
 import { companion } from "./companion"
 
@@ -115,22 +116,15 @@ export const socket = createTRPCRouter({
 
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
-			include: {
-				identity: {
-					select: {
-						approvedAt: true,
-						requestedAt: true,
-						referredBy: true,
-						hasRequestedAccess: true,
-						ens: true,
-						companion: true,
-						farcaster: true
-					}
-				}
-			}
+			...SOCKET_BASE_QUERY
 		})
 
-		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
+		if (!socket) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Socket not found"
+			})
+		}
 
 		return socket
 	}),
@@ -142,12 +136,11 @@ export const socket = createTRPCRouter({
 
 			// Resolve ENS if the input isn't a hex address
 			let resolvedAddress = input.referrerAddress
-			if (!resolvedAddress.startsWith('0x')) {
+			if (!resolvedAddress.startsWith("0x")) {
 				try {
 					const normalized = normalize(resolvedAddress)
 					const resolved = await client.getEnsAddress({
-						name: normalized,
-						universal: true
+						name: normalized
 					})
 					if (!resolved) {
 						throw new TRPCError({
@@ -177,7 +170,7 @@ export const socket = createTRPCRouter({
 				where: {
 					socketId: {
 						equals: resolvedAddress,
-						mode: 'insensitive'
+						mode: "insensitive"
 					},
 					approvedAt: { not: null }
 				}
@@ -212,38 +205,42 @@ export const socket = createTRPCRouter({
 
 	getReferralStats: anonymousProtectedProcedure.query(async ({ ctx }) => {
 		const now = new Date()
-		
+
 		// Get the last 4 weeks
-		const periods = Array.from({ length: 4 }).map((_, i) => {
-			const date = new Date()
-			// Go back i weeks from now
-			date.setDate(now.getDate() - (i * 7))
-			return date
-		}).reverse()
-	
-		const referralCounts = await Promise.all(periods.map(async (date) => {
-			// Calculate start and end of the week
-			const startOfWeek = new Date(date)
-			startOfWeek.setDate(date.getDate() - date.getDay()) // Sunday
-			startOfWeek.setHours(0, 0, 0, 0)
-	
-			const endOfWeek = new Date(startOfWeek)
-			endOfWeek.setDate(startOfWeek.getDate() + 6) // Saturday
-			endOfWeek.setHours(23, 59, 59, 999)
-	
-			const count = await ctx.db.socketIdentity.count({
-				where: {
-					approvedAt: {
-						gte: startOfWeek,
-						lte: endOfWeek
-					},
-					referredBy: ctx.session.address
-				}
+		const periods = Array.from({ length: 4 })
+			.map((_, i) => {
+				const date = new Date()
+				// Go back i weeks from now
+				date.setDate(now.getDate() - i * 7)
+				return date
 			})
-	
-			return count
-		}))
-	
+			.reverse()
+
+		const referralCounts = await Promise.all(
+			periods.map(async date => {
+				// Calculate start and end of the week
+				const startOfWeek = new Date(date)
+				startOfWeek.setDate(date.getDate() - date.getDay()) // Sunday
+				startOfWeek.setHours(0, 0, 0, 0)
+
+				const endOfWeek = new Date(startOfWeek)
+				endOfWeek.setDate(startOfWeek.getDate() + 6) // Saturday
+				endOfWeek.setHours(23, 59, 59, 999)
+
+				const count = await ctx.db.socketIdentity.count({
+					where: {
+						approvedAt: {
+							gte: startOfWeek,
+							lte: endOfWeek
+						},
+						referredBy: ctx.session.address
+					}
+				})
+
+				return count
+			})
+		)
+
 		return {
 			counts: referralCounts,
 			periods: periods.map(date => {
@@ -251,7 +248,7 @@ export const socket = createTRPCRouter({
 				startOfWeek.setDate(date.getDate() - date.getDay())
 				return {
 					weekStart: startOfWeek.toISOString(),
-					weekEnd: new Date(startOfWeek.getTime() + (6 * 24 * 60 * 60 * 1000)).toISOString()
+					weekEnd: new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
 				}
 			})
 		}
