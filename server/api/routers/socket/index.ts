@@ -152,7 +152,7 @@ export const socket = createTRPCRouter({
 					if (!resolved) {
 						throw new TRPCError({
 							code: "BAD_REQUEST",
-							message: "Invalid ENS name"
+							message: "Invalid ENS name. Please try using the wallet address instead."
 						})
 					}
 					resolvedAddress = resolved
@@ -167,7 +167,7 @@ export const socket = createTRPCRouter({
 				if (!/^0x[a-fA-F0-9]{40}$/.test(input.referrerAddress)) {
 					throw new TRPCError({
 						code: "BAD_REQUEST",
-						message: "Invalid wallet address format"
+						message: "Please use a valid Ethereum address."
 					})
 				}
 			}
@@ -183,7 +183,7 @@ export const socket = createTRPCRouter({
 			if (!referrer) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "That user is not on Plug!"
+					message: "That user is not on Plug, yet!"
 				})
 			}
 
