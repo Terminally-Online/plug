@@ -108,7 +108,8 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("Failed to unmarshal apy constraint inputs.")
 	}
 
-	reserves, err := getReserves()
+	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
+	reserves, err := getReserves(true)
 	if err != nil {
 		return nil, err
 	}
