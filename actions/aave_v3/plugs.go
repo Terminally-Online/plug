@@ -97,6 +97,37 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	)
 }
 
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]byte, error) {
+	var inputs types.ThresholdInputs
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal health factor inputs")
+	}
+	if err := inputs.Validate(); err != nil {
+		return nil, err
+	}
+
+	healthFactor, err := getHealthFactor(params.From)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get health factor: %v", err)
+	}
+
+	healthFactorFloat := new(big.Float).SetInt(healthFactor)
+	switch inputs.Operator {
+	case -1:
+		if healthFactorFloat.Cmp(inputs.Threshold) >= 0 {
+			return nil, fmt.Errorf("Current health factor %.2f is not less than threshold %.2f.", healthFactorFloat, inputs.Threshold)
+		}
+	case 1:
+		if healthFactorFloat.Cmp(inputs.Threshold) <= 0 {
+			return nil, fmt.Errorf("Current health factor %.2f is not greater than threshold %.2f.", healthFactorFloat, inputs.Threshold)
+		}
+	default:
+		return nil, fmt.Errorf("Invalid operator: must be either -1 (less than) or 1 (greater than), got %d.", inputs.Operator)
+	}
+
+	return []byte{}, nil
+}
+
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]byte, error) {
 	var inputs struct {
 		Direction int        `json:"direction"` // -1 for borrow, 1 for deposit

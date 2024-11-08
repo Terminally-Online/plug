@@ -17,6 +17,8 @@ When interacting with a specific pool, you need to target the precise pool addre
 
 When sending assets into the pool, a leading approval transaction is required so that the contract can pull it in.
 
+To get the health factor of a user's account, we can use the `getUserAccountData` function.
+
 ## Scope
 
 | Name                | Type       | Supported | Implemented | Notes                                                                         |
@@ -25,8 +27,8 @@ When sending assets into the pool, a leading approval transaction is required so
 | Borrow              | Action     |    ✔︎    | 11/07/2024  |                                                                               |
 | Repay               | Action     |    ✔︎    | 11/07/2024  | Requires an intial token approval                                             |
 | Redeem (Withdraw)   | Action     |    ✔︎    | 11/07/2024  |                                                                               |
-| Health Factor       | Constraint |           |             | Preventive actions before liquidation risk increases                          |
-| APY                 | Constraint |           |             | Automatically enter when rates are exceptionally high or exit when low        |
+| Health Factor       | Constraint |    ✔︎    | 11/08/2024  | Preventive actions before liquidation risk increases                          |
+| APY                 | Constraint |    ✔︎    | 11/08/2024  | Automatically enter when rates are exceptionally high or exit when low        |
 | APY Differentials   | Constraint |           |             | Automatically execute yield farming strategies when spreads become profitable |
 | Available Liquidity | Constraint |           |             | Automatically fill a gap to adjust rates / claim the last opportunity         |
 

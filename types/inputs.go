@@ -3,6 +3,7 @@ package types
 import (
 	"math/big"
 	"solver/utils"
+	"strconv"
 )
 
 type BaseInputs struct {
@@ -151,15 +152,15 @@ func (i *HarvestInputs) GetProtocol() Protocol {
 
 type ThresholdInputs struct {
 	BaseInputs
-	Operator  string  `json:"operator"`  // The operator to use for the threshold comparison.
-	Threshold big.Int `json:"threshold"` // The threshold value to compare against.
+	Operator  int        `json:"operator"`  // The operator to use for the threshold comparison.
+	Threshold *big.Float `json:"threshold"` // The threshold value to compare against.
 }
 
 func (i *ThresholdInputs) Validate() error {
-	if i.Operator != "-1" && i.Operator != "1" {
-		return utils.ErrInvalidField("operator", i.Operator)
+	if i.Operator != -1 && i.Operator != 1 {
+		return utils.ErrInvalidField("operator", strconv.Itoa(i.Operator))
 	}
-	if i.Threshold.Cmp(big.NewInt(0)) >= 0 && i.Threshold.Cmp(utils.Uint256Max) > 0 {
+	if i.Threshold.Cmp(big.NewFloat(0)) >= 0 && i.Threshold.Cmp(new(big.Float).SetInt(utils.Uint256Max)) > 0 {
 		return utils.ErrInvalidField("threshold", i.Threshold.String())
 	}
 	return nil

@@ -105,6 +105,18 @@ func (h *Handler) init() *Handler {
 		Fields:   types.BaseThresholdFields,
 	}
 
+	aggregatedOptions := func() []types.Option {
+		seen := make(map[string]bool)
+		options := make([]types.Option, 0)
+		for _, opt := range append(collateralOptions, borrowOptions...) {
+			if !seen[opt.Value] {
+				seen[opt.Value] = true
+				opt.Info = ""
+				options = append(options, opt)
+			}
+		}
+		return options
+	}()
 	h.schemas[types.ConstraintAPY] = types.Schema{
 		Sentence: "{0} APY of {1} is {2} than {3}%.",
 		Fields: append([]types.SchemaField{
@@ -116,20 +128,9 @@ func (h *Handler) init() *Handler {
 					{Label: "Borrow", Name: "Deposit", Value: "1"},
 				},
 			}, {
-				Name: "token",
-				Type: "address",
-				Options: func() []types.Option {
-					seen := make(map[string]bool)
-					options := make([]types.Option, 0)
-					for _, opt := range append(collateralOptions, borrowOptions...) {
-						if !seen[opt.Value] {
-							seen[opt.Value] = true
-							opt.Info = ""
-							options = append(options, opt)
-						}
-					}
-					return options
-				}(),
+				Name:    "token",
+				Type:    "address",
+				Options: aggregatedOptions,
 			},
 		}, types.BaseThresholdFields...),
 	}
@@ -169,6 +170,8 @@ func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage,
 		calldata, err = HandleActionRepay(rawInputs, params)
 	case types.ActionWithdraw:
 		calldata, err = HandleActionWithdraw(rawInputs, params)
+	case types.ConstraintHealthFactor:
+		calldata, err = HandleConstraintHealthFactor(rawInputs, params)
 	case types.ConstraintAPY:
 		calldata, err = HandleConstraintAPY(rawInputs, params)
 	default:
