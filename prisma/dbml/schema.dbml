@@ -43,6 +43,10 @@ Table Companion {
 Table SocketIdentity {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  requestedAt DateTime
+  approvedAt DateTime
+  referredBy String
+  hasRequestedAccess Boolean [not null, default: false]
   socket UserSocket [not null]
   socketId String [pk]
   farcaster FarcasterUser

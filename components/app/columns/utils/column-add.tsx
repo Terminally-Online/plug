@@ -69,6 +69,10 @@ export const ColumnAdd = () => {
 	const { socket } = useSocket()
 	const { columns, add } = useColumns()
 
+	const isApproved = socket?.identity?.approvedAt !== null
+
+	if (!isApproved) return null
+
 	const flagOptions = useMemo(() => {
 		const options: Options = []
 

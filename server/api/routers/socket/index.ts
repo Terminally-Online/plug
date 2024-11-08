@@ -6,8 +6,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
-import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
-
+import { anonymousProtectedProcedure, protectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 import { balances } from "./balances"
 import { companion } from "./companion"
 
@@ -116,12 +115,84 @@ export const socket = createTRPCRouter({
 
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session.address },
-			...SOCKET_BASE_QUERY
+			include: {
+				identity: {
+					select: {
+						approvedAt: true,
+						requestedAt: true,
+						referredBy: true,
+						hasRequestedAccess: true,
+						ens: true,
+						companion: true,
+						farcaster: true
+					}
+				}
+			}
 		})
 
 		if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 
 		return socket
+	}),
+
+	submitReferral: protectedProcedure
+		.input(z.object({ referrerAddress: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const client = createClient(mainnet.id)
+      
+			// Resolve ENS if the input isn't a hex address
+			let resolvedAddress = input.referrerAddress
+			if (!input.referrerAddress.startsWith('0x')) {
+				try {
+					const normalized = normalize(input.referrerAddress)
+					const resolved = await client.getEnsAddress({ name: normalized })
+					if (!resolved) {
+						throw new TRPCError({
+							code: "BAD_REQUEST",
+							message: "Invalid ENS name"
+						})
+					}
+					resolvedAddress = resolved
+				} catch (error) {
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: "Could not resolve ENS name"
+					})
+				}
+			}
+
+			// Verify referrer exists and is approved
+			const referrer = await ctx.db.socketIdentity.findFirst({
+				where: {
+					socketId: resolvedAddress,
+					approvedAt: { not: null }
+				}
+			})
+
+			if (!referrer) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "That user is not on Plug!"
+				})
+			}
+
+			return ctx.db.socketIdentity.update({
+				where: { socketId: ctx.session.address },
+				data: {
+					approvedAt: new Date(),
+					referredBy: resolvedAddress
+				}
+			})
+		}),
+
+	requestAccess: protectedProcedure.mutation(async ({ ctx }) => {
+		return ctx.db.socketIdentity.update({
+			where: { socketId: ctx.session.address },
+			data: {
+				hasRequestedAccess: true,
+				requestedAt: new Date()
+			}
+		})
 	}),
 
 	search: anonymousProtectedProcedure

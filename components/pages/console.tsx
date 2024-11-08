@@ -3,6 +3,7 @@ import { signIn, useSession } from "next-auth/react"
 import { LoaderCircle } from "lucide-react"
 
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
+import { ReferralRequired } from "@/components/app/utils/referral-required"
 import { useMediaQuery } from "@/lib"
 import { useSocket } from "@/state"
 
@@ -17,10 +18,13 @@ const MobilePage = () => {
 }
 
 const DesktopPage = () => {
+	const { socket } = useSocket()
+	const isApproved = socket?.identity?.approvedAt !== null
+
 	return (
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
-			<ConsoleColumnRow />
+			{isApproved ? <ConsoleColumnRow /> : <ReferralRequired />}
 		</div>
 	)
 }
