@@ -7,10 +7,10 @@ import { cn } from "@/lib"
 import { useSocket } from "@/state"
 
 const baseStats = [
-	[1900, 5123, 5200], // Users, Runs, Views
-	[1300, 3123, 500],
-	[927, 4123, 390],
-	[201, 523, 1233]
+	[0, 5, 6], // Users, Runs, Views
+	[3, 0, 5],
+	[6, 5, 0],
+	[2, 4, 3]
 ]
 
 const gradients = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
