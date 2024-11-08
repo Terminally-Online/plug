@@ -87,11 +87,11 @@ func GetCollateralAssetOptions() ([]types.Option, error) {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
 		options = append(options, types.Option{
-			Value: reserve.UnderlyingAsset.String(),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info:  rate,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
+			Value: reserve.UnderlyingAsset.String(),
 		})
 	}
 
@@ -123,11 +123,11 @@ func GetBorrowAssetOptions() ([]types.Option, error) {
 		}
 
 		options = append(options, types.Option{
-			Value: reserve.UnderlyingAsset.String(),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info:  rate,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
+			Value: reserve.UnderlyingAsset.String(),
 		})
 	}
 

@@ -148,3 +148,23 @@ func (i *HarvestInputs) Validate() error {
 func (i *HarvestInputs) GetProtocol() Protocol {
 	return i.Protocol
 }
+
+type ThresholdInputs struct {
+	BaseInputs
+	Operator  string  `json:"operator"`  // The operator to use for the threshold comparison.
+	Threshold big.Int `json:"threshold"` // The threshold value to compare against.
+}
+
+func (i *ThresholdInputs) Validate() error {
+	if i.Operator != "-1" && i.Operator != "1" {
+		return utils.ErrInvalidField("operator", i.Operator)
+	}
+	if i.Threshold.Cmp(big.NewInt(0)) >= 0 && i.Threshold.Cmp(utils.Uint256Max) > 0 {
+		return utils.ErrInvalidField("threshold", i.Threshold.String())
+	}
+	return nil
+}
+
+func (i *ThresholdInputs) GetProtocol() Protocol {
+	return i.Protocol
+}

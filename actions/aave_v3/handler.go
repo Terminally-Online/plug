@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	poolAddress          = utils.Mainnet.References["aave_v3"]["pool"]
+	poolAddress      = utils.Mainnet.References["aave_v3"]["pool"]
 	interestRateMode = new(big.Int).SetUint64(2)
 )
 
@@ -44,8 +44,8 @@ func (h *Handler) init() *Handler {
 		Sentence: "Deposit {0} {1}.",
 		Fields: []types.SchemaField{
 			{
-				Name: "tokenIn",
-				Type: "address",
+				Name:    "tokenIn",
+				Type:    "address",
 				Options: collateralOptions,
 			},
 			{
@@ -59,8 +59,8 @@ func (h *Handler) init() *Handler {
 		Sentence: "Borrow {0} {1}.",
 		Fields: []types.SchemaField{
 			{
-				Name: "tokenOut",
-				Type: "address",
+				Name:    "tokenOut",
+				Type:    "address",
 				Options: borrowOptions,
 			},
 			{
@@ -74,8 +74,8 @@ func (h *Handler) init() *Handler {
 		Sentence: "Repay {0} {1}.",
 		Fields: []types.SchemaField{
 			{
-				Name: "tokenIn",
-				Type: "address",
+				Name:    "tokenIn",
+				Type:    "address",
 				Options: borrowOptions,
 			},
 			{
@@ -89,8 +89,8 @@ func (h *Handler) init() *Handler {
 		Sentence: "Withdraw {0} {1}.",
 		Fields: []types.SchemaField{
 			{
-				Name: "tokenOut",
-				Type: "address",
+				Name:    "tokenOut",
+				Type:    "address",
 				Options: collateralOptions,
 			},
 			{
@@ -99,6 +99,48 @@ func (h *Handler) init() *Handler {
 			},
 		},
 	}
+
+	h.schemas[types.ConstraintHealthFactor] = types.Schema{
+		Sentence: "Health factor is {0} than {1}.",
+		Fields:   types.BaseThresholdFields,
+	}
+
+	h.schemas[types.ConstraintAPY] = types.Schema{
+		Sentence: "{0} APY of {1} is {2} than {3}%.",
+		Fields: append([]types.SchemaField{
+			{
+				Name: "direction",
+				Type: "uint256",
+				Options: []types.Option{
+					{Label: "Borrow", Name: "Borrow", Value: "-1"},
+					{Label: "Borrow", Name: "Deposit", Value: "1"},
+				},
+			}, {
+				Name: "token",
+				Type: "address",
+				Options: func() []types.Option {
+					seen := make(map[string]bool)
+					options := make([]types.Option, 0)
+					for _, opt := range append(collateralOptions, borrowOptions...) {
+						if !seen[opt.Value] {
+							seen[opt.Value] = true
+							opt.Info = ""
+							options = append(options, opt)
+						}
+					}
+					return options
+				}(),
+			},
+		}, types.BaseThresholdFields...),
+	}
+
+	// h.schemas[types.ConstraintAvailableLiquidity] = types.Schema{
+	// 	Sentence: "Available liquidity for {0} is {1} than {2}.",
+	// 	Fields: append([]types.SchemaField{{
+	// 		Name: "token",
+	// 		Type: "address",
+	// 	}}, types.BaseThresholdFields...),
+	// }
 
 	return h
 }
@@ -120,13 +162,15 @@ func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage,
 	var err error
 	switch action {
 	case types.ActionDeposit:
-		calldata, err = HandleDeposit(rawInputs, params)
+		calldata, err = HandleActionDeposit(rawInputs, params)
 	case types.ActionBorrow:
-		calldata, err = HandleBorrow(rawInputs, params)
+		calldata, err = HandleActionBorrow(rawInputs, params)
 	case types.ActionRepay:
-		calldata, err = HandleRepay(rawInputs, params)
+		calldata, err = HandleActionRepay(rawInputs, params)
 	case types.ActionWithdraw:
-		calldata, err = HandleWithdraw(rawInputs, params)
+		calldata, err = HandleActionWithdraw(rawInputs, params)
+	case types.ConstraintAPY:
+		calldata, err = HandleConstraintAPY(rawInputs, params)
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}

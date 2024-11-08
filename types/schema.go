@@ -29,35 +29,18 @@ type Schema struct {
 }
 
 var (
-	BaseDepositSchema = Schema{
-		Sentence: "Deposit {0} {1}.",
-		Fields: []SchemaField{
-			{
-				Name: "tokenIn",
-				Type: "address",
-			},
-			{
-				Name: "tokenOut",
-				Type: "address",
-			},
-			{
-				Name: "amountIn",
-				Type: "uint256",
+	BaseThresholdFields = []SchemaField{
+		{
+			Name: "operator",
+			Type: "uint8",
+			Options: []Option{
+				{Label: "less than", Name: "Less Than", Value: "-1"},
+				{Label: "greater than", Name: "Greater Than", Value: "1"},
 			},
 		},
-	}
-
-	BaseBorrowSchema = Schema{
-		Sentence: "Borrow {0} {1}.",
-		Fields: []SchemaField{
-			{
-				Name: "tokenOut",
-				Type: "address",
-			},
-			{
-				Name: "amountOut",
-				Type: "uint256",
-			},
+		{
+			Name: "threshold",
+			Type: "uint256",
 		},
 	}
 )

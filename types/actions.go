@@ -14,6 +14,11 @@ const (
 	ActionApprove      Action = "approve"
 	ActionSwap         Action = "swap"
 	ActionRoute        Action = "route"
+
+	ConstraintHealthFactor       Action = "health_factor"
+	ConstraintAPY                Action = "apy"
+	ConstraintAPYDifferential    Action = "apy_differential"
+	ConstraintAvailableLiquidity Action = "available_liquidity"
 )
 
 type Protocol string
