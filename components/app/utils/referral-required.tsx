@@ -19,6 +19,10 @@ export const ReferralRequired: FC = () => {
     onSuccess: () => {
       setSuccess(true)
       setError(undefined)
+      // Add a small delay before refreshing to show the success message
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     }
   })
 
@@ -39,9 +43,16 @@ export const ReferralRequired: FC = () => {
   }
 
   const handleRequestAccess = async () => {
-    const tweetText = encodeURIComponent(
-      `Hey @plug_hq! I'd love to try out Plug.\n\nMy address: ${session?.user.id}`
-    )
+    const tweetTemplates = [
+      `Hey @onplug_io! I'm ready to automate my onchain life with Plug 🔌\n\nMy address: ${session?.user.id}`,
+      `Excited to try @onplug_io - the best way to automate in crypto! 🤖\n\nMy address: ${session?.user.id}`,
+      `Hey @onplug_io - I'm looking to make Plug my new home for onchain activity ⚡\n\nMy address: ${session?.user.id}`,
+      `Need that @onplug_io access to start automating my onchain activities 🎯\n\nMy address: ${session?.user.id}`,
+      `Hey @onplug_io! Let's streamline my crypto life with automated onchain actions ⚡\n\nMy address: ${session?.user.id}`
+    ]
+    
+    const randomTweet = tweetTemplates[Math.floor(Math.random() * tweetTemplates.length)]
+    const tweetText = encodeURIComponent(randomTweet)
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank')
     await requestAccess.mutateAsync()
   }

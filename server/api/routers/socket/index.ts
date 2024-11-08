@@ -145,7 +145,10 @@ export const socket = createTRPCRouter({
 			if (!input.referrerAddress.startsWith('0x')) {
 				try {
 					const normalized = normalize(input.referrerAddress)
-					const resolved = await client.getEnsAddress({ name: normalized })
+					const resolved = await client.getEnsAddress({ 
+						name: normalized,
+						universal: true
+					})
 					if (!resolved) {
 						throw new TRPCError({
 							code: "BAD_REQUEST",
@@ -156,7 +159,15 @@ export const socket = createTRPCRouter({
 				} catch (error) {
 					throw new TRPCError({
 						code: "BAD_REQUEST",
-						message: "Could not resolve ENS name"
+						message: "Could not resolve ENS name. Please try using the wallet address instead."
+					})
+				}
+			} else {
+				// Validate hex address format
+				if (!/^0x[a-fA-F0-9]{40}$/.test(input.referrerAddress)) {
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: "Invalid wallet address format"
 					})
 				}
 			}
@@ -164,7 +175,7 @@ export const socket = createTRPCRouter({
 			// Verify referrer exists and is approved
 			const referrer = await ctx.db.socketIdentity.findFirst({
 				where: {
-					socketId: resolvedAddress,
+					socketId: resolvedAddress.toLowerCase(),
 					approvedAt: { not: null }
 				}
 			})
@@ -180,7 +191,7 @@ export const socket = createTRPCRouter({
 				where: { socketId: ctx.session.address },
 				data: {
 					approvedAt: new Date(),
-					referredBy: resolvedAddress
+					referredBy: resolvedAddress.toLowerCase()
 				}
 			})
 		}),
