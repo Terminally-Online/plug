@@ -188,15 +188,35 @@ const ProfileStats = () => {
 export const ColumnStats: FC<{ index: number }> = () => {
 	const { data: session } = useSession()
 	const { socket } = useSocket()
+	const [copied, setCopied] = useState(false)
 
 	if (!socket || !session?.user.id) return null
+
+	// Get the display address (ENS or socket address)
+	const displayAddress = socket.identity?.ens?.name || socket.socketAddress
+
+	const handleCopy = async () => {
+		try {
+			await navigator.clipboard.writeText(socket.id)
+			setCopied(true)
+			setTimeout(() => setCopied(false), 2000)
+		} catch (err) {
+			console.error("Failed to copy:", err)
+		}
+	}
 
 	return (
 		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
 			<ProfileStats />
-			<Button className="w-full" onClick={() => {}}>
-				Share Link
-			</Button>
+			<div className="flex flex-col gap-2">
+				<p className="text-sm text-grayscale-300">Refer users with your address</p>
+				<Button 
+					className="w-full truncate" 
+					onClick={handleCopy}
+				>
+					{copied ? "Copied!" : displayAddress}
+				</Button>
+			</div>
 		</div>
 	)
 }
