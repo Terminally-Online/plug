@@ -1,21 +1,27 @@
 import { useSession } from "next-auth/react"
 import { FC, useState } from "react"
+
 import { SearchIcon } from "lucide-react"
+
 import { Button } from "@/components/shared"
-import { cn, greenGradientStyle } from "@/lib"
+import { cn, greenGradientStyle, useClipboard } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
+
 import { Search } from "../inputs"
 
 export const ReferralRequired: FC = () => {
 	const { data: session } = useSession()
 	const { socket } = useSocket()
 	const [referralAddress, setReferralAddress] = useState("")
+	const [error, setError] = useState<string>()
 	const [success, setSuccess] = useState(false)
 
 	const submitReferral = api.socket.submitReferral.useMutation({
+		onError: error => setError(error.message),
 		onSuccess: () => {
 			setSuccess(true)
+			setError(undefined)
 			// Add a small delay before refreshing to show the success message
 			setTimeout(() => {
 				window.location.reload()
@@ -51,63 +57,64 @@ export const ReferralRequired: FC = () => {
 	}
 
 	return (
-		<div className="flex w-full flex-col items-start justify-between bg-white">
-			<div className="m-2 flex h-full w-full justify-center rounded-lg border-[1px] border-grayscale-100 pt-[30vh]">
-				<div className="flex w-full max-w-md flex-col px-4">
-					<div className="flex flex-col items-center">
-						<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
-						<p className="mb-8 text-center font-bold text-black/40">
-							Enter the referral code you received to get started or request one by tagging{" "}
-							<button
-								onClick={handleRequestAccess}
-								style={{
-									...greenGradientStyle
-								}}
-							>
-								@onplug_io
-							</button>{" "}
-							on Twitter.
-						</p>
+		<div className="flex w-full flex-col items-start justify-between bg-white p-2">
+			<div className="flex h-full w-full justify-center items-center rounded-lg border-[1px] border-grayscale-100">
+				<div className="flex flex-col items-center max-w-[480px]">
+					<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
+					<p className="mb-8 text-center font-bold text-black/40">
+						Enter the referral code you received to get started or request one by tagging{" "}
+						<button
+							onClick={handleRequestAccess}
+							style={{
+								...greenGradientStyle
+							}}
+						>
+							@onplug_io
+						</button>{" "}
+						on Twitter.
+					</p>
 
-						<div className="w-full space-y-6">
-							{submitReferral.error && (
-								<div className="w-full rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-									{submitReferral.error.message}
-								</div>
-							)}
+					<div className="w-full space-y-6">
+						{error && (
+							<div className="w-full rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+								{error}
+							</div>
+						)}
 
-							{success && (
-								<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
-									Successfully approved! Please refresh the page.
-								</div>
-							)}
+						{success && (
+							<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
+								Successfully approved! Please refresh the page.
+							</div>
+						)}
 
-							<div className="flex flex-col gap-2">
-								<Search
-									icon={<SearchIcon size={14} className="opacity-60" />}
-									placeholder="0x... or ENS name"
-									search={referralAddress}
-									handleSearch={setReferralAddress}
-									clear
-								/>
-								<div className="flex flex-row items-center gap-2">
-									<Button
-										variant="secondary"
-										className="w-max py-4"
-										onClick={handleRequestAccess}
-										disabled={requestAccess.isLoading}
-									>
-										{requestAccess.isLoading ? "Requesting..." : "Get Access"}
-									</Button>
+						<div className="flex flex-col gap-2">
+							<Search
+								icon={<SearchIcon size={14} className="opacity-60" />}
+								placeholder="Referral Code"
+								search={referralAddress}
+								handleSearch={setReferralAddress}
+								clear
+							/>
+							<div className="flex flex-row items-center gap-2">
+								<Button
+									variant="secondary"
+									className="w-max py-4"
+									onClick={handleRequestAccess}
+									disabled={requestAccess.isLoading}
+								>
+									{requestAccess.isLoading ? "Requesting..." : "Get Access"}
+								</Button>
 
-									<Button
-										className={cn("w-full py-4")}
-										onClick={handleSubmitReferral}
-										disabled={submitReferral.isLoading || !referralAddress}
-									>
-										{submitReferral.isLoading ? "Submitting..." : "Submit Code"}
-									</Button>
-								</div>
+								<button
+									className={cn(
+										"w-full py-4 font-bold rounded-lg", 
+										referralAddress ? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white" : "bg-white border-[1px] border-plug-green text-plug-green"
+									)}
+									onClick={handleSubmitReferral}
+									disabled={submitReferral.isLoading || !referralAddress}
+								>
+									{submitReferral.isLoading ? "Submitting..." : "Submit Code"}
+								</button>
 							</div>
 						</div>
 					</div>
