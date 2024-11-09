@@ -107,7 +107,6 @@ model SocketIdentity {
   requestedAt        DateTime?
   approvedAt         DateTime?
   referredBy         String?
-  hasRequestedAccess Boolean   @default(false)
 
   // ---------------------------------------------------------------------------
   // One-to-one

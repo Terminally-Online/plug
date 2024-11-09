@@ -197,7 +197,6 @@ export const socket = createTRPCRouter({
 		return ctx.db.socketIdentity.update({
 			where: { socketId: ctx.session.address },
 			data: {
-				hasRequestedAccess: true,
 				requestedAt: new Date()
 			}
 		})
