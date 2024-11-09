@@ -58,7 +58,7 @@ export const ReferralRequired: FC = () => {
 
 	return (
 		<div className="flex w-full flex-col items-start justify-between bg-white p-2">
-			<div className="m-2 flex h-full w-full justify-center items-center rounded-lg border-[1px] border-grayscale-100">
+			<div className="flex h-full w-full justify-center items-center rounded-lg border-[1px] border-grayscale-100">
 				<div className="flex flex-col items-center max-w-[480px]">
 					<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
 					<p className="mb-8 text-center font-bold text-black/40">
