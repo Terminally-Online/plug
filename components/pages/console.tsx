@@ -1,4 +1,6 @@
 import { signIn, useSession } from "next-auth/react"
+import { useRouter } from "next/router"
+import { useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
@@ -34,6 +36,7 @@ const DesktopPage = () => {
 
 export const ConsolePage = () => {
 	const { md } = useMediaQuery()
+	const router = useRouter()
 	// NOTE: This makes the session required for the console page. When the user does
 	// not have a session, they will be automatically logged into an anonymous account.
 	// This enables users to maintain their session through reloads, and on log out,
@@ -58,6 +61,18 @@ export const ConsolePage = () => {
 			})
 	})
 	const { socket } = useSocket()
+
+	useEffect(() => {
+		if (socket?.identity?.referralCode && !router.query.rfid) {
+			router.replace(
+				{
+					query: { ...router.query, rfid: socket.identity.referralCode }
+				},
+				undefined,
+				{ shallow: true }
+			)
+		}
+	}, [socket, router])
 
 	if (!session?.user.id || !socket)
 		return (
