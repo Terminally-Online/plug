@@ -14,24 +14,31 @@ export const referral = createTRPCRouter({
 		})
 	}),
 
-	submit: protectedProcedure.input(z.object({ referrerAddress: z.string() })).mutation(async ({ ctx, input }) => {
+	submit: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
 		const referrer = await ctx.db.socketIdentity.findFirst({
 			where: {
-				referralCode: {
-					equals: input.referrerAddress,
-					mode: "insensitive"
-				},
-				approvedAt: { not: null }
-			},
-			select: { socketId: true }
+				referralCode: input
+			}
 		})
 
-		if (!referrer) {
+		if (!referrer)
 			throw new TRPCError({
 				code: "BAD_REQUEST",
 				message: "Referral code provided is not valid."
 			})
-		}
+
+		if (referrer.socketId === ctx.session.address)
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message:
+					"You cannot refer yourself! I respect the effort though. Message @onplug_io on Twitter with a screenshot of this page for an immediate access."
+			})
+
+		if (!referrer.approvedAt)
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message: "Referral code provided is from a user not yet approved."
+			})
 
 		return ctx.db.socketIdentity.update({
 			where: { socketId: ctx.session.address },
