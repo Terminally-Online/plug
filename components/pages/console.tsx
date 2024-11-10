@@ -63,7 +63,9 @@ export const ConsolePage = () => {
 	const { socket } = useSocket()
 
 	useEffect(() => {
-		if (socket?.identity?.referralCode && !router.query.rfid) {
+		if (!socket || !socket.identity) return
+
+		if (socket.identity.approvedAt && socket.identity.referralCode && !router.query.rfid) {
 			router.replace(
 				{
 					query: { ...router.query, rfid: socket.identity.referralCode }
