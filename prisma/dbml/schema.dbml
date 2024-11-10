@@ -43,15 +43,17 @@ Table Companion {
 Table SocketIdentity {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  referralCode String [not null]
   requestedAt DateTime
   approvedAt DateTime
-  referredBy String
   socket UserSocket [not null]
   socketId String [pk]
   farcaster FarcasterUser
   farcasterId String [unique]
   ens ENS
   companion Companion
+  referrer UserSocket
+  referrerId String
 }
 
 Table UserSocket {
@@ -64,6 +66,7 @@ Table UserSocket {
   workflow Workflow [not null]
   positions PositionCache [not null]
   collectibles CollectibleCache [not null]
+  referrals SocketIdentity [not null]
 }
 
 Table Workflow {
@@ -300,6 +303,8 @@ Ref: Companion.socketId - SocketIdentity.socketId [delete: Cascade]
 Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
+
+Ref: SocketIdentity.referrerId - UserSocket.id [delete: Cascade]
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 

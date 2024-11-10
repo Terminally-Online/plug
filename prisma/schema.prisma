@@ -104,9 +104,9 @@ model SocketIdentity {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  requestedAt        DateTime?
-  approvedAt         DateTime?
-  referredBy         String?
+  referralCode String    @default(uuid())
+  requestedAt  DateTime?
+  approvedAt   DateTime?
 
   // ---------------------------------------------------------------------------
   // One-to-one
@@ -117,6 +117,12 @@ model SocketIdentity {
   farcasterId String?        @unique
   ens         ENS?
   companion   Companion?
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  referrer   UserSocket? @relation(fields: [referrerId], references: [id], name: "Referral")
+  referrerId String?
 }
 
 model UserSocket {
@@ -144,6 +150,7 @@ model UserSocket {
   workflow     Workflow[]
   positions    PositionCache[]
   collectibles CollectibleCache[]
+  referrals    SocketIdentity[]   @relation("Referral")
 
   // ---------------------------------------------------------------------------
   // Indexes
@@ -279,7 +286,7 @@ model Protocol {
   url  String
 
   // ---------------------------------------------------------------------------
-  // Many-to-one
+  // One-to-many
   // ---------------------------------------------------------------------------
   positions Position[]
 }
@@ -300,7 +307,7 @@ model Fungible {
   verified Boolean
 
   // ---------------------------------------------------------------------------
-  // Many-to-one
+  // One-to-many
   // ---------------------------------------------------------------------------
   implementations Implementation[]
   positions       Position[]
@@ -459,7 +466,7 @@ model CollectibleMetadata {
   color             String?
 
   // ---------------------------------------------------------------------------
-  // One-to-one
+  // One-to-many
   // ---------------------------------------------------------------------------
   collectible Collectible[]
 
@@ -489,21 +496,17 @@ model Collectible {
   isSpam     Boolean
 
   // ---------------------------------------------------------------------------
-  // One-to-one
+  // Many-to-one
   // ---------------------------------------------------------------------------
   collectibleMetadata CollectibleMetadata? @relation(fields: [metadataTokenId, metadataAddress, metadataChain], references: [tokenId, collectionAddress, collectionChain])
   metadataTokenId     String?
   metadataAddress     String?
   metadataChain       String?
-
-  // ---------------------------------------------------------------------------
-  // Many-to-one
-  // ---------------------------------------------------------------------------
-  collection        Collection       @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
-  collectionAddress String
-  collectionChain   String
-  cache             CollectibleCache @relation(fields: [cacheId], references: [id], onDelete: Cascade)
-  cacheId           String
+  collection          Collection           @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
+  collectionAddress   String
+  collectionChain     String
+  cache               CollectibleCache     @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  cacheId             String
 
   // ---------------------------------------------------------------------------
   // Indexes

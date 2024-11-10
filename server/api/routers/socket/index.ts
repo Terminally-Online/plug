@@ -6,10 +6,11 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
-import { anonymousProtectedProcedure, createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
+import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 import { balances } from "./balances"
 import { companion } from "./companion"
+import { referral } from "./referral"
 
 export const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
@@ -129,130 +130,6 @@ export const socket = createTRPCRouter({
 		return socket
 	}),
 
-	submitReferral: protectedProcedure
-		.input(z.object({ referrerAddress: z.string() }))
-		.mutation(async ({ ctx, input }) => {
-			const client = createClient(mainnet.id)
-
-			// Resolve ENS if the input isn't a hex address
-			let resolvedAddress = input.referrerAddress
-			if (!resolvedAddress.startsWith("0x")) {
-				try {
-					const normalized = normalize(resolvedAddress)
-					const resolved = await client.getEnsAddress({
-						name: normalized
-					})
-					if (!resolved) {
-						throw new TRPCError({
-							code: "BAD_REQUEST",
-							message: "Invalid ENS name. Please try using the wallet address instead."
-						})
-					}
-					resolvedAddress = resolved
-				} catch (error) {
-					throw new TRPCError({
-						code: "BAD_REQUEST",
-						message: "Could not resolve ENS name. Please try using the wallet address instead."
-					})
-				}
-			}
-
-			// Validate hex address format (allowing mixed case)
-			if (!/^0x[a-fA-F0-9]{40}$/i.test(resolvedAddress)) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "Please use a valid Ethereum address."
-				})
-			}
-
-			// Verify referrer exists and is approved using case-insensitive query
-			const referrer = await ctx.db.socketIdentity.findFirst({
-				where: {
-					socketId: {
-						equals: resolvedAddress,
-						mode: "insensitive"
-					},
-					approvedAt: { not: null }
-				}
-			})
-
-			if (!referrer) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "That user is not on Plug, yet!"
-				})
-			}
-
-			// Use the original case from the database for the referredBy field
-			return ctx.db.socketIdentity.update({
-				where: { socketId: ctx.session.address },
-				data: {
-					approvedAt: new Date(),
-					referredBy: referrer.socketId // Use the case from the database
-				}
-			})
-		}),
-
-	requestAccess: protectedProcedure.mutation(async ({ ctx }) => {
-		return ctx.db.socketIdentity.update({
-			where: { socketId: ctx.session.address },
-			data: {
-				requestedAt: new Date()
-			}
-		})
-	}),
-
-	getReferralStats: anonymousProtectedProcedure.query(async ({ ctx }) => {
-		const now = new Date()
-
-		// Get the last 4 weeks
-		const periods = Array.from({ length: 4 })
-			.map((_, i) => {
-				const date = new Date()
-				// Go back i weeks from now
-				date.setDate(now.getDate() - i * 7)
-				return date
-			})
-			.reverse()
-
-		const referralCounts = await Promise.all(
-			periods.map(async date => {
-				// Calculate start and end of the week
-				const startOfWeek = new Date(date)
-				startOfWeek.setDate(date.getDate() - date.getDay()) // Sunday
-				startOfWeek.setHours(0, 0, 0, 0)
-
-				const endOfWeek = new Date(startOfWeek)
-				endOfWeek.setDate(startOfWeek.getDate() + 6) // Saturday
-				endOfWeek.setHours(23, 59, 59, 999)
-
-				const count = await ctx.db.socketIdentity.count({
-					where: {
-						approvedAt: {
-							gte: startOfWeek,
-							lte: endOfWeek
-						},
-						referredBy: ctx.session.address
-					}
-				})
-
-				return count
-			})
-		)
-
-		return {
-			counts: referralCounts,
-			periods: periods.map(date => {
-				const startOfWeek = new Date(date)
-				startOfWeek.setDate(date.getDate() - date.getDay())
-				return {
-					weekStart: startOfWeek.toISOString(),
-					weekEnd: new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
-				}
-			})
-		}
-	}),
-
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {
@@ -315,5 +192,6 @@ export const socket = createTRPCRouter({
 		}),
 
 	balances,
-	companion
+	companion,
+	referral
 })
