@@ -1,10 +1,10 @@
-import { useSession } from "next-auth/react"
-import { FC, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { FC, useEffect, useState } from "react"
 
 import { Asterisk } from "lucide-react"
 
 import { Button, Search } from "@/components"
-import { cn, greenGradientStyle } from "@/lib"
+import { cn, greenGradientStyle, useConnect } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
@@ -17,20 +17,27 @@ const TWEET_TEMPLATES = [
 ]
 
 export const ReferralRequired: FC = () => {
-	const { data: session } = useSession()
+	const { account } = useConnect()
 	const { socket } = useSocket()
 
-	const { mutate, error, isLoading, isError, isSuccess } = api.socket.submitReferral.useMutation()
-	const requestAccess = api.socket.requestAccess.useMutation()
+	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation()
+	const requestAccess = api.socket.referral.request.useMutation()
 
+	const searchParams = useSearchParams()
 	const [referrerAddress, setReferralAddress] = useState("")
 
-	const isAuthenticated = session?.user.id?.startsWith("0x")
-	const isVisible = Boolean(isAuthenticated && socket && !socket.identity?.approvedAt)
+	useEffect(() => {
+		const rfid = searchParams.get("rfid")
+		if (rfid) {
+			setReferralAddress(rfid)
+		}
+	}, [searchParams])
+
+	const isVisible = Boolean(account.isAuthenticated && socket && !socket.identity?.approvedAt)
 
 	const handleRequestAccess = async () => {
 		const randomTweet = TWEET_TEMPLATES[Math.floor(Math.random() * TWEET_TEMPLATES.length)]
-		const tweetText = encodeURIComponent(randomTweet + `\n\nMy address: ${session?.user.id}`)
+		const tweetText = encodeURIComponent(randomTweet + `\n\nMy address: ${account.address}`)
 		window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank")
 		await requestAccess.mutateAsync()
 	}
@@ -39,8 +46,8 @@ export const ReferralRequired: FC = () => {
 
 	return (
 		<div className="flex w-full flex-col items-start justify-between bg-white p-2">
-			<div className="flex h-full w-full justify-center items-center rounded-lg border-[1px] border-grayscale-100">
-				<div className="flex flex-col items-center max-w-[480px]">
+			<div className="flex h-full w-full items-center justify-center rounded-lg border-[1px] border-grayscale-100">
+				<div className="flex max-w-[480px] flex-col items-center">
 					<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
 					<p className="mb-8 text-center font-bold text-black/40">
 						Enter the referral code you received to get started or request one by tagging{" "}
@@ -58,7 +65,8 @@ export const ReferralRequired: FC = () => {
 					<div className="w-full space-y-6">
 						{isSuccess && (
 							<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
-								Successfully approved! If you are not redirected in a few seconds, please refresh the page.
+								Successfully approved! If you are not redirected in a few seconds, please refresh the
+								page.
 							</div>
 						)}
 
@@ -82,8 +90,10 @@ export const ReferralRequired: FC = () => {
 
 								<button
 									className={cn(
-										"w-full py-4 font-bold rounded-lg",
-										referrerAddress && isLoading === false ? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white" : "bg-white border-[1px] border-plug-green text-plug-green"
+										"w-full rounded-lg py-4 font-bold",
+										referrerAddress && isLoading === false
+											? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
+											: "border-[1px] border-plug-green bg-white text-plug-green"
 									)}
 									onClick={() => referrerAddress && mutate({ referrerAddress })}
 									disabled={isLoading || !referrerAddress}
@@ -93,7 +103,7 @@ export const ReferralRequired: FC = () => {
 							</div>
 
 							{isError && error && (
-								<p className="text-red-500 font-bold text-center max-w-[320px] mx-auto">
+								<p className="mx-auto max-w-[320px] text-center font-bold text-red-500">
 									{error.message}
 								</p>
 							)}
