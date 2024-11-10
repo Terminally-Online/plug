@@ -1,4 +1,4 @@
-import { getCsrfToken, signIn } from "next-auth/react"
+import { getCsrfToken, signIn, useSession } from "next-auth/react"
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect } from "react"
 
 import { UserRejectedRequestError } from "viem"
@@ -29,7 +29,9 @@ import {
 const ConnectionContext = createContext<
 	| {
 			connection: UseConnectReturnType<ResolvedRegister["config"]>
-			account: UseAccountReturnType<ResolvedRegister["config"]>
+			account: UseAccountReturnType<ResolvedRegister["config"]> & {
+				isAuthenticated: boolean
+			}
 			sign: UseSignMessageReturnType
 			prove: (index: number, from?: string, address?: string) => Promise<void>
 	  }
@@ -37,8 +39,6 @@ const ConnectionContext = createContext<
 >(undefined)
 
 export function ConnectionProvider({ children }: PropsWithChildren) {
-	const { navigate } = useColumns()
-
 	const [walletConnectProvider, setWalletConnectProvider] = useAtom(walletConnectProviderAtom)
 	const [walletConnectURI, setWalletConnectURI] = useAtom(walletConnectURIAtom)
 	const setAuthenticationLoading = useSetAtom(authenticationLoadingAtom)
@@ -56,6 +56,11 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const account = useAccount()
 	const sign = useSignMessage()
 	const { disconnect } = useDisconnect()
+
+	const { navigate } = useColumns()
+	const { data: session } = useSession()
+
+	const isAuthenticated = (account.address === session?.user.id && session?.user.id?.startsWith("0x")) || false
 
 	/**
 	 * Trigger and handle the signing of a message to prove ownership of the address.
@@ -162,7 +167,9 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	}, [account.address, walletConnectProvider, walletConnectURI, init, setWalletConnectURI])
 
 	return (
-		<ConnectionContext.Provider value={{ connection, account, sign, prove }}>{children}</ConnectionContext.Provider>
+		<ConnectionContext.Provider value={{ connection, account: { ...account, isAuthenticated }, sign, prove }}>
+			{children}
+		</ConnectionContext.Provider>
 	)
 }
 

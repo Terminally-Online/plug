@@ -1,60 +1,41 @@
 import { useSession } from "next-auth/react"
 import { FC, useState } from "react"
 
-import { SearchIcon } from "lucide-react"
+import { Asterisk } from "lucide-react"
 
-import { Button } from "@/components/shared"
-import { cn, greenGradientStyle, useClipboard } from "@/lib"
+import { Button, Search } from "@/components"
+import { cn, greenGradientStyle } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
-import { Search } from "../inputs"
+const TWEET_TEMPLATES = [
+	`Yo @onplug_io! Wen automation? Ready to ape into this Plug life fam 🦍`,
+	`@onplug_io ser pls gib access, need to automate my degen plays 🚀`,
+	`gm @onplug_io! Time to stop being poor and start being automated 💸`,
+	`@onplug_io wen moon? Need that alpha automation access rn fr fr 🌙`,
+	`ayoo @onplug_io! I'm ready to become an automation maxi, LFG 🔥`
+]
 
 export const ReferralRequired: FC = () => {
 	const { data: session } = useSession()
 	const { socket } = useSocket()
-	const [referralAddress, setReferralAddress] = useState("")
-	const [error, setError] = useState<string>()
-	const [success, setSuccess] = useState(false)
 
-	const submitReferral = api.socket.submitReferral.useMutation({
-		onError: error => setError(error.message),
-		onSuccess: () => {
-			setSuccess(true)
-			setError(undefined)
-			// Add a small delay before refreshing to show the success message
-			setTimeout(() => {
-				window.location.reload()
-			}, 500)
-		}
-	})
-
+	const { mutate, error, isLoading, isError, isSuccess } = api.socket.submitReferral.useMutation()
 	const requestAccess = api.socket.requestAccess.useMutation()
+
+	const [referrerAddress, setReferralAddress] = useState("")
 
 	const isAuthenticated = session?.user.id?.startsWith("0x")
 	const isVisible = Boolean(isAuthenticated && socket && !socket.identity?.approvedAt)
 
-	if (!isVisible) return null
-
-	const handleSubmitReferral = () => {
-		if (!referralAddress) return
-		submitReferral.mutate({ referrerAddress: referralAddress })
-	}
-
 	const handleRequestAccess = async () => {
-		const tweetTemplates = [
-			`Hey @onplug_io! I'm ready to automate my onchain life with Plug 🔌\n\nMy address: ${session?.user.id}`,
-			`Excited to try @onplug_io - the best way to automate in crypto! 🤖\n\nMy address: ${session?.user.id}`,
-			`Hey @onplug_io - I'm looking to make Plug my new home for onchain activity ⚡\n\nMy address: ${session?.user.id}`,
-			`Need that @onplug_io access to start automating my onchain activities 🥵\n\nMy address: ${session?.user.id}`,
-			`Hey @onplug_io! Let's streamline my crypto life with automated onchain actions ⚡\n\nMy address: ${session?.user.id}`
-		]
-
-		const randomTweet = tweetTemplates[Math.floor(Math.random() * tweetTemplates.length)]
-		const tweetText = encodeURIComponent(randomTweet)
+		const randomTweet = TWEET_TEMPLATES[Math.floor(Math.random() * TWEET_TEMPLATES.length)]
+		const tweetText = encodeURIComponent(randomTweet + `\n\nMy address: ${session?.user.id}`)
 		window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank")
 		await requestAccess.mutateAsync()
 	}
+
+	if (!isVisible) return null
 
 	return (
 		<div className="flex w-full flex-col items-start justify-between bg-white p-2">
@@ -75,23 +56,17 @@ export const ReferralRequired: FC = () => {
 					</p>
 
 					<div className="w-full space-y-6">
-						{error && (
-							<div className="w-full rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-								{error}
-							</div>
-						)}
-
-						{success && (
+						{isSuccess && (
 							<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
-								Successfully approved! Please refresh the page.
+								Successfully approved! If you are not redirected in a few seconds, please refresh the page.
 							</div>
 						)}
 
 						<div className="flex flex-col gap-2">
 							<Search
-								icon={<SearchIcon size={14} className="opacity-60" />}
+								icon={<Asterisk size={14} className="opacity-60" />}
 								placeholder="Referral Code"
-								search={referralAddress}
+								search={referrerAddress}
 								handleSearch={setReferralAddress}
 								clear
 							/>
@@ -107,15 +82,21 @@ export const ReferralRequired: FC = () => {
 
 								<button
 									className={cn(
-										"w-full py-4 font-bold rounded-lg", 
-										referralAddress ? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white" : "bg-white border-[1px] border-plug-green text-plug-green"
+										"w-full py-4 font-bold rounded-lg",
+										referrerAddress && isLoading === false ? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white" : "bg-white border-[1px] border-plug-green text-plug-green"
 									)}
-									onClick={handleSubmitReferral}
-									disabled={submitReferral.isLoading || !referralAddress}
+									onClick={() => referrerAddress && mutate({ referrerAddress })}
+									disabled={isLoading || !referrerAddress}
 								>
-									{submitReferral.isLoading ? "Submitting..." : "Submit Code"}
+									{isLoading ? "Submitting..." : "Submit Code"}
 								</button>
 							</div>
+
+							{isError && error && (
+								<p className="text-red-500 font-bold text-center max-w-[320px] mx-auto">
+									{error.message}
+								</p>
+							)}
 						</div>
 					</div>
 				</div>

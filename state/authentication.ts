@@ -43,6 +43,7 @@ export const socketAtom = atom(get => {
 
 	const isDemo = socket?.id.startsWith("demo") || false
 	const isAnonymous = socket === undefined || isDemo || socket?.id.startsWith("anonymous") || false
+	const isApproved = (socket && Boolean(socket.identity?.approvedAt)) || false
 
 	const name = socket?.identity?.ens?.name ?? undefined
 	const avatar = socket?.identity?.ens?.avatar ?? undefined
@@ -50,6 +51,7 @@ export const socketAtom = atom(get => {
 	return {
 		isDemo,
 		isAnonymous,
+		isApproved,
 		name,
 		avatar,
 		socket
