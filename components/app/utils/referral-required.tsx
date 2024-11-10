@@ -9,29 +9,24 @@ import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
 const TWEET_TEMPLATES = [
-	`Yo @onplug_io! Wen automation? Ready to ape into this Plug life fam 🦍`,
-	`@onplug_io ser pls gib access, need to automate my degen plays 🚀`,
-	`gm @onplug_io! Time to stop being poor and start being automated 💸`,
-	`@onplug_io wen moon? Need that alpha automation access rn fr fr 🌙`,
-	`ayoo @onplug_io! I'm ready to become an automation maxi, LFG 🔥`
+	`Just discovered @onplug_io - a game-changing platform for automated trading. Can't wait to get access!`,
+	`Excited about @onplug_io's smart automation tools for trading. Looking forward to joining the community!`,
+	`@onplug_io's automated trading platform looks incredible. Would love to be part of the early access group!`,
+	`The future of trading is here with @onplug_io. Ready to experience next-level automation!`,
+	`Heard amazing things about @onplug_io's trading automation. Hope to get access soon!`
 ]
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export const ReferralRequired: FC = () => {
+	const searchParams = useSearchParams()
 	const { account } = useConnect()
 	const { socket } = useSocket()
 
 	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation()
 	const requestAccess = api.socket.referral.request.useMutation()
 
-	const searchParams = useSearchParams()
-	const [referrerAddress, setReferralAddress] = useState("")
-
-	useEffect(() => {
-		const rfid = searchParams.get("rfid")
-		if (rfid) {
-			setReferralAddress(rfid)
-		}
-	}, [searchParams])
+	const [referralCode, setReferralAddress] = useState("")
 
 	const isVisible = Boolean(account.isAuthenticated && socket && !socket.identity?.approvedAt)
 
@@ -41,6 +36,20 @@ export const ReferralRequired: FC = () => {
 		window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank")
 		await requestAccess.mutateAsync()
 	}
+
+	useEffect(() => {
+		const rfid = searchParams.get("rfid")
+
+		if (rfid === null) return
+
+		setReferralAddress(rfid)
+	}, [searchParams])
+
+	useEffect(() => {
+		if (UUID_REGEX.test(referralCode) === false) return
+
+		mutate(referralCode)
+	}, [referralCode, mutate])
 
 	if (!isVisible) return null
 
@@ -74,7 +83,7 @@ export const ReferralRequired: FC = () => {
 							<Search
 								icon={<Asterisk size={14} className="opacity-60" />}
 								placeholder="Referral Code"
-								search={referrerAddress}
+								search={referralCode}
 								handleSearch={setReferralAddress}
 								clear
 							/>
@@ -91,19 +100,19 @@ export const ReferralRequired: FC = () => {
 								<button
 									className={cn(
 										"w-full rounded-lg py-4 font-bold",
-										referrerAddress && isLoading === false
+										referralCode && isLoading === false
 											? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
 											: "border-[1px] border-plug-green bg-white text-plug-green"
 									)}
-									onClick={() => referrerAddress && mutate({ referrerAddress })}
-									disabled={isLoading || !referrerAddress}
+									onClick={() => referralCode && mutate(referralCode)}
+									disabled={isLoading || !referralCode}
 								>
 									{isLoading ? "Submitting..." : "Submit Code"}
 								</button>
 							</div>
 
 							{isError && error && (
-								<p className="mx-auto max-w-[320px] text-center font-bold text-red-500">
+								<p className="mx-auto mt-2 max-w-[360px] text-center text-sm font-bold text-red-500">
 									{error.message}
 								</p>
 							)}
