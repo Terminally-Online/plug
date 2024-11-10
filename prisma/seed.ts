@@ -39,7 +39,8 @@ const seedSockets = async () => {
 									name: socket.name,
 									avatar: socket.avatar
 								}
-							}
+							},
+							approvedAt: new Date()
 						},
 						update: {
 							ens: {
@@ -53,7 +54,8 @@ const seedSockets = async () => {
 										avatar: socket.avatar
 									}
 								}
-							}
+							},
+							approvedAt: new Date()
 						}
 					}
 				}
@@ -68,7 +70,8 @@ const seedSockets = async () => {
 								name: socket.name,
 								avatar: socket.avatar
 							}
-						}
+						},
+						approvedAt: new Date()
 					}
 				}
 			}
