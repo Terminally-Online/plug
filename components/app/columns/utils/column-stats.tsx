@@ -50,29 +50,28 @@ const ProfileStat: FC<{
 			>
 				{stats.map((stat, i) => (
 					<React.Fragment key={i}>
-						{stat !== null && (
-							<>
-								<div
-									className={cn(
-										"relative w-full bg-gradient-to-tr transition-all duration-200 ease-in-out",
-										hovering !== undefined && hovering !== i && "grayscale filter",
-										i === 0 && "rounded-b-lg",
-										i === stats.length - 1 && "rounded-t-lg"
-									)}
-									style={{
-										height: stat === null ? 0 : (stat / total) * 400,
-										background: `linear-gradient(30deg, ${gradients[i % gradients.length]})`
-									}}
-									onMouseEnter={() => {
-										setHovering(i)
-									}}
-									onMouseLeave={() => {
-										setHovering(undefined)
-									}}
-								/>
-								<div className="relative h-[1px] w-full bg-white" />
-							</>
-						)}
+						<>
+							<div
+								className={cn(
+									"relative w-full bg-gradient-to-tr transition-all duration-200 ease-in-out",
+									hovering !== undefined && hovering !== i && "grayscale filter",
+									i === 0 && "rounded-b-lg",
+									i === stats.length - 1 && "rounded-t-lg"
+								)}
+								style={{
+									height: stat === null ? 0 : (stat / total) * 400,
+									minHeight: 8,
+									background: `linear-gradient(30deg, ${gradients[i % gradients.length]})`
+								}}
+								onMouseEnter={() => {
+									setHovering(i)
+								}}
+								onMouseLeave={() => {
+									setHovering(undefined)
+								}}
+							/>
+							<div className="relative h-[1px] w-full bg-white" />
+						</>
 					</React.Fragment>
 				))}
 			</div>
@@ -84,7 +83,7 @@ const ProfileStats = () => {
 	const [hoveredPeriod, setHoveredPeriod] = useState<number | undefined>(undefined)
 	const [toggledStats, setToggledStats] = useState<boolean[]>([false, false, false, false])
 
-	const { data: referralData } = api.socket.getReferralStats.useQuery()
+	const { data: referralData } = api.socket.referral.stats.useQuery()
 
 	const stats = baseStats.map((period, index) => [...period, referralData?.counts[index] ?? 0])
 
@@ -167,7 +166,7 @@ const ProfileStats = () => {
 							key={i}
 							index={i}
 							isActive={i === stats.length - 1}
-							stats={stats[i].map((stat, j) => (toggledStats[j] ? null : stat))}
+							stats={stats[i].map((stat, j) => (toggledStats[j] ? 0 : stat))}
 							max={max}
 							onHover={setHoveredPeriod}
 						/>
