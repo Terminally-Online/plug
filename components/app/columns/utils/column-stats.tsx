@@ -1,6 +1,8 @@
 import { useSession } from "next-auth/react"
 import React, { FC, useState } from "react"
 
+import { CheckCircle, Clipboard } from "lucide-react"
+
 import { Button, Counter } from "@/components"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
@@ -59,7 +61,7 @@ const ProfileStat: FC<{
 									i === stats.length - 1 && "rounded-t-lg"
 								)}
 								style={{
-									height: stat === null ? 0 : (stat / total) * 400,
+									height: stat === null ? 0 : `${(stat / total) * 100}%`,
 									minHeight: 8,
 									background: `linear-gradient(30deg, ${gradients[i % gradients.length]})`
 								}}
@@ -95,7 +97,7 @@ const ProfileStats = () => {
 	}
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex h-full flex-col gap-8">
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row gap-2">
 					<div
@@ -159,8 +161,8 @@ const ProfileStats = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-col">
-				<div className="relative flex flex-row gap-2">
+			<div className="flex h-full flex-col">
+				<div className="relative flex h-full flex-row gap-2">
 					{Array.from({ length: stats.length }).map((_, i) => (
 						<ProfileStat
 							key={i}
@@ -188,9 +190,6 @@ export const ColumnStats: FC<{ index: number }> = () => {
 
 	if (!socket || !session?.user.id) return null
 
-	// Get the display address (ENS or socket address)
-	const displayAddress = socket.identity?.ens?.name || socket.socketAddress
-
 	const handleCopy = async () => {
 		try {
 			await navigator.clipboard.writeText(socket.id)
@@ -204,12 +203,22 @@ export const ColumnStats: FC<{ index: number }> = () => {
 	return (
 		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
 			<ProfileStats />
-			<div className="flex flex-col gap-2">
-				<p className="text-sm text-grayscale-300">Refer users with your address</p>
-				<Button className="w-full truncate" onClick={handleCopy}>
-					{copied ? "Copied!" : displayAddress}
-				</Button>
-			</div>
+			<Button
+				className="flex w-full flex-row items-center justify-center gap-2 truncate py-4"
+				onClick={handleCopy}
+			>
+				{copied ? (
+					<>
+						<CheckCircle size={14} className="opacity-60" />
+						Copied!
+					</>
+				) : (
+					<>
+						<Clipboard size={14} className="opacity-60" />
+						Copy Referral Link
+					</>
+				)}
+			</Button>
 		</div>
 	)
 }
