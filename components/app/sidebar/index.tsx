@@ -29,7 +29,7 @@ const ConsoleSidebarAction: FC<
 > = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
 	<div
 		className={cn(
-			"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-4 transition-all duration-200 ease-in-out",
+			"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-2 transition-all duration-200 ease-in-out",
 			className
 		)}
 		{...props}
@@ -98,7 +98,7 @@ const ConsoleSidebarPane = () => {
 							width: `${width}px`
 						}}
 					>
-						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-4">
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-2">
 							<Header
 								label={
 									is.companion
@@ -185,30 +185,23 @@ export const ConsoleSidebar = () => {
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
 			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
-				<div className={cn("flex w-full flex-col gap-4 p-4")}>
+				<div className={cn("flex w-full flex-col gap-4 p-2")}>
 					{session && (
 						<button
-							className="relative mx-4 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
+							className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
 							onClick={() => handleSidebar("authenticating")}
 						>
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.2 }}
-							>
-								{avatar ? (
-									<Image
-										src={avatar}
-										alt="ENS Avatar"
-										width={64}
-										height={64}
-										className="h-full w-full rounded-sm"
-									/>
-								) : (
-									<Avatar name={socket?.id ?? ""} />
-								)}
-							</motion.div>
+							{avatar ? (
+								<Image
+									src={avatar}
+									alt="ENS Avatar"
+									width={64}
+									height={64}
+									className="h-full w-full rounded-sm"
+								/>
+							) : (
+								<Avatar name={socket?.id ?? ""} />
+							)}
 						</button>
 					)}
 
@@ -265,7 +258,7 @@ export const ConsoleSidebar = () => {
 					/>
 				</div>
 
-				<div className="mt-auto flex w-full flex-col items-center gap-4 p-4">
+				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
 					<ConsoleSidebarAction
 						className={cn(is.expanded && "pr-16")}
 						icon={
