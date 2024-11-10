@@ -1,7 +1,6 @@
 import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { motion } from "framer-motion"
 import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, Wallet, X } from "lucide-react"
 
 import {
