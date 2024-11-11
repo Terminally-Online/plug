@@ -212,21 +212,8 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := struct {
-		Plug struct {
-			Socket string      `json:"socket"`
-			Plugs  interface{} `json:"plugs"`
-			Solver string      `json:"solver"`
-			Salt   string      `json:"salt"`
-		} `json:"plug"`
-		Signature interface{} `json:"signature"`
-	}{
-		Plug: struct {
-			Socket string      `json:"socket"`
-			Plugs     interface{} `json:"plugs"`
-			Solver string      `json:"solver"`
-			Salt   string      `json:"salt"`
-		}{
+	response := types.Plugs{
+		Plug: types.Plug{
 			Socket: req.From,
 			Plugs:  transaction,
 			Solver: "0x" + common.Bytes2Hex(solver),
