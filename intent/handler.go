@@ -3,6 +3,7 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"solver/solver"
 	"solver/types"
@@ -11,8 +12,8 @@ import (
 
 type IntentRequest struct {
 	Action  types.Action    `json:"action"`
-	ChainId int             `json:"chainId"`
-	From    string          `json:"from"`
+	ChainId int            `json:"chainId"`
+	From    string         `json:"from"`
 	Inputs  json.RawMessage `json:"inputs"`
 }
 
@@ -30,7 +31,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
 	action := types.Action(r.URL.Query().Get("action"))
 
-	// Case 1: No protocol - return all schemas for all protocols
+	// Case 1: No protocol - return all schemas for all protocols without fields included.
 	if protocol == "" {
 		allSchemas := make(map[types.Protocol]types.ProtocolSchema)
 
@@ -49,7 +50,20 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 					return
 				}
-				protocolSchema.Schema[supportedAction] = *schema
+				
+				// Make a deep copy of the schema
+				schemaCopy := types.Schema{
+					Fields: make([]types.SchemaField, len(schema.Fields)),
+				}
+				
+				// Deep copy each field
+				for i, field := range schema.Fields {
+					fieldCopy := field // Copy the field struct
+					fieldCopy.Options = nil // Clear options on the copy
+					schemaCopy.Fields[i] = fieldCopy
+				}
+				
+				protocolSchema.Schema[supportedAction] = schemaCopy
 			}
 			allSchemas[protocol] = protocolSchema
 		}
@@ -66,11 +80,12 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Case 2: Protocol only - return all schemas for that protocol
+	// Case 2: Protocol only - return all schemas for that protocol with fields included.
 	if action == "" {
 		protocolSchema := types.ProtocolSchema{
 			Metadata: types.ProtocolMetadata{
 				Icon: handler.GetIcon(),
+				Tags: handler.GetTags(),
 			},
 			Schema: make(map[types.Action]types.Schema),
 		}
@@ -109,6 +124,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	protocolSchema := types.ProtocolSchema{
 		Metadata: types.ProtocolMetadata{
 			Icon: handler.GetIcon(),
+			Tags: handler.GetTags(),
 		},
 		Schema: map[types.Action]types.Schema{
 			action: *schema,
