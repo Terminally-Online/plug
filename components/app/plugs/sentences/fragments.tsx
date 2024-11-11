@@ -2,7 +2,8 @@ import { FC, useMemo } from "react"
 
 import { DynamicFragment, StaticFragment } from "@/components"
 import { Action } from "@/lib"
-import { ACTION_REGEX, useActions } from "@/state"
+import { api } from "@/server/client"
+import { ACTION_REGEX } from "@/state"
 
 export const Fragments: FC<{
 	index: number
@@ -11,9 +12,14 @@ export const Fragments: FC<{
 	actionIndex: number
 	preview: boolean
 }> = ({ index, item, action, actionIndex, preview }) => {
-	const [actions] = useActions()
+	const { data: actions } = api.solver.actions.get.useQuery({
+		protocol: action.protocol,
+		action: action.action
+	})
 
 	const fragments = useMemo(() => {
+		if (!actions) return []
+
 		return actions[action.protocol].schema[action.action].sentence.split(ACTION_REGEX) as string[]
 	}, [actions, action])
 
@@ -22,6 +28,10 @@ export const Fragments: FC<{
 	}, [fragments])
 
 	let dynamicIndex = -1
+
+	const protocol = actions?.[action.protocol]
+
+	if (!protocol) return null
 
 	return (
 		<>
@@ -37,6 +47,7 @@ export const Fragments: FC<{
 							fragmentIndex={fragmentIndex}
 							dynamicIndex={dynamicIndex}
 							fragment={fragment}
+							protocol={protocol}
 							action={action}
 							dynamic={dynamic}
 							preview={preview}

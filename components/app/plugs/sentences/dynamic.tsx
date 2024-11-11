@@ -4,7 +4,8 @@ import { FC, useMemo } from "react"
 import { Hash } from "lucide-react"
 
 import { Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
-import { Action, cn, formatInputName, formatTitle, getIndexes, Value } from "@/lib"
+import { Action, ActionSchema, cn, formatInputName, formatTitle, getIndexes, Value } from "@/lib"
+import { api } from "@/server/client"
 import { useActions, useColumnStore, usePlugStore } from "@/state"
 
 export const DynamicFragment: FC<{
@@ -13,18 +14,16 @@ export const DynamicFragment: FC<{
 	actionIndex: number
 	fragmentIndex: number
 	dynamicIndex: number
+	protocol: ActionSchema
 	action: Action
 	fragment: string
 	dynamic: string[]
 	preview: boolean
-}> = ({ index, item, action, actionIndex, dynamicIndex, fragment, dynamic, preview }) => {
+}> = ({ index, item, protocol, action, actionIndex, dynamicIndex, fragment, dynamic, preview }) => {
 	const { data: session } = useSession()
 	const { isFrame, handle } = useColumnStore(index, `${actionIndex}-${dynamicIndex}`)
-	const { plug, actions, handle: plugHandle } = usePlugStore(item)
+	const { plug, actions: plugActions, handle: plugHandle } = usePlugStore(item)
 
-	const [solverActions] = useActions()
-
-	const protocol = solverActions[action.protocol]
 	const staticAction = protocol.schema[action.action]
 
 	const own = plug && session && session.address === plug.socketId
@@ -59,7 +58,7 @@ export const DynamicFragment: FC<{
 			plugHandle.action.edit({
 				id: plug?.id,
 				actions: JSON.stringify(
-					actions.map((action, nestedActionIndex) => ({
+					plugActions.map((action, nestedActionIndex) => ({
 						...action,
 						values: action.values.map((actionValue, valueIndex) => {
 							if (actionIndex !== nestedActionIndex) return actionValue
