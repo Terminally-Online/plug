@@ -69,6 +69,17 @@ Table UserSocket {
   referrals SocketIdentity [not null]
 }
 
+Table View {
+  date DateTime [not null]
+  views Int [not null, default: 0]
+  workflow Workflow [not null]
+  workflowId String [not null]
+
+  indexes {
+    (workflowId, date) [pk]
+  }
+}
+
 Table Workflow {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
@@ -84,6 +95,7 @@ Table Workflow {
   socket UserSocket [not null]
   socketId String [not null]
   executions Execution [not null]
+  views View [not null]
 }
 
 Table Execution {
@@ -305,6 +317,8 @@ Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: SocketIdentity.referrerId - UserSocket.id [delete: Cascade]
+
+Ref: View.workflowId > Workflow.id
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 

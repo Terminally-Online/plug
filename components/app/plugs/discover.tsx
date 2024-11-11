@@ -5,7 +5,7 @@ import { SearchIcon } from "lucide-react"
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
-import { COLUMN_KEYS } from "@/state"
+import { COLUMNS } from "@/state"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -45,7 +45,7 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 			/>
 
 			<Container>
-				<PlugGrid index={index} className="mb-4" from={COLUMN_KEYS.DISCOVER} plugs={visiblePlugs} />
+				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.DISCOVER} plugs={visiblePlugs} />
 			</Container>
 
 			<Callout.EmptyPlugs index={index} isEmpty={(search === "" && plugs && plugs.length === 0) || false} />

@@ -13,19 +13,18 @@ import {
 	Search,
 	ShareFrame
 } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cn } from "@/lib"
-import { MOBILE_INDEX, useColumns } from "@/state"
+import { COLUMNS, useColumnStore, usePlugData } from "@/state"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
-	index = -1,
+	index = COLUMNS.MOBILE_INDEX,
 	item,
 	from,
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { frame, schedule } = useColumns(index)
-	const { plug } = usePlugs(item)
+	const { handle } = useColumnStore(index)
+	const { plug } = usePlugData(item)
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
 
@@ -34,9 +33,9 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	useEffect(() => {
 		if (!plug || plug.actions !== "[]" || hasOpenedActions) return
 
-		frame(`${item}-actions`)
+		handle.frame(`${item}-actions`)
 		setHasOpenedActions(true)
-	}, [item, plug, frame, hasOpenedActions])
+	}, [item, handle, plug, hasOpenedActions])
 
 	if (!plug || !session) return null
 
@@ -49,7 +48,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 				<div
 					className={cn(
 						"absolute -bottom-4 left-0 right-0 z-[-1] h-[140px] bg-white",
-						index !== MOBILE_INDEX && "rounded-b-lg"
+						index !== COLUMNS.MOBILE_INDEX && "rounded-b-lg"
 					)}
 				/>
 
@@ -58,7 +57,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						className="px-4 pt-16"
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search protocols and actions"
-						handleOnClick={() => frame(`${item}-actions`)}
+						handleOnClick={() => handle.frame(`${item}-actions`)}
 					/>
 				)}
 
@@ -67,14 +66,14 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							schedule() // NOTE: Clear the schedule when we have a one-off run use.
-							frame("run")
+							handle.schedule() // NOTE: Clear the schedule when we have a one-off run use.
+							handle.frame("run")
 						}}
 					>
 						Run
 					</Button>
 
-					<Button className="w-full py-4" onClick={() => frame("schedule")}>
+					<Button className="w-full py-4" onClick={() => handle.frame("schedule")}>
 						Schedule
 					</Button>
 				</div>

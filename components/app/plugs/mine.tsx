@@ -8,7 +8,7 @@ import { Workflow } from "@prisma/client"
 import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
-import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
+import { COLUMNS, useColumnData, useSocket } from "@/state"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -16,7 +16,6 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	...props
 }) => {
 	const { socket } = useSocket()
-	const { column, isExternal } = useColumns(index)
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
 
@@ -25,17 +24,15 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
 
-	const representative = isExternal && column && column.viewAs ? column.viewAs : socket?.id
-
 	const { fetchNextPage, isLoading } = api.plugs.infinite.useInfiniteQuery(
 		{
-			address: isExternal && column && column.viewAs ? column.viewAs.socketAddress : socket?.id,
+			address: socket?.id,
 			search,
 			tag,
 			limit: 40
 		},
 		{
-			enabled: representative !== undefined,
+			enabled: socket?.id !== undefined,
 			getNextPageParam(lastPage) {
 				return lastPage.nextCursor
 			},
@@ -82,7 +79,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 			/>
 
 			<Container>
-				<PlugGrid index={index} className="mb-4" from={COLUMN_KEYS.MY_PLUGS} plugs={visiblePlugs} />
+				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
 			<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />

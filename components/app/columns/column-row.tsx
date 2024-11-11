@@ -1,15 +1,17 @@
+import { memo } from "react"
+
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
-export const ConsoleColumnRow = () => {
-	const { columns, move } = useColumns()
+export const ConsoleColumnRow = memo(() => {
+	const { columns, handle } = useColumnStore()
 
 	const onDragEnd = (result: DropResult) => {
 		if (!columns || !result.destination) return
 
-		move({
+		handle.move({
 			from: result.source.index,
 			to: result.destination.index
 		})
@@ -22,10 +24,10 @@ export const ConsoleColumnRow = () => {
 					{provided => (
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
 							{columns
-								.filter(column => column.index >= 0)
+								.filter(column => column?.index >= 0)
 								.sort((a, b) => a.index - b.index)
 								.map(column => (
-									<ConsoleColumn key={String(column.id)} index={column.index} />
+									<ConsoleColumn key={String(column.id)} id={column.id} />
 								))}
 							{provided.placeholder}
 						</div>
@@ -36,4 +38,6 @@ export const ConsoleColumnRow = () => {
 			<ColumnAdd />
 		</div>
 	)
-}
+})
+
+ConsoleColumnRow.displayName = "ConsoleColumnRow"

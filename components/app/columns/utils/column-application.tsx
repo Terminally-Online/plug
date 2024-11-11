@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/shared"
 import { useBeforeInstall } from "@/contexts"
 import { cn, GTM_EVENTS, useAnalytics } from "@/lib"
-import { Flag, useColumns, useFlags } from "@/state"
+import { Flag, useColumnStore, useFlags } from "@/state"
 
 export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,
@@ -17,7 +17,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 	const { data: session } = useSession()
 	const { prompt, isNativePromptAvailable, instructions } = useBeforeInstall()
 	const { handleFlag } = useFlags()
-	const { remove } = useColumns()
+	const { handle } = useColumnStore()
 
 	const handlePWAInstall = useAnalytics(GTM_EVENTS.CTA_CLICKED, session?.user?.id, true, "/")
 
@@ -28,9 +28,9 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 			if (added) handlePWAInstall()
 
 			handleFlag(Flag.SHOW_PWA, false)
-			remove(index)
+			handle.remove(index)
 		},
-		[index, remove, handleFlag, handlePWAInstall]
+		[index, handle, handleFlag, handlePWAInstall]
 	)
 
 	if (instructions.length === 0) return null

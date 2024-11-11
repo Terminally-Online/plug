@@ -6,14 +6,14 @@ import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Button, Dropdown, Frame } from "@/components"
 import { cn, frequencies } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const ScheduleFrame: FC<{
 	index: number
 	item: string
 }> = ({ index }) => {
 	const { data: session } = useSession()
-	const { column, isFrame, frame, schedule } = useColumns(index, "schedule")
+	const { column, isFrame, handle } = useColumnStore(index, "schedule")
 
 	if (!column) return null
 
@@ -29,7 +29,7 @@ export const ScheduleFrame: FC<{
 				<DayPicker
 					mode="range"
 					selected={column?.schedule?.date}
-					onSelect={date => schedule({ date, repeats: column?.schedule?.repeats || frequencies[0] })}
+					onSelect={date => handle.schedule({ date, repeats: column?.schedule?.repeats || frequencies[0] })}
 					showOutsideDays
 					fixedWeeks
 					weekStartsOn={1}
@@ -83,7 +83,7 @@ export const ScheduleFrame: FC<{
 					placeholder="Frequency"
 					value={column.schedule?.repeats.label || "Once"}
 					options={frequencies}
-					handleClick={() => frame("recurring")}
+					handleClick={() => handle.frame("recurring")}
 				/>
 
 				<Button
@@ -91,7 +91,7 @@ export const ScheduleFrame: FC<{
 						column.schedule && column.schedule.date && column.schedule.date.from ? "primary" : "disabled"
 					}
 					className="w-full py-4"
-					onClick={() => frame("run")}
+					onClick={() => handle.frame("run")}
 					disabled={!column.schedule || !column.schedule.date || !column.schedule.date.from}
 				>
 					{column.schedule && column.schedule.date && column.schedule.date.from ? "Next" : "Select a Date"}

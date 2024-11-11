@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, memo, useEffect, useRef, useState } from "react"
 
 import { ChevronLeft, GitFork, PlugIcon, Settings, Star, X } from "lucide-react"
 
@@ -6,13 +6,11 @@ import { Draggable } from "@hello-pangea/dnd"
 
 import {
 	ADMIN_OPTIONS,
-	Avatar,
 	Button,
 	ColumnAdd,
 	ColumnApplication,
 	ConsoleAdmin,
 	Header,
-	Image,
 	Plug,
 	PlugsDiscover,
 	PlugsMine,
@@ -21,9 +19,8 @@ import {
 	SocketPositionList,
 	SocketTokenList
 } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMN_KEYS, useColumns, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore } from "@/state"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -31,14 +28,12 @@ const MAX_COLUMN_WIDTH = 680
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
 export const ConsoleColumn: FC<{
-	index: number
-}> = ({ index }) => {
+	id: number
+}> = memo(({ id }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { socket } = useSocket()
-	const { column, navigate, resize, remove, frame } = useColumns(index)
-
-	const { plug, handle } = usePlugs(column?.item ?? "")
+	const { column, handle } = useColumnStore(id)
+	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
@@ -55,7 +50,7 @@ export const ConsoleColumn: FC<{
 		const handleMouseUp = () => {
 			setIsResizing(false)
 
-			resize({
+			handle.resize({
 				index: column.index,
 				width
 			})
@@ -70,7 +65,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [column, width, isResizing, resize])
+	}, [handle, column, width, isResizing])
 
 	if (!column) return null
 
@@ -105,7 +100,7 @@ export const ConsoleColumn: FC<{
 											<p className="rounded-sm p-1">
 												{ADMIN_OPTIONS.find(option => option.label === column.key)?.icon ?? (
 													<>
-														{column.key === COLUMN_KEYS.PLUG ? (
+														{column.key === COLUMNS.KEYS.PLUG ? (
 															<PlugIcon size={14} className="opacity-40" />
 														) : (
 															<Star size={14} className="opacity-40" />
@@ -118,7 +113,7 @@ export const ConsoleColumn: FC<{
 												<Button
 													variant="secondary"
 													onClick={() =>
-														navigate({
+														handle.navigate({
 															index: column.index,
 															key: column.from
 														})
@@ -138,25 +133,6 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											{socket && column.viewAs && column.viewAs.id !== socket.id && (
-												<div className="relative h-6 w-6 min-w-6 overflow-hidden rounded-sm">
-													{column.viewAs.identity?.ens?.avatar ? (
-														<Image
-															src={column.viewAs.identity.ens.avatar}
-															alt="ENS Avatar"
-															width={240}
-															height={240}
-															className="rounded-sm"
-														/>
-													) : (
-														<Avatar
-															name={column.viewAs?.id ?? socket.id}
-															className="rounded-sm"
-														/>
-													)}
-												</div>
-											)}
-
 											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
 												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
 													{formatTitle(
@@ -173,7 +149,7 @@ export const ConsoleColumn: FC<{
 														variant="secondary"
 														className="group rounded-sm p-1"
 														onClick={() =>
-															handle.plug.fork({
+															plugHandle.plug.fork({
 																plug: plug.id,
 																index: column.index,
 																from: column.key
@@ -186,7 +162,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => frame(`${column.item}-manage`)}
+														onClick={() => handle.frame(`${column.item}-manage`)}
 													>
 														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -194,7 +170,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => remove(column.index)}
+														onClick={() => handle.remove(column.index)}
 													>
 														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -203,36 +179,36 @@ export const ConsoleColumn: FC<{
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
+									nextOnClick={plug === undefined ? () => handle.remove(column.index) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
 
 							<div className="h-full overflow-y-scroll">
-								{column.key === COLUMN_KEYS.ADD ? (
+								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd />
-								) : column.key === COLUMN_KEYS.DISCOVER ? (
+								) : column.key === COLUMNS.KEYS.DISCOVER ? (
 									<PlugsDiscover index={column.index} className="pt-4" />
-								) : column.key === COLUMN_KEYS.MY_PLUGS ? (
+								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (
 									<PlugsMine index={column.index} className="pt-4" />
-								) : column.key === COLUMN_KEYS.PLUG ? (
+								) : column.key === COLUMNS.KEYS.PLUG ? (
 									<Plug
 										index={column.index}
 										item={column.item}
 										from={column.from}
 										className="px-4 pt-4"
 									/>
-								) : column.key === COLUMN_KEYS.ACTIVITY ? (
+								) : column.key === COLUMNS.KEYS.ACTIVITY ? (
 									<SocketActivity index={column.index} className="px-4 pt-4" />
-								) : column.key === COLUMN_KEYS.TOKENS ? (
+								) : column.key === COLUMNS.KEYS.TOKENS ? (
 									<SocketTokenList index={column.index} expanded={true} className="px-4 pt-4" />
-								) : column.key === COLUMN_KEYS.COLLECTIBLES ? (
+								) : column.key === COLUMNS.KEYS.COLLECTIBLES ? (
 									<SocketCollectionList index={column.index} expanded={true} className="px-4 pt-4" />
-								) : column.key === COLUMN_KEYS.POSITIONS ? (
+								) : column.key === COLUMNS.KEYS.POSITIONS ? (
 									<SocketPositionList index={column.index} className="px-4 pt-4" />
-								) : column.key === COLUMN_KEYS.ADMIN ? (
+								) : column.key === COLUMNS.KEYS.ADMIN ? (
 									<ConsoleAdmin index={column.index} className="px-4 pt-4" />
-								) : column.key === COLUMN_KEYS.APPLICATION ? (
+								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} className="pt-4" />
 								) : (
 									<React.Fragment></React.Fragment>
@@ -256,4 +232,6 @@ export const ConsoleColumn: FC<{
 			</Draggable>
 		</div>
 	)
-}
+})
+
+ConsoleColumn.displayName = "ConsoleColumn"

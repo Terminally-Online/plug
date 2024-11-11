@@ -4,9 +4,8 @@ import { FC, useMemo } from "react"
 import { Hash } from "lucide-react"
 
 import { Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
-import { usePlugs, Value } from "@/contexts"
-import { Action, cn, formatInputName, formatTitle, getIndexes } from "@/lib"
-import { useActions, useColumns } from "@/state"
+import { Action, cn, formatInputName, formatTitle, getIndexes, Value } from "@/lib"
+import { useActions, useColumnStore, usePlugStore } from "@/state"
 
 export const DynamicFragment: FC<{
 	item: string
@@ -20,8 +19,8 @@ export const DynamicFragment: FC<{
 	preview: boolean
 }> = ({ index, item, action, actionIndex, dynamicIndex, fragment, dynamic, preview }) => {
 	const { data: session } = useSession()
-	const { isFrame, frame } = useColumns(index, `${actionIndex}-${dynamicIndex}`)
-	const { plug, actions, handle } = usePlugs(item)
+	const { isFrame, handle } = useColumnStore(index, `${actionIndex}-${dynamicIndex}`)
+	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	const [solverActions] = useActions()
 
@@ -57,7 +56,7 @@ export const DynamicFragment: FC<{
 				: value !== action.values[parentIndex]
 
 		if (hasChanged) {
-			handle.action.edit({
+			plugHandle.action.edit({
 				id: plug?.id,
 				actions: JSON.stringify(
 					actions.map((action, nestedActionIndex) => ({
@@ -107,7 +106,7 @@ export const DynamicFragment: FC<{
 							? "linear-gradient(to right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
 							: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
 				}}
-				onClick={() => (own ? frame() : undefined)}
+				onClick={() => (own ? handle.frame() : undefined)}
 			>
 				{label}
 			</button>
@@ -144,7 +143,7 @@ export const DynamicFragment: FC<{
 					</span>
 				}
 				visible={isFrame}
-				handleBack={dynamicIndex > 0 ? () => frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
+				handleBack={dynamicIndex > 0 ? () => handle.frame(`${actionIndex}-${dynamicIndex - 1}`) : undefined}
 				hasOverlay
 				hasChildrenPadding={false}
 				scrollBehavior="partial"
@@ -237,7 +236,7 @@ export const DynamicFragment: FC<{
 								}
 								className="w-full py-4"
 								onClick={() => {
-									frame(
+									handle.frame(
 										dynamicIndex + 1 < action.values.length
 											? `${actionIndex}-${dynamicIndex + 1}`
 											: undefined

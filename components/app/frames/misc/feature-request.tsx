@@ -4,10 +4,10 @@ import { Pen, Sparkle } from "lucide-react"
 
 import { Button, Frame, Search } from "@/components"
 import { api } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const FeatureRequestFrame: FC<{ index: number }> = ({ index }) => {
-	const { isFrame } = useColumns(index, "freatureRequest")
+	const { isFrame } = useColumnStore(index, "freatureRequest")
 
 	const [message, setMessage] = useState("")
 

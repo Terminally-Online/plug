@@ -4,10 +4,10 @@ import { Blocks, SearchIcon } from "lucide-react"
 
 import { ActionItem, Frame, Search } from "@/components"
 import { useDebounce } from "@/lib"
-import { useActions, useColumns } from "@/state"
+import { useActions, useColumnStore } from "@/state"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame } = useColumns(index, `${item}-actions`)
+	const { column, isFrame } = useColumnStore(index, `${item}-actions`)
 	const [actions] = useActions()
 
 	const [search, debouncedSearch, handleDebounce] = useDebounce("")

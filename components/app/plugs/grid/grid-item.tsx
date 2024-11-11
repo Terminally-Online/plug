@@ -4,12 +4,12 @@ import { Workflow } from "@prisma/client"
 
 import { Accordion } from "@/components/shared"
 import { colors, formatTitle } from "@/lib"
-import { COLUMN_KEYS, useColumns } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state"
 
 type Props = { index: number; from: string; plug: Workflow | undefined }
 
 export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
-	const { navigate } = useColumns()
+	const { handle } = useColumnStore()
 
 	const loading = plug === undefined
 
@@ -18,9 +18,9 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 			onExpand={
 				plug
 					? () =>
-							navigate({
+							handle.navigate({
 								index,
-								key: COLUMN_KEYS.PLUG,
+								key: COLUMNS.KEYS.PLUG,
 								item: plug.id,
 								from
 							})

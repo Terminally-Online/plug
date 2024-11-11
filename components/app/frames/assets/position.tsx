@@ -5,7 +5,7 @@ import { ExternalLink, EyeOff } from "lucide-react"
 import { Counter, Frame, Image, SocketTokenPriceChart, TokenImage } from "@/components"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const PositionFrame: FC<{
 	index: number
@@ -13,7 +13,7 @@ export const PositionFrame: FC<{
 }> = ({ index, protocol }) => {
 	const { positions } = protocol
 
-	const { isFrame } = useColumns(index, `${protocol.name}-position`)
+	const { isFrame } = useColumnStore(index, `${protocol.name}-position`)
 
 	const [color, setColor] = useState("")
 	const [colors, setColors] = useState<Record<string, string>>({})

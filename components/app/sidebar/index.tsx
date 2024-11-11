@@ -13,10 +13,9 @@ import {
 	Header,
 	Image
 } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { useSidebar, useSocket } from "@/state"
+import { usePlugStore, useSidebar, useSocket } from "@/state"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
@@ -178,7 +177,7 @@ export const ConsoleSidebar = () => {
 	const { data: session } = useSession()
 
 	const { avatar, socket } = useSocket()
-	const { handle: handlePlugs } = usePlugs("NOT_IMPLEMENTED")
+	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
 	const { is, toggleExpanded, handleSidebar } = useSidebar()
 
 	return (

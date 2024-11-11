@@ -7,15 +7,15 @@ import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Fra
 import { useActivities } from "@/contexts"
 import { chains, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { COLUMN_KEYS, useColumns } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state"
 
 export const ExecutionFrame: FC<{
 	index: number
 	icon: JSX.Element
 	activity: RouterOutputs["plugs"]["activity"]["get"][number]
 }> = ({ index, icon, activity }) => {
-	const { isFrame, navigate } = useColumns(index, `${activity.id}-activity`)
-	const { handle } = useActivities()
+	const { isFrame, handle } = useColumnStore(index, `${activity.id}-activity`)
+	const { handle: activityHandle } = useActivities()
 
 	const actions = useMemo(() => JSON.parse(activity.actions), [activity])
 
@@ -27,11 +27,11 @@ export const ExecutionFrame: FC<{
 				<Button
 					className="my-4 mb-2 mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 					onClick={() =>
-						navigate({
+						handle.navigate({
 							index,
-							key: COLUMN_KEYS.PLUG,
+							key: COLUMNS.KEYS.PLUG,
 							item: activity.workflow.id,
-							from: COLUMN_KEYS.ACTIVITY
+							from: COLUMNS.KEYS.ACTIVITY
 						})
 					}
 				>
@@ -43,7 +43,7 @@ export const ExecutionFrame: FC<{
 					<Button
 						variant="destructive"
 						className="flex flex-row items-center justify-center gap-2 py-4"
-						onClick={() => handle.delete({ id: activity.id })}
+						onClick={() => activityHandle.delete({ id: activity.id })}
 					>
 						<Trash size={14} className="opacity-60" />
 						Delete
@@ -52,7 +52,7 @@ export const ExecutionFrame: FC<{
 					<Button
 						variant="secondary"
 						className="flex w-full flex-row items-center justify-center gap-2 py-4"
-						onClick={() => handle.toggle({ id: activity.id })}
+						onClick={() => activityHandle.toggle({ id: activity.id })}
 					>
 						{activity.status === "active" ? (
 							<>

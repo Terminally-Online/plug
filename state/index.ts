@@ -1,6 +1,7 @@
 export * from "./actions"
 export * from "./authentication"
 export * from "./columns"
+export * from "./plugs"
 export * from "./positions"
 export * from "./sidebar"
 export * from "./flags"

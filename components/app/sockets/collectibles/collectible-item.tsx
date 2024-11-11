@@ -3,14 +3,14 @@ import { FC, useState } from "react"
 
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const SocketCollectibleItem: FC<{
 	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = ({ index, collection, collectible }) => {
-	const { frame } = useColumns(index)
+	const { handle } = useColumnStore(index, `${collection.address}-${collection.chain}-${collectible?.tokenId}`)
 
 	const [loading, setLoading] = useState(true)
 
@@ -20,7 +20,7 @@ export const SocketCollectibleItem: FC<{
 			style={{
 				paddingTop: "100%"
 			}}
-			onClick={() => frame(`${collection.address}-${collection.chain}-${collectible?.tokenId}`)}
+			onClick={() => handle.frame()}
 		>
 			<Image
 				src={collectible?.imageUrl || collection.iconUrl || ""}

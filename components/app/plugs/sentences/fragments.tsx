@@ -1,9 +1,8 @@
 import { FC, useMemo } from "react"
 
 import { DynamicFragment, StaticFragment } from "@/components"
-import { ACTION_REGEX } from "@/contexts"
 import { Action } from "@/lib"
-import { useActions } from "@/state"
+import { ACTION_REGEX, useActions } from "@/state"
 
 export const Fragments: FC<{
 	index: number

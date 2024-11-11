@@ -3,13 +3,12 @@ import { FC, useEffect } from "react"
 import { PencilLine, Settings } from "lucide-react"
 
 import { Button, Checkbox, Frame, Search } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cardColors, useDebounce } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugStore } from "@/state"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
-	const { isFrame } = useColumns(index, `${item}-manage`)
-	const { plug, handle } = usePlugs(item)
+	const { isFrame } = useColumnStore(index, `${item}-manage`)
+	const { plug, handle } = usePlugStore(item)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
 

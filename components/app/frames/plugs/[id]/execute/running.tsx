@@ -3,12 +3,11 @@ import { FC, useEffect } from "react"
 import { LoaderCircle } from "lucide-react"
 
 import { Frame } from "@/components"
-import { usePlugs } from "@/contexts"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugData } from "@/state"
 
 export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, frame } = useColumns(index, "running")
-	const { plug } = usePlugs(item)
+	const { isFrame, handle } = useColumnStore(index, "running")
+	const { plug } = usePlugData(item)
 
 	// TODO: We un-implemented this when beginning to store frames on columns.
 	const prevFrame = "NOT_IMPLEMENTED" as string
@@ -16,11 +15,11 @@ export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item 
 	const label = prevFrame ? (prevFrame === "schedule" ? "Signing Intent" : "Building Intent...") : ""
 
 	useEffect(() => {
-		if (isFrame) {
-			const timeout = setTimeout(() => frame("ran"), 2500)
-			return () => clearTimeout(timeout)
-		}
-	}, [isFrame, frame])
+		if (!isFrame) return
+
+		const timeout = setTimeout(() => handle.frame("ran"), 2500)
+		return () => clearTimeout(timeout)
+	}, [isFrame, handle])
 
 	if (!plug) return null
 

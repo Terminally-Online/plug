@@ -1,10 +1,10 @@
 import Image from "next/image"
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useCallback, useMemo, useRef, useState } from "react"
 
 import { Counter, Frame, TokenImage } from "@/components"
-import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
+import { chains, cn, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 import { TransferRecipient } from "./transfer-recipient"
 
@@ -21,7 +21,7 @@ const ImplementationComponent: FC<{
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
-	const { column, transfer } = useColumns(index)
+	const { column, handle } = useColumnStore(index)
 
 	const [isPrecise, setIsPrecise] = useState(false)
 
@@ -40,7 +40,7 @@ const ImplementationComponent: FC<{
 					const x = e.clientX - rect.left
 					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
 
-					transfer(prev => ({
+					handle.transfer(prev => ({
 						...prev,
 						percentage
 					}))
@@ -59,7 +59,7 @@ const ImplementationComponent: FC<{
 						}
 					}
 
-					transfer(prev => ({
+					handle.transfer(prev => ({
 						...prev,
 						precise: finalAmount
 					}))
@@ -79,7 +79,7 @@ const ImplementationComponent: FC<{
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[implementation, transfer]
+		[implementation, handle]
 	)
 
 	const handleAmountChange = (value: string) => {
@@ -87,7 +87,7 @@ const ImplementationComponent: FC<{
 		const parsedValue = parseFloat(numericValue)
 
 		if (numericValue === "") {
-			transfer(prev => ({ ...prev, precise: "0" }))
+			handle.transfer(prev => ({ ...prev, precise: "0" }))
 		} else if (!isNaN(parsedValue)) {
 			const maxBalance = implementation.balance
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
@@ -96,9 +96,9 @@ const ImplementationComponent: FC<{
 			const precise = numericValue.includes(".")
 				? numericValue.split(".")[0] + "." + numericValue.split(".")[1].slice(0, 18)
 				: clampedValue.toString()
-			transfer(prev => ({ ...prev, percentage, precise }))
+			handle.transfer(prev => ({ ...prev, percentage, precise }))
 		} else {
-			transfer(prev => ({ ...prev, precise: numericValue }))
+			handle.transfer(prev => ({ ...prev, precise: numericValue }))
 		}
 	}
 
@@ -198,7 +198,7 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, column, frame, transfer } = useColumns(
+	const { isFrame, column, handle } = useColumnStore(
 		index,
 		index === -2 ? `${token?.symbol}-transfer-deposit` : `${token?.symbol}-transfer-amount`
 	)
@@ -225,7 +225,7 @@ export const TransferAmountFrame: FC<{
 				}
 				label={`${index === -2 ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
-				handleBack={index !== -2 ? () => frame(`${token.symbol}-transfer-recipient`) : undefined}
+				handleBack={index !== -2 ? () => handle.frame(`${token.symbol}-transfer-recipient`) : undefined}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
@@ -234,7 +234,7 @@ export const TransferAmountFrame: FC<{
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
-								handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
+								handleSelect={() => handle.frame(`${token.symbol}-transfer-recipient`)}
 							/>
 						</div>
 					)}
@@ -266,7 +266,7 @@ export const TransferAmountFrame: FC<{
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
 								onClick={() =>
-									transfer(prev => ({
+									handle.transfer(prev => ({
 										...prev,
 										percentage: 100,
 										precise: token?.implementations[0].balance.toString()

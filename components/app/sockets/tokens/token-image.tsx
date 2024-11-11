@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, HTMLAttributes, useEffect, useRef, useState } from "react"
+import { FC, HTMLAttributes, memo, useEffect, useRef, useState } from "react"
 
 import { cn, getAssetColor } from "@/lib"
 
@@ -11,7 +11,7 @@ export const TokenImage: FC<
 		blur?: boolean
 		handleColor?: (color: string) => void
 	}
-> = ({ logo = "", symbol = "", size = "md", blur = true, handleColor, className, ...props }) => {
+> = memo(({ logo = "", symbol = "", size = "md", blur = true, handleColor, className, ...props }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	const imgRef = useRef<HTMLImageElement>(null)
 
@@ -179,4 +179,6 @@ export const TokenImage: FC<
 			)}
 		</div>
 	)
-}
+})
+
+TokenImage.displayName = "TokenImage"

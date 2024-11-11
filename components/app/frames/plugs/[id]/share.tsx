@@ -3,13 +3,12 @@ import { FC } from "react"
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
 import { Button, Frame, Image } from "@/components"
-import { usePlugs } from "@/contexts"
 import { routes, useClipboard } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugData } from "@/state"
 
 export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame } = useColumns(index, "share")
-	const { plug } = usePlugs(item)
+	const { isFrame } = useColumnStore(index, "share")
+	const { plug } = usePlugData(item)
 
 	const { copied, handleCopied } = useClipboard(`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`)
 

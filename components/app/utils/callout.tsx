@@ -1,9 +1,8 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Button } from "@/components/shared"
-import { usePlugs } from "@/contexts"
 import { cn, greenGradientStyle } from "@/lib"
-import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSidebar, useSocket } from "@/state"
+import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSidebar, useSocket } from "@/state"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -28,11 +27,10 @@ const Anonymous: FC<
 		isAbsolute?: boolean
 	}
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
-	const { isAnonymous } = useSocket()
 	const { handleSidebar } = useSidebar()
-	const { isExternal } = useColumns(index)
+	const { isAnonymous } = useSocket()
 
-	if (isAnonymous === false || isExternal === true) return null
+	if (isAnonymous === false) return null
 
 	return (
 		<>
@@ -144,8 +142,8 @@ const EmptyPlugs: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { handle } = usePlugs()
-	const { column } = useColumns(index)
+	const { column } = useColumnData(index)
+	const { handle } = usePlugStore()
 
 	if (!column || isEmpty === false) return null
 
@@ -178,7 +176,7 @@ const EmptyPlug: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column } = useColumns(index)
+	const { column } = useColumnData(index)
 
 	if (!column || isEmpty === false) return null
 
@@ -212,7 +210,7 @@ const EmptyActivity: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { navigate } = useColumns(index)
+	const { handle } = useColumnStore(index)
 
 	if (isEmpty === false) return null
 
@@ -231,7 +229,7 @@ const EmptyActivity: FC<
 				description="When you create and run Plugs, their activity will appear here."
 				{...props}
 			>
-				<Button sizing="sm" onClick={() => navigate({ index, key: COLUMN_KEYS.DISCOVER })}>
+				<Button sizing="sm" onClick={() => handle.navigate({ index, key: COLUMNS.KEYS.DISCOVER })}>
 					Discover
 				</Button>
 			</Base>

@@ -5,7 +5,7 @@ import { ArrowDownFromLine, MapIcon, Send } from "lucide-react"
 import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 import { TokenImage } from "../../sockets/tokens/token-image"
 
@@ -15,7 +15,7 @@ export const TokenFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, frame, transfer } = useColumns(index, `${token?.symbol}-token`)
+	const { isFrame, handle } = useColumnStore(index, `${token?.symbol}-token`)
 
 	const [header, setHeader] = useState<{
 		title?: string
@@ -142,8 +142,10 @@ export const TokenFrame: FC<{
 						color: textColor
 					}}
 					onClick={() => {
-						transfer(undefined)
-						frame(index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`)
+						handle.transfer(undefined)
+						handle.frame(
+							index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
+						)
 					}}
 				>
 					{index === -2 ? (

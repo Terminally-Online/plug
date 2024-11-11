@@ -3,9 +3,8 @@ import { FC, HTMLAttributes } from "react"
 import { X } from "lucide-react"
 
 import { Accordion, Button, Fragments, Image } from "@/components"
-import { usePlugs } from "@/contexts"
-import { Action, ActionSchema, cn } from "@/lib"
-import { useActions } from "@/state"
+import { Action, cn } from "@/lib"
+import { useActions, usePlugStore } from "@/state"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
@@ -16,7 +15,7 @@ export const Sentence: FC<
 		preview?: boolean
 	}
 > = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
-	const { own, actions, handle } = usePlugs(item)
+	const { own, actions, handle } = usePlugStore(item)
 	const [solverActions] = useActions()
 
 	const actionSchema = solverActions[action.protocol]

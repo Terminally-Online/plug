@@ -14,13 +14,12 @@ import {
 	CONNECTOR_ICON_OVERRIDE_MAP,
 	formatAddress,
 	greenGradientStyle,
-	isIFramed,
 	recentConnectorIdAtom,
 	useConnect,
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
-import { authenticationAtom, useColumns, walletConnectURIMatrixAtom } from "@/state"
+import { authenticationAtom, useColumnData, walletConnectURIMatrixAtom } from "@/state"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -236,7 +235,7 @@ const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const { data: session } = useSession()
 	const { account, sign, prove } = useConnect()
-	const { column } = useColumns(index)
+	const { column } = useColumnData(index)
 
 	const authentication = useAtomValue(authenticationAtom)
 

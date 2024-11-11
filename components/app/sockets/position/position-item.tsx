@@ -3,13 +3,13 @@ import { FC } from "react"
 import { Accordion, Counter, Image } from "@/components"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const SocketPositionItem: FC<{
 	index: number
 	protocol?: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
 }> = ({ index, protocol }) => {
-	const { frame } = useColumns(index, `${protocol?.name ?? ""}-position`)
+	const { handle } = useColumnStore(index, `${protocol?.name ?? ""}-position`)
 
 	const { positions } = protocol ?? {}
 
@@ -19,7 +19,7 @@ export const SocketPositionItem: FC<{
 		: 0
 
 	return (
-		<Accordion loading={positions === undefined} onExpand={() => frame()}>
+		<Accordion loading={positions === undefined} onExpand={() => handle.frame()}>
 			{protocol === undefined ? (
 				<div className="invisible">
 					<p>.</p>

@@ -21,7 +21,7 @@ import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import {
 	authenticationLoadingAtom,
 	authenticationResponseAtom,
-	useColumns,
+	useColumnStore,
 	walletConnectProviderAtom,
 	walletConnectURIAtom
 } from "@/state"
@@ -57,7 +57,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const sign = useSignMessage()
 	const { disconnect } = useDisconnect()
 
-	const { navigate } = useColumns()
+	const { handle } = useColumnStore()
 	const { data: session } = useSession()
 
 	const isAuthenticated = (account.address === session?.user.id && session?.user.id?.startsWith("0x")) || false
@@ -111,7 +111,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 							console.log("Authenticated", authenticationResponse)
 
 							setAuthenticationResponse(authenticationResponse)
-							navigate({ index, key: from })
+							handle.navigate({ index, key: from })
 						},
 						onError: (e, account) => {
 							console.error("Authentication error", e)
@@ -131,7 +131,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 				disconnect()
 			}
 		},
-		[navigate, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
+		[handle, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
 	)
 
 	/**

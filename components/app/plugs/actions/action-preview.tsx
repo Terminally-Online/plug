@@ -1,8 +1,8 @@
 import { FC, useMemo } from "react"
 
 import { Sentence } from "@/components"
-import { usePlugs } from "@/contexts"
 import { Action, Actions, cn } from "@/lib"
+import { usePlugData } from "@/state"
 
 const SentenceReview: FC<{ index: number; item: string; actionIndex: number; action: Action }> = ({
 	index,
@@ -27,7 +27,7 @@ const SentenceReview: FC<{ index: number; item: string; actionIndex: number; act
 }
 
 export const ActionPreview: FC<{ index: number; item: string; actions?: Actions }> = ({ index, item, actions }) => {
-	const { actions: plugActions } = usePlugs(item)
+	const { actions: plugActions } = usePlugData(item)
 
 	actions = actions ?? plugActions
 

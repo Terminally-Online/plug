@@ -4,14 +4,14 @@ import { FC, useMemo } from "react"
 import { User } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { useColumns, useSidebar } from "@/state"
+import { useColumnData, useSidebar } from "@/state"
 
 const FRAMES_REQUIRED_AUTH = ["schedule", "run"]
 
 export const AuthRequiredFrame: FC<{ index: number }> = ({ index }) => {
 	const { data: session } = useSession()
 	const { is, handleActivePane } = useSidebar()
-	const { column } = useColumns(index)
+	const { column } = useColumnData(index)
 
 	const isFrame = useMemo(
 		() =>

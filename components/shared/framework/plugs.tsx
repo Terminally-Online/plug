@@ -4,10 +4,10 @@ import { PlugZap, Puzzle } from "lucide-react"
 
 import { Callout, Header, PlugGrid } from "@/components"
 import { api } from "@/server/client"
-import { COLUMN_KEYS, useColumns } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state"
 
 const Discover: FC<{ index: number }> = ({ index }) => {
-	const { navigate } = useColumns(index)
+	const { handle } = useColumnStore(index)
 
 	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "others",
@@ -26,23 +26,23 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 				icon={<Puzzle size={14} className="opacity-40" />}
 				label="Discover"
 				nextOnClick={() =>
-					navigate({
+					handle.navigate({
 						index,
-						key: COLUMN_KEYS.DISCOVER,
-						from: COLUMN_KEYS.HOME
+						key: COLUMNS.KEYS.DISCOVER,
+						from: COLUMNS.KEYS.HOME
 					})
 				}
 				nextLabel="See All"
 			/>
 
 			<Callout.EmptyPlugs className="my-24" index={index} isEmpty={plugs !== undefined && plugs.length === 0} />
-			<PlugGrid index={index} from={COLUMN_KEYS.HOME} plugs={visiblePlugs} />
+			<PlugGrid index={index} from={COLUMNS.KEYS.HOME} plugs={visiblePlugs} />
 		</div>
 	)
 }
 
 const Mine: FC<{ index: number }> = ({ index }) => {
-	const { navigate } = useColumns(index)
+	const { handle } = useColumnStore(index)
 
 	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "mine",
@@ -61,17 +61,17 @@ const Mine: FC<{ index: number }> = ({ index }) => {
 				icon={<PlugZap size={14} className="opacity-40" />}
 				label="My Plugs"
 				nextOnClick={() =>
-					navigate({
+					handle.navigate({
 						index,
-						key: COLUMN_KEYS.MY_PLUGS,
-						from: COLUMN_KEYS.HOME
+						key: COLUMNS.KEYS.MY_PLUGS,
+						from: COLUMNS.KEYS.HOME
 					})
 				}
 				nextLabel="See All"
 			/>
 
 			<Callout.EmptyPlugs className="my-24" index={index} isEmpty={plugs !== undefined && plugs.length === 0} />
-			<PlugGrid index={index} from={COLUMN_KEYS.HOME} plugs={visiblePlugs} />
+			<PlugGrid index={index} from={COLUMNS.KEYS.HOME} plugs={visiblePlugs} />
 		</div>
 	)
 }

@@ -2,14 +2,13 @@ import { FC } from "react"
 
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
-import { Button, Counter, Frame, Image } from "@/components"
-import { usePlugs } from "@/contexts"
+import { Counter, Frame, Image } from "@/components"
 import { chains } from "@/lib"
-import { COLUMN_KEYS, useColumns } from "@/state"
+import { useColumnStore, usePlugData } from "@/state"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame, navigate } = useColumns(index, "ran")
-	const { plug } = usePlugs(item)
+	const { column, isFrame } = useColumnStore(index, "ran")
+	const { plug } = usePlugData(item)
 
 	if (!plug || !column) return null
 

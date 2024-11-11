@@ -4,17 +4,16 @@ import { FC, useCallback, useMemo } from "react"
 import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
 
 import { ActionPreview, Button, Counter, Frame, Image } from "@/components"
-import { usePlugs } from "@/contexts/PlugProvider"
 import { chains } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugStore } from "@/state"
 
 export const RunFrame: FC<{
 	index: number
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
-	const { column, isFrame, frame } = useColumns(index, "run")
-	const { plug, actions, handle } = usePlugs(item)
+	const { column, isFrame, handle } = useColumnStore(index, "run")
+	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	const isReady = useMemo(
 		() => plug && actions && actions.every(action => action.values.every(value => Boolean(value))),
@@ -24,15 +23,15 @@ export const RunFrame: FC<{
 	const handleRun = useCallback(() => {
 		if (!column || !column.item) return
 
-		handle.plug.queue({
+		plugHandle.plug.queue({
 			workflowId: column.item,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to ?? new Date(),
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
-		frame("ran")
-	}, [column, frame, handle.plug])
+		handle.frame("ran")
+	}, [column, handle, plugHandle.plug])
 
 	if (!column) return null
 
@@ -44,7 +43,7 @@ export const RunFrame: FC<{
 			label="Preview"
 			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
-			handleBack={column.schedule ? () => frame("schedule") : undefined}
+			handleBack={column.schedule ? () => handle.frame("schedule") : undefined}
 		>
 			<div className="flex flex-col">
 				<ActionPreview index={index} item={item} />

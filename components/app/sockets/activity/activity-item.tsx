@@ -5,7 +5,7 @@ import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
 import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
 import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 	switch (status) {
@@ -76,11 +76,11 @@ export const ActivityItem: FC<{
 	index: number
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 }> = ({ index, activity }) => {
-	const { frame } = useColumns(index, `${activity?.id}-activity`)
+	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
 	return (
 		<>
-			<Accordion loading={activity === undefined} onExpand={() => frame()}>
+			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
 				{activity === undefined ? (
 					<div className="invisible">
 						<p>.</p>

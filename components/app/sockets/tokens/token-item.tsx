@@ -1,24 +1,24 @@
-import React, { useState } from "react"
+import React, { FC, memo, useState } from "react"
 
 import { Accordion, Counter, SocketTokenPercentages, TokenFrame, TokenImage, TransferFrame } from "@/components"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 
-export const SocketTokenItem: React.FC<{
+export const SocketTokenItem: FC<{
 	index: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = ({ index, token }) => {
-	const { frame } = useColumns(index, `${token?.symbol}-token`)
+}> = memo(({ index, token }) => {
+	const { handle } = useColumnStore(index, `${token?.symbol}-token`)
 
 	const [color, setColor] = useState(DEFAULT_TOKEN_COLOR)
 	const textColor = getTextColor(color)
 
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => frame()}>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => handle.frame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>
@@ -91,4 +91,6 @@ export const SocketTokenItem: React.FC<{
 			)}
 		</>
 	)
-}
+})
+
+SocketTokenItem.displayName = "SocketTokenItem"

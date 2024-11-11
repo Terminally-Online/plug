@@ -1,6 +1,5 @@
 import {
 	ColumnAuthenticate,
-	ColumnSearch,
 	Container,
 	Plug,
 	Plugs,
@@ -10,47 +9,47 @@ import {
 	SocketAssets,
 	SocketProfile
 } from "@/components"
-import { COLUMN_KEYS, MOBILE_INDEX, useColumns } from "@/state"
+import { COLUMNS, useColumnData } from "@/state"
 
 export const PageContent = () => {
-	const { column } = useColumns(MOBILE_INDEX)
+	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
 
 	if (!column) return null
 
 	switch (column.key) {
-		case COLUMN_KEYS.HOME:
+		case COLUMNS.KEYS.HOME:
 			return (
 				<Container className="mb-24">
 					<Plugs hideEmpty={true} />
 				</Container>
 			)
-		case COLUMN_KEYS.DISCOVER:
+		case COLUMNS.KEYS.DISCOVER:
 			return <PlugsDiscover className="pt-4" />
-		case COLUMN_KEYS.MY_PLUGS:
+		case COLUMNS.KEYS.MY_PLUGS:
 			return <PlugsMine className="pt-4" />
-		case COLUMN_KEYS.PLUG:
+		case COLUMNS.KEYS.PLUG:
 			return (
 				<Container>
 					<Plug item={column.item} />
 				</Container>
 			)
-		case COLUMN_KEYS.ACTIVITY:
+		case COLUMNS.KEYS.ACTIVITY:
 			return (
 				<Container className="pt-4">
 					<SocketActivity />
 				</Container>
 			)
-		case COLUMN_KEYS.PROFILE:
+		case COLUMNS.KEYS.PROFILE:
 			return (
 				<Container className="pt-4">
 					<SocketProfile />
 					<SocketAssets />
 				</Container>
 			)
-		case COLUMN_KEYS.AUTHENTICATE:
+		case COLUMNS.KEYS.AUTHENTICATE:
 			return (
 				<Container className="pt-4">
-					<ColumnAuthenticate index={column.index} />
+					<ColumnAuthenticate index={COLUMNS.MOBILE_INDEX} />
 				</Container>
 			)
 		default:

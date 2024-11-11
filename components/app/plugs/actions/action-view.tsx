@@ -1,9 +1,8 @@
 import { FC, useMemo } from "react"
 
 import { Accordion, Callout, Image, Sentence } from "@/components"
-import { usePlugs } from "@/contexts"
 import { Action, formatTitle, getValues } from "@/lib"
-import { useActions, useColumns } from "@/state"
+import { useActions, useColumnData, usePlugStore } from "@/state"
 
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -16,11 +15,11 @@ const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): R
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	const { column } = useColumns(index)
+	const { column } = useColumnData(index)
 	const [solverActions] = useActions()
 
 	const { item } = column ?? {}
-	const { plug, own, actions, handle } = usePlugs(item)
+	const { plug, own, actions, handle } = usePlugStore(item)
 
 	const baseSuggestions = useMemo(
 		() =>

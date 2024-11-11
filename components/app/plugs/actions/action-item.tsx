@@ -1,9 +1,8 @@
 import { FC } from "react"
 
 import { Accordion, Image } from "@/components"
-import { usePlugs } from "@/contexts"
 import { ActionSchema, formatTitle, getValues } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugStore } from "@/state"
 
 export const ActionItem: FC<{
 	index: number
@@ -13,15 +12,15 @@ export const ActionItem: FC<{
 	action: ActionSchema
 	image?: boolean
 }> = ({ index, item, protocol, actionName, action }) => {
-	const { plug, actions, handle } = usePlugs(item)
-	const { frame } = useColumns(index)
+	const { handle } = useColumnStore(index)
+	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	if (!plug) return null
 
 	return (
 		<Accordion
 			onExpand={() => {
-				handle.action.edit({
+				plugHandle.action.edit({
 					id: plug.id,
 					actions: JSON.stringify([
 						...actions,
@@ -32,7 +31,7 @@ export const ActionItem: FC<{
 						}
 					])
 				})
-				frame()
+				handle.frame()
 			}}
 		>
 			<div className="flex flex-row items-center gap-2">

@@ -1,14 +1,13 @@
-import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react"
+import { useMemo } from "react"
 
 import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plus, ShieldAlert, Star, User } from "lucide-react"
 
-import { Header } from "@/components"
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle } from "@/lib"
-import { COLUMN_KEYS, Flag, useColumns, useFlags, useSocket } from "@/state"
+import { COLUMNS, Flag, useColumnStore, useFlags, useSocket } from "@/state"
 
 type Options = Array<{
-	label: keyof typeof COLUMN_KEYS
+	label: keyof (typeof COLUMNS)["KEYS"]
 	description: string
 	icon: JSX.Element
 }>
@@ -67,7 +66,7 @@ export const ADMIN_OPTIONS: Options = [
 export const ColumnAdd = () => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
-	const { columns, add } = useColumns()
+	const { columns, handle } = useColumnStore()
 
 	const flagOptions = useMemo(() => {
 		const options: Options = []
@@ -109,7 +108,7 @@ export const ColumnAdd = () => {
 						<Accordion
 							key={option.label}
 							onExpand={() => {
-								add({ key: option.label })
+								handle.add({ key: option.label })
 							}}
 						>
 							<div className="flex flex-row items-center gap-2">

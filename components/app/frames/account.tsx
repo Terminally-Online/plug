@@ -5,12 +5,12 @@ import { useDisconnect } from "wagmi"
 import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Counter, Frame, Image, StatCard } from "@/components"
-import { MOBILE_INDEX, useColumns, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, useSocket } from "@/state"
 
 // NOTE: This is only accessible on the mobile view so the index will always be -1.
 export const AccountFrame = () => {
 	const { socket, avatar } = useSocket()
-	const { isFrame } = useColumns(MOBILE_INDEX, "account")
+	const { isFrame } = useColumnStore(COLUMNS.MOBILE_INDEX, "account")
 
 	const { disconnect } = useDisconnect({
 		mutation: {
@@ -22,7 +22,7 @@ export const AccountFrame = () => {
 
 	return (
 		<Frame
-			index={MOBILE_INDEX}
+			index={COLUMNS.MOBILE_INDEX}
 			className="z-[2]"
 			icon={
 				avatar ? (

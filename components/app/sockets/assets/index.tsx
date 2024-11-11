@@ -4,7 +4,7 @@ import { CircleDollarSign, ImageIcon } from "lucide-react"
 
 import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
 import { cn } from "@/lib"
-import { useColumns, useHoldings, useSocket } from "@/state"
+import { useHoldings, useSocket } from "@/state"
 
 export const SocketAssets: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -24,8 +24,7 @@ export const SocketAssets: FC<
 	...props
 }) => {
 	const { isAnonymous } = useSocket()
-	const { column } = useColumns(index)
-	const { collectibles, tokens, protocols } = useHoldings(address ?? column?.viewAs?.socketAddress)
+	const { collectibles, tokens, protocols } = useHoldings(address)
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>

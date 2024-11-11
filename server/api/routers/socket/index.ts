@@ -11,6 +11,7 @@ import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc
 import { balances } from "./balances"
 import { companion } from "./companion"
 import { referral } from "./referral"
+import { stats } from "./stats"
 
 export const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
@@ -193,5 +194,6 @@ export const socket = createTRPCRouter({
 
 	balances,
 	companion,
-	referral
+	referral,
+	stats
 })

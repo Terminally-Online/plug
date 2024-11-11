@@ -5,14 +5,13 @@ import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 import BlockiesSvg from "blockies-react-svg"
 
 import { Button, Container, Header, Image } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/lib"
-import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSocket } from "@/state"
+import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 const HomePageHeader = () => {
-	const { column, navigate, frame } = useColumns(MOBILE_INDEX)
+	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	const { handle: plugHandle } = usePlugStore()
 	const { socket, avatar } = useSocket()
-	const { handle } = usePlugs()
 
 	if (!column) return null
 
@@ -22,7 +21,7 @@ const HomePageHeader = () => {
 			label={
 				<>
 					{socket ? (
-						<button className="flex flex-row items-center gap-2" onClick={() => frame("auth")}>
+						<button className="flex flex-row items-center gap-2" onClick={() => handle.frame("auth")}>
 							{avatar ? (
 								<Image
 									src={avatar}
@@ -49,12 +48,12 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"text-lg font-bold transition-all duration-200 ease-in-out",
-							column.key !== COLUMN_KEYS.HOME ? "opacity-40 hover:opacity-100" : ""
+							column.key !== COLUMNS.KEYS.HOME ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
-							navigate({
+							handle.navigate({
 								index: -1,
-								key: COLUMN_KEYS.HOME
+								key: COLUMNS.KEYS.HOME
 							})
 						}
 					>
@@ -64,12 +63,12 @@ const HomePageHeader = () => {
 					<button
 						className={cn(
 							"mr-auto text-lg font-bold transition-all duration-200 ease-in-out",
-							column.key !== COLUMN_KEYS.ACTIVITY ? "opacity-40 hover:opacity-100" : ""
+							column.key !== COLUMNS.KEYS.ACTIVITY ? "opacity-40 hover:opacity-100" : ""
 						)}
 						onClick={() =>
-							navigate({
+							handle.navigate({
 								index: -1,
-								key: COLUMN_KEYS.ACTIVITY
+								key: COLUMNS.KEYS.ACTIVITY
 							})
 						}
 					>
@@ -77,7 +76,7 @@ const HomePageHeader = () => {
 					</button>
 				</>
 			}
-			nextOnClick={() => handle.plug.add({ from: column.key })}
+			nextOnClick={() => plugHandle.plug.add({ from: column.key })}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
@@ -85,8 +84,8 @@ const HomePageHeader = () => {
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
-	const { column, navigate, frame } = useColumns(MOBILE_INDEX)
-	const { plug, handle } = usePlugs(column?.item ?? "")
+	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
 
 	const own = plug !== undefined && session && session.address === plug.socketId
 
@@ -99,7 +98,7 @@ const PlugHeader = () => {
 				onBack={
 					column.from
 						? () =>
-								navigate({
+								handle.navigate({
 									index: -1,
 									key: column.from ?? ""
 								})
@@ -114,7 +113,7 @@ const PlugHeader = () => {
 					/>
 				}
 				label={plug.name === "" ? "Untitled Plug" : plug.name}
-				nextOnClick={own ? () => frame("manage") : () => {}}
+				nextOnClick={own ? () => handle.frame("manage") : () => {}}
 				nextLabel={
 					own ? (
 						<Ellipsis size={14} />
@@ -135,7 +134,7 @@ const PlugHeader = () => {
 					variant="secondary"
 					className="group ml-auto p-1"
 					onClick={() =>
-						handle.plug.fork({
+						plugHandle.plug.fork({
 							plug: plug.id,
 							index: -1,
 							from: column.key
@@ -145,7 +144,7 @@ const PlugHeader = () => {
 					<GitFork size={14} />
 				</Button>
 
-				<Button variant="secondary" className="group p-1" onClick={() => frame("share")}>
+				<Button variant="secondary" className="group p-1" onClick={() => handle.frame("share")}>
 					<Share size={14} />
 				</Button>
 			</div>
@@ -154,8 +153,8 @@ const PlugHeader = () => {
 }
 
 const DynamicPageHeader = () => {
-	const { column, navigate } = useColumns(MOBILE_INDEX)
-	const { handle } = usePlugs(column?.item ?? "")
+	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	const { handle: plugHandle } = usePlugStore(column?.item ?? "")
 
 	if (!column) return null
 
@@ -168,9 +167,9 @@ const DynamicPageHeader = () => {
 						variant="secondary"
 						className="rounded-sm p-1"
 						onClick={() =>
-							navigate({
+							handle.navigate({
 								index: -1,
-								key: column?.from ?? COLUMN_KEYS.HOME
+								key: column?.from ?? COLUMNS.KEYS.HOME
 							})
 						}
 					>
@@ -179,26 +178,26 @@ const DynamicPageHeader = () => {
 
 					<Button
 						className="mr-auto text-lg font-bold transition-all duration-200 ease-in-out"
-						onClick={() => navigate({ index: -1, key: COLUMN_KEYS.ACTIVITY })}
+						onClick={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.ACTIVITY })}
 					>
 						{formatTitle(column?.key.toLowerCase() ?? "")}
 					</Button>
 				</>
 			}
-			nextOnClick={() => handle.plug.add({ from: column.key })}
+			nextOnClick={() => plugHandle.plug.add({ from: column.key })}
 			nextLabel={<Plus size={14} />}
 		/>
 	)
 }
 
 export const PageHeader = () => {
-	const { column } = useColumns(MOBILE_INDEX)
+	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
 
 	return (
 		<Container>
-			{[COLUMN_KEYS.HOME, COLUMN_KEYS.ACTIVITY].includes(column?.key ?? "") ? (
+			{[COLUMNS.KEYS.HOME, COLUMNS.KEYS.ACTIVITY].includes(column?.key) ? (
 				<HomePageHeader />
-			) : column?.key === COLUMN_KEYS.PLUG ? (
+			) : column?.key === COLUMNS.KEYS.PLUG ? (
 				<PlugHeader />
 			) : (
 				<DynamicPageHeader />

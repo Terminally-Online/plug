@@ -158,6 +158,23 @@ model UserSocket {
   @@index([socketAddress])
 }
 
+model View {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  date  DateTime
+  views Int      @default(0)
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflowId String
+
+  @@id([workflowId, date])
+  @@index([date])
+}
+
 model Workflow {
   // ---------------------------------------------------------------------------
   // Core
@@ -188,6 +205,7 @@ model Workflow {
   // One-to-many
   // ---------------------------------------------------------------------------
   executions Execution[]
+  views      View[]
 }
 
 model Execution {

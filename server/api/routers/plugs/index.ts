@@ -15,14 +15,57 @@ const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
 
 export const plugs = createTRPCRouter({
-	get: publicProcedure.input(z.array(z.string())).query(async ({ input, ctx }) => {
-		return await ctx.db.workflow.findMany({
-			where: {
-				id: { in: input },
-				isPrivate: false
+	get: publicProcedure
+		.input(
+			z.object({
+				ids: z.array(z.string()),
+				viewed: z.array(z.string())
+			})
+		)
+		.query(async ({ input, ctx }) => {
+			if (input.ids.length === 0) return []
+
+			const weekStart = new Date()
+			weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
+			weekStart.setUTCHours(0, 0, 0, 0)
+
+			const workflows = await ctx.db.workflow.findMany({
+				where: {
+					id: { in: input.ids },
+					isPrivate: false
+				}
+			})
+
+			const newViews = workflows
+				.filter(w => !input.viewed.includes(w.id))
+				.map(w => ({
+					workflowId: w.id,
+					date: weekStart,
+					views: 1
+				}))
+
+			if (newViews.length > 0) {
+				await ctx.db.view.createMany({
+					data: newViews,
+					skipDuplicates: true
+				})
+
+				await ctx.db.view.updateMany({
+					where: {
+						workflowId: { in: newViews.map(v => v.workflowId) },
+						date: weekStart
+					},
+					data: {
+						views: {
+							increment: 1
+						}
+					}
+				})
 			}
-		})
-	}),
+
+			return workflows
+		}),
+
 	infinite: anonymousProtectedProcedure
 		.input(
 			z.object({
@@ -160,6 +203,7 @@ export const plugs = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
+
 	add: anonymousProtectedProcedure
 		.input(z.object({ index: z.number().optional(), from: z.string().optional() }).optional())
 		.mutation(async ({ input, ctx }) => {
@@ -181,6 +225,7 @@ export const plugs = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
+
 	fork: anonymousProtectedProcedure
 		.input(z.object({ plug: z.string(), index: z.number(), from: z.string() }))
 		.mutation(async ({ input, ctx }) => {
@@ -208,6 +253,7 @@ export const plugs = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
+
 	edit: anonymousProtectedProcedure
 		.input(
 			z.object({
@@ -238,6 +284,7 @@ export const plugs = createTRPCRouter({
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
 		}),
+
 	delete: anonymousProtectedProcedure
 		.input(z.object({ plug: z.string(), index: z.number(), from: z.string().nullish() }))
 		.mutation(async ({ input, ctx }) => {

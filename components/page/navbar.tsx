@@ -2,18 +2,17 @@ import { useSession } from "next-auth/react"
 
 import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
-import { Bell, HousePlug, Plus, Search } from "lucide-react"
+import { Bell, HousePlug, Plus } from "lucide-react"
 
 import { Image } from "@/components"
-import { usePlugs } from "@/contexts"
 import { cn } from "@/lib"
-import { COLUMN_KEYS, MOBILE_INDEX, useColumns, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 export const PageNavbar = () => {
 	const { data: session } = useSession()
 	const { avatar } = useSocket()
-	const { column, navigate } = useColumns(MOBILE_INDEX)
-	const { handle } = usePlugs()
+	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	const { handle: plugHandle } = usePlugStore()
 
 	if (!column) return null
 
@@ -22,31 +21,31 @@ export const PageNavbar = () => {
 			<div className="relative z-[11] flex flex-row items-center justify-between gap-2 px-8 py-4">
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.HOME })}
+					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
 				>
 					<HousePlug
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === COLUMN_KEYS.HOME && "text-opacity-100"
+							column?.key === COLUMNS.KEYS.HOME && "text-opacity-100"
 						)}
 					/>
 				</button>
 				{/*<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.SEARCH })}
+					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.SEARCH })}
 				>
 					<Search
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === COLUMN_KEYS.SEARCH && "text-opacity-100"
+							column?.key === COLUMNS.KEYS.SEARCH && "text-opacity-100"
 						)}
 					/>
 				</button>*/}
 				<button
 					className="group flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-plug-green to-plug-yellow"
-					onClick={() => handle.plug.add({ index: MOBILE_INDEX })}
+					onClick={() => plugHandle.plug.add({ index: COLUMNS.MOBILE_INDEX })}
 				>
 					<Plus
 						size={24}
@@ -55,19 +54,19 @@ export const PageNavbar = () => {
 				</button>
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.ACTIVITY })}
+					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.ACTIVITY })}
 				>
 					<Bell
 						size={24}
 						className={cn(
 							"text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-							column?.key === COLUMN_KEYS.ACTIVITY && "text-opacity-100"
+							column?.key === COLUMNS.KEYS.ACTIVITY && "text-opacity-100"
 						)}
 					/>
 				</button>
 				<button
 					className="group h-8 w-8"
-					onClick={() => navigate({ index: MOBILE_INDEX, key: COLUMN_KEYS.PROFILE })}
+					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.PROFILE })}
 				>
 					{session && (
 						<button

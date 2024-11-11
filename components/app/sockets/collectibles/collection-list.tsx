@@ -1,11 +1,11 @@
-import { FC, HTMLAttributes, useMemo, useState } from "react"
+import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
 import { Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns, useHoldings, useSocket } from "@/state"
+import { useHoldings, useSocket } from "@/state"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -15,21 +15,16 @@ export const SocketCollectionList: FC<
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ index, columnCollectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
+> = memo(({ index, columnCollectibles, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { column, isExternal } = useColumns(index)
-	const { collectibles: apiCollectibles } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
+	const { collectibles: apiCollectibles } = useHoldings(socket?.socketAddress)
 
 	const collectibles = columnCollectibles ?? apiCollectibles
 
 	const [search, handleSearch] = useState("")
 
 	const visibleCollectibles: RouterOutputs["socket"]["balances"]["collectibles"] | Array<undefined> = useMemo(() => {
-		if (
-			collectibles === undefined ||
-			(isAnonymous && isExternal === false) ||
-			(search === "" && collectibles.length === 0)
-		)
+		if (collectibles === undefined || isAnonymous || (search === "" && collectibles.length === 0))
 			return Array(5).fill(undefined)
 
 		const filteredCollectibles = collectibles.filter(
@@ -44,11 +39,11 @@ export const SocketCollectionList: FC<
 		if (expanded) return filteredCollectibles
 
 		return filteredCollectibles.slice(0, count)
-	}, [isAnonymous, isExternal, collectibles, expanded, count, search])
+	}, [isAnonymous, collectibles, expanded, count, search])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{(isAnonymous === false || isExternal) && isColumn && collectibles && collectibles.length > 0 && (
+			{isAnonymous === false && isColumn && collectibles && collectibles.length > 0 && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}
@@ -98,4 +93,6 @@ export const SocketCollectionList: FC<
 			)}
 		</div>
 	)
-}
+})
+
+SocketCollectionList.displayName = "SocketCollectionList"

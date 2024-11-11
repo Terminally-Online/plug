@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC, memo, useEffect, useState } from "react"
 
 import { getAddress } from "viem"
 
@@ -30,7 +30,7 @@ import {
 	getTextColor
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 import { TransferFrame } from "./transfer"
 
@@ -40,8 +40,8 @@ export const CollectibleFrame: FC<{
 	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-}> = ({ index, collection, collectible }) => {
-	const { isFrame, frame, transfer } = useColumns(
+}> = memo(({ index, collection, collectible }) => {
+	const { isFrame, handle } = useColumnStore(
 		index,
 		`${collection.address}-${collection.chain}-${collectible?.tokenId}`
 	)
@@ -149,8 +149,10 @@ export const CollectibleFrame: FC<{
 				<div className="flex flex-row gap-2 px-6 pb-4">
 					<button
 						onClick={() => {
-							transfer({ percentage: 0, precise: "0", recipient: undefined })
-							frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+							handle.transfer({ percentage: 0, precise: "0", recipient: undefined })
+							handle.frame(
+								`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
+							)
 						}}
 						className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 						style={{
@@ -383,4 +385,6 @@ export const CollectibleFrame: FC<{
 			/>
 		</>
 	)
-}
+})
+
+CollectibleFrame.displayName = "CollectibleFrame"

@@ -3,7 +3,7 @@ import { FC, useCallback, useMemo, useRef, useState } from "react"
 import { Accordion, CollectibleImage, Counter, Frame, Image } from "@/components"
 import { chains, cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 import { TransferRecipient } from "./transfer-recipient"
 
@@ -20,11 +20,10 @@ export const TransferNFTFrame: FC<{
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	// Column controls
-	const { isFrame, frame } = useColumns(
+	const { column, isFrame, handle } = useColumnStore(
 		index,
 		`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`
 	)
-	const { column, transfer } = useColumns(index)
 
 	// Local state
 	const [isPrecise, setIsPrecise] = useState(false)
@@ -50,7 +49,7 @@ export const TransferNFTFrame: FC<{
 					const nearestWholeNumber = Math.round(rawPercentage * maxAmount)
 					const snappedPercentage = (nearestWholeNumber / maxAmount) * 100
 
-					transfer(prev => ({
+					handle.transfer(prev => ({
 						...prev,
 						percentage: snappedPercentage,
 						precise: nearestWholeNumber.toString()
@@ -69,14 +68,14 @@ export const TransferNFTFrame: FC<{
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[maxAmount, transfer, containerRef]
+		[handle, maxAmount, containerRef]
 	)
 
 	const handleAmountChange = (value: string) => {
 		const numericValue = value.replace(/[^0-9]/g, "")
 
 		if (numericValue === "") {
-			transfer(prev => ({
+			handle.transfer(prev => ({
 				...prev,
 				precise: "0",
 				percentage: 0
@@ -87,7 +86,7 @@ export const TransferNFTFrame: FC<{
 			const clampedValue = Math.min(Math.max(0, parsedValue), maxAmount)
 			const percentage = (clampedValue / maxAmount) * 100
 
-			transfer(prev => ({
+			handle.transfer(prev => ({
 				...prev,
 				precise: clampedValue.toString(),
 				percentage
@@ -97,13 +96,13 @@ export const TransferNFTFrame: FC<{
 
 	const handleMaxClick = useCallback(() => {
 		if (isERC1155) {
-			transfer(prev => ({
+			handle.transfer(prev => ({
 				...prev,
 				percentage: 100,
 				precise: maxAmount.toString()
 			}))
 		}
-	}, [isERC1155, maxAmount, transfer])
+	}, [isERC1155, maxAmount, handle])
 
 	// Computed values
 	const isReady = useMemo(() => {
@@ -146,7 +145,7 @@ export const TransferNFTFrame: FC<{
 			label="Transfer"
 			visible={isFrame}
 			handleBack={() =>
-				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
+				handle.frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`)
 			}
 			hasChildrenPadding={false}
 			hasOverlay
@@ -157,7 +156,9 @@ export const TransferNFTFrame: FC<{
 						<TransferRecipient
 							address={column?.transfer?.recipient ?? ""}
 							handleSelect={() =>
-								frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`)
+								handle.frame(
+									`${collection.address}-${collection.chain}-${collectible.tokenId}-recipient`
+								)
 							}
 						/>
 					</div>

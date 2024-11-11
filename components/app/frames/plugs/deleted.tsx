@@ -3,12 +3,11 @@ import { FC } from "react"
 import { Trash2 } from "lucide-react"
 
 import { Button, Frame } from "@/components"
-import { usePlugs } from "@/contexts"
-import { useColumns } from "@/state"
+import { useColumnStore, usePlugStore } from "@/state"
 
 export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
-	const { isFrame } = useColumns(index, "deleted")
-	const { handle } = usePlugs()
+	const { isFrame } = useColumnStore(index, "deleted")
+	const { handle } = usePlugStore()
 
 	return (
 		<Frame index={index} className="z-[2]" icon={<Trash2 size={18} />} label="Plug Deleted" visible={isFrame}>

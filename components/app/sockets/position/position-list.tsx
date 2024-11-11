@@ -5,7 +5,7 @@ import { SearchIcon } from "lucide-react"
 import { Callout, PositionFrame, Search, SocketPositionItem } from "@/components"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns, useHoldings, useSocket } from "@/state"
+import { useHoldings, useSocket } from "@/state"
 
 export const SocketPositionList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -16,19 +16,14 @@ export const SocketPositionList: FC<
 	}
 > = ({ index, columnProtocols, expanded, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { column, isExternal } = useColumns(index)
-	const { protocols: apiProtocols } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
+	const { protocols: apiProtocols } = useHoldings(socket?.socketAddress)
 
 	const protocols = columnProtocols ?? apiProtocols
 
 	const [search, handleSearch] = useState("")
 
 	const visibilePositions = useMemo(() => {
-		if (
-			(isAnonymous && isExternal === false) ||
-			protocols === undefined ||
-			(search === "" && protocols.length === 0)
-		)
+		if (isAnonymous || protocols === undefined || (search === "" && protocols.length === 0))
 			return Array(5).fill(undefined)
 
 		const filteredProtocols = protocols.filter(
@@ -47,13 +42,13 @@ export const SocketPositionList: FC<
 		if (expanded) return filteredProtocols
 
 		return filteredProtocols.slice(0, 3)
-	}, [isAnonymous, isExternal, expanded, protocols, search])
+	}, [isAnonymous, expanded, protocols, search])
 
 	if (protocols === undefined) return null
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{(isAnonymous === false || isExternal) && isColumn && protocols.length > 0 && (
+			{isAnonymous === false && isColumn && protocols.length > 0 && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}

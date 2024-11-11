@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC, memo, useState } from "react"
 
 import { Accordion, Image } from "@/components"
 import { chains, formatTitle, getChainId } from "@/lib"
@@ -10,7 +10,7 @@ export const SocketCollectionItem: FC<{
 	index: number
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number] | undefined
 	searched?: boolean
-}> = ({ index, collection, searched = false }) => {
+}> = memo(({ index, collection, searched = false }) => {
 	const [expanded, setExpanded] = useState(searched)
 	const [error, setError] = useState(false)
 
@@ -36,18 +36,16 @@ export const SocketCollectionItem: FC<{
 							src={collection.iconUrl ?? ""}
 							alt={collection.name}
 							className="absolute left-1/2 h-48 w-48 -translate-x-1/2 rounded-full blur-2xl"
-							width={140}
-							height={140}
+							width={240}
+							height={240}
 							onError={() => setError(true)}
 						/>
-						<div
+						<Image
 							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
-							style={{
-								backgroundImage: `url(${collection.iconUrl})`,
-								backgroundSize: "cover",
-								backgroundPosition: "center",
-								backgroundRepeat: "no-repeat"
-							}}
+							src={collection.iconUrl ?? ""}
+							alt={collection.name}
+							width={240}
+							height={240}
 						/>
 					</div>
 
@@ -71,4 +69,6 @@ export const SocketCollectionItem: FC<{
 			)}
 		</Accordion>
 	)
-}
+})
+
+SocketCollectionItem.displayName = "SocketCollectionItem"

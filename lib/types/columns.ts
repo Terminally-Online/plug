@@ -1,5 +1,3 @@
-import { MinimalUserSocketModel } from "@/prisma/types"
-
 import { Schedule, Transfer } from "@/lib"
 
 export type Column = {
@@ -10,7 +8,6 @@ export type Column = {
 	item?: string
 	from?: string
 	frame?: string
-	viewAs?: MinimalUserSocketModel
 	schedule?: Schedule
 	transfer?: Transfer
 }

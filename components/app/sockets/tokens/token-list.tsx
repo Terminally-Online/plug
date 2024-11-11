@@ -1,11 +1,11 @@
-import { FC, HTMLAttributes, useMemo, useState } from "react"
+import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
 import { Callout, Search, SocketTokenItem } from "@/components"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumns, useHoldings, useSocket } from "@/state"
+import { useHoldings, useSocket } from "@/state"
 
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
@@ -15,17 +15,16 @@ export const SocketTokenList: FC<
 		count?: number
 		isColumn?: boolean
 	}
-> = ({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
+> = memo(({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { column, isExternal } = useColumns(index)
-	const { tokens: apiTokens } = useHoldings(column?.viewAs?.socketAddress ?? socket?.socketAddress)
+	const { tokens: apiTokens } = useHoldings(socket?.socketAddress)
 
 	const tokens = columnTokens ?? apiTokens
 
 	const [search, handleSearch] = useState("")
 
 	const visibleTokens = useMemo(() => {
-		if ((isAnonymous && isExternal === false) || tokens === undefined || (search === "" && tokens.length === 0))
+		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0))
 			return Array(5).fill(undefined)
 
 		const filteredTokens = tokens.filter(
@@ -40,11 +39,11 @@ export const SocketTokenList: FC<
 		if (expanded) return filteredTokens
 
 		return filteredTokens.slice(0, count)
-	}, [isAnonymous, isExternal, tokens, expanded, count, search])
+	}, [isAnonymous, tokens, expanded, count, search])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
-			{(isAnonymous === false || isExternal) && isColumn && tokens.length > 0 && (
+			{isAnonymous === false && isColumn && tokens.length > 0 && (
 				<Search
 					className="mb-2"
 					icon={<SearchIcon size={14} className="opacity-40" />}
@@ -76,4 +75,6 @@ export const SocketTokenList: FC<
 			/>
 		</div>
 	)
-}
+})
+
+SocketTokenList.displayName = "SocketTokenList"

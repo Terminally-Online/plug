@@ -4,10 +4,10 @@ import { Clock } from "lucide-react"
 
 import { Button, Frame } from "@/components"
 import { frequencies } from "@/lib"
-import { useColumns } from "@/state"
+import { useColumnStore } from "@/state"
 
 export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
-	const { column, isFrame, frame, schedule } = useColumns(index, "recurring")
+	const { column, isFrame, handle } = useColumnStore(index, "recurring")
 
 	return (
 		<Frame
@@ -16,7 +16,7 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 			icon={<Clock size={18} className="opacity-40" />}
 			label="Recurring Frequency"
 			visible={isFrame}
-			handleBack={() => frame("schedule")}
+			handleBack={() => handle.frame("schedule")}
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-4">
@@ -26,8 +26,8 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 						variant="secondary"
 						className="py-4"
 						onClick={() => {
-							schedule({ date: column?.schedule?.date, repeats: frequency })
-							frame("schedule")
+							handle.schedule({ date: column?.schedule?.date, repeats: frequency })
+							handle.frame("schedule")
 						}}
 					>
 						{frequency.label}
