@@ -1,10 +1,10 @@
 import { useMemo } from "react"
 
-import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plus, ShieldAlert, Star, User } from "lucide-react"
+import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, ShieldAlert, Star, User } from "lucide-react"
 
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle } from "@/lib"
-import { COLUMNS, Flag, useColumnStore, useFlags, useSocket } from "@/state"
+import { COLUMNS, Flag, useColumnStore, useFlags, usePlugStore, useSocket } from "@/state"
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]
@@ -67,6 +67,7 @@ export const ColumnAdd = () => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
 	const { columns, handle } = useColumnStore()
+	const { handle: plugHandle } = usePlugStore()
 
 	const flagOptions = useMemo(() => {
 		const options: Options = []
@@ -85,7 +86,7 @@ export const ColumnAdd = () => {
 	if (!isApproved) return null
 
 	const isAdmin = socket?.admin ?? false
-	const options = isAdmin ? ADMIN_OPTIONS : [...flagOptions, ...OPTIONS]
+	const options = isAdmin ? ADMIN_OPTIONS : [...OPTIONS, ...flagOptions]
 
 	return (
 		<div
@@ -104,6 +105,18 @@ export const ColumnAdd = () => {
 
 			<div className="h-full overflow-y-scroll">
 				<div className="flex h-full flex-col gap-2 p-4">
+					<Accordion key={"add"} onExpand={() => plugHandle.plug.add()}>
+						<div className="flex flex-row items-center gap-2">
+							<div className="flex h-10 w-10 min-w-10 items-center justify-center">
+								<Plug size={14} className="opacity-40" />
+							</div>
+
+							<div className="flex flex-col items-start text-left font-bold">
+								<p>Create Plug</p>
+								<p className="text-sm opacity-40">Start creating a new Plug from scratch.</p>
+							</div>
+						</div>
+					</Accordion>
 					{options.map(option => (
 						<Accordion
 							key={option.label}
