@@ -29,7 +29,7 @@ const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_W
 
 export const ConsoleColumn: FC<{
 	id: number
-}> = memo(({ id }) => {
+}> = ({ id }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { column, handle } = useColumnStore(id)
@@ -232,6 +232,4 @@ export const ConsoleColumn: FC<{
 			</Draggable>
 		</div>
 	)
-})
-
-ConsoleColumn.displayName = "ConsoleColumn"
+}

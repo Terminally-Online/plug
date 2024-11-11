@@ -213,7 +213,7 @@ export const useColumnStore = (index?: number, key?: string) => {
 				if (!index) return
 
 				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index)
+					const targetColumn = prev.find(col => col.index === index || col.id === index)
 					if (!targetColumn) return prev
 
 					const frameKey = columnKey || key

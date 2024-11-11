@@ -91,12 +91,12 @@ const ConsoleSidebarPane = () => {
 			{(is.authenticating || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
-						className="m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
+						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
 						style={{
 							width: `${width}px`
 						}}
 					>
-						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 px-2">
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4">
 							<Header
 								label={
 									is.companion
@@ -139,7 +139,7 @@ const ConsoleSidebarPane = () => {
 							/>
 						</div>
 
-						<div className="relative h-full">
+						<div className="h-full overflow-y-scroll">
 							{is.searching ? (
 								<ColumnSearch index={0} className="px-4" />
 							) : is.stats ? (

@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 import { ColumnAdd, ConsoleColumn } from "@/components"
 import { useColumnStore } from "@/state"
 
-export const ConsoleColumnRow = memo(() => {
+export const ConsoleColumnRow = () => {
 	const { columns, handle } = useColumnStore()
 
 	const onDragEnd = (result: DropResult) => {
@@ -38,6 +38,4 @@ export const ConsoleColumnRow = memo(() => {
 			<ColumnAdd />
 		</div>
 	)
-})
-
-ConsoleColumnRow.displayName = "ConsoleColumnRow"
+}
