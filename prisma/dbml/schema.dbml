@@ -318,7 +318,7 @@ Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
 Ref: SocketIdentity.referrerId - UserSocket.id [delete: Cascade]
 
-Ref: View.workflowId > Workflow.id
+Ref: View.workflowId > Workflow.id [delete: Cascade]
 
 Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
 

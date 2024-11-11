@@ -238,11 +238,17 @@ export const plugs = createTRPCRouter({
 
 				const { id, ...forkingData } = forking
 
+				const name = forking.name.replace(/ \(#\d+\)$/, "")
+				const count = await ctx.db.workflow.count({
+					where: { workflowForkedId: forking.workflowForkedId || input.plug }
+				})
+				const forkNumber = count + 1
 				const plug = await ctx.db.workflow.create({
 					data: {
 						...forkingData,
-						name: forking.name,
-						socketId: ctx.session.address
+						name: `${name} (#${forkNumber})`,
+						socketId: ctx.session.address,
+						workflowForkedId: forking.workflowForkedId || input.plug
 					}
 				})
 

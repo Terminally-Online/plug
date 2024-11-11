@@ -213,7 +213,7 @@ export const ConsoleSidebar = () => {
 						title="New Plug"
 						isExpanded={is.expanded}
 						isPrimary={true}
-						onClick={() => handlePlugs.plug.add({ index: 0 })}
+						onClick={() => handlePlugs.plug.add()}
 					/>
 
 					<ConsoleSidebarAction

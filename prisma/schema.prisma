@@ -168,7 +168,7 @@ model View {
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   workflowId String
 
   @@id([workflowId, date])

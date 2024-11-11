@@ -39,17 +39,17 @@ const usePlugActions = () => {
 		onSuccess: result => {
 			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spread(prev, result.plug))
 
-			if (result.index === 0)
-				handle.add({
-					index: columns[columns.length - 1].index + 1,
-					key: COLUMNS.KEYS.PLUG,
-					from: result.from,
-					item: result.plug.id
-				})
-			else if (result.index)
+			if (result.index)
 				handle.navigate({
 					key: COLUMNS.KEYS.PLUG,
 					index: result.index,
+					from: result.from,
+					item: result.plug.id
+				})
+			else
+				handle.add({
+					index: columns[columns.length - 1].index + 1,
+					key: COLUMNS.KEYS.PLUG,
 					from: result.from,
 					item: result.plug.id
 				})
@@ -66,7 +66,16 @@ const usePlugActions = () => {
 	})
 
 	const forkMutation = api.plugs.fork.useMutation({
-		onSuccess: result => setPlugs(prev => spread(prev, result.plug))
+		onSuccess: result => {
+			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spread(prev, result.plug))
+
+			handle.navigate({
+				key: COLUMNS.KEYS.PLUG,
+				index: result.index,
+				from: result.from,
+				item: result.plug.id
+			})
+		}
 	})
 
 	const queueMutation = api.plugs.activity.queue.useMutation({

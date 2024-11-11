@@ -152,7 +152,7 @@ export const ConsoleColumn: FC<{
 															plugHandle.plug.fork({
 																plug: plug.id,
 																index: column.index,
-																from: column.key
+																from: COLUMNS.KEYS.MY_PLUGS
 															})
 														}
 													>
