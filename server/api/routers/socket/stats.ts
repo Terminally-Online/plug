@@ -21,7 +21,6 @@ export const stats = createTRPCRouter({
 		}
 
 		const [referralCounts, viewCounts] = await Promise.all([
-			// Existing referral counts query
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)
@@ -39,7 +38,7 @@ export const stats = createTRPCRouter({
 					})
 				})
 			),
-			// Simplified view counts query - now we just need to look up the exact weeks
+
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)

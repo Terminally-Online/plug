@@ -9,7 +9,7 @@ import { Actions } from "@/lib"
 import { tags } from "@/lib/constants"
 import { api } from "@/server/client"
 
-import { useColumnStore } from "./columns"
+import { COLUMNS, useColumnStore } from "./columns"
 
 export const plugsAtom = atom<Workflow[]>([])
 export const searchAtom = atom("")
@@ -30,9 +30,30 @@ export type Value = string | Option | undefined | null
 
 const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 
-const createPlugActions = (setPlugs: (update: (prev: Workflow[]) => Workflow[]) => void) => {
+const usePlugActions = () => {
+	const { columns, handle } = useColumnStore()
+
+	const [plugs, setPlugs] = useAtom(plugsAtom)
+
 	const addMutation = api.plugs.add.useMutation({
-		onSuccess: result => setPlugs(prev => spread(prev, result.plug))
+		onSuccess: result => {
+			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spread(prev, result.plug))
+
+			if (result.index === 0)
+				handle.add({
+					index: columns[columns.length - 1].index + 1,
+					key: COLUMNS.KEYS.PLUG,
+					from: result.from,
+					item: result.plug.id
+				})
+			else if (result.index)
+				handle.navigate({
+					key: COLUMNS.KEYS.PLUG,
+					index: result.index,
+					from: result.from,
+					item: result.plug.id
+				})
+		}
 	})
 
 	const editMutation = api.plugs.edit.useMutation({
@@ -129,7 +150,7 @@ export const usePlugStore = (id?: string) => {
 		handle: {
 			search: setSearch,
 			tag: setTag,
-			plug: createPlugActions(setPlugs),
+			plug: usePlugActions(),
 			action: {
 				edit: (data: { id?: string; actions: string }) => actionMutation.mutate(data)
 			}
