@@ -23,7 +23,7 @@ const createInitialBitmap = (): number => {
 		}, 0)
 }
 
-const flagsAtom = atomWithStorage<number>("flags", createInitialBitmap())
+const flagsAtom = atomWithStorage<number>("plug.flags", createInitialBitmap())
 
 export const useFlags = () => {
 	const [flagsBitmap, setFlagsBitmap] = useAtom(flagsAtom)

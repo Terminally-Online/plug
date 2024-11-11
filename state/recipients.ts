@@ -6,7 +6,7 @@ import { useConnect } from "@/lib"
 
 import { atomWithStorage } from "jotai/utils"
 
-const recipientAtom = atomWithStorage<string[]>("recipients", [])
+const recipientAtom = atomWithStorage<string[]>("plug.recipients", [])
 
 export const useRecipients = (recipient: string) => {
 	const { account } = useConnect()

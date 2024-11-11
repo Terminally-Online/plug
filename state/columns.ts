@@ -46,7 +46,7 @@ export const DEFAULT_COLUMNS = [
 	width: COLUMNS.DEFAULT_WIDTH
 }))
 
-const columnsStorageAtom = atomWithStorage<Column[]>("socketColumns", DEFAULT_COLUMNS)
+const columnsStorageAtom = atomWithStorage<Column[]>("plug.columns", DEFAULT_COLUMNS)
 const primaryColumnsAtom = atom(
 	get => get(columnsStorageAtom),
 	(get, set, update: Column[] | ((prev: Column[]) => Column[])) => {

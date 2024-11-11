@@ -23,7 +23,7 @@ export const CONNECTOR_ICON_OVERRIDE_MAP: { [id in string]?: string } = {
 }
 
 // Used to track which connector was used most recently for UI states.
-export const recentConnectorIdAtom = atomWithStorage<string | undefined>("recentConnectorId", undefined)
+export const recentConnectorIdAtom = atomWithStorage<string | undefined>("plug.recentConnectorId", undefined)
 export function useRecentConnectorId() {
 	return useAtomValue(recentConnectorIdAtom)
 }

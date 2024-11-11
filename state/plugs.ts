@@ -10,11 +10,12 @@ import { tags } from "@/lib/constants"
 import { api } from "@/server/client"
 
 import { COLUMNS, useColumnStore } from "./columns"
+import { atomWithStorage } from "jotai/utils"
 
 export const plugsAtom = atom<Workflow[]>([])
 export const searchAtom = atom("")
 export const tagAtom = atom<(typeof tags)[number]>(tags[0])
-export const viewedPlugsAtom = atom<Set<string>>(new Set<string>())
+export const viewedPlugsAtom = atomWithStorage<Set<string>>("plug.viewed", new Set<string>())
 
 export const workflowByIdAtom = atom(get => (id: string) => get(plugsAtom).find(plug => plug.id === id))
 

@@ -16,7 +16,7 @@ const DEFAULT_SIDEBAR_STATE: SidebarState = {
 	width: 380
 }
 
-const sidebarAtom = atomWithStorage<SidebarState>("sidebar", DEFAULT_SIDEBAR_STATE)
+const sidebarAtom = atomWithStorage<SidebarState>("plug.sidebar", DEFAULT_SIDEBAR_STATE)
 
 const expandedAtom = atom(
 	get => get(sidebarAtom).expanded,
