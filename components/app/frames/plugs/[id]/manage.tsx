@@ -7,7 +7,7 @@ import { cardColors, useDebounce } from "@/lib"
 import { useColumnStore, usePlugStore } from "@/state"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
-	const { isFrame } = useColumnStore(index, `${item}-manage`)
+	const { isFrame } = useColumnStore(index, "manage")
 	const { plug, handle } = usePlugStore(item)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
