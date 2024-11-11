@@ -3,7 +3,6 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"solver/solver"
 	"solver/types"
