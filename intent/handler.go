@@ -38,6 +38,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			protocolSchema := types.ProtocolSchema{
 				Metadata: types.ProtocolMetadata{
 					Icon: handler.GetIcon(),
+					Tags: handler.GetTags(),
 				},
 				Schema: make(map[types.Action]types.Schema),
 			}

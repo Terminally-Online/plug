@@ -15,6 +15,7 @@ type HandlerParams struct {
 
 type BaseProtocolHandler interface {
 	GetIcon() string
+	GetTags() []string
 	GetActions() []types.Action
 	GetChains() []int
 	GetSchema(action types.Action) (*types.Schema, error)
@@ -28,6 +29,7 @@ type SchemaProvider interface {
 type Protocol struct {
 	Name           string
 	Icon           string
+	Tags           []string
 	Chains         []int
 	SchemaProvider SchemaProvider
 }
@@ -38,6 +40,10 @@ func (p Protocol) GetName() string {
 
 func (p Protocol) GetIcon() string {
 	return p.Icon
+}
+
+func (p Protocol) GetTags() []string {
+	return p.Tags
 }
 
 func (p Protocol) GetChains() []int {

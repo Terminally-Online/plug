@@ -27,6 +27,7 @@ func New() actions.BaseProtocolHandler {
 		Protocol: actions.Protocol{
 			Name:   "Aave V2",
 			Icon:   "https://app.aave.com/favicon.ico",
+			Tags:   []string{"lending", "defi"},
 			Chains: []int{1},
 		},
 	}

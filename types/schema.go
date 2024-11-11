@@ -1,7 +1,8 @@
 package types
 
 type ProtocolMetadata struct {
-	Icon string `json:"icon"`
+	Icon string   `json:"icon"`
+	Tags []string `json:"tags"`
 }
 
 type ProtocolSchema struct {
