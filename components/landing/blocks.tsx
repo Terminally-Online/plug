@@ -101,7 +101,7 @@ export const Blocks = () => {
 	}
 
 	return (
-		<div className="relative z-[1] overflow-hidden py-[80px]">
+		<div className="relative z-[1] overflow-hidden">
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
@@ -148,7 +148,7 @@ export const Blocks = () => {
 								{rowItems.map((item, index) => (
 									<motion.div
 										key={`${item}-${index}`}
-										className="relative flex aspect-square flex-1 cursor-pointer items-center justify-center rounded-xl bg-grayscale-0 transition-all duration-200 ease-in-out"
+										className="relative flex aspect-square flex-1 cursor-pointer items-center justify-center rounded-xl border-[1px] border-plug-green/10 bg-plug-white transition-all duration-200 ease-in-out"
 										onMouseEnter={allHovered ? undefined : () => handleItemHover(item)}
 										onClick={handleItemClick}
 										animate={

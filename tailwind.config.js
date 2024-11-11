@@ -16,6 +16,7 @@ module.exports = {
 			fontFamily: { sans: ["var(--font-satoshi)", "sans-serif"] },
 
 			colors: {
+				black: "#0E160E",
 				background: "#FFFFFF",
 				search: "#F8F8F8",
 
@@ -32,8 +33,11 @@ module.exports = {
 				"grayscale-1000": "#343e3d",
 				"grayscale-1100": "#1f2525",
 
-				"plug-green": "#00E100",
-				"plug-yellow": "#A3F700",
+				white: "#FDFFF7",
+				"plug-white": "#FDFFF7",
+				"plug-green": "#385842",
+				"plug-yellow": "#D2F38A",
+
 				"plug-red": "#FF0000",
 				"sun-orange": "#FFA800",
 				"sun-yellow": "#FAFF00",

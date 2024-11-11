@@ -16,7 +16,7 @@ export const InfoCard: FC<
 	return (
 		<motion.div
 			className={cn(
-				"relative flex min-h-[240px] flex-row items-end gap-8 rounded-xl bg-grayscale-0 p-8",
+				"relative flex min-h-[240px] flex-row items-end gap-8 rounded-xl border-[1px] border-plug-green/10 bg-plug-white p-8 text-plug-green",
 				className
 			)}
 			initial={{ transform: "translateY(20px)", opacity: 0 }}
@@ -33,7 +33,7 @@ export const InfoCard: FC<
 				<div className="mb-auto mt-1">{icon}</div>
 				<div className="z-[10] flex flex-col gap-2 font-bold">
 					<h2 className="flex items-center gap-4 text-lg lg:text-2xl">{text}</h2>
-					{description && <p className="max-w-[480px] text-black/40">{description}</p>}
+					{description && <p className="max-w-[480px] text-plug-green/40">{description}</p>}
 				</div>
 			</div>
 		</motion.div>

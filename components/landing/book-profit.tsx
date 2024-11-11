@@ -85,8 +85,8 @@ export const BookProfit = () => {
 					</motion.div>
 				))}
 			</motion.div>
-			<div className="absolute bottom-[30%] left-0 right-0 top-[60%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-grayscale-0" />
+			<div className="absolute bottom-[30%] left-0 right-0 top-[60%] bg-gradient-to-b from-plug-white/0 to-plug-white" />
+			<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-plug-white" />
 		</InfoCard>
 	)
 }

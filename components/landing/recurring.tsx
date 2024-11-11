@@ -20,7 +20,7 @@ export const Recurring = () => {
 								className="h-full w-full rounded-sm"
 								style={{
 									background:
-										Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #00E100, #A3F700)"
+										Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #385842, #D2F38A)"
 								}}
 								initial={{ opacity: 1 }}
 								animate={{ opacity: [1, 0] }}
@@ -36,8 +36,8 @@ export const Recurring = () => {
 				))}
 			</div>
 
-			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-grayscale-0" />
+			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
+			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 		</InfoCard>
 	)
 }

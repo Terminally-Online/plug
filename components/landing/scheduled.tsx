@@ -14,9 +14,9 @@ export const Scheduled = () => {
 			background:
 				active === true
 					? [
-							"linear-gradient(30deg, rgba(0,239,53,0.65), rgba(147,233,0,1))",
-							"linear-gradient(30deg, rgba(0,239,53,1), rgba(147,233,0,1))",
-							"linear-gradient(30deg, rgba(0,239,53,0.65), rgba(147,233,0,1))"
+							"linear-gradient(30deg, rgba(56,88,66,0.65), rgba(210,243,138,1))",
+							"linear-gradient(30deg, rgba(56,88,66,1),    rgba(210,243,138,1))",
+							"linear-gradient(30deg, rgba(56,88,66,0.65), rgba(210,243,138,1))"
 						]
 					: ["rgba(217,217,217,0)", "rgba(217,217,217,0.4)", "rgba(217,217,217,0)"]
 		},
@@ -132,8 +132,8 @@ export const Scheduled = () => {
 				<div className="border-r-[1px]" />
 			</div>
 
-			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-grayscale-0" />
+			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
+			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 		</InfoCard>
 	)
 }

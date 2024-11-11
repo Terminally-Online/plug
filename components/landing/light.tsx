@@ -117,34 +117,13 @@ const ProtocolLine = ({
 	}
 
 	return (
-		<div
-			className={cn("group relative ml-[-25vw] flex w-[150vw] overflow-hidden py-8")}
-			onMouseEnter={handleMouseEnter}
-		>
-			<motion.div
-				className={cn(
-					"absolute top-[50%] h-[2px] w-full translate-y-[-50%] bg-gradient-to-r transition-all duration-200 ease-in-out",
-					isGreen
-						? "from-plug-green to-plug-yellow blur filter"
-						: "from-grayscale-100 to-grayscale-100/0 group-hover:from-plug-green group-hover:to-plug-yellow group-hover:blur group-hover:filter"
-				)}
-				animate={
-					isStrumming
-						? {
-								scaleY: [1, 2, 1],
-								translateY: ["-50%", "-60%", "-50%"],
-								rotate: [0, 2, -2, 0]
-							}
-						: {}
-				}
-				transition={{ duration: 0.15, times: [0, 0.5, 1] }}
-			/>
+		<div className={cn("group relative ml-[-25vw] flex w-[150vw] py-8")} onMouseEnter={handleMouseEnter}>
 			<motion.div
 				className={cn(
 					"absolute top-[50%] h-[2px] w-full translate-y-[-50%] bg-gradient-to-r transition-all duration-200 ease-in-out",
 					isGreen
 						? "from-plug-green to-plug-yellow"
-						: "from-grayscale-100 to-grayscale-100/0 group-hover:from-plug-green group-hover:to-plug-yellow"
+						: "from-plug-green/10 to-plug-green/0 group-hover:from-plug-green group-hover:to-plug-yellow"
 				)}
 				animate={
 					isStrumming
@@ -294,39 +273,7 @@ export const Light = () => {
 	}, [])
 
 	return (
-		<div className="relative z-0 my-[80px]">
-			<LandingContainer className="relative mb-[80px] flex flex-col gap-4 xl:mb-[40px]">
-				<div className="flex flex-row items-center gap-12">
-					<motion.h1
-						className="max-w-[420px] text-[32px] font-bold leading-tight md:max-w-[600px] md:text-[52px] lg:min-w-[720px] lg:max-w-[720px] lg:text-[64px]"
-						initial={{ transform: "translateY(-20px)", opacity: 0 }}
-						whileInView={{
-							transform: ["translateY(-20px)", "translateY(0px)"],
-							opacity: [0, 1]
-						}}
-						transition={{ duration: 0.3 }}
-					>
-						Blockchain transactions at the speed of light.
-					</motion.h1>
-					<div className="hidden h-[2px] w-full bg-grayscale-100 xl:flex" />
-				</div>
-				<motion.p
-					className="max-w-[540px] text-[16px] font-bold text-black/40 lg:max-w-[620px] lg:text-[18px]"
-					initial={{ transform: "translateY(20px)", opacity: 0 }}
-					whileInView={{
-						transform: ["translateY(20px)", "translateY(0px)"],
-						opacity: [0, 1]
-					}}
-					transition={{
-						duration: 0.3,
-						delay: 0.15
-					}}
-				>
-					Transactions that respond and execute faster than you can click. Instead of constantly being fifteen
-					minutes late, Plug submits your transaction the instant the value can be captured.
-				</motion.p>
-			</LandingContainer>
-
+		<div className="-mt-[160px]">
 			<motion.div
 				className="flex flex-col"
 				style={{

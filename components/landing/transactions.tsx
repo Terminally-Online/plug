@@ -1,4 +1,4 @@
-import { Blob, Execution, LandingContainer, Recurring, Scheduled } from "@/components"
+import { Execution, LandingContainer, Recurring, Scheduled } from "@/components"
 
 export const Transactions = () => {
 	return (
@@ -8,8 +8,6 @@ export const Transactions = () => {
 				<Execution />
 				<Recurring />
 			</LandingContainer>
-
-			<Blob className="blur-[220px]" left={"60%"} top={"30%"} width={"400"} height={"300"} />
 		</div>
 	)
 }
