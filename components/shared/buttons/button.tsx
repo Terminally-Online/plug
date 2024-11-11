@@ -13,7 +13,7 @@ type Props = {
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
 	primary:
-		"relative bg-gradient-to-tr from-plug-green to-plug-yellow border-[1px] border-plug-green text-white transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+		"relative bg-gradient-to-tr from-plug-green to-plug-yellow border-[1px] border-white text-white transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	primaryDisabled:
 		"relative bg-white text-plug-green border-[1px] border-plug-green transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	secondary:

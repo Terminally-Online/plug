@@ -88,7 +88,9 @@ export const ScheduleFrame: FC<{
 
 				<Button
 					variant={
-						column.schedule && column.schedule.date && column.schedule.date.from ? "primary" : "disabled"
+						column.schedule && column.schedule.date && column.schedule.date.from
+							? "primary"
+							: "primaryDisabled"
 					}
 					className="w-full py-4"
 					onClick={() => handle.frame("run")}
