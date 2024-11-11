@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react"
 
-import { ACTION_REGEX } from "@/contexts"
+import { ACTION_REGEX } from "@/state"
 
 export const isConnected = async (ctx: any, callback: () => any) => {
 	if (!(await getSession(ctx))) {
