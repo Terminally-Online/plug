@@ -3,10 +3,17 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
+	"os"
 	"solver/solver"
 	"solver/types"
 	"solver/utils"
+	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type IntentRequest struct {
@@ -157,7 +164,78 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(transaction); err != nil {
+	// Generate the encoded solver value so that the smart contract can decode it.
+	// Note: Used in Solidity with:
+	// 		body: `(uint48 expiration, address solver))`
+	// 		encode: `abi.encode(uint48(0), msg.sender)`
+	// 		decode: `abi.decode(data, (uint48, address))`
+	solverArguments := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 48}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}
+	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
+
+	solver, err := solverArguments.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
+	if err != nil {
+		utils.MakeHttpError(w, "failed to pack solver: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	saltArguments := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 96}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}
+	salt, err := saltArguments.Pack(
+		big.NewInt(time.Now().Unix()),
+		common.HexToAddress(req.From),
+		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
+		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
+	)
+	if err != nil {
+		utils.MakeHttpError(w, "failed to pack salt: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: Implement the EIP-712 signing schema.
+	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	if err != nil {
+		utils.Error(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	plugsHash := crypto.Keccak256Hash([]byte(req.From), []byte(salt), []byte(solver))
+	signature, err := crypto.Sign(plugsHash.Bytes(), privateKey)
+	if err != nil {
+		utils.Error(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	response := struct {
+		Plug struct {
+			Socket string      `json:"socket"`
+			Plugs  interface{} `json:"plugs"`
+			Solver string      `json:"solver"`
+			Salt   string      `json:"salt"`
+		} `json:"plug"`
+		Signature interface{} `json:"signature"`
+	}{
+		Plug: struct {
+			Socket string      `json:"socket"`
+			Plugs     interface{} `json:"plugs"`
+			Solver string      `json:"solver"`
+			Salt   string      `json:"salt"`
+		}{
+			Socket: req.From,
+			Plugs:  transaction,
+			Solver: "0x" + common.Bytes2Hex(solver),
+			Salt:   "0x" + common.Bytes2Hex(salt),
+		},
+		Signature: "0x" + common.Bytes2Hex(signature),
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 	}
 }
