@@ -42,7 +42,6 @@ Yearn and Curve are closely related and this integration includes specs related 
 | V3 | Deposit Assets | Action | Vault (ERC-4626) |  |  | Requires approval |
 | V3 | Withdraw Assets | Action | Vault (ERC-4626) |  |  | Check maxWithdraw |
 | V3 | Stake Shares | Action | Vault (ERC-4626) |  |  | |
-| V3 | Vault Discovery | Constraint | Registry |  |  | Find endorsed vaults |
 | V3 | APY Tracking | Constraint | yDaemon |  |  | Historical + current |
 | yCRV | Deposit CRV | Action | yCRV Contract |  |  | Get yCRV tokens |
 | yCRV | Stake yCRV | Action | YearnBoostedStaker |  |  | Earn crvUSD |
@@ -61,7 +60,7 @@ Deposits assets into a Yearn vault in exchange for vault shares.
 - **Function:** `deposit(uint256 assets, address receiver)`
 - **Sentence:**
   - Deposit AMOUNT ASSET into VAULT
-  - "Deposit {0} {1} into {1=>2}."
+  - `Deposit {0} {1} into {1=>2}.`
   - Deposit 1000 USDC into USDC-A yVault
 
 
@@ -77,7 +76,7 @@ Withdraws underlying assets from a vault by burning shares.
 - **Function:** `withdraw(uint256 assets, address receiver, address owner)`
 - **Sentence:**
   - Withdraw AMOUNT ASSET into VAULT
-  - "Withdraw {0} {1} from {1=>2}."
+  - `Withdraw {0} {1} from {1=>2}.`
   - Withdraw 1000 USDC from USDC-A yVault
 
 | Input Name | Type | Description | Notes |
@@ -93,7 +92,7 @@ Stake vault shares in gauge for additional rewards.
 - **Function:** `deposit(uint256 amount, address receiver)`
 - - **Sentence:**
   - Stake AMOUNT shares into VAULT_GUAGE_CONTRACT.
-  - "Stake {0} shares into {1}."
+  - `Stake {0} shares into {1}.`
   - Stake 873.4 shares into USDC-A yVault
 
 | Input Name | Type | Description | Notes |
@@ -111,12 +110,12 @@ Retrieves historical and current APY data for vaults.
 - **Endpoint:** `GET /api/v1/vaults/apy/{chain}/{address}`
 - - **Sentence:**
   - If VAULT apy is DIRECTION than AMOUNT.
-  - "If {0} apy is {1} than {2}."
+  - `If {0} apy is {1} than {2}.`
   - If USCD-A yVault is Greater Than 4%
 
 | Field | Type | Description | Notes |
 | :--- | :--- | :--- | :--- |
-| type | string | APY calculation type | "net" or "gross" |
+| type | string | APY calculation type | `net` or `gross` |
 | composite | boolean | If vault has multiple yield sources | true/false |
 | points | array | Historical APY data points | timestamp + value pairs |
 | weekAgo | number | Rolling 7-day APY | Percentage value |
@@ -132,7 +131,7 @@ Convert CRV tokens to yCRV for enhanced yields.
 - **Function:** `deposit(uint256 amount)`
 - **Sentence:**
   - Deposit AMOUNT crv.
-  - "Deposit {0} crv."
+  - `Deposit {0} crv.`
 
 | Input Name | Type | Description | Notes |
 | :--- | :--- | :--- | :--- |
@@ -146,7 +145,7 @@ Stake yCRV tokens in YearnBoostedStaker to earn crvUSD rewards.
 - **Function:** `stake(uint256 amount)`
 - **Sentence:**
   - Stake AMOUNT ycrv for crvUSD.
-  - "Stake {0} ycrv."
+  - `Stake {0} ycrv.`
 
 | Input Name | Type | Description | Notes |
 | :--- | :--- | :--- | :--- |
@@ -160,7 +159,7 @@ Deposit yCRV into yvyCRV vault for auto-compounding yields.
 - **Function:** `deposit(uint256 amount)`
 - **Sentence:**
   - Deposit AMOUNT ycrv to earn ycrv.
-  - "Deposit {0} ycrv to earn ycrv."
+  - `Deposit {0} ycrv to earn ycrv.`
 
 | Input Name | Type | Description | Notes |
 | :--- | :--- | :--- | :--- |
@@ -174,13 +173,13 @@ Claim accumulated crvUSD rewards from staked yCRV positions.
 - **Function:** `claim()`
 - **Sentence:**
   - Claim my yCRV rewards.
-  - "Claim my yCRV rewards."
+  - `Claim my yCRV rewards.`
 
 - **Contract:** (Reward Distibutor) `0xB226c52EB411326CdB54824a88aBaFDAAfF16D3d`
 - **Function:** `getClaimable(address _account)`
 - **Sentence:**
   - If my claimable ycrv is DIRECTION than AMOUNT.
-  - "If my claimable ycrv is {0} than {1}"
+  - `If my claimable ycrv is {0} than {1}`
 
 | Input Name | Type | Description | Notes |
 | :--- | :--- | :--- | :--- |
