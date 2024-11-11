@@ -85,7 +85,7 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 
 	return (
 		<>
-			<div className="flex h-full flex-col items-center gap-2 px-6 py-4">
+			<div className="flex h-full flex-col items-center gap-4 px-4 py-4">
 				<div className="relative mx-4 flex h-full min-h-96 w-full flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16 text-center">
 					<div className="absolute left-4 right-4 top-4">
 						<div className="flex w-full flex-row items-center justify-between gap-2">
@@ -178,27 +178,22 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 					</div>
 				</div>
 
-				<div className="flex w-full flex-row gap-2">
-					<Button
-						className={cn(
-							"w-full",
-							canFeed === false &&
-								"flex cursor-auto items-center justify-center bg-grayscale-0 text-center hover:bg-grayscale-0 hover:text-opacity-60"
-						)}
-						onClick={canFeed ? () => feedMutation.mutate() : () => {}}
-						disabled={feedMutation.isLoading || !canFeed}
-					>
-						{feedMutation.isLoading ? (
-							"..."
-						) : canFeed && !feed ? (
-							"Feed"
-						) : (
-							<span className="tabular-nums">
-								<Counter count={`${hours}:${minutes}:${seconds}`} />
-							</span>
-						)}
-					</Button>
-				</div>
+				<Button
+					variant={canFeed ? "primary" : "primaryDisabled"}
+					className="flex w-full items-center justify-center"
+					onClick={canFeed ? () => feedMutation.mutate() : () => {}}
+					disabled={feedMutation.isLoading || !canFeed}
+				>
+					{feedMutation.isLoading ? (
+						"..."
+					) : canFeed && !feed ? (
+						"Feed"
+					) : (
+						<span className="tabular-nums">
+							<Counter count={`${hours}:${minutes}:${seconds}`} />
+						</span>
+					)}
+				</Button>
 			</div>
 		</>
 	)

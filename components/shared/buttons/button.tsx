@@ -4,7 +4,7 @@ import { FC, HTMLAttributes, PropsWithChildren } from "react"
 import { cn } from "@/lib"
 
 type Props = {
-	variant?: "primary" | "secondary" | "white" | "disabled" | "destructive" | "none"
+	variant?: "primary" | "primaryDisabled" | "secondary" | "white" | "disabled" | "destructive" | "none"
 	sizing?: "sm" | "md" | "lg"
 	href?: string
 	external?: boolean
@@ -13,7 +13,9 @@ type Props = {
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
 	primary:
-		"relative bg-gradient-to-tr from-plug-green to-plug-yellow text-white transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+		"relative bg-gradient-to-tr from-plug-green to-plug-yellow border-[1px] border-plug-green text-white transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+	primaryDisabled:
+		"relative bg-white text-plug-green border-[1px] border-plug-green transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	secondary:
 		"border-[1px] border-grayscale-100 text-black hover:border-white hover:bg-grayscale-100 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-grayscale-0 [&.active]:text-opacity-100 [&.active]:hover:bg-grayscale-100 [&.active]:hover:border-grayscale-0",
 	white: "bg-white text-black hover:bg-opacity-80",
@@ -39,8 +41,7 @@ export const Button: FC<Props> = ({
 	disabled = false,
 	...props
 }) => {
-	const base =
-		"relative cursor-pointer outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
+	const base = "relative outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none"
 
 	if (onClick || disabled)
 		return (

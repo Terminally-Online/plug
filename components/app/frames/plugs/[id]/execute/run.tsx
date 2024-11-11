@@ -111,7 +111,7 @@ export const RunFrame: FC<{
 				)}
 
 				<Button
-					variant={isReady ? "primary" : "disabled"}
+					variant={isReady ? "primary" : "primaryDisabled"}
 					className="mt-4 w-full py-4"
 					onClick={handleRun}
 					disabled={!isReady}
