@@ -30,8 +30,8 @@ export const COLUMNS = {
 		PROFILE: "PROFILE",
 		SETTINGS: "SETTINGS",
 		TOKENS: "TOKENS"
-	} as const
-} as const
+	}
+}
 
 export const DEFAULT_COLUMNS = [
 	{ key: COLUMNS.KEYS.PANE, index: -2 },
