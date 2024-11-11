@@ -17,19 +17,19 @@ export const Fragments: FC<{
 		action: action.action
 	})
 
-	const fragments = useMemo(() => {
-		if (!actions) return []
+	const protocol = actions?.[action.protocol]
 
-		return actions[action.protocol].schema[action.action].sentence.split(ACTION_REGEX) as string[]
-	}, [actions, action])
+	const fragments = useMemo(() => {
+		if (!protocol) return []
+
+		return protocol.schema[action.action].sentence.split(ACTION_REGEX) as string[]
+	}, [protocol, action])
 
 	const dynamic = useMemo(() => {
 		return fragments.filter(fragment => fragment.match(ACTION_REGEX))
 	}, [fragments])
 
 	let dynamicIndex = -1
-
-	const protocol = actions?.[action.protocol]
 
 	if (!protocol) return null
 
