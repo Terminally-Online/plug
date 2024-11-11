@@ -1,11 +1,11 @@
-name: Auto Assign
+name: Auto Assign and PR Title Check
 on:
     issues:
         types: [opened]
     pull_request:
-        types: [opened]
+        types: [opened, edited, synchronize]
 jobs:
-    run:
+    auto-assign:
         runs-on: ubuntu-latest
         permissions:
             issues: write
@@ -17,3 +17,23 @@ jobs:
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   assignees: nftchance
                   numOfAssignee: 1
+
+    check-pr-title:
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check PR Title
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      const title = context.payload.pull_request.title;
+                      const validPrefixes = ['fix:', 'chore:', 'feat:'];
+                      const hasValidPrefix = validPrefixes.some(prefix => 
+                        title.toLowerCase().startsWith(prefix)
+                      );
+
+                      if (!hasValidPrefix) {
+                        core.setFailed(
+                          'PR title must start with one of: fix:, chore:, or feat:'
+                        );
+                      }
