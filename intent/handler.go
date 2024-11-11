@@ -11,8 +11,8 @@ import (
 
 type IntentRequest struct {
 	Action  types.Action    `json:"action"`
-	ChainId int            `json:"chainId"`
-	From    string         `json:"from"`
+	ChainId int             `json:"chainId"`
+	From    string          `json:"from"`
 	Inputs  json.RawMessage `json:"inputs"`
 }
 
@@ -49,19 +49,19 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 					return
 				}
-				
+
 				// Make a deep copy of the schema
 				schemaCopy := types.Schema{
 					Fields: make([]types.SchemaField, len(schema.Fields)),
 				}
-				
+
 				// Deep copy each field
 				for i, field := range schema.Fields {
-					fieldCopy := field // Copy the field struct
+					fieldCopy := field      // Copy the field struct
 					fieldCopy.Options = nil // Clear options on the copy
 					schemaCopy.Fields[i] = fieldCopy
 				}
-				
+
 				protocolSchema.Schema[supportedAction] = schemaCopy
 			}
 			allSchemas[protocol] = protocolSchema
@@ -173,3 +173,4 @@ func (h *Handler) validateRequest(req *IntentRequest) error {
 
 	return nil
 }
+
