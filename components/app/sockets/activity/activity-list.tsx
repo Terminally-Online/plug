@@ -18,10 +18,9 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	const { activities, isLoading } = useActivities()
 
 	const visibleActivities = useMemo(() => {
-		if (!session || isAnonymous || isLoading) return Array(10).fill(undefined)
-
-		return activities || []
-	}, [activities, session, isAnonymous, isLoading])
+		if (activities === undefined || isLoading || activities.length === 0) return Array(10).fill(undefined)
+		return activities
+	}, [activities, isLoading])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>

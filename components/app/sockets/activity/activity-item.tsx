@@ -82,9 +82,15 @@ export const ActivityItem: FC<{
 		<>
 			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
 				{activity === undefined ? (
-					<div className="invisible">
-						<p>.</p>
-						<p>.</p>
+					<div className="flex w-full flex-row">
+						<div className="relative h-10 min-w-10">
+							<span className="invisible">.</span>
+						</div>
+						<div className="relative flex w-full flex-col overflow-hidden">
+							<div className="flex flex-row items-center justify-between gap-2">
+								<span className="invisible font-bold">Loading...</span>
+							</div>
+						</div>
 					</div>
 				) : (
 					<div className="flex w-full flex-row">
