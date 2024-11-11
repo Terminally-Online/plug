@@ -136,7 +136,7 @@ Retrieves risk metrics and scoring for vaults.
 ### Boost Calculation
 Calculates the boost multiplier for a user's vault deposits based on their veYFI balance.
 
-- **Contract:** Retrieved via Registry's `getGaugeForVault(vault)`
+- **Contract:** Retrieved via Registry's `getEndorsedVaults(asset)`
 - **Function:** `getBoost(address user)`
 
 | Input Name | Type | Description | Notes |
