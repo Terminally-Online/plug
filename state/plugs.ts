@@ -113,8 +113,13 @@ export const usePlugStore = (id?: string) => {
 			onSuccess: data => {
 				setPlugs(prev => data.map(plug => prev.find(p => p.id === plug.id) ?? plug))
 				setViewedPlugs(prev => {
-					const newSet = new Set(prev)
+					const newSet = new Set([...Array.from(prev)].slice(-49))
 					data.forEach(plug => newSet.add(plug.id))
+					if (newSet.size > 50) {
+						const entries = Array.from(newSet)
+						newSet.clear()
+						entries.slice(-50).forEach(id => newSet.add(id))
+					}
 					return newSet
 				})
 			}
