@@ -2,8 +2,6 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { subscriptions } from "@/server/subscription"
-
 import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
 
 export const simulation = createTRPCRouter({

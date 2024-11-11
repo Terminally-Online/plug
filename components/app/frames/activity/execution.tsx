@@ -148,7 +148,7 @@ export const ExecutionFrame: FC<{
 					)}
 
 					{activity.simulations.map((simulation, index) => (
-						<Accordion key={index}>
+						<Accordion key={index} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
 							<div className="flex flex-row gap-2">
 								<ActivityIcon status={simulation.status} />
 								<div className="flex w-full flex-col">
