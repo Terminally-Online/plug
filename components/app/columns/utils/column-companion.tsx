@@ -180,7 +180,7 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 
 				<Button
 					variant={canFeed ? "primary" : "primaryDisabled"}
-					className="flex w-full items-center justify-center"
+					className="flex w-full items-center justify-center py-4"
 					onClick={canFeed ? () => feedMutation.mutate() : () => {}}
 					disabled={feedMutation.isLoading || !canFeed}
 				>
