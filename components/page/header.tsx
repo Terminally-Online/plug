@@ -195,7 +195,7 @@ export const PageHeader = () => {
 
 	return (
 		<Container>
-			{[COLUMNS.KEYS.HOME, COLUMNS.KEYS.ACTIVITY].includes(column?.key) ? (
+			{[COLUMNS.KEYS.HOME, COLUMNS.KEYS.ACTIVITY].includes(column?.key ?? "") ? (
 				<HomePageHeader />
 			) : column?.key === COLUMNS.KEYS.PLUG ? (
 				<PlugHeader />
