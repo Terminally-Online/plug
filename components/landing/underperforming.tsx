@@ -34,7 +34,7 @@ export const Underperforming = () => {
 				{bars.map(({ key, height, redHeight, delay }) => (
 					<motion.div
 						key={key}
-						className="relative mt-auto w-full rounded-xl bg-grayscale-100"
+						className="relative mt-auto w-full rounded-xl bg-plug-green/10"
 						initial={{ height: height }}
 						whileInView={{ height: [height, "0%"] }}
 						transition={{ ...animationProps, delay }}
@@ -55,8 +55,8 @@ export const Underperforming = () => {
 				))}
 			</div>
 
-			<div className="absolute bottom-[45%] left-0 right-0 top-[25%] bg-gradient-to-b from-grayscale-0/0 to-grayscale-0" />
-			<div className="absolute bottom-0 left-0 right-0 top-[55%] bg-grayscale-0" />
+			<div className="absolute bottom-[45%] left-0 right-0 top-[25%] bg-gradient-to-b from-plug-white/0 to-plug-white" />
+			<div className="absolute bottom-0 left-0 right-0 top-[55%] bg-plug-white" />
 		</InfoCard>
 	)
 }
