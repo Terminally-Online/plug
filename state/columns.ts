@@ -91,8 +91,6 @@ export const useColumnStore = (index?: number, key?: string) => {
 	const getColumnByIndex = useAtomValue(columnByIndexAtom)
 	const isFrame = useAtomValue(isFrameAtom)
 
-	// setColumns(DEFAULT_COLUMNS)
-
 	const column = useMemo(() => (index !== undefined ? getColumnByIndex(index) : undefined), [index, getColumnByIndex])
 
 	const handleScroll = useCallback(() => {
@@ -210,7 +208,7 @@ export const useColumnStore = (index?: number, key?: string) => {
 
 		frame: useCallback(
 			(columnKey?: string) => {
-				if (!index) return
+				if (index === undefined) return
 
 				setColumns(prev => {
 					const targetColumn = prev.find(col => col.index === index || col.id === index)
@@ -229,7 +227,7 @@ export const useColumnStore = (index?: number, key?: string) => {
 
 		schedule: useCallback(
 			(schedule?: Schedule) => {
-				if (!index) return
+				if (index === undefined) return
 
 				setColumns(prev => {
 					const targetColumn = prev.find(col => col.index === index)
@@ -243,7 +241,7 @@ export const useColumnStore = (index?: number, key?: string) => {
 
 		transfer: useCallback(
 			(updater: Transfer | undefined | ((prev: Transfer | undefined) => Transfer)) => {
-				if (!index) return
+				if (index === undefined) return
 
 				setColumns(prev => {
 					const targetColumn = prev.find(col => col.index === index)
