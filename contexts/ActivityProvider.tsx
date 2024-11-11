@@ -13,7 +13,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	const { isAnonymous } = useSocket()
 	const [activities, setActivities] = useState<ContextType<typeof ActivityContext>["activities"]>([])
 
-	const { data, isLoading } = api.plugs.activity.get.useQuery(undefined, {
+	const { isLoading } = api.plugs.activity.get.useQuery(undefined, {
 		enabled: isAnonymous === false,
 		onSuccess: data => setActivities(data)
 	})
@@ -56,7 +56,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<ActivityContext.Provider
 			value={{
-				activities: activities,
+				activities,
 				isLoading,
 				handle: { toggle: data => handle.toggle.mutate(data), delete: data => handle.delete.mutate(data) }
 			}}

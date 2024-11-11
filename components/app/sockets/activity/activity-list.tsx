@@ -1,19 +1,15 @@
-import { useSession } from "next-auth/react"
 import { FC, HTMLAttributes, useMemo } from "react"
 
-import { Callout } from "@/components"
+import { ActivityItem, Callout } from "@/components"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
-import { useSocket } from "@/state"
-
-import { ActivityItem } from "./activity-item"
+import { COLUMNS, useSocket } from "@/state"
 
 export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
-	index = -1,
+	index = COLUMNS.MOBILE_INDEX,
 	className,
 	...props
 }) => {
-	const { data: session } = useSession()
 	const { isAnonymous } = useSocket()
 	const { activities, isLoading } = useActivities()
 
