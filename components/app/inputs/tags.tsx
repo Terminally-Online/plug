@@ -5,6 +5,9 @@ import { motion } from "framer-motion"
 import { Button } from "@/components"
 import { cn, tags } from "@/lib"
 
+// TODO: (#611) Remove this flag once we have tag functionality implemented in the backend.
+const TAGS_ENABLED = false
+
 export const Tags: FC<{
 	tag?: string
 	handleTag: (tag: string) => void
@@ -13,6 +16,7 @@ export const Tags: FC<{
 	const tagRefs = useRef(tags.map(() => createRef<HTMLDivElement>()))
 
 	useEffect(() => {
+		if (TAGS_ENABLED === false) return
 		if (scrollContainerRef.current && tagRefs.current) {
 			const activeIndex = tags.findIndex(tagItem => tagItem.toLowerCase() === (tag || "all"))
 
@@ -28,6 +32,8 @@ export const Tags: FC<{
 			}
 		}
 	}, [tag])
+
+	if (TAGS_ENABLED === false) return null
 
 	return (
 		<div className="relative mb-4 mt-2">
