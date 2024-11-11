@@ -224,7 +224,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 
 	const handleCopy = async () => {
 		try {
-			await navigator.clipboard.writeText(socket.id)
+			await navigator.clipboard.writeText(window.location.href)
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000)
 		} catch (err) {
@@ -244,6 +244,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 					handleSearch={() => {}}
 				/>
 				<Button
+					variant={copied ? "primaryDisabled" : "primary"}
 					className="flex w-full flex-row items-center justify-center gap-2 truncate py-4"
 					onClick={handleCopy}
 				>
