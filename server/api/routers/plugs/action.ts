@@ -20,22 +20,26 @@ export const action = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-			// TODO: We need to factor the tags based on the protocols/actions from the solver.
-			const tags: string[] = []
+			// NOTE: We wrap this endpoint in a try/catch because we do not want JSON.parse to crash the server.
+			try {
+				// TODO: For this to work we need to be sending the full action object to the database.
+				// const actions = JSON.parse(input.actions)
+				const tags: string[] = []
 
-			// TODO: Attempt a JSON parse on the actions to confirm it is valid before saving it to the database.
+				const plug = await ctx.db.workflow.update({
+					where: { id: input.id, socketId: ctx.session.address },
+					data: {
+						actions: input.actions,
+						tags,
+						updatedAt: new Date()
+					}
+				})
 
-			const plug = await ctx.db.workflow.update({
-				where: { id: input.id, socketId: ctx.session.address },
-				data: {
-					actions: input.actions,
-					tags,
-					updatedAt: new Date()
-				}
-			})
+				ctx.emitter.emit(events.edit, plug)
 
-			ctx.emitter.emit(events.edit, plug)
-
-			return plug
+				return plug
+			} catch {
+				throw new TRPCError({ code: "BAD_REQUEST" })
+			}
 		})
 })
