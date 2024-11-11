@@ -76,6 +76,7 @@ export const Search: FC<Props> = ({
 						className="w-full cursor-pointer bg-transparent font-bold outline-none"
 						value={search}
 						onChange={e => (handleSearch ? handleSearch(e.target.value) : null)}
+						autoCorrect="off"
 					/>
 				) : (
 					<textarea

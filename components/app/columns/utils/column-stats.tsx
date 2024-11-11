@@ -3,7 +3,7 @@ import React, { FC, useState } from "react"
 
 import { CheckCircle, Clipboard } from "lucide-react"
 
-import { Button, Counter } from "@/components"
+import { Button, Counter, Search } from "@/components"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
@@ -235,22 +235,31 @@ export const ColumnStats: FC<{ index: number }> = () => {
 	return (
 		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
 			<ProfileStats />
-			<Button
-				className="flex w-full flex-row items-center justify-center gap-2 truncate py-4"
-				onClick={handleCopy}
-			>
-				{copied ? (
-					<>
-						<CheckCircle size={14} className="opacity-60" />
-						Copied!
-					</>
-				) : (
-					<>
-						<Clipboard size={14} className="opacity-60" />
-						Copy Referral Link
-					</>
-				)}
-			</Button>
+
+			<div className="flex flex-col gap-2">
+				<Search
+					icon={<Clipboard size={14} className="opacity-60" />}
+					placeholder="Copy Referral Link"
+					search={socket?.identity?.referralCode ?? ""}
+					handleSearch={() => {}}
+				/>
+				<Button
+					className="flex w-full flex-row items-center justify-center gap-2 truncate py-4"
+					onClick={handleCopy}
+				>
+					{copied ? (
+						<>
+							<CheckCircle size={14} className="opacity-60" />
+							Copied!
+						</>
+					) : (
+						<>
+							<Clipboard size={14} className="opacity-60" />
+							Copy Referral Link
+						</>
+					)}
+				</Button>
+			</div>
 		</div>
 	)
 }
