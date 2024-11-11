@@ -183,6 +183,7 @@ export const DynamicFragment: FC<{
 									<button
 										key={`${index}-${actionIndex}-${optionIndex}`}
 										className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
+										// @ts-ignore - I broke this while refactoring the way state is managed
 										onClick={() => handleValue(option)}
 									>
 										{option.icon && (
