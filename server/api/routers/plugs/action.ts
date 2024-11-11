@@ -22,8 +22,7 @@ export const action = createTRPCRouter({
 
 			// NOTE: We wrap this endpoint in a try/catch because we do not want JSON.parse to crash the server.
 			try {
-				// TODO: For this to work we need to be sending the full action object to the database.
-				// const actions = JSON.parse(input.actions)
+				// TODO: (#611) Update the tags of the Plug based on the protocol/action pair.
 				const tags: string[] = []
 
 				const plug = await ctx.db.workflow.update({
