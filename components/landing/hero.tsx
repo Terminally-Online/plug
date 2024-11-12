@@ -23,26 +23,28 @@ export const Hero = () => {
 							<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
 							<Image src="/plug-word-green.svg" alt="Logo" width={64} height={32} />
 						</button>
-						<button className="mr-4" onClick={() => handleCallToAction(routes.documentation)}>
+						<button className="ml-8 mr-4" onClick={() => handleCallToAction(routes.documentation)}>
 							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 						</button>
-						<button onClick={() => handleCallToAction(routes.twitter)}>
+						<button className="mr-24" onClick={() => handleCallToAction(routes.twitter)}>
 							<Twitter
 								size={18}
 								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
 							/>
 						</button>
 
+						<div className="h-[2px] w-full bg-plug-green/10" />
+
 						<Button
 							variant="none"
-							className="ml-auto w-max rounded-md border-[1px] border-plug-yellow/20 bg-plug-yellow px-4 py-2 text-center text-sm font-black text-plug-green filter backdrop-blur-xl"
+							className="ml-24 w-max min-w-[110px] rounded-md border-[1px] border-plug-yellow/20 bg-plug-yellow px-4 py-2 text-center text-sm font-black text-plug-green filter backdrop-blur-xl transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
 							onClick={() => handleCallToAction()}
 						>
 							Enter App
 						</Button>
 					</div>
 
-					<div className="my-auto flex py-32 items-center pb-6">
+					<div className="my-auto flex items-center py-32 pb-6">
 						<div className="flex flex-col gap-8 md:my-auto">
 							<motion.h1
 								className="text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
@@ -53,7 +55,8 @@ export const Hero = () => {
 								}}
 								transition={{ duration: 0.3 }}
 							>
-								Your all-in-one app for onchain activity.
+								Your all-in-one app for onchain activity
+								<span className="text-plug-yellow">.</span>
 							</motion.h1>
 
 							<motion.p
@@ -74,7 +77,7 @@ export const Hero = () => {
 
 							<Button
 								variant="none"
-								className="mt-8 w-max rounded-md border-[1px] border-plug-yellow/30 bg-plug-yellow px-8 py-3 text-center font-black text-plug-green filter backdrop-blur-xl"
+								className="mt-8 w-max rounded-md border-[1px] border-plug-yellow/30 bg-plug-yellow px-8 py-3 text-center font-black text-plug-green filter backdrop-blur-xl transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
 								onClick={() => handleCallToAction()}
 							>
 								Enter App
