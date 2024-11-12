@@ -7,7 +7,7 @@ export const Transactions = () => {
 	const pathLength = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
 	return (
-		<div className="relative z-[11] mb-[80px] h-full bg-plug-white">
+		<div className="relative z-[11] mb-[40px] h-full bg-plug-white">
 			<svg
 				width="1827"
 				height="976"

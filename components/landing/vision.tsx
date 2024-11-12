@@ -10,7 +10,7 @@ export const Vision: FC = () => {
 	const { scrollYProgress } = useScroll({
 		offset: ["start end", "end start"]
 	})
-	const pathLength = useTransform(scrollYProgress, [0.4, 1], [0, 1])
+	const pathLength = useTransform(scrollYProgress, [0.4, 0.9], [0, 1])
 
 	return (
 		<div className="relative z-[11] mb-[80px] h-full bg-plug-white">

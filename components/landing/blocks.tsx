@@ -102,7 +102,7 @@ export const Blocks = () => {
 
 	return (
 		<div className="relative z-[9999] overflow-hidden">
-			<LandingContainer className="relative mb-[80px] flex flex-col gap-4">
+			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
 						className="max-w-[320px] text-[32px] font-black leading-tight md:max-w-[520px] md:text-[52px] lg:min-w-[480px] lg:max-w-[920px] lg:text-[64px]"
