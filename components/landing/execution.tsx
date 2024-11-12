@@ -183,7 +183,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 						height={48}
 						className="h-6 w-6 rounded-sm"
 					/>
-					<p className="text-[14px] font-bold text-black/40 lg:text-[16px]">{children}</p>
+					<p className="text-[14px] font-bold text-plug-green/40 lg:text-[16px]">{children}</p>
 				</div>
 			</motion.div>
 
@@ -255,7 +255,7 @@ export const Execution = () => {
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text='"If this, then that” execution.'
 			description="Control every granular detail and squeeze the maximum value out of every transaction."
-			className="col-span-2 h-full min-h-[640px] xl:col-span-4 xl:row-span-2 relative z-[999]"
+			className="relative z-[999] col-span-2 h-full min-h-[640px] xl:col-span-4 xl:row-span-2"
 		>
 			<div className="flex h-[80%] w-full select-none flex-col items-center justify-center gap-2">
 				<ExecutionActions />

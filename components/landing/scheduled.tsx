@@ -18,7 +18,7 @@ export const Scheduled = () => {
 							"linear-gradient(30deg, rgba(210,243,138,1),    rgba(210,243,138,1))",
 							"linear-gradient(30deg, rgba(210,243,138,0.65), rgba(210,243,138,1))"
 						]
-					: ["rgba(217,217,217,0)", "rgba(217,217,217,0.4)", "rgba(217,217,217,0)"]
+					: ["rgba(56,88,66,0)", "rgba(56,88,66,.1)", "rgba(56,88,66,0)"]
 		},
 		transition: {
 			duration: 0.25,

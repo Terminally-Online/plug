@@ -9,7 +9,7 @@ export const Recurring = () => {
 			icon={<Wallet size={24} className="opacity-40" />}
 			text="Recurring runs."
 			description="Set it and forget it with transactions that auto-execute on the frequency you have defined."
-			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px] relative z-[99999]"
+			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="ml-[-4px] grid h-[50%] w-[102%] gap-[2px]">
 				{Array.from({ length: 5 }).map((_, rowIndex) => (
@@ -17,10 +17,9 @@ export const Recurring = () => {
 						{Array.from({ length: 16 }).map((_, colIndex) => (
 							<motion.div
 								key={colIndex}
-								className="h-full w-full rounded-sm"
+								className="h-full w-full rounded-[2px]"
 								style={{
-									background:
-										Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #385842, #D2F38A)"
+									background: Math.random() < 0.5 ? "rgba(56,88,66,0.1)" : "#D2F38A"
 								}}
 								initial={{ opacity: 1 }}
 								animate={{ opacity: [1, 0] }}
