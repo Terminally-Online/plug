@@ -13,6 +13,45 @@ export const Transactions = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%]"
+			>
+				<g clip-path="url(#clip0_4611_7253)">
+					<path
+						d="M15.7501 1013.5C337.75 381 651.346 608.093 778.25 712.516C1184.75 1047 1590.08 925.892 1672.25 786.5C1789.56 587.5 1549.61 646.725 1737.75 371C1882.75 158.5 1727.75 38.9964 1630.25 39C1386.75 55 1417.75 519.515 1040.25 519.515C759.751 519.515 891.75 285.5 387.75 399C227.25 447.5 -155.101 454.5 -67.5012 134.5"
+						stroke="url(#paint0_linear_4611_7253)"
+						stroke-width="60"
+					/>
+					<path
+						d="M15.7501 1013.5C337.75 381 651.346 608.093 778.25 712.516C1184.75 1047 1590.08 925.892 1672.25 786.5C1789.56 587.5 1549.61 646.725 1737.75 371C1882.75 158.5 1727.75 38.9964 1630.25 39C1386.75 55 1417.75 519.515 1040.25 519.515C759.751 519.515 891.75 285.5 387.75 399C227.25 447.5 -155.101 454.5 -67.5012 134.5"
+						stroke="#FDFEF6"
+						stroke-width="60"
+						stroke-dasharray="4 4"
+					/>
+				</g>
+				<defs>
+					<linearGradient
+						id="paint0_linear_4611_7253"
+						x1="1362.25"
+						y1="232.5"
+						x2="467.75"
+						y2="504"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop stop-color="#D2F38A" />
+						<stop offset="1" stop-color="#385842" />
+					</linearGradient>
+					<clipPath id="clip0_4611_7253">
+						<rect width="1827" height="976" fill="white" />
+					</clipPath>
+				</defs>
+			</svg>
+
+			<svg
+				width="1827"
+				height="976"
+				viewBox="0 0 1827 976"
+				fill="none"
 				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%]"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
