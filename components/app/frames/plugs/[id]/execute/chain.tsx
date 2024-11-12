@@ -52,7 +52,7 @@ export const ChainFrame: FC<{ index: number; item: string }> = ({ index, item })
 	// 		))}
 
 	// 		<Button
-	// 			variant={isDisabled ? "disabled" : "primary"}
+	// 			variant={isDisabled ? "pointer disabled" : "primary"}
 	// 			className="mt-4"
 	// 			onClick={() => handleFrame(nextFrame)}
 	// 			disabled={isDisabled}

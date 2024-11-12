@@ -45,25 +45,8 @@ export const BookProfit = () => {
 				{actions.map((action, index) => (
 					<motion.div
 						key={index}
-						className="mr-0 flex w-[460px] items-center gap-4 overflow-hidden rounded-lg bg-white px-6 py-4 md:w-[640px]"
+						className="mr-0 flex w-[460px] items-center gap-4 overflow-hidden rounded-lg border-[1px] border-plug-green/10 bg-white px-6 py-4 md:w-[520px]"
 					>
-						<div className="relative flex h-10 w-16 items-center justify-center">
-							<div className="absolute top-1/2 h-16 w-16 -translate-y-1/2 rounded-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[60px] filter" />
-							<CheckCircle
-								className="absolute top-1/2 ml-auto h-5 w-5 -translate-y-1/2 text-center"
-								size={24}
-								style={{
-									stroke: "url(#plug-gradient)"
-								}}
-							/>
-							<svg width="0" height="0">
-								<linearGradient id="plug-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-									<stop stopColor="#00E100" offset="0%" />
-									<stop stopColor="#A3F700" offset="100%" />
-								</linearGradient>
-							</svg>
-						</div>
-
 						<h3 className="flex w-full flex-col">
 							<span className="font-bold md:text-xl">{action[0]}</span>
 							<span className="flex w-full flex-row items-center gap-2 md:text-lg">

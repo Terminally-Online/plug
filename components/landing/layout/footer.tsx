@@ -8,7 +8,7 @@ export const LandingFooter: FC = () => {
 	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED)
 
 	return (
-		<div className="relative z-[12] bg-white pt-16 lg:gap-4">
+		<div className="relative z-[1] bg-white pt-32 lg:gap-4">
 			<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
 
 			<LandingContainer className="mb-16 flex-col gap-2">

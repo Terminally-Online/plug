@@ -273,7 +273,7 @@ export const Light = () => {
 	}, [])
 
 	return (
-		<div className="-mt-[160px]">
+		<div className="relative z-[10] -mt-[160px]">
 			<motion.div
 				className="flex flex-col"
 				style={{

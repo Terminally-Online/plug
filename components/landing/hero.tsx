@@ -42,8 +42,8 @@ export const Hero = () => {
 						</Button>
 					</div>
 
-					<div className="my-auto flex min-h-[calc(100vh-180px)] items-center pb-6">
-						<div className="my-12 flex flex-col gap-8 md:my-auto">
+					<div className="my-auto flex py-32 items-center pb-6">
+						<div className="flex flex-col gap-8 md:my-auto">
 							<motion.h1
 								className="text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
 								initial={{ transform: "translateY(-20px)", opacity: 0 }}

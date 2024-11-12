@@ -33,7 +33,7 @@ export const Scheduled = () => {
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text="Scheduled transactions."
 			description="Define timeframes for your transactions. You don't have to be online to be onchain."
-			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
+			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px] relative z-[99999]"
 		>
 			<div className="ml-auto grid w-full grid-cols-7 grid-rows-4 text-xs">
 				<div className="h-10 border-b-[1px] border-r-[1px]" />

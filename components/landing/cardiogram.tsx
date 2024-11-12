@@ -14,9 +14,9 @@ export const Cardiogram = () => {
 			<svg className="absolute inset-0 h-[50%] w-full" viewBox="0 0 200 100" preserveAspectRatio="none">
 				<defs>
 					<linearGradient id="cardiogramGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-						<stop offset="0%" stopColor="#00E100" />
-						<stop offset="50%" stopColor="#A3F700" />
-						<stop offset="100%" stopColor="#00E100" />
+						<stop offset="0%" stopColor="#385842" />
+						<stop offset="50%" stopColor="#D2F38A" />
+						<stop offset="100%" stopColor="#385842" />
 					</linearGradient>
 					<filter id="glow">
 						<feGaussianBlur stdDeviation="8" result="coloredBlur" />

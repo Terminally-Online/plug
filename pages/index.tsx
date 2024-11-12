@@ -10,7 +10,6 @@ const Page = () => (
 
 		<div className="overflow-x-hidden">
 			<Hero />
-			<Light />
 			<Transactions />
 			<Blocks />
 			<Vision />
