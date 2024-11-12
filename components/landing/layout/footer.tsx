@@ -1,21 +1,42 @@
-import Image from "next/image"
-import { FC } from "react"
+import { FC, useRef } from "react"
+
+import { motion, useSpring } from "framer-motion"
 
 import { LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
+import { useScroll, useTransform } from "framer-motion"
 
 export const LandingFooter: FC = () => {
+	const footerRef = useRef<HTMLDivElement>(null)
+	const { scrollYProgress } = useScroll({
+		target: footerRef,
+		offset: ["start end", "end end"]
+	})
+	const springyProgress = useSpring(scrollYProgress, {
+		stiffness: 100,
+		damping: 30,
+		restDelta: 0.001
+	})
+	const y = useTransform(
+		springyProgress,
+		[0, 1],
+		["-100%", "0%"],
+	)
+
 	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED)
 
 	return (
-		<div className="relative z-[1] overflow-hidden bg-white pt-32 lg:gap-4">
+		<div ref={footerRef} className="relative z-[1] overflow-hidden bg-white pt-32 lg:gap-4 w-full h-full">
 			<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
-			<Image
-				className="pointer-events-none absolute inset-0 mb-4 w-full -translate-y-[30%] opacity-[4%]"
-				src="/plug-word-green.svg"
-				alt="Logo"
-				width={96}
-				height={64}
+			<motion.div
+				className="pointer-events-none absolute inset-0 mb-4 w-full opacity-[4%]"
+				style={{ 
+					y: y,
+					backgroundImage: "url(/plug-word-green.svg)", 
+					backgroundSize: "cover", 
+					backgroundPosition: "center", 
+					backgroundRepeat: "no-repeat" 
+				}}
 			/>
 
 			<LandingContainer className="mb-32 flex-col gap-2">
