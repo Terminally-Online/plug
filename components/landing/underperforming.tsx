@@ -26,8 +26,8 @@ export const Underperforming = () => {
 	return (
 		<InfoCard
 			icon={<Code size={24} className="opacity-40" />}
-			text="You're underperforming."
-			description="It's time to upgrade to a modern tool stack that helps you win. Stop leaving money on the table."
+			text="Unmatched returns."
+			description="The best tools set you up for unparalleled successes and makes winning effortless."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="relative -mx-1 flex h-[40%] flex-row gap-1 pt-2">
@@ -36,19 +36,19 @@ export const Underperforming = () => {
 						key={key}
 						className="relative mt-auto w-full rounded-xl bg-plug-green/10"
 						initial={{ height: height }}
-						whileInView={{ height: [height, "0%"] }}
+						animate={{ height: [height, "0%"] }}
 						transition={{ ...animationProps, delay }}
 					>
 						<motion.div
 							className="absolute bottom-0 left-0 right-0 h-[12px] rounded-xl bg-plug-red"
 							initial={{ bottom: redHeight }}
-							whileInView={{ bottom: [redHeight, "0%"] }}
+							animate={{ bottom: [redHeight, "0%"] }}
 							transition={{ ...animationProps, delay }}
 						/>
 						<motion.div
-							className="absolute bottom-0 left-0 right-0 h-[12px] rounded-xl bg-gradient-to-r from-plug-green to-plug-yellow shadow-[0_0_8px_rgba(163,247,0,0.5)]"
+							className="absolute bottom-0 left-0 right-0 h-[12px] rounded-xl bg-plug-yellow"
 							initial={{ bottom: "calc(100% - 6px)" }}
-							whileInView={{ bottom: ["calc(100% - 6px)", "0%"] }}
+							animate={{ bottom: ["calc(100% - 6px)", "0%"] }}
 							transition={{ ...animationProps, delay }}
 						/>
 					</motion.div>

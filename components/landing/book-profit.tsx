@@ -25,7 +25,7 @@ export const BookProfit = () => {
 	return (
 		<InfoCard
 			icon={<PowerOff size={24} className="opacity-40" />}
-			text="Book profit constantly."
+			text="All your transactions running 24 hours."
 			description="Stay active in a market that never sleeps by keeping your money working even when you aren't."
 			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"
 		>
