@@ -1,7 +1,7 @@
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import { CheckCircle, PowerOff } from "lucide-react"
+import { PowerOff } from "lucide-react"
 
 import { InfoCard } from "@/components"
 
@@ -45,7 +45,7 @@ export const BookProfit = () => {
 				{actions.map((action, index) => (
 					<motion.div
 						key={index}
-						className="mr-0 flex w-[460px] items-center gap-4 overflow-hidden rounded-lg border-[1px] border-plug-green/10 bg-white px-6 py-4 md:w-[520px]"
+						className="mr-0 flex w-[420px] items-center gap-4 overflow-hidden rounded-lg border-[1px] border-plug-green/10 bg-white px-6 py-4"
 					>
 						<h3 className="flex w-full flex-col">
 							<span className="font-bold md:text-xl">{action[0]}</span>
