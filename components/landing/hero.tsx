@@ -56,7 +56,7 @@ export const Hero = () => {
 								transition={{ duration: 0.3 }}
 							>
 								Your all-in-one app for onchain activity
-								<span className="text-plug-yellow">.</span>
+								<span className="animate-pulse text-plug-yellow">.</span>
 							</motion.h1>
 
 							<motion.p

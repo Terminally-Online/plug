@@ -6,17 +6,17 @@ import { InfoCard } from "@/components"
 export const Scheduled = () => {
 	const getDayAnimation = (delay: number, active: boolean = false) => ({
 		style: {
-			color: active === true ? "#FFFFFF" : "rgba(0,0,0,0.40)",
-			borderColor: "#D9D9D9",
+			color: active === true ? "#0E160E" : "rgba(0,0,0,0.40)",
+			borderColor: "rgba(56,88,66,0.1)",
 			padding: "4px 8px"
 		},
 		whileInView: {
 			background:
 				active === true
 					? [
-							"linear-gradient(30deg, rgba(56,88,66,0.65), rgba(210,243,138,1))",
-							"linear-gradient(30deg, rgba(56,88,66,1),    rgba(210,243,138,1))",
-							"linear-gradient(30deg, rgba(56,88,66,0.65), rgba(210,243,138,1))"
+							"linear-gradient(30deg, rgba(210,243,138,0.65), rgba(210,243,138,1))",
+							"linear-gradient(30deg, rgba(210,243,138,1),    rgba(210,243,138,1))",
+							"linear-gradient(30deg, rgba(210,243,138,0.65), rgba(210,243,138,1))"
 						]
 					: ["rgba(217,217,217,0)", "rgba(217,217,217,0.4)", "rgba(217,217,217,0)"]
 		},
@@ -33,7 +33,7 @@ export const Scheduled = () => {
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text="Scheduled transactions."
 			description="Define timeframes for your transactions. You don't have to be online to be onchain."
-			className="col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px] relative z-[99999]"
+			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="ml-auto grid w-full grid-cols-7 grid-rows-4 text-xs">
 				<div className="h-10 border-b-[1px] border-r-[1px]" />
