@@ -8,12 +8,17 @@ export const LandingFooter: FC = () => {
 	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED)
 
 	return (
-		<div className="relative z-[1] bg-white pt-32 lg:gap-4">
+		<div className="relative z-[1] overflow-hidden bg-white pt-32 lg:gap-4">
 			<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
+			<Image
+				className="pointer-events-none absolute inset-0 mb-4 w-full -translate-y-[30%] opacity-[4%]"
+				src="/plug-word-green.svg"
+				alt="Logo"
+				width={96}
+				height={64}
+			/>
 
-			<LandingContainer className="mb-16 flex-col gap-2">
-				<Image className="mb-4" src="/plug-word-green.svg" alt="Logo" width={96} height={64} />
-
+			<LandingContainer className="mb-32 flex-col gap-2">
 				<div className="grid grid-cols-1 font-bold text-plug-green/40 lg:grid-cols-12">
 					<div className="mb-8 lg:col-span-4 lg:mb-0">
 						<p className="lg:max-w-[320px]">
