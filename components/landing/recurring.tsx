@@ -17,7 +17,7 @@ export const Recurring = () => {
 						{Array.from({ length: 16 }).map((_, colIndex) => (
 							<motion.div
 								key={colIndex}
-								className="h-full w-full rounded-sm"
+								className="h-full w-full rounded-[4px]"
 								style={{
 									background:
 										Math.random() < 0.5 ? "#D9D9D9" : "linear-gradient(30deg, #385842, #D2F38A)"

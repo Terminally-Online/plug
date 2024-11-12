@@ -155,37 +155,16 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 				}}
 			>
 				<motion.div
-					className="bg-gradient-radial absolute inset-0 rounded-lg from-plug-green via-plug-yellow to-plug-white opacity-0 blur-lg filter"
-					initial={{ opacity: 0 }}
-					animate={{
-						opacity: [0, 0.1, 0.2, 0],
-						background: [
-							"radial-gradient(circle at 0% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 100% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 100% 100%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 0% 100%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 0% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)"
-						]
-					}}
-					transition={{
-						duration: 2,
-						ease: "linear",
-						delay: 0.1 + index * 2,
-						repeat: Infinity
-					}}
-				/>
-
-				<motion.div
 					className="bg-gradient-radial absolute inset-0 rounded-lg from-plug-green via-plug-yellow to-plug-white opacity-0"
 					initial={{ opacity: 0 }}
 					animate={{
 						opacity: [0, 1, 1, 0],
 						background: [
-							"radial-gradient(circle at 0% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 100% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 100% 100%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 0% 100%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)",
-							"radial-gradient(circle at 0% 0%, #D2F38A 0%, #A3F700 50%, #FFFFFF 100%)"
+							"radial-gradient(circle at 0%  #385842 0%, #D2F38A 50%, #FFFFFF 100%)",
+							"radial-gradient(circle at 100% 0%, #385842 0%, #D2F38A 50%, #FFFFFF 100%)",
+							"radial-gradient(circle at 100% 100%, #385842 0%, #D2F38A 50%, #FFFFFF 100%)",
+							"radial-gradient(circle at 0% 100%, #385842 0%, #d2f38a 50%, #FFFFFF 100%)",
+							"radial-gradient(circle at 0% 0%, #D2F38A 0%, #385842 50%, #FFFFFF 100%)"
 						]
 					}}
 					transition={{
@@ -224,7 +203,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 					<motion.div
 						className="h-full w-full bg-grayscale-100"
 						initial={{ background: "linear-gradient(30deg, #EBECEC, #EBECEC)" }}
-						animate={{ background: "linear-gradient(30deg, #D2F38A, #A3F700)" }}
+						animate={{ background: "linear-gradient(30deg, #D2F38A, #385842)" }}
 						transition={{
 							duration: 0.2,
 							ease: "linear",
