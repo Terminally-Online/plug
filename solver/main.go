@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/actions/aave_v3"
+	"solver/actions/yearn_v3"
 	"solver/types"
 	"solver/utils"
 )
@@ -16,7 +17,8 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		protocols: map[types.Protocol]actions.BaseProtocolHandler{
-			types.ProtocolAaveV3: aave_v3.New(),
+			types.ProtocolAaveV3:  aave_v3.New(),
+			types.ProtocolYearnV3: yearn_v3.New(),
 		},
 	}
 }

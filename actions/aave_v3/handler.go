@@ -25,7 +25,7 @@ func New() actions.BaseProtocolHandler {
 	h := &Handler{
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
-			Name:   "Aave V2",
+			Name:   "Aave V3",
 			Icon:   "https://app.aave.com/favicon.ico",
 			Tags:   []string{"lending", "defi"},
 			Chains: []int{1},
