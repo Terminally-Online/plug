@@ -2,6 +2,7 @@ export * from "./cards"
 export * from "./layout"
 
 export { HeroBarChart } from "./bar-chart"
+export { Curve3D } from "./curve-3d"
 
 export { Blob } from "./blob"
 export { Blocks } from "./blocks"

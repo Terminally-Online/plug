@@ -1,13 +1,18 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 
 import { Execution, LandingContainer, Recurring, Scheduled } from "@/components"
+import { useRef } from "react"
 
 export const Transactions = () => {
-	const { scrollYProgress } = useScroll()
-	const pathLength = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+	const containerRef = useRef<HTMLDivElement>(null)
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ["start end", "end start"]
+	})
+	const pathLength = useTransform(scrollYProgress, [0.2, 0.7], [1, 0])
 
 	return (
-		<div className="relative z-[11] mb-[40px] h-full bg-plug-white">
+		<div className="relative z-[11] mb-[40px] h-full bg-plug-white" ref={containerRef}>
 			<svg
 				width="1827"
 				height="976"

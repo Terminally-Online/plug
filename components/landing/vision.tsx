@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
@@ -7,13 +7,15 @@ import { BookProfit, Cardiogram, LandingContainer } from "@/components"
 import { Underperforming } from "./underperforming"
 
 export const Vision: FC = () => {
+	const containerRef = useRef<HTMLDivElement>(null)
 	const { scrollYProgress } = useScroll({
+		target: containerRef,
 		offset: ["start end", "end start"]
 	})
-	const pathLength = useTransform(scrollYProgress, [0.4, 0.9], [0, 1])
+	const pathLength = useTransform(scrollYProgress, [0.2, 0.7], [0, 1])
 
 	return (
-		<div className="relative z-[11] mb-[80px] h-full bg-plug-white">
+		<div className="relative z-[11] mb-[80px] h-full bg-plug-white" ref={containerRef}>
 			<svg
 				width="1827"
 				height="976"
