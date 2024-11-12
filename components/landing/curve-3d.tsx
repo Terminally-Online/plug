@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { InfoCard } from "./cards";
 import { CalendarClock } from "lucide-react";
+import { ActionStaking } from "./actions";
 
 export const Curve3D = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -66,7 +67,6 @@ export const Curve3D = () => {
 				</svg>
 			</div>
 
-			{/* Fade-in text container */}
 			<motion.div
 				className="absolute inset-0 flex items-center justify-center z-[100000] pt-[60%] flex flex-col gap-12"
 				style={{
@@ -85,7 +85,6 @@ export const Curve3D = () => {
 						description="Define timeframes for your transactions."
 						className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
 					>
-
 						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 					</InfoCard>
@@ -99,19 +98,10 @@ export const Curve3D = () => {
 						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 					</InfoCard>
+					<ActionStaking />
 					<InfoCard
 						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Swap."
-						description="Easily swap your crypto at the best price"
-						className="relative z-[99999] row-span-2"
-					>
-
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Provide Liquidity."
+						text="Discover Opportunities."
 						description="Deposit your crypto into liquidity pools to earn swap fees and yield."
 						className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 					>
@@ -145,7 +135,6 @@ export const Curve3D = () => {
 						description="Deposit your crypto into liquidity pools to earn swap fees and yield."
 						className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 					>
-
 						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 					</InfoCard>
