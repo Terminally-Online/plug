@@ -44,7 +44,7 @@ export const Hero = () => {
 						</Button>
 					</div>
 
-					<div className="my-auto flex items-center py-32 pb-6">
+					<div className="relative my-auto flex items-center py-32 pb-6">
 						<div className="flex flex-col gap-8 md:my-auto">
 							<motion.h1
 								className="text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
@@ -55,8 +55,7 @@ export const Hero = () => {
 								}}
 								transition={{ duration: 0.3 }}
 							>
-								Your all-in-one app for onchain activity
-								<span className="animate-pulse text-plug-yellow">.</span>
+								Your all-in-one app for onchain activity.
 							</motion.h1>
 
 							<motion.p

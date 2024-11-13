@@ -2,7 +2,7 @@ import { FC, useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
-import { BookProfit, Cardiogram, LandingContainer } from "@/components"
+import { BookProfit, LandingContainer, Routing } from "@/components"
 
 import { Underperforming } from "./underperforming"
 
@@ -147,7 +147,7 @@ export const Vision: FC = () => {
 			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
 				<BookProfit />
 				<Underperforming />
-				<Cardiogram />
+				<Routing />
 			</LandingContainer>
 		</div>
 	)

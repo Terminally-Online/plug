@@ -1,7 +1,7 @@
 import Image from "next/image"
 
 import { motion } from "framer-motion"
-import { PowerOff } from "lucide-react"
+import { Sun } from "lucide-react"
 
 import { InfoCard } from "@/components"
 
@@ -24,8 +24,8 @@ export const BookProfit = () => {
 
 	return (
 		<InfoCard
-			icon={<PowerOff size={24} className="opacity-40" />}
-			text="All your transactions running 24 hours."
+			icon={<Sun size={24} className="opacity-40" />}
+			text="Your transactions run 24 hours."
 			description="Stay active in a market that never sleeps by keeping your money working even when you aren't."
 			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"
 		>
