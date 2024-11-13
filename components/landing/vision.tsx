@@ -146,8 +146,8 @@ export const Vision: FC = () => {
 
 			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
 				<BookProfit />
-				<Underperforming />
 				<Routing />
+				<Underperforming />
 			</LandingContainer>
 		</div>
 	)
