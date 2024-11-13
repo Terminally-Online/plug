@@ -101,7 +101,7 @@ export const Blocks = () => {
 	}
 
 	return (
-		<div className="relative z-[9999] overflow-hidden mt-[1000px]">
+		<div className="relative z-[9999] mt-[1000px] overflow-hidden">
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1

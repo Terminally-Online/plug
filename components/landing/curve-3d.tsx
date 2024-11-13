@@ -1,7 +1,6 @@
 import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { CalendarClock } from "lucide-react"
 
 import {
 	ActionBorrow,
@@ -13,7 +12,6 @@ import {
 	ActionTransfer
 } from "./actions"
 import { ActionLiquidity } from "./actions/liquidity"
-import { InfoCard } from "./cards"
 
 export const Curve3D = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -22,13 +20,11 @@ export const Curve3D = () => {
 		offset: ["start end", "end start"]
 	})
 
-	const pathLength = useTransform(scrollYProgress, [0, 0.35], [0, 1])
-
 	const diagonal = Math.sqrt(Math.pow(2800, 2) + Math.pow(1400, 2))
 	const maxRadius = diagonal / 2
 
+	const pathLength = useTransform(scrollYProgress, [0, 0.35], [0, 1])
 	const circleRadius = useTransform(scrollYProgress, [0.34, 0.35, 0.6], [0, 30, maxRadius])
-
 	const textOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
 
 	return (
