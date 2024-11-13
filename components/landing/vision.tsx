@@ -30,11 +30,17 @@ export const Vision: FC = () => {
 						stroke="url(#paint0_linear_4612_71)"
 						stroke-width="60"
 					/>
-					<path
+					<motion.path
 						d="M1798.8 -0.000377674C1476.8 632.5 1272.62 374.395 1151.8 262.984C866.618 -0.000367615 664.618 129.999 556.618 246.499C399.571 415.907 189.936 272.5 74.6184 441.5C-40.6992 610.5 86 932 327 882.5C550.338 836.628 509.184 536.485 886.682 536.485C1167.18 536.485 1126 737 1539.18 657C1699.68 608.5 2001.9 511 1914.3 831"
 						stroke="#FEFFF7"
 						stroke-width="60"
 						stroke-dasharray="4 4"
+						animate={{ strokeDashoffset: [60, 0] }}
+						transition={{
+							duration: 0.5,
+							repeat: Infinity,
+							ease: "linear"
+						}}
 					/>
 				</g>
 				<defs>

@@ -13,7 +13,7 @@ export const Transactions = () => {
 	const pathLength = useTransform(scrollYProgress, [0.2, 0.7], [1, 0])
 
 	return (
-		<div className="relative z-[11] mb-[40px] h-full bg-plug-white" ref={containerRef}>
+		<div className="relative z-[11] mb-[120px] mt-[1100px] h-full bg-plug-white" ref={containerRef}>
 			<svg
 				width="1827"
 				height="976"
@@ -28,11 +28,17 @@ export const Transactions = () => {
 						stroke="url(#paint0_linear_4611_7253)"
 						stroke-width="60"
 					/>
-					<path
+					<motion.path
 						d="M15.7501 1013.5C337.75 381 651.346 608.093 778.25 712.516C1184.75 1047 1590.08 925.892 1672.25 786.5C1789.56 587.5 1549.61 646.725 1737.75 371C1882.75 158.5 1727.75 38.9964 1630.25 39C1386.75 55 1417.75 519.515 1040.25 519.515C759.751 519.515 891.75 285.5 387.75 399C227.25 447.5 -155.101 454.5 -67.5012 134.5"
 						stroke="#FDFEF6"
 						stroke-width="60"
 						stroke-dasharray="4 4"
+						animate={{ strokeDashoffset: [0, 60] }}
+						transition={{
+							duration: 0.5,
+							repeat: Infinity,
+							ease: "linear"
+						}}
 					/>
 				</g>
 				<defs>
