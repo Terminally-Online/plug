@@ -47,7 +47,7 @@ export const ActionDiscover = () => {
 			description="Stay on top of the latest crypto opportunities and trends by exploring curated and commmunity plugs."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
-			<div className="absolute inset-0 -mx-8 grid grid-cols-4 gap-4">
+			<div className="absolute inset-0 -mx-8 grid grid-cols-4 gap-1">
 				{PLUGS.map((plug, index) => {
 					const columnIndex = index % 4
 
