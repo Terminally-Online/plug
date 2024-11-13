@@ -179,7 +179,7 @@ export const Platform = () => {
 				</svg>
 			</div>
 
-			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-3 grid-rows-2 gap-8">
+			<LandingContainer className="relative z-[9] mb-[80px] grid grid-rows-2 gap-8 xl:grid-cols-3">
 				<InfoCard
 					icon={<Sparkles size={24} className="opacity-40" />}
 					text="Protocol Abstraction."
@@ -246,8 +246,8 @@ export const Platform = () => {
 				<InfoCard
 					icon={<LayoutDashboard size={24} className="opacity-40" />}
 					text="Modular Components."
-					description="However you prefer it, your layout can be resized, reordered, and refocused to what matters most to you."
-					className="relative z-[99999] col-span-2 row-span-2 h-full"
+					description="However you prefer it, the layout can be resized, reordered, and refocused to what matters."
+					className="relative z-[99999] row-span-2 h-full xl:col-span-2"
 				>
 					<div className="absolute inset-0 flex flex-row items-center justify-center">
 						<motion.div
