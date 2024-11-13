@@ -7,9 +7,9 @@ import {
 	ActionBorrow,
 	ActionBridge,
 	ActionDiscover,
-	ActionTrade,
 	ActionStaking,
 	ActionSwap,
+	ActionTrade,
 	ActionTransfer
 } from "./actions"
 import { ActionLiquidity } from "./actions/liquidity"
@@ -40,12 +40,24 @@ export const Curve3D = () => {
 					xmlns="http://www.w3.org/2000/svg"
 					className="h-full w-full overflow-visible"
 				>
+					<path
+						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486"
+						stroke="url(#paint0_linear_4614_166)"
+						stroke-width="60"
+						stroke-linecap="round"
+					/>
+					<path
+						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486L952.5 489"
+						stroke="#FEFFF7"
+						stroke-width="60"
+						stroke-dasharray="4 4"
+					/>
 					<motion.path
 						style={{ pathLength }}
-						d="M0 251C234 385 219.145 251 508.814 251C732.341 251 718.957 473.761 913 486.5"
+						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486"
 						stroke="url(#paint0_linear_4614_166)"
-						strokeWidth="60"
-						strokeLinecap="round"
+						stroke-width="60"
+						stroke-linecap="round"
 					/>
 					<motion.circle cx="913" cy="486.5" fill="#D2F38A" r={circleRadius} className="overflow-visible" />
 					<defs>
@@ -72,9 +84,11 @@ export const Curve3D = () => {
 			>
 				<div className="max-w-[720px] text-center">
 					<h2 className="mb-4 text-[52px] font-black text-[#385842]">
-						Every common crypto usecase at your fingertips.
+						Every common crypto usecase on autopilot.
 					</h2>
-					<p className="text-xl font-bold text-plug-green/40">Scroll down to explore more</p>
+					<p className="mx-auto max-w-[480px] text-xl font-bold text-plug-green/40">
+						When using Plug, you have everything at your fingertips only a few clicks away.
+					</p>
 				</div>
 
 				<div className="grid max-w-[1200px] grid-cols-4 gap-4">
