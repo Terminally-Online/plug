@@ -3,7 +3,7 @@ import { CalendarClock } from "lucide-react"
 
 import { InfoCard } from "../cards"
 
-const LINES = 40
+const LINES = 60
 
 export const ActionBridge = () => {
 	return (

@@ -3,7 +3,15 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { CalendarClock } from "lucide-react"
 
-import { ActionBorrow, ActionBridge, ActionDiscover, ActionStaking, ActionSwap } from "./actions"
+import {
+	ActionBorrow,
+	ActionBridge,
+	ActionDiscover,
+	ActionTrade,
+	ActionStaking,
+	ActionSwap,
+	ActionTransfer
+} from "./actions"
 import { ActionLiquidity } from "./actions/liquidity"
 import { InfoCard } from "./cards"
 
@@ -70,31 +78,14 @@ export const Curve3D = () => {
 				</div>
 
 				<div className="grid max-w-[1200px] grid-cols-4 gap-4">
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Liquidity."
-						description="Stake and manage your crypto assets."
-						className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
-					>
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
-
+					<ActionTransfer />
 					<ActionBorrow />
 					<ActionStaking />
 					<ActionDiscover />
-					<ActionBridge />
+					<ActionTrade />
 					<ActionSwap />
+					<ActionBridge />
 					<ActionLiquidity />
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Harvest."
-						description="Move your crypto quickly between chains."
-						className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
-					>
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
 				</div>
 			</motion.div>
 		</div>

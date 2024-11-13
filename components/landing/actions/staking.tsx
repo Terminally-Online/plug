@@ -41,7 +41,7 @@ export const ActionStaking = () => {
 	return (
 		<InfoCard
 			icon={<CalendarClock size={24} className="opacity-40" />}
-			text="Staking."
+			text="Stake."
 			description="Earn rewards by staking your tokens in pools."
 			className="relative z-[99999] row-span-2 overflow-hidden"
 		>
