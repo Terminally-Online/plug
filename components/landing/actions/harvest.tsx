@@ -1,8 +1,9 @@
+import { useRef } from "react"
+
+import { motion, useScroll, useTransform } from "framer-motion"
 import { CalendarClock } from "lucide-react"
 
 import { InfoCard } from "../cards"
-import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
 
 export const ActionTrade = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -10,10 +11,10 @@ export const ActionTrade = () => {
 		target: containerRef,
 		offset: ["start end", "end start"]
 	})
-	const pathLength = useTransform(scrollYProgress, [0.2, 0.7], [0, 1])
+	const pathLength = useTransform(scrollYProgress, [0.2, 1], [0, 1])
 
 	return (
-		<>
+		<div ref={containerRef}>
 			<InfoCard
 				icon={<CalendarClock size={24} className="opacity-40" />}
 				text="Trade."
@@ -36,6 +37,6 @@ export const ActionTrade = () => {
 				<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 				<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 			</InfoCard>
-		</>
+		</div>
 	)
 }
