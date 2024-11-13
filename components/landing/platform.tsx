@@ -48,6 +48,16 @@ const PROTOCOLS = [
  * - Protocol Abstraction
  * - Customizable Layouts
  * - Modular Components
+ * - Cross-Chain Integration
+ * - DeFi Analytics & Insights
+ * - Smart Contract Security
+ * - Yield Optimization
+ * - NFT Management
+ * - Governance Participation
+ * - Gas Fee Optimization
+ * - Liquidity Pool Management
+ * - Trading Automation
+ * - Risk Assessment Tools
  */
 
 export const Platform = () => {
@@ -368,10 +378,88 @@ export const Platform = () => {
 				</InfoCard>
 				<InfoCard
 					icon={<Wallet size={24} className="opacity-40" />}
-					text="Portfolio Management."
-					description="Swap between different chains with ease."
+					text="Focused Context."
+					description="With a global dashboard you can zoom all the way in or out for the context you want."
 					className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
 				>
+					<div className="absolute inset-0">
+						<motion.div
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							initial={{ y: "100%" }}
+							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
+							transition={{
+								duration: 2,
+								repeat: Infinity,
+								ease: "easeInOut",
+								repeatDelay: 4
+							}}
+						>
+							<motion.div className="mx-6 flex flex-row items-center gap-1">
+								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<p className="p-2 pl-4 font-bold">Transfer $USDC</p>
+							</motion.div>
+
+							<div className="mb-2 h-[2px] w-full bg-plug-green/10" />
+							<div className="gradient-animated mx-6 mb-2 h-16 rounded-lg bg-plug-green/10" />
+							<div className="gradient-animated mx-6 mb-2 h-16 rounded-lg bg-plug-green/10" />
+						</motion.div>
+
+						<motion.div
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							initial={{ y: "100%" }}
+							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
+							transition={{
+								duration: 2,
+								repeat: Infinity,
+								ease: "easeInOut",
+								delay: 2,
+								repeatDelay: 4
+							}}
+						>
+							<motion.div className="mx-6 flex flex-row items-center gap-1">
+								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<p className="p-2 pl-4 font-bold">Simulation Results</p>
+							</motion.div>
+
+							<div className="mb-2 h-[2px] w-full bg-plug-green/10" />
+							<div className="flex flex-row items-end gap-2 px-6">
+								<div className="gradient-animated mb-2 h-4 w-full rounded-lg bg-plug-green/10" />
+								<div className="gradient-animated mb-2 h-8 w-full rounded-lg bg-plug-green/10" />
+								<div className="gradient-animated mb-2 h-16 w-full rounded-lg bg-plug-green/10" />
+								<div className="gradient-animated mb-2 h-12 w-full rounded-lg bg-plug-green/10" />
+							</div>
+						</motion.div>
+
+						<motion.div
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							initial={{ y: "100%" }}
+							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
+							transition={{
+								duration: 2,
+								repeat: Infinity,
+								ease: "easeInOut",
+								delay: 4,
+								repeatDelay: 4
+							}}
+						>
+							<motion.div className="mx-6 flex flex-row items-center gap-1">
+								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<p className="p-2 pl-4 font-bold">Schedule Run</p>
+							</motion.div>
+
+							<div className="mb-2 h-[2px] w-full bg-plug-green/10" />
+							<div className="mx-6 mb-1 flex flex-row justify-between text-xs font-bold">
+								<p>01/24</p>
+								<p>02/24</p>
+							</div>
+							<div className="mx-6 grid h-full grid-cols-7 grid-rows-4 gap-1">
+								{Array.from({ length: 28 }).map((_, index) => (
+									<div key={index} className="h-full w-full rounded-sm bg-plug-green/10" />
+								))}
+							</div>
+						</motion.div>
+					</div>
+
 					<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 					<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 				</InfoCard>
