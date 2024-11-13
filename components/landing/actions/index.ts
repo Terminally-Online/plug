@@ -1,4 +1,5 @@
 export * from "./borrow"
+export * from "./bridge"
 export * from "./discover"
 export * from "./liquidity"
 export * from "./staking"
