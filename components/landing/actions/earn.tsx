@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react"
+import { FC, useEffect, useState } from "react"
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { Handshake } from "lucide-react"
 
 import { InfoCard } from "@/components"
@@ -154,15 +154,8 @@ const BASE_TOKEN_RADIUS = 32
 const TOKENS = 40
 const SYMBOLS = ["ETH", "BTC", "SOL", "AVAX", "MATIC", "UNI", "AAVE", "SUSHI", "YFI", "COMP", "MKR", "CRV"]
 
-export const ActionTransfer: React.FC = () => {
+export const ActionEarn: FC = () => {
 	const [packedTokens, setPackedTokens] = useState<Token[]>([])
-	const containerRef = useRef<HTMLDivElement>(null)
-
-	const { scrollYProgress } = useScroll({
-		target: containerRef,
-		offset: ["start end", "end start"]
-	})
-	const pathLength = useTransform(scrollYProgress, [-500, 0], [1, 0])
 
 	useEffect(() => {
 		const positions = generatePackedCircles(TOKENS, 320, 320, BASE_TOKEN_RADIUS)
@@ -175,57 +168,53 @@ export const ActionTransfer: React.FC = () => {
 	}, [])
 
 	return (
-		<div ref={containerRef}>
-			<InfoCard
-				icon={<Handshake size={24} className="opacity-40" />}
-				text="Earn."
-				description="Earn yield and creator rewards constantly."
-				className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
-			>
-				<div className="absolute inset-0 z-[-1] overflow-hidden">
-					{packedTokens.map(token => (
-						<motion.div
-							key={token.id}
-							className="absolute flex items-center justify-center"
-							style={{
-								width: token.size,
-								height: token.size,
-								left: token.x - token.radius,
-								top: token.y - token.radius,
-								transform: `rotate(${token.rotation}deg)`
-							}}
-							animate={{
-								transform: [
-									"translateY(-500%)",
-									"translateY(0%)",
-									"translateY(0%)",
-									"translateY(0%)",
-									"translateY(0%)",
-									"translateY(0%)",
-									"translateY(500%)"
-								]
-							}}
-							transition={{
-								duration: 6,
-								ease: "easeInOut",
-								repeat: Infinity,
-								repeatDelay: packedTokens.length * 0.1,
-								delay: (packedTokens.length - token.id) * 0.1
-							}}
-						>
-							<div className="flex h-full w-full items-center justify-center rounded-full border-[2px] border-dashed border-plug-green/40 bg-plug-yellow font-bold text-plug-green">
-								<p className="relative text-xs">
-									${SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]}
-								</p>
-							</div>
-						</motion.div>
-					))}
-				</div>
+		<InfoCard
+			icon={<Handshake size={24} className="opacity-40" />}
+			text="Earn."
+			description="Earn yield and creator rewards constantly."
+			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
+		>
+			<div className="absolute inset-0 z-[-1] overflow-hidden">
+				{packedTokens.map(token => (
+					<motion.div
+						key={token.id}
+						className="absolute flex items-center justify-center"
+						style={{
+							width: token.size,
+							height: token.size,
+							left: token.x - token.radius,
+							top: token.y - token.radius,
+							transform: `rotate(${token.rotation}deg)`
+						}}
+						animate={{
+							transform: [
+								"translateY(-500%)",
+								"translateY(0%)",
+								"translateY(0%)",
+								"translateY(0%)",
+								"translateY(0%)",
+								"translateY(0%)",
+								"translateY(500%)"
+							]
+						}}
+						transition={{
+							duration: 6,
+							ease: "easeInOut",
+							repeat: Infinity,
+							repeatDelay: packedTokens.length * 0.1,
+							delay: (packedTokens.length - token.id) * 0.1
+						}}
+					>
+						<div className="flex h-full w-full items-center justify-center rounded-full border-[2px] border-dashed border-plug-green/40 bg-plug-yellow font-bold text-plug-green">
+							<p className="relative text-xs">${SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]}</p>
+						</div>
+					</motion.div>
+				))}
+			</div>
 
-				{/* Gradient overlays */}
-				<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-				<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-			</InfoCard>
-		</div>
+			{/* Gradient overlays */}
+			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
+			<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
+		</InfoCard>
 	)
 }

@@ -1,6 +1,6 @@
 import Head from "next/head"
 
-import { Blocks, Curve3D, Hero, LandingFooter, Transactions, Vision } from "@/components"
+import { Blocks, Curve3D, Hero, LandingFooter, Platform, Transactions, Vision } from "@/components"
 
 const Page = () => (
 	<>
@@ -10,6 +10,7 @@ const Page = () => (
 
 		<div className="overflow-x-hidden">
 			<Hero />
+			<Platform />
 			<Transactions />
 			<Curve3D />
 			<Blocks />

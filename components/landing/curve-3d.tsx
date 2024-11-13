@@ -6,10 +6,10 @@ import {
 	ActionBorrow,
 	ActionBridge,
 	ActionDiscover,
+	ActionEarn,
 	ActionStaking,
 	ActionSwap,
-	ActionTrade,
-	ActionTransfer
+	ActionTrade
 } from "./actions"
 import { ActionLiquidity } from "./actions/liquidity"
 
@@ -88,7 +88,7 @@ export const Curve3D = () => {
 				</div>
 
 				<div className="grid max-w-[1200px] grid-cols-4 gap-4">
-					<ActionTransfer />
+					<ActionEarn />
 					<ActionBorrow />
 					<ActionStaking />
 					<ActionDiscover />
