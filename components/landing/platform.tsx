@@ -2,6 +2,7 @@ import Image from "next/image"
 import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
+import { LayoutDashboard, Sparkles, Wallet } from "lucide-react"
 
 import { InfoCard } from "./cards"
 import { LandingContainer } from "./layout"
@@ -33,6 +34,21 @@ const PROTOCOLS = [
 	"uniswap",
 	"aave"
 ]
+
+/**
+ * Title:
+ * (What is the) Platform?
+ *
+ * Description:
+ * This section is about "what" the platform is. So often you visit a crypto app and cannot figure
+ * out what it actually is. It's a ten thousand foot view of the app.
+ *
+ * Cards that we could show on this section:
+ * - Portfolio Management
+ * - Protocol Abstraction
+ * - Customizable Layouts
+ * - Modular Components
+ */
 
 export const Platform = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -155,7 +171,7 @@ export const Platform = () => {
 
 			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-3 grid-rows-2 gap-8">
 				<InfoCard
-					icon={<span className="text-white">🌐</span>}
+					icon={<Sparkles size={24} className="opacity-40" />}
 					text="Protocol Abstraction."
 					description="All the functionality of major protocols available without having to bounce between apps."
 					className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
@@ -218,9 +234,9 @@ export const Platform = () => {
 					<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 				</InfoCard>
 				<InfoCard
-					icon={<span className="text-white">🌐</span>}
-					text="Customizable Layouts."
-					description="However you prefer it, your layout can be resized, re-ordered, and refocused to what matters most to you."
+					icon={<LayoutDashboard size={24} className="opacity-40" />}
+					text="Modular Components."
+					description="However you prefer it, your layout can be resized, reordered, and refocused to what matters most to you."
 					className="relative z-[99999] col-span-2 row-span-2 h-full"
 				>
 					<div className="absolute inset-0 flex flex-row items-center justify-center">
@@ -309,7 +325,7 @@ export const Platform = () => {
 								repeatDelay: 6
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Strategies</p>
+							<p className="p-2 pl-4 font-bold">Plugs</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex grid h-full grid-cols-2 gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS }).map((_, index) => (
@@ -351,7 +367,7 @@ export const Platform = () => {
 					<div className="absolute bottom-0 left-0 right-0 top-[70%] bg-plug-white" />
 				</InfoCard>
 				<InfoCard
-					icon={<span className="text-white">🌐</span>}
+					icon={<Wallet size={24} className="opacity-40" />}
 					text="Portfolio Management."
 					description="Swap between different chains with ease."
 					className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
