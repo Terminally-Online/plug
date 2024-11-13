@@ -1,11 +1,11 @@
-import { CalendarClock } from "lucide-react"
+import { Handshake } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components"
 
 export const ActionTransfer = () => {
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<Handshake size={24} className="opacity-40" />}
 			text="Earn."
 			description="Earn yield and creator rewards constantly."
 			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"

@@ -1,9 +1,9 @@
 import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { ChartLine } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components"
 
 export const ActionTrade = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -16,7 +16,7 @@ export const ActionTrade = () => {
 	return (
 		<div ref={containerRef}>
 			<InfoCard
-				icon={<CalendarClock size={24} className="opacity-40" />}
+				icon={<ChartLine size={24} className="opacity-40" />}
 				text="Trade."
 				description="Move your crypto quickly between chains."
 				className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"

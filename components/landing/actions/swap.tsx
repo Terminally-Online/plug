@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { ReplaceAll } from "lucide-react"
 
 import { InfoCard } from "../cards"
 
@@ -8,7 +8,7 @@ const SYMBOLS = ["ETH", "BTC", "SOL", "AVAX", "MATIC", "UNI", "AAVE", "SUSHI", "
 export const ActionSwap = () => {
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<ReplaceAll size={24} className="opacity-40" />}
 			text="Swap."
 			description="Simple built in swaps in just a few clicks."
 			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"

@@ -1,11 +1,9 @@
 import { useState } from "react"
 
 import { motion, useAnimationFrame } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { HandCoins } from "lucide-react"
 
-import { Counter } from "@/components/shared"
-
-import { InfoCard } from "../cards"
+import { Counter, InfoCard } from "@/components"
 
 export const ActionBorrow = () => {
 	const [percentage, setPercentage] = useState(25)
@@ -21,7 +19,7 @@ export const ActionBorrow = () => {
 	})
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<HandCoins size={24} className="opacity-40" />}
 			text="Borrow & Lend."
 			description="Realize the full value of your onchain assets by supplying and borrowing with decentralized lending markets."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"

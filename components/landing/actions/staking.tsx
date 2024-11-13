@@ -1,12 +1,39 @@
-import { motion, useAnimationControls } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { useEffect, useState } from "react"
+
+import { motion } from "framer-motion"
+import { BookUp2 } from "lucide-react"
 
 import { InfoCard } from "@/components"
 
+const PAIRS = [
+	["DAI", "sDAI"],
+	["USDC", "sUSDC"],
+	["USDT", "sUSDT"],
+	["ETH", "stETH"],
+	["ETH", "rETH"],
+	["BTC", "wBTC"],
+	["SOL", "mSOL"],
+	["MATIC", "stMATIC"],
+	["AVAX", "sAVAX"],
+	["CRV", "yCRV"],
+	["ATOM", "stATOM"],
+	["BNB", "stBNB"]
+]
+
 export const ActionStaking = () => {
+	const [currentPairIndex, setCurrentPairIndex] = useState(0)
+	const [baseToken, stakedToken] = PAIRS[currentPairIndex]
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setCurrentPairIndex(prev => (prev + 1) % PAIRS.length)
+		}, 7000)
+		return () => clearInterval(interval)
+	}, [])
+
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<BookUp2 size={24} className="opacity-40" />}
 			text="Stake."
 			description="Earn rewards by staking your tokens in pools."
 			className="relative z-[99999] row-span-2 overflow-hidden"
@@ -24,10 +51,10 @@ export const ActionStaking = () => {
 						ease: "linear"
 					}}
 				>
-					<p className="relative">$DAI</p>
+					<p className="relative">${baseToken}</p>
 				</motion.div>
 			</div>
-			<div className="absolute inset-0 top-1/2 z-[999] h-[4px] overflow-hidden bg-plug-yellow" />
+			<div className="absolute inset-0 top-1/2 z-[999] h-[2px] overflow-hidden bg-plug-yellow" />
 			<div className="absolute inset-0 top-1/2 overflow-hidden">
 				<motion.div
 					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
@@ -42,7 +69,7 @@ export const ActionStaking = () => {
 						delay: 3
 					}}
 				>
-					<p className="relative">$sDAI</p>
+					<p className="relative">${stakedToken}</p>
 				</motion.div>
 			</div>
 

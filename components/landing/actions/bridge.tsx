@@ -1,14 +1,14 @@
 import { motion } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { BringToFront } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components"
 
 const LINES = 60
 
 export const ActionBridge = () => {
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<BringToFront size={24} className="opacity-40" />}
 			text="Bridge."
 			description="Move your crypto quickly between chains."
 			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"

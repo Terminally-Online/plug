@@ -1,11 +1,11 @@
 import React from "react"
 
 import { motion } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { Droplets } from "lucide-react"
 
 import { InfoCard } from "../cards"
 
-const generatePoints = (width: number, height: number, segments = 10) => {
+const generatePoints = (width: number, segments = 10) => {
 	const points = []
 	for (let i = 0; i <= segments; i++) {
 		const x = (i / segments) * width
@@ -16,8 +16,7 @@ const generatePoints = (width: number, height: number, segments = 10) => {
 
 export const ActionLiquidity = () => {
 	const width = 500
-	const height = 200
-	const points = generatePoints(width, height)
+	const points = generatePoints(width)
 
 	const createPath = (values: number[]) => {
 		const points = values.map((v, i) => `${(i * width) / 10} ${v}`).join(" L ")
@@ -26,7 +25,7 @@ export const ActionLiquidity = () => {
 
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<Droplets size={24} className="opacity-40" />}
 			text="Provide Liquidity."
 			description="Deposit your crypto into liquidity pools to earn swap fees and yield."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"

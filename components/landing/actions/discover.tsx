@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { CalendarClock } from "lucide-react"
+import { Telescope } from "lucide-react"
 
 import { InfoCard } from "../cards"
 
@@ -42,7 +42,7 @@ const COLORS = [
 export const ActionDiscover = () => {
 	return (
 		<InfoCard
-			icon={<CalendarClock size={24} className="opacity-40" />}
+			icon={<Telescope size={24} className="opacity-40" />}
 			text="Discover Opportunities."
 			description="Stay on top of the latest crypto opportunities and trends by exploring curated and commmunity plugs."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
