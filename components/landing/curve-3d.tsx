@@ -3,7 +3,7 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { CalendarClock } from "lucide-react"
 
-import { ActionDiscover, ActionStaking } from "./actions"
+import { ActionBorrow, ActionDiscover, ActionStaking, ActionSwap } from "./actions"
 import { ActionLiquidity } from "./actions/liquidity"
 import { InfoCard } from "./cards"
 
@@ -79,26 +79,11 @@ export const Curve3D = () => {
 						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 					</InfoCard>
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Borrow & Lend."
-						description="Realize the full value of your onchain assets by supplying and borrowing with decentralized lending markets."
-						className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
-					>
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
+
+					<ActionBorrow />
 					<ActionStaking />
 					<ActionDiscover />
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Discover Opportunities."
-						description="Stay on top of the latest crypto opportunities and trends by exploring curated and commmunity plugs."
-						className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
-					>
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
+
 					<InfoCard
 						icon={<CalendarClock size={24} className="opacity-40" />}
 						text="Bridge."
@@ -108,15 +93,7 @@ export const Curve3D = () => {
 						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 					</InfoCard>
-					<InfoCard
-						icon={<CalendarClock size={24} className="opacity-40" />}
-						text="Swap."
-						description="Simple built in swaps in just a few clicks."
-						className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
-					>
-						<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
-						<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
-					</InfoCard>
+					<ActionSwap />
 					<ActionLiquidity />
 					<InfoCard
 						icon={<CalendarClock size={24} className="opacity-40" />}

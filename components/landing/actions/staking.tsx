@@ -1,7 +1,9 @@
-import { CalendarClock } from "lucide-react"
-import { InfoCard } from "@/components"
-import { motion, useAnimationControls } from "framer-motion"
 import { useEffect, useState } from "react"
+
+import { motion, useAnimationControls } from "framer-motion"
+import { CalendarClock } from "lucide-react"
+
+import { InfoCard } from "@/components"
 
 export const ActionStaking = () => {
 	const controls = useAnimationControls()
@@ -16,7 +18,7 @@ export const ActionStaking = () => {
 					top: "100%",
 					transition: {
 						duration: duration,
-						ease: "easeIn",
+						ease: "easeIn"
 					}
 				})
 
@@ -46,7 +48,7 @@ export const ActionStaking = () => {
 			<div className="absolute inset-0">
 				<motion.div
 					animate={controls}
-					className="absolute top-[-24rem] w-24 h-24 rounded-full left-1/2 bg-plug-yellow -translate-x-1/2 flex items-center justify-center text-plug-green font-bold"
+					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
 				>
 					<p>$USDC</p>
 				</motion.div>
@@ -57,4 +59,4 @@ export const ActionStaking = () => {
 	)
 }
 
-export default ActionStaking;
+export default ActionStaking
