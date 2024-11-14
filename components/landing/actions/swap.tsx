@@ -13,11 +13,11 @@ export const ActionSwap = () => {
 			description="Simple built in swaps in just a few clicks."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
-			<div className="absolute inset-0 flex flex-col items-center justify-center">
+			<div className="absolute inset-0 flex items-center justify-center">
 				{SYMBOLS.map((symbol, index) => (
 					<motion.div
 						key={index}
-						className="origin-bottom-center absolute -top-8 left-[12%] mx-auto flex h-3/4 w-3/4 translate-x-1/4 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
+						className="absolute -top-8 flex h-64 w-64 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
 						initial={{
 							y: "0rem"
 						}}
