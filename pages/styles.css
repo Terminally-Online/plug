@@ -95,25 +95,21 @@ input[type="number"].controls-hide {
 	appearance: textfield;
 }
 
-/* Completely hide all scrollbars */
 *::-webkit-scrollbar {
 	display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 * {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
 
-/* Style for selected text */
 ::selection {
-	background-color: #D2F38A;
-	color: white;
+	background-color: #d2f38a;
+	color: #385842;
 }
 
-/* For Firefox */
 ::-moz-selection {
-	background-color: #D2F38A;
-	color: white;
+	background-color: #d2f38a;
+	color: #385842;
 }
