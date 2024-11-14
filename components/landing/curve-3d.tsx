@@ -31,7 +31,7 @@ export const Curve3D = () => {
 	const textOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
 
 	return (
-		<div className="relative w-full xl:h-screen" ref={containerRef}>
+		<div className="relative h-full w-full xl:h-screen" ref={containerRef}>
 			<div className="absolute inset-0 z-[99999] mt-24 hidden overflow-visible xl:flex">
 				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 overflow-visible">
 					<path
@@ -77,12 +77,12 @@ export const Curve3D = () => {
 			</div>
 
 			<motion.div
-				className="absolute inset-0 z-[100000] flex flex-col items-center justify-center gap-12 xl:pt-[60%]"
+				className="flex flex-col items-center justify-center gap-12 px-8 text-plug-green lg:px-24 xl:absolute xl:inset-0 xl:z-[100000] xl:pt-[60%]"
 				style={{
 					opacity: xl ? textOpacity : 1
 				}}
 			>
-				<div className="text-center xl:max-w-[720px]">
+				<div className="xl:max-w-[720px] xl:text-center">
 					<h2 className="mb-4 text-[52px] font-black text-[#385842]">
 						Every common crypto usecase on autopilot.
 					</h2>
@@ -91,7 +91,7 @@ export const Curve3D = () => {
 					</p>
 				</div>
 
-				<div className="grid max-w-[1200px] grid-cols-2 gap-4 xl:grid-cols-4">
+				<div className="grid max-w-[1200px] grid-cols-2 gap-4 xl:grid-cols-4 xl:gap-8">
 					<ActionEarn />
 					<ActionBorrow />
 					<ActionStaking />

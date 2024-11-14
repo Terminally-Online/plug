@@ -11,6 +11,7 @@ const Page = () => (
 		<div className="overflow-x-hidden">
 			<Hero />
 			<Platform />
+			<Curve3D />
 			<Transactions />
 			<Blocks />
 			<Vision />
