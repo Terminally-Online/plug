@@ -23,21 +23,24 @@ export const Hero = () => {
 							<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
 							<Image src="/plug-word-green.svg" alt="Logo" width={64} height={32} />
 						</button>
-						<button className="ml-8 mr-4" onClick={() => handleCallToAction(routes.documentation)}>
+						<button
+							className="ml-auto mr-4 xl:ml-8"
+							onClick={() => handleCallToAction(routes.documentation)}
+						>
 							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 						</button>
-						<button className="mr-24" onClick={() => handleCallToAction(routes.twitter)}>
+						<button className="xl:mr-24" onClick={() => handleCallToAction(routes.twitter)}>
 							<Twitter
 								size={18}
 								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
 							/>
 						</button>
 
-						<div className="h-[2px] w-full bg-plug-green/10" />
+						<div className="hidden h-[2px] w-full bg-plug-green/10 xl:flex" />
 
 						<Button
 							variant="none"
-							className="ml-24 w-max min-w-[110px] rounded-md border-[1px] border-plug-yellow/20 bg-plug-yellow px-4 py-2 text-center text-sm font-black text-plug-green filter backdrop-blur-xl transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
+							className="w-max min-w-[110px] rounded-md border-[1px] border-plug-yellow/20 bg-plug-yellow px-4 py-2 text-center text-sm font-black text-plug-green filter backdrop-blur-xl transition-all duration-200 ease-in-out hover:bg-plug-yellow/50 xl:ml-24"
 							onClick={() => handleCallToAction()}
 						>
 							Enter App
@@ -47,7 +50,7 @@ export const Hero = () => {
 					<div className="relative my-auto flex items-center py-32 pb-6">
 						<div className="flex flex-col gap-8 md:my-auto">
 							<motion.h1
-								className="text-[52px] font-black leading-tight md:max-w-[720px] md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
+								className="text-[48px] font-black leading-tight md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
 								initial={{ transform: "translateY(-20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(-20px)", "translateY(0px)"],
@@ -70,8 +73,8 @@ export const Hero = () => {
 									delay: 0.15
 								}}
 							>
-								Designed to let you do more with less. Plug gives you a single interface to manage,
-								compose, schedule, and execute all your transactions and holdings in one place.
+								Plug gives you a single interface to manage, compose, schedule, and execute all your
+								transactions and holdings in one place.
 							</motion.p>
 
 							<Button
