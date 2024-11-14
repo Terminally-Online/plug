@@ -348,7 +348,7 @@ export const Platform = () => {
 						</motion.div>
 
 						<motion.div
-							className="h-full border-r-[2px] border-plug-green/10"
+							className="h-full"
 							initial={{ width: "20%" }}
 							animate={{ width: "40%" }}
 							transition={{
