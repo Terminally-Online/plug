@@ -10,17 +10,18 @@ export const Transactions = () => {
 		target: containerRef,
 		offset: ["start end", "end start"]
 	})
-	const pathLength = useTransform(scrollYProgress, [0.2, 0.7], [1, 0])
+	const pathLength = useTransform(scrollYProgress, [0.2, 0.5], [1, 0])
 
 	return (
-		<div className="relative z-[11] mb-[120px] h-full bg-plug-white xl:mt-[1100px]" ref={containerRef}>
+		<div
+			className="relative z-[11] mb-[80px] h-full bg-plug-white xl:mt-[600px] 2xl:mt-[1100px]"
+			ref={containerRef}
+		>
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
 					<path
@@ -60,11 +61,9 @@ export const Transactions = () => {
 			</svg>
 
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
 					<motion.path
@@ -125,11 +124,9 @@ export const Transactions = () => {
 			</svg>
 
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[9999] -ml-[15%] -mt-[9%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[9999] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<mask
 					id="mask0_4612_25"
@@ -166,7 +163,7 @@ export const Transactions = () => {
 				</defs>
 			</svg>
 
-			<LandingContainer className="relative grid grid-cols-2 gap-4 xl:grid-cols-6 xl:grid-rows-2 xl:gap-8">
+			<LandingContainer className="relative grid grid-cols-2 gap-2 xl:grid-cols-6 xl:grid-rows-2">
 				<Scheduled />
 				<Execution />
 				<Recurring />

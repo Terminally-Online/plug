@@ -48,7 +48,7 @@ export const Hero = () => {
 					</div>
 
 					<div className="relative my-auto flex items-center py-32 pb-6">
-						<div className="flex flex-col gap-8 md:my-auto">
+						<div className="flex flex-col gap-4 md:my-auto xl:gap-8">
 							<motion.h1
 								className="text-[48px] font-black leading-tight md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
 								initial={{ transform: "translateY(-20px)", opacity: 0 }}
@@ -62,7 +62,7 @@ export const Hero = () => {
 							</motion.h1>
 
 							<motion.p
-								className="max-w-[480px] text-[18px] font-bold text-plug-green/40 md:max-w-[520px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
+								className="max-w-[480px] text-xl font-bold text-plug-green/40 md:max-w-[520px] lg:max-w-[620px] lg:text-[24px] xl:max-w-[620px] 2xl:max-w-[720px]"
 								initial={{ transform: "translateY(20px)", opacity: 0 }}
 								whileInView={{
 									transform: ["translateY(20px)", "translateY(0px)"],

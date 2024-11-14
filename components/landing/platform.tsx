@@ -35,31 +35,6 @@ const PROTOCOLS = [
 	"aave"
 ]
 
-/**
- * Title:
- * (What is the) Platform?
- *
- * Description:
- * This section is about "what" the platform is. So often you visit a crypto app and cannot figure
- * out what it actually is. It's a ten thousand foot view of the app.
- *
- * Cards that we could show on this section:
- * - Portfolio Management
- * - Protocol Abstraction
- * - Customizable Layouts
- * - Modular Components
- * - Cross-Chain Integration
- * - DeFi Analytics & Insights
- * - Smart Contract Security
- * - Yield Optimization
- * - NFT Management
- * - Governance Participation
- * - Gas Fee Optimization
- * - Liquidity Pool Management
- * - Trading Automation
- * - Risk Assessment Tools
- */
-
 export const Platform = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const { scrollYProgress } = useScroll({
@@ -173,7 +148,7 @@ export const Platform = () => {
 				</svg>
 			</div>
 
-			<LandingContainer className="relative z-[9] mb-[80px] grid grid-rows-2 gap-4 xl:grid-cols-3 xl:gap-8">
+			<LandingContainer className="relative z-[9] mb-[80px] grid grid-rows-2 gap-2 xl:grid-cols-3">
 				<InfoCard
 					icon={<Sparkles size={24} className="opacity-40" />}
 					text="Protocol Abstraction."

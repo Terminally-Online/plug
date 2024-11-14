@@ -80,21 +80,21 @@ export const Curve3D = () => {
 			</div>
 
 			<motion.div
-				className="flex flex-col items-center justify-center gap-12 px-8 text-plug-green lg:px-24 xl:absolute xl:inset-0 xl:z-[100000] xl:pt-[60%]"
+				className="flex flex-col items-center justify-center gap-12 px-8 text-plug-green lg:px-24 xl:absolute xl:inset-0 xl:z-[100000] xl:pt-[50%] 2xl:pt-[60%]"
 				style={{
 					opacity: xl ? textOpacity : 1
 				}}
 			>
 				<div className="xl:max-w-[720px] xl:text-center">
-					<h2 className="mb-4 text-[52px] font-black text-[#385842]">
+					<h2 className="mb-4 text-[52px] font-black leading-tight text-[#385842]">
 						Every common crypto usecase on autopilot.
 					</h2>
-					<p className="mx-auto max-w-[480px] text-xl font-bold text-plug-green/40">
+					<p className="mr-auto max-w-[480px] text-xl font-bold text-plug-green/40 xl:mx-auto">
 						When using Plug, you have everything at your fingertips only a few clicks away.
 					</p>
 				</div>
 
-				<div className="grid max-w-[1200px] grid-cols-2 gap-4 xl:grid-cols-4 xl:gap-8">
+				<div className="grid w-full grid-cols-2 gap-2 xl:max-w-[1200px] xl:grid-cols-4">
 					<ActionEarn />
 					<ActionBorrow />
 					<ActionStaking />

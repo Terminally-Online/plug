@@ -142,7 +142,7 @@ export const Vision: FC = () => {
 				</defs>
 			</svg>
 
-			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-4 xl:grid-cols-6 xl:grid-rows-2 xl:gap-8">
+			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-2 xl:grid-cols-6 xl:grid-rows-2">
 				<BookProfit />
 				<Routing />
 				<Underperforming />
