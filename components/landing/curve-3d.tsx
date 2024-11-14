@@ -96,13 +96,13 @@ export const Curve3D = () => {
 
 				<div className="grid w-full grid-cols-2 gap-2 xl:max-w-[1200px] xl:grid-cols-4">
 					<ActionEarn />
-					<ActionBorrow />
+					<ActionLiquidity />
 					<ActionStaking />
 					<ActionDiscover />
 					<ActionTrade />
 					<ActionSwap />
 					<ActionBridge />
-					<ActionLiquidity />
+					<ActionBorrow />
 				</div>
 			</motion.div>
 		</div>
