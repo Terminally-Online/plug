@@ -105,7 +105,7 @@ export const Blocks = () => {
 			<LandingContainer className="relative mb-[40px] flex flex-col gap-4">
 				<div className="flex flex-row items-center gap-12">
 					<motion.h1
-						className="max-w-[420px] text-[52px] font-black leading-tight md:max-w-[520px] lg:min-w-[480px] lg:max-w-[920px] lg:text-[64px]"
+						className="max-w-[420px] text-[52px] font-black leading-tight md:max-w-[520px] lg:min-w-[480px] lg:text-[64px]"
 						initial={{ transform: "translateY(-20px)", opacity: 0 }}
 						whileInView={{
 							transform: ["translateY(-20px)", "translateY(0px)"],
@@ -115,6 +115,7 @@ export const Blocks = () => {
 					>
 						All of Ethereum in one place.
 					</motion.h1>
+
 					<div className="hidden w-full items-center gap-4 md:visible xl:flex xl:flex-row">
 						<div className="h-[2px] w-full bg-plug-green/10" />
 						<button

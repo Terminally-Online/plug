@@ -255,7 +255,7 @@ export const Execution = () => {
 			icon={<CalendarClock size={24} className="opacity-40" />}
 			text='"If this, then that” execution.'
 			description="Control every granular detail and squeeze the maximum value out of every transaction."
-			className="relative z-[999] col-span-2 h-full min-h-[640px] xl:col-span-4 xl:row-span-2"
+			className="relative z-[999] col-span-2 h-full xl:col-span-4 xl:row-span-2"
 		>
 			<div className="flex h-[80%] w-full select-none flex-col items-center justify-center gap-2">
 				<ExecutionActions />

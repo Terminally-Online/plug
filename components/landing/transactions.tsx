@@ -14,7 +14,7 @@ export const Transactions = () => {
 
 	return (
 		<div
-			className="relative z-[11] mb-[80px] h-full bg-plug-white xl:mt-[600px] 2xl:mt-[1100px]"
+			className="relative z-[11] mb-[80px] h-full bg-plug-white xl:mt-[900px] 2xl:mt-[1100px]"
 			ref={containerRef}
 		>
 			<svg

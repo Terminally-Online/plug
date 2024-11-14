@@ -85,7 +85,7 @@ export const Curve3D = () => {
 					opacity: xl ? textOpacity : 1
 				}}
 			>
-				<div className="xl:max-w-[720px] xl:text-center">
+				<div className="mr-auto max-w-[720px] xl:mx-auto xl:text-center">
 					<h2 className="mb-4 text-[52px] font-black leading-tight text-[#385842]">
 						Every common crypto usecase on autopilot.
 					</h2>
