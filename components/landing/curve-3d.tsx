@@ -25,17 +25,12 @@ export const Curve3D = () => {
 
 	const pathLength = useTransform(scrollYProgress, [0, 0.35], [0, 1])
 	const circleRadius = useTransform(scrollYProgress, [0.34, 0.35, 0.6], [0, 30, maxRadius])
-	const textOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
+	const opacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
 
 	return (
-		<div className="relative h-screen w-full" ref={containerRef}>
-			<div className="absolute inset-0 z-[99999] overflow-visible">
-				<svg
-					viewBox="0 0 1827 976"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					className="h-full w-full overflow-visible"
-				>
+		<div className="relative h-full w-full bg-plug-yellow xl:h-screen xl:bg-plug-white" ref={containerRef}>
+			<div className="absolute inset-0 z-[99999] mt-24 hidden overflow-visible xl:flex">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 overflow-visible">
 					<path
 						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486"
 						stroke="url(#paint0_linear_4614_166)"
@@ -78,13 +73,8 @@ export const Curve3D = () => {
 				</svg>
 			</div>
 
-			<motion.div
-				className="absolute inset-0 z-[100000] flex flex-col items-center justify-center gap-12 pt-[60%]"
-				style={{
-					opacity: textOpacity
-				}}
-			>
-				<div className="max-w-[720px] text-center">
+			<motion.div className="inset-0 z-[100000] flex flex-col items-center justify-center gap-12 px-6 pb-32 pt-24 xl:pt-[60%]">
+				<div className="xl:max-w-[720px] xl:text-center">
 					<h2 className="mb-4 text-[52px] font-black text-[#385842]">
 						Every common crypto usecase on autopilot.
 					</h2>
@@ -93,7 +83,7 @@ export const Curve3D = () => {
 					</p>
 				</div>
 
-				<div className="grid max-w-[1200px] grid-cols-4 gap-4">
+				<div className="flex grid-cols-4 flex-col gap-4 xl:grid xl:max-w-[1200px]">
 					<ActionEarn />
 					<ActionBorrow />
 					<ActionStaking />

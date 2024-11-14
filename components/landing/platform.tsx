@@ -69,9 +69,9 @@ export const Platform = () => {
 	const pathLength = useTransform(scrollYProgress, [0, 0.7], [1, 0])
 
 	return (
-		<div className="relative" ref={containerRef}>
-			<div className="absolute inset-0">
-				<svg width="1827" height="976" viewBox="0 0 1827 976" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<div className="relative overflow-visible" ref={containerRef}>
+			<div className="absolute inset-0 -right-[5%] top-[-5%] overflow-visible">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
@@ -109,7 +109,7 @@ export const Platform = () => {
 					</defs>
 				</svg>
 
-				<svg width="1827" height="976" viewBox="0 0 1827 976" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 hidden xl:flex">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
 							style={{ pathLength }}
@@ -135,14 +135,8 @@ export const Platform = () => {
 						</clipPath>
 					</defs>
 				</svg>
-				<svg
-					width="1827"
-					height="976"
-					viewBox="0 0 1827 976"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					className="absolute inset-0 z-[99999]"
-				>
+
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 z-[99999] hidden xl:flex">
 					<mask
 						id="mask0_4624_28614"
 						style={{ maskType: "alpha" }}
@@ -243,6 +237,7 @@ export const Platform = () => {
 					<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
 					<div className="absolute bottom-0 left-0 right-0 top-[50%] bg-plug-white" />
 				</InfoCard>
+
 				<InfoCard
 					icon={<LayoutDashboard size={24} className="opacity-40" />}
 					text="Modular Components."

@@ -21,7 +21,6 @@ export const Vision: FC = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
 				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%]"
 			>
 				<g clip-path="url(#clip0_4612_71)">
@@ -67,7 +66,7 @@ export const Vision: FC = () => {
 				viewBox="0 0 1827 976"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%]"
+				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4612_71)">
 					<motion.path
@@ -101,8 +100,7 @@ export const Vision: FC = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				className="pointer-events-none absolute z-[99] -mr-[10%] -mt-[10%]"
+				className="pointer-events-none absolute z-[99] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<mask
 					id="mask0_4612_101"
