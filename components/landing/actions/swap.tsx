@@ -11,7 +11,7 @@ export const ActionSwap = () => {
 			icon={<ReplaceAll size={24} className="opacity-40" />}
 			text="Swap."
 			description="Simple built in swaps in just a few clicks."
-			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
+			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
 			<div className="absolute inset-0 flex flex-col items-center justify-center">
 				{SYMBOLS.map((symbol, index) => (

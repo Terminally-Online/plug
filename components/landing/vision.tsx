@@ -21,7 +21,7 @@ export const Vision: FC = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%]"
+				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4612_71)">
 					<path
@@ -142,7 +142,7 @@ export const Vision: FC = () => {
 				</defs>
 			</svg>
 
-			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
+			<LandingContainer className="relative z-[9] mb-[80px] grid grid-cols-2 gap-4 xl:grid-cols-6 xl:grid-rows-2 xl:gap-8">
 				<BookProfit />
 				<Routing />
 				<Underperforming />

@@ -13,10 +13,10 @@ export const ActionBridge = () => {
 			icon={<BringToFront size={24} className="opacity-40" />}
 			text="Bridge."
 			description="Move your crypto quickly between chains."
-			className="relative z-[99999] h-[320px] sm:h-[320px] 2xl:h-[300px]"
+			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
 			<div className="absolute inset-0 top-2 h-1/2 w-full">
-				<svg viewBox="0 0 1000 300" className="h-full w-full mt-[-5%]" style={{ overflow: "visible" }}>
+				<svg viewBox="0 0 1000 300" className="mt-[-5%] h-full w-full" style={{ overflow: "visible" }}>
 					<defs>
 						<linearGradient id="flow-gradient" x1="0" y1="0" x2="1" y2="0">
 							<stop offset="0%" stopColor="#D2F38A" />

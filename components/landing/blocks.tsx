@@ -66,8 +66,8 @@ export const Blocks = () => {
 	const [hasFallen, setHasFallen] = useState(false)
 	const [shuffledItems, setShuffledItems] = useState<string[]>([])
 
-	const rows = md ? 3 : 6
-	const columns = md ? 12 : 6
+	const rows = md ? 3 : 4
+	const columns = md ? 12 : 4
 
 	useEffect(() => {
 		const allItems = [...protocols, ...blockchains]

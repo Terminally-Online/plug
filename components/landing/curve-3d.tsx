@@ -2,6 +2,8 @@ import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
+import { useMediaQuery } from "@/lib"
+
 import {
 	ActionBorrow,
 	ActionBridge,
@@ -15,6 +17,7 @@ import { ActionLiquidity } from "./actions/liquidity"
 
 export const Curve3D = () => {
 	const containerRef = useRef<HTMLDivElement>(null)
+	const { xl } = useMediaQuery()
 	const { scrollYProgress } = useScroll({
 		target: containerRef,
 		offset: ["start end", "end start"]
@@ -25,10 +28,10 @@ export const Curve3D = () => {
 
 	const pathLength = useTransform(scrollYProgress, [0, 0.35], [0, 1])
 	const circleRadius = useTransform(scrollYProgress, [0.34, 0.35, 0.6], [0, 30, maxRadius])
-	const opacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
+	const textOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
 
 	return (
-		<div className="relative h-full w-full bg-plug-yellow xl:h-screen xl:bg-plug-white" ref={containerRef}>
+		<div className="relative w-full xl:h-screen" ref={containerRef}>
 			<div className="absolute inset-0 z-[99999] mt-24 hidden overflow-visible xl:flex">
 				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 overflow-visible">
 					<path
@@ -73,8 +76,13 @@ export const Curve3D = () => {
 				</svg>
 			</div>
 
-			<motion.div className="inset-0 z-[100000] flex flex-col items-center justify-center gap-12 px-6 pb-32 pt-24 xl:pt-[60%]">
-				<div className="xl:max-w-[720px] xl:text-center">
+			<motion.div
+				className="absolute inset-0 z-[100000] flex flex-col items-center justify-center gap-12 xl:pt-[60%]"
+				style={{
+					opacity: xl ? textOpacity : 1
+				}}
+			>
+				<div className="text-center xl:max-w-[720px]">
 					<h2 className="mb-4 text-[52px] font-black text-[#385842]">
 						Every common crypto usecase on autopilot.
 					</h2>
@@ -83,7 +91,7 @@ export const Curve3D = () => {
 					</p>
 				</div>
 
-				<div className="flex grid-cols-4 flex-col gap-4 xl:grid xl:max-w-[1200px]">
+				<div className="grid max-w-[1200px] grid-cols-2 gap-4 xl:grid-cols-4">
 					<ActionEarn />
 					<ActionBorrow />
 					<ActionStaking />

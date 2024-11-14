@@ -1,10 +1,11 @@
+import Image from "next/image"
 import { FC, useRef } from "react"
 
 import { motion, useSpring } from "framer-motion"
+import { useScroll, useTransform } from "framer-motion"
 
 import { LandingContainer } from "@/components"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
-import { useScroll, useTransform } from "framer-motion"
 
 export const LandingFooter: FC = () => {
 	const footerRef = useRef<HTMLDivElement>(null)
@@ -17,32 +18,35 @@ export const LandingFooter: FC = () => {
 		damping: 30,
 		restDelta: 0.001
 	})
-	const y = useTransform(
-		springyProgress,
-		[0, 1],
-		["-100%", "0%"],
-	)
+	const y = useTransform(springyProgress, [0, 1], ["-100%", "0%"])
 
 	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED)
 
 	return (
-		<div ref={footerRef} className="relative z-[1] overflow-hidden bg-white pt-32 lg:gap-4 w-full h-full">
+		<div ref={footerRef} className="relative z-[1] h-full w-full overflow-hidden bg-white pt-12 lg:gap-4 xl:pt-32">
 			<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
 			<motion.div
 				className="pointer-events-none absolute inset-0 mb-4 w-full opacity-[4%]"
-				style={{ 
+				style={{
 					y: y,
-					backgroundImage: "url(/plug-word-green.svg)", 
-					backgroundSize: "cover", 
-					backgroundPosition: "center", 
-					backgroundRepeat: "no-repeat" 
+					backgroundImage: "url(/plug-word-green.svg)",
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat"
 				}}
 			/>
 
-			<LandingContainer className="mb-32 flex-col gap-2">
+			<LandingContainer className="mb-12 flex-col gap-2 xl:mb-32">
 				<div className="grid grid-cols-1 font-bold text-plug-green/40 lg:grid-cols-12">
 					<div className="mb-8 lg:col-span-4 lg:mb-0">
-						<p className="lg:max-w-[320px]">
+						<Image
+							className="mb-4 lg:hidden"
+							src="/plug-word-green.svg"
+							alt="Logo"
+							width={140}
+							height={64}
+						/>
+						<p className="max-w-[380px] lg:max-w-[280px]">
 							Automate your transactions on every popular Ethereum based blockchain so that you can log
 							off and have everything run without you doing a thing.
 						</p>
@@ -67,7 +71,7 @@ export const LandingFooter: FC = () => {
 							Audits
 						</button>
 					</div>
-					<div className="mb-2 flex flex-col items-start gap-2 lg:col-span-2">
+					<div className="flex flex-col items-start gap-2 lg:col-span-2 xl:mb-2">
 						<button
 							className="transition-all duration-200 ease-in-out hover:text-plug-green"
 							onClick={() => handleCallToAction(routes.documentation)}

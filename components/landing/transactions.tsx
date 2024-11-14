@@ -20,7 +20,7 @@ export const Transactions = () => {
 				viewBox="0 0 1827 976"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%]"
+				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
 					<path
@@ -64,7 +64,7 @@ export const Transactions = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%]"
+				className="pointer-events-none absolute z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
 					<motion.path
@@ -129,7 +129,7 @@ export const Transactions = () => {
 				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[9999] -ml-[15%] -mt-[9%]"
+				className="pointer-events-none absolute z-[9999] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<mask
 					id="mask0_4612_25"
@@ -166,7 +166,7 @@ export const Transactions = () => {
 				</defs>
 			</svg>
 
-			<LandingContainer className="relative grid grid-cols-2 gap-8 xl:grid-cols-6 xl:grid-rows-2">
+			<LandingContainer className="relative grid grid-cols-2 gap-4 xl:grid-cols-6 xl:grid-rows-2 xl:gap-8">
 				<Scheduled />
 				<Execution />
 				<Recurring />

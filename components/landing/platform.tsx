@@ -70,7 +70,7 @@ export const Platform = () => {
 
 	return (
 		<div className="relative overflow-visible" ref={containerRef}>
-			<div className="absolute inset-0 -right-[5%] top-[-5%] overflow-visible">
+			<div className="absolute inset-0 -right-[5%] top-[-5%] hidden overflow-visible xl:flex">
 				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
@@ -173,7 +173,7 @@ export const Platform = () => {
 				</svg>
 			</div>
 
-			<LandingContainer className="relative z-[9] mb-[80px] grid grid-rows-2 gap-8 xl:grid-cols-3">
+			<LandingContainer className="relative z-[9] mb-[80px] grid grid-rows-2 gap-4 xl:grid-cols-3 xl:gap-8">
 				<InfoCard
 					icon={<Sparkles size={24} className="opacity-40" />}
 					text="Protocol Abstraction."
