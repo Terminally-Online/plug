@@ -31,7 +31,10 @@ export const Curve3D = () => {
 	const textOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1])
 
 	return (
-		<div className="relative h-full w-full xl:h-screen" ref={containerRef}>
+		<div
+			className="relative mb-12 h-full w-full bg-plug-yellow py-24 xl:h-screen xl:bg-plug-white xl:py-0"
+			ref={containerRef}
+		>
 			<div className="absolute inset-0 z-[99999] mt-24 hidden overflow-visible xl:flex">
 				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 overflow-visible">
 					<path
