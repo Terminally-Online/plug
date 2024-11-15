@@ -5,10 +5,7 @@ import { Blocks, Curve3D, Hero, LandingFooter, Platform, Transactions, Vision } 
 const Page = () => (
 	<>
 		<Head>
-			<title>
-				A single interface to manage, compose, schedule, and execute all your transactions and holdings in one
-				place.
-			</title>
+			<title>Plug</title>
 		</Head>
 
 		<div className="overflow-x-hidden">
