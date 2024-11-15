@@ -57,9 +57,9 @@ export const ActionBorrow = () => {
 			description="Realize the full value of your onchain assets by supplying and borrowing with decentralized lending markets."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
-			<motion.p className="absolute left-0 right-0 top-2 z-[9999] flex w-full items-center justify-between whitespace-nowrap px-8 pb-4 font-bold">
+			<motion.p className="absolute left-0 right-0 top-2 z-[9999] flex w-full justify-between whitespace-nowrap px-8 pb-4 font-bold">
 				<span className="opacity-40">Health Factor:</span>
-				<span className="ml-auto flex flex-row items-center pl-2">
+				<span className="flex flex-row items-center pl-2">
 					<Counter count={Math.round(percentage)} />%
 				</span>
 			</motion.p>
@@ -68,7 +68,7 @@ export const ActionBorrow = () => {
 				{Array.from({ length: 24 }).map((_, index) => (
 					<motion.div
 						key={index}
-						className="relative h-24 w-full rounded-full"
+						className="relative h-16 w-full rounded-full md:h-32"
 						animate={{
 							backgroundColor: getIsActive(index) ? "#D2F38A" : "#FF0000",
 							opacity: getIsActive(index) ? 1 : 0.6
