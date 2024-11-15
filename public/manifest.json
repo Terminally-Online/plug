@@ -21,6 +21,6 @@
 	"display": "standalone",
 	"start_url": "/",
 	"scope": "/",
-	"description": "A single interface to manage, compose, schedule, and execute all your transactions in one place.",
+	"description": "A single interface to manage, compose, schedule, and execute all your onchain activity in one place.",
 	"orientation": "portrait"
 }
