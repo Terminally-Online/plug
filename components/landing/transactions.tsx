@@ -14,13 +14,12 @@ export const Transactions = () => {
 
 	return (
 		<div
-			className="relative z-[11] mb-[80px] h-full bg-plug-white xl:mb-[160px] xl:mt-[900px] 2xl:mt-[1100px]"
 			ref={containerRef}
+			className="relative z-[11] mb-[80px] h-full bg-plug-white xl:mb-[160px] xl:mt-[900px] 2xl:mt-[70vw]"
 		>
 			<svg
 				viewBox="0 0 1827 976"
 				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
 				className="pointer-events-none absolute inset-0 z-[9] -ml-[15%] -mt-[9%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4611_7253)">
