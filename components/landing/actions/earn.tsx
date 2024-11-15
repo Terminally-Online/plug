@@ -6,8 +6,8 @@ import { Handshake } from "lucide-react"
 import { InfoCard } from "@/components"
 
 interface Circle {
-	x: number
-	y: number
+	xPercent: number // Changed from x to xPercent
+	yPercent: number // Changed from y to yPercent
 	radius: number
 }
 
@@ -18,7 +18,8 @@ interface Token extends Circle {
 }
 
 const distance = (a: Circle, b: Circle): number => {
-	return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+	// Convert percentage distances to a 0-100 scale for calculation
+	return Math.sqrt(Math.pow(a.xPercent - b.xPercent, 2) + Math.pow(a.yPercent - b.yPercent, 2))
 }
 
 const circleCollides = (circle: Circle, circles: Circle[], minDistance: number): boolean => {
@@ -29,121 +30,90 @@ const circleCollides = (circle: Circle, circles: Circle[], minDistance: number):
 	return false
 }
 
-interface PackingArea {
-	x: number
-	y: number
-	width: number
-	height: number
-	density: number
-}
-
-const generatePackedCircles = (
-	count: number,
-	width: number,
-	height: number,
-	baseRadius: number
-): (Circle & { size: number })[] => {
+const generatePackedCircles = (count: number, baseRadius: number): (Circle & { size: number })[] => {
 	const circles: (Circle & { size: number })[] = []
 	const maxAttempts = 150
-	const padding = baseRadius
 
-	const packingAreas: PackingArea[] = [
-		{
-			x: padding,
-			y: 0,
-			width: width - padding * 2,
-			height: height,
-			density: 1
-		}
-	] as const
-
-	// Helper function to get hexagonal grid position
-	const getHexPosition = (row: number, col: number, area: PackingArea): { x: number; y: number } => {
-		const hexWidth = baseRadius * 1.732 // √3
-		const hexHeight = baseRadius * 1.5
+	// Helper function to get hexagonal grid position in percentages
+	const getHexPosition = (row: number, col: number): { xPercent: number; yPercent: number } => {
+		const hexWidth = 15 // Percentage of container width
+		const hexHeight = 15 // Percentage of container height
 
 		return {
-			x: area.x + col * hexWidth + (row % 2) * (hexWidth / 2),
-			y: area.y + row * hexHeight
+			xPercent: col * hexWidth + (row % 2) * (hexWidth / 2),
+			yPercent: row * hexHeight
 		}
 	}
 
-	// Place tokens in each area using hexagonal pattern as starting positions
-	for (const area of packingAreas) {
-		const areaCount = Math.floor(count * area.density)
-		let placed = 0
+	// Calculate rows and columns based on count
+	const rows = Math.ceil(Math.sqrt(count))
+	const cols = Math.ceil(count / rows)
 
-		// Calculate how many rows and columns we need for hexagonal packing
-		const rows = Math.ceil(Math.sqrt(areaCount))
-		const cols = Math.ceil(areaCount / rows)
+	let placed = 0
 
-		// Try placing tokens in a hexagonal pattern with some randomization
-		for (let row = 0; row < rows && placed < areaCount; row++) {
-			for (let col = 0; col < cols && placed < areaCount; col++) {
-				let attempts = 0
-				let circle: Circle & { size: number }
-
-				do {
-					// Generate random size for this token
-					const sizeMultiplier = 0.7 + Math.random() * 0.6 // Random between 0.7 and 1.3
-					const tokenSize = baseRadius * sizeMultiplier
-
-					// Get base hexagonal position
-					const hexPos = getHexPosition(row, col, area)
-
-					// Add slight randomization to the hexagonal position
-					const jitter = tokenSize * 0.2
-					circle = {
-						x: hexPos.x + (Math.random() - 0.5) * jitter,
-						y: hexPos.y + (Math.random() - 0.5) * jitter,
-						radius: tokenSize,
-						size: tokenSize * 2 // Store the diameter
-					}
-
-					// Add some horizontal spread based on vertical position
-					const spreadFactor = 1 - circle.y / height
-					const xSpread = area.width * (0.3 + spreadFactor * 0.2)
-					const xCenter = area.x + area.width / 2
-					circle.x = xCenter + (circle.x - xCenter) * (1 + spreadFactor)
-
-					attempts++
-				} while (circleCollides(circle, circles, circle.radius * 0.5) && attempts < maxAttempts)
-
-				if (attempts < maxAttempts) {
-					circles.push(circle)
-					placed++
-				}
-			}
-		}
-
-		// Fill any gaps with random positions
-		while (placed < areaCount) {
+	// Try placing tokens in a hexagonal pattern
+	for (let row = 0; row < rows && placed < count; row++) {
+		for (let col = 0; col < cols && placed < count; col++) {
 			let attempts = 0
 			let circle: Circle & { size: number }
 
 			do {
-				const spreadFactor = 1 - (area.y + area.height / 2) / height
-				const xSpread = area.width * (0.4 + spreadFactor * 0.3)
-				const xCenter = area.x + area.width / 2
-
-				const sizeMultiplier = 1.5 + Math.random()
+				const sizeMultiplier = 0.7 + Math.random() * 0.6
 				const tokenSize = baseRadius * sizeMultiplier
 
+				// Get base hexagonal position
+				const hexPos = getHexPosition(row, col)
+
+				// Add randomization to the position
+				const jitter = 5 // 5% jitter
 				circle = {
-					x: xCenter + (Math.random() - 0.5) * xSpread,
-					y: area.y + Math.random() * area.height,
+					xPercent: hexPos.xPercent + (Math.random() - 0.5) * jitter,
+					yPercent: hexPos.yPercent + (Math.random() - 0.5) * jitter,
 					radius: tokenSize,
 					size: tokenSize * 2
 				}
+
+				// Spread tokens out more towards the top
+				const spreadFactor = 1 - circle.yPercent / 100
+				circle.xPercent = 50 + (circle.xPercent - 50) * (1 + spreadFactor)
+
+				// Ensure tokens stay within bounds (with some overflow allowed)
+				circle.xPercent = Math.max(-10, Math.min(110, circle.xPercent))
+				circle.yPercent = Math.max(-10, Math.min(110, circle.yPercent))
+
 				attempts++
-			} while (circleCollides(circle, circles, circle.radius * 0.5) && attempts < maxAttempts)
+			} while (circleCollides(circle, circles, 10) && attempts < maxAttempts)
 
 			if (attempts < maxAttempts) {
 				circles.push(circle)
 				placed++
-			} else {
-				break // Prevent infinite loop if we can't place more tokens
 			}
+		}
+	}
+
+	// Fill any remaining gaps with random positions
+	while (placed < count) {
+		let attempts = 0
+		let circle: Circle & { size: number }
+
+		do {
+			const sizeMultiplier = 1.5 + Math.random()
+			const tokenSize = baseRadius * sizeMultiplier
+
+			circle = {
+				xPercent: Math.random() * 120 - 10, // -10% to 110%
+				yPercent: Math.random() * 120 - 10, // -10% to 110%
+				radius: tokenSize,
+				size: tokenSize * 2
+			}
+			attempts++
+		} while (circleCollides(circle, circles, 10) && attempts < maxAttempts)
+
+		if (attempts < maxAttempts) {
+			circles.push(circle)
+			placed++
+		} else {
+			break
 		}
 	}
 
@@ -158,7 +128,7 @@ export const ActionEarn: FC = () => {
 	const [packedTokens, setPackedTokens] = useState<Token[]>([])
 
 	useEffect(() => {
-		const positions = generatePackedCircles(TOKENS, 320, 320, BASE_TOKEN_RADIUS)
+		const positions = generatePackedCircles(TOKENS, BASE_TOKEN_RADIUS)
 		const tokens = positions.map((pos, index) => ({
 			...pos,
 			id: index,
@@ -172,9 +142,9 @@ export const ActionEarn: FC = () => {
 			icon={<Handshake size={24} className="opacity-40" />}
 			text="Earn."
 			description="Earn yield and creator rewards constantly."
-			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
+			className="relative z-[99999] col-span-2 h-[320px] overflow-hidden sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
-			<div className="absolute inset-0 z-[-1] overflow-hidden">
+			<div className="absolute inset-0 z-[-1]">
 				{packedTokens.map(token => (
 					<motion.div
 						key={token.id}
@@ -182,19 +152,19 @@ export const ActionEarn: FC = () => {
 						style={{
 							width: token.size,
 							height: token.size,
-							left: token.x - token.radius,
-							top: token.y - token.radius,
-							transform: `rotate(${token.rotation}deg)`
+							left: `${token.xPercent}%`,
+							top: `${token.yPercent}%`,
+							transform: `translate(-50%, -50%) rotate(${token.rotation}deg)`
 						}}
 						animate={{
 							transform: [
-								"translateY(-500%)",
-								"translateY(0%)",
-								"translateY(0%)",
-								"translateY(0%)",
-								"translateY(0%)",
-								"translateY(0%)",
-								"translateY(500%)"
+								"translate(-50%, -500%) rotate(0deg)",
+								"translate(-50%, -50%) rotate(0deg)",
+								"translate(-50%, -50%) rotate(0deg)",
+								"translate(-50%, -50%) rotate(0deg)",
+								"translate(-50%, -50%) rotate(0deg)",
+								"translate(-50%, -50%) rotate(0deg)",
+								"translate(-50%, 500%) rotate(0deg)"
 							]
 						}}
 						transition={{
