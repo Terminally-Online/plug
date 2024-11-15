@@ -27,7 +27,7 @@ export const Underperforming = () => {
 		<InfoCard
 			icon={<Code size={24} className="opacity-40" />}
 			text="Positive returns with ease."
-			description="The best tools set you up for unparalleled successes and makes winning effortless."
+			description="The best tools set you up for unparalleled successes and make winning effortless."
 			className="col-span-2 h-[280px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<div className="relative -mx-1 flex h-[40%] flex-row gap-1 pt-2">

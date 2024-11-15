@@ -17,7 +17,7 @@ export const ActionTrade = () => {
 		<InfoCard
 			icon={<ChartLine size={24} className="opacity-40" />}
 			text="Trade."
-			description="Move your crypto quickly between chains."
+			description="Respond to market trends in real-time."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
 			<div ref={containerRef}>

@@ -10,7 +10,7 @@ export const ActionSwap = () => {
 		<InfoCard
 			icon={<ReplaceAll size={24} className="opacity-40" />}
 			text="Swap."
-			description="Simple built in swaps in just a few clicks."
+			description="No matter the tokens, we will find the best route."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] xl:col-span-1 2xl:h-[300px]"
 		>
 			<div className="absolute inset-0 flex items-center justify-center">

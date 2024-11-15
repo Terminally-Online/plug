@@ -1,14 +1,12 @@
-import Image from "next/image"
-
 import { motion } from "framer-motion"
-import { Sun } from "lucide-react"
+import { Radar } from "lucide-react"
 
 import { InfoCard } from "@/components"
 
 export const BookProfit = () => {
 	return (
 		<InfoCard
-			icon={<Sun size={24} className="opacity-40" />}
+			icon={<Radar size={24} className="opacity-40" />}
 			text="Constantly pinging the market."
 			description="With Plug monitoring every onchain transaction, you can immediately respond no matter the state of the market."
 			className="col-span-2 h-[540px] xl:col-span-4 xl:row-span-2 xl:h-full"

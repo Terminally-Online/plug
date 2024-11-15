@@ -27,7 +27,7 @@ export const ActionLiquidity = () => {
 		<InfoCard
 			icon={<Droplets size={24} className="opacity-40" />}
 			text="Provide Liquidity."
-			description="Deposit your crypto into liquidity pools to earn swap fees and yield."
+			description="Deposit your tokens into liquidity pools to earn trading fees and yield rewards while supporting decentralized trading."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
 			<svg className="absolute inset-0 h-full w-full" viewBox="0 0 500 200" preserveAspectRatio="none">

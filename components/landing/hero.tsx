@@ -74,7 +74,7 @@ export const Hero = () => {
 								}}
 							>
 								Plug gives you a single interface to manage, compose, schedule, and execute all your
-								transactions in one place.
+								onchain activity in one place.
 							</motion.p>
 
 							<Button
