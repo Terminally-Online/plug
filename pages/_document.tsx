@@ -3,7 +3,7 @@ import { Head, Html, Main, NextScript } from "next/document"
 export default function Document() {
 	const title = "Plug"
 	const description =
-		"Designed to let you do more with less. Plug gives you a single interface to manage, compose, schedule, and execute all your transactions and holdings in one place."
+		"A single interface to manage, compose, schedule, and execute all your transactions and holdings in one place."
 
 	return (
 		<Html lang="en">

@@ -5,7 +5,10 @@ import { Blocks, Curve3D, Hero, LandingFooter, Platform, Transactions, Vision } 
 const Page = () => (
 	<>
 		<Head>
-			<title>&quot;If This, Then That&quot; for Ethereum transactions.</title>
+			<title>
+				A single interface to manage, compose, schedule, and execute all your transactions and holdings in one
+				place.
+			</title>
 		</Head>
 
 		<div className="overflow-x-hidden">
