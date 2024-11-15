@@ -36,7 +36,7 @@ export const ActionStaking = () => {
 			icon={<BookUp2 size={24} className="opacity-40" />}
 			text="Stake."
 			description="Earn rewards by staking your tokens in pools."
-			className="relative z-[99999] col-span-2 row-span-2 overflow-hidden xl:col-span-1"
+			className="relative z-[99999] col-span-2 row-span-2 min-h-[520px] overflow-hidden xl:col-span-1"
 		>
 			<div className="absolute inset-0 bottom-1/2 overflow-hidden">
 				<motion.div
