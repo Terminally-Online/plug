@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { motion, useAnimationFrame } from "framer-motion"
 import { HandCoins } from "lucide-react"
@@ -7,7 +7,7 @@ import { Counter, InfoCard } from "@/components"
 
 export const ActionBorrow = () => {
 	const [percentage, setPercentage] = useState(25)
-
+	const [activeIndex, setActiveIndex] = useState(0)
 	const widthValues = [80, 90, 50, 70, 80, 90, 40, 20]
 	const animationDuration = 12000
 
@@ -17,6 +17,39 @@ export const ActionBorrow = () => {
 		const currentWidth = widthValues[index]
 		setPercentage(currentWidth)
 	})
+
+	// Calculate target index based on percentage
+	const getTargetIndex = (percent: number) => {
+		return Math.floor((percent / 100) * 24)
+	}
+
+	useEffect(() => {
+		const targetIndex = getTargetIndex(percentage)
+
+		// Animate pills sequentially
+		const animatePills = async () => {
+			if (targetIndex > activeIndex) {
+				// Animate upwards
+				for (let i = activeIndex; i <= targetIndex; i++) {
+					setActiveIndex(i)
+					await new Promise(resolve => setTimeout(resolve, 50)) // Adjust speed here
+				}
+			} else {
+				// Animate downwards
+				for (let i = activeIndex; i >= targetIndex; i--) {
+					setActiveIndex(i)
+					await new Promise(resolve => setTimeout(resolve, 50)) // Adjust speed here
+				}
+			}
+		}
+
+		animatePills()
+	}, [percentage, activeIndex])
+
+	const getIsActive = (index: number) => {
+		return index <= activeIndex
+	}
+
 	return (
 		<InfoCard
 			icon={<HandCoins size={24} className="opacity-40" />}
@@ -24,59 +57,28 @@ export const ActionBorrow = () => {
 			description="Realize the full value of your onchain assets by supplying and borrowing with decentralized lending markets."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
-			<div className="absolute inset-0 bottom-1/2 flex flex-row">
-				<motion.p
-					className="absolute top-2 z-[9999] ml-[22px] h-8 -translate-x-1/2 border-l-[2px] border-plug-green/10 pb-4 font-bold"
-					animate={{
-						left: ["80%", "90%", "50%", "70%", "80%", "90%", "40%", "20%"]
-					}}
-					transition={{
-						duration: 12,
-						repeat: Infinity,
-						repeatType: "reverse",
-						ease: "easeInOut"
-					}}
-				>
-					<span className="flex flex-row items-center pl-2">
-						<Counter count={Math.round(percentage)} />%
-					</span>
-				</motion.p>
-				<motion.div
-					className="relative mt-[6%] flex h-24 items-center justify-center bg-plug-yellow"
-					animate={{
-						width: ["80%", "90%", "50%", "70%", "80%", "90%", "40%", "20%"]
-					}}
-					transition={{
-						duration: 12,
-						repeat: Infinity,
-						repeatType: "reverse",
-						ease: "easeInOut"
-					}}
-				/>
-				<motion.div
-					className="relative mt-[6%] flex h-24 w-1/2 items-center justify-center bg-plug-red"
-					animate={{
-						width: ["20%", "10%", "50%", "30%", "20%", "10%", "60%", "80%"]
-					}}
-					transition={{
-						duration: 12,
-						repeat: Infinity,
-						repeatType: "reverse",
-						ease: "easeInOut"
-					}}
-				/>
-				<svg
-					viewBox="0 0 5482 967"
-					fill="none"
-					className="absolute bottom-0 left-0 right-0 top-0 z-[999] mt-[6%]"
-				>
-					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
-						d="M5482 0H0V967H5482V0ZM48 128.5C48 84.043 84.043 48 128.5 48C172.957 48 209 84.043 209 128.5V838.5C209 882.957 172.957 919 128.5 919C84.043 919 48 882.957 48 838.5V128.5ZM257 128.5C257 84.043 293.043 48 337.5 48C381.957 48 418 84.043 418 128.5V838.5C418 882.957 381.957 919 337.5 919C293.043 919 257 882.957 257 838.5V128.5ZM546.5 48C502.043 48 466 84.043 466 128.5V838.5C466 882.957 502.043 919 546.5 919C590.957 919 627 882.957 627 838.5V128.5C627 84.043 590.957 48 546.5 48ZM675 128.5C675 84.043 711.043 48 755.5 48C799.957 48 836 84.043 836 128.5V838.5C836 882.957 799.957 919 755.5 919C711.043 919 675 882.957 675 838.5V128.5ZM964.5 48C920.043 48 884 84.043 884 128.5V838.5C884 882.957 920.043 919 964.5 919C1008.96 919 1045 882.957 1045 838.5V128.5C1045 84.043 1008.96 48 964.5 48ZM1093 128.5C1093 84.043 1129.04 48 1173.5 48C1217.96 48 1254 84.043 1254 128.5V838.5C1254 882.957 1217.96 919 1173.5 919C1129.04 919 1093 882.957 1093 838.5V128.5ZM1382.5 48C1338.04 48 1302 84.043 1302 128.5V838.5C1302 882.957 1338.04 919 1382.5 919C1426.96 919 1463 882.957 1463 838.5V128.5C1463 84.043 1426.96 48 1382.5 48ZM1511 128.5C1511 84.043 1547.04 48 1591.5 48C1635.96 48 1672 84.043 1672 128.5V838.5C1672 882.957 1635.96 919 1591.5 919C1547.04 919 1511 882.957 1511 838.5V128.5ZM1800.5 48C1756.04 48 1720 84.043 1720 128.5V838.5C1720 882.957 1756.04 919 1800.5 919C1844.96 919 1881 882.957 1881 838.5V128.5C1881 84.043 1844.96 48 1800.5 48ZM1929 128.5C1929 84.043 1965.04 48 2009.5 48C2053.96 48 2090 84.043 2090 128.5V838.5C2090 882.957 2053.96 919 2009.5 919C1965.04 919 1929 882.957 1929 838.5V128.5ZM2218.5 48C2174.04 48 2138 84.043 2138 128.5V838.5C2138 882.957 2174.04 919 2218.5 919C2262.96 919 2299 882.957 2299 838.5V128.5C2299 84.043 2262.96 48 2218.5 48ZM2347 128.5C2347 84.043 2383.04 48 2427.5 48C2471.96 48 2508 84.043 2508 128.5V838.5C2508 882.957 2471.96 919 2427.5 919C2383.04 919 2347 882.957 2347 838.5V128.5ZM2636.5 48C2592.04 48 2556 84.043 2556 128.5V838.5C2556 882.957 2592.04 919 2636.5 919C2680.96 919 2717 882.957 2717 838.5V128.5C2717 84.043 2680.96 48 2636.5 48ZM2765 128.5C2765 84.043 2801.04 48 2845.5 48C2889.96 48 2926 84.043 2926 128.5V838.5C2926 882.957 2889.96 919 2845.5 919C2801.04 919 2765 882.957 2765 838.5V128.5ZM3054.5 48C3010.04 48 2974 84.043 2974 128.5V838.5C2974 882.957 3010.04 919 3054.5 919C3098.96 919 3135 882.957 3135 838.5V128.5C3135 84.043 3098.96 48 3054.5 48ZM3183 128.5C3183 84.043 3219.04 48 3263.5 48C3307.96 48 3344 84.043 3344 128.5V838.5C3344 882.957 3307.96 919 3263.5 919C3219.04 919 3183 882.957 3183 838.5V128.5ZM3472.5 48C3428.04 48 3392 84.043 3392 128.5V838.5C3392 882.957 3428.04 919 3472.5 919C3516.96 919 3553 882.957 3553 838.5V128.5C3553 84.043 3516.96 48 3472.5 48ZM3601 128.5C3601 84.043 3637.04 48 3681.5 48C3725.96 48 3762 84.043 3762 128.5V838.5C3762 882.957 3725.96 919 3681.5 919C3637.04 919 3601 882.957 3601 838.5V128.5ZM3890.5 48C3846.04 48 3810 84.043 3810 128.5V838.5C3810 882.957 3846.04 919 3890.5 919C3934.96 919 3971 882.957 3971 838.5V128.5C3971 84.043 3934.96 48 3890.5 48ZM4019 128.5C4019 84.043 4055.04 48 4099.5 48C4143.96 48 4180 84.043 4180 128.5V838.5C4180 882.957 4143.96 919 4099.5 919C4055.04 919 4019 882.957 4019 838.5V128.5ZM4308.5 48C4264.04 48 4228 84.043 4228 128.5V838.5C4228 882.957 4264.04 919 4308.5 919C4352.96 919 4389 882.957 4389 838.5V128.5C4389 84.043 4352.96 48 4308.5 48ZM4437 128.5C4437 84.043 4473.04 48 4517.5 48C4561.96 48 4598 84.043 4598 128.5V838.5C4598 882.957 4561.96 919 4517.5 919C4473.04 919 4437 882.957 4437 838.5V128.5ZM4726.5 48C4682.04 48 4646 84.043 4646 128.5V838.5C4646 882.957 4682.04 919 4726.5 919C4770.96 919 4807 882.957 4807 838.5V128.5C4807 84.043 4770.96 48 4726.5 48ZM4855 128.5C4855 84.043 4891.04 48 4935.5 48C4979.96 48 5016 84.043 5016 128.5V838.5C5016 882.957 4979.96 919 4935.5 919C4891.04 919 4855 882.957 4855 838.5V128.5ZM5144.5 48C5100.04 48 5064 84.043 5064 128.5V838.5C5064 882.957 5100.04 919 5144.5 919C5188.96 919 5225 882.957 5225 838.5V128.5C5225 84.043 5188.96 48 5144.5 48ZM5273 128.5C5273 84.043 5309.04 48 5353.5 48C5397.96 48 5434 84.043 5434 128.5V838.5C5434 882.957 5397.96 919 5353.5 919C5309.04 919 5273 882.957 5273 838.5V128.5Z"
-						fill="#FEFFF8"
+			<motion.p className="absolute left-0 right-0 top-2 z-[9999] flex w-full items-center justify-between whitespace-nowrap px-8 pb-4 font-bold">
+				<span className="opacity-40">Health Factor:</span>
+				<span className="ml-auto flex flex-row items-center pl-2">
+					<Counter count={Math.round(percentage)} />%
+				</span>
+			</motion.p>
+
+			<div className="absolute inset-0 bottom-1/2 mt-10 flex flex-row gap-2">
+				{Array.from({ length: 24 }).map((_, index) => (
+					<motion.div
+						key={index}
+						className="relative h-24 w-full rounded-full"
+						animate={{
+							backgroundColor: getIsActive(index) ? "#D2F38A" : "#FF0000",
+							opacity: getIsActive(index) ? 1 : 0.6
+						}}
+						transition={{
+							duration: 0.2,
+							ease: "easeInOut"
+						}}
 					/>
-				</svg>
+				))}
 			</div>
 
 			<div className="absolute bottom-[50%] left-0 right-0 top-0 bg-gradient-to-b from-plug-white/0 to-plug-white" />
