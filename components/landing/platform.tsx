@@ -75,8 +75,8 @@ export const Platform = () => {
 							y2="504"
 							gradientUnits="userSpaceOnUse"
 						>
-							<stop stop-color="#D2F38A" />
-							<stop offset="1" stop-color="#385842" />
+							<stop stopColor="#D2F38A" />
+							<stop offset="1" stopColor="#385842" />
 						</linearGradient>
 						<clipPath id="clip0_4624_28608">
 							<rect width="1827" height="976" fill="white" />
@@ -102,8 +102,8 @@ export const Platform = () => {
 							y2="504"
 							gradientUnits="userSpaceOnUse"
 						>
-							<stop stop-color="#D2F38A" />
-							<stop offset="1" stop-color="#385842" />
+							<stop stopColor="#D2F38A" />
+							<stop offset="1" stopColor="#385842" />
 						</linearGradient>
 						<clipPath id="clip0_4624_28608">
 							<rect width="1827" height="976" fill="white" />
@@ -145,8 +145,8 @@ export const Platform = () => {
 							y2="504"
 							gradientUnits="userSpaceOnUse"
 						>
-							<stop stop-color="#D2F38A" />
-							<stop offset="1" stop-color="#385842" />
+							<stop stopColor="#D2F38A" />
+							<stop offset="1" stopColor="#385842" />
 						</linearGradient>
 					</defs>
 				</svg>

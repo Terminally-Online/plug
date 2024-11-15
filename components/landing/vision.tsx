@@ -49,8 +49,8 @@ export const Vision: FC = () => {
 						y2="471.5"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 					<clipPath id="clip0_4612_71">
 						<rect width="1827" height="976" fill="white" />
@@ -82,8 +82,8 @@ export const Vision: FC = () => {
 						y2="471.5"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 					<clipPath id="clip0_4612_71">
 						<rect width="1827" height="976" fill="white" />
@@ -106,8 +106,8 @@ export const Vision: FC = () => {
 					height="573"
 				>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M844 67H0V640H370.953V427.587L642.359 427.586V287.976H844V67Z"
 						fill="#D9D9D9"
 					/>
@@ -130,8 +130,8 @@ export const Vision: FC = () => {
 						y2="471.5"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 				</defs>
 			</svg>

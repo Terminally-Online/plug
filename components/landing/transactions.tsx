@@ -50,8 +50,8 @@ export const Transactions = () => {
 						y2="504"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 					<clipPath id="clip0_4611_7253">
 						<rect width="1827" height="976" fill="white" />
@@ -102,8 +102,8 @@ export const Transactions = () => {
 						y2="504"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 					<linearGradient
 						id="paint1_linear_4611_7253"
@@ -113,8 +113,8 @@ export const Transactions = () => {
 						y2="504"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 					<clipPath id="clip0_4611_7253">
 						<rect width="1827" height="976" fill="white" />
@@ -136,7 +136,7 @@ export const Transactions = () => {
 					width="1336"
 					height="976"
 				>
-					<path fill-rule="evenodd" clip-rule="evenodd" d="M1530 0H1827V976H491V555H1530V0Z" fill="#D9D9D9" />
+					<path fillRule="evenodd" clipRule="evenodd" d="M1530 0H1827V976H491V555H1530V0Z" fill="#D9D9D9" />
 				</mask>
 				<g mask="url(#mask0_4612_25)">
 					<motion.path
@@ -156,8 +156,8 @@ export const Transactions = () => {
 						y2="504"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#D2F38A" />
-						<stop offset="1" stop-color="#385842" />
+						<stop stopColor="#D2F38A" />
+						<stop offset="1" stopColor="#385842" />
 					</linearGradient>
 				</defs>
 			</svg>
