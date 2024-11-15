@@ -84,7 +84,7 @@ export const Platform = () => {
 					</defs>
 				</svg>
 
-				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 hidden xl:flex overflow-visible">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 hidden overflow-visible xl:flex">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
 							style={{ pathLength }}
@@ -111,7 +111,11 @@ export const Platform = () => {
 					</defs>
 				</svg>
 
-				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 z-[99999] hidden xl:flex overflow-visible">
+				<svg
+					viewBox="0 0 1827 976"
+					fill="none"
+					className="absolute inset-0 z-[99999] hidden overflow-visible xl:flex"
+				>
 					<mask
 						id="mask0_4624_28614"
 						style={{ maskType: "alpha" }}
@@ -233,7 +237,7 @@ export const Platform = () => {
 								repeatDelay: 6
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Discover</p>
+							<p className="truncate p-2 pl-4 font-bold">Discover</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex grid h-full grid-cols-2 gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS }).map((_, index) => (
@@ -257,7 +261,7 @@ export const Platform = () => {
 								repeatDelay: 10
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Tokens</p>
+							<p className="truncate p-2 pl-4 font-bold">Tokens</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
@@ -281,7 +285,7 @@ export const Platform = () => {
 								repeatDelay: 10
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Collectibles</p>
+							<p className="truncate p-2 pl-4 font-bold">Collectibles</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
@@ -305,7 +309,7 @@ export const Platform = () => {
 								repeatDelay: 6
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Plugs</p>
+							<p className="truncate p-2 pl-4 font-bold">Plugs</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex grid h-full grid-cols-2 gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS }).map((_, index) => (
@@ -330,7 +334,7 @@ export const Platform = () => {
 								repeatDelay: 6
 							}}
 						>
-							<p className="p-2 pl-4 font-bold">Activity</p>
+							<p className="truncate p-2 pl-4 font-bold">Activity</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
