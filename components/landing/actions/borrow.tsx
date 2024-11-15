@@ -18,7 +18,6 @@ export const ActionBorrow = () => {
 		setPercentage(currentWidth)
 	})
 
-	// Calculate target index based on percentage
 	const getTargetIndex = (percent: number) => {
 		return Math.floor((percent / 100) * 24)
 	}
@@ -26,19 +25,16 @@ export const ActionBorrow = () => {
 	useEffect(() => {
 		const targetIndex = getTargetIndex(percentage)
 
-		// Animate pills sequentially
 		const animatePills = async () => {
 			if (targetIndex > activeIndex) {
-				// Animate upwards
 				for (let i = activeIndex; i <= targetIndex; i++) {
 					setActiveIndex(i)
-					await new Promise(resolve => setTimeout(resolve, 50)) // Adjust speed here
+					await new Promise(resolve => setTimeout(resolve, 50))
 				}
 			} else {
-				// Animate downwards
 				for (let i = activeIndex; i >= targetIndex; i--) {
 					setActiveIndex(i)
-					await new Promise(resolve => setTimeout(resolve, 50)) // Adjust speed here
+					await new Promise(resolve => setTimeout(resolve, 50))
 				}
 			}
 		}
