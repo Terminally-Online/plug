@@ -24,7 +24,7 @@ export const ActionBorrow = () => {
 			description="Realize the full value of your onchain assets by supplying and borrowing with decentralized lending markets."
 			className="relative z-[99999] col-span-2 h-[320px] sm:h-[320px] 2xl:h-[300px]"
 		>
-			<div className="absolute inset-0 flex flex-row">
+			<div className="absolute inset-0 bottom-1/2 flex flex-row">
 				<motion.p
 					className="absolute top-2 z-[9999] ml-[22px] h-8 -translate-x-1/2 border-l-[2px] border-plug-green/10 pb-4 font-bold"
 					animate={{
@@ -66,11 +66,9 @@ export const ActionBorrow = () => {
 					}}
 				/>
 				<svg
-					width="100%"
-					height="100%"
 					viewBox="0 0 5482 967"
 					fill="none"
-					className="absolute left-0 right-0 z-[999] mt-[4%] h-32"
+					className="absolute bottom-0 left-0 right-0 top-0 z-[999] mt-[6%]"
 				>
 					<path
 						fill-rule="evenodd"

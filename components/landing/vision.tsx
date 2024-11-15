@@ -17,11 +17,9 @@ export const Vision: FC = () => {
 	return (
 		<div className="relative z-[11] mb-[80px] h-full bg-plug-white" ref={containerRef}>
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4612_71)">
 					<path
@@ -61,12 +59,10 @@ export const Vision: FC = () => {
 			</svg>
 
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className="pointer-events-none absolute z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[2] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<g clip-path="url(#clip0_4612_71)">
 					<motion.path
@@ -96,11 +92,9 @@ export const Vision: FC = () => {
 			</svg>
 
 			<svg
-				width="1827"
-				height="976"
 				viewBox="0 0 1827 976"
 				fill="none"
-				className="pointer-events-none absolute z-[99] -mr-[10%] -mt-[10%] hidden xl:flex"
+				className="pointer-events-none absolute inset-0 z-[99] -mr-[10%] -mt-[10%] hidden xl:flex"
 			>
 				<mask
 					id="mask0_4612_101"

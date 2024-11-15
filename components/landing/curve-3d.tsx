@@ -23,7 +23,7 @@ export const Curve3D = () => {
 		offset: ["start end", "end start"]
 	})
 
-	const diagonal = Math.sqrt(Math.pow(2800, 2) + Math.pow(1400, 2))
+	const diagonal = Math.sqrt(Math.pow(xl ? 2800 : 3200, 2) + Math.pow(xl ? 1400 : 1600, 2))
 	const maxRadius = diagonal / 2
 
 	const pathLength = useTransform(scrollYProgress, [0, 0.35], [0, 1])
