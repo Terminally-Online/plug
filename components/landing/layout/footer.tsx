@@ -23,7 +23,10 @@ export const LandingFooter: FC = () => {
 	const handleCallToAction = useAnalytics(GTM_EVENTS.CTA_CLICKED)
 
 	return (
-		<div ref={footerRef} className="relative z-[1] h-full w-full overflow-hidden bg-white pt-12 lg:gap-4 xl:pt-32">
+		<div
+			ref={footerRef}
+			className="relative z-[999999] h-full w-full overflow-hidden bg-white pt-12 lg:gap-4 xl:pt-32"
+		>
 			<div className="absolute top-0 h-[2px] w-full bg-gradient-to-r from-plug-green to-plug-yellow" />
 			<motion.div
 				className="pointer-events-none absolute inset-0 mb-4 w-full opacity-[4%]"
