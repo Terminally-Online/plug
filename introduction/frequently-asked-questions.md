@@ -15,6 +15,10 @@ head:
 
 <span style="color: rgba(0,0,0,0.6)">While [Plug](/) is rather simple to use, it's a new user pattern and that may lead to questions that you have never had to ask before. It is understandable that you may have some questions, so below you can find a general breakdown of the questions we've most commonly been asked.</span>
 
+## Where are the developer docs?
+
+There aren't any.
+
 ## What is an Intent?
 
 A metaphor will establish this understanding in the simplest way for you. An intent, is a declaration of outcomes that you'd like to see. When you type into Google Maps you only enter the address, not the route you will take. Intents are functionally the same. Contrary to a typical transaction where you declare the exact route you want to take, with an intent you only define the final destination. This way, instead of you managing the complexity a more sophisticated system can calculate the best route and get you there on the quickest path, that has no traffic, avoids construction, and keeps you from being late to your date.
@@ -47,10 +51,6 @@ No, users do not lose custody of their assets. Users can even take their Intents
 ## What protocols and chains are supported?
 
 Effectively everything. Due to the generalized nature of our architecture there are very few things that cannot be integrated. You can find a full list of our [active integrations here](/introduction/integrations).
-
-## Wen token?
-
-When the flywheel is spinning hard. No sooner. No later. A critical piece of having a functional token ecosystem is to have a mechanism that provides persistent value accrual. Today, that remains the north star for all tokenization conversations.
 
 ## Why haven't you built X yet?
 
