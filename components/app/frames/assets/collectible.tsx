@@ -130,7 +130,8 @@ export const CollectibleFrame: FC<{
 									a: ({ node, children, ...props }) => (
 										<a
 											{...props}
-											className="text-plug-green hover:opacity-80 transition-opacity duration-200 cursor-pointer relative z-20"
+											className="hover:opacity-80 transition-opacity duration-200 cursor-pointer relative z-20"
+											style={{ color: metadata?.color ?? "" }}
 											target="_blank"
 											rel="noopener noreferrer"
 											onClick={(e) => {
