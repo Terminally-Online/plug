@@ -50,8 +50,7 @@ export const LandingFooter: FC = () => {
 							height={64}
 						/>
 						<p className="max-w-[380px] lg:max-w-[280px]">
-							Automate your transactions on every popular Ethereum based blockchain so that you can log
-							off and have everything run without you doing a thing.
+							Minimzie the complexity of your onchain experience and get better results with Plug.
 						</p>
 					</div>
 					<div className="mb-2 flex flex-col items-start gap-2 lg:col-span-2">
@@ -60,12 +59,6 @@ export const LandingFooter: FC = () => {
 							onClick={() => handleCallToAction(routes.comingSoon)}
 						>
 							Smart Contracts
-						</button>
-						<button
-							className="transition-all duration-200 ease-in-out hover:text-plug-green"
-							onClick={() => handleCallToAction(routes.github)}
-						>
-							Code
 						</button>
 						<button
 							className="transition-all duration-200 ease-in-out hover:text-plug-green"

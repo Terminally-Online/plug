@@ -23,13 +23,7 @@ export const Hero = () => {
 							<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
 							<Image src="/plug-word-green.svg" alt="Logo" width={64} height={32} />
 						</button>
-						<button
-							className="ml-auto mr-4 xl:ml-8"
-							onClick={() => handleCallToAction(routes.documentation)}
-						>
-							<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
-						</button>
-						<button className="xl:mr-24" onClick={() => handleCallToAction(routes.twitter)}>
+						<button className="ml-8 xl:mr-24" onClick={() => handleCallToAction(routes.twitter)}>
 							<Twitter
 								size={18}
 								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
