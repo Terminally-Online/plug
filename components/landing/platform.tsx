@@ -45,8 +45,8 @@ export const Platform = () => {
 
 	return (
 		<div className="relative overflow-visible" ref={containerRef}>
-			<div className="absolute inset-0 -right-[5%] top-[-5%] hidden overflow-visible xl:flex">
-				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0">
+			<div className="absolute inset-0 -right-[5%] top-[-10%] hidden overflow-visible xl:flex">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 overflow-visible">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
@@ -84,7 +84,7 @@ export const Platform = () => {
 					</defs>
 				</svg>
 
-				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 hidden xl:flex">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 hidden xl:flex overflow-visible">
 					<g clip-path="url(#clip0_4624_28608)">
 						<motion.path
 							style={{ pathLength }}
@@ -111,7 +111,7 @@ export const Platform = () => {
 					</defs>
 				</svg>
 
-				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 z-[99999] hidden xl:flex">
+				<svg viewBox="0 0 1827 976" fill="none" className="absolute inset-0 z-[99999] hidden xl:flex overflow-visible">
 					<mask
 						id="mask0_4624_28614"
 						style={{ maskType: "alpha" }}
