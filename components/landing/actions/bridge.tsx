@@ -40,7 +40,7 @@ export const ActionBridge = () => {
 									key={`flow-${i}-${j}`}
 									d={`M 0 ${i * 40} C 300 ${i * 40}, 420 ${j * 45}, 600 ${j * 45}`}
 									stroke="url(#flow-gradient)"
-									strokeWidth="24"
+									strokeWidth="16"
 									fill="none"
 									initial={{ pathLength: 0 }}
 									animate={{ pathLength: [0, 1, 0] }}
@@ -60,7 +60,7 @@ export const ActionBridge = () => {
 									key={`flow-right-${i}-${j}`}
 									d={`M 600 ${j * 45} C 780 ${j * 45}, 900 ${i * 40}, 1200 ${i * 40}`}
 									stroke="url(#flow-gradient-reversed)"
-									strokeWidth="24"
+									strokeWidth="16"
 									fill="none"
 									initial={{ pathLength: 0 }}
 									animate={{ pathLength: [0, 1, 0] }}
