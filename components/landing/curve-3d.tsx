@@ -40,13 +40,13 @@ export const Curve3D = () => {
 					<path
 						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486"
 						stroke="url(#paint0_linear_4614_166)"
-						stroke-width="60"
-						stroke-linecap="round"
+						strokeWidth="60"
+						strokeLinecap="round"
 					/>
 					<motion.path
 						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486L952.5 489"
 						stroke="#FEFFF7"
-						stroke-width="60"
+						strokeWidth="60"
 						stroke-dasharray="4 4"
 						animate={{ strokeDashoffset: [60, 0] }}
 						transition={{
@@ -59,8 +59,8 @@ export const Curve3D = () => {
 						style={{ pathLength }}
 						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486"
 						stroke="url(#paint0_linear_4614_166)"
-						stroke-width="60"
-						stroke-linecap="round"
+						strokeWidth="60"
+						strokeLinecap="round"
 					/>
 					<motion.circle cx="913" cy="486.5" fill="#D2F38A" r={circleRadius} className="overflow-visible" />
 					<defs>

@@ -51,12 +51,12 @@ export const Platform = () => {
 						<motion.path
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
 							stroke="url(#paint0_linear_4624_28608)"
-							stroke-width="60"
+							strokeWidth="60"
 						/>
 						<motion.path
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
 							stroke="#FEFFF7"
-							stroke-width="60"
+							strokeWidth="60"
 							stroke-dasharray="4 4"
 							animate={{ strokeDashoffset: [0, 60] }}
 							transition={{
@@ -90,7 +90,7 @@ export const Platform = () => {
 							style={{ pathLength }}
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
 							stroke="url(#paint0_linear_4624_28608)"
-							stroke-width="60"
+							strokeWidth="60"
 						/>
 					</g>
 					<defs>
@@ -132,8 +132,8 @@ export const Platform = () => {
 							style={{ pathLength }}
 							d="M1737.75 371C1482.5 233 1506.38 483.689 1349.5 476C1171.88 467.295 1181 296.5 931 296.5C681 296.5 618 811 350.5 720.5C83 630 387.75 196.5 -67.5 134.5"
 							stroke="url(#paint0_linear_4624_28614)"
-							stroke-width="60"
-							stroke-linecap="round"
+							strokeWidth="60"
+							strokeLinecap="round"
 						/>
 					</g>
 					<defs>
