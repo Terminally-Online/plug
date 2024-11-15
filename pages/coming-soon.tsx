@@ -4,7 +4,7 @@ import { greenGradientStyle, routes } from "@/lib"
 const Page = () => (
 	<StaticLayout title="Coming Soon">
 		<div className="flex min-h-[800px] flex-col items-center justify-center gap-2 text-plug-green">
-			<h1 className="text-[48px] font-bold lg:text-[72px]" style={{ ...greenGradientStyle }}>
+			<h1 className="text-[48px] font-black lg:text-[72px]" style={{ ...greenGradientStyle }}>
 				Coming Soon
 			</h1>
 
