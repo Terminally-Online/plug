@@ -365,7 +365,7 @@ export const Platform = () => {
 							}}
 						>
 							<motion.div className="mx-6 flex flex-row items-center gap-1">
-								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<div className="h-6 w-6 rounded-full bg-plug-yellow" />
 								<p className="p-2 pl-4 font-bold">Transfer $USDC</p>
 							</motion.div>
 
@@ -387,7 +387,7 @@ export const Platform = () => {
 							}}
 						>
 							<motion.div className="mx-6 flex flex-row items-center gap-1">
-								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<div className="h-6 w-6 rounded-full bg-plug-yellow" />
 								<p className="p-2 pl-4 font-bold">Simulation Results</p>
 							</motion.div>
 
@@ -413,7 +413,7 @@ export const Platform = () => {
 							}}
 						>
 							<motion.div className="mx-6 flex flex-row items-center gap-1">
-								<div className="h-6 w-6 rounded-full bg-plug-green/10" />
+								<div className="h-6 w-6 rounded-full bg-plug-yellow" />
 								<p className="p-2 pl-4 font-bold">Schedule Run</p>
 							</motion.div>
 
