@@ -1,4 +1,5 @@
 import { FC, memo, useEffect, useState } from "react"
+import ReactMarkdown from "react-markdown"
 
 import { getAddress } from "viem"
 
@@ -60,8 +61,6 @@ export const CollectibleFrame: FC<{
 
 	const textColor = getTextColor(metadata?.color ?? "#ffffff")
 
-	const { truncated } = formatLongString(collection.description, expanded === false ? 80 : undefined)
-
 	useEffect(() => {
 		if (isFrame === false) setExpanded(false)
 	}, [isFrame])
@@ -113,23 +112,54 @@ export const CollectibleFrame: FC<{
 
 					<p className="pt-4 text-lg font-bold">{collectible?.name}</p>
 
-					<div
-						className={cn(
-							"relative flex flex-col gap-2 overflow-y-hidden transition-all duration-200 ease-in-out",
-							expanded === false ? "max-h-[60px]" : "h-auto max-h-[1000px]"
-						)}
-					>
-						<p className="font-bold opacity-40">{collection.description}</p>
-
+					{collection.description && (
 						<div
 							className={cn(
-								"absolute bottom-0 left-0 right-0 top-0 h-full bg-gradient-to-b from-white/0 transition-all duration-200 ease-in-out",
-								truncated && expanded === false ? "to-white" : "to-white/0"
+								"relative flex flex-col gap-2 overflow-y-hidden transition-all duration-200 ease-in-out",
+								expanded === false ? "max-h-[60px]" : "h-auto max-h-[1000px]"
 							)}
-						/>
-					</div>
+						>
+							<ReactMarkdown
+								options={{ breaks: true }}
+								className="w-full text-sm font-bold opacity-60 relative z-10"
+								components={{
+									p: ({ children }) => (
+										<p className="mb-4">
+											{children}
+										</p>
+									),
+									a: ({ node, children, ...props }) => (
+										<a
+											{...props}
+											className="text-plug-green hover:opacity-80 transition-opacity duration-200 cursor-pointer relative z-20"
+											target="_blank"
+											rel="noopener noreferrer"
+											onClick={(e) => {
+												e.preventDefault()
+												e.stopPropagation()
+												if (props.href) {
+													window.open(props.href, '_blank', 'noopener,noreferrer')
+												}
+											}}
+										>
+											{children}
+										</a>
+									)
+								}}
+							>
+								{collection.description}
+							</ReactMarkdown>
 
-					{(truncated || expanded) && (
+							<div
+								className={cn(
+									"absolute bottom-0 left-0 right-0 top-0 h-full bg-gradient-to-b from-white/0 transition-all duration-200 ease-in-out",
+									expanded === false ? "to-white" : "to-white/0"
+								)}
+							/>
+						</div>
+					)}
+
+					{collection.description && (
 						<button
 							className="mr-auto flex flex-row items-center gap-2 font-bold"
 							onClick={() => setExpanded(!expanded)}
