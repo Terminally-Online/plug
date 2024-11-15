@@ -120,7 +120,6 @@ export const CollectibleFrame: FC<{
 							)}
 						>
 							<ReactMarkdown
-								options={{ breaks: true }}
 								className="w-full text-sm font-bold opacity-60 relative z-10"
 								components={{
 									p: ({ children }) => (
