@@ -19,3 +19,13 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  body {
+    @apply bg-[#FDFFF7] text-plug-green antialiased;
+  }
+}
+
+.status-card {
+  @apply transition-all duration-200 ease-in-out hover:border-plug-yellow/50;
+}
