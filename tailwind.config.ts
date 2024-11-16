@@ -1,6 +1,6 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
-export default {
+const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,11 +8,19 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+      fontFamily: {
+        sans: ["var(--font-satoshi)", "sans-serif"]
       },
+      colors: {
+        black: "#0E160E",
+        background: "#FFFFFF",
+        "grayscale-100": "#EBECEC",
+        "plug-green": "#385842",
+        "plug-yellow": "#D2F38A",
+      }
     },
   },
   plugins: [],
-} satisfies Config;
+}
+
+export default config
