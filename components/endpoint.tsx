@@ -24,7 +24,7 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
 
   return (
     <div className="relative rounded-lg border-[1px] border-plug-green/10 p-4 gap-2 flex flex-col font-bold w-full overflow-hidden">
-      <div className="absolute left-0 bottom-0 filter blur-[80px] -z-[1]">
+      <div className="absolute left-0 bottom-0 filter blur-[100px] -z-[1]">
         {operational ? (
           <Operational className="w-32 h-32 min-w-32" />
         ) : (

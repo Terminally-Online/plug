@@ -42,7 +42,7 @@ export default async function Home() {
           <p className="text-sm font-bold">
             <span className="opacity-60">
               If you believe the system is down, but it is not reflected here
-              please notify us by sending a dm on Twitter to
+              please notify us by sending a DM on Twitter to
             </span>{" "}
             <Link
               href="https://twitter.com/onplug_io"
