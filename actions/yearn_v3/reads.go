@@ -3,7 +3,7 @@ package yearn_v3
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"solver/utils"
 )
@@ -109,7 +109,7 @@ func FetchTokenList(chainID int) ([]Token, error) {
 		return nil, fmt.Errorf("could not fetch token list")
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
