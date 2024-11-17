@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -10,6 +11,11 @@ const satoshi = localFont({
   ],
   variable: "--font-satoshi",
 });
+
+export const metadata: Metadata = {
+  title: "Plug | Status",
+  description: "Real-time system monitoring for all Plug architecture stack items.",
+};
 
 export default function RootLayout({
   children,
