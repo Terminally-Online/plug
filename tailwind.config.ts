@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
@@ -9,18 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-satoshi)", "sans-serif"]
+        sans: ["var(--font-satoshi)", "sans-serif"],
       },
       colors: {
         black: "#0E160E",
-        background: "#FFFFFF",
-        "grayscale-100": "#EBECEC",
+        white: "#FEFFF7",
+        background: "#FEFFF7",
+
         "plug-green": "#385842",
         "plug-yellow": "#D2F38A",
-      }
+      },
     },
   },
   plugins: [],
-}
+};
 
-export default config
+export default config;

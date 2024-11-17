@@ -2,30 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer base {
-  body {
-    @apply bg-[#FDFFF7] text-plug-green antialiased;
-  }
-}
-
-.status-card {
-  @apply transition-all duration-200 ease-in-out hover:border-plug-yellow/50;
+* {
+  font-family: "Satoshi Variable", sans-serif;
 }
