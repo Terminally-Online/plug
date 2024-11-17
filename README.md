@@ -1,14 +1,23 @@
 ![Plug banner](/plug.png)
 
-`@terminally-online/plug` is a generalized intent framework and platform that brings the capability of automated transactions to all Ethereum based chains.
+`@terminally-online/plug` is the only everything aggregator for all onchain activity in the EVM ecosystem, providing a seamless interface between users and the decentralized world.
 
-With state and outcome assurance users can:
+## Why Plug?
 
--   schedule their transactions and desired outcomes
--   step away from their device
--   and relax as everything is magically executed according to their specification
+-   **Universal Integration**: Connect with every major protocol and platform in the EVM ecosystem.
+-   **Intent-Driven Architecture**: Express what you want to achieve, let Plug handle the complexity.
+-   **Maximum Value Extraction**: Automatically find and execute the most optimal routes for your transactions.
+-   **Enterprise-Grade Reliability**: Built for scale with robust monitoring and fail-safes.
 
-It's the first all-in-one solution for managing your onchain activity while unlocking the true power of composability and automation.
+## Features
+
+-   **Portfolio Management**: Seamlessly track, analyze, and rebalance your assets across multiple protocols and chains.
+-   **Smart Intent Resolution**: Convert high-level user intents into optimized transaction sequences.
+-   **Cross-Protocol Optimization**: Find the best routes across multiple protocols and liquidity sources.
+-   **Real-Time Monitoring**: Track transaction status and health metrics across the entire system.
+-   **User-First Design**: A strict focus on the end-user instead of a developer ecosystem.
+
+## Framework
 
 ```ml
 ├─ app - "Front-end application for end-users to interact with Plug."
@@ -17,7 +26,6 @@ It's the first all-in-one solution for managing your onchain activity while unlo
 ├─ licenses - "Automatic license generation and distribution for each package of Plug."
 ├─ pitch - "Automatic generation of pitch deck and supporting materials."
 ├─ science - "Singular housing location for all of the code-supported research of the ecosystem."
-└─ solver — "Instant transaction and route building for intents within Plug."
+├─ solver — "Instant transaction and route building for intents within Plug."
+└─ status — "Monitor the health of all the systems that power the Plug ecosystem."
 ```
-
-Both `app` and `solver` are currently applying a [Business Source License](https://www.onplug.io/license/busl) to their codebases and are not open source. If you're interested in contributing to either of these packages, please reach out to us at [hello@onplug.io](mailto:hello@onplug.io).
