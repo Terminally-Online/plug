@@ -11,7 +11,7 @@
 
 ## Features
 
--   **Portfolio Management**: Seamlessly track, analyze, and rebalance your assets across multiple protocols and chains.
+-   **Portfolio Management**: Seamlessly track, use, and swap your assets across chains.
 -   **Smart Intent Resolution**: Convert high-level user intents into optimized transaction sequences.
 -   **Cross-Protocol Optimization**: Find the best routes across multiple protocols and liquidity sources.
 -   **Real-Time Monitoring**: Track transaction status and health metrics across the entire system.
