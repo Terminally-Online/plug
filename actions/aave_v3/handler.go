@@ -7,8 +7,6 @@ import (
 	"solver/actions"
 	"solver/types"
 	"solver/utils"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -136,6 +134,8 @@ func (h *Handler) init() *Handler {
 		}, types.BaseThresholdFields...),
 	}
 
+	// TODO: (#13) We will wait to add this until someone asks for it. Right now it
+	//          just adds confusion and doesn't have an intuitive mathematical use.
 	// h.schemas[types.ConstraintAvailableLiquidity] = types.Schema{
 	// 	Sentence: "Available liquidity for {0} is {1} than {2}.",
 	// 	Fields: append([]types.SchemaField{{
@@ -160,30 +160,20 @@ func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
 }
 
 func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
-	var calldata []byte
-	var err error
 	switch action {
 	case types.ActionDeposit:
-		calldata, err = HandleActionDeposit(rawInputs, params)
+		return HandleActionDeposit(rawInputs, params)
 	case types.ActionBorrow:
-		calldata, err = HandleActionBorrow(rawInputs, params)
+		return HandleActionBorrow(rawInputs, params)
 	case types.ActionRepay:
-		calldata, err = HandleActionRepay(rawInputs, params)
+		return HandleActionRepay(rawInputs, params)
 	case types.ActionWithdraw:
-		calldata, err = HandleActionWithdraw(rawInputs, params)
+		return HandleActionWithdraw(rawInputs, params)
 	case types.ConstraintHealthFactor:
-		calldata, err = HandleConstraintHealthFactor(rawInputs, params)
+		return HandleConstraintHealthFactor(rawInputs, params)
 	case types.ConstraintAPY:
-		calldata, err = HandleConstraintAPY(rawInputs, params)
+		return HandleConstraintAPY(rawInputs, params)
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
-	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
-	}
-
-	return []*types.Transaction{{
-		To:   poolAddress,
-		Data: "0x" + common.Bytes2Hex(calldata),
-	}}, nil
 }
