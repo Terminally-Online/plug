@@ -2,6 +2,7 @@ import { Endpoint } from "@/components/endpoint";
 import { ExperiencingIssues } from "@/components/experiencing-issues";
 import { Operational } from "@/components/operational";
 import { Endpoints } from "@/lib/types";
+import Image from "next/image";
 import Link from "next/link";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -21,6 +22,19 @@ export default async function Home() {
   return (
     <>
       <main>
+        <div className="flex flex-row gap-2 p-8 max-w-[720px] items-center mx-auto justify-between">
+          <Link className="flex flex-row items-center gap-2" href="https://onplug.io" target="_blank">          
+            <Image className="w-8 h-8" src="/plug-logo-green.svg" alt="Logo" height={32} width={32} />
+            <Image className="h-8" src="/plug-word-green.svg" alt="Wordmark" height={32} width={96} />
+          </Link>
+
+          <Link
+            className="bg-plug-yellow text-plug-green font-bold px-3 py-1 rounded-md"
+            href="https://twitter.com/onplug_io" target="_blank">
+            Follow
+          </Link>
+        </div>
+
         <div className="h-52 flex items-center justify-center flex-col gap-2">
           {operational ? (
             <Operational className="w-24 h-24" />
