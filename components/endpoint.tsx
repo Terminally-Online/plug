@@ -41,7 +41,7 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
           )}
 
           <div className="flex flex-row justify-between items-center font-black w-full min-w-0">
-            <div className="flex flex-col min-w-0 flex-1 mr-4">
+            <div className="flex flex-col min-w-0 flex-1 mr-4 overflow-ellipsis">
               <Link
                 href={endpoint.url}
                 target="_blank"
@@ -54,7 +54,7 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
                     marginRight: hoveredName ? "8px" : "4px",
                   }}
                 >
-                  {endpoint.url}
+                  {endpoint.url.replace("https://", "")}
                 </motion.span>
                 <motion.span animate={{ opacity: hoveredName ? 1 : 0.4 }}>
                   <ChevronRight size={18} className="mt-[2px]" />
