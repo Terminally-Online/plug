@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Book, Twitter } from "lucide-react"
+import { Activity, Book, Twitter } from "lucide-react"
 
 import { Button, Image, LandingContainer } from "@/components"
 import { env } from "@/env"
@@ -17,13 +17,19 @@ export const Hero = () => {
 				<LandingContainer className="flex h-full flex-col py-8 text-plug-green">
 					<div className="flex flex-row items-center gap-4">
 						<button
-							className="mr-8 flex flex-row items-center gap-8"
+							className="mr-16 flex flex-row items-center gap-8"
 							onClick={() => handleCallToAction(routes.index)}
 						>
 							<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
 							<Image src="/plug-word-green.svg" alt="Logo" width={64} height={32} />
 						</button>
-						<button className="ml-8 xl:mr-24" onClick={() => handleCallToAction(routes.twitter)}>
+						<button className="ml-auto xl:ml-8" onClick={() => handleCallToAction(routes.status)}>
+							<Activity
+								size={18}
+								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
+							/>
+						</button>
+						<button className="xl:ml-8 xl:mr-24" onClick={() => handleCallToAction(routes.twitter)}>
 							<Twitter
 								size={18}
 								className="opacity-80 transition-opacity duration-200 hover:opacity-100"
