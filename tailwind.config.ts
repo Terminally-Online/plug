@@ -18,6 +18,7 @@ const config: Config = {
 
         "plug-green": "#385842",
         "plug-yellow": "#D2F38A",
+        "plug-red": "#F38A8A",
       },
     },
   },

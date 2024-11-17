@@ -40,11 +40,25 @@ export default async function Home() {
           <div className="bg-plug-green/10 h-[2px] w-full my-2" />
 
           <p className="text-sm font-bold">
-            <span className="opacity-60">If you believe the system is down, but it is not reflected here please notify us by sending a dm on Twitter to</span>{" "}
-            <Link href="https://twitter.com/onplug_io" target="_blank" className="opacity-100">@onplug_io</Link>
-            <span className="opacity-60">.</span></p>
+            <span className="opacity-60">
+              If you believe the system is down, but it is not reflected here
+              please notify us by sending a dm on Twitter to
+            </span>{" "}
+            <Link
+              href="https://twitter.com/onplug_io"
+              target="_blank"
+              className="opacity-100"
+            >
+              @onplug_io
+            </Link>
+            <span className="opacity-60">.</span>
+          </p>
 
-          <p className="text-sm font-bold opacity-60">We monitor the status of all our systems very closely. We check the status of all systems every 30 minutes. This page utilizes a global cache that clears every 5 minutes.</p>
+          <p className="text-sm font-bold opacity-60">
+            We monitor the status of all our systems very closely. We check the
+            status of all systems every 30 minutes. This page utilizes a global
+            cache that clears every 5 minutes.
+          </p>
         </div>
       </main>
     </>

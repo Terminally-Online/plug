@@ -62,7 +62,7 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
               </Link>
 
               <p className="font-black text-sm opacity-60">
-                {operational ? "Operational" : "Failing"}
+                {operational ? "Operational" : "Experiencing Issues"}
               </p>
             </div>
 
@@ -84,7 +84,7 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
               "w-full h-12 rounded-lg cursor-pointer mt-auto",
               history.status === history.expected
                 ? "bg-plug-yellow"
-                : "bg-red-300"
+                : "bg-plug-red"
             )}
             initial={{ height: 0 }}
             animate={{
