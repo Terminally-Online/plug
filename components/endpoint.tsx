@@ -40,12 +40,12 @@ export const Endpoint: FC<{ endpoint: EndpointType }> = ({ endpoint }) => {
             <ExperiencingIssues className="w-12 h-12 min-w-12" />
           )}
 
-          <div className="flex flex-row justify-between items-center font-black w-full">
-            <div className="flex flex-col">
+          <div className="flex flex-row justify-between items-center font-black w-full min-w-0">
+            <div className="flex flex-col min-w-0 flex-1 mr-4">
               <Link
                 href={endpoint.url}
                 target="_blank"
-                className="text-lg flex flex-row items-center cursor-pointer truncate"
+                className="flex flex-row items-center cursor-pointer truncate max-w-full"
                 onMouseEnter={() => setHoveredName(true)}
                 onMouseLeave={() => setHoveredName(false)}
               >
