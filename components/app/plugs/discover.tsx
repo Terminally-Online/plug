@@ -18,9 +18,16 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 	})
 
 	const visiblePlugs = useMemo(() => {
-		if (plugs === undefined || plugs.length === 0) return Array(12).fill(undefined)
-		return plugs
-	}, [plugs])
+		if (plugs === undefined || plugs.length === 0) {
+			return Array(12).fill(undefined)
+		}
+
+		// Filter plugs based on search text
+		return plugs.filter(plug => {
+			if (!search) return true
+			return plug.name.toLowerCase().includes(search.toLowerCase())
+		})
+	}, [plugs, search])
 
 	return (
 		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
