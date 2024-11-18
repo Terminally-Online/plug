@@ -56,9 +56,9 @@ export const RunFrame: FC<{
 						)}
 					</>
 				) : (
-					<p className="text-sm font-medium text-grayscale-300 text-center py-4">
-						No actions configured yet. Add some actions to run this Plug.
-					</p>
+					<div className="font-bold text-black/40 text-center py-4 p-4 border-[1px] border-plug-green/10 rounded-lg flex">
+						<p className="max-w-[380px] mx-auto">No actions added and configured on this Plug yet. Add some actions to run and schedule it.</p>
+					</div>
 				)}
 
 				<div className="mb-2 mt-4 flex flex-row items-center gap-4">

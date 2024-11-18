@@ -183,7 +183,7 @@ const EmptyPlug: FC<
 	return (
 		<Base
 			className={cn("my-52", className)}
-			title="No actions have been added to Plug yet."
+			title="No actions added, yet."
 			description="Get started by adding one of the many actions available to your Plug."
 			{...props}
 		/>
