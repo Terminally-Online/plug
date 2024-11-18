@@ -1,6 +1,6 @@
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
@@ -8,11 +8,10 @@ import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } 
 import { LoginRequired } from "@/components/app/utils/login-required"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
 import { useConnect, useMediaQuery, useUrlParams } from "@/lib"
-import { useSocket } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 const MobilePage = () => {
 	// Add URL parameter handling for mobile
-	useUrlParams()
 
 	return (
 		<>
@@ -27,12 +26,11 @@ const DesktopPage = () => {
 	const { account } = useConnect()
 	const { socket } = useSocket()
 	// Add URL parameter handling for desktop
-	useUrlParams()
 
 	const isApproved = socket?.identity?.approvedAt !== null
 
 	return (
-		<div data-column-id={0} className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
+		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
 			{/*{!account.isAuthenticated ? <LoginRequired /> : !isApproved ? <ReferralRequired /> : <ConsoleColumnRow />}*/}
 			<ConsoleColumnRow />
@@ -68,6 +66,10 @@ export const ConsolePage = () => {
 	})
 	const { socket } = useSocket()
 
+	const { columns, handle } = useColumnStore()
+	const { plugs } = usePlugStore()
+	const hasHandledInitialUrl = useRef(false)
+
 	useEffect(() => {
 		if (!socket || !socket.identity) return
 
@@ -81,6 +83,34 @@ export const ConsolePage = () => {
 			)
 		}
 	}, [socket, router])
+
+	useEffect(() => {
+    
+		const plugId = router.query.plug as string
+		
+		if (!plugId || !plugs.length || hasHandledInitialUrl.current) return
+		
+		hasHandledInitialUrl.current = true
+	
+		   // Clear the plug param from URL while preserving other params
+		   const { plug, ...restQuery } = router.query
+		   router.replace(
+			 {
+			   pathname: router.pathname,
+			   query: restQuery
+			 },
+			 undefined,
+			 { shallow: true }
+		   )
+	   
+		  handle.add({
+			index: columns[columns.length - 1]?.index + 1 || 0,
+			key: COLUMNS.KEYS.PLUG,
+			item: plugId,
+			from: COLUMNS.KEYS.MY_PLUGS
+	  })
+	
+	  }, [router, router.query, columns, plugs, handle])
 
 	if (!session?.user.id || !socket)
 		return (
