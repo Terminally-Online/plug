@@ -24,14 +24,27 @@ export const misc = createTRPCRouter({
 
 		if (socket === null) return { plugs: [], tokens: [], collectibles: [] }
 
-		// TODO(#403): Handle private plugs and exclude them while combining the self-results.
 		const plugs = await ctx.db.workflow.findMany({
 			where: {
 				name: {
 					contains: input,
 					mode: "insensitive",
 					notIn: ["Untitled Plug", ""]
-				}
+				},
+				OR: [
+					// Show user's own plugs (including private)
+					{
+						socketId: ctx.session.address
+					},
+					// Show other users' public plugs
+					{
+						socketId: {
+							not: ctx.session.address
+						},
+						isPrivate: false,
+						actions: { not: "[]" }
+					}
+				]
 			},
 			orderBy: { updatedAt: "desc" }
 		})
