@@ -15,6 +15,19 @@ var (
 
 	TokenStandards = []int{0, 20, 721, 1155}
 	VaultStandards = []int{4626}
+
+	SelectorLookup = "8063%s14"
+	UpgradableImplementationSelector = "5c60da1b"
+
+	// NOTE: 20 & 721 share the definition of transferFrom, but the it will hit for 20 before 721.
+	TokenSelectors = []struct {
+		Selector string
+		Type     int
+	}{
+		{"a9059cbb", 20}, // 20 -- transfer(...)
+		{"23b872dd", 721}, // 721 -- transferFrom(...)
+		{"f242432a", 1155}, // 1155 -- safeTransferFrom(...)
+	}
 )
 
 var (
