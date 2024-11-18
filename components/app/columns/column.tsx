@@ -4,8 +4,6 @@ import { ChevronLeft, Share, PlugIcon, Settings, Star, X, Check } from "lucide-r
 
 import { Draggable } from "@hello-pangea/dnd"
 
-
-
 import {
 	ADMIN_OPTIONS,
 	Button,
@@ -22,7 +20,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -36,6 +34,7 @@ export const ConsoleColumn: FC<{
 
 	const { column, handle } = useColumnStore(id)
 	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
+	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
@@ -153,7 +152,7 @@ export const ConsoleColumn: FC<{
 														className="group rounded-sm p-1"
 														onClick={async () => {
 															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${plug.rfid}`;
+																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`;
 																await navigator.clipboard.writeText(shareUrl);
 																setCopied(true);
 																setTimeout(() => setCopied(false), 2000);
