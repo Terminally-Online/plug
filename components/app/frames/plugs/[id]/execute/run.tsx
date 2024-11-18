@@ -16,7 +16,7 @@ export const RunFrame: FC<{
 	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	const isReady = useMemo(
-		() => plug && actions && actions.every(action => action.values.every(value => Boolean(value))),
+		() => plug && actions && actions.length > 0 && actions.every(action => action.values.every(value => Boolean(value))),
 		[plug, actions]
 	)
 
@@ -46,7 +46,20 @@ export const RunFrame: FC<{
 			handleBack={column.schedule ? () => handle.frame("schedule") : undefined}
 		>
 			<div className="flex flex-col">
-				<ActionPreview index={index} item={item} />
+				{actions && actions.length > 0 ? (
+					<>
+						<ActionPreview index={index} item={item} />
+						{!isReady && (
+							<p className="text-sm font-medium text-grayscale-300 text-center py-2">
+								Some actions have missing required values.
+							</p>
+						)}
+					</>
+				) : (
+					<p className="text-sm font-medium text-grayscale-300 text-center py-4">
+						No actions configured yet. Add some actions to run this Plug.
+					</p>
+				)}
 
 				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Transaction</p>
@@ -116,7 +129,11 @@ export const RunFrame: FC<{
 					onClick={handleRun}
 					disabled={!isReady}
 				>
-					{isReady ? "Run" : "Missing required values"}
+					{isReady 
+						? "Run" 
+						: actions?.length === 0 
+							? "No Actions Added" 
+							: "Required Inputs Incomplete"}
 				</Button>
 			</div>
 		</Frame>
