@@ -1,8 +1,10 @@
 import React, { FC, memo, useEffect, useRef, useState } from "react"
 
-import { ChevronLeft, GitFork, PlugIcon, Settings, Star, X } from "lucide-react"
+import { ChevronLeft, Share, PlugIcon, Settings, Star, X, Check } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
+
+
 
 import {
 	ADMIN_OPTIONS,
@@ -37,6 +39,7 @@ export const ConsoleColumn: FC<{
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
+	const [copied, setCopied] = useState(false)
 
 	useEffect(() => {
 		if (!column) return
@@ -148,15 +151,28 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() =>
-															plugHandle.plug.fork({
-																plug: plug.id,
-																index: column.index,
-																from: COLUMNS.KEYS.MY_PLUGS
-															})
-														}
+														onClick={async () => {
+															try {
+																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${plug.rfid}`;
+																await navigator.clipboard.writeText(shareUrl);
+																setCopied(true);
+																setTimeout(() => setCopied(false), 2000);
+															} catch (err) {
+																console.error("Failed to copy link:", err);
+															}
+														}}
 													>
-														<GitFork size={14} className="opacity-60 hover:opacity-100" />
+														{copied ? (
+															<Check 
+																size={14} 
+																className="opacity-60 transition-all" 
+															/>
+														) : (
+															<Share 
+																size={14} 
+																className="opacity-60 group-hover:opacity-100 transition-opacity" 
+															/>
+														)}
 													</Button>
 
 													<Button

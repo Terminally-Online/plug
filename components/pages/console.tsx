@@ -7,7 +7,7 @@ import { LoaderCircle } from "lucide-react"
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
 import { LoginRequired } from "@/components/app/utils/login-required"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
-import { useConnect, useMediaQuery, useUrlParams } from "@/lib"
+import { useConnect, useMediaQuery } from "@/lib"
 import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 const MobilePage = () => {
