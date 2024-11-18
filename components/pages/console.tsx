@@ -7,10 +7,13 @@ import { LoaderCircle } from "lucide-react"
 import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
 import { LoginRequired } from "@/components/app/utils/login-required"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
-import { useConnect, useMediaQuery } from "@/lib"
+import { useConnect, useMediaQuery, useUrlParams } from "@/lib"
 import { useSocket } from "@/state"
 
 const MobilePage = () => {
+	// Add URL parameter handling for mobile
+	useUrlParams()
+
 	return (
 		<>
 			<PageContent />
@@ -23,11 +26,13 @@ const MobilePage = () => {
 const DesktopPage = () => {
 	const { account } = useConnect()
 	const { socket } = useSocket()
+	// Add URL parameter handling for desktop
+	useUrlParams()
 
 	const isApproved = socket?.identity?.approvedAt !== null
 
 	return (
-		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
+		<div data-column-id={0} className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
 			{/*{!account.isAuthenticated ? <LoginRequired /> : !isApproved ? <ReferralRequired /> : <ConsoleColumnRow />}*/}
 			<ConsoleColumnRow />
