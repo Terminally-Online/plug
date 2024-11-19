@@ -25,15 +25,20 @@ const MobilePage = () => {
 const DesktopPage = () => {
 	const { account } = useConnect()
 	const { socket } = useSocket()
-	// Add URL parameter handling for desktop
 
-	const isApproved = socket?.identity?.approvedAt !== null
+	const isApproved = Boolean(socket?.identity?.approvedAt)
+	const needsReferral = Boolean(account.isAuthenticated && socket && !socket.identity?.approvedAt)
 
 	return (
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
-			{/*{!account.isAuthenticated ? <LoginRequired /> : !isApproved ? <ReferralRequired /> : <ConsoleColumnRow />}*/}
-			<ConsoleColumnRow />
+			{!account.isAuthenticated ? (
+				<LoginRequired />
+			) : needsReferral ? (
+				<ReferralRequired />
+			) : (
+				<ConsoleColumnRow />
+			)}
 		</div>
 	)
 }
