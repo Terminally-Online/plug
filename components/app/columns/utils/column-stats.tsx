@@ -8,19 +8,14 @@ import { cn } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
 
-const BASE_STATS = [
-	[0, 5, 6],
-	[3, 0, 5],
-	[6, 5, 0],
-	[2, 4, 3]
-]
-
 const GRADIENTS = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
 
 type StatsResponse = {
 	counts: {
 		referrals: number[]
 		views: number[]
+		runs: number[]
+		users: number[]
 	}
 	periods: {
 		weekStart: string
@@ -101,11 +96,11 @@ const ProfileStats = () => {
 	// Construct stats array with real data
 	const stats =
 		statsData?.periods.map((_, index) => [
-			BASE_STATS[index][0], // Users (still hardcoded)
-			BASE_STATS[index][1], // Runs (still hardcoded)
-			statsData.counts.views[index] ?? 0, // Views from our new tracking
-			statsData.counts.referrals[index] ?? 0 // Referrals
-		]) ?? BASE_STATS.map(period => [...period, 0])
+			statsData.counts.users[index] ?? 0,
+			statsData.counts.runs[index] ?? 0,
+			statsData.counts.views[index] ?? 0,
+			statsData.counts.referrals[index] ?? 0
+		]) ?? Array(4).fill([0, 0, 0, 0])
 
 	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]

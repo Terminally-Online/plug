@@ -20,7 +20,7 @@ export const stats = createTRPCRouter({
 			return result
 		}
 
-		const [referralCounts, viewCounts] = await Promise.all([
+		const [referralCounts, viewCounts, runCounts, userCounts] = await Promise.all([
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)
@@ -57,13 +57,68 @@ export const stats = createTRPCRouter({
 
 					return views._sum.views || 0
 				})
+			),
+
+			Promise.all(
+				periods.map(async date => {
+					const weekStart = getWeekStart(date)
+					const weekEnd = new Date(weekStart)
+					weekEnd.setDate(weekStart.getDate() + 7)
+
+					const runs = await ctx.db.simulation.count({
+						where: {
+							status: "success",
+							createdAt: {
+								gte: weekStart,
+								lt: weekEnd
+							},
+							execution: {
+								workflow: {
+									socketId: ctx.session.address
+								}
+							}
+						}
+					})
+
+					return runs
+				})
+			),
+
+			Promise.all(
+				periods.map(async date => {
+					const weekStart = getWeekStart(date)
+					const weekEnd = new Date(weekStart)
+					weekEnd.setDate(weekStart.getDate() + 7)
+
+					const uniqueUsers = await ctx.db.execution.groupBy({
+						by: ['id'],
+						where: {
+							createdAt: {
+								gte: weekStart,
+								lt: weekEnd
+							},
+							workflow: {
+								socketId: ctx.session.address
+							},
+							simulations: {
+								some: {
+									status: "success"
+								}
+							}
+						},
+					})
+
+					return uniqueUsers.length
+				})
 			)
 		])
 
 		return {
 			counts: {
 				referrals: referralCounts,
-				views: viewCounts
+				views: viewCounts,
+				runs: runCounts,
+				users: userCounts
 			},
 			periods: periods.map(date => {
 				const weekStart = getWeekStart(date)
