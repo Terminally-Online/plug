@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect, useRef, useState } from "react"
 
-import { ChevronLeft, Share, PlugIcon, Settings, Star, X, Check } from "lucide-react"
+import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -152,24 +152,21 @@ export const ConsoleColumn: FC<{
 														className="group rounded-sm p-1"
 														onClick={async () => {
 															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`;
-																await navigator.clipboard.writeText(shareUrl);
-																setCopied(true);
-																setTimeout(() => setCopied(false), 2000);
+																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
+																await navigator.clipboard.writeText(shareUrl)
+																setCopied(true)
+																setTimeout(() => setCopied(false), 2000)
 															} catch (err) {
-																console.error("Failed to copy link:", err);
+																console.error("Failed to copy link:", err)
 															}
 														}}
 													>
 														{copied ? (
-															<Check 
-																size={14} 
-																className="opacity-60 transition-all" 
-															/>
+															<Check size={14} className="opacity-60 transition-all" />
 														) : (
-															<Share 
-																size={14} 
-																className="opacity-60 group-hover:opacity-100 transition-opacity" 
+															<Share
+																size={14}
+																className="opacity-60 transition-opacity group-hover:opacity-100"
 															/>
 														)}
 													</Button>

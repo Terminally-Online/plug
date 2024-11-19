@@ -94,7 +94,7 @@ const ProfileStats = () => {
 	})
 
 	// Construct stats array with real data
-	const stats =
+	const stats: number[][] =
 		statsData?.periods.map((_, index) => [
 			statsData.counts.users[index] ?? 0,
 			statsData.counts.runs[index] ?? 0,
@@ -102,7 +102,7 @@ const ProfileStats = () => {
 			statsData.counts.referrals[index] ?? 0
 		]) ?? Array(4).fill([0, 0, 0, 0])
 
-	const max = Math.max(...stats.map(period => period.reduce((sum, value) => sum + (value ?? 0), 0)))
+	const max = Math.max(...stats.map(period => period.reduce((sum: number, value: number) => sum + (value ?? 0), 0)))
 	const currentStats = hoveredPeriod !== undefined ? stats[hoveredPeriod] : stats[stats.length - 1]
 
 	// Format dates from the API response
@@ -195,7 +195,7 @@ const ProfileStats = () => {
 							key={i}
 							index={i}
 							isActive={i === stats.length - 1}
-							stats={stats[i].map((stat, j) => (toggledStats[j] ? 0 : stat))}
+							stats={stats[i].map((stat: number, j: number) => (toggledStats[j] ? 0 : stat))}
 							max={max}
 							onHover={setHoveredPeriod}
 						/>

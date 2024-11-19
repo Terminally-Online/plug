@@ -16,7 +16,11 @@ export const RunFrame: FC<{
 	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	const isReady = useMemo(
-		() => plug && actions && actions.length > 0 && actions.every(action => action.values.every(value => Boolean(value))),
+		() =>
+			plug &&
+			actions &&
+			actions.length > 0 &&
+			actions.every(action => action.values.every(value => Boolean(value))),
 		[plug, actions]
 	)
 
@@ -50,14 +54,16 @@ export const RunFrame: FC<{
 					<>
 						<ActionPreview index={index} item={item} />
 						{!isReady && (
-							<p className="text-sm font-medium text-grayscale-300 text-center py-2">
+							<p className="py-2 text-center text-sm font-medium text-grayscale-300">
 								Some actions have missing required values.
 							</p>
 						)}
 					</>
 				) : (
-					<div className="font-bold text-black/40 text-center py-4 p-4 border-[1px] border-plug-green/10 rounded-lg flex">
-						<p className="max-w-[380px] mx-auto">No actions added and configured on this Plug yet. Add some actions to run and schedule it.</p>
+					<div className="flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
+						<p className="mx-auto max-w-[380px]">
+							No actions added and configured on this Plug yet. Add some actions to run and schedule it.
+						</p>
 					</div>
 				)}
 
@@ -129,11 +135,7 @@ export const RunFrame: FC<{
 					onClick={handleRun}
 					disabled={!isReady}
 				>
-					{isReady 
-						? "Run" 
-						: actions?.length === 0 
-							? "No Actions Added" 
-							: "Required Inputs Incomplete"}
+					{isReady ? "Run" : actions?.length === 0 ? "No Actions Added" : "Required Inputs Incomplete"}
 				</Button>
 			</div>
 		</Frame>

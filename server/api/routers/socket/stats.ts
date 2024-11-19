@@ -91,7 +91,7 @@ export const stats = createTRPCRouter({
 					weekEnd.setDate(weekStart.getDate() + 7)
 
 					const uniqueUsers = await ctx.db.execution.groupBy({
-						by: ['id'],
+						by: ["id"],
 						where: {
 							createdAt: {
 								gte: weekStart,
@@ -105,7 +105,7 @@ export const stats = createTRPCRouter({
 									status: "success"
 								}
 							}
-						},
+						}
 					})
 
 					return uniqueUsers.length

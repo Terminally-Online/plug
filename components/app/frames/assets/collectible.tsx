@@ -120,25 +120,21 @@ export const CollectibleFrame: FC<{
 							)}
 						>
 							<ReactMarkdown
-								className="w-full text-sm font-bold opacity-60 relative z-10"
+								className="relative z-10 w-full text-sm font-bold opacity-60"
 								components={{
-									p: ({ children }) => (
-										<p className="mb-4">
-											{children}
-										</p>
-									),
+									p: ({ children }) => <p className="mb-4">{children}</p>,
 									a: ({ node, children, ...props }) => (
 										<a
 											{...props}
-											className="hover:opacity-80 transition-opacity duration-200 cursor-pointer relative z-20"
+											className="relative z-20 cursor-pointer transition-opacity duration-200 hover:opacity-80"
 											style={{ color: metadata?.color ?? "" }}
 											target="_blank"
 											rel="noopener noreferrer"
-											onClick={(e) => {
+											onClick={e => {
 												e.preventDefault()
 												e.stopPropagation()
 												if (props.href) {
-													window.open(props.href, '_blank', 'noopener,noreferrer')
+													window.open(props.href, "_blank", "noopener,noreferrer")
 												}
 											}}
 										>

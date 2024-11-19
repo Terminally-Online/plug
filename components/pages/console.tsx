@@ -85,32 +85,30 @@ export const ConsolePage = () => {
 	}, [socket, router])
 
 	useEffect(() => {
-    
 		const plugId = router.query.plug as string
-		
+
 		if (!plugId || !plugs.length || hasHandledInitialUrl.current) return
-		
+
 		hasHandledInitialUrl.current = true
-	
-		   // Clear the plug param from URL while preserving other params
-		   const { plug, ...restQuery } = router.query
-		   router.replace(
-			 {
-			   pathname: router.pathname,
-			   query: restQuery
-			 },
-			 undefined,
-			 { shallow: true }
-		   )
-	   
-		  handle.add({
+
+		// Clear the plug param from URL while preserving other params
+		const { plug, ...restQuery } = router.query
+		router.replace(
+			{
+				pathname: router.pathname,
+				query: restQuery
+			},
+			undefined,
+			{ shallow: true }
+		)
+
+		handle.add({
 			index: columns[columns.length - 1]?.index + 1 || 0,
 			key: COLUMNS.KEYS.PLUG,
 			item: plugId,
 			from: COLUMNS.KEYS.MY_PLUGS
-	  })
-	
-	  }, [router, router.query, columns, plugs, handle])
+		})
+	}, [router, router.query, columns, plugs, handle])
 
 	if (!session?.user.id || !socket)
 		return (
