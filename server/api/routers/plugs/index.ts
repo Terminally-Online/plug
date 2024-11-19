@@ -37,7 +37,9 @@ export const plugs = createTRPCRouter({
 			})
 
 			const newViews = workflows
-				.filter(w => !input.viewed.includes(w.id))
+				.filter(
+					w => !input.viewed.includes(w.id) && w.socketId !== ctx.session?.address // Exclude creator views
+				)
 				.map(w => ({
 					workflowId: w.id,
 					date: weekStart,
