@@ -23,12 +23,12 @@ export const ReferralRequired: FC = () => {
 	const searchParams = useSearchParams()
 	const { account } = useConnect()
 	const { socket } = useSocket()
-	const { socketQuery } = useData()
+	const { refetch } = useData()
 
 	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation({
 		onSuccess: () => {
 			// Refetch socket data which will trigger reactive updates
-			socketQuery.refetch()
+			refetch()
 		}
 	})
 	const requestAccess = api.socket.referral.request.useMutation()

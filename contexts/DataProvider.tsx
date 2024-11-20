@@ -12,7 +12,7 @@ import { actionsAtom, socketModelAtom } from "@/state"
  * rerenders where is not needed.
  */
 interface DataContextType {
-    socketQuery: ReturnType<typeof api.socket.get.useQuery>
+    refetch: () => Promise<void>
 }
 
 export const DataContext = createContext<DataContextType>({} as DataContextType)
@@ -22,7 +22,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
     const setActions = useSetAtom(actionsAtom)
 
     // Initialize socket query with exposed reference
-    const socketQuery = api.socket.get.useQuery(undefined, {
+    const { refetch } = api.socket.get.useQuery(undefined, {
         enabled: session !== null,
         onSuccess: data => setSocket(data)
     })
@@ -34,7 +34,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
     return (
         <DataContext.Provider 
             value={{
-                socketQuery
+                refetch
             }}
         >
             {children}
