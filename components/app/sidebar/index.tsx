@@ -267,32 +267,34 @@ export const ConsoleSidebar = () => {
                 </div>
 
                 <div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
-                    <ConsoleSidebarAction
-                        className={cn(is.expanded && "pr-16")}
-                        icon={
-                            <PanelRightOpen
-                                size={14}
-                                className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                            />
-                        }
-                        title="Collapse"
-                        isExpanded={is.expanded}
-                        onClick={toggleExpanded}
-                    />
-
                     {account.isAuthenticated && (
-                        <ConsoleSidebarAction
-                            className={cn(is.expanded && "pr-16")}
-                            icon={
-                                <LogOut
-                                    size={14}
-                                    className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                />
-                            }
-                            title="Logout"
-                            isExpanded={is.expanded}
-                            onClick={() => disconnect()}
-                        />
+                        <>
+                            <ConsoleSidebarAction
+                                className={cn(is.expanded && "pr-16")}
+                                icon={
+                                    <PanelRightOpen
+                                        size={14}
+                                        className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+                                    />
+                                }
+                                title="Collapse"
+                                isExpanded={is.expanded}
+                                onClick={toggleExpanded}
+                            />
+
+                            <ConsoleSidebarAction
+                                className={cn(is.expanded && "pr-16")}
+                                icon={
+                                    <LogOut
+                                        size={14}
+                                        className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+                                    />
+                                }
+                                title="Logout"
+                                isExpanded={is.expanded}
+                                onClick={() => disconnect()}
+                            />
+                        </>
                     )}
                 </div>
             </div>
