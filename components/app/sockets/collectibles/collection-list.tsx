@@ -42,7 +42,7 @@ export const SocketCollectionList: FC<
 	}, [isAnonymous, collectibles, expanded, count, search])
 
 	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+		<div className={cn("flex flex-col gap-2", className)} {...props}>
 			{isAnonymous === false && isColumn && collectibles && collectibles.length > 0 && (
 				<Search
 					className="mb-2"

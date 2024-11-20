@@ -42,7 +42,7 @@ export const SocketTokenList: FC<
 	}, [isAnonymous, tokens, expanded, count, search])
 
 	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+		<div className={cn("flex flex-col gap-2", className)} {...props}>
 			{isAnonymous === false && isColumn && tokens.length > 0 && (
 				<Search
 					className="mb-2"

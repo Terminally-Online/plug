@@ -27,7 +27,7 @@ export const SocketAssets: FC<
 	const { collectibles, tokens, protocols } = useHoldings(address)
 
 	return (
-		<div className={cn("flex h-full flex-col gap-2", className)} {...props}>
+		<div className={cn("flex flex-col gap-2", className)} {...props}>
 			<Callout.Anonymous index={index} viewing="assets" />
 			<Callout.EmptyAssets
 				index={index}
