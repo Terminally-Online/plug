@@ -1,4 +1,5 @@
 import { useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 
 import { Asterisk } from "lucide-react"
@@ -19,11 +20,19 @@ const TWEET_TEMPLATES = [
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export const ReferralRequired: FC = () => {
+	const router = useRouter()
 	const searchParams = useSearchParams()
 	const { account } = useConnect()
 	const { socket } = useSocket()
 
-	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation()
+	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation({
+		onSuccess: () => {
+			// Add a slight delay before refreshing to allow the UI to show success state
+			setTimeout(() => {
+				router.refresh()
+			}, 300)
+		}
+	})
 	const requestAccess = api.socket.referral.request.useMutation()
 
 	const [referralCode, setReferralAddress] = useState("")
