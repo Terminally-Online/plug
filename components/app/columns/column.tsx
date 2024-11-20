@@ -86,7 +86,7 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className="relative my-2 flex w-full select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white"
+							className="relative my-2 w-full select-none flex flex-col rounded-lg border-[1px] border-grayscale-100 bg-white overflow-hidden"
 						>
 							<div
 								className={cn(
@@ -196,7 +196,7 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							<div className="flex-1 overflow-y-auto pb-4">
+							<div className="flex-1 overflow-y-auto rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
