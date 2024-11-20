@@ -12,7 +12,7 @@ import { actionsAtom, socketModelAtom } from "@/state"
  * rerenders where is not needed.
  */
 interface DataContextType {
-    refetch: () => Promise<void>
+    refetch: () => Promise<QueryObserverResult<any, any>>  // This matches TRPC's actual return type
 }
 
 export const DataContext = createContext<DataContextType>({} as DataContextType)
