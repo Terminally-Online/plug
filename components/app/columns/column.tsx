@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { ChevronLeft, Share, PlugIcon, Settings, Star, X, Check } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -86,7 +86,7 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className="relative my-2 w-full select-none overflow-y-hidden rounded-lg border-[1px] border-grayscale-100 bg-white"
+							className="relative my-2 w-full select-none flex flex-col rounded-lg border-[1px] border-grayscale-100 bg-white"
 						>
 							<div
 								className={cn(
@@ -152,21 +152,24 @@ export const ConsoleColumn: FC<{
 														className="group rounded-sm p-1"
 														onClick={async () => {
 															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
-																await navigator.clipboard.writeText(shareUrl)
-																setCopied(true)
-																setTimeout(() => setCopied(false), 2000)
+																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`;
+																await navigator.clipboard.writeText(shareUrl);
+																setCopied(true);
+																setTimeout(() => setCopied(false), 2000);
 															} catch (err) {
-																console.error("Failed to copy link:", err)
+																console.error("Failed to copy link:", err);
 															}
 														}}
 													>
 														{copied ? (
-															<Check size={14} className="opacity-60 transition-all" />
+															<Check 
+																size={14} 
+																className="opacity-60 transition-all" 
+															/>
 														) : (
-															<Share
-																size={14}
-																className="opacity-60 transition-opacity group-hover:opacity-100"
+															<Share 
+																size={14} 
+																className="opacity-60 group-hover:opacity-100 transition-opacity" 
 															/>
 														)}
 													</Button>
@@ -196,7 +199,7 @@ export const ConsoleColumn: FC<{
 								/>
 							</div>
 
-							<div className="h-full overflow-y-scroll">
+							<div className="flex-1 overflow-y-auto pb-4">
 								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
