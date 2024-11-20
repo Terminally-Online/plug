@@ -12,7 +12,7 @@ import { actionsAtom, socketModelAtom } from "@/state"
  * rerenders where is not needed.
  */
 interface DataContextType {
-    refetch: () => Promise<QueryObserverResult<any, any>>  // This matches TRPC's actual return type
+    socketQuery: ReturnType<typeof api.socket.get.useQuery>
 }
 
 export const DataContext = createContext<DataContextType>({} as DataContextType)
@@ -22,7 +22,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
     const setActions = useSetAtom(actionsAtom)
 
     // Initialize socket query with exposed reference
-    const { refetch } = api.socket.get.useQuery(undefined, {
+    const socketQuery = api.socket.get.useQuery(undefined, {
         enabled: session !== null,
         onSuccess: data => setSocket(data)
     })
@@ -34,7 +34,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
     return (
         <DataContext.Provider 
             value={{
-                refetch
+                socketQuery
             }}
         >
             {children}
