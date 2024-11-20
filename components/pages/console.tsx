@@ -26,8 +26,7 @@ const DesktopPage = () => {
 	const { account } = useConnect()
 	const { socket } = useSocket()
 
-	const isApproved = Boolean(socket?.identity?.approvedAt)
-	const needsReferral = Boolean(account.isAuthenticated && socket && !socket.identity?.approvedAt)
+	const needsReferral = Boolean(account.isAuthenticated && socket && !socket.identity?.referrerId)
 
 	return (
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">

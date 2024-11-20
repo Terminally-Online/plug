@@ -172,134 +172,133 @@ const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
-    const { account } = useConnect()
-    const { disconnect } = useDisconnect(true)
-    const { data: session } = useSession()
-    const { socket } = useSocket()
+	const { account } = useConnect()
+	const { disconnect } = useDisconnect(true)
+	const { data: session } = useSession()
+	const { socket } = useSocket()
 
-    const { avatar } = useSocket()
-    const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
-    const { is, toggleExpanded, handleSidebar } = useSidebar()
+	const { avatar } = useSocket()
+	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
+	const { is, toggleExpanded, handleSidebar } = useSidebar()
 
-    const isApproved = socket?.identity?.approvedAt !== null
-    const showRestrictedOptions = account.isAuthenticated && isApproved
+	const showRestrictedOptions = account.isAuthenticated && socket?.identity?.referrerId !== null
 
-    return (
-        <div className="flex h-full w-max select-none flex-row bg-transparent">
-            <div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
-                <div className={cn("flex w-full flex-col gap-4 p-2")}>
-                    {session && (
-                        <button
-                            className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
-                            onClick={() => handleSidebar("authenticating")}
-                        >
-                            {avatar ? (
-                                <Image
-                                    src={avatar}
-                                    alt="ENS Avatar"
-                                    width={64}
-                                    height={64}
-                                    className="h-full w-full rounded-sm"
-                                />
-                            ) : (
-                                <Avatar name={socket?.id ?? ""} />
-                            )}
-                        </button>
-                    )}
+	return (
+		<div className="flex h-full w-max select-none flex-row bg-transparent">
+			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
+				<div className={cn("flex w-full flex-col gap-4 p-2")}>
+					{session && (
+						<button
+							className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
+							onClick={() => handleSidebar("authenticating")}
+						>
+							{avatar ? (
+								<Image
+									src={avatar}
+									alt="ENS Avatar"
+									width={64}
+									height={64}
+									className="h-full w-full rounded-sm"
+								/>
+							) : (
+								<Avatar name={socket?.id ?? ""} />
+							)}
+						</button>
+					)}
 
-                    {showRestrictedOptions && (
-                        <ConsoleSidebarAction
-                            icon={
-                                <Plus
-                                    size={14}
-                                    className="transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                />
-                            }
-                            title="New Plug"
-                            isExpanded={is.expanded}
-                            isPrimary={true}
-                            onClick={() => handlePlugs.plug.add()}
-                        />
-                    )}
+					{showRestrictedOptions && (
+						<ConsoleSidebarAction
+							icon={
+								<Plus
+									size={14}
+									className="transition-all duration-200 ease-in-out group-hover:opacity-100"
+								/>
+							}
+							title="New Plug"
+							isExpanded={is.expanded}
+							isPrimary={true}
+							onClick={() => handlePlugs.plug.add()}
+						/>
+					)}
 
-                    {showRestrictedOptions && (
-                        <>
-                            <ConsoleSidebarAction
-                                icon={
-                                    <Search
-                                        size={14}
-                                        className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                    />
-                                }
-                                title="Search"
-                                isExpanded={is.expanded}
-                                isActive={is.searching}
-                                onClick={() => handleSidebar("searching")}
-                            />
+					{showRestrictedOptions && (
+						<>
+							<ConsoleSidebarAction
+								icon={
+									<Search
+										size={14}
+										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Search"
+								isExpanded={is.expanded}
+								isActive={is.searching}
+								onClick={() => handleSidebar("searching")}
+							/>
 
-                            <ConsoleSidebarAction
-                                icon={
-                                    <ChartBar
-                                        size={14}
-                                        className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                    />
-                                }
-                                title="Stats"
-                                isExpanded={is.expanded}
-                                isActive={is.stats}
-                                onClick={() => handleSidebar("stats")}
-                            />
+							<ConsoleSidebarAction
+								icon={
+									<ChartBar
+										size={14}
+										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Stats"
+								isExpanded={is.expanded}
+								isActive={is.stats}
+								onClick={() => handleSidebar("stats")}
+							/>
 
-                            <ConsoleSidebarAction
-                                icon={
-                                    <Cat
-                                        size={14}
-                                        className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                    />
-                                }
-                                title="Companion"
-                                isExpanded={is.expanded}
-                                isActive={is.companion}
-                                onClick={() => handleSidebar("companion")}
-                            />
-                        </>
-                    )}
-                </div>
+							<ConsoleSidebarAction
+								icon={
+									<Cat
+										size={14}
+										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Companion"
+								isExpanded={is.expanded}
+								isActive={is.companion}
+								onClick={() => handleSidebar("companion")}
+							/>
+						</>
+					)}
+				</div>
 
-                <div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
-                    {account.isAuthenticated && (
-                        <>
-                            <ConsoleSidebarAction
-                                className={cn(is.expanded && "pr-16")}
-                                icon={
-                                    <PanelRightOpen
-                                        size={14}
-                                        className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                    />
-                                }
-                                title="Collapse"
-                                isExpanded={is.expanded}
-                                onClick={toggleExpanded}
-                            />
+				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
+					{account.isAuthenticated && (
+						<>
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<PanelRightOpen
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Collapse"
+								isExpanded={is.expanded}
+								onClick={toggleExpanded}
+							/>
 
-                            <ConsoleSidebarAction
-                                className={cn(is.expanded && "pr-16")}
-                                icon={
-                                    <LogOut
-                                        size={14}
-                                        className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-                                    />
-                                }
-                                title="Logout"
-                                isExpanded={is.expanded}
-                                onClick={() => disconnect()}
-                            />
-                        </>
-                    )}
-                </div>
-            </div>
+							<ConsoleSidebarAction
+								className={cn(is.expanded && "pr-16")}
+								icon={
+									<LogOut
+										size={14}
+										className="rotate-180 opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="Logout"
+								isExpanded={is.expanded}
+								onClick={() => disconnect()}
+							/>
+						</>
+					)}
+				</div>
+			</div>
 
-            <ConsoleSidebarPane />
-        </div>
-    )
+			<ConsoleSidebarPane />
+		</div>
+	)
 }
