@@ -1,5 +1,4 @@
 import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 
 import { Asterisk } from "lucide-react"
@@ -8,11 +7,12 @@ import { Button, Search } from "@/components"
 import { cn, greenGradientStyle, useConnect } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
+import { useData } from "@/contexts/DataProvider"
 
 const TWEET_TEMPLATES = [
 	`Just discovered @onplug_io - a game-changing platform for automated trading. Can't wait to get access!`,
 	`Excited about @onplug_io's smart automation tools for trading. Looking forward to joining the community!`,
-	`@onplug_io's automated trading platform looks incredible. Would love to be part of the early access group!`,
+	`This new automated trading platform looks incredible. Would love to be part of the early access group for @onplug_io!`,
 	`The future of trading is here with @onplug_io. Ready to experience next-level automation!`,
 	`Heard amazing things about @onplug_io's trading automation. Hope to get access soon!`
 ]
@@ -20,17 +20,15 @@ const TWEET_TEMPLATES = [
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export const ReferralRequired: FC = () => {
-	const router = useRouter()
 	const searchParams = useSearchParams()
 	const { account } = useConnect()
 	const { socket } = useSocket()
+	const { socketQuery } = useData()
 
 	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation({
 		onSuccess: () => {
-			// Add a slight delay before refreshing to allow the UI to show success state
-			setTimeout(() => {
-				router.refresh()
-			}, 300)
+			// Refetch socket data which will trigger reactive updates
+			socketQuery.refetch()
 		}
 	})
 	const requestAccess = api.socket.referral.request.useMutation()
