@@ -38,7 +38,7 @@ const Anonymous: FC<
 				<div
 					className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 					style={{
-						backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+						backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 					}}
 				/>
 			)}
@@ -71,7 +71,7 @@ const EmptySearch: FC<
 			<div
 				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 				style={{
-					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
@@ -116,7 +116,7 @@ const EmptyAssets: FC<
 			<div
 				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 				style={{
-					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
@@ -152,7 +152,7 @@ const EmptyPlugs: FC<
 			<div
 				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 				style={{
-					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
@@ -219,7 +219,7 @@ const EmptyActivity: FC<
 			<div
 				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 				style={{
-					backgroundImage: `linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,1), rgba(255,255,255,0.85), rgba(255,255,255,0))`
+					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
