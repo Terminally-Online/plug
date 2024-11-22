@@ -73,16 +73,9 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            - name: 🏗️ Build Project Artifacts
-              if: github.ref == 'refs/heads/main'
-              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-              env:
-                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
             - name: 🚀 Deploy Project Artifacts to Vercel
               if: github.ref == 'refs/heads/main'
-              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
