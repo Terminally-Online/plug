@@ -1,7 +1,9 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
+
 import { Button } from "@/components/shared"
 import { cn, greenGradientStyle } from "@/lib"
 import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSidebar, useSocket } from "@/state"
+
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
 		title: ReactNode | JSX.Element | string
