@@ -16,6 +16,52 @@ permissions:
     id-token: write
 
 jobs:
+    format:
+      name: 🎨 Format
+      runs-on: ubuntu-latest
+      steps:
+        - name: 🛒 Checkout
+          uses: actions/checkout@v4
+
+        - name: ⚙️  Setup Action
+          uses: pnpm/action-setup@v4
+          with:
+              version: 8
+
+        - name: 📚 Setup Node
+          uses: actions/setup-node@v4
+          with:
+              node-version: 18
+              cache: "pnpm"
+
+        - name: 🫙 Restore cache
+          uses: actions/cache@v4
+          with:
+              path: |
+                  .next/cache
+              key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+              restore-keys: |
+                  ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+        - name: 📦 Install dependencies
+          run: pnpm install
+
+        - name: 🎨 Run Prettier
+          run: pnpm prettier:format
+
+        - name: 📝 Configure Git Commit
+          if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
+          run: |
+              git config user.name "nftchance"
+              git config user.email "chance@utc24.io"
+
+        - name: 📝 Commit Changes
+          if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
+          run: |
+              git add .
+              git diff --staged --quiet || git commit -m "chore: prettier formatting"
+              git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/terminally-online/plug-app.git
+
     build:
         name: 🏗️ Build
         runs-on: ubuntu-latest
