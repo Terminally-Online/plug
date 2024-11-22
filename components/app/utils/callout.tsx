@@ -1,9 +1,7 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
-
 import { Button } from "@/components/shared"
 import { cn, greenGradientStyle } from "@/lib"
 import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSidebar, useSocket } from "@/state"
-
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
 		title: ReactNode | JSX.Element | string
@@ -19,7 +17,6 @@ const Base: FC<
 		{children && <div className="mt-4 flex flex-row gap-2">{children}</div>}
 	</div>
 )
-
 const Anonymous: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "id" | "title" | "description"> & {
 		index: number
@@ -29,9 +26,7 @@ const Anonymous: FC<
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
 	const { handleSidebar } = useSidebar()
 	const { isAnonymous } = useSocket()
-
 	if (isAnonymous === false) return null
-
 	return (
 		<>
 			{isAbsolute && (
@@ -42,7 +37,6 @@ const Anonymous: FC<
 					}}
 				/>
 			)}
-
 			<Base
 				className={cn(isAbsolute && "absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Your are anonymous."
@@ -56,7 +50,6 @@ const Anonymous: FC<
 		</>
 	)
 }
-
 const EmptySearch: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		isEmpty: boolean
@@ -65,7 +58,6 @@ const EmptySearch: FC<
 	}
 > = ({ isEmpty, search, handleSearch, className, ...props }) => {
 	if (isEmpty === false) return null
-
 	return (
 		<>
 			<div
@@ -100,7 +92,6 @@ const EmptySearch: FC<
 		</>
 	)
 }
-
 const EmptyAssets: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
@@ -110,7 +101,6 @@ const EmptyAssets: FC<
 	}
 > = ({ index, isEmpty, isViewing = "assets", isReceivable = false, className, ...props }) => {
 	if (isEmpty === false) return null
-
 	return (
 		<>
 			<div
@@ -135,7 +125,6 @@ const EmptyAssets: FC<
 		</>
 	)
 }
-
 const EmptyPlugs: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
@@ -144,9 +133,7 @@ const EmptyPlugs: FC<
 > = ({ index, isEmpty, className, ...props }) => {
 	const { column } = useColumnData(index)
 	const { handle } = usePlugStore()
-
 	if (!column || isEmpty === false) return null
-
 	return (
 		<>
 			<div
@@ -169,7 +156,6 @@ const EmptyPlugs: FC<
 		</>
 	)
 }
-
 const EmptyPlug: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
@@ -177,9 +163,7 @@ const EmptyPlug: FC<
 	}
 > = ({ index, isEmpty, className, ...props }) => {
 	const { column } = useColumnData(index)
-
 	if (!column || isEmpty === false) return null
-
 	return (
 		<Base
 			className={cn("my-52", className)}
@@ -189,7 +173,6 @@ const EmptyPlug: FC<
 		/>
 	)
 }
-
 const EmptyPage: FC<PropsWithChildren> = () => (
 	<Base
 		title="Oh no! We could not find the page you were looking for."
@@ -203,7 +186,6 @@ const EmptyPage: FC<PropsWithChildren> = () => (
 		</div>
 	</Base>
 )
-
 const EmptyActivity: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
@@ -211,9 +193,7 @@ const EmptyActivity: FC<
 	}
 > = ({ index, isEmpty, className, ...props }) => {
 	const { handle } = useColumnStore(index)
-
 	if (isEmpty === false) return null
-
 	return (
 		<>
 			<div
@@ -236,7 +216,6 @@ const EmptyActivity: FC<
 		</>
 	)
 }
-
 export const Callout = Object.assign(Base, {
 	Anonymous,
 	EmptySearch,
