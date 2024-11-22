@@ -44,6 +44,9 @@ jobs:
                   ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
         - name: 📦 Install dependencies
+          run: pnpm install
+
+        - name: 🎨 Run Prettier
           run: pnpm prettier:format
 
         - name: Commit changes
