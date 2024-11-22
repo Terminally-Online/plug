@@ -60,7 +60,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const { handle } = useColumnStore()
 	const { data: session } = useSession()
 
-	const isAuthenticated = (session?.user.id?.startsWith("0x")) || false
+	const isAuthenticated = session?.user.id?.startsWith("0x") || false
 
 	/**
 	 * Trigger and handle the signing of a message to prove ownership of the address.

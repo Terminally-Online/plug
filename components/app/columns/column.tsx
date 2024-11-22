@@ -86,7 +86,7 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className="relative my-2 w-full select-none flex flex-col rounded-lg border-[1px] border-grayscale-100 bg-white overflow-hidden"
+							className="relative my-2 flex w-full select-none flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100 bg-white"
 						>
 							<div
 								className={cn(

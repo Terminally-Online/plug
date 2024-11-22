@@ -31,13 +31,7 @@ const DesktopPage = () => {
 	return (
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
-			{!account.isAuthenticated ? (
-				<LoginRequired />
-			) : needsReferral ? (
-				<ReferralRequired />
-			) : (
-				<ConsoleColumnRow />
-			)}
+			{!account.isAuthenticated ? <LoginRequired /> : needsReferral ? <ReferralRequired /> : <ConsoleColumnRow />}
 		</div>
 	)
 }

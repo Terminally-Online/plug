@@ -12,34 +12,34 @@ import { actionsAtom, socketModelAtom } from "@/state"
  * rerenders where is not needed.
  */
 interface DataContextType {
-    socketQuery: ReturnType<typeof api.socket.get.useQuery>
+	socketQuery: ReturnType<typeof api.socket.get.useQuery>
 }
 
 export const DataContext = createContext<DataContextType>({} as DataContextType)
 
 export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ session, children }) => {
-    const setSocket = useSetAtom(socketModelAtom)
-    const setActions = useSetAtom(actionsAtom)
+	const setSocket = useSetAtom(socketModelAtom)
+	const setActions = useSetAtom(actionsAtom)
 
-    // Initialize socket query with exposed reference
-    const socketQuery = api.socket.get.useQuery(undefined, {
-        enabled: session !== null,
-        onSuccess: data => setSocket(data)
-    })
+	// Initialize socket query with exposed reference
+	const socketQuery = api.socket.get.useQuery(undefined, {
+		enabled: session !== null,
+		onSuccess: data => setSocket(data)
+	})
 
-    api.solver.actions.get.useQuery(undefined, {
-        onSuccess: data => setActions(data)
-    })
+	api.solver.actions.get.useQuery(undefined, {
+		onSuccess: data => setActions(data)
+	})
 
-    return (
-        <DataContext.Provider 
-            value={{
-                socketQuery
-            }}
-        >
-            {children}
-        </DataContext.Provider>
-    )
+	return (
+		<DataContext.Provider
+			value={{
+				socketQuery
+			}}
+		>
+			{children}
+		</DataContext.Provider>
+	)
 }
 
 /**

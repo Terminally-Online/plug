@@ -4,10 +4,10 @@ import { FC, useEffect, useState } from "react"
 import { Asterisk } from "lucide-react"
 
 import { Button, Search } from "@/components"
+import { useData } from "@/contexts/DataProvider"
 import { cn, greenGradientStyle, useConnect } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state"
-import { useData } from "@/contexts/DataProvider"
 
 const TWEET_TEMPLATES = [
 	`Just discovered @onplug_io - a game-changing platform for automated trading. Can't wait to get access!`,
