@@ -94,3 +94,9 @@ jobs:
                   -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
                   -H "Content-Type: application/json" \
                   --data '{"purge_everything":true}'
+
+            - name: Commit changes
+              uses: stefanzweifel/git-auto-commit-action@v4
+              with:
+                  commit_message: Apply formatting changes
+                  branch: ${{ github.head_ref }}
