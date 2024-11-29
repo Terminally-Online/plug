@@ -24,7 +24,13 @@ export const Sentence: FC<
 		column,
 		handle: { frame }
 	} = useColumnStore(index)
-	const { own, actions: plugActions, handle: { action: { edit } } } = usePlugStore(item)
+	const {
+		own,
+		actions: plugActions,
+		handle: {
+			action: { edit }
+		}
+	} = usePlugStore(item)
 
 	const { data: solverActions } = api.solver.actions.get.useQuery({
 		protocol: action.protocol,
@@ -108,7 +114,10 @@ export const Sentence: FC<
 											}}
 											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 										>
-											{(option && option.label) || value?.value || input.name || `Input #${input.index}`}
+											{(option && option.label) ||
+												value?.value ||
+												input.name ||
+												`Input #${input.index}`}
 										</button>
 
 										<Frame
