@@ -3,41 +3,12 @@ import { useCallback, useMemo, useState } from "react"
 import {
 	CordState,
 	createInitialState,
-	InputReference,
-	InputState,
 	parseCordSentence,
 	resolveSentence,
 	setValue,
-	shouldRenderInput
+	shouldRenderInput,
+	UseCordReturn
 } from "@terminallyonline/cord"
-
-export type ValidationError = {
-	type: "validation"
-	message: string
-}
-
-export type CordError = {
-	type: "parse" | "resolution" | "validation"
-	message: string
-}
-
-export type UseCordReturn = {
-	state: CordState
-	actions: {
-		setValue: (index: number, value: string) => void
-		reset: () => void
-		clear: (index: number) => void
-		clearAll: () => void
-	}
-	helpers: {
-		getInputValue: (index: number) => InputState | undefined
-		getInputError: (index: number) => ValidationError | undefined
-		getDependentInputs: (index: number) => InputReference[]
-		hasDependency: (index: number) => boolean
-		isComplete: boolean
-		isValid: boolean
-	}
-}
 
 const initialState: CordState = {
 	values: createInitialState(),

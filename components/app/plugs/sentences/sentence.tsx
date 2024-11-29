@@ -11,20 +11,26 @@ import { useColumnStore, usePlugStore } from "@/state"
 
 import { useCord } from "./useCord"
 
-export const Sentence: FC<
-	HTMLAttributes<HTMLButtonElement> & {
-		index: number
-		item: string
-		action: Action
-		actionIndex: number
-		preview?: boolean
-	}
-> = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
+type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
+	index: number
+	item: string
+	preview?: boolean
+	action: Action
+	actionIndex: number
+}
+
+export const Sentence: FC<SentenceProps> = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
 	const {
 		column,
 		handle: { frame }
 	} = useColumnStore(index)
-	const { own, actions: plugActions, handle: { action: { edit } } } = usePlugStore(item)
+	const {
+		own,
+		actions: plugActions,
+		handle: {
+			action: { edit }
+		}
+	} = usePlugStore(item)
 
 	const { data: solverActions } = api.solver.actions.get.useQuery({
 		protocol: action.protocol,
@@ -41,6 +47,23 @@ export const Sentence: FC<
 	} = useCord(sentence)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
+
+	const handleValue = (index: number, value: string) => {
+		setValue(index, value)
+
+		edit({
+			id: item,
+			actions: JSON.stringify(
+				plugActions.map((action, nestedActionIndex) => ({
+					...action,
+					values: nestedActionIndex === actionIndex ? {
+						...action.values,
+						[index]: value
+					} : action.values
+				}))
+			)
+		})
+	}
 
 	if (!column || !solverActions || !actionSchema || !parsed) return null
 
@@ -108,7 +131,10 @@ export const Sentence: FC<
 											}}
 											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 										>
-											{(option && option.label) || value?.value || input.name || `Input #${input.index}`}
+											{(option && option.label) ||
+												value?.value ||
+												input.name ||
+												`Input #${input.index}`}
 										</button>
 
 										<Frame
@@ -164,7 +190,7 @@ export const Sentence: FC<
 														icon={<Hash size={14} />}
 														placeholder={getInputPlaceholder(input.type)}
 														search={value?.value}
-														handleSearch={data => setValue(input.index, data)}
+														handleSearch={data => handleValue(input.index, data)}
 													/>
 												)}
 
@@ -179,7 +205,7 @@ export const Sentence: FC<
 																	<Checkbox
 																		checked={option.value === value?.value}
 																		handleChange={() =>
-																			setValue(
+																			handleValue(
 																				input.index,
 																				option.value === value?.value
 																					? ""
@@ -192,7 +218,7 @@ export const Sentence: FC<
 																		key={`${index}-${actionIndex}-${optionIndex}`}
 																		className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
 																		onClick={() =>
-																			setValue(
+																			handleValue(
 																				input.index,
 																				option.value === value?.value
 																					? ""

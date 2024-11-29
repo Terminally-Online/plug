@@ -9,21 +9,21 @@ import { Frame, Search } from "@/components"
 import { cn, formatTitle } from "@/lib"
 import { ACTION_REGEX, useColumnStore } from "@/state"
 
-import { ValidationError } from "./useCord"
+// import { ValidationError } from "./useCord"
 
-type FragmentProps = {
-	index: number
-	actionIndex: number
-	item: string
-	icon: string
-	// action: Action
-	preview: boolean
-	own: boolean
-	parsed: ParsedCordSentence | null
-	setValue: (index: number, value: string) => void
-	getInputValue: (index: number) => InputState | undefined
-	getInputError: (index: number) => ValidationError | undefined
-}
+// type FragmentProps = {
+// 	index: number
+// 	actionIndex: number
+// 	item: string
+// 	icon: string
+// 	// action: Action
+// 	preview: boolean
+// 	own: boolean
+// 	parsed: ParsedCordSentence | null
+// 	setValue: (index: number, value: string) => void
+// 	getInputValue: (index: number) => InputState | undefined
+// 	getInputError: (index: number) => ValidationError | undefined
+// }
 
 // export const Fragments: FC<FragmentProps> = ({
 // 	index,

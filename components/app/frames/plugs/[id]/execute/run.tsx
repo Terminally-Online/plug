@@ -15,14 +15,17 @@ export const RunFrame: FC<{
 	const { column, isFrame, handle } = useColumnStore(index, "run")
 	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
-	const isReady = useMemo(
-		() =>
-			plug &&
-			actions &&
-			actions.length > 0 &&
-			actions.every(action => action.values.every(value => Boolean(value))),
-		[plug, actions]
-	)
+	const isReady = false
+
+	// TODO: Disabled this while working on implementing cord. Need to re-implement it.
+	// const isReady = useMemo(
+	// 	() =>
+	// 		plug &&
+	// 		actions &&
+	// 		actions.length > 0 &&
+	// 		actions.every(action => action.values.every(value => Boolean(value))),
+	// 	[plug, actions]
+	// )
 
 	const handleRun = useCallback(() => {
 		if (!column || !column.item) return
