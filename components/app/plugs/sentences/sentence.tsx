@@ -24,18 +24,15 @@ export const Sentence: FC<
 		column,
 		handle: { frame }
 	} = useColumnStore(index)
-	const { own, actions: plugActions, handle } = usePlugStore(item)
+	const { own, actions: plugActions, handle: { action: { edit } } } = usePlugStore(item)
 
 	const { data: solverActions } = api.solver.actions.get.useQuery({
 		protocol: action.protocol,
 		action: action.action
 	})
-	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 
-	const sentence = useMemo(
-		() => (actionSchema ? actionSchema.schema[action.action].sentence : ""),
-		[actionSchema, action.action]
-	)
+	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
+	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 
 	const {
 		state: { parsed },
@@ -281,7 +278,7 @@ export const Sentence: FC<
 							variant="secondary"
 							className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
 							onClick={() =>
-								handle.action.edit({
+								edit({
 									id: item,
 									actions: JSON.stringify(plugActions.filter((_, i) => i !== actionIndex))
 								})
