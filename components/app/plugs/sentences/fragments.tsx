@@ -5,7 +5,7 @@ import { Hash } from "lucide-react"
 
 import { getInputPlaceholder, InputState, ParsedCordSentence } from "@terminallyonline/cord"
 
-import { Frame, Search} from "@/components"
+import { Frame, Search } from "@/components"
 import { cn, formatTitle } from "@/lib"
 import { ACTION_REGEX, useColumnStore } from "@/state"
 
@@ -41,39 +41,39 @@ type FragmentProps = {
 //
 // 	if (!parsed || !column) return null
 
-	// const fragments = useMemo(() => {
-	// 	return sentence.split(ACTION_REGEX) as string[]
-	// }, [sentence])
-	//
-	// const dynamic = useMemo(() => {
-	// 	return fragments.filter(fragment => fragment.match(ACTION_REGEX))
-	// }, [fragments])
-	//
-	// let dynamicIndex = -1
+// const fragments = useMemo(() => {
+// 	return sentence.split(ACTION_REGEX) as string[]
+// }, [sentence])
+//
+// const dynamic = useMemo(() => {
+// 	return fragments.filter(fragment => fragment.match(ACTION_REGEX))
+// }, [fragments])
+//
+// let dynamicIndex = -1
 
-	// return (
-	// 	<>
-	// 		{fragments.map((fragment, fragmentIndex) => {
-	// 			if (fragment.match(ACTION_REGEX)) {
-	// 				dynamicIndex++
-	// 				return (
-	// 					<DynamicFragment
-	// 						key={`${actionIndex}-${fragmentIndex}`}
-	// 						item={item}
-	// 						index={index}
-	// 						actionIndex={actionIndex}
-	// 						fragmentIndex={fragmentIndex}
-	// 						dynamicIndex={dynamicIndex}
-	// 						fragment={fragment}
-	// 						// protocol={protocol}
-	// 						// action={action}
-	// 						// dynamic={dynamic}
-	// 						// preview={preview}
-	// 					/>
-	// 				)
-	// 			}
-	// 			return <StaticFragment key={`${actionIndex}-${fragmentIndex}`} fragment={fragment} />
-	// 		})}
-	// 	</>
-	// )
+// return (
+// 	<>
+// 		{fragments.map((fragment, fragmentIndex) => {
+// 			if (fragment.match(ACTION_REGEX)) {
+// 				dynamicIndex++
+// 				return (
+// 					<DynamicFragment
+// 						key={`${actionIndex}-${fragmentIndex}`}
+// 						item={item}
+// 						index={index}
+// 						actionIndex={actionIndex}
+// 						fragmentIndex={fragmentIndex}
+// 						dynamicIndex={dynamicIndex}
+// 						fragment={fragment}
+// 						// protocol={protocol}
+// 						// action={action}
+// 						// dynamic={dynamic}
+// 						// preview={preview}
+// 					/>
+// 				)
+// 			}
+// 			return <StaticFragment key={`${actionIndex}-${fragmentIndex}`} fragment={fragment} />
+// 		})}
+// 	</>
+// )
 // }
