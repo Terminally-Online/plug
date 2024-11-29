@@ -2,12 +2,12 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { Hash, X } from "lucide-react"
 
-import { getInputPlaceholder, shouldRenderInput } from "@terminallyonline/cord"
+import { getInputPlaceholder } from "@terminallyonline/cord"
 
-import { Accordion, Button, Frame, Image, Search } from "@/components"
+import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
 import { Action, cn, formatTitle } from "@/lib"
 import { api } from "@/server/client"
-import { useActions, useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore, usePlugStore } from "@/state"
 
 import { useCord } from "./useCord"
 
@@ -25,7 +25,6 @@ export const Sentence: FC<
 		handle: { frame }
 	} = useColumnStore(index)
 	const { own, actions: plugActions, handle } = usePlugStore(item)
-	// const [solverActions] = useActions()
 
 	const { data: solverActions } = api.solver.actions.get.useQuery({
 		protocol: action.protocol,
@@ -33,9 +32,7 @@ export const Sentence: FC<
 	})
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 
-	// const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
-	const sentence =
-		"Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
+	const sentence = useMemo(() => actionSchema ? actionSchema.schema[action.action].sentence : "", [actionSchema, action.action])
 
 	const {
 		state: { parsed },
@@ -45,7 +42,7 @@ export const Sentence: FC<
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
-	if (!column || !actionSchema || !parsed) return null
+	if (!column || !solverActions || !actionSchema || !parsed) return null
 
 	return (
 		<>
@@ -82,6 +79,10 @@ export const Sentence: FC<
 								const input = parsed.inputs.find(i => i.index === inputIndex)
 
 								if (!input) return null
+
+								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
+								const options = sentenceOptions && sentenceOptions[inputIndex]
+								const isOptionBased = options !== undefined
 
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
@@ -155,22 +156,83 @@ export const Sentence: FC<
 											scrollBehavior="partial"
 										>
 											<div className="flex flex-col gap-2 overflow-y-auto px-6">
-												<Search
+												{isOptionBased === false && <Search
 													className="mb-4"
 													icon={<Hash size={14} />}
 													placeholder={getInputPlaceholder(input.type)}
 													search={value?.value}
 													handleSearch={data => setValue(input.index, data)}
-												/>
+												/>}
+
+												{isOptionBased && <>
+													<div className="mb-4 flex w-full flex-col gap-2">
+														{options.map((option, optionIndex) => (
+															<div
+																key={`${index}-${actionIndex}-${optionIndex}`}
+																className="flex flex-row items-center gap-4"
+															>
+																<Checkbox
+																	checked={option.value === value?.value}
+																	handleChange={() =>
+																		setValue(
+																			input.index,
+																			// TODO: This should be set to undefined/null instead of empty string
+																			option.value === value?.value ? "" : option.value
+																		)
+																	}
+																/>
+
+																<button
+																	key={`${index}-${actionIndex}-${optionIndex}`}
+																	className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
+																	onClick={() => setValue(
+																		input.index,
+																		// TODO: This should be set to undefined/null instead of empty string
+																		option.value === value?.value ? "" : option.value
+																	)}
+																>
+																	{option.icon && (
+																		<div className="min-w-6">
+																			{option.icon.startsWith(
+																				"https://token-icons.llamao.fi/icons/tokens/"
+																			) ? (
+																				<TokenImage
+																					logo={option.icon}
+																					symbol={option.label}
+																					size="xs"
+																					blur={false}
+																				/>
+																			) : (
+																				<Image
+																					src={option.icon}
+																					alt={option.label}
+																					width={60}
+																					height={60}
+																					className="h-6 w-6 rounded-full"
+																					unoptimized
+																				/>
+																			)}
+																		</div>
+																	)}
+																	<span className="truncate">{option.name}</span>
+																	{option.info && (
+																		<span className="ml-auto tabular-nums opacity-40">
+																			<Counter count={option.info} />
+																		</span>
+																	)}
+																</button>
+															</div>
+														))}
+													</div>
+
+												</>}
 											</div>
 
 											<div className="mt-auto bg-white">
 												<div className="relative">
-													{/*
 													{options && options.length > 0 && (
 														<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
 													)}
-													*/}
 													<div className="mb-4 px-6">
 														<Button
 															variant={!isEmpty && !error ? "primary" : "disabled"}
@@ -184,7 +246,7 @@ export const Sentence: FC<
 															}
 															disabled={isEmpty || error !== undefined}
 														>
-															{isEmpty || error
+															{isOptionBased && isEmpty ? "Choose option" : isEmpty || error
 																? error?.message || "Enter value"
 																: parsed.inputs.length - 1 > inputIndex
 																	? "Next"
