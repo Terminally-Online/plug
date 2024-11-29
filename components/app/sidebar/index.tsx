@@ -37,7 +37,7 @@ const ConsoleSidebarAction: FC<
 				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
 				isActive && "bg-grayscale-0 hover:bg-white",
 				isPrimary &&
-					"group-hover: border-plug-yellow bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
+					"group-hover: border-plug-yellow bg-plug-yellow text-plug-green"
 			)}
 		>
 			{icon}
