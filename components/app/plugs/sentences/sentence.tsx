@@ -29,17 +29,16 @@ export const Sentence: FC<
 	const actionSchema = solverActions[action.protocol]
 
 	// const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
-	const sentence = "Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
+	const sentence =
+		"Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
 
 	const {
 		state: { parsed, error, values },
 		actions: { setValue },
 		helpers: { getInputValue, getInputError }
-	} = useCord(
-		sentence
-	)
+	} = useCord(sentence)
 
-	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : [];
+	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
 	if (!column || !parsed) return null
 
@@ -70,14 +69,14 @@ export const Sentence: FC<
 
 						<div className="flex flex-wrap items-center gap-1">
 							{parts.map((part, partIndex) => {
-								const match = part.match(/\{(\d+)\}/);
+								const match = part.match(/\{(\d+)\}/)
 
-								if (!match) return <span key={partIndex}>{part}</span>;
+								if (!match) return <span key={partIndex}>{part}</span>
 
-								const inputIndex = parseInt(match[1]);
-								const input = parsed.inputs.find(i => i.index === inputIndex);
+								const inputIndex = parseInt(match[1])
+								const input = parsed.inputs.find(i => i.index === inputIndex)
 
-								if (!input) return null;
+								if (!input) return null
 
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
