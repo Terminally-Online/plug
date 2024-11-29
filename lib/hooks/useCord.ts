@@ -105,7 +105,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 				}))
 			},
 			[parsed, state.values]
-		),
+		)
 	}
 
 	const helpers = {
@@ -135,7 +135,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 	useEffect(() => {
 		setState(prev => ({
 			...prev,
-			values: createStateFromValues(values),
+			values: createStateFromValues(values)
 		}))
 	}, [values])
 
