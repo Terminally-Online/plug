@@ -32,7 +32,10 @@ export const Sentence: FC<
 	})
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 
-	const sentence = useMemo(() => actionSchema ? actionSchema.schema[action.action].sentence : "", [actionSchema, action.action])
+	const sentence = useMemo(
+		() => (actionSchema ? actionSchema.schema[action.action].sentence : ""),
+		[actionSchema, action.action]
+	)
 
 	const {
 		state: { parsed },
@@ -156,76 +159,85 @@ export const Sentence: FC<
 											scrollBehavior="partial"
 										>
 											<div className="flex flex-col gap-2 overflow-y-auto px-6">
-												{isOptionBased === false && <Search
-													className="mb-4"
-													icon={<Hash size={14} />}
-													placeholder={getInputPlaceholder(input.type)}
-													search={value?.value}
-													handleSearch={data => setValue(input.index, data)}
-												/>}
+												{isOptionBased === false && (
+													<Search
+														className="mb-4"
+														icon={<Hash size={14} />}
+														placeholder={getInputPlaceholder(input.type)}
+														search={value?.value}
+														handleSearch={data => setValue(input.index, data)}
+													/>
+												)}
 
-												{isOptionBased && <>
-													<div className="mb-4 flex w-full flex-col gap-2">
-														{options.map((option, optionIndex) => (
-															<div
-																key={`${index}-${actionIndex}-${optionIndex}`}
-																className="flex flex-row items-center gap-4"
-															>
-																<Checkbox
-																	checked={option.value === value?.value}
-																	handleChange={() =>
-																		setValue(
-																			input.index,
-																			// TODO: This should be set to undefined/null instead of empty string
-																			option.value === value?.value ? "" : option.value
-																		)
-																	}
-																/>
-
-																<button
+												{isOptionBased && (
+													<>
+														<div className="mb-4 flex w-full flex-col gap-2">
+															{options.map((option, optionIndex) => (
+																<div
 																	key={`${index}-${actionIndex}-${optionIndex}`}
-																	className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
-																	onClick={() => setValue(
-																		input.index,
-																		// TODO: This should be set to undefined/null instead of empty string
-																		option.value === value?.value ? "" : option.value
-																	)}
+																	className="flex flex-row items-center gap-4"
 																>
-																	{option.icon && (
-																		<div className="min-w-6">
-																			{option.icon.startsWith(
-																				"https://token-icons.llamao.fi/icons/tokens/"
-																			) ? (
-																				<TokenImage
-																					logo={option.icon}
-																					symbol={option.label}
-																					size="xs"
-																					blur={false}
-																				/>
-																			) : (
-																				<Image
-																					src={option.icon}
-																					alt={option.label}
-																					width={60}
-																					height={60}
-																					className="h-6 w-6 rounded-full"
-																					unoptimized
-																				/>
-																			)}
-																		</div>
-																	)}
-																	<span className="truncate">{option.name}</span>
-																	{option.info && (
-																		<span className="ml-auto tabular-nums opacity-40">
-																			<Counter count={option.info} />
-																		</span>
-																	)}
-																</button>
-															</div>
-														))}
-													</div>
+																	<Checkbox
+																		checked={option.value === value?.value}
+																		handleChange={() =>
+																			setValue(
+																				input.index,
+																				// TODO: This should be set to undefined/null instead of empty string
+																				option.value === value?.value
+																					? ""
+																					: option.value
+																			)
+																		}
+																	/>
 
-												</>}
+																	<button
+																		key={`${index}-${actionIndex}-${optionIndex}`}
+																		className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
+																		onClick={() =>
+																			setValue(
+																				input.index,
+																				// TODO: This should be set to undefined/null instead of empty string
+																				option.value === value?.value
+																					? ""
+																					: option.value
+																			)
+																		}
+																	>
+																		{option.icon && (
+																			<div className="min-w-6">
+																				{option.icon.startsWith(
+																					"https://token-icons.llamao.fi/icons/tokens/"
+																				) ? (
+																					<TokenImage
+																						logo={option.icon}
+																						symbol={option.label}
+																						size="xs"
+																						blur={false}
+																					/>
+																				) : (
+																					<Image
+																						src={option.icon}
+																						alt={option.label}
+																						width={60}
+																						height={60}
+																						className="h-6 w-6 rounded-full"
+																						unoptimized
+																					/>
+																				)}
+																			</div>
+																		)}
+																		<span className="truncate">{option.name}</span>
+																		{option.info && (
+																			<span className="ml-auto tabular-nums opacity-40">
+																				<Counter count={option.info} />
+																			</span>
+																		)}
+																	</button>
+																</div>
+															))}
+														</div>
+													</>
+												)}
 											</div>
 
 											<div className="mt-auto bg-white">
@@ -246,11 +258,13 @@ export const Sentence: FC<
 															}
 															disabled={isEmpty || error !== undefined}
 														>
-															{isOptionBased && isEmpty ? "Choose option" : isEmpty || error
-																? error?.message || "Enter value"
-																: parsed.inputs.length - 1 > inputIndex
-																	? "Next"
-																	: "Done"}
+															{isOptionBased && isEmpty
+																? "Choose option"
+																: isEmpty || error
+																	? error?.message || "Enter value"
+																	: parsed.inputs.length - 1 > inputIndex
+																		? "Next"
+																		: "Done"}
 														</Button>
 													</div>
 												</div>

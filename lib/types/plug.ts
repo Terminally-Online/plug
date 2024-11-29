@@ -9,13 +9,16 @@ export type ActionSchema = {
 	schema: {
 		[action: string]: {
 			sentence: string
-			options?: Record<string, {
-				value: string
-				name: string
-				label: string
-				info?: string
-				icon: string
-			}[]>
+			options?: Record<
+				string,
+				{
+					value: string
+					name: string
+					label: string
+					info?: string
+					icon: string
+				}[]
+			>
 		}
 	}
 }
