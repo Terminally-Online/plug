@@ -1,12 +1,15 @@
+import Image from "next/image"
 import { FC } from "react"
 
-import { DynamicFragment, Frame, Search, StaticFragment } from "@/components"
-import { ACTION_REGEX, useColumnStore } from "@/state"
-import { ValidationError } from "./useCord"
-import { getInputPlaceholder, InputState, ParsedCordSentence } from "@terminallyonline/cord"
-import { cn, formatTitle } from "@/lib"
-import Image from "next/image"
 import { Hash } from "lucide-react"
+
+import { getInputPlaceholder, InputState, ParsedCordSentence } from "@terminallyonline/cord"
+
+import { DynamicFragment, Frame, Search, StaticFragment } from "@/components"
+import { cn, formatTitle } from "@/lib"
+import { ACTION_REGEX, useColumnStore } from "@/state"
+
+import { ValidationError } from "./useCord"
 
 type FragmentProps = {
 	index: number
@@ -16,10 +19,10 @@ type FragmentProps = {
 	// action: Action
 	preview: boolean
 	own: boolean
-	parsed: ParsedCordSentence | null;
-	setValue: (index: number, value: string) => void;
-	getInputValue: (index: number) => InputState | undefined;
-	getInputError: (index: number) => ValidationError | undefined;
+	parsed: ParsedCordSentence | null
+	setValue: (index: number, value: string) => void
+	getInputValue: (index: number) => InputState | undefined
+	getInputError: (index: number) => ValidationError | undefined
 }
 
 export const Fragments: FC<FragmentProps> = ({
@@ -94,12 +97,16 @@ export const Fragments: FC<FragmentProps> = ({
 											{parsed.inputs.length > 1 && <span>:</span>}
 										</span>
 										*/}
-										{parsed.inputs.length > 1 && <span> {formatTitle(input.name ?? `Input #${inputIndex}`)}</span>}
+										{parsed.inputs.length > 1 && (
+											<span> {formatTitle(input.name ?? `Input #${inputIndex}`)}</span>
+										)}
 									</span>
 								</span>
 							}
 							visible={column.frame === `${actionIndex}-${inputIndex}`}
-							handleBack={inputIndex > 0 ? () => handle.frame(`${actionIndex}-${inputIndex - 1}`) : undefined}
+							handleBack={
+								inputIndex > 0 ? () => handle.frame(`${actionIndex}-${inputIndex - 1}`) : undefined
+							}
 							hasOverlay
 							hasChildrenPadding={false}
 							scrollBehavior="partial"

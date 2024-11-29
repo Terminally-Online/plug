@@ -2,11 +2,13 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { Hash, X } from "lucide-react"
 
+import { getInputPlaceholder } from "@terminallyonline/cord"
+
 import { Accordion, Button, Fragments, Frame, Image, Search } from "@/components"
 import { Action, cn, formatTitle } from "@/lib"
 import { useActions, useColumnStore, usePlugStore } from "@/state"
+
 import { useCord } from "./useCord"
-import { getInputPlaceholder } from "@terminallyonline/cord"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
@@ -17,7 +19,10 @@ export const Sentence: FC<
 		preview?: boolean
 	}
 > = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
-	const { column, handle: { frame } } = useColumnStore(index)
+	const {
+		column,
+		handle: { frame }
+	} = useColumnStore(index)
 	const { own, actions: plugActions, handle } = usePlugStore(item)
 	const [solverActions] = useActions()
 
@@ -28,8 +33,10 @@ export const Sentence: FC<
 	const {
 		state: { parsed, error, values },
 		actions: { setValue },
-		helpers: { getInputValue, getInputError },
-	} = useCord("Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}");
+		helpers: { getInputValue, getInputError }
+	} = useCord(
+		"Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
+	)
 
 	if (!column || !parsed) return null
 
@@ -111,12 +118,21 @@ export const Sentence: FC<
 															{formatTitle(action.action)}
 															{parsed.inputs.length > 1 && <span>:</span>}
 														</span>
-														{parsed.inputs.length > 1 && <span> {formatTitle(input.name ?? `Input #${inputIndex}`)}</span>}
+														{parsed.inputs.length > 1 && (
+															<span>
+																{" "}
+																{formatTitle(input.name ?? `Input #${inputIndex}`)}
+															</span>
+														)}
 													</span>
 												</span>
 											}
 											visible={column.frame === `${actionIndex}-${inputIndex}`}
-											handleBack={inputIndex > 0 ? () => frame(`${actionIndex}-${inputIndex - 1}`) : undefined}
+											handleBack={
+												inputIndex > 0
+													? () => frame(`${actionIndex}-${inputIndex - 1}`)
+													: undefined
+											}
 											hasOverlay
 											hasChildrenPadding={false}
 											scrollBehavior="partial"
@@ -131,7 +147,6 @@ export const Sentence: FC<
 												/>
 											</div>
 
-
 											<div className="mt-auto bg-white">
 												<div className="relative">
 													{/*
@@ -143,10 +158,20 @@ export const Sentence: FC<
 														<Button
 															variant={isValid ? "primary" : "disabled"}
 															className="w-full py-4"
-															onClick={() => frame(inputIndex + 1 < parsed.inputs.length ? `${actionIndex}-${inputIndex + 1}` : undefined)}
+															onClick={() =>
+																frame(
+																	inputIndex + 1 < parsed.inputs.length
+																		? `${actionIndex}-${inputIndex + 1}`
+																		: undefined
+																)
+															}
 															disabled={isValid === false}
 														>
-															{!isValid ? "Enter value" : parsed.inputs.length - 1 > inputIndex ? "Next" : "Done"}
+															{!isValid
+																? "Enter value"
+																: parsed.inputs.length - 1 > inputIndex
+																	? "Next"
+																	: "Done"}
 														</Button>
 													</div>
 												</div>
