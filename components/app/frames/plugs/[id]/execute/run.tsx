@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback } from "react"
 
 import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
 
@@ -12,8 +12,8 @@ export const RunFrame: FC<{
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
-	const { column, isFrame, handle } = useColumnStore(index, "run")
-	const { plug, actions, handle: plugHandle } = usePlugStore(item)
+	const { column, isFrame, handle: { frame } } = useColumnStore(index, "run")
+	const { actions, handle: { plug: { queue }} } = usePlugStore(item)
 
 	const isReady = false
 
@@ -30,15 +30,15 @@ export const RunFrame: FC<{
 	const handleRun = useCallback(() => {
 		if (!column || !column.item) return
 
-		plugHandle.plug.queue({
+		queue({
 			workflowId: column.item,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to ?? new Date(),
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
-		handle.frame("ran")
-	}, [column, handle, plugHandle.plug])
+		frame("ran")
+	}, [column, queue, frame])
 
 	if (!column) return null
 
@@ -50,18 +50,11 @@ export const RunFrame: FC<{
 			label="Preview"
 			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
-			handleBack={column.schedule ? () => handle.frame("schedule") : undefined}
+			handleBack={column.schedule ? () => frame("schedule") : undefined}
 		>
 			<div className="flex flex-col">
 				{actions && actions.length > 0 ? (
-					<>
-						<ActionPreview index={index} item={item} />
-						{!isReady && (
-							<p className="py-2 text-center text-sm font-medium opacity-40">
-								Some actions have missing required values.
-							</p>
-						)}
-					</>
+					<ActionPreview index={index} item={item} />
 				) : (
 					<div className="flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
 						<p className="mx-auto max-w-[380px]">
