@@ -86,6 +86,7 @@ export const Sentence: FC<
 								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
 								const options = sentenceOptions && sentenceOptions[inputIndex]
 								const isOptionBased = options !== undefined
+								// TODO: This is not the most performant way to do this, but for now it works.
 								const option = options?.find(option => option.value === value?.value) || undefined
 
 								const isEmpty = !value?.value.trim()
