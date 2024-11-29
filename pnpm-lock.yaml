@@ -12,8 +12,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@prisma/client@5.20.0)(next-auth@4.24.10)
   '@next/third-parties':
-    specifier: ^14.2.15
-    version: 14.2.18(next@14.2.15)(react@18.3.1)
+    specifier: ^15.0.3
+    version: 15.0.3(next@14.2.15)(react@18.3.1)
   '@prisma/client':
     specifier: 5.20.0
     version: 5.20.0(prisma@5.22.0)
@@ -2813,11 +2813,11 @@ packages:
     dev: false
     optional: true
 
-  /@next/third-parties@14.2.18(next@14.2.15)(react@18.3.1):
-    resolution: {integrity: sha512-GMKDCbef/qQ3wTg37w85vARtR9JRxDq4ft+MSu1QZTZK/fzxkmGfLwQZN6k72umZZSNAtn3mTBcmbqWYS06xmQ==}
+  /@next/third-parties@15.0.3(next@14.2.15)(react@18.3.1):
+    resolution: {integrity: sha512-T2NkBXLcgRY0cmE7jb/dSMXNK9D+yv1k+n0uBxwMBS9SEtOhuMvxiUPQRj5x4cFnsei6JECloJg88koMprKw0A==}
     peerDependencies:
-      next: ^13.0.0 || ^14.0.0
-      react: ^18.2.0
+      next: ^13.0.0 || ^14.0.0 || ^15.0.0
+      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
     dependencies:
       next: 14.2.15(@babel/core@7.26.0)(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
