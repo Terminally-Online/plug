@@ -179,7 +179,6 @@ export const Sentence: FC<
 																		handleChange={() =>
 																			setValue(
 																				input.index,
-																				// TODO: This should be set to undefined/null instead of empty string
 																				option.value === value?.value
 																					? ""
 																					: option.value
@@ -193,7 +192,6 @@ export const Sentence: FC<
 																		onClick={() =>
 																			setValue(
 																				input.index,
-																				// TODO: This should be set to undefined/null instead of empty string
 																				option.value === value?.value
 																					? ""
 																					: option.value
