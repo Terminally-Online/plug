@@ -26,7 +26,6 @@ const initialState: CordState = {
 	parsed: null,
 	resolvedSentence: null,
 	error: null,
-	isDirty: false,
 	validationErrors: new Map()
 }
 
@@ -97,7 +96,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 				setState(prev => ({
 					...prev,
 					values: result.value,
-					isDirty: true,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
 								type: "validation",
@@ -108,30 +106,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			},
 			[parsed, state.values]
 		),
-		reset: useCallback(() => {
-			setState(initialState)
-		}, []),
-		clear: useCallback((index: number) => {
-			setState(prev => {
-				const newValues = new Map(prev.values)
-				newValues.delete(index)
-
-				return {
-					...prev,
-					values: newValues,
-					validationErrors: new Map([...prev.validationErrors].filter(([k]) => k !== index)),
-					isDirty: true
-				}
-			})
-		}, []),
-		clearAll: useCallback(() => {
-			setState(prev => ({
-				...prev,
-				values: createInitialState(),
-				validationErrors: new Map(),
-				isDirty: true
-			}))
-		}, [])
 	}
 
 	const helpers = {
@@ -162,7 +136,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		setState(prev => ({
 			...prev,
 			values: createStateFromValues(values),
-			isDirty: false
 		}))
 	}, [values])
 

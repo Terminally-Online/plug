@@ -26,6 +26,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^4.18.0
     version: 4.36.1(react-dom@18.3.1)(react-native@0.76.3)(react@18.3.1)
+  '@terminallyonline/cord':
+    specifier: ^0.2.1
+    version: 0.2.1
   '@trpc/client':
     specifier: ^10.45.2
     version: 10.45.2(@trpc/server@10.45.2)
@@ -3805,6 +3808,10 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
       react-native: 0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0)(@types/react@18.3.12)(react@18.3.1)(utf-8-validate@5.0.10)
       use-sync-external-store: 1.2.2(react@18.3.1)
+    dev: false
+
+  /@terminallyonline/cord@0.2.1:
+    resolution: {integrity: sha512-4umYcuJz5vRHs8r4qpUfm8kIauECbAZ46Ejx1T6Xeq32qHICKMQ+2hHL8wdp5pWNuIdYr62HiR8mP+5f9bYBkA==}
     dev: false
 
   /@trivago/prettier-plugin-sort-imports@4.3.0(prettier@3.3.3):
