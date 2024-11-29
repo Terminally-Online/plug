@@ -2,9 +2,9 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { Hash, X } from "lucide-react"
 
-import { getInputPlaceholder } from "@terminallyonline/cord"
+import { getInputPlaceholder, shouldRenderInput } from "@terminallyonline/cord"
 
-import { Accordion, Button, Fragments, Frame, Image, Search } from "@/components"
+import { Accordion, Button, Frame, Image, Search } from "@/components"
 import { Action, cn, formatTitle } from "@/lib"
 import { useActions, useColumnStore, usePlugStore } from "@/state"
 
@@ -28,15 +28,18 @@ export const Sentence: FC<
 
 	const actionSchema = solverActions[action.protocol]
 
-	const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
+	// const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
+	const sentence = "Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
 
 	const {
 		state: { parsed, error, values },
 		actions: { setValue },
 		helpers: { getInputValue, getInputError }
 	} = useCord(
-		"Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
+		sentence
 	)
+
+	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : [];
 
 	if (!column || !parsed) return null
 
@@ -65,10 +68,19 @@ export const Sentence: FC<
 							/>
 						</div>
 
-						<div className="flex flex-wrap">
-							{parsed.inputs.map((input, inputIndex) => {
-								const value = getInputValue(input.index)
-								const error = getInputError(input.index)
+						<div className="flex flex-wrap items-center gap-1">
+							{parts.map((part, partIndex) => {
+								const match = part.match(/\{(\d+)\}/);
+
+								if (!match) return <span key={partIndex}>{part}</span>;
+
+								const inputIndex = parseInt(match[1]);
+								const input = parsed.inputs.find(i => i.index === inputIndex);
+
+								if (!input) return null;
+
+								const value = getInputValue(inputIndex)
+								const error = getInputError(inputIndex)
 								const isEmpty = !value?.value.trim()
 								const isValid = !isEmpty && !error
 
@@ -156,7 +168,7 @@ export const Sentence: FC<
 													*/}
 													<div className="mb-4 px-6">
 														<Button
-															variant={isValid ? "primary" : "disabled"}
+															variant={!isEmpty && !error ? "primary" : "disabled"}
 															className="w-full py-4"
 															onClick={() =>
 																frame(
@@ -165,10 +177,10 @@ export const Sentence: FC<
 																		: undefined
 																)
 															}
-															disabled={isValid === false}
+															disabled={isEmpty || error !== undefined}
 														>
-															{!isValid
-																? "Enter value"
+															{isEmpty || error
+																? error?.message || "Enter value"
 																: parsed.inputs.length - 1 > inputIndex
 																	? "Next"
 																	: "Done"}
