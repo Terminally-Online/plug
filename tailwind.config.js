@@ -84,7 +84,7 @@ module.exports = {
 
 			backgroundImage: {
 				"gradient-animated":
-					"linear-gradient(90deg, rgba(255,255,255,0.0), rgba(235, 236, 236, 1), rgba(255,255,255,0.0))"
+					"linear-gradient(90deg, rgba(253, 255, 247, 0), rgba(56, 88, 66, 0.1), rgba(253,255,247,0.0))"
 			},
 
 			borderRadius: {
