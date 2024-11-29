@@ -5,11 +5,9 @@ import { Hash, X } from "lucide-react"
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
 import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
-import { Action, cn, formatTitle } from "@/lib"
+import { Action, cn, formatTitle, useCord } from "@/lib"
 import { api } from "@/server/client"
 import { useColumnStore, usePlugStore } from "@/state"
-
-import { useCord } from "./useCord"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
