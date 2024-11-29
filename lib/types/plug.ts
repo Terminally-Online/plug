@@ -27,14 +27,7 @@ export type ActionSchemas = {
 	[protocol: string]: ActionSchema
 }
 
-export type Option = {
-	icon: JSX.Element | undefined
-	label: string
-	value: string | number
-	imagePath?: string
-}
-
-export type Value = string | Option | undefined | null
+export type Value = string | undefined | null
 
 export type Action = {
 	protocol: string
