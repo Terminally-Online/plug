@@ -185,7 +185,7 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 
 	return (
 		<Accordion
-			className={cn(isDisabled && "cursor-not-allowed bg-grayscale-0")}
+			className={cn(isDisabled && "cursor-not-allowed bg-plug-green/5")}
 			onExpand={
 				isDisabled
 					? undefined
@@ -218,7 +218,7 @@ const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 	return (
 		<div className="mb-auto w-full pt-2">
 			<ConnectorQrCode />
-			<div className="h-[1px] w-full bg-grayscale-100" />
+			<div className="h-[1px] w-full bg-plug-green/10" />
 			<div className="px-4 pt-4">
 				<Animate.List>
 					{connectors.map(connector => (

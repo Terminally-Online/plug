@@ -86,7 +86,7 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 	return (
 		<>
 			<div className="flex h-full flex-col items-center gap-4 px-4 py-4">
-				<div className="relative mx-4 flex h-full min-h-96 w-full flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-grayscale-0 to-white p-8 py-16 text-center">
+				<div className="relative mx-4 flex h-full min-h-96 w-full flex-col items-center justify-center gap-1 rounded-lg bg-gradient-to-tr from-plug-green/5 to-white p-8 py-16 text-center">
 					<div className="absolute left-4 right-4 top-4">
 						<div className="flex w-full flex-row items-center justify-between gap-2">
 							<p

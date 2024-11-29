@@ -79,7 +79,7 @@ export const Sentence: FC<SentenceProps> = ({
 	return (
 		<>
 			<Accordion
-				className={cn("hover:cursor-auto hover:border-grayscale-100 hover:bg-white", className)}
+				className={cn("hover:cursor-auto hover:border-plug-green/10 hover:bg-white", className)}
 				{...props}
 			>
 				<div className={cn("flex flex-row items-center font-bold")}>
@@ -326,7 +326,7 @@ export const Sentence: FC<SentenceProps> = ({
 			</Accordion>
 
 			{preview === false && actionIndex < plugActions.length - 1 && (
-				<div className="mx-auto h-2 w-[2px] bg-grayscale-0" />
+				<div className="mx-auto h-2 w-[2px] bg-plug-green/5" />
 			)}
 		</>
 	)

@@ -242,7 +242,7 @@ export const Platform = () => {
 							<div className="flex grid h-full grid-cols-2 gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS }).map((_, index) => (
 									<div
-										className="gradient-animated h-[52px] w-full rounded-lg bg-grayscale-100"
+										className="gradient-animated h-[52px] w-full rounded-lg bg-plug-green/10"
 										key={index}
 									/>
 								))}
@@ -266,7 +266,7 @@ export const Platform = () => {
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
 									<div
-										className="gradient-animated h-[48px] w-full rounded-lg bg-grayscale-100"
+										className="gradient-animated h-[48px] w-full rounded-lg bg-plug-green/10"
 										key={index}
 									/>
 								))}
@@ -290,7 +290,7 @@ export const Platform = () => {
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
 									<div
-										className="gradient-animated h-[48px] w-full rounded-lg bg-grayscale-100"
+										className="gradient-animated h-[48px] w-full rounded-lg bg-plug-green/10"
 										key={index}
 									/>
 								))}
@@ -314,7 +314,7 @@ export const Platform = () => {
 							<div className="flex grid h-full grid-cols-2 gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS }).map((_, index) => (
 									<div
-										className="gradient-animated h-[52px] w-full rounded-lg bg-grayscale-100"
+										className="gradient-animated h-[52px] w-full rounded-lg bg-plug-green/10"
 										key={index}
 									/>
 								))}
@@ -339,7 +339,7 @@ export const Platform = () => {
 							<div className="flex h-full flex-col gap-1 px-2 pt-2">
 								{Array.from({ length: ITEMS / 2 }).map((_, index) => (
 									<div
-										className="gradient-animated h-[48px] w-full rounded-lg bg-grayscale-100"
+										className="gradient-animated h-[48px] w-full rounded-lg bg-plug-green/10"
 										key={index}
 									/>
 								))}

@@ -69,7 +69,7 @@ export const TransferRecipient: FC<
 			)
 		if (account.address === address)
 			return (
-				<p className="rounded-md bg-grayscale-0 px-2 py-1 text-sm">
+				<p className="rounded-md bg-plug-green/5 px-2 py-1 text-sm">
 					<span className="opacity-40">Connected</span>
 				</p>
 			)

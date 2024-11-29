@@ -34,12 +34,12 @@ export const Accordion: FC<Props> = memo(
 		return (
 			<button
 				className={cn(
-					"group flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-grayscale-100 outline-none",
-					expanded && "bg-grayscale-0 hover:bg-white",
+					"group flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-plug-green/10 outline-none",
+					expanded && "bg-plug-green/5 hover:bg-white",
 					loading
 						? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
 						: "transition-all duration-200 ease-in-out",
-					loading === false && expanded === false && "bg-white hover:border-white hover:bg-grayscale-0",
+					loading === false && expanded === false && "bg-white hover:border-white hover:bg-plug-green/5",
 					loading === false ? "cursor-pointer" : "cursor-default",
 					className
 				)}

@@ -40,7 +40,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 
 				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Transaction</p>
-					<div className="h-[2px] w-full bg-grayscale-100" />
+					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
 				<p className="flex w-full flex-row items-center gap-4 font-bold">
@@ -67,7 +67,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					<>
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Schedule</p>
-							<div className="h-[2px] w-full bg-grayscale-100" />
+							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
 						<p className="flex flex-row justify-between font-bold">

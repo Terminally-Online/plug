@@ -117,7 +117,7 @@ export const TransferNFTFrame: FC<{
 			icon={
 				<div className="relative h-8 w-10">
 					<div
-						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100 blur-2xl filter"
+						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10 blur-2xl filter"
 						style={{
 							backgroundImage: `url(${collection.iconUrl})`,
 							backgroundSize: "cover",
@@ -129,7 +129,7 @@ export const TransferNFTFrame: FC<{
 						}}
 					/>
 					<div
-						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+						className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 						style={{
 							backgroundImage: `url(${collection.iconUrl})`,
 							backgroundSize: "cover",
@@ -196,7 +196,7 @@ export const TransferNFTFrame: FC<{
 					) : (
 						<div className="relative z-[5] flex flex-col gap-4">
 							<div
-								className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
+								className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
 								ref={containerRef}
 								onMouseDown={handleDragStart}
 								onMouseEnter={() => setIsPrecise(true)}

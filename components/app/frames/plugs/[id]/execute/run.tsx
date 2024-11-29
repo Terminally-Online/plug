@@ -57,7 +57,7 @@ export const RunFrame: FC<{
 					<>
 						<ActionPreview index={index} item={item} />
 						{!isReady && (
-							<p className="py-2 text-center text-sm font-medium text-grayscale-300">
+							<p className="py-2 text-center text-sm font-medium opacity-40">
 								Some actions have missing required values.
 							</p>
 						)}
@@ -72,7 +72,7 @@ export const RunFrame: FC<{
 
 				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Transaction</p>
-					<div className="h-[2px] w-full bg-grayscale-100" />
+					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
 				<p className="flex w-full flex-row items-center gap-4 font-bold">
@@ -99,7 +99,7 @@ export const RunFrame: FC<{
 					<>
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Schedule</p>
-							<div className="h-[2px] w-full bg-grayscale-100" />
+							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
 						<p className="flex flex-row justify-between font-bold">

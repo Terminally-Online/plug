@@ -91,12 +91,12 @@ export const ColumnAdd = () => {
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-grayscale-100 bg-white",
+				"relative my-2 mr-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
 				columns.length === 2 && "ml-2"
 			)}
 			style={{ minWidth: "480px" }}
 		>
-			<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white transition-all duration-200 ease-in-out">
+			<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
 				<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
 					<Plus size={18} className="opacity-40" />
 					<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>

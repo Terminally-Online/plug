@@ -1,4 +1,4 @@
-import React, { FC, memo, useEffect, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 
 import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
 
@@ -32,8 +32,11 @@ export const ConsoleColumn: FC<{
 }> = ({ id }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { column, handle } = useColumnStore(id)
-	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
+	const {
+		column,
+		handle: { frame, remove, resize, navigate }
+	} = useColumnStore(id)
+	const { plug } = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
@@ -52,7 +55,7 @@ export const ConsoleColumn: FC<{
 		const handleMouseUp = () => {
 			setIsResizing(false)
 
-			handle.resize({
+			resize({
 				index: column.index,
 				width
 			})
@@ -67,7 +70,7 @@ export const ConsoleColumn: FC<{
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
 		}
-	}, [handle, column, width, isResizing])
+	}, [resize, column, width, isResizing])
 
 	if (!column) return null
 
@@ -86,12 +89,12 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className="relative my-2 flex w-full select-none flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100 bg-white"
+							className="relative my-2 flex w-full select-none flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10 bg-white"
 						>
 							<div
 								className={cn(
-									"group relative z-[30] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4 transition-all duration-200 ease-in-out",
-									snapshot.isDragging ? "bg-grayscale-0" : "hover:bg-grayscale-0"
+									"group relative z-[30] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
+									snapshot.isDragging ? "bg-plug-green/5" : "hover:bg-plug-green/5"
 								)}
 								{...provided.dragHandleProps}
 							>
@@ -115,7 +118,7 @@ export const ConsoleColumn: FC<{
 												<Button
 													variant="secondary"
 													onClick={() =>
-														handle.navigate({
+														navigate({
 															index: column.index,
 															key: column.from
 														})
@@ -128,7 +131,7 @@ export const ConsoleColumn: FC<{
 
 											{plug && (
 												<div
-													className="h-6 w-6 min-w-6 rounded-sm bg-grayscale-100"
+													className="h-6 w-6 min-w-6 rounded-sm bg-plug-green/10"
 													style={{
 														backgroundImage: cardColors[plug.color]
 													}}
@@ -174,7 +177,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => handle.frame("manage")}
+														onClick={() => frame("manage")}
 													>
 														<Settings size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -182,7 +185,7 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="group rounded-sm p-1"
-														onClick={() => handle.remove(column.index)}
+														onClick={() => remove(column.index)}
 													>
 														<X size={14} className="opacity-60 hover:opacity-100" />
 													</Button>
@@ -191,7 +194,7 @@ export const ConsoleColumn: FC<{
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => handle.remove(column.index) : undefined}
+									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
 									nextLabel={<X size={14} />}
 								/>
 							</div>
@@ -236,7 +239,7 @@ export const ConsoleColumn: FC<{
 							}}
 						>
 							<div
-								className={cn("h-full w-[1px] bg-grayscale-100", snapshot.isDragging && "opacity-0")}
+								className={cn("h-full w-[1px] bg-plug-green/10", snapshot.isDragging && "opacity-0")}
 							/>
 						</div>
 					</div>

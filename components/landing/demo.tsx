@@ -49,7 +49,7 @@ export const Demo = () => {
 						The home of all your onchain activity.
 					</motion.h1>
 					<div className="hidden w-full items-center gap-4 md:visible xl:flex xl:flex-row">
-						<div className="h-[2px] w-full bg-grayscale-100" />
+						<div className="h-[2px] w-full bg-plug-green/10" />
 						<Link
 							className="whitespace-nowrap font-bold opacity-40 transition-opacity duration-200 ease-in-out hover:opacity-100"
 							href={`${routes.documentation}/introduction/integrations`}
@@ -58,7 +58,7 @@ export const Demo = () => {
 						>
 							Experience the Difference
 						</Link>
-						<div className="h-[2px] w-24 bg-grayscale-100" />
+						<div className="h-[2px] w-24 bg-plug-green/10" />
 					</div>
 				</div>
 				<motion.p
@@ -80,7 +80,7 @@ export const Demo = () => {
 
 			<Blob left={"55%"} top={"350"} width={"1000"} height={"500"} />
 
-			<div className="z-[120] h-[95vh] w-full border-y-[1px] border-grayscale-100 bg-white">
+			<div className="z-[120] h-[95vh] w-full border-y-[1px] border-plug-green/10 bg-white">
 				<DemoApp />
 			</div>
 		</div>

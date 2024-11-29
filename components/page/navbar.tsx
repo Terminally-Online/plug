@@ -17,7 +17,7 @@ export const PageNavbar = () => {
 	if (!column) return null
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-grayscale-100 bg-white">
+		<div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-plug-green/10 bg-white">
 			<div className="relative z-[11] flex flex-row items-center justify-between gap-2 px-8 py-4">
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
@@ -70,7 +70,7 @@ export const PageNavbar = () => {
 				>
 					{session && (
 						<button
-							className="relative h-8 w-8 rounded-md bg-grayscale-0 transition-all duration-200 ease-in-out"
+							className="relative h-8 w-8 rounded-md bg-plug-green/5 transition-all duration-200 ease-in-out"
 							onClick={() => {}}
 						>
 							<motion.div

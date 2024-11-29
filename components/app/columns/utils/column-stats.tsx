@@ -37,13 +37,13 @@ const ProfileStat: FC<{
 	return (
 		<div
 			className={cn(
-				"group relative flex w-full flex-col items-center grayscale filter transition-all duration-200 ease-in-out hover:grayscale-0",
-				isActive && "grayscale-0"
+				"hover:plug-green/5 group relative flex w-full flex-col items-center grayscale filter transition-all duration-200 ease-in-out",
+				isActive && "plug-green/5"
 			)}
 			onMouseEnter={() => onHover(index)}
 			onMouseLeave={() => onHover(undefined)}
 		>
-			<div className="absolute bottom-0 left-1/2 top-8 w-[2px] -translate-x-1/2 bg-grayscale-100" />
+			<div className="absolute bottom-0 left-1/2 top-8 w-[2px] -translate-x-1/2 bg-plug-green/10" />
 			<p
 				className={cn(
 					"mb-8 font-bold opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-100",
@@ -130,7 +130,7 @@ const ProfileStats = () => {
 				<div className="flex flex-row gap-2">
 					<div
 						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[0] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							toggledStats[0] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
 						}`}
 						onClick={() => handleToggle(0)}
 					>
@@ -144,7 +144,7 @@ const ProfileStats = () => {
 					</div>
 					<div
 						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[1] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							toggledStats[1] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
 						}`}
 						onClick={() => handleToggle(1)}
 					>
@@ -160,7 +160,7 @@ const ProfileStats = () => {
 				<div className="flex flex-row gap-2">
 					<div
 						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[2] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							toggledStats[2] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
 						}`}
 						onClick={() => handleToggle(2)}
 					>
@@ -174,7 +174,7 @@ const ProfileStats = () => {
 					</div>
 					<div
 						className={`relative flex w-full cursor-pointer flex-col items-start justify-center rounded-md border-[1px] px-6 py-4 text-left ${
-							toggledStats[3] === false ? "border-white bg-grayscale-0" : "border-grayscale-100 bg-white"
+							toggledStats[3] === false ? "border-white bg-plug-green/5" : "border-plug-green/10 bg-white"
 						}`}
 						onClick={() => handleToggle(3)}
 					>

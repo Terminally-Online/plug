@@ -17,7 +17,7 @@ export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false })
 			"h-min w-min rounded-[6px] p-[2px]",
 			disabled === false
 				? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow"
-				: "cursor-not-allowed bg-grayscale-100"
+				: "cursor-not-allowed bg-plug-green/10"
 		)}
 		onClick={() => disabled === false && handleChange(!checked)}
 	>

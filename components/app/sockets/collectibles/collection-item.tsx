@@ -55,7 +55,7 @@ export const SocketCollectionItem: FC<{
 							<Image
 								src={chains[getChainId(collection.chain)].logo}
 								alt={collection.name}
-								className="z-1 relative h-4 w-4 rounded-full bg-grayscale-100"
+								className="z-1 relative h-4 w-4 rounded-full bg-plug-green/10"
 								width={48}
 								height={48}
 							/>

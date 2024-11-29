@@ -41,7 +41,7 @@ export const SocketTabs: FC<{
 	}, [selected])
 
 	return (
-		<div className="border-b-[1px] border-grayscale-100 px-4">
+		<div className="border-b-[1px] border-plug-green/10 px-4">
 			<ul className="relative flex list-none gap-4 pb-2">
 				{tabs.map((tab, index) => (
 					<button

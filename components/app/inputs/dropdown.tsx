@@ -23,7 +23,7 @@ export const Dropdown: FC<Props> = ({ icon, placeholder, value, handleClick, cla
 				className={cn("flex flex-col gap-2", className)}
 				onClick={() => (handleClick ? handleClick() : undefined)}
 			>
-				<div className="flex w-full cursor-pointer flex-row items-center gap-4 rounded-lg bg-grayscale-0 p-4 px-6">
+				<div className="flex w-full cursor-pointer flex-row items-center gap-4 rounded-lg bg-plug-green/5 p-4 px-6">
 					{icon}
 
 					<p className="flex gap-2">

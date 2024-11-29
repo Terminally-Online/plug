@@ -78,7 +78,7 @@ export const PositionFrame: FC<{
 
 				<div className={cn("relative mb-4 flex flex-col gap-4 px-6 font-bold", keys.length > 0 && "pt-4")}>
 					<a
-						className="flex w-full items-center justify-center gap-2 rounded-lg bg-grayscale-100 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+						className="flex w-full items-center justify-center gap-2 rounded-lg bg-plug-green/10 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 						style={{
 							backgroundColor: color ?? "",
 							color: textColor

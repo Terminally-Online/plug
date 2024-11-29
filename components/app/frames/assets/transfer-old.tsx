@@ -109,7 +109,7 @@ export const TransferFrame: FC<{
 	// 					{token.implementations.map((implementation, index) => (
 	// 						<div
 	// 							key={index}
-	// 							className="relative mr-6 flex items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
+	// 							className="relative mr-6 flex items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
 	// 						>
 	// 							<div className="flex w-full flex-row">
 	// 								<div className="flex flex-row items-center gap-4 px-2">
@@ -156,7 +156,7 @@ export const TransferFrame: FC<{
 	//
 	// 						<Button
 	// 							variant="secondary"
-	// 							className="p-1 group-hover:bg-grayscale-100"
+	// 							className="p-1 group-hover:bg-plug-green/10"
 	// 							onClick={() =>
 	// 								setTransfer({
 	// 									...transfer,
@@ -172,7 +172,7 @@ export const TransferFrame: FC<{
 	// 					</p>
 	// 				</button>
 	//
-	// 				<div className="h-0 border-[1px] border-b-grayscale-100" />
+	// 				<div className="h-0 border-[1px] border-b-plug-green/10" />
 	//
 	// 				<button
 	// 					className="group flex flex-col gap-2 text-left"
@@ -186,7 +186,7 @@ export const TransferFrame: FC<{
 	//
 	// 						<Button
 	// 							variant="secondary"
-	// 							className="p-1 group-hover:bg-grayscale-100"
+	// 							className="p-1 group-hover:bg-plug-green/10"
 	// 							onClick={() => setTransfer({ ...transfer, action: "send" })}
 	// 						>
 	// 							<ArrowRight size={14} className="ml-auto" />
@@ -264,7 +264,7 @@ export const TransferFrame: FC<{
 	//
 	// 								<Button
 	// 									variant="secondary"
-	// 									className="p-1 group-hover:bg-grayscale-100"
+	// 									className="p-1 group-hover:bg-plug-green/10"
 	// 									onClick={() => setTransfer({ ...transfer, chain })}
 	// 								>
 	// 									<ChevronRight size={14} />
@@ -329,7 +329,7 @@ export const TransferFrame: FC<{
 	// 						<span className="mr-auto">Advanced</span>
 	// 						<Button
 	// 							variant="secondary"
-	// 							className="p-1 group-hover:bg-grayscale-100"
+	// 							className="p-1 group-hover:bg-plug-green/10"
 	// 							onClick={() => setAdvanced(!advanced)}
 	// 						>
 	// 							<motion.div animate={{ rotate: advanced ? 180 : 0 }} transition={{ duration: 0.2 }}>

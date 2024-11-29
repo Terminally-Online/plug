@@ -165,7 +165,7 @@ export const TokenImage: FC<
 						ref={imgRef}
 						src={logo}
 						alt={symbol}
-						className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full bg-grayscale-100"
+						className="absolute left-1/2 -translate-x-1/2 animate-fade-in rounded-full bg-plug-green/10"
 						style={{
 							height: `${dimensions.content}rem`,
 							width: `${dimensions.content}rem`,

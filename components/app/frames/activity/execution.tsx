@@ -70,7 +70,7 @@ export const ExecutionFrame: FC<{
 
 				<div className="mb-2 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Details</p>
-					<div className="h-[2px] w-full bg-grayscale-100" />
+					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
 				<div className="flex flex-col">
@@ -117,7 +117,7 @@ export const ExecutionFrame: FC<{
 				{(activity.status !== "paused" || activity.simulations.length > 0) && (
 					<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 						<p className="font-bold opacity-40">Simulations</p>
-						<div className="h-[2px] w-full bg-grayscale-100" />
+						<div className="h-[2px] w-full bg-plug-green/10" />
 					</div>
 				)}
 

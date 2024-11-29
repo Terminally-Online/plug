@@ -201,7 +201,7 @@ const ExecutionAction: FC<PropsWithChildren<{ index: number; indexes: number; pr
 					}}
 				>
 					<motion.div
-						className="h-full w-full bg-grayscale-100"
+						className="h-full w-full bg-plug-green/10"
 						initial={{ background: "linear-gradient(30deg, #EBECEC, #EBECEC)" }}
 						animate={{ background: "linear-gradient(30deg, #D2F38A, #385842)" }}
 						transition={{

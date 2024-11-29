@@ -104,7 +104,7 @@ const ImplementationComponent: FC<{
 
 	return (
 		<div
-			className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-grayscale-100 p-4"
+			className="relative mr-6 flex cursor-ew-resize items-center gap-4 overflow-hidden rounded-r-lg border-[1px] border-l-[0px] border-plug-green/10 p-4"
 			ref={containerRef}
 			onMouseDown={handleDragStart}
 			onMouseEnter={() => setIsPrecise(true)}

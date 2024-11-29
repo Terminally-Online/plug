@@ -36,7 +36,7 @@ export const SocketPositionItem: FC<{
 							height={240}
 						/>
 						<Image
-							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+							className="absolute left-1/2 top-1/2 h-10 w-10 min-w-10 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 							src={protocol.icon}
 							alt=""
 							width={240}

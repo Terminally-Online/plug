@@ -34,10 +34,9 @@ const ConsoleSidebarAction: FC<
 	>
 		<div
 			className={cn(
-				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-grayscale-100 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-grayscale-0",
-				isActive && "bg-grayscale-0 hover:bg-white",
-				isPrimary &&
-					"group-hover: border-plug-yellow bg-plug-yellow text-plug-green"
+				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-plug-green/5",
+				isActive && "bg-plug-green/5 hover:bg-white",
+				isPrimary && "group-hover: border-plug-yellow bg-plug-yellow text-plug-green"
 			)}
 		>
 			{icon}
@@ -91,12 +90,12 @@ const ConsoleSidebarPane = () => {
 			{(is.authenticating || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
-						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-grayscale-100"
+						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10"
 						style={{
 							width: `${width}px`
 						}}
 					>
-						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-grayscale-100 bg-white px-4">
+						<div className="relative z-[30] w-full rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4">
 							<Header
 								label={
 									is.companion
@@ -163,7 +162,7 @@ const ConsoleSidebarPane = () => {
 							setIsResizing(true)
 						}}
 					>
-						<div className="h-full w-[1px] bg-grayscale-100" />
+						<div className="h-full w-[1px] bg-plug-green/10" />
 					</div>
 				</div>
 			)}
@@ -185,11 +184,11 @@ export const ConsoleSidebar = () => {
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
-			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-grayscale-100 py-4">
+			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-plug-green/10 py-4">
 				<div className={cn("flex w-full flex-col gap-4 p-2")}>
 					{session && (
 						<button
-							className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-grayscale-0 transition-all duration-200 ease-in-out"
+							className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 							onClick={() => handleSidebar("authenticating")}
 						>
 							{avatar ? (

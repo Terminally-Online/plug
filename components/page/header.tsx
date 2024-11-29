@@ -106,7 +106,7 @@ const PlugHeader = () => {
 				}
 				icon={
 					<div
-						className="h-6 w-6 min-w-6 rounded-md bg-grayscale-100"
+						className="h-6 w-6 min-w-6 rounded-md bg-plug-green/10"
 						style={{
 							backgroundImage: cardColors[plug.color]
 						}}

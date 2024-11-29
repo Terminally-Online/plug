@@ -72,7 +72,7 @@ export const CollectibleFrame: FC<{
 				icon={
 					<div className="relative h-8 w-10">
 						<div
-							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100 blur-2xl filter"
+							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10 blur-2xl filter"
 							style={{
 								backgroundImage: `url(${collection.iconUrl})`,
 								backgroundSize: "cover",
@@ -84,7 +84,7 @@ export const CollectibleFrame: FC<{
 							}}
 						/>
 						<div
-							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-grayscale-100"
+							className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in rounded-full bg-plug-green/10"
 							style={{
 								backgroundImage: `url(${collection.iconUrl})`,
 								backgroundSize: "cover",
