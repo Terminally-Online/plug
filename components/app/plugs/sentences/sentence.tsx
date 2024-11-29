@@ -9,6 +9,7 @@ import { Action, cn, formatTitle } from "@/lib"
 import { useActions, useColumnStore, usePlugStore } from "@/state"
 
 import { useCord } from "./useCord"
+import { api } from "@/server/client"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
@@ -24,23 +25,27 @@ export const Sentence: FC<
 		handle: { frame }
 	} = useColumnStore(index)
 	const { own, actions: plugActions, handle } = usePlugStore(item)
-	const [solverActions] = useActions()
+	// const [solverActions] = useActions()
 
-	const actionSchema = solverActions[action.protocol]
-
+	const { data: solverActions } = api.solver.actions.get.useQuery({
+		protocol: action.protocol,
+		action: action.action
+	})
+	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
+	
 	// const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
 	const sentence =
 		"Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}"
 
 	const {
-		state: { parsed, error, values },
+		state: { parsed },
 		actions: { setValue },
 		helpers: { getInputValue, getInputError }
 	} = useCord(sentence)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
-	if (!column || !parsed) return null
+	if (!column || !actionSchema || !parsed) return null
 
 	return (
 		<>
@@ -80,6 +85,7 @@ export const Sentence: FC<
 
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
+
 								const isEmpty = !value?.value.trim()
 								const isValid = !isEmpty && !error
 
