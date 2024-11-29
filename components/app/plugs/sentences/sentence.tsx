@@ -1,10 +1,12 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
-import { X } from "lucide-react"
+import { Hash, X } from "lucide-react"
 
-import { Accordion, Button, Fragments, Image } from "@/components"
-import { Action, cn } from "@/lib"
-import { useActions, usePlugStore } from "@/state"
+import { Accordion, Button, Fragments, Frame, Image, Search } from "@/components"
+import { Action, cn, formatTitle } from "@/lib"
+import { useActions, useColumnStore, usePlugStore } from "@/state"
+import { useCord } from "./useCord"
+import { getInputPlaceholder } from "@terminallyonline/cord"
 
 export const Sentence: FC<
 	HTMLAttributes<HTMLButtonElement> & {
@@ -15,10 +17,21 @@ export const Sentence: FC<
 		preview?: boolean
 	}
 > = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
-	const { own, actions, handle } = usePlugStore(item)
+	const { column, handle: { frame } } = useColumnStore(index)
+	const { own, actions: plugActions, handle } = usePlugStore(item)
 	const [solverActions] = useActions()
 
 	const actionSchema = solverActions[action.protocol]
+
+	const sentence = useMemo(() => actionSchema.schema[action.action].sentence, [actionSchema, action.action])
+
+	const {
+		state: { parsed, error, values },
+		actions: { setValue },
+		helpers: { getInputValue, getInputError },
+	} = useCord("Transfer {0<amount:[(1.1)==721?1:uint256]>} {1<token:address=0x62180042606624f02d8a130da8a3171e9b33894d:uint256=721>} {2<id:[(1.1)>20?uint256:null]>}");
+
+	if (!column || !parsed) return null
 
 	return (
 		<>
@@ -45,13 +58,104 @@ export const Sentence: FC<
 							/>
 						</div>
 
-						<Fragments
-							index={index}
-							item={item}
-							action={action}
-							actionIndex={actionIndex}
-							preview={preview}
-						/>
+						<div className="flex flex-wrap">
+							{parsed.inputs.map((input, inputIndex) => {
+								const value = getInputValue(input.index)
+								const error = getInputError(input.index)
+								const isEmpty = !value?.value.trim()
+								const isValid = !isEmpty && !error
+
+								return (
+									<>
+										<button
+											className={cn(
+												"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
+												preview && !isValid ? "text-plug-red" : "text-plug-green",
+												own === true ? "cursor-pointer" : "cursor-default"
+											)}
+											style={{
+												background:
+													preview && !isValid
+														? "linear-gradient(to right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
+														: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`
+											}}
+											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
+										>
+											{value?.value || input.name || `Input #${input.index}`}
+										</button>
+
+										<Frame
+											index={index}
+											icon={
+												<div className="relative h-10 min-w-10">
+													<Image
+														src={actionSchema.metadata.icon}
+														alt={`Action ${actionIndex} icon`}
+														width={64}
+														height={64}
+														className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 rounded-sm blur-2xl filter"
+													/>
+													<Image
+														src={actionSchema.metadata.icon}
+														alt={`Action ${actionIndex} icon`}
+														width={64}
+														height={64}
+														className="relative left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-sm"
+													/>
+												</div>
+											}
+											label={
+												<span className="relative">
+													<span className="text-lg">
+														<span className={cn(parsed.inputs.length > 1 && "opacity-40")}>
+															{formatTitle(action.action)}
+															{parsed.inputs.length > 1 && <span>:</span>}
+														</span>
+														{parsed.inputs.length > 1 && <span> {formatTitle(input.name ?? `Input #${inputIndex}`)}</span>}
+													</span>
+												</span>
+											}
+											visible={column.frame === `${actionIndex}-${inputIndex}`}
+											handleBack={inputIndex > 0 ? () => frame(`${actionIndex}-${inputIndex - 1}`) : undefined}
+											hasOverlay
+											hasChildrenPadding={false}
+											scrollBehavior="partial"
+										>
+											<div className="flex flex-col gap-2 overflow-y-auto px-6">
+												<Search
+													className="mb-4"
+													icon={<Hash size={14} />}
+													placeholder={getInputPlaceholder(input.type)}
+													search={value?.value}
+													handleSearch={data => setValue(input.index, data)}
+												/>
+											</div>
+
+
+											<div className="mt-auto bg-white">
+												<div className="relative">
+													{/*
+													{options && options.length > 0 && (
+														<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
+													)}
+													*/}
+													<div className="mb-4 px-6">
+														<Button
+															variant={isValid ? "primary" : "disabled"}
+															className="w-full py-4"
+															onClick={() => frame(inputIndex + 1 < parsed.inputs.length ? `${actionIndex}-${inputIndex + 1}` : undefined)}
+															disabled={isValid === false}
+														>
+															{!isValid ? "Enter value" : parsed.inputs.length - 1 > inputIndex ? "Next" : "Done"}
+														</Button>
+													</div>
+												</div>
+											</div>
+										</Frame>
+									</>
+								)
+							})}
+						</div>
 					</p>
 
 					{preview === false && own && (
@@ -61,7 +165,7 @@ export const Sentence: FC<
 							onClick={() =>
 								handle.action.edit({
 									id: item,
-									actions: JSON.stringify(actions.filter((_, i) => i !== actionIndex))
+									actions: JSON.stringify(plugActions.filter((_, i) => i !== actionIndex))
 								})
 							}
 						>
@@ -71,7 +175,7 @@ export const Sentence: FC<
 				</div>
 			</Accordion>
 
-			{preview === false && actionIndex < actions.length - 1 && (
+			{preview === false && actionIndex < plugActions.length - 1 && (
 				<div className="mx-auto h-2 w-[2px] bg-grayscale-0" />
 			)}
 		</>

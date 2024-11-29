@@ -141,7 +141,7 @@ export const usePlugStore = (id?: string) => {
 	})
 
 	const plug = plugs.find(p => p.id === id)
-	const own = plug && session.data && session.data.address === plug.socketId
+	const own = plug && session.data && session.data.address === plug.socketId || false
 	const actions: Actions = useMemo(() => {
 		if (!plug) return []
 		try {
