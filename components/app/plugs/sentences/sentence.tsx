@@ -19,7 +19,15 @@ type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	actionIndex: number
 }
 
-export const Sentence: FC<SentenceProps> = ({ index, item, action, actionIndex, preview = false, className, ...props }) => {
+export const Sentence: FC<SentenceProps> = ({
+	index,
+	item,
+	action,
+	actionIndex,
+	preview = false,
+	className,
+	...props
+}) => {
 	const {
 		column,
 		handle: { frame }
@@ -56,10 +64,13 @@ export const Sentence: FC<SentenceProps> = ({ index, item, action, actionIndex, 
 			actions: JSON.stringify(
 				plugActions.map((action, nestedActionIndex) => ({
 					...action,
-					values: nestedActionIndex === actionIndex ? {
-						...action.values,
-						[index]: value
-					} : action.values
+					values:
+						nestedActionIndex === actionIndex
+							? {
+									...action.values,
+									[index]: value
+								}
+							: action.values
 				}))
 			)
 		})
