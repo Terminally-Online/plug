@@ -27,12 +27,10 @@ export type ActionSchemas = {
 	[protocol: string]: ActionSchema
 }
 
-export type Value = string | undefined | null
-
 export type Action = {
 	protocol: string
 	action: string
-	values: Array<Value>
+	values: Record<string, string | undefined>
 }
 
 export type Actions = Array<Action>

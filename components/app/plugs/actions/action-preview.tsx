@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { FC } from "react"
 
 import { Sentence } from "@/components"
 import { Action, Actions, cn } from "@/lib"
@@ -10,7 +10,8 @@ const SentenceReview: FC<{ index: number; item: string; actionIndex: number; act
 	actionIndex,
 	action
 }) => {
-	const isReady = useMemo(() => action.values.every(value => Boolean(value)), [action])
+	const isReady = false
+	// const isReady = useMemo(() => action.values.every(value => Boolean(value)), [action])
 
 	return (
 		<Sentence

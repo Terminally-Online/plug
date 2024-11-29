@@ -52,7 +52,7 @@ export const Sentence: FC<SentenceProps> = ({
 		state: { parsed },
 		actions: { setValue },
 		helpers: { getInputValue, getInputError }
-	} = useCord(sentence)
+	} = useCord(sentence, action.values)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
