@@ -26,7 +26,7 @@ export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false })
 			initial={{ background: "#FFFFFF " }}
 			animate={{
 				background: checked
-					? "linear-gradient(to top right, #00E100, #A3F700)"
+					? "linear-gradient(to top right, #385842, #D2F38A)"
 					: "linear-gradient(to top right, #FFFFFF, #FFFFFF)"
 			}}
 			transition={{ duration: 0.2, ease: "easeInOut" }}
