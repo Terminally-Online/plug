@@ -136,7 +136,7 @@ export const Sentence: FC<SentenceProps> = ({
 												background:
 													preview && !isValid
 														? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
-														: `linear-gradient(to top right, rgba(56, 88, 66, 0,1), rgba(210, 243, 138, 0.1))`
+														: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
 											}}
 											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 										>
