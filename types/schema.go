@@ -18,30 +18,14 @@ type Option struct {
 	Icon  string `json:"icon,omitempty"`
 }
 
-type SchemaField struct {
-	Name    string   `json:"name"`
-	Type    string   `json:"type"`
-	Options []Option `json:"options,omitempty"`
-}
-
 type Schema struct {
-	Sentence string        `json:"sentence"`
-	Fields   []SchemaField `json:"fields,omitempty"`
+	Sentence string           `json:"sentence"`
+	Options  map[int][]Option `json:"options,omitempty"`
 }
 
 var (
-	BaseThresholdFields = []SchemaField{
-		{
-			Name: "operator",
-			Type: "uint8",
-			Options: []Option{
-				{Label: "less than", Name: "Less Than", Value: "-1"},
-				{Label: "greater than", Name: "Greater Than", Value: "1"},
-			},
-		},
-		{
-			Name: "threshold",
-			Type: "uint256",
-		},
+	BaseThresholdFields = []Option{
+		{Label: "less than", Name: "Less Than", Value: "-1"},
+		{Label: "greater than", Name: "Greater Than", Value: "1"},
 	}
 )

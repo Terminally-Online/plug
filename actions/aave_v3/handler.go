@@ -40,68 +40,38 @@ func (h *Handler) init() *Handler {
 	}
 
 	h.schemas[types.ActionDeposit] = types.Schema{
-		Sentence: "Deposit {0} {1}.",
-		Fields: []types.SchemaField{
-			{
-				Name:    "tokenIn",
-				Type:    "address",
-				Options: collateralOptions,
-			},
-			{
-				Name: "amountIn",
-				Type: "uint256",
-			},
+		Sentence: "Deposit {0<tokenIn:address>} {1<amountIn:uint256>}.",
+		Options: map[int][]types.Option{
+			0: collateralOptions,
 		},
 	}
 
 	h.schemas[types.ActionBorrow] = types.Schema{
-		Sentence: "Borrow {0} {1}.",
-		Fields: []types.SchemaField{
-			{
-				Name:    "tokenOut",
-				Type:    "address",
-				Options: borrowOptions,
-			},
-			{
-				Name: "amountOut",
-				Type: "uint256",
-			},
+		Sentence: "Borrow {0<tokenOut:address>} {1<amountOut:uint256>}.",
+		Options: map[int][]types.Option{
+			0: borrowOptions,
 		},
 	}
 
 	h.schemas[types.ActionRepay] = types.Schema{
-		Sentence: "Repay {0} {1}.",
-		Fields: []types.SchemaField{
-			{
-				Name:    "tokenIn",
-				Type:    "address",
-				Options: borrowOptions,
-			},
-			{
-				Name: "amountIn",
-				Type: "uint256",
-			},
+		Sentence: "Repay {0<tokenIn:address>} {1<amountIn:uint256>}.",
+		Options: map[int][]types.Option{
+			0: borrowOptions,
 		},
 	}
 
 	h.schemas[types.ActionWithdraw] = types.Schema{
-		Sentence: "Withdraw {0} {1}.",
-		Fields: []types.SchemaField{
-			{
-				Name:    "tokenOut",
-				Type:    "address",
-				Options: collateralOptions,
-			},
-			{
-				Name: "amountOut",
-				Type: "uint256",
-			},
+		Sentence: "Withdraw {0<tokenOut:address>} {1<amountOut:uint256>}.",
+		Options: map[int][]types.Option{
+			0: collateralOptions,
 		},
 	}
 
 	h.schemas[types.ConstraintHealthFactor] = types.Schema{
-		Sentence: "Health factor is {0} than {1}.",
-		Fields:   types.BaseThresholdFields,
+		Sentence: "Health factor is {0<operator:int8>} than {1<threshold:uint256>}.",
+		Options: map[int][]types.Option{
+			0: types.BaseThresholdFields,
+		},
 	}
 
 	aggregatedOptions := func() []types.Option {
@@ -117,32 +87,16 @@ func (h *Handler) init() *Handler {
 		return options
 	}()
 	h.schemas[types.ConstraintAPY] = types.Schema{
-		Sentence: "{0} APY of {1} is {2} than {3}%.",
-		Fields: append([]types.SchemaField{
-			{
-				Name: "direction",
-				Type: "uint256",
-				Options: []types.Option{
-					{Label: "Borrow", Name: "Borrow", Value: "-1"},
-					{Label: "Borrow", Name: "Deposit", Value: "1"},
-				},
-			}, {
-				Name:    "token",
-				Type:    "address",
-				Options: aggregatedOptions,
+		Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:uint256>}%.",
+		Options: map[int][]types.Option{
+			0: {
+				{Label: "Borrow", Name: "Borrow", Value: "-1"},
+				{Label: "Deposit", Name: "Deposit", Value: "1"},
 			},
-		}, types.BaseThresholdFields...),
+			1: aggregatedOptions,
+			2: types.BaseThresholdFields,
+		},
 	}
-
-	// TODO: (#13) We will wait to add this until someone asks for it. Right now it
-	//          just adds confusion and doesn't have an intuitive mathematical use.
-	// h.schemas[types.ConstraintAvailableLiquidity] = types.Schema{
-	// 	Sentence: "Available liquidity for {0} is {1} than {2}.",
-	// 	Fields: append([]types.SchemaField{{
-	// 		Name: "token",
-	// 		Type: "address",
-	// 	}}, types.BaseThresholdFields...),
-	// }
 
 	return h
 }

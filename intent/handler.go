@@ -57,18 +57,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				// Make a deep copy of the schema
 				schemaCopy := types.Schema{
-					Fields: make([]types.SchemaField, len(schema.Fields)),
+					Sentence: schema.Sentence,
 				}
-
-				// Deep copy each field
-				for i, field := range schema.Fields {
-					fieldCopy := field      // Copy the field struct
-					fieldCopy.Options = nil // Clear options on the copy
-					schemaCopy.Fields[i] = fieldCopy
-				}
-
 				protocolSchema.Schema[supportedAction] = schemaCopy
 			}
 			allSchemas[protocol] = protocolSchema
@@ -238,4 +229,3 @@ func (h *Handler) validateRequest(req *IntentRequest) error {
 
 	return nil
 }
-

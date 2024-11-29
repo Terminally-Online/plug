@@ -27,29 +27,12 @@ func New() actions.BaseProtocolHandler {
 }
 
 func (h *Handler) init() *Handler {
-	transferFields := []types.SchemaField{
-		{
-			Name: "amount",
-			Type: "uint256",
-		},
-		{
-			Name: "token",
-			Type: "address",
-		},
-		{
-			Name: "recipient",
-			Type: "address",
-		},
-	}
-
 	h.schemas[types.ActionTransfer] = types.Schema{
-		Sentence: "Transfer {0} {1} to {2}.",
-		Fields:   transferFields,
+		Sentence: "Transfer {0<amount:uint256>} {1<token:address>} to {2<recipient:address>}.",
 	}
 
 	h.schemas[types.ActionTransferFrom] = types.Schema{
-		Sentence: "Transfer {0} {1} to {2}.",
-		Fields:   transferFields,
+		Sentence: "Transfer {0<amount:uint256>} {1<token:address>} to {2<recipient:address>}.",
 	}
 
 	return h

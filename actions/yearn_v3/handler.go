@@ -37,17 +37,9 @@ func (h *Handler) init() *Handler {
 	}
 
 	h.schemas[types.ActionDeposit] = types.Schema{
-		Sentence: "Deposit {0} {1}.",
-		Fields: []types.SchemaField{
-			{
-				Name:    "tokenIn",
-				Type:    "address",
-				Options: underlyingAssetOptions,
-			},
-			{
-				Name: "amountIn",
-				Type: "uint256",
-			},
+		Sentence: "Deposit {0<tokenIn:address>} {1<amountIn:uint256>}.",
+		Options: map[int][]types.Option{
+			0: underlyingAssetOptions,
 		},
 	}
 

@@ -32,7 +32,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		common.HexToAddress(params.From),
 		uint16(0),
 	)
-	if err != nil { 
+	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 	return []*types.Transaction{{
@@ -61,7 +61,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		uint16(0),
 		common.HexToAddress(params.From),
 	)
-	if err != nil { 
+	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 	return []*types.Transaction{{
@@ -89,7 +89,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		interestRateMode,
 		common.HexToAddress(params.From),
 	)
-	if err != nil { 
+	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 	return []*types.Transaction{{
@@ -116,7 +116,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		inputs.AmountOut,
 		common.HexToAddress(params.From),
 	)
-	if err != nil { 
+	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 	return []*types.Transaction{{
@@ -128,7 +128,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs types.ThresholdInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal health factor inputs")
+		return nil, fmt.Errorf("failed to unmarshal health factor inputs")
 	}
 	if err := inputs.Validate(); err != nil {
 		return nil, err
@@ -143,14 +143,14 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	switch inputs.Operator {
 	case -1:
 		if healthFactorFloat.Cmp(inputs.Threshold) >= 0 {
-			return nil, fmt.Errorf("Current health factor %.2f is not less than threshold %.2f.", healthFactorFloat, inputs.Threshold)
+			return nil, fmt.Errorf("current health factor %.2f is not less than threshold %.2f", healthFactorFloat, inputs.Threshold)
 		}
 	case 1:
 		if healthFactorFloat.Cmp(inputs.Threshold) <= 0 {
-			return nil, fmt.Errorf("Current health factor %.2f is not greater than threshold %.2f.", healthFactorFloat, inputs.Threshold)
+			return nil, fmt.Errorf("current health factor %.2f is not greater than threshold %.2f", healthFactorFloat, inputs.Threshold)
 		}
 	default:
-		return nil, fmt.Errorf("Invalid operator: must be either -1 (less than) or 1 (greater than), got %d.", inputs.Operator)
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
 	return []*types.Transaction{}, nil
@@ -164,7 +164,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		Threshold *big.Float `json:"threshold"` // Percentage
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal apy constraint inputs.")
+		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
 	}
 
 	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
@@ -181,7 +181,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		}
 	}
 	if targetReserve == nil {
-		return nil, fmt.Errorf("Token %s not supported.", inputs.Token)
+		return nil, fmt.Errorf("token %s not supported", inputs.Token)
 	}
 
 	var rate *big.Int
@@ -191,7 +191,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	case 1:
 		rate = targetReserve.LiquidityRate
 	default:
-		return nil, fmt.Errorf("Invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
+		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
 	}
 	rateFloat := new(big.Float).Quo(
 		new(big.Float).SetInt(rate),
@@ -201,14 +201,14 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	switch inputs.Operator {
 	case -1:
 		if rateFloat.Cmp(inputs.Threshold) >= 0 {
-			return nil, fmt.Errorf("Current rate %.2f%% is not less than threshold %.2f%%.", rateFloat, inputs.Threshold)
+			return nil, fmt.Errorf("current rate %.2f%% is not less than threshold %.2f%%", rateFloat, inputs.Threshold)
 		}
 	case 1:
 		if rateFloat.Cmp(inputs.Threshold) <= 0 {
-			return nil, fmt.Errorf("Current rate %.2f%% is not greater than threshold %.2f%%.", rateFloat, inputs.Threshold)
+			return nil, fmt.Errorf("current rate %.2f%% is not greater than threshold %.2f%%", rateFloat, inputs.Threshold)
 		}
 	default:
-		return nil, fmt.Errorf("Invalid operator: must be either -1 (less than) or 1 (greater than), got %d.", inputs.Operator)
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
 	return []*types.Transaction{}, nil
