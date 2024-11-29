@@ -80,12 +80,13 @@ export const Sentence: FC<
 
 								if (!input) return null
 
+								const value = getInputValue(inputIndex)
+								const error = getInputError(inputIndex)
+
 								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
 								const options = sentenceOptions && sentenceOptions[inputIndex]
 								const isOptionBased = options !== undefined
-
-								const value = getInputValue(inputIndex)
-								const error = getInputError(inputIndex)
+								const option = options?.find(option => option.value === value?.value) || undefined
 
 								const isEmpty = !value?.value.trim()
 								const isValid = !isEmpty && !error
@@ -106,7 +107,7 @@ export const Sentence: FC<
 											}}
 											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 										>
-											{value?.value || input.name || `Input #${input.index}`}
+											{(option && option.label) || value?.value || input.name || `Input #${input.index}`}
 										</button>
 
 										<Frame
