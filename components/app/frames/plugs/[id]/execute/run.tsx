@@ -27,13 +27,10 @@ export const RunFrame: FC<{
 	const isReady = useMemo(() => {
 		if (!actions || actions.length === 0) return false
 
-		// Get all action sentences from the ActionPreview component
 		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
-		// Check if we have the same number of sentences as actions
 		if (sentences.length !== actions.length) return false
 
-		// Check if each sentence is valid by looking at the data-valid attribute
 		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
 	}, [actions, item])
 
