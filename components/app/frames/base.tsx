@@ -5,7 +5,7 @@ import { ChevronLeft, X } from "lucide-react"
 
 import { Button, Header } from "@/components"
 import { cn, useMediaQuery } from "@/lib"
-import { useColumnStore } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
@@ -51,7 +51,8 @@ export const Frame: FC<Props> = ({
 						}}
 						className={cn(
 							md ? "absolute" : "fixed",
-							"bottom-0 left-0 right-0 top-0 z-[10] cursor-pointer",
+							"bottom-0 left-0 right-0 z-[10] cursor-pointer",
+							index === COLUMNS.MOBILE_INDEX ? "top-0" : "top-[60px]",
 							(handleBack === undefined || hasOverlay === true) &&
 								"bg-gradient-to-b from-plug-green/10 to-plug-green/20"
 						)}
