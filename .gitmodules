@@ -7,9 +7,6 @@
 [submodule "packages/docs"]
 	path = packages/docs
 	url = https://github.com/terminally-online/plug-docs
-[submodule "packages/pitch"]
-	path = packages/pitch
-	url = https://github.com/terminally-online/plug-pitch
 [submodule "packages/science"]
 	path = packages/science
 	url = https://github.com/terminally-online/plug-science
