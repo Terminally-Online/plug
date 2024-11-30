@@ -1,0 +1,176 @@
+@font-face {
+  font-family: "Satoshi";
+  font-weight: 500 900;
+  src:
+    url("./assets/fonts/Satoshi-Variable.woff2")
+      format("woff2 supports variations"),
+    url("./assets/fonts/Satoshi-Variable.woff2") format("woff2-variations");
+}
+
+:root {
+  --font-fallback: BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-sans;
+}
+
+* {
+  font-weight: 500 !important;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+body,
+html,
+.VPSidebar,
+.curtain,
+.search {
+  background-color: #fefff7 !important;
+}
+
+.VPSidebar {
+  border-right: 1px solid rgba(56, 88, 66, 0.1) !important;
+}
+
+h1,
+h2 {
+  font-weight: 900 !important;
+  color: #385842;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700 !important;
+  color: #385842;
+}
+
+strong {
+  font-weight: 700 !important;
+}
+
+:root {
+  /* --vp-font-family-base: "Satoshi", var(--font-fallback); */
+  /* --vp-font-family-mono: "Satoshi", var(--font-fallback); */
+
+  --vp-c-default-1: #385842;
+  --vp-c-default-2: #385842;
+  --vp-c-default-3: #385842;
+  --vp-c-default-soft: var(--vp-c-gray-soft);
+
+  --vp-c-brand-1: #385842;
+  --vp-c-brand-2: #d2f38a;
+  --vp-c-brand-3: #fffc00;
+  --vp-c-brand-soft: rgba(255, 174, 0, 0.2);
+
+  --vp-c-tip-1: var(--vp-c-brand-1);
+  --vp-c-tip-2: var(--vp-c-brand-2);
+  --vp-c-tip-3: var(--vp-c-brand-3);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
+
+  --vp-c-warning-1: var(--vp-c-yellow-1);
+  --vp-c-warning-2: var(--vp-c-yellow-2);
+  --vp-c-warning-3: var(--vp-c-yellow-3);
+  --vp-c-warning-soft: var(--vp-c-yellow-soft);
+
+  --vp-c-danger-1: var(--vp-c-red-1);
+  --vp-c-danger-2: var(--vp-c-red-2);
+  --vp-c-danger-3: var(--vp-c-red-3);
+  --vp-c-danger-soft: var(--vp-c-red-soft);
+}
+
+/**
+* Component: Button
+* -------------------------------------------------------------------------- */
+
+:root {
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: var(--vp-c-white);
+  --vp-button-brand-bg: var(--vp-c-brand-3);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: var(--vp-c-white);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: var(--vp-c-white);
+  --vp-button-brand-active-bg: var(--vp-c-brand-1);
+}
+
+/**
+* Component: Home
+* -------------------------------------------------------------------------- */
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    120deg,
+    #ff050f 30%,
+    #e2ff00
+  );
+
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    #ff050f 50%,
+    #e2ff00 50%
+  );
+  --vp-home-hero-image-filter: blur(44px);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --vp-home-hero-image-filter: blur(68px);
+  }
+}
+
+/**
+* Component: Custom Block
+* -------------------------------------------------------------------------- */
+
+:root {
+  --vp-custom-block-tip-border: transparent;
+  --vp-custom-block-tip-text: var(--vp-c-text-1);
+  --vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+  --vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
+}
+
+/**
+* Component: Algolia
+* -------------------------------------------------------------------------- */
+
+.DocSearch {
+  --docsearch-primary-color: var(--vp-c-brand-1) !important;
+}
+
+/**
+* Component: Base
+* -------------------------------------------------------------------------- */
+
+a {
+  text-decoration: none !important;
+}
+
+.main > div > div > p > a,
+.main > div > div > p > span > a,
+.main > div > div > ul > li > a,
+.main > div > div > ol > li > a {
+  color: var(--vp-c-brand-1);
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: none !important;
+}
+
+.main > div > div > p > a:hover,
+.main > div > div > p > span > a:hover,
+.main > div > div > ul > li > a:hover,
+.main > div > div > ol > li > a:hover {
+  background: var(--vp-c-brand-2);
+  color: #385842 !important;
+}
+
+code {
+  font-weight: 700 !important;
+}
