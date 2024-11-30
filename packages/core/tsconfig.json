@@ -1,0 +1,38 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"strict": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
+		"allowJs": true,
+		"rootDir": "./",
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"baseUrl": "./",
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+		"skipLibCheck": true,
+		"paths": {
+			"@/*": ["./*"]
+		},
+
+		"downlevelIteration": true,
+		"isolatedModules": true,
+		"noImplicitAny": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"resolveJsonModule": true,
+		"strictNullChecks": true,
+
+		"lib": ["es2021"]
+	},
+	"include": ["src/**/*", "lib/**/*"],
+	"files": ["src/index.ts"],
+	"exclude": ["node_modules", "dist", "tsup.config.ts"]
+}
