@@ -19,8 +19,8 @@ module.exports = {
 				black: "#0E160E",
 				background: "#FFFFFF",
 				search: "#F8F8F8",
-
 				white: "#FDFFF7",
+
 				"plug-white": "#FDFFF7",
 				"plug-green": "#385842",
 				"plug-yellow": "#D2F38A",

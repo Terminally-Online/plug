@@ -1,13 +1,13 @@
 export const colors = {
-	red: "#FF5154",
-	orange: "#FF9900",
-	yellow: "#EEB902",
-	lightgreen: "#43D262",
-	green: "#28BC7E",
-	cyan: "#3FCAB1",
-	blue: "#2D7DD2",
-	magenta: "#D345F6",
-	purple: "#9665FF"
+	red: "#F3908A",
+	orange: "#F3B08A",
+	yellow: "#F3EF8A",
+	lightgreen: "#D2F38A",
+	green: "#92F38A",
+	cyan: "#8AF3E6",
+	blue: "#8AAEF3",
+	magenta: "#EB8AF3",
+	purple: "#9F8AF3"
 } as const
 
 export const tagColors = {
