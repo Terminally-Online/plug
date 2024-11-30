@@ -49,7 +49,7 @@ export const Sentence: FC<SentenceProps> = ({
 	const {
 		state: { parsed },
 		actions: { setValue },
-		helpers: { getInputValue, getInputError }
+		helpers: { getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, action.values)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
@@ -79,7 +79,16 @@ export const Sentence: FC<SentenceProps> = ({
 	return (
 		<>
 			<Accordion
-				className={cn("hover:cursor-auto hover:border-plug-green/10 hover:bg-white", className)}
+				className={cn(
+					"hover:bg-white",
+					isValid && isComplete
+						? "border-plug-yellow hover:border-plug-yellow"
+						: "border-plug-red hover:border-plug-red",
+					className
+				)}
+				data-sentence
+				data-valid={isValid && isComplete}
+				data-action-preview={item}
 				{...props}
 			>
 				<div className={cn("flex flex-row items-center font-bold")}>
@@ -129,14 +138,13 @@ export const Sentence: FC<SentenceProps> = ({
 										<button
 											className={cn(
 												"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
-												preview && !isValid ? "text-plug-red" : "text-plug-green",
+												!isValid ? "text-plug-red" : "text-plug-green",
 												own === true ? "cursor-pointer" : "cursor-default"
 											)}
 											style={{
-												background:
-													preview && !isValid
-														? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
-														: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
+												background: !isValid
+													? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
+													: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
 											}}
 											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 										>

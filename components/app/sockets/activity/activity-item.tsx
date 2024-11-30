@@ -32,9 +32,9 @@ export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 		case "paused":
 			return (
 				<div className="relative h-10 min-w-10">
-					<div className="absolute mt-8 h-48 w-10 rounded-full bg-grayscale-400 blur-2xl filter" />
+					<div className="bg-text-plug-green/20 absolute mt-8 h-48 w-10 rounded-full blur-2xl filter" />
 					<Pause
-						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-grayscale-400"
+						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-plug-green/20"
 						size={16}
 					/>
 				</div>
