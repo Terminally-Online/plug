@@ -1,0 +1,21 @@
+{
+	"tabWidth": 4,
+	"useTabs": true,
+	"semi": false,
+	"singleQuote": true,
+	"trailingComma": "none",
+	"printWidth": 80,
+	"arrowParens": "avoid",
+	"endOfLine": "auto",
+	"plugins": ["@trivago/prettier-plugin-sort-imports"],
+	"importOrder": [
+		"<THIRD_PARTY_MODULES>",
+		"@nftchance/(.*)$",
+		"^@/src/(.*)$",
+		"^@/lib/(.*)$"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true,
+	"importOrderGroupNamespaceSpecifiers": true,
+	"importOrderCaseInsensitive": true
+}
