@@ -29,7 +29,7 @@ export type Option = {
 }
 export type Value = string | Option | undefined | null
 
-const spread = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
+export const spreadPlugs = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
 
 const usePlugActions = () => {
 	const { columns, handle } = useColumnStore()
@@ -38,7 +38,7 @@ const usePlugActions = () => {
 
 	const addMutation = api.plugs.add.useMutation({
 		onSuccess: result => {
-			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spread(prev, result.plug))
+			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spreadPlugs(prev, result.plug))
 
 			if (result.index)
 				handle.navigate({
@@ -68,7 +68,7 @@ const usePlugActions = () => {
 
 	const forkMutation = api.plugs.fork.useMutation({
 		onSuccess: result => {
-			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spread(prev, result.plug))
+			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spreadPlugs(prev, result.plug))
 
 			handle.navigate({
 				key: COLUMNS.KEYS.PLUG,
@@ -94,6 +94,27 @@ const usePlugActions = () => {
 		queue: (data: { workflowId: string; startAt: Date; endAt?: Date; frequency?: number }) =>
 			queueMutation.mutate(data)
 	}
+}
+
+export const usePlugSubscriptions = () => {
+	const session = useSession()
+	const [, setPlugs] = useAtom(plugsAtom)
+
+	api.plugs.onAdd.useSubscription(undefined, {
+		enabled: Boolean(session.data),
+		onData: data => setPlugs(prev => spreadPlugs(prev, data))
+	})
+
+	api.plugs.onEdit.useSubscription(undefined, {
+		enabled: Boolean(session.data),
+		onData: data =>
+			setPlugs(prev => prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)))
+	})
+
+	api.plugs.onDelete.useSubscription(undefined, {
+		enabled: Boolean(session.data),
+		onData: data => setPlugs(prev => prev.filter(plug => plug.id !== data.id))
+	})
 }
 
 export const usePlugStore = (id?: string) => {
@@ -126,19 +147,6 @@ export const usePlugStore = (id?: string) => {
 			}
 		}
 	)
-
-	api.plugs.onAdd.useSubscription(undefined, {
-		onData: data => setPlugs(prev => spread(prev, data))
-	})
-
-	api.plugs.onEdit.useSubscription(undefined, {
-		onData: data =>
-			setPlugs(prev => prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)))
-	})
-
-	api.plugs.onDelete.useSubscription(undefined, {
-		onData: data => setPlugs(prev => prev.filter(plug => plug.id !== data.id))
-	})
 
 	const plug = plugs.find(p => p.id === id)
 	const own = (plug && session.data && session.data.address === plug.socketId) || false

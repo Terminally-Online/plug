@@ -8,7 +8,7 @@ import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } 
 import { LoginRequired } from "@/components/app/utils/login-required"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
 import { useConnect, useMediaQuery } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore, usePlugSubscriptions, useSocket, useSubscriptions } from "@/state"
 
 const MobilePage = () => {
 	// Add URL parameter handling for mobile
@@ -37,6 +37,8 @@ const DesktopPage = () => {
 }
 
 export const ConsolePage = () => {
+	useSubscriptions()
+
 	const { md } = useMediaQuery()
 	const router = useRouter()
 	// NOTE: This makes the session required for the console page. When the user does
@@ -66,6 +68,7 @@ export const ConsolePage = () => {
 
 	const { columns, handle } = useColumnStore()
 	const { plugs } = usePlugStore()
+
 	const hasHandledInitialUrl = useRef(false)
 
 	useEffect(() => {
