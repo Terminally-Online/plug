@@ -1,0 +1,135 @@
+name: "🤖 CI"
+on:
+    push:
+        branches:
+            - "**"
+
+    workflow_dispatch:
+
+concurrency:
+    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+    contents: write
+    pages: write
+    id-token: write
+
+jobs:
+    format:
+      name: 🎨 Format
+      runs-on: ubuntu-latest
+      steps:
+        - name: 🛒 Checkout
+          uses: actions/checkout@v4
+
+        - name: ⚙️  Setup Action
+          uses: pnpm/action-setup@v4
+          with:
+              version: 8
+
+        - name: 📚 Setup Node
+          uses: actions/setup-node@v4
+          with:
+              node-version: 18
+              cache: "pnpm"
+
+        - name: 🫙 Restore cache
+          uses: actions/cache@v4
+          with:
+              path: |
+                  .next/cache
+              key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+              restore-keys: |
+                  ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+        - name: 📦 Install dependencies
+          run: pnpm install
+
+        - name: 🎨 Run Prettier
+          run: pnpm prettier:format
+
+        - name: 📝 Configure Git Commit
+          if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
+          run: |
+              git config user.name "nftchance"
+              git config user.email "chance@utc24.io"
+
+        - name: 📝 Commit Changes
+          if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
+          run: |
+              git add .
+              git diff --staged --quiet || git commit -m "chore: prettier formatting"
+              git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/terminally-online/plug-app.git
+
+    build:
+        name: 🏗️ Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: 🛒 Checkout
+              uses: actions/checkout@v4
+
+            - name: ⚙️  Setup Action
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 8
+
+            - name: 📚 Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: 🫙 Restore cache
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      .next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+            - name: 📦 Install dependencies
+              run: pnpm install
+
+            - name: 🔥 Build Next (Not Deploying)
+              if: github.ref != 'refs/heads/main'
+              run: pnpm build
+              env:
+                  ENCRYPTION_KEY: github-action
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5434/postgres
+                  NEXTAUTH_URL: http://localhost:3000
+                  NEXTAUTH_SECRET: github-action
+                  OPENSEA_KEY: github-action
+                  ZERION_KEY: github-action
+                  NEXT_PUBLIC_EARLY_ACCESS: false
+                  NEXT_PUBLIC_APP_URL: http://localhost:3000
+                  NEXT_PUBLIC_WS_URL: ws://localhost:3001
+                  NEXT_PUBLIC_WALLETCONNECT_ID: github-action
+                  NEXT_PUBLIC_ALCHEMY_KEY: github-action
+
+            - name: 🔄 Install Vercel CLI
+              if: github.ref == 'refs/heads/main'
+              run: pnpm install --global vercel@latest
+
+            - name: 🔗 Pull Vercel Environment Information
+              if: github.ref == 'refs/heads/main'
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+            - name: 🚀 Deploy Project Artifacts to Vercel
+              if: github.ref == 'refs/heads/main'
+              run: vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+            - name: ☢️  Purge CloudFlare
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+                  -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+                  -H "Content-Type: application/json" \
+                  --data '{"purge_everything":true}'

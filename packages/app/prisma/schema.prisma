@@ -1,0 +1,569 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "omitApi"]
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model FarcasterUserAddress {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Many-to-many
+  // ---------------------------------------------------------------------------
+  farcasterUsers FarcasterUser[] @relation("FarcasterAddresses")
+}
+
+model FarcasterUser {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // One-to-one
+  // ---------------------------------------------------------------------------
+  identity SocketIdentity?
+
+  // ---------------------------------------------------------------------------
+  // Many-to-many
+  // ---------------------------------------------------------------------------
+  addresses FarcasterUserAddress[] @relation("FarcasterAddresses")
+  followers FarcasterUser[]        @relation("FarcasterFollows")
+  following FarcasterUser[]        @relation("FarcasterFollows")
+}
+
+model ENS {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name   String
+  avatar String?
+
+  // ---------------------------------------------------------------------------
+  // One-to-one
+  // ---------------------------------------------------------------------------
+  identity SocketIdentity @relation(fields: [socketId], references: [socketId], onDelete: Cascade)
+  socketId String         @id
+
+  @@index([name])
+}
+
+model Companion {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  lastFeedAt DateTime?
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name      String
+  feedCount Int    @default(0)
+  treatsFed Int    @default(0)
+  streak    Int    @default(0)
+
+  // ---------------------------------------------------------------------------
+  // One-to-one
+  // ---------------------------------------------------------------------------
+  identity SocketIdentity @relation(fields: [socketId], references: [socketId], onDelete: Cascade)
+  socketId String         @id
+
+  @@index([name])
+}
+
+model SocketIdentity {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  referralCode String    @default(uuid())
+  requestedAt  DateTime?
+  approvedAt   DateTime?
+
+  // ---------------------------------------------------------------------------
+  // One-to-one
+  // ---------------------------------------------------------------------------
+  socket      UserSocket     @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socketId    String         @id @unique
+  farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
+  farcasterId String?        @unique
+  ens         ENS?
+  companion   Companion?
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  referrer   UserSocket? @relation(fields: [referrerId], references: [id], name: "Referral")
+  referrerId String?
+}
+
+model UserSocket {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  admin         Boolean @default(false)
+  socketAddress String
+
+  // ---------------------------------------------------------------------------
+  // One-to-one
+  // ---------------------------------------------------------------------------
+  identity SocketIdentity?
+
+  // ---------------------------------------------------------------------------
+  // One-to-many 
+  // ---------------------------------------------------------------------------
+  workflow     Workflow[]
+  positions    PositionCache[]
+  collectibles CollectibleCache[]
+  referrals    SocketIdentity[]   @relation("Referral")
+
+  // ---------------------------------------------------------------------------
+  // Indexes
+  // ---------------------------------------------------------------------------
+  @@index([socketAddress])
+}
+
+model View {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  date  DateTime
+  views Int      @default(0)
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowId String
+
+  @@id([workflowId, date])
+  @@index([date])
+}
+
+model Workflow {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name             String   @default("Untitled Plug")
+  isCurated        Boolean  @default(false)
+  isPrivate        Boolean  @default(false)
+  actions          String   @default("[]")
+  color            String
+  tags             String[]
+  workflowForkedId String?
+  frequency        Int      @default(10)
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socketId String
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  executions Execution[]
+  views      View[]
+}
+
+model Execution {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  status           String    @default("active")
+  actions          String    @default("[]")
+  startAt          DateTime
+  endAt            DateTime?
+  frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
+  nextSimulationAt DateTime  @default(now())
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  simulations Simulation[]
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowId String
+
+  // ---------------------------------------------------------------------------
+  // Indexes
+  // ---------------------------------------------------------------------------
+  @@index([workflowId])
+  @@index([startAt])
+  @@index([nextSimulationAt])
+}
+
+model Simulation {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  status      String
+  result      Json?
+  error       String?
+  gasEstimate Float?
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  execution   Execution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  executionId String
+}
+
+model TokenPrice {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  chain      String
+  address    String
+  price      Float   @default(0)
+  change     Float   @default(0)
+  decimals   Int?
+  symbol     String?
+  timestamp  Int?
+  confidence Float?
+}
+
+model Protocol {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name String @id
+  icon String
+  url  String
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  positions Position[]
+}
+
+model Fungible {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name     String
+  symbol   String
+  icon     String?
+  verified Boolean
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  implementations Implementation[]
+  positions       Position[]
+
+  @@id([name, symbol])
+}
+
+model Implementation {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  chain    String
+  contract String
+  decimals Int
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  fungible       Fungible @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol], onDelete: Cascade)
+  fungibleName   String
+  fungibleSymbol String
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  balances ImplementationBalance[]
+
+  @@id([chain, contract])
+}
+
+model ImplementationBalance {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  balance Float
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  implementation         Implementation @relation(fields: [implementationChain, implementationContract], references: [chain, contract])
+  implementationChain    String
+  implementationContract String
+  cache                  PositionCache  @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  cacheId                String
+}
+
+model Position {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  chain   String
+  type    String
+  balance Float?
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  fungible       Fungible      @relation(fields: [fungibleName, fungibleSymbol], references: [name, symbol], onDelete: Cascade)
+  fungibleName   String
+  fungibleSymbol String
+  protocol       Protocol?     @relation(fields: [protocolName], references: [name], onDelete: Cascade)
+  protocolName   String?
+  cache          PositionCache @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  cacheId        String
+}
+
+model PositionCache {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  balances  ImplementationBalance[]
+  positions Position[]
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socketId String
+}
+
+model Collection {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  address   String
+  chain     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  name              String
+  description       String
+  iconUrl           String?
+  openseaUrl        String?
+  projectUrl        String?
+  wikiUrl           String?
+  discordUrl        String?
+  telegramUrl       String?
+  twitterUsername   String?
+  instagramUsername String?
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  collectibles Collectible[]
+
+  // ---------------------------------------------------------------------------
+  // Indexes
+  // ---------------------------------------------------------------------------
+  @@id([address, chain])
+}
+
+model CollectibleMetadata {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  tokenId           String
+  collectionAddress String
+  collectionChain   String
+  traits            Json[]
+  color             String?
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  collectible Collectible[]
+
+  // ---------------------------------------------------------------------------
+  // Indexes
+  // ---------------------------------------------------------------------------
+  @@id([tokenId, collectionAddress, collectionChain])
+}
+
+model Collectible {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  tokenId    String
+  amount     String
+  name       String
+  interface  String
+  previewUrl String?
+  imageUrl   String?
+  videoUrl   String?
+  isSpam     Boolean
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  collectibleMetadata CollectibleMetadata? @relation(fields: [metadataTokenId, metadataAddress, metadataChain], references: [tokenId, collectionAddress, collectionChain])
+  metadataTokenId     String?
+  metadataAddress     String?
+  metadataChain       String?
+  collection          Collection           @relation(fields: [collectionAddress, collectionChain], references: [address, chain])
+  collectionAddress   String
+  collectionChain     String
+  cache               CollectibleCache     @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  cacheId             String
+
+  // ---------------------------------------------------------------------------
+  // Indexes
+  // ---------------------------------------------------------------------------
+  @@id([cacheId, tokenId, collectionAddress, collectionChain])
+}
+
+model CollectibleCache {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // One-to-many
+  // ---------------------------------------------------------------------------
+  collectibles Collectible[]
+
+  // ---------------------------------------------------------------------------
+  // Many-to-one
+  // ---------------------------------------------------------------------------
+  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socketId String
+}
+
+model FeatureRequest {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // ---------------------------------------------------------------------------
+  // Fields
+  // ---------------------------------------------------------------------------
+  userAddress String
+  context     String
+  message     String?
+}
