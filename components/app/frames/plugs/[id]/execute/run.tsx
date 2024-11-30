@@ -29,8 +29,6 @@ export const RunFrame: FC<{
 
 		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
-		if (sentences.length !== actions.length) return false
-
 		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
 	}, [actions, item])
 
