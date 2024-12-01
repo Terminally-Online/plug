@@ -49,24 +49,34 @@ export const getMetadataForToken = async ({
 	const colorUrl = collectible.previewUrl ?? collectible.collection.iconUrl ?? ""
 	const color = await getDominantColor(colorUrl)
 
-	const metadata = await db.collectibleMetadata.create({
-		data: {
-			tokenId,
-			collectionAddress: address,
-			collectionChain: chain,
-			traits,
-			color,
-			collectible: {
-				connect: {
-					cacheId_tokenId_collectionAddress_collectionChain: {
-						cacheId: collectible.cacheId,
-						tokenId,
-						collectionAddress: address,
-						collectionChain: chain
-					}
+	const data = {
+		tokenId,
+		collectionAddress: address,
+		collectionChain: chain,
+		traits,
+		color,
+		collectible: {
+			connect: {
+				cacheId_tokenId_collectionAddress_collectionChain: {
+					cacheId: collectible.cacheId,
+					tokenId,
+					collectionAddress: address,
+					collectionChain: chain
 				}
 			}
 		}
+	}
+
+	const metadata = await db.collectibleMetadata.upsert({
+		where: {
+			tokenId_collectionAddress_collectionChain: {
+				tokenId,
+				collectionAddress: address,
+				collectionChain: chain
+			}
+		},
+		create: data,
+		update: data
 	})
 
 	return metadata
