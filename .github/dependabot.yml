@@ -1,20 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    allow:
-      - dependency-name: "packages/app"
-      - dependency-name: "packages/core"
-      - dependency-name: "packages/docs"
-      - dependency-name: "packages/pitch"
-      - dependency-name: "packages/router"
-      - dependency-name: "packages/types"
-    schedule:
-      interval: "daily"
-    groups:
-      production-dependencies:
-        patterns:
-          - "*"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -24,3 +9,7 @@ updates:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
