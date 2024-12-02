@@ -1,0 +1,73 @@
+name: "📦 Build"
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "packages/core/**"
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+env:
+  FOUNDRY_PROFILE: ci
+
+defaults:
+  run:
+    working-directory: packages/core
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+    name: 👁️ Build and Keep Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️  Setup Action
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📚 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: 📂 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: 🫙 Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: ✨ Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: 📦 Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          forge install
+
+      - name: 📦 Build package
+        run: pnpm build
+
+      - name: 🧹 Lint
+        run: pnpm build:lint
+
+      - name: 🧪 Run Forge Test
+        run: |
+          forge test
