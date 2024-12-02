@@ -1,6 +1,8 @@
 import { defineConfig, HeadConfig } from "vitepress";
 
 export default defineConfig({
+  // base: "/plug/",
+
   title: "Plug Documentation",
   titleTemplate: ":title | Plug Documentation",
   description: "Documentation for the Plug protocol and application.",
