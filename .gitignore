@@ -58,8 +58,8 @@ report
 lcov.info
 
 # Vitepress
-/.vitepress/cache
-/.vitepress/dist
+# /.vitepress/cache
+# /.vitepress/dist
 
 # Dependency directories
 venv/
