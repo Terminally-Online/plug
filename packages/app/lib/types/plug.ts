@@ -2,25 +2,25 @@ import { DateRange } from "react-day-picker"
 
 import { frequencies } from "@/lib"
 
+export type Options = {
+	value: string
+	name: string
+	label: string
+	info?: string
+	icon: string
+}[]
+
 export type ActionSchema = {
 	metadata: {
 		icon: string
 	}
-	schema: {
-		[action: string]: {
+	schema: Record<
+		string,
+		{
 			sentence: string
-			options?: Record<
-				string,
-				{
-					value: string
-					name: string
-					label: string
-					info?: string
-					icon: string
-				}[]
-			>
+			options?: Record<string, Options | Record<string, Options>>
 		}
-	}
+	>
 }
 
 export type ActionSchemas = {

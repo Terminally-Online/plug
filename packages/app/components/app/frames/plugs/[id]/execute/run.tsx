@@ -61,7 +61,7 @@ export const RunFrame: FC<{
 				{actions && actions.length > 0 ? (
 					<ActionPreview index={index} item={item} />
 				) : (
-					<div className="flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
+					<div className="flex rounded-lg border-[2px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
 						<p className="mx-auto max-w-[380px]">
 							No actions added and configured on this Plug yet. Add some actions to run and schedule it.
 						</p>

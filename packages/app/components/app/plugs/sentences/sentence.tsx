@@ -5,7 +5,7 @@ import { Hash, X } from "lucide-react"
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
 import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
-import { Action, cn, formatTitle, useCord } from "@/lib"
+import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { api } from "@/server/client"
 import { useColumnStore, usePlugStore } from "@/state"
 
@@ -112,24 +112,43 @@ export const Sentence: FC<SentenceProps> = ({
 
 						<div className="flex flex-wrap items-center gap-1">
 							{parts.map((part, partIndex) => {
-								const match = part.match(/\{(\d+)\}/)
+								const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
 								if (!match) return <span key={partIndex}>{part}</span>
 
-								const inputIndex = parseInt(match[1])
+								const inputIndex = parseInt(match[2] || match[1])
+								const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
 								const input = parsed.inputs.find(i => i.index === inputIndex)
 
 								if (!input) return null
 
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
+								const dependentOnValue =
+									(input.dependentOn && getInputValue(input.dependentOn)?.value) || undefined
 
 								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
-								const options = sentenceOptions && sentenceOptions[inputIndex]
+								const options =
+									sentenceOptions &&
+									(Array.isArray(sentenceOptions[optionsIndex])
+										? (sentenceOptions[optionsIndex] as Options)
+										: sentenceOptions &&
+											  typeof sentenceOptions?.[optionsIndex] === "object" &&
+											  dependentOnValue
+											? (sentenceOptions[optionsIndex] as Record<string, Options>)[
+													dependentOnValue
+												]
+											: undefined)
 								const isOptionBased = options !== undefined
-								// TODO: This is not the most performant way to do this, but for now it works.
-								const option = options?.find(option => option.value === value?.value) || undefined
 
+								// NOTE: This is not the most performant way to do this, but for now it works.
+								const option = Array.isArray(options)
+									? options.find(option => option.value === value?.value)
+									: undefined
+
+								const isReady =
+									(input.dependentOn && getInputValue(input.dependentOn)?.value) ||
+									input.dependentOn === undefined
 								const isEmpty = !value?.value.trim()
 								const isValid = !isEmpty && !error
 
@@ -201,7 +220,20 @@ export const Sentence: FC<SentenceProps> = ({
 											scrollBehavior="partial"
 										>
 											<div className="flex flex-col gap-2 overflow-y-auto px-6">
-												{isOptionBased === false && (
+												{!isReady && (
+													<div className="mb-2 flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
+														<p className="mx-auto max-w-[380px]">
+															Please enter a value for{" "}
+															{
+																parsed.inputs.find(i => i.index === input.dependentOn)
+																	?.name
+															}{" "}
+															before continuing.
+														</p>
+													</div>
+												)}
+
+												{isReady && !isOptionBased && (
 													<Search
 														className="mb-4"
 														icon={<Hash size={14} />}
@@ -211,7 +243,7 @@ export const Sentence: FC<SentenceProps> = ({
 													/>
 												)}
 
-												{isOptionBased && (
+												{isReady && isOptionBased && (
 													<>
 														<div className="mb-4 flex w-full flex-col gap-2">
 															{options.map((option, optionIndex) => (
