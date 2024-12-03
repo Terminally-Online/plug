@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -93,9 +93,16 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 					value
 				})
 
+				const dependentInputs = parsed.inputs.filter(input => input.dependentOn === index)
+				const newValues = new Map(result.value)
+
+				dependentInputs.forEach(input => {
+					newValues.delete(input.index)
+				})
+
 				setState(prev => ({
 					...prev,
-					values: result.value,
+					values: newValues,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
 								type: "validation",
@@ -144,13 +151,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			return !hasEmptyValues
 		}, [parsedWithFilteredInputs, state.validationErrors, state.values])
 	}
-
-	useEffect(() => {
-		setState(prev => ({
-			...prev,
-			values: createStateFromValues(values)
-		}))
-	}, [values])
 
 	return {
 		state: {

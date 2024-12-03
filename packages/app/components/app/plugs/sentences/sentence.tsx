@@ -55,6 +55,8 @@ export const Sentence: FC<SentenceProps> = ({
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
 	const handleValue = (index: number, value: string) => {
+		if (!parsed) return
+
 		setValue(index, value)
 
 		edit({
@@ -65,9 +67,9 @@ export const Sentence: FC<SentenceProps> = ({
 					values:
 						nestedActionIndex === actionIndex
 							? {
-									...action.values,
-									[index]: value
-								}
+								...action.values,
+								[index]: value
+							}
 							: action.values
 				}))
 			)
@@ -133,11 +135,11 @@ export const Sentence: FC<SentenceProps> = ({
 									(Array.isArray(sentenceOptions[optionsIndex])
 										? (sentenceOptions[optionsIndex] as Options)
 										: sentenceOptions &&
-											  typeof sentenceOptions?.[optionsIndex] === "object" &&
-											  dependentOnValue
+											typeof sentenceOptions?.[optionsIndex] === "object" &&
+											dependentOnValue
 											? (sentenceOptions[optionsIndex] as Record<string, Options>)[
-													dependentOnValue
-												]
+											dependentOnValue
+											]
 											: undefined)
 								const isOptionBased = options !== undefined
 
@@ -194,19 +196,17 @@ export const Sentence: FC<SentenceProps> = ({
 												</div>
 											}
 											label={
-												<span className="relative">
-													<span className="text-lg">
-														<span className={cn(parsed.inputs.length > 1 && "opacity-40")}>
-															{formatTitle(action.action)}
-															{parsed.inputs.length > 1 && <span>:</span>}
-														</span>
-														{parsed.inputs.length > 1 && (
-															<span>
-																{" "}
-																{formatTitle(input.name ?? `Input #${inputIndex}`)}
-															</span>
-														)}
+												<span className="relative text-lg">
+													<span className={cn(parsed.inputs.length > 1 && "opacity-40")}>
+														{formatTitle(action.action)}
+														{parsed.inputs.length > 1 && <span>:</span>}
 													</span>
+													{parsed.inputs.length > 1 && (
+														<span>
+															{" "}
+															{formatTitle(input.name ?? `Input #${inputIndex}`)}
+														</span>
+													)}
 												</span>
 											}
 											visible={column.frame === `${actionIndex}-${inputIndex}`}
