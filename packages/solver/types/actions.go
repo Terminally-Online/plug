@@ -26,8 +26,8 @@ const (
 	ConstraintAPY                Action = "apy"
 	ConstraintAPYDifferential    Action = "apy_differential"
 	ConstraintAvailableLiquidity Action = "available_liquidity"
-	ConstraintGracePeriod        Action = "grace_period"
-	ConstraintTimeLeft           Action = "time_left"
+	HandleConstraintTimeLeft     Action = "time_left"
+	HandleConstraintRenewalPrice Action = "renewal_price"
 )
 
 type Protocol string
@@ -37,4 +37,5 @@ const (
 	ProtocolAaveV3  Protocol = "aave_v3"
 	ProtocolYearnV3 Protocol = "yearn_v3"
 	ProtocolNouns   Protocol = "nouns"
+	ProtocolENS     Protocol = "ens"
 )
