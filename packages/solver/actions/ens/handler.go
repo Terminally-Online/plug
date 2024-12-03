@@ -1,6 +1,8 @@
 package ens
 
 import (
+	"encoding/json"
+	"fmt"
 	"solver/actions"
 	"solver/types"
 )
@@ -17,7 +19,7 @@ func New() actions.BaseProtocolHandler {
 			Name:   "ENS",
 			Icon:   "https://app.ens.domains/favicon.ico",
 			Tags:   []string{"naming", "web3"},
-			Chains: []int{1}, // Ethereum mainnet only
+			Chains: []int{1},
 		},
 	}
 	h.Protocol.SchemaProvider = h
@@ -25,21 +27,23 @@ func New() actions.BaseProtocolHandler {
 }
 
 func (h *Handler) init() *Handler {
-	// Buy ENS name
-	h.schemas[types.Action("buy_ens")] = types.Schema{
+	h.schemas[types.ActionBuy] = types.Schema{
 		Sentence: "Buy ENS name {0<name:string>} for {1<price:uint256>} ETH.",
 		Options:  map[int]types.SchemaOptions{},
 	}
 
-	// Renew ENS for specific years
-	h.schemas[types.Action("renew_ens")] = types.Schema{
-		Sentence: "Renew ENS name {0<name:string>} for {1<years:uint256>} years.",
+	h.schemas[types.ActionRenew] = types.Schema{
+		Sentence: "Renew ENS {0<name:string>} for {1<duration:uint256>} years.",
 		Options:  map[int]types.SchemaOptions{},
 	}
 
-	// Renew ENS for maximum duration
-	h.schemas[types.Action("renew_ens_max")] = types.Schema{
-		Sentence: "Renew ENS name {0<name:string>} for maximum duration.",
+	h.schemas[types.ConstraintGracePeriod] = types.Schema{
+		Sentence: "ENS {0<name:string>} is in renewal grace period.",
+		Options:  map[int]types.SchemaOptions{},
+	}
+
+	h.schemas[types.ConstraintTimeLeft] = types.Schema{
+		Sentence: "Time left in ENS {0<name:string>} is less than {1<duration:uint256>}.",
 		Options:  map[int]types.SchemaOptions{},
 	}
 
@@ -48,4 +52,19 @@ func (h *Handler) init() *Handler {
 
 func (h *Handler) GetSchemas() map[types.Action]types.Schema {
 	return h.schemas
+}
+
+func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
+	schema, exists := h.schemas[action]
+	if !exists {
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
+	return &schema, nil
+}
+
+func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+	switch action {
+	default:
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
 }
