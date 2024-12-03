@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 type ProtocolMetadata struct {
 	Icon string   `json:"icon"`
 	Tags []string `json:"tags"`
@@ -19,8 +24,32 @@ type Option struct {
 }
 
 type Schema struct {
-	Sentence string           `json:"sentence"`
-	Options  map[int][]Option `json:"options,omitempty"`
+	Sentence string                `json:"sentence"`
+	Options  map[int]SchemaOptions `json:"options,omitempty"`
+}
+
+type SchemaOptions struct {
+	Simple  []Option            `json:"-"`
+	Complex map[string][]Option `json:"-"`
+}
+
+func (o SchemaOptions) MarshalJSON() ([]byte, error) {
+	if o.Simple != nil {
+		return json.Marshal(o.Simple)
+	}
+	return json.Marshal(o.Complex)
+}
+
+func (o *SchemaOptions) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &o.Simple); err == nil {
+		return nil
+	}
+
+	if err := json.Unmarshal(data, &o.Complex); err == nil {
+		return nil
+	}
+
+	return fmt.Errorf("invalid options format")
 }
 
 var (

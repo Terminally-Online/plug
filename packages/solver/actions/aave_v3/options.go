@@ -3,7 +3,6 @@ package aave_v3
 import (
 	"fmt"
 	"math/big"
-	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/types"
 	"solver/utils"
 )
@@ -11,10 +10,6 @@ import (
 var (
 	uiPoolDataProviderAddress  = utils.Mainnet.References["aave_v3"]["ui_pool_data_provider"]
 	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
-	
-	reservesCache     []aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData
-	lastCacheUpdate   int64
-	cacheDuration     int64 = 300
 )
 
 func GetCollateralAssetOptions() ([]types.Option, error) {
@@ -46,7 +41,7 @@ func GetCollateralAssetOptions() ([]types.Option, error) {
 			new(big.Float).SetInt(reserve.LiquidityRate),
 			new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(25), nil)),
 		)
-		
+
 		var rate string
 		if rateFloat.Cmp(big.NewFloat(0)) > 0 && rateFloat.Cmp(big.NewFloat(0.01)) < 0 {
 			rate = "<0.01%"
@@ -81,7 +76,7 @@ func GetBorrowAssetOptions() ([]types.Option, error) {
 			new(big.Float).SetInt(reserve.VariableBorrowRate),
 			new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(25), nil)),
 		)
-		
+
 		var rate string
 		if rateFloat.Cmp(big.NewFloat(0)) > 0 && rateFloat.Cmp(big.NewFloat(0.01)) < 0 {
 			rate = "<0.01%"

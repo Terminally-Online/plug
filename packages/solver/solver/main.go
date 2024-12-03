@@ -18,7 +18,7 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		protocols: map[types.Protocol]actions.BaseProtocolHandler{
-			types.ProtocolPlug:  plug.New(),
+			types.ProtocolPlug:    plug.New(),
 			types.ProtocolAaveV3:  aave_v3.New(),
 			types.ProtocolYearnV3: yearn_v3.New(),
 		},

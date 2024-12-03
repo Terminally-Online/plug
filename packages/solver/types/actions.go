@@ -6,7 +6,9 @@ const (
 	ActionDeposit      Action = "deposit"
 	ActionBorrow       Action = "borrow"
 	ActionRedeem       Action = "redeem"
+	ActionRedeemMax	   Action = "redeem_max"
 	ActionWithdraw     Action = "withdraw"
+	ActionWithdrawMax  Action = "withdraw_max"
 	ActionRepay        Action = "repay"
 	ActionHarvest      Action = "harvest"
 	ActionTransfer     Action = "transfer"
@@ -14,6 +16,8 @@ const (
 	ActionApprove      Action = "approve"
 	ActionSwap         Action = "swap"
 	ActionRoute        Action = "route"
+	ActionStake        Action = "stake"
+	ActionStakeMax     Action = "stake_max"
 
 	ConstraintHealthFactor       Action = "health_factor"
 	ConstraintAPY                Action = "apy"

@@ -42,6 +42,7 @@ var (
 				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
+				"gauge": "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
 			},
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
