@@ -47,6 +47,9 @@ var (
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 			},
+			"ens": {
+				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
+			},
 		},
 	}
 )
