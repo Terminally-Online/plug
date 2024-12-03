@@ -49,6 +49,7 @@ var (
 			},
 			"ens": {
 				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
+				"base_registrar": "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
 			},
 		},
 	}

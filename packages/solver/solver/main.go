@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/actions/aave_v3"
+	"solver/actions/ens"
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
 	"solver/types"
@@ -21,6 +22,7 @@ func New() *Solver {
 			types.ProtocolPlug:    plug.New(),
 			types.ProtocolAaveV3:  aave_v3.New(),
 			types.ProtocolYearnV3: yearn_v3.New(),
+			types.ProtocolENS:     ens.New(),
 		},
 	}
 }
