@@ -127,7 +127,7 @@ export const Sentence: FC<SentenceProps> = ({
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
 								const dependentOnValue =
-									(input.dependentOn && getInputValue(input.dependentOn)?.value) || undefined
+									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
 
 								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
 								const options =
@@ -149,7 +149,7 @@ export const Sentence: FC<SentenceProps> = ({
 									: undefined
 
 								const isReady =
-									(input.dependentOn && getInputValue(input.dependentOn)?.value) ||
+									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									input.dependentOn === undefined
 								const isEmpty = !value?.value.trim()
 								const isValid = !isEmpty && !error
@@ -207,6 +207,7 @@ export const Sentence: FC<SentenceProps> = ({
 															{formatTitle(input.name ?? `Input #${inputIndex}`)}
 														</span>
 													)}
+													{input.dependentOn}
 												</span>
 											}
 											visible={column.frame === `${actionIndex}-${inputIndex}`}
