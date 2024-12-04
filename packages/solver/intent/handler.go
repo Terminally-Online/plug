@@ -106,11 +106,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Case 3: Protocol and action - return specific schema
-	if !h.solver.SupportsAction(handler, action) {
-		utils.MakeHttpError(w, fmt.Sprintf("action %s not supported by protocol %s", action, protocol), http.StatusBadRequest)
-		return
-	}
-
 	schema, err := handler.GetSchema(action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
