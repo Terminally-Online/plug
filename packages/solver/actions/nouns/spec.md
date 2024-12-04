@@ -9,6 +9,7 @@ With Nouns our primary focus is a lightbulb moment for less-sophisticated users.
 - [Nouns Developer Docs](https://docs.ens.domains/contracts)
 - [Auction House Contract](https://etherscan.io/address/0x830BD73E4184ceF73443C15111a1DF14e495C706#writeContract)
 - [Token Contract](https://etherscan.io/address/0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03#writeContract)
+- [Art Contract](https://etherscan.io/address/0x33A9c445fb4FB21f2c030A6b2d3e2F12D017BFAC#readContract)
 - [Trait Images](https://github.com/nounsDAO/nouns-monorepo/tree/master/packages/nouns-assets/images/v0)
 
 ## Contract Interfacing
