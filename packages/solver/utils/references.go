@@ -35,21 +35,26 @@ var (
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
-				"pool": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+				"pool":                  "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 				"ui_pool_data_provider": "0x194324C9Af7f56E22F1614dD82E18621cb9238E7",
 			},
 			"yearn_v3": {
 				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
-				"gauge": "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
+				"gauge":    "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
 			},
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 			},
 			"ens": {
 				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
-				"base_registrar": "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+			},
+			"nouns": {
+				"auction_house": "0x830BD73E4184ceF73443C15111a1DF14e495C706",
+				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
 			},
 		},
 	}
