@@ -76,16 +76,16 @@ func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
 
 func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	switch action {
-	// case types.ActionBid:
-	// 	return HandleActionBid(rawInputs, params)
-	// case types.Action(IncreaseBid):
-	// 	return HandleActionIncreaseBid(rawInputs, params)
-	// case types.Action(HasTrait):
-	// 	return HandleConstraintHasTrait(rawInputs, params)
-	// case types.Action(IsTokenId):
-	// 	return HandleConstraintIsTokenId(rawInputs, params)
-	// case types.Action(CurrentBidWithinRange):
-	// 	return HandleConstraintCurrentBidWithinRange(rawInputs, params)
+	case types.ActionBid:
+		return HandleActionBid(rawInputs, params)
+	case types.Action(IncreaseBid):
+		return HandleActionIncreaseBid(rawInputs, params)
+	case types.Action(HasTrait):
+		return HandleConstraintHasTrait(rawInputs, params)
+	case types.Action(IsTokenId):
+		return HandleConstraintIsTokenId(rawInputs, params)
+	case types.Action(CurrentBidWithinRange):
+		return HandleConstraintCurrentBidWithinRange(rawInputs, params)
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}
