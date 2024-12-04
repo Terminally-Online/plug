@@ -22,6 +22,6 @@ Most of the Nouns actions take place through the Auction House. However, most co
 | :------------------ | :----------------------- | :--------- | :---------- | :----------------------------------------------------------------------------------------------- |
 | Nouns Auction House | Bid Amount               | Action     | 12/4/2024   |                                                                                                  |
 | Nouns Auction House | Increase Bid             | Action     | 12/4/2024   | Sometimes you only want to outbid the current one by a set amount instead of having a max amount |
-| Nouns Token         | Has Trait                | Action     |             | Will be checked by the hash of the trait                                                         |
+| Nouns Token         | Has Trait                | Action     | 12/4/2024   | Will be checked by the hash of the trait                                                         |
 | Nouns Token         | Is Token Id              | Constraint | 12/4/2024   | Solved for by seeing the last minted token? Believe the active auction returns the last id?      |
 | Nouns Token         | Current Bid Within Range | Constraint | 12/4/2024   | Bound the amount willing to bid on the noun                                                      |

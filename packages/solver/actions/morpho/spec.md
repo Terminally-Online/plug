@@ -68,7 +68,7 @@ Alternative data access option: https://docs.morpho.org/apis/morpho/
 | :--- | :------ |:------ |
 | MetaMorpho Factory | 0xA9c3D3a366466Fa809d1Ae982Fb2c46E5fC41101 | Deploys Morpho Vaults|
 | Morpho Market Factory | 0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb | Deploys Morpho Markets |
-| Public Allocator | 0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb | Deploys Morpho Markets |
+| Public Allocator | 0xfd32fA2ca22c76dD6E550706Ad913FC6CE91c75D |  |
 
 
 ### Deposit to Morpho Vault
