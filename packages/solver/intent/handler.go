@@ -17,10 +17,9 @@ import (
 )
 
 type IntentRequest struct {
-	Action  types.Action    `json:"action"`
-	ChainId int             `json:"chainId"`
-	From    string          `json:"from"`
-	Inputs  json.RawMessage `json:"inputs"`
+	ChainId int               `json:"chainId"`
+	From    string            `json:"from"`
+	Inputs  []json.RawMessage `json:"inputs"`
 }
 
 type Handler struct {
@@ -149,10 +148,19 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transaction, err := h.solver.GetTransaction(req.Action, req.Inputs, req.ChainId, req.From)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
+	transactionsBatch := make([]*types.Transaction, 0)
+	for _, inputs := range req.Inputs {
+		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
+		if err != nil {
+			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		transactionsBatch = append(transactionsBatch, transactions...)
+	}
+
+	if len(transactionsBatch) == 0 { 
+		utils.MakeHttpError(w, "has no transactions to execute", http.StatusBadRequest)
 	}
 
 	// Generate the encoded solver value so that the smart contract can decode it.
@@ -206,7 +214,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	response := types.Plugs{
 		Plug: types.Plug{
 			Socket: req.From,
-			Plugs:  transaction,
+			Plugs:  transactionsBatch,
 			Solver: "0x" + common.Bytes2Hex(solver),
 			Salt:   "0x" + common.Bytes2Hex(salt),
 		},
