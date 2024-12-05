@@ -88,7 +88,7 @@ query ExampleQuery($first: Int) {
 | Rewards       | Claim Rewards           | Action     |             |       |
 | Morpho Market | Health Factor           | Constraint |             |       |
 | Morpho Vault  | Vault APY               | Constraint |             |       |
-| Morpho Market | Vault APY               | Constraint |             |       |
+| Morpho Market | Market APY              | Constraint |             |       |
 
 ### Contracts
 
@@ -141,9 +141,23 @@ maxRedeem() read on vault can be used to find this amount.
 
 "Withdraw all {0 token} from {0->1 vault}."
 
+### Supply Collateral
+
+### Withdraw Collateral
+
+### Withdraw All Collateral
+
 ### Borrow from Morpho Market
 
 "Borrow {0 amount} {1 token} against {2 collateral_amount} {2->3 collateral}."
+
+### Repay
+
+### Repay in Full
+
+### Claim Rewards
+
+### Health Factor
 
 ### Get Vault APY
 
