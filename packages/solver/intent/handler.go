@@ -144,11 +144,30 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transactionsBatch := make([]*types.Transaction, 0)
+	var breakOuter bool
 	for _, inputs := range req.Inputs {
 		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
 		if err != nil {
 			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 			return
+		}
+
+		// NOTE: Some plug actions have exclusive transactions that need to be run alone
+		//       before the rest of the Plug can run. For this, we will just break out
+		//       of the loop and execute any solo transactions that are needed for
+		//       the rest of the batch to run in sequence.
+		for _, transaction := range transactions { 
+			if transaction.Exclusive { 
+				// NOTE: Set the field to false to avoid tarnishing the response shape.
+				transaction.Exclusive = false
+				transactionsBatch = []*types.Transaction{transaction}
+				breakOuter = true
+				break
+			}
+		}
+		
+		if breakOuter {
+			break
 		}
 
 		transactionsBatch = append(transactionsBatch, transactions...)
