@@ -17,10 +17,9 @@ import (
 )
 
 type IntentRequest struct {
-	Action  types.Action    `json:"action"`
-	ChainId int             `json:"chainId"`
-	From    string          `json:"from"`
-	Inputs  json.RawMessage `json:"inputs"`
+	ChainId int               `json:"chainId"`
+	From    string            `json:"from"`
+	Inputs  []json.RawMessage `json:"inputs"`
 }
 
 type Handler struct {
@@ -107,11 +106,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Case 3: Protocol and action - return specific schema
-	if !h.solver.SupportsAction(handler, action) {
-		utils.MakeHttpError(w, fmt.Sprintf("action %s not supported by protocol %s", action, protocol), http.StatusBadRequest)
-		return
-	}
-
 	schema, err := handler.GetSchema(action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
@@ -149,10 +143,38 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transaction, err := h.solver.GetTransaction(req.Action, req.Inputs, req.ChainId, req.From)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
+	transactionsBatch := make([]*types.Transaction, 0)
+	var breakOuter bool
+	for _, inputs := range req.Inputs {
+		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
+		if err != nil {
+			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// NOTE: Some plug actions have exclusive transactions that need to be run alone
+		//       before the rest of the Plug can run. For this, we will just break out
+		//       of the loop and execute any solo transactions that are needed for
+		//       the rest of the batch to run in sequence.
+		for _, transaction := range transactions { 
+			if transaction.Exclusive { 
+				// NOTE: Set the field to false to avoid tarnishing the response shape.
+				transaction.Exclusive = false
+				transactionsBatch = []*types.Transaction{transaction}
+				breakOuter = true
+				break
+			}
+		}
+		
+		if breakOuter {
+			break
+		}
+
+		transactionsBatch = append(transactionsBatch, transactions...)
+	}
+
+	if len(transactionsBatch) == 0 { 
+		utils.MakeHttpError(w, "has no transactions to execute", http.StatusBadRequest)
 	}
 
 	// Generate the encoded solver value so that the smart contract can decode it.
@@ -206,7 +228,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	response := types.Plugs{
 		Plug: types.Plug{
 			Socket: req.From,
-			Plugs:  transaction,
+			Plugs:  transactionsBatch,
 			Solver: "0x" + common.Bytes2Hex(solver),
 			Salt:   "0x" + common.Bytes2Hex(salt),
 		},
