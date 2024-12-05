@@ -58,10 +58,26 @@ func (h *Handler) init() *Handler {
 
 	h.schemas[types.ActionWithdraw] = types.Schema{
 		Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<vault:address>}.",
+		Options: map[int]types.SchemaOptions{
+			1: {
+				Simple: underlyingAssetOptions,
+			},
+			2: {
+				Complex: underlyingAssetToVaultOptions,
+			},
+		},
 	}
 
 	h.schemas[types.ActionWithdrawMax] = types.Schema{
 		Sentence: "Withdraw max {0<token:address>} from {0=>1<vault:address>}",
+		Options: map[int]types.SchemaOptions{
+			0: {
+				Simple: underlyingAssetOptions,
+			},
+			1: {
+				Complex: underlyingAssetToVaultOptions,
+			},
+		},
 	}
 
 	h.schemas[types.ActionStake] = types.Schema{
