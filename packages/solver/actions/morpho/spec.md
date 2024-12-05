@@ -8,12 +8,33 @@
 - [Addresses](https://docs.morpho.org/morpho/addresses/)
 - [Morpho API](https://blue-api.morpho.org/graphql)
 - [Rewards Program](rewards.morpho.org/v1/programs)
+- [MetaMorpho Factory Contract](https://etherscan.io/address/0xA9c3D3a366466Fa809d1Ae982Fb2c46E5fC41101)
+- [Morpho Contract](https://etherscan.io/address/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb)
+- [Universal Reward Distributor Contract](https://etherscan.io/address/0x330eefa8a787552dc5cad3c3ca644844b1e61ddb)
 
 ---
 
 ## Contract Interfacing
 
 For each vault specified and returned by the API call we have a `asset` field that reflects the asset that can be borrowed. This asset however does not reflect which tokens can be used as collateral.
+
+## Scope
+
+| System                | Name                    | Type       | Implemented | Notes |
+| :-------------------- | :---------------------- | :--------- | :---------- | :---- |
+| Morpho Vault          | Earn via Vault          | Action     |             |       |
+| Morpho Vault          | Withdraw from Vault     | Action     |             |       |
+| Morpho Vault          | Withdraw Max from Vault | Action     |             |       |
+| :------------         | :---------------------- | :--------- | :---------- | :---- |
+| Morpho Market         | Supply Collateral       | Action     |             |       |
+| Morpho Market         | Withdraw Collateral     | Action     |             |       |
+| Morpho Market         | Withdraw All Collateral | Action     |             |       |
+| Morpho Market         | Borrow                  | Action     |             |       |
+| Morpho Market         | Repay                   | Action     |             |       |
+| Morpho Market         | Repay in Full           | Action     |             |       |
+| Rewards               | Claim Rewards           | Action     |             |       |
+| Morpho Market         | Health Factor           | Constraint |             |       |
+| Morpho Vault & Market | APY                     | Constraint |             |       |
 
 To determine which vaults we support you can make the call to their API with the following query:
 
@@ -72,32 +93,6 @@ query ExampleQuery($first: Int) {
 }
 ```
 
-## Scope
-
-| System        | Name                    | Type       | Implemented | Notes |
-| :------------ | :---------------------- | :--------- | :---------- | :---- |
-| Morpho Vault  | Earn via Vault          | Action     |             |       |
-| Morpho Vault  | Withdraw from Vault     | Action     |             |       |
-| Morpho Vault  | Withdraw Max from Vault | Action     |             |       |
-| Morpho Market | Supply Collateral       | Action     |             |       |
-| Morpho Market | Withdraw Collateral     | Action     |             |       |
-| Morpho Market | Withdraw All Collateral | Action     |             |       |
-| Morpho Market | Borrow                  | Action     |             |       |
-| Morpho Market | Repay                   | Action     |             |       |
-| Morpho Market | Repay in Full           | Action     |             |       |
-| Rewards       | Claim Rewards           | Action     |             |       |
-| Morpho Market | Health Factor           | Constraint |             |       |
-| Morpho Vault  | Vault APY               | Constraint |             |       |
-| Morpho Market | Market APY              | Constraint |             |       |
-
-### Contracts
-
-| Name                         | Address                                    | Desc                   |
-| :--------------------------- | :----------------------------------------- | :--------------------- |
-| MetaMorpho Factory           | 0xA9c3D3a366466Fa809d1Ae982Fb2c46E5fC41101 | Deploys Morpho Vaults  |
-| Morpho Market Factory        | 0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb | Deploys Morpho Markets |
-| Universal Reward Distributor | 0x330eefa8a787552dc5cad3c3ca644844b1e61ddb | Claim rewards          |
-
 ### Earn via Morpho Vault
 
 deposit() is called on the Morpho Vault.
@@ -141,28 +136,48 @@ maxRedeem() read on vault can be used to find this amount.
 
 "Withdraw all {0 token} from {0->1 vault}."
 
+## Markets
+
 ### Supply Collateral
+
+"Supply {0 amount} {1 collateral} as collateral for {1->2 token}."
 
 ### Withdraw Collateral
 
+"Withdraw {0 amount} tokens from {1 market}."
+
 ### Withdraw All Collateral
 
+"Withdraw all collateral from {0 market}."
+
 ### Borrow from Morpho Market
+
+Borrows `assets` or `shares` on behalf of `onBehalf` and sends the assets to `receiver`.
+
+Either `assets` or `shares` should be zero. Most use cases should rely on `assets` as an input so the caller is guaranteed to borrow `assets` of tokens, but the possibility to mint a specific amount of shares is given for full compatibility and precision.`msg.sender` must be authorized to manage `onBehalf`'s positions.
+
+Borrowing a large amount can revert for overflow.
+
+Borrowing an amount of shares may lead to borrow fewer assets than expected due to slippage. Consider using the `assets` parameter to avoid this.
 
 "Borrow {0 amount} {1 token} against {2 collateral_amount} {2->3 collateral}."
 
 ### Repay
 
+"Repay {0 amount} tokens in {1 market}."
+
 ### Repay in Full
+
+"Repay entire position in {1 market}."
 
 ### Claim Rewards
 
-### Health Factor
+"Claim rewards"
 
-### Get Vault APY
+### LTV
 
-"Deposit APY for {0 token} in {0->1 vault} is {2 direction} than {3 threshold}."
+"LTV for position in {0 market} is {1 operator} than {2 threshold}."
 
-### Get Specific Asset Borrow APY
+### Get APY
 
-"Borrow APY for {0 token} with {0->1 collateral} collateral is {2 direction} than {3 threshold}."
+"{0 action} APY in {1->2 vault/market} is {3 operator} than {4 threshold}."
