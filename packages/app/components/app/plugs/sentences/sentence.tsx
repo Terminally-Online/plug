@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes } from "react"
 
-import { Hash, X } from "lucide-react"
+import { Hash, Slash, X } from "lucide-react"
 
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
@@ -127,7 +127,8 @@ export const Sentence: FC<SentenceProps> = ({
 								const value = getInputValue(inputIndex)
 								const error = getInputError(inputIndex)
 								const dependentOnValue =
-									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
+									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
+									undefined
 
 								const sentenceOptions = solverActions[action.protocol].schema[action.action].options
 								const options =
@@ -197,17 +198,14 @@ export const Sentence: FC<SentenceProps> = ({
 											}
 											label={
 												<span className="relative text-lg">
-													<span className={cn(parsed.inputs.length > 1 && "opacity-40")}>
+													<span className={"opacity-40"}>
 														{formatTitle(action.action)}
-														{parsed.inputs.length > 1 && <span>:</span>}
+														:
 													</span>
-													{parsed.inputs.length > 1 && (
-														<span>
-															{" "}
-															{formatTitle(input.name ?? `Input #${inputIndex}`)}
-														</span>
-													)}
-													{input.dependentOn}
+													<span>
+														{" "}
+														{formatTitle(input.name ?? `Input #${inputIndex}`)}
+													</span>
 												</span>
 											}
 											visible={column.frame === `${actionIndex}-${inputIndex}`}
@@ -278,25 +276,33 @@ export const Sentence: FC<SentenceProps> = ({
 																	>
 																		{option.icon && (
 																			<div className="min-w-6">
-																				{option.icon.startsWith(
-																					"https://token-icons.llamao.fi/icons/tokens/"
-																				) ? (
-																					<TokenImage
-																						logo={option.icon}
-																						symbol={option.label}
-																						size="xs"
-																						blur={false}
-																					/>
-																				) : (
-																					<Image
-																						src={option.icon}
-																						alt={option.label}
-																						width={60}
-																						height={60}
-																						className="h-6 w-6 rounded-full"
-																						unoptimized
-																					/>
-																				)}
+																				<div className="flex items-center space-x-2">
+																					{option.icon
+																						.split("%7C")
+																						.map(icon =>
+																							decodeURIComponent(icon)
+																						)
+																						.map((icon, index) => (
+																							<div
+																								key={index}
+																								className="flex items-center"
+																							>
+																								<TokenImage
+																									logo={icon}
+																									symbol={
+																										option.label
+																									}
+																									size="xs"
+																									blur={false}
+																									className={cn(
+																										index > 0
+																											? "-ml-4"
+																											: ""
+																									)}
+																								/>
+																							</div>
+																						))}
+																				</div>
 																			</div>
 																		)}
 																		<span className="truncate">{option.name}</span>
