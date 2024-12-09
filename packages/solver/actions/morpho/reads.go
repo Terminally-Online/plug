@@ -47,6 +47,23 @@ const (
 			}
 		}
 	}`
+	vaultsQuery = `query {
+		markets {
+ 		    items {
+ 		        id
+ 		        uniqueKey
+ 		        loanAsset {
+ 		            symbol
+ 		        }
+ 		        collateralAsset {
+ 		            symbol
+ 		        }
+ 		        supplyingVaults {
+ 		            address
+ 		        }
+ 		    }
+ 		}
+	}`
 )
 
 type Asset struct {
@@ -76,18 +93,6 @@ type Market struct {
 	State           MarketState `json:"state"`
 }
 
-type MarketResponse struct {
-	Data struct {
-		Markets struct {
-			Items    []Market `json:"items"`
-			PageInfo struct {
-				CountTotal int `json:"countTotal"`
-				Count      int `json:"count"`
-			} `json:"pageInfo"`
-		} `json:"markets"`
-	} `json:"data"`
-}
-
 func GetMarkets() ([]Market, error) {
 	var allMarkets []Market
 	skip := 0
@@ -114,7 +119,17 @@ func GetMarkets() ([]Market, error) {
 			},
 			nil,
 			bytes.NewBuffer(jsonBody),
-			MarketResponse{},
+			struct {
+				Data struct {
+					Markets struct {
+						Items    []Market `json:"items"`
+						PageInfo struct {
+							CountTotal int `json:"countTotal"`
+							Count      int `json:"count"`
+						} `json:"pageInfo"`
+					} `json:"markets"`
+				} `json:"data"`
+			}{},
 		)
 		if err != nil {
 			return []Market{}, err
@@ -131,4 +146,8 @@ func GetMarkets() ([]Market, error) {
 	}
 
 	return allMarkets, nil
+}
+
+func GetVaults() {
+
 }

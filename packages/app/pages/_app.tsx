@@ -59,4 +59,5 @@ const PlugApp: FC<AppProps> = ({ Component, pageProps }) => {
 	)
 }
 
-export default api.withTRPC(PlugApp)
+// export default api.withTRPC(PlugApp)
+export default PlugApp
