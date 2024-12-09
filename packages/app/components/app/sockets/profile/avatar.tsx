@@ -34,7 +34,7 @@ export const Avatar: FC<HTMLAttributes<HTMLDivElement> & { name: string; rotatio
 			style={{ filter: `hue-rotate(${hueRotation}deg)`, ...style }}
 			{...props}
 		>
-			<BoringAvatar variant="beam" name={name} size={"100%"} colors={["#00E100", "#A3F700"]} square />
+			<BoringAvatar variant="beam" name={name} size={"100%"} colors={["#385842", "#D2F38A"]} square />
 		</div>
 	)
 }

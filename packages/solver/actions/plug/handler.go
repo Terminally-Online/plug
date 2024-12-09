@@ -28,7 +28,7 @@ func New() actions.BaseProtocolHandler {
 
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionTransfer] = types.Schema{
-		Sentence: "Transfer {0<amount:uint256>} {1<token:address>} to {2<recipient:address>}.",
+		Sentence: "Transfer {0<amount:[(1.1)=721?1:uint256]>} {1<token:address:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}",
 	}
 
 	h.schemas[types.ActionTransferFrom] = types.Schema{

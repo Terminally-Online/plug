@@ -46,7 +46,7 @@ func (h *Handler) init() *Handler {
 		Sentence: "Outbid the current bid by {0<percent:uint256>}%.",
 	}
 	h.schemas[types.Action(HasTrait)] = types.Schema{
-		Sentence: "Bid on noun that has a {0<traitType:string>} of {0=>1<trait:uint256>}.",
+		Sentence: "Bid on noun that has a {0<traitType:string>} of {0=>1<trait:string>}.",
 		Options: map[int]types.SchemaOptions{
 			0: {Simple: traitTypeOptions},
 			1: {Complex: traitOptions},

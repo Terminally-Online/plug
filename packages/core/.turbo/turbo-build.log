@@ -1,0 +1,17 @@
+
+
+> @terminally-online/plug-core@0.0.0 prebuild /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/core
+> run-s prebuild:*
+
+
+> @terminally-online/plug-core@0.0.0 prebuild:schema /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/core
+> pnpm plug:schema
+
+
+> @terminally-online/plug-core@0.0.0 build /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/core
+> pnpm build:ts && pnpm build:contracts
+
+
+> @terminally-online/plug-core@0.0.0 build:ts /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/core
+> pnpm tsup && pnpm build:format
+
