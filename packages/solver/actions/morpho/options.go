@@ -2,9 +2,7 @@ package morpho
 
 import (
 	"fmt"
-	"net/url"
 	"solver/types"
-	"strconv"
 )
 
 func GetMarketOptions() ([]types.Option, error) {
@@ -15,41 +13,77 @@ func GetMarketOptions() ([]types.Option, error) {
 
 	options := make([]types.Option, 0)
 	for _, market := range markets {
-		lltv := func() float64 {
-			switch v := market.LLTV.(type) {
-			case string:
-				f, _ := strconv.ParseFloat(v, 64)
-				return f / 1e16
-			case float64:
-				return v / 1e16
-			default:
-				return 0
-			}
-		}()
-
-		reference := fmt.Sprintf(
-			"%s/%s (LLTV: %.0f%%)",
-			market.CollateralAsset.Symbol,
-			market.LoanAsset.Symbol,
-			lltv,
-		)
-		if lltv == 0 || len(reference) > 30 {
-			continue
-		}
-
-		urlEncoded := url.QueryEscape(fmt.Sprintf(
-			"%s|%s",
-			market.CollateralAsset.LogoURI,
-			market.LoanAsset.LogoURI,
-		))
-
 		options = append(options, types.Option{
-			Label: reference,
-			Name:  reference,
+			Label: market.Metadata.Name,
+			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
-			Icon:  urlEncoded,
+			Icon:  market.Metadata.Icon,
 		})
 	}
 
 	return options, nil
+}
+
+func GetCollateralTokenToMarketOptions() ([]types.Option, map[string][]types.Option, error) {
+	markets, err := GetMarkets()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	seenCollateral := make(map[string]bool)
+	tokenOptions := make([]types.Option, 0)
+	tokenToMarketOptions := make(map[string][]types.Option)
+
+	for _, market := range markets {
+		if !seenCollateral[market.CollateralAsset.Address] {
+			tokenOptions = append(tokenOptions, types.Option{
+				Label: market.CollateralAsset.Symbol,
+				Name:  market.CollateralAsset.Symbol,
+				Value: market.CollateralAsset.Address,
+			})
+			seenCollateral[market.CollateralAsset.Address] = true
+		}
+
+		tokenToMarketOptions[market.CollateralAsset.Address] = append(tokenToMarketOptions[market.CollateralAsset.Address], types.Option{
+			Label: market.Metadata.Name,
+			Name:  market.Metadata.Name,
+			Value: market.UniqueKey,
+			Icon:  market.Metadata.Icon,
+			Info:  fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
+		})
+	}
+
+	return tokenOptions, tokenToMarketOptions, nil
+}
+
+func GetBorrowTokenToMarketOptions() ([]types.Option, map[string][]types.Option, error) {
+	markets, err := GetMarkets()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	seenLoanAssets := make(map[string]bool)
+	tokenOptions := make([]types.Option, 0)
+	tokenToMarketOptions := make(map[string][]types.Option)
+
+	for _, market := range markets {
+		if !seenLoanAssets[market.LoanAsset.Address] {
+			tokenOptions = append(tokenOptions, types.Option{
+				Label: market.LoanAsset.Symbol,
+				Name:  market.LoanAsset.Symbol,
+				Value: market.LoanAsset.Address,
+			})
+			seenLoanAssets[market.LoanAsset.Address] = true
+		}
+
+		tokenToMarketOptions[market.LoanAsset.Address] = append(tokenToMarketOptions[market.LoanAsset.Address], types.Option{
+			Label: market.Metadata.Name,
+			Name:  market.Metadata.Name,
+			Value: market.UniqueKey,
+			Icon:  market.Metadata.Icon,
+			Info:  fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100),
+		})
+	}
+
+	return tokenOptions, tokenToMarketOptions, nil
 }
