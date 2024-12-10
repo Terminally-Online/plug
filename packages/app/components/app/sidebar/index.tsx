@@ -57,6 +57,7 @@ const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { data: session } = useSession()
+	const { account } = useConnect()
 	const { is, width, handleActivePane, resize } = useSidebar()
 
 	const [isResizing, setIsResizing] = useState(false)
@@ -87,7 +88,7 @@ const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || is.stats || is.companion || is.searching) && (
+			{(is.authenticating || !account.isAuthenticated || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10"
@@ -104,7 +105,7 @@ const ConsoleSidebarPane = () => {
 											? "Stats"
 											: is.searching
 												? "Search"
-												: session?.user.id
+												: session?.user.id.startsWith("0x")
 													? "Wallet"
 													: "Login"
 								}
@@ -120,7 +121,7 @@ const ConsoleSidebarPane = () => {
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
 										/>
-									) : is.authenticating && session?.user.id ? (
+									) : session?.user.id.startsWith("0x") ? (
 										<Wallet
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -147,7 +148,7 @@ const ConsoleSidebarPane = () => {
 								<ColumnCompanion index={0} />
 							) : session?.user.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
-							) : session?.user.id.startsWith("0x") === false ? (
+							) : session?.user.id.startsWith("0x") === false || !account.isAuthenticated ? (
 								<ColumnAuthenticate index={0} />
 							) : (
 								<></>
@@ -173,7 +174,6 @@ const ConsoleSidebarPane = () => {
 export const ConsoleSidebar = () => {
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
-	const { data: session } = useSession()
 	const { socket } = useSocket()
 
 	const { avatar } = useSocket()
@@ -186,42 +186,38 @@ export const ConsoleSidebar = () => {
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
 			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-plug-green/10 py-4">
 				<div className={cn("flex w-full flex-col gap-4 p-2")}>
-					{session && (
-						<button
-							className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
-							onClick={() => handleSidebar("authenticating")}
-						>
-							{avatar ? (
-								<Image
-									src={avatar}
-									alt="ENS Avatar"
-									width={64}
-									height={64}
-									className="h-full w-full rounded-sm"
-								/>
-							) : (
-								<Avatar name={socket?.id ?? ""} />
-							)}
-						</button>
-					)}
-
-					{showRestrictedOptions && (
-						<ConsoleSidebarAction
-							icon={
-								<Plus
-									size={14}
-									className="transition-all duration-200 ease-in-out group-hover:opacity-100"
-								/>
-							}
-							title="New Plug"
-							isExpanded={is.expanded}
-							isPrimary={true}
-							onClick={() => handlePlugs.plug.add()}
-						/>
-					)}
+					<button
+						className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						onClick={() => handleSidebar("authenticating")}
+					>
+						{avatar ? (
+							<Image
+								src={avatar}
+								alt="ENS Avatar"
+								width={64}
+								height={64}
+								className="h-full w-full rounded-sm"
+							/>
+						) : (
+							<Avatar name={socket?.id ?? ""} />
+						)}
+					</button>
 
 					{showRestrictedOptions && (
 						<>
+							<ConsoleSidebarAction
+								icon={
+									<Plus
+										size={14}
+										className="transition-all duration-200 ease-in-out group-hover:opacity-100"
+									/>
+								}
+								title="New Plug"
+								isExpanded={is.expanded}
+								isPrimary={true}
+								onClick={() => handlePlugs.plug.add()}
+							/>
+
 							<ConsoleSidebarAction
 								icon={
 									<Search

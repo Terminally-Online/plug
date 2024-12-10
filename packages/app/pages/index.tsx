@@ -1,6 +1,6 @@
 import Head from "next/head"
 
-import { Blocks, Curve3D, Hero, LandingFooter, Platform, Transactions, Vision } from "@/components"
+import { Blocks, Curve3D, Hero, LandingFooter, Navbar, Platform, Transactions, Vision } from "@/components"
 
 const Page = () => (
 	<>
@@ -9,6 +9,7 @@ const Page = () => (
 		</Head>
 
 		<div className="overflow-x-hidden">
+			<Navbar />
 			<Hero />
 			<Platform />
 			<Curve3D />

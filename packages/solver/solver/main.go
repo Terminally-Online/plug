@@ -6,6 +6,7 @@ import (
 	"solver/actions"
 	"solver/actions/aave_v3"
 	"solver/actions/ens"
+	"solver/actions/morpho"
 	"solver/actions/nouns"
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
@@ -25,6 +26,7 @@ func New() *Solver {
 			types.ProtocolYearnV3: yearn_v3.New(),
 			types.ProtocolENS:     ens.New(),
 			types.ProtocolNouns:   nouns.New(),
+			types.ProtocolMorpho:  morpho.New(),
 		},
 	}
 }

@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-import { Book, Twitter } from "lucide-react"
+import { Activity, Book, Twitter } from "lucide-react"
 
 import { Button, Image, LandingContainer } from "@/components"
 import { env } from "@/env"
@@ -13,23 +13,33 @@ export const Navbar: FC = () => {
 	)
 
 	return (
-		<LandingContainer className="fixed z-[10] w-full items-center gap-8 bg-gradient-to-b from-white to-white/0 py-8">
-			<div className="flex w-full flex-row items-center gap-4">
+		<LandingContainer className="flex h-full flex-col py-8 text-plug-green">
+			<div className="flex flex-row items-center justify-between xl:justify-start">
 				<button
-					className="mr-8 flex flex-row items-center gap-8"
+					className="flex flex-row items-center gap-4 md:gap-8 xl:mr-16"
 					onClick={() => handleCallToAction(routes.index)}
 				>
-					<Image src="/plug-logo-green.svg" alt="Logo" width={32} height={32} />
-					<Image src="/plug-word-green.svg" alt="Logo" width={64} height={32} />
-				</button>
-				<button onClick={() => handleCallToAction(routes.twitter)}>
-					<Twitter size={18} className="opacity-40 transition-opacity duration-200 hover:opacity-100" />
+					<Image src="/plug-logo-green.svg" alt="Logo" width={24} height={24} />
+					<Image src="/plug-word-green.svg" alt="Logo" width={64} height={24} />
 				</button>
 
+				<div className="ml-auto flex items-center gap-6 md:gap-8 xl:ml-0">
+					<button onClick={() => handleCallToAction(routes.status)}>
+						<Activity size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
+					</button>
+					<button onClick={() => handleCallToAction(routes.twitter)}>
+						<Twitter size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
+					</button>
+					<button onClick={() => handleCallToAction(routes.posts)}>
+						<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
+					</button>
+				</div>
+
+				<div className="mx-8 hidden h-[2px] w-full bg-plug-green/10 xl:block" />
+
 				<Button
-					variant="secondary"
-					className="ml-auto px-4 py-2"
-					sizing="sm"
+					variant="none"
+					className="ml-6 w-max min-w-[110px] rounded-md border-[1px] border-plug-yellow/20 bg-plug-yellow px-4 py-2 text-center text-sm font-black text-plug-green filter backdrop-blur-xl transition-all duration-200 ease-in-out hover:bg-plug-yellow/50 md:ml-8"
 					onClick={() => handleCallToAction()}
 				>
 					Enter App

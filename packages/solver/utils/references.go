@@ -56,6 +56,10 @@ var (
 				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
 				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
 			},
+			"morpho": {
+				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+				"distributor": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb",
+			},
 		},
 	}
 )

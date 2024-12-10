@@ -53,6 +53,11 @@ func (o *SchemaOptions) UnmarshalJSON(data []byte) error {
 }
 
 var (
+	BaseBorowFields = []Option{
+		{Label: "Borrow", Name: "Borrow", Value: "-1"},
+		{Label: "Deposit", Name: "Deposit", Value: "1"},
+	}
+
 	BaseThresholdFields = []Option{
 		{Label: "less than", Name: "Less Than", Value: "-1"},
 		{Label: "greater than", Name: "Greater Than", Value: "1"},
