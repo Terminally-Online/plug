@@ -3,15 +3,35 @@ Bebop Integration
 ## Overview
 
 Bebop enables Plug users to make swaps and to check prices. The PMM API is used to get access to quotes and fills from professional market makers. The JAM API enables users to swap tokens not supported in the PMM API by accessing solver auctions.
+
 ## Supporting Documentation
 
 - [API Comparison](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/bebop-trading-apis-comparison)
-- [Getting Quotes](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/get-quote )
+
+
+### PMM API
+- [Supported Tokens](https://api.bebop.xyz/pmm/ethereum/v3/token-info)
+- [Get Quote](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/get-quote)
+- [Submit Order](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/submit-order)
+- [Manage Approvals](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/manage-approvals)
+- [Token Pricing](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/pricing)
+
+
+### JAM API
+
+- [Get Quote](https://api.bebop.xyz/jam/polygon/docs#/v1/get_quote_v1_quote_get)
+- [Submit Order](https://docs.bebop.xyz/bebop/bebop-api-jam/jam-api-endpoints/submit-order)
+- [Get Order Status](https://docs.bebop.xyz/bebop/bebop-api-jam/jam-api-endpoints/order-status)
+- [Manage Approvals](https://docs.bebop.xyz/bebop/bebop-api-jam/jam-api-endpoints/manage-approvals)
 
 ---
 ## Contract Interfacing
 
-Bebop can be interacted with directly via the API.
+Bebop can be interacted with directly via the API. Bebop offers 2 endpoints of importance. The PMM API should be used to see if a token in an action or constraint is supported.
+
+There is a defined set of tokens that can be traded using the Bebop PMM RFQ API. These can be retrieved using the /token-info endpoint. Tokens may become unavailable from time to time, for buying or selling. These states will be indicated using the availability.canBuy and availability.canSell fields for each token. 
+
+If a pair is not supported through the PMM API, the JAM API can be utilized.
   
 ## Scope
 
@@ -25,11 +45,26 @@ Bebop can be interacted with directly via the API.
 
 ## Swaps
 
-While Plug offers different types of Swaps to the user, under the hood these swaps share many of the same actions.
+While Plug offers different types of Swaps to the user, under the hood these swaps share many of the same actions. We should use the PMM API when possible 
 
-[Retrieve a quote](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/get-quote) The quote will indicate a price given the trade parameters that you have specified. Use https://api.bebop.xyz/pmm/arbitrum/docs#/v3/quote_v3_quote_get
+1. Check the PMM supported tokens to determine if the PMM API can be used
 
-Before swapping, we must [make approvals](https://docs.bebop.xyz/bebop/bebop-api-pmm-rfq/rfq-api-endpoints/trade/manage-approvals) In order for Bebop to facilitate the trade, it needs to have access to your tokens. Approvals can be made with standard ERC20 Approvals or Permit2. 
+If the pair is supported on the PMM API...
+
+2a. Get a Quote using the PMM API and specify Permit2
+3a. Make Approvals using Permit2 when reque
+4a. Submit an Order using the PMM API
+
+If the pair is NOT supported on the PMM API...
+
+2b. Get a Quote using the JAM API
+4b. Submit an Order using the JAM API
+
+Retrie The quote will indicate a price given the trade parameters that you have specified. 
+
+Before swapping, we must make approvals. 
+
+In order for Bebop to facilitate the trade, it needs to have access to your tokens. Approvals can be made with standard ERC20 Approvals or Permit2. 
 
 To use Permit2, specify `approval_type=Permit2` when retrieving a quote. The quote endpoint will return a `requiredSignatures` field with token addresses that you must provide permit signatures for.
 
