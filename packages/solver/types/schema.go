@@ -53,7 +53,7 @@ func (o *SchemaOptions) UnmarshalJSON(data []byte) error {
 }
 
 var (
-	BaseBorowFields = []Option{
+	BaseLendActionTypeFields = []Option{
 		{Label: "Borrow", Name: "Borrow", Value: "-1"},
 		{Label: "Deposit", Name: "Deposit", Value: "1"},
 	}

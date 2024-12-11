@@ -20,14 +20,22 @@ const (
 				loanAsset {
 					address
 					symbol
+					name
 					decimals
 					logoURI
 				}
 				collateralAsset {
 					address
 					symbol
+					name
 					decimals
 					logoURI
+				}
+				dailyApys {
+					borrowApy
+					supplyApy
+					netBorrowApy
+					netSupplyApy
 				}
 				state {
 					price
@@ -57,24 +65,19 @@ const (
 				metadata {
 					image
 					description
-					curators {
+				}
+				asset {
+					address
+					decimals
 					name
-					image
-					url
-					verified
-					}
+					symbol
+					logoURI
+				}
+				dailyApys {
+					apy
+					netApy
 				}
 				state {
-					rewards {
-						asset {
-							address
-							decimals
-							symbol
-							name
-						}
-					}
-					netApy
-					netApyWithoutRewards
 					allocation {
 						enabled
 						market {
@@ -95,27 +98,25 @@ const (
 								decimals
 								logoURI
 							}
-							state {
+							dailyApys {
 								borrowApy
-								borrowAssets
-								borrowAssetsUsd
-								borrowShares
 								supplyApy
-								supplyAssets
-								supplyAssetsUsd
-								supplyShares
-								dailyBorrowApy
-								dailySupplyApy
-								fee
-								utilization
+								netBorrowApy
+								netSupplyApy
+							}
+							state {
 								price
+								borrowShares
+								borrowAssets
+								borrowApy
+								dailyBorrowApy
+								supplyShares
+								supplyAssets
+								supplyApy
+								dailySupplyApy
 							}
 						}
 					}
-				}
-				liquidity {
-					underlying
-					usd
 				}
 			}
 			pageInfo {
@@ -127,6 +128,74 @@ const (
 	}`
 	rewardsApiUrl = "https://rewards.morpho.org/v1/users/%s/distributions?chain_id=%d"
 )
+
+func GetVaults() ([]Vault, error) {
+	var vaults []Vault
+	skip := 0
+	limit := 100
+
+	for {
+		paginatedQuery := fmt.Sprintf(vaultsQuery, skip)
+		requestBody := struct {
+			Query string `json:"query"`
+		}{
+			Query: paginatedQuery,
+		}
+
+		jsonBody, err := json.Marshal(requestBody)
+		if err != nil {
+			return []Vault{}, err
+		}
+
+		vaultResponse, err := utils.MakeHTTPRequest(
+			morphoApiUrl,
+			"POST",
+			map[string]string{
+				"Content-Type": "application/json",
+			},
+			nil,
+			bytes.NewBuffer(jsonBody),
+			struct {
+				Data struct {
+					Vaults struct {
+						Items    []Vault `json:"items"`
+						PageInfo struct {
+							CountTotal int `json:"countTotal"`
+							Count      int `json:"count"`
+						} `json:"pageInfo"`
+					} `json:"vaults"`
+				} `json:"data"`
+			}{},
+		)
+		if err != nil {
+			return []Vault{}, err
+		}
+
+		vaults = append(vaults, vaultResponse.Data.Vaults.Items...)
+
+		if vaultResponse.Data.Vaults.PageInfo.Count < limit ||
+			skip+vaultResponse.Data.Vaults.PageInfo.Count >= vaultResponse.Data.Vaults.PageInfo.CountTotal {
+			break
+		}
+
+		skip += limit
+	}
+
+	return vaults, nil
+}
+
+func GetVault(address string) (Vault, error) {
+	vaults, err := GetVaults()
+	if err != nil {
+		return Vault{}, err
+	}
+	for _, vault := range vaults {
+		if vault.Address == address {
+			return vault, nil
+		}
+	}
+	return Vault{}, fmt.Errorf("vault not found for address: %s", address)
+}
 
 func GetMarkets() ([]Market, error) {
 	var markets []Market
@@ -188,61 +257,6 @@ func GetMarket(uniqueKey string) (Market, error) {
 		}
 	}
 	return Market{}, fmt.Errorf("market not found for unique key: %s", uniqueKey)
-}
-
-func GetVaults() ([]Vault, error) {
-	var vaults []Vault
-	skip := 0
-	limit := 100
-
-	for {
-		paginatedQuery := fmt.Sprintf(vaultsQuery, skip)
-		requestBody := struct {
-			Query string `json:"query"`
-		}{
-			Query: paginatedQuery,
-		}
-
-		jsonBody, err := json.Marshal(requestBody)
-		if err != nil {
-			return []Vault{}, err
-		}
-
-		vaultResponse, err := utils.MakeHTTPRequest(
-			morphoApiUrl,
-			"POST",
-			map[string]string{
-				"Content-Type": "application/json",
-			},
-			nil,
-			bytes.NewBuffer(jsonBody),
-			struct {
-				Data struct {
-					Vaults struct {
-						Items    []Vault `json:"items"`
-						PageInfo struct {
-							CountTotal int `json:"countTotal"`
-							Count      int `json:"count"`
-						} `json:"pageInfo"`
-					} `json:"vaults"`
-				} `json:"data"`
-			}{},
-		)
-		if err != nil {
-			return []Vault{}, err
-		}
-
-		vaults = append(vaults, vaultResponse.Data.Vaults.Items...)
-
-		if vaultResponse.Data.Vaults.PageInfo.Count < limit ||
-			skip+vaultResponse.Data.Vaults.PageInfo.Count >= vaultResponse.Data.Vaults.PageInfo.CountTotal {
-			break
-		}
-
-		skip += limit
-	}
-
-	return vaults, nil
 }
 
 func GetDistributions(address string, chainId int) ([]Distribution, error) {

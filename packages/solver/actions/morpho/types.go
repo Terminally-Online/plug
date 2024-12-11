@@ -13,6 +13,7 @@ import (
 type Asset struct {
 	Address  string `json:"address"`
 	Symbol   string `json:"symbol"`
+	Name     string `json:"name"`
 	Decimals int    `json:"decimals"`
 	LogoURI  string `json:"logoURI"`
 }
@@ -93,7 +94,13 @@ type Market struct {
 	IRMAddress      string                     `json:"irmAddress"`
 	LoanAsset       Asset                      `json:"loanAsset,omitempty"`
 	CollateralAsset Asset                      `json:"collateralAsset,omitempty"`
-	State           MarketState                `json:"state"`
+	DailyApys       struct {
+		BorrowApy    float64 `json:"borrowApy"`
+		SupplyApy    float64 `json:"supplyApy"`
+		NetBorrowApy float64 `json:"netBorrowApy"`
+		NetSupplyApy float64 `json:"netSupplyApy"`
+	} `json:"dailyApys"`
+	State MarketState `json:"state"`
 }
 
 func (m *Market) UnmarshalJSON(data []byte) error {
@@ -105,7 +112,13 @@ func (m *Market) UnmarshalJSON(data []byte) error {
 		IRMAddress      string      `json:"irmAddress"`
 		LoanAsset       Asset       `json:"loanAsset"`
 		CollateralAsset Asset       `json:"collateralAsset"`
-		State           MarketState `json:"state"`
+		DailyApys       struct {
+			BorrowApy    float64 `json:"borrowApy"`
+			SupplyApy    float64 `json:"supplyApy"`
+			NetBorrowApy float64 `json:"netBorrowApy"`
+			NetSupplyApy float64 `json:"netSupplyApy"`
+		} `json:"dailyApys"`
+		State MarketState `json:"state"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return fmt.Errorf("unmarshaling raw market: %w", err)
@@ -117,6 +130,7 @@ func (m *Market) UnmarshalJSON(data []byte) error {
 	m.IRMAddress = raw.IRMAddress
 	m.LoanAsset = raw.LoanAsset
 	m.CollateralAsset = raw.CollateralAsset
+	m.DailyApys = raw.DailyApys
 	m.State = raw.State
 
 	lltv, err := parseBigInt(raw.LLTV)
@@ -193,22 +207,16 @@ type Vault struct {
 	Metadata struct {
 		Image       string `json:"image"`
 		Description string `json:"description"`
-		Curators    []struct {
-			Name     string `json:"name"`
-			Image    string `json:"image"`
-			URL      string `json:"url"`
-			Verified bool   `json:"verified"`
-		} `json:"curators"`
 	} `json:"metadata"`
+	Asset     Asset `json:"asset"`
+	DailyApys struct {
+		Apy    float64 `json:"apy"`
+		NetApy float64 `json:"netApy"`
+	} `json:"dailyApys"`
 	State struct {
-		Rewards []struct {
-			Asset Asset `json:"asset"`
-		} `json:"rewards"`
-		NetApy               float64 `json:"netApy"`
-		NetApyWithoutRewards float64 `json:"netApyWithoutRewards"`
-		Allocation           struct {
-			Enabled bool     `json:"enabled"`
-			Market  []Market `json:"market"`
+		Allocation []struct {
+			Enabled bool   `json:"enabled"`
+			Market  Market `json:"market"`
 		} `json:"allocation"`
 	} `json:"state"`
 }

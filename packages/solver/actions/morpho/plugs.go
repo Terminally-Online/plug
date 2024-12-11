@@ -8,13 +8,68 @@ import (
 	"solver/bindings/erc_20"
 	"solver/bindings/morpho_distributor"
 	"solver/bindings/morpho_router"
+	"solver/bindings/morpho_vault"
 	"solver/types"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleEarn(
+	rawInputs json.RawMessage,
+	params actions.HandlerParams,
+) ([]*types.Transaction, error) {
+	var inputs struct {
+		Amount *big.Int `json:"amount"`
+		Token  string   `json:"token"`
+		Vault  string   `json:"vault"`
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal earn inputs: %w", err)
+	}
+
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABIFailed("ERC20")
+	}
+	approveCalldata, err := erc20Abi.Pack(
+		"approve",
+		common.HexToAddress(inputs.Vault),
+		inputs.Amount,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack approve calldata: %w", err)
+	}
+
+	vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get morpho vault abi: %w", err)
+	}
+	depositCalldata, err := vaultAbi.Pack(
+		"deposit",
+		inputs.Amount,
+		common.HexToAddress(params.From),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack deposit calldata: %w", err)
+	}
+
+	return []*types.Transaction{
+		{
+			To:   inputs.Token,
+			Data: "0x" + common.Bytes2Hex(approveCalldata),
+		},
+		{
+			To:   inputs.Vault,
+			Data: "0x" + common.Bytes2Hex(depositCalldata),
+		},
+	}, nil
+}
+
+func HandleSupplyCollateral(
+	rawInputs json.RawMessage,
+	params actions.HandlerParams,
+) ([]*types.Transaction, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -46,8 +101,8 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 	if err != nil {
 		return nil, fmt.Errorf("failed to get morpho abi: %w", err)
 	}
-	supplyCalldata, err := morphoAbi.Pack(
-		"supply",
+	supplyCollateralCalldata, err := morphoAbi.Pack(
+		"supplyCollateral",
 		market.Params,
 		inputs.Amount,
 		common.HexToAddress(params.From),
@@ -64,12 +119,12 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		},
 		{
 			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(supplyCalldata),
+			Data: "0x" + common.Bytes2Hex(supplyCollateralCalldata),
 		},
 	}, nil
 }
 
-func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -77,6 +132,34 @@ func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerP
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
+	}
+
+	if len(inputs.Target) == 42 {
+		_, err := GetVault(inputs.Target)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get vault: %w", err)
+		}
+
+		vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get vault abi: %w", err)
+		}
+		withdrawCalldata, err := vaultAbi.Pack(
+			"withdraw",
+			inputs.Amount,
+			common.HexToAddress(params.From),
+			common.HexToAddress(params.From),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
+		}
+
+		return []*types.Transaction{
+			{
+				To:   inputs.Target,
+				Data: "0x" + common.Bytes2Hex(withdrawCalldata),
+			},
+		}, nil
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -108,14 +191,50 @@ func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerP
 	}, nil
 }
 
-func HandleWithdrawMaxCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
-		Token  string   `json:"token"`
-		Target string   `json:"target"`
+		Token  string `json:"token"`
+		Target string `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
+	}
+
+	if len(inputs.Target) == 42 {
+		_, err := GetVault(inputs.Target)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get vault: %w", err)
+		}
+
+		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get erc20 abi: %w", err)
+		}
+		balance, err := erc20Abi.Pack("balanceOf", common.HexToAddress(params.From))
+		if err != nil {
+			return nil, fmt.Errorf("failed to pack balance of calldata: %w", err)
+		}
+
+		vaultAbi, err := morpho_vault.MorphoVaultMetaData.GetAbi()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get vault abi: %w", err)
+		}
+		withdrawCalldata, err := vaultAbi.Pack(
+			"redeem",
+			balance,
+			common.HexToAddress(params.From),
+			common.HexToAddress(params.From),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
+		}
+
+		return []*types.Transaction{
+			{
+				To:   inputs.Target,
+				Data: "0x" + common.Bytes2Hex(withdrawCalldata),
+			},
+		}, nil
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -255,7 +374,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*ty
 	}, nil
 }
 
-func HandleRepayMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Target string `json:"target"`
@@ -289,18 +408,6 @@ func HandleRepayMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		new(big.Int).Add(market.State.BorrowAssets, VirtualAssets),
 		new(big.Int).Add(market.State.BorrowShares, VirtualShares),
 	)
-	erc20, err := erc_20.NewErc20(common.HexToAddress(market.LoanAsset.Address), nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get erc20: %w", err)
-	}
-	balance, err := erc20.BalanceOf(nil, common.HexToAddress(params.From))
-	if err != nil {
-		return nil, fmt.Errorf("failed to get balance: %w", err)
-	}
-	// NOTE: Not sure if we want to revert or use the entire balance they have in this case.
-	if balance.Cmp(borrowAssets) < 0 {
-		return nil, fmt.Errorf("balance %s is less than borrow assets %s", balance, borrowAssets)
-	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
@@ -448,7 +555,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Direction int     `json:"direction"` // -1 for borrow, 1 for deposit
-		Address   string  `json:"address"`   // Underlying market or vault
+		Target    string  `json:"target"`    // Underlying market or vault
 		Operator  int     `json:"operator"`  // -1 for less than, 1 for greater than
 		Threshold float64 `json:"threshold"` // Percentage
 	}
@@ -456,31 +563,32 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs: %w", err)
 	}
 
-	markets, err := GetMarkets()
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch markets: %w", err)
-	}
-
-	var market *Market
-	for _, m := range markets {
-		if m.UniqueKey == inputs.Address {
-			market = &m
-			break
-		}
-	}
-
-	if market == nil {
-		return nil, fmt.Errorf("market not found for address: %s", inputs.Address)
-	}
-
 	var currentRate float64
-	switch inputs.Direction {
-	case -1:
-		currentRate = market.State.BorrowApy * 100 // Convert to percentage
-	case 1:
-		currentRate = market.State.SupplyApy * 100 // Convert to percentage
-	default:
-		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
+	if len(inputs.Target) == 42 {
+		vault, err := GetVault(inputs.Target)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch vault: %w", err)
+		}
+
+		if inputs.Direction != 1 {
+			return nil, fmt.Errorf("vaults only support deposit direction (1), got %d", inputs.Direction)
+		}
+
+		currentRate = vault.DailyApys.NetApy * 100
+	} else {
+		market, err := GetMarket(inputs.Target)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch market: %w", err)
+		}
+
+		switch inputs.Direction {
+		case -1:
+			currentRate = market.DailyApys.BorrowApy * 100
+		case 1:
+			currentRate = market.DailyApys.SupplyApy * 100
+		default:
+			return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
+		}
 	}
 
 	switch inputs.Operator {

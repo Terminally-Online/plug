@@ -8,15 +8,16 @@ import (
 )
 
 var (
-	ActionSupplyCollateral      = "supply_collateral"
-	ActionWithdrawCollateral    = "withdraw_collateral"
-	ActionWithdrawMaxCollateral = "withdraw_max_collateral"
-	ActionBorrow                = "borrow"
-	ActionRepay                 = "repay"
-	ActionRepayMax              = "repay_max"
-	ActionClaimRewards          = "claim_rewards"
-	ConstraintLLTV              = "lltv"
-	ConstraintAPY               = "apy"
+	ActionEarn             = "earn"
+	ActionSupplyCollateral = "supply_collateral"
+	ActionWithdraw         = "withdraw"
+	ActionWithdrawAll      = "withdraw_all"
+	ActionBorrow           = "borrow"
+	ActionRepay            = "repay"
+	ActionRepayAll         = "repay_all"
+	ActionClaimRewards     = "claim_rewards"
+	ConstraintLLTV         = "lltv"
+	ConstraintAPY          = "apy"
 )
 
 type Handler struct {
@@ -39,6 +40,11 @@ func New() actions.BaseProtocolHandler {
 }
 
 func (h *Handler) init() *Handler {
+	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
+	if err != nil {
+		return nil
+	}
+
 	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions()
 	if err != nil {
 		return nil
@@ -53,6 +59,13 @@ func (h *Handler) init() *Handler {
 		return nil
 	}
 
+	h.schemas[types.Action(ActionEarn)] = types.Schema{
+		Sentence: "Earn by depositing {0<amount:uint256>} {1<token:address>} to {1=>2<vault:string>}.",
+		Options: map[int]types.SchemaOptions{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+		},
+	}
 	h.schemas[types.Action(ActionSupplyCollateral)] = types.Schema{
 		Sentence: "Supply {0<amount:uint256>} {1<token:address>} as collateral to {1=>2<market:string>}.",
 		Options: map[int]types.SchemaOptions{
@@ -60,35 +73,36 @@ func (h *Handler) init() *Handler {
 			2: {Complex: collateralToMarketOptions},
 		},
 	}
-	h.schemas[types.Action(ActionWithdrawCollateral)] = types.Schema{
-		Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<market:string>}.",
+	h.schemas[types.Action(ActionWithdraw)] = types.Schema{
+		Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<target:string>}.",
 		Options: map[int]types.SchemaOptions{
 			1: {Simple: collateralOptions},
 			2: {Complex: collateralToMarketOptions},
 		},
 	}
-	h.schemas[types.Action(ActionWithdrawMaxCollateral)] = types.Schema{
-		Sentence: "Withdraw max collateral from {0<market:string>}.",
+	h.schemas[types.Action(ActionWithdrawAll)] = types.Schema{
+		Sentence: "Withdraw all {0<token:address>} from {0=>1<target:string>}.",
 		Options: map[int]types.SchemaOptions{
-			0: {Simple: marketOptions},
+			0: {Simple: collateralOptions},
+			1: {Complex: collateralToMarketOptions},
 		},
 	}
 	h.schemas[types.Action(ActionBorrow)] = types.Schema{
-		Sentence: "Borrow {0<amount:uint256>} {1<token:address>} from {1=>2<target:string>}.",
+		Sentence: "Borrow {0<amount:uint256>} {1<token:address>} from {1=>2<market:string>}.",
 		Options: map[int]types.SchemaOptions{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		},
 	}
 	h.schemas[types.Action(ActionRepay)] = types.Schema{
-		Sentence: "Repay {0<amount:uint256>} {1<token:address>} to {1=>2<target:address>}.",
+		Sentence: "Repay {0<amount:uint256>} {1<token:address>} to {1=>2<market:string>}.",
 		Options: map[int]types.SchemaOptions{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		},
 	}
-	h.schemas[types.Action(ActionRepayMax)] = types.Schema{
-		Sentence: "Repay max {0<token:address>} to {0=>1<target:address>}.",
+	h.schemas[types.Action(ActionRepayAll)] = types.Schema{
+		Sentence: "Repay all {0<token:address>} to {0=>1<market:string>}.",
 		Options: map[int]types.SchemaOptions{
 			0: {Simple: borrowOptions},
 			1: {Complex: borrowToMarketOptions},
@@ -107,7 +121,7 @@ func (h *Handler) init() *Handler {
 	h.schemas[types.Action(ConstraintAPY)] = types.Schema{
 		Sentence: "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:uint256>}%.",
 		Options: map[int]types.SchemaOptions{
-			0: {Simple: types.BaseBorowFields},
+			0: {Simple: types.BaseLendActionTypeFields},
 			1: {Simple: marketOptions},
 			2: {Simple: types.BaseThresholdFields},
 		},
@@ -130,18 +144,20 @@ func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
 
 func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	switch action {
+	case types.Action(ActionEarn):
+		return HandleEarn(rawInputs, params)
 	case types.Action(ActionSupplyCollateral):
 		return HandleSupplyCollateral(rawInputs, params)
-	case types.Action(ActionWithdrawCollateral):
-		return HandleWithdrawCollateral(rawInputs, params)
-	case types.Action(ActionWithdrawMaxCollateral):
-		return HandleWithdrawMaxCollateral(rawInputs, params)
+	case types.Action(ActionWithdraw):
+		return HandleWithdraw(rawInputs, params)
+	case types.Action(ActionWithdrawAll):
+		return HandleWithdrawAll(rawInputs, params)
 	case types.Action(ActionBorrow):
 		return HandleBorrow(rawInputs, params)
 	case types.Action(ActionRepay):
 		return HandleRepay(rawInputs, params)
-	case types.Action(ActionRepayMax):
-		return HandleRepayMax(rawInputs, params)
+	case types.Action(ActionRepayAll):
+		return HandleRepayAll(rawInputs, params)
 	case types.Action(ActionClaimRewards):
 		return HandleClaimRewards(rawInputs, params)
 	case types.Action(ConstraintLLTV):
