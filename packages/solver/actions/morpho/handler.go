@@ -44,7 +44,10 @@ func (h *Handler) init() *Handler {
 	if err != nil {
 		return nil
 	}
-
+	marketOptions, marketAndVaultOptions, err := GetMarketAndVaultOptions()
+	if err != nil {
+		return nil
+	}
 	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions()
 	if err != nil {
 		return nil
@@ -53,8 +56,7 @@ func (h *Handler) init() *Handler {
 	if err != nil {
 		return nil
 	}
-
-	marketOptions, err := GetMarketOptions()
+	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions()
 	if err != nil {
 		return nil
 	}
@@ -76,15 +78,15 @@ func (h *Handler) init() *Handler {
 	h.schemas[types.Action(ActionWithdraw)] = types.Schema{
 		Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<target:string>}.",
 		Options: map[int]types.SchemaOptions{
-			1: {Simple: collateralOptions},
-			2: {Complex: collateralToMarketOptions},
+			1: {Simple: supplyAndCollateralTokenOptions},
+			2: {Complex: supplyAndCollateralTokenToMarketOptions},
 		},
 	}
 	h.schemas[types.Action(ActionWithdrawAll)] = types.Schema{
 		Sentence: "Withdraw all {0<token:address>} from {0=>1<target:string>}.",
 		Options: map[int]types.SchemaOptions{
-			0: {Simple: collateralOptions},
-			1: {Complex: collateralToMarketOptions},
+			0: {Simple: supplyAndCollateralTokenOptions},
+			1: {Complex: supplyAndCollateralTokenToMarketOptions},
 		},
 	}
 	h.schemas[types.Action(ActionBorrow)] = types.Schema{
@@ -112,7 +114,7 @@ func (h *Handler) init() *Handler {
 		Sentence: "Claim all reward distributions.",
 	}
 	h.schemas[types.ConstraintHealthFactor] = types.Schema{
-		Sentence: "Health factor in {0<target:string>} is {1<operator:int8>} than {2<threshold:uint256>}.",
+		Sentence: "Health factor in {0<market:string>} is {1<operator:int8>} than {2<threshold:uint256>}.",
 		Options: map[int]types.SchemaOptions{
 			0: {Simple: marketOptions},
 			1: {Simple: types.BaseThresholdFields},
@@ -122,7 +124,7 @@ func (h *Handler) init() *Handler {
 		Sentence: "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:uint256>}%.",
 		Options: map[int]types.SchemaOptions{
 			0: {Simple: types.BaseLendActionTypeFields},
-			1: {Simple: marketOptions},
+			1: {Simple: marketAndVaultOptions},
 			2: {Simple: types.BaseThresholdFields},
 		},
 	}

@@ -22,12 +22,12 @@
 | :-------------------- | :---------------- | :--------- | :---------: | :---- |
 | Morpho Vault          | Earn via Vault    | Action     | 12/11/2024  |       |
 | Morpho Market         | Supply Collateral | Action     | 12/11/2024  |       |
-| Morpho Vault & Market | Withdraw          | Action     |             |       |
-| Morpho Vault & Market | Withdraw Max      | Action     |             |       |
-| Morpho Market         | Borrow            | Action     |             |       |
-| Morpho Market         | Repay             | Action     |             |       |
-| Morpho Market         | Repay in Full     | Action     |             |       |
-| Rewards               | Claim Rewards     | Action     |             |       |
+| Morpho Vault & Market | Withdraw          | Action     | 12/04/2024  |       |
+| Morpho Vault & Market | Withdraw Max      | Action     | 12/04/2024  |       |
+| Morpho Market         | Borrow            | Action     | 12/04/2024  |       |
+| Morpho Market         | Repay             | Action     | 12/04/2024  |       |
+| Morpho Market         | Repay in Full     | Action     | 12/04/2024  |       |
+| Rewards               | Claim Rewards     | Action     | 12/04/2024  |       |
 | Morpho Market         | Health Factor     | Constraint | 12/10/2024  |       |
 | Morpho Vault & Market | APY               | Constraint | 12/11/2024  |       |
 
