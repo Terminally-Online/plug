@@ -57,7 +57,7 @@ jobs:
 
       - name: 📦 Install dependencies
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
           forge install
 
       - name: 📦 Build package
