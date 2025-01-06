@@ -7,9 +7,19 @@ import (
 )
 
 type BaseInputs struct {
-	ChainId  int      `json:"chainId"`
 	Protocol Protocol `json:"protocol"`
-	Target   *string  `json:"target"`
+	Action   Action   `json:"action"`
+}
+
+func (i *BaseInputs) Validate() error { 
+	if i.Protocol == "" { 
+		return utils.ErrInvalidField("protocol", "must be non-empty string")
+	}
+	if i.Action == "" { 
+		return utils.ErrInvalidField("action", "must be non-empty string")
+	}
+
+	return nil
 }
 
 type ActionInputs interface {

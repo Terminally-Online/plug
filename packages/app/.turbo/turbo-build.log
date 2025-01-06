@@ -1,0 +1,9 @@
+
+
+> app@0.1.0 build /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/app
+> run-s build:*
+
+
+> app@0.1.0 build:env /Users/chanceherriage/Documents/GitHub/terminally-online/plug/packages/app
+> pnpm env:decrypt
+

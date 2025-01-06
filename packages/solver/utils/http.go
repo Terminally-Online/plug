@@ -37,7 +37,7 @@ func MakeHTTPRequest[T any](fullUrl string, method string, headers map[string]st
 	if err != nil {
 		return responseType, err
 	}
-	if res == nil { 
+	if res == nil {
 		return responseType, fmt.Errorf("Error: Calling %s returned an empt response", u.String())
 	}
 
@@ -61,17 +61,17 @@ func MakeHTTPRequest[T any](fullUrl string, method string, headers map[string]st
 }
 
 type ErrorResponse struct {
-    Error string `json:"error"`
-    Code  int    `json:"code"`
+	Error string `json:"error"`
+	Code  int    `json:"code"`
 }
 
 func MakeHttpError(w http.ResponseWriter, message string, status int) {
-    w.WriteHeader(status)
-    if err := json.NewEncoder(w).Encode(ErrorResponse{
-        Error: message,
-        Code:  status,
-    }); err != nil {
-        // If we fail to write the error response, log to stderr as last resort
-        http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
-    }
+	w.WriteHeader(status)
+	if err := json.NewEncoder(w).Encode(ErrorResponse{
+		Error: message,
+		Code:  status,
+	}); err != nil {
+		// If we fail to write the error response, log to stderr as last resort
+		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+	}
 }
