@@ -156,8 +156,8 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		//       before the rest of the Plug can run. For this, we will just break out
 		//       of the loop and execute any solo transactions that are needed for
 		//       the rest of the batch to run in sequence.
-		for _, transaction := range transactions { 
-			if transaction.Exclusive { 
+		for _, transaction := range transactions {
+			if transaction.Exclusive {
 				// NOTE: Set the field to false to avoid tarnishing the response shape.
 				transaction.Exclusive = false
 				transactionsBatch = []*types.Transaction{transaction}
@@ -165,7 +165,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-		
+
 		if breakOuter {
 			break
 		}
@@ -173,8 +173,9 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		transactionsBatch = append(transactionsBatch, transactions...)
 	}
 
-	if len(transactionsBatch) == 0 { 
+	if len(transactionsBatch) == 0 {
 		utils.MakeHttpError(w, "has no transactions to execute", http.StatusBadRequest)
+		return
 	}
 
 	// Generate the encoded solver value so that the smart contract can decode it.

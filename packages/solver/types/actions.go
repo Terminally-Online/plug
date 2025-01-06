@@ -38,4 +38,5 @@ const (
 	ProtocolYearnV3 Protocol = "yearn_v3"
 	ProtocolNouns   Protocol = "nouns"
 	ProtocolENS     Protocol = "ens"
+	ProtocolMorpho  Protocol = "morpho"
 )

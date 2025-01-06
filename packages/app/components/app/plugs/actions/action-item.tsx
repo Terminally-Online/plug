@@ -52,7 +52,10 @@ export const ActionItem: FC<{
 					/>
 				</div>
 
-				<p className="font-bold">{formatTitle(actionName)}</p>
+				<p className="font-bold">
+					<span className="opacity-40">{formatTitle(protocol)}: </span>
+					{formatTitle(actionName)}
+				</p>
 			</div>
 		</Accordion>
 	)
