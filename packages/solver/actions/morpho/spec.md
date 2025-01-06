@@ -8,161 +8,211 @@
 - [Addresses](https://docs.morpho.org/morpho/addresses/)
 - [Morpho API](https://blue-api.morpho.org/graphql)
 - [Rewards Program](rewards.morpho.org/v1/programs)
+- [MetaMorpho Factory Contract](https://etherscan.io/address/0xA9c3D3a366466Fa809d1Ae982Fb2c46E5fC41101)
+- [Morpho Contract](https://etherscan.io/address/0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb)
+- [Universal Reward Distributor Contract](https://etherscan.io/address/0x330eefa8a787552dc5cad3c3ca644844b1e61ddb)
+- [EthereumV2 Bundler Contract](https://etherscan.io/address/0x4095F064B8d3c3548A3bebfd0Bbfd04750E30077)
+- [Rewards API](https://docs.morpho.org/apis/rewards/)
 
 ---
 
-## Contract Interfacing
-
-For each vault specified and returned by the API call we have a `asset` field that reflects the asset that can be borrowed. This asset however does not reflect which tokens can be used as collateral.
-
-To determine which vaults we support you can make the call to their API with the following query:
-
-```graphql
-query ExampleQuery($first: Int) {
-  vaults(first: $first, where: { chainId_in: [1], whitelisted: true }) {
-    items {
-      address
-      symbol
-      name
-      whitelisted
-      metadata {
-        image
-      }
-      asset {
-        address
-        decimals
-        name
-        symbol
-        logoURI
-      }
-      state {
-        apy
-        netApy
-        allocation {
-          enabled
-          market {
-            collateralAsset {
-              address
-              name
-              symbol
-              logoURI
-              decimals
-            }
-          }
-        }
-        dailyApy
-        dailyNetApy
-        weeklyApy
-        weeklyNetApy
-        monthlyApy
-        monthlyNetApy
-        quarterlyApy
-        quarterlyNetApy
-        yearlyApy
-        yearlyNetApy
-        allTimeApy
-        allTimeNetApy
-      }
-      liquidity {
-        underlying
-        usd
-      }
-    }
-  }
-}
-```
-
 ## Scope
 
-| System        | Name                    | Type       | Implemented | Notes |
-| :------------ | :---------------------- | :--------- | :---------- | :---- |
-| Morpho Vault  | Earn via Vault          | Action     |             |       |
-| Morpho Vault  | Withdraw from Vault     | Action     |             |       |
-| Morpho Vault  | Withdraw Max from Vault | Action     |             |       |
-| Morpho Market | Supply Collateral       | Action     |             |       |
-| Morpho Market | Withdraw Collateral     | Action     |             |       |
-| Morpho Market | Withdraw All Collateral | Action     |             |       |
-| Morpho Market | Borrow                  | Action     |             |       |
-| Morpho Market | Repay                   | Action     |             |       |
-| Morpho Market | Repay in Full           | Action     |             |       |
-| Rewards       | Claim Rewards           | Action     |             |       |
-| Morpho Market | Health Factor           | Constraint |             |       |
-| Morpho Vault  | Vault APY               | Constraint |             |       |
-| Morpho Market | Market APY              | Constraint |             |       |
+| System                | Name              | Type       | Implemented | Notes |
+| :-------------------- | :---------------- | :--------- | :---------: | :---- |
+| Morpho Vault          | Earn via Vault    | Action     | 12/11/2024  |       |
+| Morpho Market         | Supply Collateral | Action     | 12/11/2024  |       |
+| Morpho Vault & Market | Withdraw          | Action     | 12/04/2024  |       |
+| Morpho Vault & Market | Withdraw Max      | Action     | 12/04/2024  |       |
+| Morpho Market         | Borrow            | Action     | 12/04/2024  |       |
+| Morpho Market         | Repay             | Action     | 12/04/2024  |       |
+| Morpho Market         | Repay in Full     | Action     | 12/04/2024  |       |
+| Rewards               | Claim Rewards     | Action     | 12/04/2024  |       |
+| Morpho Market         | Health Factor     | Constraint | 12/10/2024  |       |
+| Morpho Vault & Market | APY               | Constraint | 12/11/2024  |       |
 
-### Contracts
+## Earn
 
-| Name                         | Address                                    | Desc                   |
-| :--------------------------- | :----------------------------------------- | :--------------------- |
-| MetaMorpho Factory           | 0xA9c3D3a366466Fa809d1Ae982Fb2c46E5fC41101 | Deploys Morpho Vaults  |
-| Morpho Market Factory        | 0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb | Deploys Morpho Markets |
-| Universal Reward Distributor | 0x330eefa8a787552dc5cad3c3ca644844b1e61ddb | Claim rewards          |
+```javascript [sentence]
+Earn by depositing {0<amount:uint256>} {1<token:address>} to {1=>2<vault:address>}.
+```
 
-### Earn via Morpho Vault
+```solidity [transaction batch]
+token.approve(address vault, uint256 amount)
+vault.deposit(uint256 assets, address receiver)
+```
 
-deposit() is called on the Morpho Vault.
+## Supply Collateral
 
-Mints shares Vault shares to receiver by depositing exactly amount of underlying tokens.
+```javascript [sentence]
+Supply {0<amount:uint256>} {1<token:address>} as collateral to {1=>2<market:string>}.
+```
 
-- MUST emit the Deposit event.
-- MAY support an additional flow in which the underlying tokens are owned by the Vault contract before the deposit execution, and are accounted for during deposit.
-- MUST revert if all of assets cannot be deposited (due to deposit limit being reached, slippage, the user not approving enough underlying tokens to the Vault contract, etc).
+```solidity [transaction batch]
+erc20.approve(address market, uint256 amount)
+market.supplyCollateral(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets,
+    address onBehalf,
+    bytes data
+)
+```
 
-NOTE: most implementations will require pre-approval of the Vault with the Vault’s underlying asset token.
+## Withdraw
 
-"Deposit {0 amount} {1 token} to {1->2 vault}."
+```javascript [sentence]
+Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<target:strng>}.
+```
 
-### Withdraw from Morpho Vault
+When it is a vault:
 
-This is called on the Morpho Vault.
+```solidity [transaction batch]
+vault.withdraw(uint256 assets, address receiver, address owner)
+```
 
-Burns shares from owner and sends exactly assets of underlying tokens to receiver.
+When it is a market:
 
-- MUST emit the Withdraw event.
-- MAY support an additional flow in which the underlying tokens are owned by the Vault contract before the withdraw execution, and are accounted for during withdraw.
-- MUST revert if all of assets cannot be withdrawn (due to withdrawal limit being reached, slippage, the owner not having enough shares, etc).
+```solidity [transaction batch]
+market.withdraw(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets,
+    uint256 shares, // NOTE: This will be zero because we are defining the amount of assets to withdraw.
+    address onBehalf,
+    address receiver
+)
+```
 
-NOTE: some implementations will require pre-requesting to the Vault before a withdrawal may be performed. Those methods should be performed separately.
+## Withdraw All
 
-"Withdraw {0 amount} {1 token} from {1->2 vault}."
+```javascript [sentence]
+Withdraw all {0<token:address>} from {0=>1<target:string>}
+```
 
-### Withdraw Max from Morpho Vault
+When it is a vault:
 
-This is called on the Morpho Vault by using Redeem.
+```solidity [transaction batch]
+vault.redeem(uint256 shares, address receiver, address owner)
+```
 
-Burns exactly shares from owner and sends assets of underlying tokens to receiver. - MUST emit the Withdraw event.
+When it is a market:
 
-- MAY support an additional flow in which the underlying tokens are owned by the Vault contract before the redeem execution, and are accounted for during redeem.
-- MUST revert if all of shares cannot be redeemed (due to withdrawal limit being reached, slippage, the owner not having enough shares, etc).
+Use the `position()` read to determine the shares owned by the address.
 
-NOTE: some implementations will require pre-requesting to the Vault before a withdrawal may be performed. Those methods should be performed separately.
+```solidity [transaction batch]
+market.withdraw(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets, // NOTE: This will be zero because we are defining the amount of shares to withdraw.
+    uint256 shares,
+    address onBehalf,
+    address receiver
+)
+```
 
-maxRedeem() read on vault can be used to find this amount.
+## Borrow
 
-"Withdraw all {0 token} from {0->1 vault}."
+```javascript [sentence]
+Borrow {0<amount:uint256>} {1<token:address>} from {1=>2<market:string>}
+```
 
-### Supply Collateral
+```solidity [transaction batch]
+market.borrow(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets,
+    uint256 shares, // NOTE: This will be zero because we are defining the amount of assets to borrow.
+    address onBehalf,
+    address receiver
+)
+```
 
-### Withdraw Collateral
+## Repay
 
-### Withdraw All Collateral
+```javascript [sentence]
+Repay {0<amount:uint256>} {1<token:address>} in {1=>2<market:string>}
+```
 
-### Borrow from Morpho Market
+```solidity [transaction batch]
+loanToken.approve(address market, uint256 amount)
+market.repay(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets,
+    uint256 shares, // NOTE: This will be zero because we will repay assets
+    address onBehalf,
+    bytes data
+)
+```
 
-"Borrow {0 amount} {1 token} against {2 collateral_amount} {2->3 collateral}."
+# Repay All
 
-### Repay
+```javascript [sentence]
+Repay all {0<token:address>} in {0=>1<market:string>}
+```
 
-### Repay in Full
+```solidity [transaction batch]
+loanToken.approve(address market, uint256 amount)
+market.repay(
+    tuple marketParams(
+        address loanToken,
+        address collateralToken,
+        address oracle,
+        address irm,
+        uint256 lltv
+    ),
+    uint256 assets,
+    uint256 shares, // NOTE: This will be zero because we need to use assets so that we can approve the correct amount
+    address onBehalf,
+    bytes data
+)
+```
 
-### Claim Rewards
+## Claim Rewards
 
-### Health Factor
+```javascript [sentence]
+Claim all reward distributions.
+```
 
-### Get Vault APY
+```solidity [transaction batch]
+distributor.claim(
+    address account,
+    address reward,
+    uint256 claimableAmount,
+    bytes32[] proof
+)
+```
 
-"Deposit APY for {0 token} in {0->1 vault} is {2 direction} than {3 threshold}."
+## Health Factor
 
-### Get Specific Asset Borrow APY
+A bunch of math here. Just go check the code.
 
-"Borrow APY for {0 token} with {0->1 collateral} collateral is {2 direction} than {3 threshold}."
+## APY
+
+Needs to be implemented for vaults.

@@ -18,26 +18,6 @@ var (
 	resolver = "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
 )
 
-/*
-TODO: (#216) This is a bit borked because it is a sole transaction that needs to run out of succession of the rest.
-The requirement to register is a leading commitment. However, if you have a leading commitment you could end up
-in a specific case where things simply aren't functional due to the definition of the plug.
-.
-There is a potential solution of running this transaction alone, but then have you bypassed any onchain
-validation and/or constraints? Constraints won't return transactions anyways so perhaps the best option here
-**is** to run it alone, save the commitment and then proceed with the rest of the transactions.
-.
-To run it alone we would need some way to enable the definition of having an "exclusive" field on the
-Transaction type. When it is marked as exclusive we would return only that transactions. We would continue
-to run only exclusive transaction as long as there is one.
-.
-This means that even in the case that a plug has multiple "buys" in a row, it would run the commitments one
-by one until there is a committment for all of them. Then, the fact that are having a rotating set of simulations
-results in there being one mega transaction at the end.
-.
-This approach would not properly handle the case where perhaps the user needs/wants to do a transaction
-before running the commitment like topping up on gas.
-*/
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Name     string   `json:"name"`

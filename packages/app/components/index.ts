@@ -1,4 +1,5 @@
 export * from "./app"
+export * from "./blog"
 export * from "./landing"
 export * from "./page"
 export * from "./shared"
