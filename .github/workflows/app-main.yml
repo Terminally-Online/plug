@@ -6,8 +6,10 @@ on:
     paths:
       - "packages/app/**"
 
+  workflow_dispatch:
+
 concurrency:
-  cancel-in-progress: true
+  cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
