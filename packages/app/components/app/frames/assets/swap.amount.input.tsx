@@ -38,8 +38,6 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 				activeElement.blur()
 			}
 
-			console.log("handleDragStart")
-
 			const handleDrag = (e: MouseEvent) => {
 				if (containerRef.current) {
 					const rect = containerRef.current.getBoundingClientRect()
@@ -91,7 +89,8 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 		if (numericValue === "") {
 			setAmounts({ ...amounts, precise: "0" })
 		} else if (!isNaN(parsedValue)) {
-			const maxBalance = token.balance
+			// @ts-ignore
+			const maxBalance = token?.balance ?? token?.implementations[0]?.balance ?? 0
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
 			const percentage = (clampedValue / maxBalance) * 100
 
@@ -117,8 +116,6 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 					<div className="flex flex-row items-center gap-4 px-2">
 						<TokenImage
 							logo={
-								// @ts-ignore
-								token?.icon?.url ||
 								token?.icon ||
 								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
 							}

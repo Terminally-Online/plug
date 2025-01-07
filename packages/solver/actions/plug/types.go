@@ -1,23 +1,15 @@
 package plug
 
 type BebopTransactionMeta struct {
-	ApprovalType   string        `json:"approvalType"`
-	ApprovalTarget string        `json:"approvalTarget"`
-	NativeToken    string        `json:"nativeToken"`
-	Expiry         int64         `json:"expiry"`
-	Slippage       float64       `json:"slippage"`
-	PriceImpact    float64       `json:"priceImpact"`
-	Warnings       []interface{} `json:"warnings"`
-
+	Expiry             int64                                  `json:"expiry"`
+	Slippage           float64                                `json:"slippage"`
+	PriceImpact        float64                                `json:"priceImpact"`
+	Warnings           []interface{}                          `json:"warnings"`
 	BuyTokens          map[string]BebopQuoteResponseBuyTokens `json:"buyTokens"`
 	SellTokens         map[string]BebopQuoteResponseToken     `json:"sellTokens"`
 	SettlementAddress  string                                 `json:"settlementAddress"`
 	RequiredSignatures []interface{}                          `json:"requiredSignatures"`
 	PartnerFeeNative   string                                 `json:"partnerFeeNative"`
-	Makers             []string                               `json:"makers"`
-	ToSign             BebopQuoteResponseToSign               `json:"toSign"`
-	OnchainOrderType   string                                 `json:"onchainOrderType"`
-	PartialFillOffset  int                                    `json:"partialFillOffset"`
 }
 
 type BebopQuoteResponseBuyTokens struct {

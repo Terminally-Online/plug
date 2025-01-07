@@ -63,8 +63,12 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				{
 					protocol: "plug",
 					action: "swap",
-					tokenIn: getAddress(tokenInImplementation?.contract ?? ""),
-					tokenOut: getAddress(tokenOutImplementation?.contract ?? ""),
+					tokenIn: getAddress(
+						tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+					),
+					tokenOut: getAddress(
+						tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+					),
 					amountOut: parseUnits(
 						amounts[tokenOut.symbol]?.precise,
 						tokenOutImplementation?.decimals ?? 18
@@ -115,7 +119,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<TokenImage
 							logo={
 								tokenOut?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenOut.implementations[0].chain)}/${tokenOut.implementations[0].contract}?h=240&w=240`
+								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenOut.implementations[0].chain)}/${tokenOut.implementations[0]?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}?h=240&w=240`
 							}
 							symbol={tokenOut.symbol}
 							size="sm"
@@ -126,7 +130,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						<TokenImage
 							logo={
 								tokenIn?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenIn.implementations[0].chain)}/${tokenIn.implementations[0].contract}?h=240&w=240`
+								`https://token-icons.llamao.fi/icons/tokens/${getChainId(tokenIn.implementations[0].chain)}/${tokenIn.implementations[0]?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}?h=240&w=240`
 							}
 							symbol={tokenIn.symbol}
 							size="sm"
@@ -153,7 +157,12 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						index={index}
 						token={{
 							...tokenOut,
-							price: meta?.sellTokens[getAddress(tokenOutImplementation?.contract ?? "")]?.priceUsd ?? 0
+							price:
+								meta?.sellTokens[
+									getAddress(
+										tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+									)
+								]?.priceUsd ?? 0
 						}}
 						color={tokenOutColor}
 						amounts={amounts[tokenOut.symbol]}
@@ -177,24 +186,38 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						index={index}
 						token={{
 							...tokenIn,
-							// @ts-ignore
-							price: meta?.buyTokens[getAddress(tokenInImplementation?.address)]?.priceUsd ?? 0,
+							price:
+								meta?.buyTokens[
+									getAddress(
+										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+									)
+								]?.priceUsd ?? 0,
 							implementations: [
-								// @ts-ignore
 								{
 									...tokenInImplementation,
-									// @ts-ignore
-									balance: meta?.buyTokens[getAddress(tokenInImplementation?.address)]?.amount ?? 0
+									balance:
+										meta?.buyTokens[
+											getAddress(
+												tokenInImplementation?.contract ??
+													"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+											)
+										]?.amount ?? 0
 								}
 							]
 						}}
 						color={tokenInColor}
 						amounts={{
 							precise: formatUnits(
-								// @ts-ignore
-								meta?.buyTokens[getAddress(tokenInImplementation?.address)]?.amount ?? "0",
-								// @ts-ignore
-								meta?.buyTokens[getAddress(tokenInImplementation?.address)]?.decimals ?? 18
+								meta?.buyTokens[
+									getAddress(
+										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+									)
+								]?.amount ?? "0",
+								meta?.buyTokens[
+									getAddress(
+										tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+									)
+								]?.decimals ?? 18
 							).toString(),
 							percentage: amounts[tokenOut.symbol].percentage
 						}}
