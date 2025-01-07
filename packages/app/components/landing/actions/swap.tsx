@@ -17,7 +17,7 @@ export const ActionSwap = () => {
 				{SYMBOLS.map((symbol, index) => (
 					<motion.div
 						key={index}
-						className="absolute -top-8 flex h-64 w-64 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
+						className="absolute -top-8 flex h-64 w-64 items-center justify-center rounded-full border-[1px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
 						initial={{
 							y: "0rem"
 						}}

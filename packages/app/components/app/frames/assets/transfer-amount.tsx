@@ -154,7 +154,13 @@ const ImplementationComponent: FC<{
 							className="my-auto ml-auto flex flex-row font-bold tabular-nums transition-all duration-200 ease-in-out"
 							style={{ color: isPrecise ? color : undefined }}
 						>
-							<Counter count={column?.transfer?.precise ?? "0"} />
+							<Counter
+								count={
+									Number(column?.transfer?.precise).toLocaleString("en-US", {
+										maximumFractionDigits: 40
+									}) ?? "0"
+								}
+							/>
 
 							{isPrecise && (
 								<div
@@ -283,10 +289,10 @@ export const TransferAmountFrame: FC<{
 						<button
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
-								isReady === false && "bg-white"
+								isReady === false && "transparent"
 							)}
 							style={{
-								backgroundColor: isReady ? color : "#FFFFFF",
+								backgroundColor: isReady ? color : "transparent",
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}

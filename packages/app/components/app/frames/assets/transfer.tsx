@@ -6,15 +6,11 @@ import { TransferAmountFrame } from "./transfer-amount"
 import { TransferNFTFrame } from "./transfer-nft"
 import { TransferRecipientFrame } from "./transfer-recipient"
 
-type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
-type CollectionType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
-
-interface TransferFrameProps {
+type TransferFrameProps = {
 	index: number
-	token?: TokenType
-	collectible?: CollectibleType
-	collection?: CollectionType
+	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
+	collectible?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
+	collection?: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	color: string
 	textColor: string
 }

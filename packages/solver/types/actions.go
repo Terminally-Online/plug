@@ -39,4 +39,5 @@ const (
 	ProtocolNouns   Protocol = "nouns"
 	ProtocolENS     Protocol = "ens"
 	ProtocolMorpho  Protocol = "morpho"
+	ProtocolBebop   Protocol = "bebop"
 )

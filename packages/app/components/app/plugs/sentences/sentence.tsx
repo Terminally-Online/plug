@@ -38,7 +38,7 @@ export const Sentence: FC<SentenceProps> = ({
 		}
 	} = usePlugStore(item)
 
-	const { data: solverActions } = api.solver.actions.get.useQuery({
+	const { data: solverActions } = api.solver.actions.getSchemas.useQuery({
 		protocol: action.protocol,
 		action: action.action
 	})

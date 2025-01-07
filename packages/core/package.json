@@ -16,7 +16,7 @@
 		"prebuild:format": "prettier --write .",
 		"prebuild:package": "pnpm build:lint && rm -rf ./dist",
 		"prebuild": "run-s prebuild:*",
-		"build:contracts": "forge fmt && pnpm prebuild:artifacts && npx wagmi generate",
+		"build:contracts": "forge fmt && pnpm prebuild:artifacts && pnpm wagmi generate",
 		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
 		"build:format": "pnpm prettier --write .",
 		"build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts && pnpm prebuild:etcher && forge test",

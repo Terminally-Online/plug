@@ -15,7 +15,7 @@ export const BookProfit = () => {
 				{Array.from({ length: 20 }).map((_, index) => (
 					<motion.div
 						key={index}
-						className="absolute origin-center rounded-full border-[2px] border-plug-yellow"
+						className="absolute origin-center rounded-full border-[1px] border-plug-yellow"
 						style={{
 							width: 20 + Math.sin(index * 0.5) * 20,
 							height: 20 + Math.cos(index * 0.5) * 20
@@ -36,7 +36,7 @@ export const BookProfit = () => {
 				{Array.from({ length: 12 }).map((_, index) => (
 					<motion.div
 						key={index}
-						className="absolute origin-center rounded-full border-[2px] border-plug-yellow"
+						className="absolute origin-center rounded-full border-[1px] border-plug-yellow"
 						animate={{
 							height: [0, 2000],
 							rotate: [index * 15, index * 15 + 90]

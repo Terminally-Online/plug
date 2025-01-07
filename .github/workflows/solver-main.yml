@@ -6,13 +6,8 @@ on:
     paths:
       - "packages/solver/**"
 
-  pull_request:
-    branches: ["**"]
-    paths:
-      - "packages/solver/**"
-
 concurrency:
-  cancel-in-progress: true
+  cancel-in-progress: false
   group: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
