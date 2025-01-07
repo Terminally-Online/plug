@@ -1,14 +1,16 @@
 import { FC, useCallback, useRef, useState } from "react"
 
 import { Counter, Image, TokenImage } from "@/components"
-import { chains, getChainId } from "@/lib"
+import { chains, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
+
+type Token =
+	| RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]
+	| RouterOutputs["solver"]["tokens"]["get"][number]
 
 type SwapAmountInputProps = {
 	index: number
-	token:
-		| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-		| NonNullable<RouterOutputs["solver"]["tokens"]["get"]>[number]
+	token: Token
 	color: string
 	amounts: {
 		precise: string
@@ -43,14 +45,10 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
 					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
-					console.log("percentage", percentage)
 
-					setAmounts(prev => ({
-						...prev,
-						percentage
-					}))
+					// @ts-ignore
+					const newAmount = ((token?.balance ?? token.implementations[0]?.balance ?? 0) * percentage) / 100
 
-					const newAmount = (token.implementations[0]?.balance ?? 0 * percentage) / 100
 					const formattedAmount = newAmount.toFixed(20).replace(/\.?0+$/, "")
 					const [integerPart, decimalPart] = formattedAmount.split(".")
 					let finalAmount = integerPart
@@ -64,11 +62,10 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 						}
 					}
 
-					setAmounts(prev => ({
-						...prev,
-						precise: finalAmount
-					}))
-
+					setAmounts({
+						precise: finalAmount,
+						percentage
+					})
 					setIsPrecise(true)
 				}
 			}
@@ -94,8 +91,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 		if (numericValue === "") {
 			setAmounts({ ...amounts, precise: "0" })
 		} else if (!isNaN(parsedValue)) {
-			// @ts-ignore
-			const maxBalance = token?.balance ?? token?.implementations[0]?.balance ?? 0
+			const maxBalance = token.balance
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
 			const percentage = (clampedValue / maxBalance) * 100
 
