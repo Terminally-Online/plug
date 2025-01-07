@@ -7,10 +7,12 @@ import { cn, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useHoldings, useSocket } from "@/state"
 
+type Tokens = RouterOutputs["socket"]["balances"]["positions"]["tokens"] | RouterOutputs["solver"]["tokens"]["get"]
+
 export const SocketTokenList: FC<
 	HTMLAttributes<HTMLDivElement> & {
 		index: number
-		columnTokens?: RouterOutputs["socket"]["balances"]["positions"]["tokens"]
+		columnTokens?: Tokens
 		expanded?: boolean
 		count?: number
 		isColumn?: boolean
@@ -45,7 +47,6 @@ export const SocketTokenList: FC<
 		if (!debouncedSearch) return filteredTokens
 
 		const ownedSymbols = filteredTokens.map(token => token.symbol)
-		// @ts-ignore
 		const unownedTokens = searchedTokens?.filter(token => !ownedSymbols.includes(token.symbol))
 
 		return filteredTokens.concat(unownedTokens ?? [])
