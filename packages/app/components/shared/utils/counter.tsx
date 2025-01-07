@@ -54,26 +54,30 @@ export const Counter: FC<
 
 	return (
 		<span className={cn("relative flex w-full flex-row-reverse overflow-hidden", className)} {...props}>
-			{numArray.map((number, index) =>
-				number === "." ? (
-					<DecimalColumn key={index} />
-				) : number === "-" ? (
-					<MinusColumn key={index} />
-				) : number === "," ? (
-					<CommaColumn key={index} />
-				) : number === "/" ? (
-					<SlashColumn key={index} />
-				) : number === "%" ? (
-					<PercentColumn key={index} />
-				) : number === "<" ? (
-					<LeftChevronColumn key={index} />
-				) : number === ">" ? (
-					<RightChevronColumn key={index} />
-				) : number === ":" ? (
-					<ColonColumn key={index} />
-				) : (
-					<NumberColumn key={index} digit={number} />
+			{count !== undefined && count !== null ? (
+				numArray.map((number, index) =>
+					number === "." ? (
+						<DecimalColumn key={index} />
+					) : number === "-" ? (
+						"-"
+					) : number === "," ? (
+						<CommaColumn key={index} />
+					) : number === "/" ? (
+						<SlashColumn key={index} />
+					) : number === "%" ? (
+						<PercentColumn key={index} />
+					) : number === "<" ? (
+						<LeftChevronColumn key={index} />
+					) : number === ">" ? (
+						<RightChevronColumn key={index} />
+					) : number === ":" ? (
+						<ColonColumn key={index} />
+					) : (
+						<NumberColumn key={index} digit={number} />
+					)
 				)
+			) : (
+				"-"
 			)}
 		</span>
 	)

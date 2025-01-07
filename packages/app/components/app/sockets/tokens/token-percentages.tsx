@@ -19,6 +19,8 @@ export const SocketTokenPercentages: FC<{
 		return `${filledLength} ${emptyLength}`
 	}
 
+	if (!implementations || implementations.length === 0) return null
+
 	return (
 		<svg width={SIZE} height={SIZE} viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
 			<g transform={`translate(${VIEWBOX / 2},${VIEWBOX / 2})`}>

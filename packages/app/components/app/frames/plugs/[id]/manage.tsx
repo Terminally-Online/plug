@@ -60,7 +60,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 						{Object.keys(cardColors).map(color => (
 							<div
 								key={color}
-								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[2px]"
+								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[1px]"
 								style={{
 									borderColor:
 										plug.color === color
@@ -75,7 +75,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 								}
 							>
 								<div
-									className="h-full w-full rounded-full border-[2px] border-white transition-all duration-200 ease-in-out"
+									className="h-full w-full rounded-full border-[1px] border-white transition-all duration-200 ease-in-out"
 									style={{
 										background: cardColors[color as keyof typeof cardColors]
 									}}

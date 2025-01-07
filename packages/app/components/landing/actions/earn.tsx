@@ -175,7 +175,7 @@ export const ActionEarn: FC = () => {
 							delay: (packedTokens.length - token.id) * 0.1
 						}}
 					>
-						<div className="flex h-full w-full items-center justify-center rounded-full border-[2px] border-dashed border-plug-green/40 bg-plug-yellow font-bold text-plug-green">
+						<div className="flex h-full w-full items-center justify-center rounded-full border-[1px] border-dashed border-plug-green/40 bg-plug-yellow font-bold text-plug-green">
 							<p className="relative text-xs">${SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]}</p>
 						</div>
 					</motion.div>

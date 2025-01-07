@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from "react"
 
-import { ArrowDownFromLine, MapIcon, Send } from "lucide-react"
+import { ArrowDownFromLine, ArrowRightLeft, MapIcon, Send } from "lucide-react"
 
 import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
@@ -74,6 +74,8 @@ export const TokenFrame: FC<{
 				<div className="relative h-8 w-10">
 					<TokenImage
 						logo={
+							// @ts-ignore
+							token?.icon?.url ||
 							token?.icon ||
 							`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
 						}
@@ -93,7 +95,11 @@ export const TokenFrame: FC<{
 						{tooltipData || token.price ? (
 							<>
 								<p>$</p>
-								<Counter count={tooltipData?.price || token.price || 0} />
+								<Counter
+									count={(tooltipData?.price || token.price || 0).toLocaleString("en-US", {
+										minimumFractionDigits: 2
+									})}
+								/>
 							</>
 						) : (
 							<>-</>
@@ -135,6 +141,34 @@ export const TokenFrame: FC<{
 			/>
 
 			<div className="flex flex-row gap-2 px-6 pt-4">
+				{token.implementations.some(implementation => implementation.balance) && (
+					<button
+						className="flex w-max items-center justify-center gap-2 rounded-lg border-[1px] px-12 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+						style={{
+							borderColor: color ?? "",
+							color: color ?? ""
+						}}
+						onClick={() => {
+							handle.transfer(undefined)
+							handle.frame(
+								index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
+							)
+						}}
+					>
+						{index === -2 ? (
+							<>
+								<ArrowDownFromLine size={14} className="opacity-60" />
+								Deposit
+							</>
+						) : (
+							<>
+								<Send size={14} className="opacity-60" />
+								Send
+							</>
+						)}
+					</button>
+				)}
+
 				<button
 					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 					style={{
@@ -142,30 +176,19 @@ export const TokenFrame: FC<{
 						color: textColor
 					}}
 					onClick={() => {
-						handle.transfer(undefined)
-						handle.frame(
-							index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
-						)
+						// handle.transfer(undefined)
+						handle.frame(`${token.symbol}-swap-token`)
 					}}
 				>
-					{index === -2 ? (
-						<>
-							<ArrowDownFromLine size={14} className="opacity-60" />
-							Deposit
-						</>
-					) : (
-						<>
-							<Send size={14} className="opacity-60" />
-							Send
-						</>
-					)}
+					<ArrowRightLeft size={14} className="opacity-60" />
+					Swap
 				</button>
 			</div>
 
 			<div className="flex flex-col px-6 pb-2 pt-4 font-bold">
 				<div className="flex flex-row items-center gap-4">
 					<p className="mr-auto opacity-40">Balance</p>
-					<div className="h-[2px] w-full" style={{ backgroundColor: color }} />
+					<div className="h-[2px] w-full bg-plug-green/10" />
 					<p className="ml-auto opacity-40">Value</p>
 				</div>
 
@@ -173,30 +196,30 @@ export const TokenFrame: FC<{
 					<div className="mr-auto flex h-8 items-center" style={{ color: color }}>
 						<TokenImage
 							logo={
+								// @ts-ignore
+								token?.icon?.url ||
 								token?.icon ||
 								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
 							}
 							symbol={token.symbol}
 							size="xs"
 						/>
-						<Counter className="ml-4 mr-2 w-max" count={token.balance} />
+						<Counter className="ml-4 mr-2 w-max" count={token.balance ?? 0} />
 						<p>{token.symbol}</p>
 					</div>
-					{token.value && (
-						<div className="ml-auto flex h-8 items-center text-center">
-							<p>$</p>
-							<Counter
-								count={tooltipData ? token.balance * tooltipData.price : token.value}
-								decimals={2}
-							/>
-						</div>
-					)}
+					<div className="ml-auto flex h-8 items-center text-center">
+						<p>$</p>
+						<Counter
+							count={tooltipData ? token.balance * tooltipData.price : (token.value ?? 0)}
+							decimals={2}
+						/>
+					</div>
 				</div>
 			</div>
 
 			<div className="flex flex-row items-center gap-4 px-6 font-bold">
 				<p className="opacity-40">Distribution</p>
-				<div className="h-[2px] w-full" style={{ backgroundColor: color }} />
+				<div className="h-[2px] w-full bg-plug-green/10" />
 			</div>
 
 			<div className="relative mt-2 flex w-full flex-col gap-2 px-6 pb-4">
@@ -210,14 +233,14 @@ export const TokenFrame: FC<{
 							height={24}
 						/>
 
-						<p className="mr-auto font-bold">{formatTitle(implementation.chain)}</p>
+						<p className="mr-auto font-bold">{formatTitle(implementation.chain ?? "Unknown")}</p>
 
 						<div className="flex flex-col font-bold opacity-60">
-							<Counter count={isFrame ? implementation.balance : 0} />
+							<Counter count={implementation.balance ?? 0} />
 						</div>
 
 						<div className="flex min-w-[72px] flex-row items-center text-right font-bold">
-							<Counter count={isFrame ? implementation.percentage : 0} />%
+							<Counter count={implementation.percentage ?? 0} />%
 						</div>
 					</div>
 				))}
@@ -225,37 +248,42 @@ export const TokenFrame: FC<{
 
 			<div className="flex flex-row items-center gap-4 px-6 font-bold">
 				<p className="opacity-40">Links</p>
-				<div className="h-[2px] w-full" style={{ backgroundColor: color }} />
+				<div className="h-[2px] w-full bg-plug-green/10" />
 			</div>
 
 			<div className="relative mt-2 flex w-full flex-wrap gap-2 px-6 pb-4">
-				{token.implementations.map((implementation, index) => (
-					<div key={index} className="flex flex-row items-center gap-4">
-						<a
-							className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
-							style={{
-								backgroundColor: color ?? "",
-								color: textColor
-							}}
-							href={getBlockExplorerAddress(getChainId(implementation.chain), implementation.contract)}
-							target="_blank"
-							rel="noreferrer"
-						>
-							{token.implementations.length > 1 ? (
-								<Image
-									src={chains[getChainId(implementation.chain)].logo}
-									alt={implementation.chain}
-									className="h-4 w-4 rounded-full"
-									width={24}
-									height={24}
-								/>
-							) : (
-								<MapIcon size={14} className="opacity-60" />
-							)}
-							Explorer
-						</a>
-					</div>
-				))}
+				{token.implementations
+					// @ts-ignore
+					.map((implementation, index) => (
+						<div key={index} className="flex flex-row items-center gap-4">
+							<a
+								className="flex flex-row items-center gap-2 rounded-md px-4 py-2 text-xs font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+								style={{
+									backgroundColor: color ?? "",
+									color: textColor
+								}}
+								href={getBlockExplorerAddress(
+									getChainId(implementation.chain),
+									implementation.contract
+								)}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{token.implementations.length > 1 ? (
+									<Image
+										src={chains[getChainId(implementation.chain)].logo}
+										alt={implementation.chain}
+										className="h-4 w-4 rounded-full"
+										width={24}
+										height={24}
+									/>
+								) : (
+									<MapIcon size={14} className="opacity-60" />
+								)}
+								Explorer
+							</a>
+						</div>
+					))}
 			</div>
 		</Frame>
 	)

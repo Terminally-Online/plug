@@ -3,8 +3,8 @@ import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 import { SearchIcon } from "lucide-react"
 
 import { Callout, Search, SocketTokenItem } from "@/components"
-import { cn } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { cn, useDebounce } from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
 import { useHoldings, useSocket } from "@/state"
 
 export const SocketTokenList: FC<
@@ -21,7 +21,12 @@ export const SocketTokenList: FC<
 
 	const tokens = columnTokens ?? apiTokens
 
-	const [search, handleSearch] = useState("")
+	const [search, debouncedSearch, handleSearch] = useDebounce("")
+
+	const { data: searchedTokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
+		enabled: search !== "" && expanded,
+		keepPreviousData: true
+	})
 
 	const visibleTokens = useMemo(() => {
 		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0))
@@ -29,17 +34,22 @@ export const SocketTokenList: FC<
 
 		const filteredTokens = tokens.filter(
 			token =>
-				token.name.toLowerCase().includes(search.toLowerCase()) ||
-				token.symbol.toLowerCase().includes(search.toLowerCase()) ||
+				token.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+				token.symbol.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
 				token.implementations.some(implementation =>
-					implementation.contract.toLowerCase().includes(search.toLowerCase())
+					implementation.contract.toLowerCase().includes(debouncedSearch.toLowerCase())
 				)
 		)
 
-		if (expanded) return filteredTokens
+		if (!expanded) return filteredTokens.slice(0, count)
+		if (!debouncedSearch) return filteredTokens
 
-		return filteredTokens.slice(0, count)
-	}, [isAnonymous, tokens, expanded, count, search])
+		const ownedSymbols = filteredTokens.map(token => token.symbol)
+		// @ts-ignore
+		const unownedTokens = searchedTokens?.filter(token => !ownedSymbols.includes(token.symbol))
+
+		return filteredTokens.concat(unownedTokens ?? [])
+	}, [isAnonymous, tokens, expanded, count, debouncedSearch, searchedTokens])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
@@ -62,7 +72,7 @@ export const SocketTokenList: FC<
 
 			<div className="flex flex-col gap-2">
 				{visibleTokens.map((token, tokenIndex) => (
-					<SocketTokenItem key={tokenIndex} index={index} token={token} />
+					<SocketTokenItem key={`${tokenIndex}-${token?.symbol}`} index={index} token={token} />
 				))}
 			</div>
 

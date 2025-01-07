@@ -27,3 +27,17 @@ export const getSchemas = async (protocol?: string, action?: string): Promise<Ac
 
 	return response.data
 }
+
+export const getTransaction = async (input: {
+	chainId: number
+	from: string
+	inputs: Array<{
+		protocol: string
+		action: string
+		[key: string]: string | number
+	}>
+}) => {
+	const response = await axios.post(`${env.SOLVER_URL}/intent`, input)
+
+	return response.data
+}
