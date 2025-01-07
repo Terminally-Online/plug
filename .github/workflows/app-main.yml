@@ -3,6 +3,8 @@ name: Build and Deploy App
 on:
   push:
     branches: ["**"]
+    paths:
+      - "packages/app/**"
 
   workflow_dispatch:
 
