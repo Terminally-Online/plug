@@ -42,7 +42,7 @@ export const Button: FC<Props> = ({
 	...props
 }) => {
 	const base =
-		"relative outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none border-[1px]"
+		"group relative outline-none font-black transition-all duration-200 hover:text-opacity-100 select-none border-[1px]"
 
 	if (onClick || disabled)
 		return (

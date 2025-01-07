@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, PlugIcon, RefreshCw, Settings, Share, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -20,7 +20,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, useHoldings, usePlugStore, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -38,6 +38,7 @@ export const ConsoleColumn: FC<{
 	} = useColumnStore(id)
 	const { plug } = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
+	const { refetchHoldings, isLoading, isSuccess } = useHoldings(socket?.socketAddress)
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
@@ -152,7 +153,7 @@ export const ConsoleColumn: FC<{
 												<div className="flex flex-row items-center justify-end gap-4">
 													<Button
 														variant="secondary"
-														className="group rounded-sm p-1"
+														className="rounded-sm p-1"
 														onClick={async () => {
 															try {
 																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
@@ -176,18 +177,24 @@ export const ConsoleColumn: FC<{
 
 													<Button
 														variant="secondary"
-														className="group rounded-sm p-1"
+														className="rounded-sm p-1"
 														onClick={() => frame("manage")}
 													>
-														<Settings size={14} className="opacity-60 hover:opacity-100" />
+														<Settings
+															size={14}
+															className="opacity-60 transition-opacity group-hover:opacity-100"
+														/>
 													</Button>
 
 													<Button
 														variant="secondary"
-														className="group rounded-sm p-1"
+														className="rounded-sm p-1"
 														onClick={() => remove(column.index)}
 													>
-														<X size={14} className="opacity-60 hover:opacity-100" />
+														<X
+															size={14}
+															className="opacity-60 transition-opacity group-hover:opacity-100"
+														/>
 													</Button>
 												</div>
 											)}
@@ -195,7 +202,12 @@ export const ConsoleColumn: FC<{
 									}
 									nextPadded={false}
 									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
-									nextLabel={<X size={14} />}
+									nextLabel={
+										<X
+											size={14}
+											className="opacity-60 transition-opacity group-hover:opacity-100"
+										/>
+									}
 								/>
 							</div>
 
