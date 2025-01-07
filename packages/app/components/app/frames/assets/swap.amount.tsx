@@ -193,6 +193,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 									)
 								]?.priceUsd ?? 0,
 							implementations: [
+								// @ts-ignore
 								{
 									...tokenInImplementation,
 									balance:
