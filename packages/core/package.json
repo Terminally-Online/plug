@@ -58,15 +58,15 @@
 		"typescript": "~5.4.5"
 	},
 	"dependencies": {
-		"abitype": "^1.0.2",
-		"commander": "^12.1.0",
-		"ethers": "^6.13.2",
-		"lucide-react": "^0.446.0",
-		"pathe": "^1.1.2",
-		"solady": "^0.0.191",
-		"viem": "^2.9.17",
-		"wagmi": "^2.5.19",
-		"zod": "^3.23.8"
+		"abitype": "^1.0.8",
+		"commander": "^13.0.0",
+		"ethers": "^6.13.5",
+		"lucide-react": "^0.469.0",
+		"pathe": "^2.0.0",
+		"solady": "^0.0.288",
+		"viem": "^2.22.4",
+		"wagmi": "^2.14.6",
+		"zod": "^3.24.1"
 	},
 	"repository": {
 		"type": "git",

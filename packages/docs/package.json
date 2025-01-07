@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "fs-extra": "^11.2.0",
-    "pathe": "^1.1.2",
+    "pathe": "^2.0.0",
     "vitepress": "^1.0.0-rc.24",
     "vue": "^3.3.7"
   },
