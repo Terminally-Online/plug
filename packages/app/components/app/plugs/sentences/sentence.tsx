@@ -46,16 +46,28 @@ export const Sentence: FC<SentenceProps> = ({
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 
+	const values = Object.entries(action.values ?? []).reduce(
+		(acc, [key, value]) => {
+			if (value) {
+				acc[key] = value.value
+			}
+			return acc
+		},
+		{} as Record<string, string>
+	)
+
 	const {
 		state: { parsed },
 		actions: { setValue },
-		helpers: { getInputValue, getInputError, isValid, isComplete }
-	} = useCord(sentence, action.values)
+		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
+	} = useCord(sentence, values)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
 	const handleValue = (index: number, value: string) => {
-		if (!parsed) return
+		const inputName = getInputName(index)
+
+		if (!parsed || !inputName) return
 
 		setValue(index, value)
 
@@ -68,7 +80,7 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 									...action.values,
-									[index]: value
+									[index]: { value, name: inputName }
 								}
 							: action.values
 				}))

@@ -2,6 +2,8 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
+import { Action } from "@/lib"
+
 import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
 
 export const simulation = createTRPCRouter({
@@ -51,10 +53,28 @@ export const simulation = createTRPCRouter({
 				}
 			})
 
-			const parsedExecutions = executions.map(queuedWorkflow => ({
-				...queuedWorkflow,
-				actions: JSON.parse(queuedWorkflow.actions as string)
-			}))
+			const parsedExecutions = executions.map(queuedWorkflow => {
+				const inputs = JSON.parse(queuedWorkflow.actions as string).map((action: Action) => ({
+					protocol: action.protocol,
+					action: action.action,
+					...Object.entries(action.values ?? []).reduce(
+						(acc, [_, value]) => {
+							if (!value || !value.name) return acc
+
+							acc[value.name] = value.value
+
+							return acc
+						},
+						{} as Record<string, string>
+					)
+				}))
+
+				return {
+					chainId: 1,
+					from: queuedWorkflow.workflow.socket.socketAddress,
+					inputs
+				}
+			})
 
 			// NOTE: We update these executions in the database when they are called upon by
 			// the solver so that we do not process the same simulation twice. We do not create a simulation

@@ -80,7 +80,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 											...actions,
 											{
 												...suggestion,
-												values: getValues(
+												...getValues(
 													solverActions[suggestion.protocol].schema[suggestion.action]
 														.sentence
 												)

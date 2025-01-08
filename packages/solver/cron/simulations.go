@@ -34,6 +34,8 @@ type ExecutionsRequest struct {
 	} `json:"result"`
 }
 
+type TransactionRequest struct{}
+
 type SimulationRequest struct {
 	Id     string `json:"id"`
 	Status string `json:"status"`
@@ -70,7 +72,17 @@ func GetExecutions() (ExecutionsRequest, error) {
 	return response, nil
 }
 
+func GetTransaction(execution ExecutionRequest) (TransactionRequest, error) {
+	return TransactionRequest{}, nil
+}
+
+// Perform the simulation and return the status of the simulation.
 func GetSimulation(execution ExecutionRequest) (SimulationRequest, error) {
+	_, err := GetTransaction(execution)
+	if err != nil {
+		return SimulationRequest{}, err
+	}
+
 	statuses := []string{"success", "warning", "failure"}
 	randomIndex := rand.Intn(len(statuses))
 
@@ -108,12 +120,16 @@ func PostSimulations(simulations []SimulationRequest) {
 }
 
 func Simulations() {
+	// Get the set of executions that need to be simulated.
 	executions, err := GetExecutions()
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
+	log.Println(executions)
+
+	// Loop through the executions and simulate them
 	var simulations []SimulationRequest
 	for _, execution := range executions.Result.Data.Json {
 		simulation, err := GetSimulation(execution)
