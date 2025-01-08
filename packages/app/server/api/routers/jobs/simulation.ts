@@ -70,6 +70,7 @@ export const simulation = createTRPCRouter({
 				}))
 
 				return {
+					id: queuedWorkflow.id,
 					chainId: 1,
 					from: queuedWorkflow.workflow.socket.socketAddress,
 					inputs
