@@ -1,7 +1,5 @@
 import { FC, HTMLAttributes, useState } from "react"
-
 import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
-
 import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
 import { cn, greenGradientStyle } from "@/lib"
 import { useDebounce } from "@/lib/hooks"
@@ -39,8 +37,8 @@ export const ColumnSearch: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 				clear={true}
 			/>
 
-			{debouncedSearch === "" && (
-					<div className="absolute inset-0 z-[7] flex flex-col items-center justify-center md:z-[5]">
+			{debouncedSearch === "" && !search && (
+				<div className="absolute inset-0 z-[1] flex flex-col items-center justify-center md:z-[1]">
 					<p className="font-bold">Submit your search.</p>
 					<p className="mb-4 max-w-[320px] text-center text-sm font-bold opacity-40">
 						Here you can search for everything from plugs, tokens, collectibles, and more.
