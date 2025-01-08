@@ -17,6 +17,7 @@ type Props = React.HTMLAttributes<HTMLDivElement> &
 		hasOverlay?: boolean
 		hasChildrenPadding?: boolean
 		next?: JSX.Element
+		nextEmpty?: boolean
 		scrollBehavior?: "content" | "partial"
 	}
 
