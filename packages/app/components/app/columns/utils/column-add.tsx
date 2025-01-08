@@ -1,6 +1,19 @@
 import { useMemo } from "react"
 
-import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, ShieldAlert, Star, User } from "lucide-react"
+import {
+	Activity,
+	Cable,
+	Cog,
+	Coins,
+	Globe,
+	ImageIcon,
+	PiggyBank,
+	Plug,
+	Plus,
+	ShieldAlert,
+	Star,
+	User
+} from "lucide-react"
 
 import { Accordion } from "@/components/shared"
 import { cn, formatTitle } from "@/lib"
@@ -46,6 +59,11 @@ export const OPTIONS: Options = [
 		label: "POSITIONS",
 		description: "View your positions and manage them.",
 		icon: <PiggyBank size={14} className="opacity-40" />
+	},
+	{
+		label: "SETTINGS",
+		description: "View and manage your Plug settings.",
+		icon: <Cog size={14} className="opacity-40" />
 	}
 ] as const
 

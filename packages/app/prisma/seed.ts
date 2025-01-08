@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client"
+import { getSocketAddress, getSocketSalt } from "@terminallyonline/plug-core/lib"
+
+import { MAGIC_NONCE } from "@/server/api/routers/socket"
 
 const prisma = new PrismaClient()
 
@@ -27,10 +30,15 @@ const seedSockets = async () => {
 	]
 
 	for (const socket of DEFAULT_SOCKETS) {
+		const { bytes, hex: salt } = getSocketSalt(MAGIC_NONCE, socket.address as `0x${string}`)
+		const { address: socketAddress, implementation } = getSocketAddress(bytes)
+
 		await prisma.userSocket.upsert({
 			where: { id: socket.address },
 			update: {
-				socketAddress: socket.address,
+				socketAddress,
+				salt,
+				implementation,
 				identity: {
 					upsert: {
 						create: {
@@ -62,7 +70,9 @@ const seedSockets = async () => {
 			},
 			create: {
 				id: socket.address,
-				socketAddress: socket.address,
+				socketAddress,
+				salt,
+				implementation,
 				identity: {
 					create: {
 						ens: {

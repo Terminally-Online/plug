@@ -228,7 +228,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 	}
 
 	return (
-		<div className="flex flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
+		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-4 py-4 text-center">
 			<ProfileStats />
 
 			<div className="flex flex-col gap-2">

@@ -10,6 +10,7 @@ import {
 	ColumnAdd,
 	ColumnApplication,
 	ConsoleAdmin,
+	ConsoleSettings,
 	Header,
 	Plug,
 	PlugsDiscover,
@@ -235,6 +236,8 @@ export const ConsoleColumn: FC<{
 									<SocketPositionList index={column.index} className="px-4 pt-4" />
 								) : column.key === COLUMNS.KEYS.ADMIN ? (
 									<ConsoleAdmin index={column.index} className="px-4 pt-4" />
+								) : column.key === COLUMNS.KEYS.SETTINGS ? (
+									<ConsoleSettings index={column.index} className="px-4 pt-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} className="pt-4" />
 								) : (

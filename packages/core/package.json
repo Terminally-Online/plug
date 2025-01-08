@@ -1,114 +1,114 @@
 {
-	"name": "@terminally-online/plug-core",
-	"version": "0.0.0",
-	"author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
-	"maintainers": [
-		"🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
-	],
-	"license": "BUSL-1.1",
-	"scripts": {
-		"prebuild:schema": "pnpm plug:schema",
-		"prebuild:zod": "pnpm plug:zod",
-		"prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
-		"prebuild:etcher": "pnpm tsx src/lib/functions/core/etcher.ts",
-		"prebuild:mine": "pnpm prebuild:etcher",
-		"prebuild:lint": "tsc --noEmit",
-		"prebuild:format": "prettier --write .",
-		"prebuild:package": "pnpm build:lint && rm -rf ./dist",
-		"prebuild": "run-s prebuild:*",
-		"build:contracts": "forge fmt && pnpm prebuild:artifacts && pnpm wagmi generate",
-		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
-		"build:format": "pnpm prettier --write .",
-		"build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts && pnpm prebuild:etcher && forge test",
-		"build:mine:quick": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts --quick --leading=1 --total=2",
-		"build:ts": "pnpm tsup && pnpm build:format",
-		"build:lint": "tsc",
-		"build": "pnpm build:ts && pnpm build:contracts",
-		"hold-prebuild:mine:quick": "pnpm prebuild:etcher",
-		"postbuild:mine": "pnpm prebuild:etcher && forge test",
-		"postbuild:mine:quick": "pnpm prebuild:etcher && forge test",
-		"plug": "tsx ./src/cli/index.ts",
-		"plug:schema": "pnpm plug schema",
-		"plug:zod": "pnpm plug zod"
-	},
-	"devDependencies": {
-		"@changesets/cli": "^2.27.1",
-		"@prb/test": "^0.6.4",
-		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
-		"@types/chai": "^4.3.14",
-		"@types/chai-as-promised": "^7.1.8",
-		"@types/fs-extra": "^11.0.4",
-		"@types/mocha": "^10.0.6",
-		"@types/node": "^20.12.7",
-		"@wagmi/cli": "^2.1.4",
-		"chai": "^5.1.0",
-		"dedent": "^1.5.3",
-		"ds-test": "github:dapphub/ds-test",
-		"execa": "^8.0.1",
-		"forge-std": "github:foundry-rs/forge-std#v1",
-		"fs-extra": "^11.2.0",
-		"nodemon": "^3.1.0",
-		"npm-run-all": "^4.1.5",
-		"prettier": "^3.2.5",
-		"solhint": "^4.5.4",
-		"solidity-coverage": "^0.8.12",
-		"tsconfig-paths": "^4.2.0",
-		"tsup": "^8.0.2",
-		"tsx": "^4.7.2",
-		"typescript": "~5.4.5"
-	},
-	"dependencies": {
-		"abitype": "^1.0.2",
-		"commander": "^12.1.0",
-		"ethers": "^6.13.2",
-		"lucide-react": "^0.446.0",
-		"pathe": "^1.1.2",
-		"solady": "^0.0.191",
-		"viem": "^2.9.17",
-		"wagmi": "^2.5.19",
-		"zod": "^3.23.8"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/terminally-online/plug-core.git"
-	},
-	"keywords": [
-		"eip712",
-		"typehash",
-		"signatures",
-		"eth",
-		"ethereum",
-		"solidity",
-		"crypto",
-		"intent",
-		"plugs",
-		"plug"
-	],
-	"main": "dist/index.js",
-	"module": "dist/index.mjs",
-	"types": "dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./lib": {
-			"types": "./dist/lib/index.d.ts",
-			"default": "./dist/lib/index.js"
-		},
-		"./artifacts": {
-			"types": "./artifacts/artifacts.d.ts"
-		},
-		"./package.json": "./package.json",
-		"./addresses.json": "./src/lib/addresses.json"
-	},
-	"files": [
-		"/lib",
-		"/dist",
-		"/src",
-		"/artifacts"
-	],
-	"publishConfig": {
-		"access": "public"
-	}
+  "name": "@terminallyonline/plug-core",
+  "version": "0.0.0",
+  "author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
+  "maintainers": [
+    "🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
+  ],
+  "license": "BUSL-1.1",
+  "scripts": {
+    "prebuild:schema": "pnpm plug:schema",
+    "prebuild:zod": "pnpm plug:zod",
+    "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
+    "prebuild:etcher": "pnpm tsx src/lib/functions/core/etcher.ts",
+    "prebuild:mine": "pnpm prebuild:etcher",
+    "prebuild:lint": "tsc --noEmit",
+    "prebuild:format": "prettier --write .",
+    "prebuild:package": "pnpm build:lint && rm -rf ./dist",
+    "prebuild": "run-s prebuild:*",
+    "build:contracts": "forge fmt && pnpm prebuild:artifacts && pnpm wagmi generate",
+    "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
+    "build:format": "pnpm prettier --write .",
+    "build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts && pnpm prebuild:etcher && forge test",
+    "build:mine:quick": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts --quick --leading=1 --total=2",
+    "build:ts": "pnpm tsup && pnpm build:format",
+    "build:lint": "tsc",
+    "build": "pnpm build:ts && pnpm build:contracts",
+    "hold-prebuild:mine:quick": "pnpm prebuild:etcher",
+    "postbuild:mine": "pnpm prebuild:etcher && forge test",
+    "postbuild:mine:quick": "pnpm prebuild:etcher && forge test",
+    "plug": "tsx ./src/cli/index.ts",
+    "plug:schema": "pnpm plug schema",
+    "plug:zod": "pnpm plug zod"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@prb/test": "^0.6.4",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/chai": "^4.3.14",
+    "@types/chai-as-promised": "^7.1.8",
+    "@types/fs-extra": "^11.0.4",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.7",
+    "@wagmi/cli": "^2.1.4",
+    "chai": "^5.1.0",
+    "dedent": "^1.5.3",
+    "ds-test": "github:dapphub/ds-test",
+    "execa": "^8.0.1",
+    "forge-std": "github:foundry-rs/forge-std#v1",
+    "fs-extra": "^11.2.0",
+    "nodemon": "^3.1.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.5",
+    "solhint": "^4.5.4",
+    "solidity-coverage": "^0.8.12",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.2",
+    "typescript": "~5.4.5"
+  },
+  "dependencies": {
+    "abitype": "^1.0.2",
+    "commander": "^12.1.0",
+    "ethers": "^6.13.2",
+    "lucide-react": "^0.446.0",
+    "pathe": "^1.1.2",
+    "solady": "^0.0.191",
+    "viem": "^2.9.17",
+    "wagmi": "^2.5.19",
+    "zod": "^3.23.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terminally-online/plug-core.git"
+  },
+  "keywords": [
+    "eip712",
+    "typehash",
+    "signatures",
+    "eth",
+    "ethereum",
+    "solidity",
+    "crypto",
+    "intent",
+    "plugs",
+    "plug"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "default": "./dist/lib/index.js"
+    },
+    "./artifacts": {
+      "types": "./artifacts/artifacts.d.ts"
+    },
+    "./package.json": "./package.json",
+    "./addresses.json": "./src/lib/addresses.json"
+  },
+  "files": [
+    "/lib",
+    "/dist",
+    "/src",
+    "/artifacts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
