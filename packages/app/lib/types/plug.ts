@@ -30,7 +30,7 @@ export type ActionSchemas = {
 export type Action = {
 	protocol: string
 	action: string
-	values: Record<string, string | undefined>
+	values: Record<string, { value: string; name: string } | undefined>
 }
 
 export type Actions = Array<Action>

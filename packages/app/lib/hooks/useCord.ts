@@ -29,7 +29,7 @@ const initialState: CordState = {
 	validationErrors: new Map()
 }
 
-export const useCord = (sentence: string, values: Record<string, string | undefined>): UseCordReturn => {
+export const useCord = (sentence: string, values: Record<string, string | undefined>) => {
 	const [state, setState] = useState<CordState>(() => ({
 		...initialState,
 		values: createStateFromValues(values)
@@ -116,6 +116,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 	}
 
 	const helpers = {
+		getInputName: useCallback((index: number) => parsed?.inputs[index].name, [parsed]),
 		getInputValue: useCallback((index: number) => state.values.get(index), [state.values]),
 		getInputError: useCallback((index: number) => state.validationErrors.get(index), [state.validationErrors]),
 		getDependentInputs: useCallback(

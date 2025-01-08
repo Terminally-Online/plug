@@ -27,7 +27,7 @@ export const ActionItem: FC<{
 						{
 							protocol,
 							action: actionName,
-							values: getValues(action.schema[actionName].sentence)
+							...getValues(action.schema[actionName].sentence)
 						}
 					])
 				})

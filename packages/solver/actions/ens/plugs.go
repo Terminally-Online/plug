@@ -21,7 +21,7 @@ var (
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
-		MaxPrice *big.Int `json:"max_price"`
+		MaxPrice *big.Int `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)

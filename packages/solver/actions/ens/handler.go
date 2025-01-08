@@ -40,7 +40,7 @@ func (h *Handler) init() *Handler {
 	}
 
 	h.schemas[types.ActionBuy] = types.Schema{
-		Sentence: "Buy ENS {0<name:string>} with a max price of {1<max_price:uint256>} ETH.",
+		Sentence: "Buy ENS {0<name:string>} with a max price of {1<maxPrice:uint256>} ETH.",
 	}
 
 	h.schemas[types.ActionRenew] = types.Schema{
