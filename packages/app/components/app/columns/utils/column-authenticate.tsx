@@ -248,7 +248,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center text-center">
-			{session?.user.id === account.address && (
+			{session?.user?.id === account.address && (
 				<Callout
 					title="You are authenticated."
 					description="You should not be seeing this message. Please refresh the page."
@@ -262,7 +262,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 				/>
 			)}
 
-			{session?.user.id !== account.address &&
+			{session?.user?.id !== account.address &&
 				account.address &&
 				sign.isLoading === false &&
 				authentication.isLoading === false && (
