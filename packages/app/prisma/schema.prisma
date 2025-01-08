@@ -136,8 +136,10 @@ model UserSocket {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  admin         Boolean @default(false)
-  socketAddress String
+  admin          Boolean @default(false)
+  socketAddress  String
+  salt           String?
+  implementation String?
 
   // ---------------------------------------------------------------------------
   // One-to-one
