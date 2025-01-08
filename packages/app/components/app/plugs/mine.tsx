@@ -1,29 +1,28 @@
 import { FC, HTMLAttributes, useMemo, useState } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
-import { SearchIcon } from "lucide-react"
+import { ChevronLeft, SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
+import { Button, Callout, Container, Header, PlugGrid, Search, Tags } from "@/components"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
-import { COLUMNS, useColumnData, useSocket } from "@/state"
+import { COLUMNS, useColumnData, useColumnStore, useSocket } from "@/state"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
 	className,
 	...props
 }) => {
+	const { handle } = useColumnStore(index)
 	const { socket } = useSocket()
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
-
 	const [plugs, setPlugs] = useState<{
 		count?: number
 		plugs: Array<Workflow>
 	}>({ plugs: [] })
-
 	const { fetchNextPage, isLoading } = api.plugs.infinite.useInfiniteQuery(
 		{
 			address: socket?.id,
@@ -44,13 +43,10 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 			}
 		}
 	)
-
 	const visiblePlugs = useMemo(() => {
 		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
-
 		return plugs.plugs
 	}, [plugs, search])
-
 	useMotionValueEvent(scrollYProgress, "change", latest => {
 		if (!plugs || isLoading || latest < 0.8) return
 		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
@@ -58,31 +54,51 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{(search !== "" || (plugs && plugs.plugs.length > 0)) && (
-				<Container>
-					<Search
-						icon={<SearchIcon size={14} className="opacity-60" />}
-						placeholder="Search Plugs"
-						search={search}
-						handleSearch={handleSearch}
-						clear={true}
-					/>
-				</Container>
-			)}
-
-			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
-
-			<Callout.EmptySearch
-				isEmpty={(search !== "" || tag !== "") && plugs && plugs.count === 0}
-				search={search || tag}
-				handleSearch={handleSearch}
-			/>
-
-			<Container>
-				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
+			<Container className="border-grayscale-100 fixed left-0 right-0 top-0 z-[10] border-b-[1px] bg-white md:hidden">
+				<Header
+					size="lg"
+					label={
+						<div className="flex flex-row items-center gap-4">
+							<Button
+								variant="secondary"
+								className="rounded-sm p-1"
+								onClick={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+							>
+								<ChevronLeft size={14} />
+							</Button>
+							<span className="font-bold">My Plugs</span>
+						</div>
+					}
+				/>
 			</Container>
 
-			<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />
+			<div className="mt-16 md:mt-0">
+				{(search !== "" || (plugs && plugs.plugs.length > 0)) && (
+					<Container className="mb-6">
+						<Search
+							icon={<SearchIcon size={14} className="opacity-60" />}
+							placeholder="Search Plugs"
+							search={search}
+							handleSearch={handleSearch}
+							clear={true}
+						/>
+					</Container>
+				)}
+
+				{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
+
+				<Callout.EmptySearch
+					isEmpty={(search !== "" || tag !== "") && plugs && plugs.count === 0}
+					search={search || tag}
+					handleSearch={handleSearch}
+				/>
+
+				<Container>
+					<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
+				</Container>
+
+				<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />
+			</div>
 		</div>
 	)
 }

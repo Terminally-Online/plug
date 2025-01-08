@@ -5,10 +5,12 @@ import { PencilLine, Settings } from "lucide-react"
 import { Button, Checkbox, Frame, Search } from "@/components"
 import { cardColors, useDebounce } from "@/lib"
 import { useColumnStore, usePlugStore } from "@/state"
+import { COLUMNS } from "@/state"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
 	const { isFrame } = useColumnStore(index, "manage")
 	const { plug, handle } = usePlugStore(item)
+	const { handle: columnHandle } = useColumnStore(index)
 
 	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
 
@@ -88,7 +90,18 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 				<Button
 					variant="destructive"
 					className="w-full"
-					onClick={() => handle.plug.delete({ plug: plug.id, index, from })}
+					onClick={() => {
+						if (index === COLUMNS.MOBILE_INDEX) {
+							handle.plug.delete({ plug: plug.id, index })
+							columnHandle.navigate({
+								index: COLUMNS.MOBILE_INDEX,
+								key: COLUMNS.KEYS.HOME
+							})
+						} else {
+							handle.plug.delete({ plug: plug.id, index, from })
+							columnHandle.remove(index)
+						}
+					}}
 				>
 					Delete
 				</Button>

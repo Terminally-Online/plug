@@ -30,7 +30,7 @@
 
         export const faviconUrls = {} as const;
 
-        export const posts: Posts = {pulseofcrypto:{filename:"pulse-of-crypto",slug:"pulse-of-crypto",title:"The Pulse of Crypto.",description:"In a market that never sleeps, Plug is your heartbeat that keeps your onchain presence constant....",image:"/cdn/papers/incentivized-creation.png",content:"\n\n# The Pulse of Crypto\n\nYour markdown content here...\n",attributes:{created:"2024-09-28T05:00:00.000Z",className:"",tags:["perspective"],author:"nftchance"}}};
+        export const posts: Posts = {pulseofcrypto:{filename:"pulse-of-crypto",slug:"pulse-of-crypto",title:"The Pulse of Crypto.",description:"In a market that never sleeps, Plug is your heartbeat that keeps your onchain presence constant....",image:"/cdn/papers/incentivized-creation.png",content:"\n\n# The Pulse of Crypto\n\nYour markdown content here...\n",attributes:{created:"2024-09-28T04:00:00.000Z",className:"",tags:["perspective"],author:"nftchance"}}};
 
         // * Get all the Posts for a given page.
         export const getPosts = (

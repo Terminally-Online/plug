@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 
 import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
-import { Bell, HousePlug, Plus } from "lucide-react"
+import { Bell, HousePlug, Plus, Search } from "lucide-react"
 
 import { Image } from "@/components"
 import { cn } from "@/lib"
@@ -10,11 +10,15 @@ import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 export const PageNavbar = () => {
 	const { data: session } = useSession()
-	const { avatar } = useSocket()
+	const { avatar, socket } = useSocket()
 	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
 	const { handle: plugHandle } = usePlugStore()
 
-	if (!column) return null
+	// Hide navbar when:
+	// 1. No session
+	// 2. In Plug view/create
+	// 3. Not approved
+	if (!session || !column || column.key === COLUMNS.KEYS.PLUG || !socket?.identity?.approvedAt) return null
 
 	return (
 		<div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-plug-green/10 bg-white">
@@ -31,9 +35,9 @@ export const PageNavbar = () => {
 						)}
 					/>
 				</button>
-				{/*<button
+				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.SEARCH })}
+					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.SEARCH })}
 				>
 					<Search
 						size={24}
@@ -42,7 +46,7 @@ export const PageNavbar = () => {
 							column?.key === COLUMNS.KEYS.SEARCH && "text-opacity-100"
 						)}
 					/>
-				</button>*/}
+				</button>
 				<button
 					className="group flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-plug-green to-plug-yellow"
 					onClick={() => plugHandle.plug.add({ index: COLUMNS.MOBILE_INDEX })}
@@ -66,7 +70,7 @@ export const PageNavbar = () => {
 				</button>
 				<button
 					className="group h-8 w-8"
-					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.PROFILE })}
+					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.WALLET })}
 				>
 					{session && (
 						<button
@@ -102,7 +106,7 @@ export const PageNavbar = () => {
 						</button>
 					)}
 				</button>
-			</div>{" "}
+			</div>
 		</div>
 	)
 }

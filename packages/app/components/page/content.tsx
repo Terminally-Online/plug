@@ -1,5 +1,8 @@
 import {
 	ColumnAuthenticate,
+	ColumnSearch,
+	ColumnStats,
+	ColumnWallet,
 	Container,
 	Plug,
 	Plugs,
@@ -52,6 +55,24 @@ export const PageContent = () => {
 					<ColumnAuthenticate index={COLUMNS.MOBILE_INDEX} />
 				</Container>
 			)
+			case COLUMNS.KEYS.SEARCH:
+				return (
+					<Container className="pt-4">
+						<ColumnSearch index={COLUMNS.MOBILE_INDEX} />
+					</Container>
+				)
+			case COLUMNS.KEYS.STATS:
+				return (
+					<Container className="pt-4">
+						<ColumnStats index={COLUMNS.MOBILE_INDEX} />
+					</Container>
+				)
+			case COLUMNS.KEYS.WALLET:
+				return (
+					<Container className="pt-4">
+						<ColumnWallet index={COLUMNS.MOBILE_INDEX} />
+					</Container>
+				)
 		default:
 			return <></>
 	}

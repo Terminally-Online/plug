@@ -16,6 +16,7 @@ import {
 	greenGradientStyle,
 	recentConnectorIdAtom,
 	useConnect,
+	useMediaQuery,
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
@@ -26,7 +27,7 @@ const QR_CODE_PIXEL_SPACING = 0.3
 
 const ConnectorQrCode = () => {
 	const { connection } = useConnect()
-
+	const { md } = useMediaQuery()
 	const qrMatrix = useAtomValue(walletConnectURIMatrixAtom)
 
 	const isCorner = useCallback(
@@ -48,6 +49,12 @@ const ConnectorQrCode = () => {
 
 	return (
 		<div className="my-2 flex w-full flex-col items-center justify-center py-8">
+			{!md && (
+				<>
+					<h1 className="mb-8 text-2xl font-bold">Welcome to Plug</h1>
+					<p className="mb-8 text-center font-bold text-black/40">Connect your wallet to get started</p>
+				</>
+			)}
 			<div className="relative w-full max-w-[300px]">
 				{qrMatrix ? (
 					<motion.div
