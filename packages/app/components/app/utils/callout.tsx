@@ -164,7 +164,7 @@ const EmptyPlug: FC<
 	const { column } = useColumnData(index)
 	if (!column || isEmpty === false) return null
 	return (
-		<div className="relative flex-1">
+		<div className="relative h-[300px]">
 			<GradientOverlay />
 			<Base
 				className={cn(className)}
