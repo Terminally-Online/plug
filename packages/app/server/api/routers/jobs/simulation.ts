@@ -6,6 +6,8 @@ import { Action } from "@/lib"
 
 import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
 
+const DEFAULT_SIMULATION_FREQUENCY = 1 * 60 * 1000
+
 export const simulation = createTRPCRouter({
 	simulate: apiKeyProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		return await ctx.db.$transaction(async tx => {
@@ -53,6 +55,7 @@ export const simulation = createTRPCRouter({
 				}
 			})
 
+			// NOTE: We have to do a little shape transformation as our solver api expects a specific shape.
 			const parsedExecutions = executions.map(queuedWorkflow => {
 				const inputs = JSON.parse(queuedWorkflow.actions as string).map((action: Action) => ({
 					protocol: action.protocol,
@@ -80,23 +83,30 @@ export const simulation = createTRPCRouter({
 			// NOTE: We update these executions in the database when they are called upon by
 			// the solver so that we do not process the same simulation twice. We do not create a simulation
 			// record in the database until we get back the response from the solver.
-			// await Promise.all(
-			// 	executions.map(simulatedExecution =>
-			// 		tx.execution.update({
-			// 			where: { id: simulatedExecution.id },
-			// 			data: {
-			// 				nextSimulationAt: new Date(now.getTime() + simulatedExecution.frequency * 60 * 1000)
-			// 			}
-			// 		})
-			// 	)
-			// )
+			await tx.execution.updateMany({
+				where: {
+					id: {
+						in: executions.map(execution => execution.id)
+					}
+				},
+				data: { nextSimulationAt: new Date(now.getTime() + DEFAULT_SIMULATION_FREQUENCY) }
+			})
 
 			return parsedExecutions
 		})
 	}),
 
 	simulated: apiKeyProcedure
-		.input(z.array(z.object({ id: z.string(), status: z.string() })))
+		.input(
+			z.array(
+				z.object({
+					id: z.string(),
+					status: z.string(),
+					error: z.string().optional(),
+					gasEstimate: z.number().optional()
+				})
+			)
+		)
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
 				return await Promise.all(
@@ -104,7 +114,9 @@ export const simulation = createTRPCRouter({
 						const { id } = await tx.simulation.create({
 							data: {
 								status: simulation.status,
-								executionId: simulation.id
+								executionId: simulation.id,
+								error: simulation.error,
+								gasEstimate: simulation.gasEstimate
 							},
 							select: {
 								id: true
