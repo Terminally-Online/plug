@@ -157,7 +157,7 @@ export const CollectibleFrame: FC<{
 
 					{collection.description && (
 						<button
-							className="mr-auto flex flex-row items-center gap-2 font-bold"
+							className="mr-auto flex flex-row items-center gap-2 text-sm font-bold"
 							onClick={() => setExpanded(!expanded)}
 						>
 							{expanded ? "Read Less" : "Read More"}
@@ -214,7 +214,7 @@ export const CollectibleFrame: FC<{
 					<div>
 						<div className="flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Details</p>
-							<div className="h-[2px] w-full" style={{ backgroundColor: metadata?.color ?? "" }} />
+							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
 						<div className="mt-2 w-full font-bold">
@@ -260,12 +260,7 @@ export const CollectibleFrame: FC<{
 
 						<div className="mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Links</p>
-							<div
-								className="h-[2px] w-full"
-								style={{
-									backgroundColor: metadata?.color ?? ""
-								}}
-							/>
+							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
 						<div className="mt-2 flex flex-wrap gap-2">
