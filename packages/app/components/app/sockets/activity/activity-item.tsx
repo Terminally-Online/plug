@@ -1,9 +1,24 @@
+import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { AlertCircle, Bell, CheckCircle, Fence, FileWarning, Hash, Loader, Pause, XCircle } from "lucide-react"
+import {
+	AlertCircle,
+	Bell,
+	CheckCircle,
+	CircleDollarSign,
+	Clock10,
+	Fence,
+	FileWarning,
+	Globe,
+	Hash,
+	Loader,
+	Pause,
+	Waypoints,
+	XCircle
+} from "lucide-react"
 
 import { Accordion, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
-import { formatTitle } from "@/lib"
+import { chains, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state"
 
@@ -132,23 +147,47 @@ export const ActivityItem: FC<{
 				handleBack={() => handle.frame()}
 				hasOverlay={true}
 			>
-				<p className="flex flex-row items-center justify-between gap-2 font-bold">
-					<Bell size={14} className="opacity-60" />
+				<div className="flex flex-row items-center gap-4">
+					<p className="font-bold opacity-40">Details</p>
+					<div className="h-[2px] w-full bg-plug-green/10" />
+				</div>
+
+				<p className="flex flex-row items-center justify-between gap-4 font-bold">
+					<Bell size={18} className="opacity-20" />
 					<span className="opacity-40">Status</span>{" "}
-					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-						{formatTitle(simulation?.status ?? "pending")}
+					<span className="ml-auto">{formatTitle(simulation?.status ?? "pending")}</span>
+				</p>
+				<p className="flex flex-row items-center justify-between gap-4 font-bold">
+					<Clock10 size={18} className="opacity-20" />
+					<span className="opacity-40">Simulated</span>{" "}
+					<span className="ml-auto">
+						<DateSince date={new Date(simulation?.createdAt ?? new Date())} />
 					</span>
 				</p>
-				<p className="flex flex-row items-center justify-between gap-2 font-bold">
-					<Fence size={14} className="opacity-60" />
-					<span className="opacity-40">Gas Estimate</span>{" "}
+				<p className="flex flex-row items-center justify-between gap-4 font-bold">
+					<Waypoints size={18} className="opacity-20" />
+					<span className="opacity-40">Chain</span>
+					<span className="ml-auto flex flex-row items-center gap-2">
+						<Image
+							className="h-4 w-4"
+							src={chains[getChainId("ethereum")].logo}
+							alt="Ethereum"
+							width={24}
+							height={24}
+						/>
+						Ethereum
+					</span>
+				</p>
+				<p className="flex flex-row items-center justify-between gap-4 font-bold">
+					<CircleDollarSign size={18} className="opacity-20" />
+					<span className="opacity-40">Fee</span>{" "}
 					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-						{simulation?.gasEstimate}
+						<Counter count={simulation?.gasEstimate ?? 0} />
 					</span>
 				</p>
 				{simulation?.error && (
-					<p className="flex flex-row items-center justify-between gap-2 font-bold">
-						<FileWarning size={14} className="opacity-60" />
+					<p className="flex flex-row items-center justify-between gap-4 font-bold">
+						<FileWarning size={18} className="opacity-20" />
 						<span className="opacity-40">Error</span>{" "}
 						<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
 							{simulation?.error}
