@@ -1,15 +1,13 @@
 import Image from "next/image"
 import { FC, useMemo } from "react"
 
-import { Bell, Calendar, Eye, Pause, Play, Trash, Waypoints } from "lucide-react"
+import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 
 import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
-import { chains, formatFrequency, formatTitle } from "@/lib"
+import { cardColors, chains, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state"
-
-import { SimulationFrame } from "./simulation"
 
 export const ExecutionFrame: FC<{
 	index: number
@@ -25,35 +23,41 @@ export const ExecutionFrame: FC<{
 
 	return (
 		<>
-			<Frame index={index} icon={icon} label={activity.workflow.name} visible={isFrame} hasOverlay={true}>
+			<Frame
+				index={index}
+				icon={icon}
+				label={
+					<span className="flex flex-row items-center gap-2 text-lg font-bold">
+						<div
+							className="mr-4 flex h-8 w-8 min-w-8 items-center justify-center rounded-sm bg-plug-green/10 text-white/60"
+							style={{
+								backgroundImage: cardColors[activity.workflow.color]
+							}}
+						/>
+						<span>{activity.workflow.name}</span>
+					</span>
+				}
+				visible={isFrame}
+				hasOverlay={true}
+			>
 				<div className="flex flex-col">
 					<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
 
-					<Button
-						className="my-4 mb-2 mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
-						onClick={() =>
-							handle.navigate({
-								index,
-								key: COLUMNS.KEYS.PLUG,
-								item: activity.workflow.id,
-								from: COLUMNS.KEYS.ACTIVITY
-							})
-						}
-					>
-						<Eye size={14} className="opacity-60" />
-						View
-					</Button>
-
-					<div className="mb-4 flex flex-row items-center gap-2">
+					<div className="my-4 flex flex-row items-center gap-2">
 						<Button
-							variant="destructive"
-							className="flex flex-row items-center justify-center gap-2 py-4"
-							onClick={() => activityHandle.delete({ id: activity.id })}
+							className="flex w-max flex-row items-center justify-center gap-2 py-4"
+							onClick={() =>
+								handle.navigate({
+									index,
+									key: COLUMNS.KEYS.PLUG,
+									item: activity.workflow.id,
+									from: COLUMNS.KEYS.ACTIVITY
+								})
+							}
 						>
-							<Trash size={14} className="opacity-60" />
-							Delete
+							<Eye size={14} className="opacity-60" />
+							View
 						</Button>
-
 						<Button
 							variant="secondary"
 							className="flex w-full flex-row items-center justify-center gap-2 py-4"
