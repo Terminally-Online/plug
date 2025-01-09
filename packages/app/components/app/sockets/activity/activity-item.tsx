@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { FC, useMemo } from "react"
 
 import {
@@ -7,20 +6,15 @@ import {
 	CheckCircle,
 	CircleDollarSign,
 	Clock10,
-	Fence,
-	FileWarning,
-	Globe,
-	Hash,
 	Loader,
 	MessageCircleQuestionIcon,
 	Pause,
 	Share,
-	Waypoints,
 	XCircle
 } from "lucide-react"
 
 import { Accordion, ActionPreview, Button, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
-import { cardColors, chains, formatTitle, getChainId } from "@/lib"
+import { cardColors, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state"
 
