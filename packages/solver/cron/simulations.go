@@ -6,43 +6,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"solver/simulate"
+	"solver/solver"
 	"solver/utils"
-
-	"golang.org/x/exp/rand"
 )
-
-type ExecutionRequest struct {
-	Id      string `json:"id"`
-	Actions []struct {
-		CategoryName string      `json:"categoryName"`
-		ActionName   string      `json:"actionName"`
-		Values       interface{} `json:"values"`
-	} `json:"actions"`
-	Workflow struct {
-		Socket struct {
-			Id            string `json:"id"`
-			SocketAddress string `json:"socketAddress"`
-		} `json:"socket"`
-	} `json:"workflow"`
-}
 
 type ExecutionsRequest struct {
 	Result struct {
 		Data struct {
-			Json []ExecutionRequest `json:"json"`
+			Json []simulate.ExecutionRequest `json:"json"`
 		} `json:"data"`
 	} `json:"result"`
-}
-
-type TransactionRequest struct{}
-
-type SimulationRequest struct {
-	Id     string `json:"id"`
-	Status string `json:"status"`
-}
-
-type SimulationsRequest struct {
-	Json []SimulationRequest `json:"json"`
 }
 
 type SimulationsResponse struct {
@@ -72,29 +46,8 @@ func GetExecutions() (ExecutionsRequest, error) {
 	return response, nil
 }
 
-func GetTransaction(execution ExecutionRequest) (TransactionRequest, error) {
-	return TransactionRequest{}, nil
-}
-
-// Perform the simulation and return the status of the simulation.
-func GetSimulation(execution ExecutionRequest) (SimulationRequest, error) {
-	_, err := GetTransaction(execution)
-	if err != nil {
-		return SimulationRequest{}, err
-	}
-
-	statuses := []string{"success", "warning", "failure"}
-	randomIndex := rand.Intn(len(statuses))
-
-	response := SimulationRequest{
-		Id:     execution.Id,
-		Status: statuses[randomIndex],
-	}
-	return response, nil
-}
-
-func PostSimulations(simulations []SimulationRequest) {
-	response := SimulationsRequest{
+func PostSimulations(simulations []simulate.SimulationRequest) {
+	response := simulate.SimulationsRequest{
 		Json: simulations,
 	}
 	body, err := json.Marshal(response)
@@ -120,27 +73,22 @@ func PostSimulations(simulations []SimulationRequest) {
 }
 
 func Simulations() {
-	// Get the set of executions that need to be simulated.
+	solver := solver.New()
+	simulator := simulate.New(solver)
+
 	executions, err := GetExecutions()
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	log.Println(executions)
-
-	// Loop through the executions and simulate them
-	var simulations []SimulationRequest
-	for _, execution := range executions.Result.Data.Json {
-		simulation, err := GetSimulation(execution)
-		if err != nil {
-			simulation = SimulationRequest{
-				Id:     execution.Id,
-				Status: "failure",
-			}
-		}
-		simulations = append(simulations, simulation)
+	simulations, err := simulator.GetSimulations(executions.Result.Data.Json)
+	if err != nil {
+		log.Println(err.Error())
+		return
 	}
 
-	PostSimulations(simulations)
+	if len(simulations) > 0 {
+		PostSimulations(simulations)
+	}
 }

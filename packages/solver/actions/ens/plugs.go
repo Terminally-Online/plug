@@ -20,8 +20,8 @@ var (
 
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
-		Name     string   `json:"name"`
-		MaxPrice *big.Int `json:"maxPrice"`
+		Name     string `json:"name"`
+		MaxPrice string `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
@@ -36,7 +36,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	if err != nil {
 		return nil, fmt.Errorf("failed to get provider: %v", err)
 	}
-	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress(*name), provider)
+	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]), provider)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get registrar: %v", err)
 	}
@@ -107,9 +107,12 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get rent price: %v", err)
 	}
 
-	maxPriceWei := new(big.Int).Mul(inputs.MaxPrice, big.NewInt(1e18))
-	if price.Base.Cmp(maxPriceWei) > 0 {
-		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPriceWei)
+	maxPrice, ok := new(big.Int).SetString(inputs.MaxPrice, 10)
+	if !ok {
+		return nil, fmt.Errorf("failed to parse max price: %v", inputs.MaxPrice)
+	}
+	if price.Base.Cmp(maxPrice) > 0 {
+		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPrice)
 	}
 
 	return []*types.Transaction{{

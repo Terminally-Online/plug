@@ -1,8 +1,8 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 
-import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
+import { AlertCircle, Bell, CheckCircle, Fence, FileWarning, Hash, Loader, Pause, XCircle } from "lucide-react"
 
-import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
+import { Accordion, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
 import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state"
@@ -75,8 +75,14 @@ export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 export const ActivityItem: FC<{
 	index: number
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
-}> = ({ index, activity }) => {
+	simulationId: string | undefined
+}> = ({ index, activity, simulationId }) => {
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
+
+	const simulation = useMemo(
+		() => activity?.simulations.find(sim => sim.id === simulationId),
+		[activity, simulationId]
+	)
 
 	return (
 		<>
@@ -112,9 +118,44 @@ export const ActivityItem: FC<{
 				)}
 			</Accordion>
 
-			{activity && (
-				<ExecutionFrame index={index} icon={<ActivityIcon status={activity.status} />} activity={activity} />
-			)}
+			<ExecutionFrame
+				index={index}
+				icon={<ActivityIcon status={activity?.status ?? "pending"} />}
+				activity={activity}
+			/>
+
+			<Frame
+				index={index}
+				icon={<ActivityIcon status={simulation?.status ?? "pending"} />}
+				label={`Simulation ${formatTitle(simulation?.status ?? "Pending")}`}
+				visible={simulation !== undefined}
+				handleBack={() => handle.frame()}
+				hasOverlay={true}
+			>
+				<p className="flex flex-row items-center justify-between gap-2 font-bold">
+					<Bell size={14} className="opacity-60" />
+					<span className="opacity-40">Status</span>{" "}
+					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
+						{formatTitle(simulation?.status ?? "pending")}
+					</span>
+				</p>
+				<p className="flex flex-row items-center justify-between gap-2 font-bold">
+					<Fence size={14} className="opacity-60" />
+					<span className="opacity-40">Gas Estimate</span>{" "}
+					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
+						{simulation?.gasEstimate}
+					</span>
+				</p>
+				{simulation?.error && (
+					<p className="flex flex-row items-center justify-between gap-2 font-bold">
+						<FileWarning size={14} className="opacity-60" />
+						<span className="opacity-40">Error</span>{" "}
+						<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
+							{simulation?.error}
+						</span>
+					</p>
+				)}
+			</Frame>
 		</>
 	)
 }
