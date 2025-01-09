@@ -13,6 +13,7 @@ type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
 	item: string
 	preview?: boolean
+	error?: boolean
 	action: Action
 	actionIndex: number
 }
@@ -23,6 +24,7 @@ export const Sentence: FC<SentenceProps> = ({
 	action,
 	actionIndex,
 	preview = false,
+	error = false,
 	className,
 	...props
 }) => {
@@ -95,7 +97,7 @@ export const Sentence: FC<SentenceProps> = ({
 			<Accordion
 				className={cn(
 					"cursor-default hover:bg-white",
-					isValid && isComplete
+					isValid && isComplete && !error
 						? "border-plug-yellow hover:border-plug-yellow"
 						: "border-plug-red hover:border-plug-red",
 					className
@@ -137,7 +139,7 @@ export const Sentence: FC<SentenceProps> = ({
 								if (!input) return null
 
 								const value = getInputValue(inputIndex)
-								const error = getInputError(inputIndex)
+								const inputError = getInputError(inputIndex)
 								const dependentOnValue =
 									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									undefined
@@ -165,7 +167,7 @@ export const Sentence: FC<SentenceProps> = ({
 									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									input.dependentOn === undefined
 								const isEmpty = !value?.value.trim()
-								const isValid = !isEmpty && !error
+								const isValid = !isEmpty && !inputError && !error
 
 								return (
 									<>
@@ -346,7 +348,7 @@ export const Sentence: FC<SentenceProps> = ({
 															{isOptionBased && isEmpty
 																? "Choose option"
 																: isEmpty || error
-																	? error?.message || "Enter value"
+																	? inputError?.message || "Enter value"
 																	: parsed.inputs.length - 1 > inputIndex
 																		? "Next"
 																		: "Done"}
