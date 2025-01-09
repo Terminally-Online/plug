@@ -12,13 +12,15 @@ import {
 	Globe,
 	Hash,
 	Loader,
+	MessageCircleQuestionIcon,
 	Pause,
+	Share,
 	Waypoints,
 	XCircle
 } from "lucide-react"
 
-import { Accordion, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
-import { chains, formatTitle, getChainId } from "@/lib"
+import { Accordion, ActionPreview, Button, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
+import { cardColors, chains, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state"
 
@@ -99,6 +101,8 @@ export const ActivityItem: FC<{
 		[activity, simulationId]
 	)
 
+	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity])
+
 	return (
 		<>
 			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
@@ -108,8 +112,15 @@ export const ActivityItem: FC<{
 						<p>.</p>
 					</div>
 				) : (
-					<div className="flex w-full flex-row">
+					<div className="flex w-full flex-row items-center">
 						<ActivityIcon status={activity.status} />
+
+						<div
+							className="mr-4 h-10 w-10 min-w-10 rounded-sm bg-plug-green/10"
+							style={{
+								backgroundImage: cardColors[activity.workflow.color]
+							}}
+						/>
 
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -147,11 +158,42 @@ export const ActivityItem: FC<{
 				handleBack={() => handle.frame()}
 				hasOverlay={true}
 			>
-				<div className="flex flex-row items-center gap-4">
+				{activity && (
+					<ActionPreview
+						index={index}
+						item={activity.workflow.id}
+						actions={actions}
+						errors={simulation?.errors ?? []}
+					/>
+				)}
+
+				{simulation?.error && (
+					<p className="mx-auto mt-4 px-8 text-center text-sm font-bold text-plug-red">
+						Warning: {simulation?.error}
+					</p>
+				)}
+
+				{simulation?.status === "success" ? (
+					<Button
+						className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+						onClick={() => {}}
+					>
+						<Share size={18} className="opacity-60" />
+						Share
+					</Button>
+				) : (
+					<Button
+						className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
+						onClick={() => {}}
+					>
+						<MessageCircleQuestionIcon size={18} className="opacity-60" />
+						Get Help
+					</Button>
+				)}
+				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 					<p className="font-bold opacity-40">Details</p>
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
-
 				<p className="flex flex-row items-center justify-between gap-4 font-bold">
 					<Bell size={18} className="opacity-20" />
 					<span className="opacity-40">Status</span>{" "}
@@ -164,33 +206,12 @@ export const ActivityItem: FC<{
 						<DateSince date={new Date(simulation?.createdAt ?? new Date())} />
 					</span>
 				</p>
-				<p className="flex flex-row items-center justify-between gap-4 font-bold">
-					<Waypoints size={18} className="opacity-20" />
-					<span className="opacity-40">Chain</span>
-					<span className="ml-auto flex flex-row items-center gap-2">
-						<Image
-							className="h-4 w-4"
-							src={chains[getChainId("ethereum")].logo}
-							alt="Ethereum"
-							width={24}
-							height={24}
-						/>
-						Ethereum
-					</span>
-				</p>
-				<p className="flex flex-row items-center justify-between gap-4 font-bold">
-					<CircleDollarSign size={18} className="opacity-20" />
-					<span className="opacity-40">Fee</span>{" "}
-					<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-						<Counter count={simulation?.gasEstimate ?? 0} />
-					</span>
-				</p>
-				{simulation?.error && (
+				{simulation?.gasEstimate && (
 					<p className="flex flex-row items-center justify-between gap-4 font-bold">
-						<FileWarning size={18} className="opacity-20" />
-						<span className="opacity-40">Error</span>{" "}
+						<CircleDollarSign size={18} className="opacity-20" />
+						<span className="opacity-40">Fee</span>{" "}
 						<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-							{simulation?.error}
+							<Counter count={simulation?.gasEstimate ?? 0} />
 						</span>
 					</p>
 				)}

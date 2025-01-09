@@ -122,6 +122,7 @@ Table Simulation {
   status String [not null]
   result Json
   error String
+  errors String[] [not null]
   gasEstimate Float
   execution Execution [not null]
   executionId String [not null]

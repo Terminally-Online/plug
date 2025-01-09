@@ -4,7 +4,12 @@ import { Sentence } from "@/components"
 import { Action, Actions } from "@/lib"
 import { usePlugData } from "@/state"
 
-export const ActionPreview: FC<{ index: number; item: string; actions?: Actions }> = ({ index, item, actions }) => {
+export const ActionPreview: FC<{ index: number; item: string; actions?: Actions; errors?: Array<string | null> }> = ({
+	index,
+	item,
+	actions,
+	errors = []
+}) => {
 	const { actions: plugActions } = usePlugData(item)
 
 	actions = actions ?? plugActions
@@ -12,14 +17,21 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions 
 	return (
 		<div className="flex flex-col gap-2">
 			{actions.map((action, actionIndex) => (
-				<Sentence
-					key={actionIndex}
-					index={index}
-					item={item}
-					actionIndex={actionIndex}
-					action={action}
-					preview={true}
-				/>
+				<>
+					<Sentence
+						key={actionIndex}
+						index={index}
+						item={item}
+						actionIndex={actionIndex}
+						action={action}
+						preview
+						error={errors && errors[actionIndex] ? true : false}
+					/>
+
+					{errors && errors[actionIndex] && (
+						<p className="text-sm font-bold text-plug-red">Error: {errors[actionIndex]}</p>
+					)}
+				</>
 			))}
 		</div>
 	)

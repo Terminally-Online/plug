@@ -261,6 +261,7 @@ model Simulation {
   status      String
   result      Json?
   error       String?
+  errors      String[] @default([])
   gasEstimate Float?
 
   // ---------------------------------------------------------------------------

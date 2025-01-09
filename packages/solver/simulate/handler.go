@@ -18,10 +18,11 @@ type ExecutionRequest struct {
 type TransactionRequest struct{}
 
 type SimulationRequest struct {
-	Id          string `json:"id"`
-	Status      string `json:"status"`
-	Error       string `json:"error,omitempty"`
-	GasEstimate int    `json:"gasEstimate,omitempty"`
+	Id          string   `json:"id"`
+	Status      string   `json:"status"`
+	Error       string   `json:"error,omitempty"`
+	Errors      []string `json:"errors,omitempty"`
+	GasEstimate int      `json:"gasEstimate,omitempty"`
 }
 
 type SimulationsRequest struct {
@@ -55,9 +56,10 @@ func (h *Simulator) GetSimulations(executions []ExecutionRequest) ([]SimulationR
 }
 
 func (h *Simulator) GetSimulation(execution ExecutionRequest) (*SimulationRequest, error) {
-	transactionsBatch := make([]*types.Transaction, 0)
 	var breakOuter bool
-	for _, input := range execution.Inputs {
+	transactionsBatch := make([]*types.Transaction, 0)
+	errors := make([]string, len(execution.Inputs))
+	for i, input := range execution.Inputs {
 		inputMap := map[string]interface{}{
 			"protocol": input["protocol"],
 			"action":   input["action"],
@@ -68,20 +70,14 @@ func (h *Simulator) GetSimulation(execution ExecutionRequest) (*SimulationReques
 
 		inputsJson, err := json.Marshal(inputMap)
 		if err != nil {
-			return &SimulationRequest{
-				Id:     execution.Id,
-				Status: "failure",
-				Error:  err.Error(),
-			}, nil
+			errors[i] = err.Error()
+			continue
 		}
 
 		transactions, err := h.solver.GetTransaction(inputsJson, execution.ChainId, execution.From)
 		if err != nil {
-			return &SimulationRequest{
-				Id:     execution.Id,
-				Status: "warning",
-				Error:  err.Error(),
-			}, nil
+			errors[i] = err.Error()
+			continue
 		}
 
 		// NOTE: Some plug actions have exclusive transactions that need to be run alone
@@ -105,6 +101,19 @@ func (h *Simulator) GetSimulation(execution ExecutionRequest) (*SimulationReques
 		transactionsBatch = append(transactionsBatch, transactions...)
 	}
 
+	// If there were any errors we will return a failure.
+	for _, err := range errors {
+		if err != "" {
+			return &SimulationRequest{
+				Id:     execution.Id,
+				Status: "failure",
+				Errors: errors,
+			}, nil
+		}
+	}
+
+	// If there was no transaction to execute we will return a warning because
+	// we will be halting the simulation of this workflow.
 	if len(transactionsBatch) == 0 {
 		return &SimulationRequest{
 			Id:     execution.Id,

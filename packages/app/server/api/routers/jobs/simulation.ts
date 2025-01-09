@@ -103,6 +103,7 @@ export const simulation = createTRPCRouter({
 					id: z.string(),
 					status: z.string(),
 					error: z.string().optional(),
+					errors: z.array(z.string()).optional(),
 					gasEstimate: z.number().optional()
 				})
 			)
@@ -116,6 +117,7 @@ export const simulation = createTRPCRouter({
 								status: simulation.status,
 								executionId: simulation.id,
 								error: simulation.error,
+								errors: simulation.errors,
 								gasEstimate: simulation.gasEstimate
 							},
 							select: {
