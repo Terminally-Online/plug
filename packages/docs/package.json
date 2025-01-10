@@ -1,5 +1,6 @@
 {
-  "name": "@nftchance/plug-docs",
+  "name": "@terminallyonline/plug-docs",
+  "version": "0.0.0",
   "license": "MIT",
   "scripts": {
     "generate": "pnpm plug docs",

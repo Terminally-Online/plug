@@ -1,6 +1,6 @@
 {
-	"name": "app",
-	"version": "0.1.0",
+	"name": "@terminallyonline/plug-app",
+	"version": "0.1.1",
 	"license": "BUSL-1.1",
 	"private": true,
 	"scripts": {
@@ -41,7 +41,7 @@
 		"@t3-oss/env-nextjs": "^0.11.1",
 		"@tanstack/react-query": "^4.18.0",
 		"@terminallyonline/cord": "^0.3.0",
-		"@terminallyonline/plug-core": "^0.0.0",
+		"@terminallyonline/plug-core": "^0.0.1",
 		"@trpc/client": "^10.45.2",
 		"@trpc/next": "^10.45.2",
 		"@trpc/react-query": "^10.45.2",
@@ -83,6 +83,8 @@
 		"@tailwindcss/forms": "^0.5.7",
 		"@tailwindcss/line-clamp": "^0.4.4",
 		"@tailwindcss/typography": "^0.5.13",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.1.0",
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
 		"@types/cli-progress": "^3.11.6",
 		"@types/matter-js": "^0.19.7",
@@ -103,7 +105,8 @@
 		"tailwindcss-animate": "^1.0.7",
 		"trpc-panel": "^1.3.4",
 		"tsconfig-paths-webpack-plugin": "^4.1.0",
-		"typescript": "^5.6.3"
+		"typescript": "^5.6.3",
+		"vitest": "^2.1.8"
 	},
 	"packageManager": "pnpm@9.14.4"
 }
