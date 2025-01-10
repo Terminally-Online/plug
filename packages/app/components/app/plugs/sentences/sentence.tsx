@@ -108,7 +108,7 @@ export const Sentence: FC<SentenceProps> = ({
 				{...props}
 			>
 				<div className={cn("flex flex-row items-center font-bold")}>
-					<p className="flex w-full flex-wrap items-center gap-[4px]">
+					<div className="flex w-full flex-wrap items-center gap-[4px]">
 						<div className="relative h-6 w-10">
 							<Image
 								className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
@@ -361,7 +361,7 @@ export const Sentence: FC<SentenceProps> = ({
 								)
 							})}
 						</div>
-					</p>
+					</div>
 
 					{preview === false && own && (
 						<Button

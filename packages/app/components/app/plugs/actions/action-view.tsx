@@ -57,7 +57,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 			{actions.map((action, actionIndex) => (
 				<Sentence
-					key={`${actionIndex}-sentence`}
+					key={`${index}-${actionIndex}-sentence`}
 					index={index}
 					item={item}
 					actionIndex={actionIndex}

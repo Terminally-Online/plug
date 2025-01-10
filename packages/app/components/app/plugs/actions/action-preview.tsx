@@ -19,7 +19,7 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 			{actions.map((action, actionIndex) => (
 				<>
 					<Sentence
-						key={actionIndex}
+						key={`${index}-${actionIndex}`}
 						index={index}
 						item={item}
 						actionIndex={actionIndex}
