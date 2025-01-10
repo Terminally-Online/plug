@@ -109,7 +109,9 @@ Table Execution {
   startAt DateTime [not null]
   endAt DateTime
   frequency Int [not null, default: 0]
-  nextSimulationAt DateTime [default: `now()`, not null]
+  periodStartAt DateTime
+  periodEndAt DateTime
+  nextSimulationAt DateTime
   simulations Simulation [not null]
   workflow Workflow [not null]
   workflowId String [not null]
