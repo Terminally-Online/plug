@@ -5,7 +5,7 @@ import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 
 import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Frame, TimeUntil } from "@/components"
 import { useActivities } from "@/contexts"
-import { cardColors, chains, formatFrequency, formatTitle } from "@/lib"
+import { cardColors, chains, cn, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state"
 
@@ -45,7 +45,9 @@ export const ExecutionFrame: FC<{
 
 					<div className="my-4 flex flex-row items-center gap-2">
 						<Button
-							className="flex w-max flex-row items-center justify-center gap-2 py-4"
+							className={cn("flex w-max flex-row items-center justify-center gap-2 py-4", {
+								"w-full": activity.status === "completed"
+							})}
 							onClick={() =>
 								handle.navigate({
 									index,
@@ -58,23 +60,25 @@ export const ExecutionFrame: FC<{
 							<Eye size={14} className="opacity-60" />
 							View
 						</Button>
-						<Button
-							variant="secondary"
-							className="flex w-full flex-row items-center justify-center gap-2 py-4"
-							onClick={() => activityHandle.toggle({ id: activity.id })}
-						>
-							{activity.status === "active" ? (
-								<>
-									<Pause size={14} className="opacity-60" />
-									Pause
-								</>
-							) : (
-								<>
-									<Play size={14} className="opacity-60" />
-									Resume
-								</>
-							)}
-						</Button>
+						{activity.status !== "completed" && (
+							<Button
+								variant="secondary"
+								className="flex w-full flex-row items-center justify-center gap-2 py-4"
+								onClick={() => activityHandle.toggle({ id: activity.id })}
+							>
+								{activity.status === "active" ? (
+									<>
+										<Pause size={14} className="opacity-60" />
+										Pause
+									</>
+								) : (
+									<>
+										<Play size={14} className="opacity-60" />
+										Resume
+									</>
+								)}
+							</Button>
+						)}
 					</div>
 
 					<div className="mb-2 flex flex-row items-center gap-4">
@@ -131,7 +135,7 @@ export const ExecutionFrame: FC<{
 					)}
 
 					<div className="flex flex-col gap-2">
-						{activity.status !== "paused" && (
+						{activity.status !== "paused" && activity.nextSimulationAt && (
 							<Accordion>
 								<div className="flex flex-row gap-2">
 									<ActivityIcon status="upcoming" />
@@ -173,7 +177,7 @@ export const ExecutionFrame: FC<{
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
 											<p>{formatTitle(simulation.status)}</p>
 											<p>
-												<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+												<Counter count={simulation.createdAt.toLocaleDateString()} />
 											</p>
 										</div>
 									</div>

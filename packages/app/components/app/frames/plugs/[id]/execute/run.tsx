@@ -38,7 +38,7 @@ export const RunFrame: FC<{
 		queue({
 			workflowId: column.item,
 			startAt: column.schedule?.date?.from ?? new Date(),
-			endAt: column.schedule?.date?.to ?? new Date(),
+			endAt: column.schedule?.date?.to,
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 

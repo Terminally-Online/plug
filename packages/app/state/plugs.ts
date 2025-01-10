@@ -91,7 +91,7 @@ const usePlugActions = () => {
 		edit: (data: { id: string } & WorkflowData) => editMutation.mutate(data),
 		delete: (data: { plug: string; index: number; from?: string | null }) => deleteMutation.mutate(data),
 		fork: (data: { plug: string; index: number; from: string }) => forkMutation.mutate(data),
-		queue: (data: { workflowId: string; startAt: Date; endAt?: Date; frequency?: number }) =>
+		queue: (data: { workflowId: string; startAt: Date; endAt?: Date; frequency: number }) =>
 			queueMutation.mutate(data)
 	}
 }
