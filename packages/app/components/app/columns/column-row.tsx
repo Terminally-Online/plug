@@ -1,5 +1,3 @@
-import { memo } from "react"
-
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, RefreshCw, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -21,7 +21,7 @@ import {
 	SocketTokenList
 } from "@/components"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore, useHoldings, usePlugStore, useSocket } from "@/state"
+import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -39,7 +39,6 @@ export const ConsoleColumn: FC<{
 	} = useColumnStore(id)
 	const { plug } = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
-	const { refetchHoldings, isLoading, isSuccess } = useHoldings(socket?.socketAddress)
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
