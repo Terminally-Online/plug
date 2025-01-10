@@ -3,7 +3,8 @@ import { FC, HTMLAttributes, useMemo } from "react"
 import { ActivityItem, Callout } from "@/components"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
-import { COLUMNS, useColumnStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = COLUMNS.MOBILE_INDEX,

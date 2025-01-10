@@ -21,7 +21,9 @@ import {
 	SocketTokenList
 } from "@/components"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680

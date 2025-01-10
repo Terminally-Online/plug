@@ -7,7 +7,7 @@ import { ArrowRight, ArrowRightLeft, Bell, Loader, TriangleRight } from "lucide-
 import { Counter, Frame, SwapAmountInput, TokenImage } from "@/components"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]

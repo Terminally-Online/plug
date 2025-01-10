@@ -5,7 +5,8 @@ import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-
 
 import { ActionPreview, Button, Counter, Frame, Image } from "@/components"
 import { chains } from "@/lib"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const RunFrame: FC<{
 	index: number

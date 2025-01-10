@@ -1,7 +1,7 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ColumnAdd, ConsoleColumn } from "@/components"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const ConsoleColumnRow = () => {
 	const { columns, handle } = useColumnStore()

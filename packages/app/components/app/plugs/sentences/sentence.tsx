@@ -7,7 +7,8 @@ import { getInputPlaceholder } from "@terminallyonline/cord"
 import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { api } from "@/server/client"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
