@@ -58,7 +58,9 @@ export const activity = createTRPCRouter({
 						startAt: input.startAt,
 						endAt: input.endAt,
 						periodStartAt: input.startAt,
-						periodEndAt: input.endAt,
+						periodEndAt: input.frequency
+							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
+							: null,
 						nextSimulationAt: input.startAt
 					},
 					include: {
