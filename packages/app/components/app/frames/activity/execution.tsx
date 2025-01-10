@@ -125,6 +125,35 @@ export const ExecutionFrame: FC<{
 								<Counter count={activity.endAt.toLocaleDateString()} />
 							</p>
 						)}
+
+						{activity?.nextSimulationAt && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Play size={18} className="opacity-20" />
+									<span className="opacity-40">Next Simulation At</span>
+								</span>{" "}
+								<Counter count={activity.nextSimulationAt?.toLocaleDateString()} />
+							</p>
+						)}
+
+						{activity?.periodStartAt && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Play size={18} className="opacity-20" />
+									<span className="opacity-40">Period Start At</span>
+								</span>{" "}
+								<Counter count={activity.periodStartAt?.toLocaleDateString()} />
+							</p>
+						)}
+						{activity?.periodEndAt && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<Play size={18} className="opacity-20" />
+									<span className="opacity-40">Period End At</span>
+								</span>{" "}
+								<Counter count={activity.periodEndAt?.toLocaleDateString()} />
+							</p>
+						)}
 					</div>
 
 					{(activity.status !== "paused" || activity.simulations.length > 0) && (

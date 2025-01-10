@@ -14,4 +14,4 @@ export const MobileConsole = memo(() => {
 	)
 })
 
-MobileConsole.displayName = "MobilePage"
+MobileConsole.displayName = "MobileConsole"

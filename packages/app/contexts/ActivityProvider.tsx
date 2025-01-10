@@ -20,6 +20,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
 		onData: data => {
+			console.log("received new activity update", data)
 			if (activities.find(activity => activity.id === data.id)) {
 				setActivities(prev => prev.map(activity => (activity.id === data.id ? data : activity)))
 			} else {

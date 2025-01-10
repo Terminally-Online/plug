@@ -2,9 +2,8 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { Prisma, Simulation } from "@prisma/client"
-
 import { Action, getNextSimulationAt } from "@/lib"
+import { subscriptions } from "@/server/subscription"
 
 import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
 
@@ -31,6 +30,10 @@ export const simulation = createTRPCRouter({
 			await tx.execution.updateMany({
 				where: { id: { in: executions.map(e => e.id) } },
 				data: { status: "processing" }
+			})
+
+			executions.forEach(execution => {
+				ctx.emitter.emit(subscriptions.execution.update, execution)
 			})
 
 			return executions.map(queuedWorkflow => {
@@ -102,6 +105,8 @@ export const simulation = createTRPCRouter({
 							},
 							select: { id: true }
 						})
+
+						ctx.emitter.emit(subscriptions.execution.update, execution)
 
 						return id
 					})
