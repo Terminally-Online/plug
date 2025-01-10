@@ -40,8 +40,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@5.20.0(prisma@5.22.0))(next-auth@4.24.10(next@14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(react-dom@18.3.1(react@18.2.0))(react@18.2.0))
       '@next/third-parties':
-        specifier: ^15.0.3
-        version: 15.0.3(next@14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        specifier: ^15.1.4
+        version: 15.1.4(next@14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@prisma/client':
         specifier: 5.20.0
         version: 5.20.0(prisma@5.22.0)
@@ -313,13 +313,13 @@ importers:
         version: 1.5.3
       ds-test:
         specifier: github:dapphub/ds-test
-        version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
       execa:
         specifier: ^8.0.1
         version: 8.0.1
       forge-std:
         specifier: github:foundry-rs/forge-std#v1
-        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/b93cf4bc34ff214c099dc970b153f85ade8c9f66
+        version: git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -2195,11 +2195,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@next/third-parties@15.0.3':
-    resolution: {integrity: sha512-T2NkBXLcgRY0cmE7jb/dSMXNK9D+yv1k+n0uBxwMBS9SEtOhuMvxiUPQRj5x4cFnsei6JECloJg88koMprKw0A==}
+  '@next/third-parties@15.1.4':
+    resolution: {integrity: sha512-x3HQ43zDt7HbtRzbbf+Yz61/KHXKIY3xdchKo0XahAUyc4AcBkHuOYxk7PDNkPTGA/vncyzdn0jy+Gi1ziceiA==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
-      react: ^18.2.0 || 19.0.0-rc-66855b96-20241106
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
 
   '@noble/ciphers@1.1.3':
     resolution: {integrity: sha512-Ygv6WnWJHLLiW4fnNDC1z+i13bud+enXOFRBlpxI+NJliPWx5wdR+oWlTjLuBPTqjUjtHXtjkU6w3kuuH6upZA==}
@@ -4523,8 +4523,8 @@ packages:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
 
-  ds-test@https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0:
-    resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0}
+  ds-test@git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0:
+    resolution: {commit: e282159d5170298eb2455a6c05280ab5a73a4ef0, repo: git@github.com:dapphub/ds-test.git, type: git}
     version: 1.0.0
 
   duplexify@4.1.3:
@@ -5030,8 +5030,8 @@ packages:
     resolution: {integrity: sha512-Ld2g8rrAyMYFXBhEqMz8ZAHBi4J4uS1i/CxGMDnjyFWddMXLVcDp051DZfu+t7+ab7Wv6SMqpWmyFIj5UbfFvg==}
     engines: {node: '>=14'}
 
-  forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/b93cf4bc34ff214c099dc970b153f85ade8c9f66:
-    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/b93cf4bc34ff214c099dc970b153f85ade8c9f66}
+  forge-std@git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66:
+    resolution: {commit: b93cf4bc34ff214c099dc970b153f85ade8c9f66, repo: git@github.com:foundry-rs/forge-std.git, type: git}
     version: 1.9.5
 
   form-data-encoder@2.1.4:
@@ -10751,7 +10751,7 @@ snapshots:
   '@next/swc-win32-x64-msvc@15.0.3':
     optional: true
 
-  '@next/third-parties@15.0.3(next@14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+  '@next/third-parties@15.1.4(next@14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       next: 14.2.21(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@18.3.1(react@18.2.0))(react@18.2.0)
       react: 18.2.0
@@ -13655,7 +13655,7 @@ snapshots:
 
   dotenv@8.6.0: {}
 
-  ds-test@https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0: {}
+  ds-test@git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0: {}
 
   duplexify@4.1.3:
     dependencies:
@@ -14465,7 +14465,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/b93cf4bc34ff214c099dc970b153f85ade8c9f66: {}
+  forge-std@git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66: {}
 
   form-data-encoder@2.1.4: {}
 
