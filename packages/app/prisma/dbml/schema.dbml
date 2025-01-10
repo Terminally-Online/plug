@@ -109,7 +109,6 @@ Table Execution {
   startAt DateTime [not null]
   endAt DateTime
   frequency Int [not null, default: 0]
-  periodStartAt DateTime
   periodEndAt DateTime
   nextSimulationAt DateTime
   simulations Simulation [not null]

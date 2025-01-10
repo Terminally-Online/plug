@@ -228,7 +228,6 @@ model Execution {
   endAt   DateTime?
 
   frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
-  periodStartAt    DateTime?
   periodEndAt      DateTime?
   nextSimulationAt DateTime?
 
