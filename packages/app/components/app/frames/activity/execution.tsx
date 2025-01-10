@@ -7,7 +7,7 @@ import { Accordion, ActionPreview, ActivityIcon, Button, Counter, DateSince, Fra
 import { useActivities } from "@/contexts"
 import { cardColors, chains, cn, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 export const ExecutionFrame: FC<{
 	index: number

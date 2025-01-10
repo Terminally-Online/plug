@@ -5,7 +5,10 @@ import { useEffect, useRef } from "react"
 import { LoaderCircle } from "lucide-react"
 
 import { useMediaQuery } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket, useSubscriptions } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
+import { useSubscriptions } from "@/state/subscriptions"
 
 import { DesktopConsole } from "./desktop"
 import { MobileConsole } from "./mobile"
@@ -25,9 +28,8 @@ export const ConsolePage = () => {
 			})
 	})
 
-	const { md } = useMediaQuery()
 	const router = useRouter()
-
+	const { md } = useMediaQuery()
 	const { socket } = useSocket()
 	const { columns, handle } = useColumnStore()
 	const { plugs } = usePlugStore()
