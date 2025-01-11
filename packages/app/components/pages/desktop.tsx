@@ -1,11 +1,11 @@
 import { useSession } from "next-auth/react"
 import { memo } from "react"
 
-import { useSocket } from "@/state"
-
-import { ConsoleColumnRow, ConsoleSidebar } from "../app"
-import { LoginRequired } from "../app/utils/login-required"
-import { ReferralRequired } from "../app/utils/referral-required"
+import { ConsoleColumnRow } from "@/components/app/columns/column-row"
+import { ConsoleSidebar } from "@/components/app/sidebar"
+import { LoginRequired } from "@/components/app/utils/login-required"
+import { ReferralRequired } from "@/components/app/utils/referral-required"
+import { useSocket } from "@/state/authentication"
 
 export const DesktopConsole = memo(() => {
 	const { data: session } = useSession()

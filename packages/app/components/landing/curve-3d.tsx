@@ -105,5 +105,3 @@ export const Curve3D = () => {
 		</div>
 	)
 }
-
-export default Curve3D

@@ -4,9 +4,11 @@ import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus } from "lucide-react"
 
-import { Image } from "@/components"
+import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const PageNavbar = () => {
 	const { data: session } = useSession()

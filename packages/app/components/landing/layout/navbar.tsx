@@ -50,5 +50,3 @@ export const Navbar: FC = () => {
 		</LandingContainer>
 	)
 }
-
-export default Navbar
