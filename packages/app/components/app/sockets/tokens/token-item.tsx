@@ -1,17 +1,15 @@
 import React, { FC, memo, useState } from "react"
 
-import {
-	Accordion,
-	Counter,
-	SocketTokenPercentages,
-	SwapFrame,
-	TokenFrame,
-	TokenImage,
-	TransferFrame
-} from "@/components"
+import { SwapFrame } from "@/components/app/frames/assets/swap"
+import { TokenFrame } from "@/components/app/frames/assets/token"
+import { TransferFrame } from "@/components/app/frames/assets/transfer"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { SocketTokenPercentages } from "@/components/app/sockets/tokens/token-percentages"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 

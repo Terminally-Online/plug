@@ -4,24 +4,23 @@ import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-r
 
 import { Draggable } from "@hello-pangea/dnd"
 
-import {
-	ADMIN_OPTIONS,
-	Button,
-	ColumnAdd,
-	ColumnApplication,
-	ConsoleAdmin,
-	ConsoleSettings,
-	Header,
-	Plug,
-	PlugsDiscover,
-	PlugsMine,
-	SocketActivity,
-	SocketCollectionList,
-	SocketPositionList,
-	SocketTokenList
-} from "@/components"
+import { ConsoleAdmin } from "@/components/app/columns/admin/column-admin"
+import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
+import { ADMIN_OPTIONS, ColumnAdd } from "@/components/app/columns/utils/column-add"
+import { ColumnApplication } from "@/components/app/columns/utils/column-application"
+import { Header } from "@/components/app/layout/header"
+import { PlugsDiscover } from "@/components/app/plugs/discover"
+import { PlugsMine } from "@/components/app/plugs/mine"
+import { Plug } from "@/components/app/plugs/plug"
+import { SocketActivity } from "@/components/app/sockets/activity/activity-list"
+import { SocketCollectionList } from "@/components/app/sockets/collectibles/collection-list"
+import { SocketPositionList } from "@/components/app/sockets/position/position-list"
+import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
+import { Button } from "@/components/shared/buttons/button"
 import { cardColors, cn, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680

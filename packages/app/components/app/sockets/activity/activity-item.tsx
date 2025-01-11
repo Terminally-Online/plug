@@ -13,10 +13,16 @@ import {
 	XCircle
 } from "lucide-react"
 
-import { Accordion, ActionPreview, Button, Counter, DateSince, ExecutionFrame, Frame } from "@/components"
+import { ExecutionFrame } from "@/components/app/frames/activity/execution"
+import { Frame } from "@/components/app/frames/base"
+import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
+import { Button } from "@/components/shared/buttons/button"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
+import { DateSince } from "@/components/shared/utils/date-since"
 import { cardColors, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 	switch (status) {

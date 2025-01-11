@@ -1,7 +1,7 @@
 import { ContextType, createContext, FC, PropsWithChildren, useContext, useState } from "react"
 
 import { api, RouterOutputs } from "@/server/client"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
@@ -20,6 +20,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
 		onData: data => {
+			console.log("received new activity update", data)
 			if (activities.find(activity => activity.id === data.id)) {
 				setActivities(prev => prev.map(activity => (activity.id === data.id ? data : activity)))
 			} else {

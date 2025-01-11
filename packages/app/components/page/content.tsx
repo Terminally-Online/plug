@@ -1,15 +1,13 @@
-import {
-	ColumnAuthenticate,
-	Container,
-	Plug,
-	Plugs,
-	PlugsDiscover,
-	PlugsMine,
-	SocketActivity,
-	SocketAssets,
-	SocketProfile
-} from "@/components"
-import { COLUMNS, useColumnData } from "@/state"
+import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
+import { Container } from "@/components/app/layout/container"
+import { PlugsDiscover } from "@/components/app/plugs/discover"
+import { PlugsMine } from "@/components/app/plugs/mine"
+import { Plug } from "@/components/app/plugs/plug"
+import { SocketActivity } from "@/components/app/sockets/activity/activity-list"
+import { SocketAssets } from "@/components/app/sockets/assets"
+import { SocketProfile } from "@/components/app/sockets/profile"
+import { Plugs } from "@/components/shared/framework/plugs"
+import { COLUMNS, useColumnData } from "@/state/columns"
 
 export const PageContent = () => {
 	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)

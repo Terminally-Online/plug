@@ -3,7 +3,7 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ChartLine } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 export const ActionTrade = () => {
 	const containerRef = useRef<HTMLDivElement>(null)

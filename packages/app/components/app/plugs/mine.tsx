@@ -5,10 +5,15 @@ import { SearchIcon } from "lucide-react"
 
 import { Workflow } from "@prisma/client"
 
-import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
+import { Search } from "@/components/app/inputs/search"
+import { Tags } from "@/components/app/inputs/tags"
+import { Container } from "@/components/app/layout/container"
+import { PlugGrid } from "@/components/app/plugs/grid/grid"
+import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
-import { COLUMNS, useColumnData, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS } from "@/state/columns"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,

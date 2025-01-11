@@ -4,9 +4,14 @@ import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
 
 import BlockiesSvg from "blockies-react-svg"
 
-import { Button, Container, Header, Image } from "@/components"
+import { Container } from "@/components/app/layout/container"
+import { Header } from "@/components/app/layout/header"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
 import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/lib"
-import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 const HomePageHeader = () => {
 	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)

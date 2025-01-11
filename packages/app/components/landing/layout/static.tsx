@@ -1,7 +1,8 @@
 import Head from "next/head"
 import { FC, PropsWithChildren } from "react"
 
-import { LandingFooter, Navbar } from "@/components"
+import { LandingFooter } from "@/components/landing/layout/footer"
+import { Navbar } from "@/components/landing/layout/navbar"
 
 export const StaticLayout: FC<PropsWithChildren & { title: string }> = ({ title, children }) => (
 	<>

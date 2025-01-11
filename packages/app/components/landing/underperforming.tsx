@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Code } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 export const Underperforming = () => {
 	const bars = useMemo(() => {

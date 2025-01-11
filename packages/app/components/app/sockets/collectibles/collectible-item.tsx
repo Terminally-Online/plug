@@ -1,9 +1,9 @@
-import Image from "next/image"
 import { FC, useState } from "react"
 
+import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const SocketCollectibleItem: FC<{
 	index: number

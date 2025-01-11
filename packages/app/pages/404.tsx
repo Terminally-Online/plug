@@ -1,4 +1,5 @@
-import { Callout, StaticLayout } from "@/components"
+import { Callout } from "@/components/app/utils/callout"
+import { StaticLayout } from "@/components/landing/layout/static"
 
 const NotFound = () => {
 	return (

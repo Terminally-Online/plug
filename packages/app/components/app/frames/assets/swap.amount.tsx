@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from "react"
 
 import { formatUnits, getAddress, parseUnits } from "viem"
 
-import { ArrowRight, ArrowRightLeft, Bell, Loader, TriangleRight } from "lucide-react"
+import { ArrowRight, Bell, Loader, TriangleRight } from "lucide-react"
 
-import { Counter, Frame, SwapAmountInput, TokenImage } from "@/components"
+import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.input"
+import { Frame } from "@/components/app/frames/base"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]

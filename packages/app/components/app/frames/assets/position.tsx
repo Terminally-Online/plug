@@ -2,10 +2,14 @@ import React, { FC, useMemo, useState } from "react"
 
 import { ExternalLink, EyeOff } from "lucide-react"
 
-import { Counter, Frame, Image, SocketTokenPriceChart, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { SocketTokenPriceChart } from "@/components/app/sockets/tokens/token-chart"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Image } from "@/components/app/utils/image"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const PositionFrame: FC<{
 	index: number
