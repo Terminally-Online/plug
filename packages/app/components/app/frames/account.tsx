@@ -4,8 +4,13 @@ import { useDisconnect } from "wagmi"
 
 import BlockiesSvg from "blockies-react-svg"
 
-import { Button, Counter, Frame, Image, StatCard } from "@/components"
-import { COLUMNS, useColumnStore, useSocket } from "@/state"
+import { StatCard } from "@/components/app/cards/stat"
+import { Frame } from "@/components/app/frames/base"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 // NOTE: This is only accessible on the mobile view so the index will always be -1.
 export const AccountFrame = () => {

@@ -4,8 +4,8 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { LayoutDashboard, Sparkles, Wallet } from "lucide-react"
 
-import { InfoCard } from "./cards"
-import { LandingContainer } from "./layout"
+import { InfoCard } from "@/components/landing/cards/info"
+import { LandingContainer } from "@/components/landing/layout/container"
 
 const ITEMS = 24
 const PROTOCOLS = [
@@ -358,7 +358,7 @@ export const Platform = () => {
 				>
 					<div className="absolute inset-0">
 						<motion.div
-							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[1px] border-plug-green/10"
 							initial={{ y: "100%" }}
 							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
 							transition={{
@@ -379,7 +379,7 @@ export const Platform = () => {
 						</motion.div>
 
 						<motion.div
-							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[1px] border-plug-green/10"
 							initial={{ y: "100%" }}
 							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
 							transition={{
@@ -405,7 +405,7 @@ export const Platform = () => {
 						</motion.div>
 
 						<motion.div
-							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[2px] border-plug-green/10"
+							className="absolute bottom-1/2 left-[20%] right-[20%] top-8 rounded-lg border-[1px] border-plug-green/10"
 							initial={{ y: "100%" }}
 							animate={{ y: ["100%", "0%", "0%", "0%", "100%"] }}
 							transition={{

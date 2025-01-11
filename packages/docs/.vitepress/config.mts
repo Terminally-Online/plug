@@ -61,6 +61,16 @@ export default defineConfig({
           },
         ],
       },
+
+      {
+        text: "Developer",
+        items: [
+          {
+            text: "Execution Lifecycle",
+            link: "/developer/lifecycle",
+          },
+        ],
+      },
     ],
 
     socialLinks: [

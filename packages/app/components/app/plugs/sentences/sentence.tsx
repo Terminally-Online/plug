@@ -1,18 +1,27 @@
 import { FC, HTMLAttributes } from "react"
 
-import { Hash, Slash, X } from "lucide-react"
+import { Hash, X } from "lucide-react"
 
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
-import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Checkbox } from "@/components/app/inputs/checkbox"
+import { Search } from "@/components/app/inputs/search"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { api } from "@/server/client"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
 	item: string
 	preview?: boolean
+	error?: boolean
 	action: Action
 	actionIndex: number
 }
@@ -23,6 +32,7 @@ export const Sentence: FC<SentenceProps> = ({
 	action,
 	actionIndex,
 	preview = false,
+	error = false,
 	className,
 	...props
 }) => {
@@ -38,7 +48,7 @@ export const Sentence: FC<SentenceProps> = ({
 		}
 	} = usePlugStore(item)
 
-	const { data: solverActions } = api.solver.actions.get.useQuery({
+	const { data: solverActions } = api.solver.actions.getSchemas.useQuery({
 		protocol: action.protocol,
 		action: action.action
 	})
@@ -46,16 +56,28 @@ export const Sentence: FC<SentenceProps> = ({
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 
+	const values = Object.entries(action.values ?? []).reduce(
+		(acc, [key, value]) => {
+			if (value) {
+				acc[key] = value.value
+			}
+			return acc
+		},
+		{} as Record<string, string>
+	)
+
 	const {
 		state: { parsed },
 		actions: { setValue },
-		helpers: { getInputValue, getInputError, isValid, isComplete }
-	} = useCord(sentence, action.values)
+		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
+	} = useCord(sentence, values)
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
 	const handleValue = (index: number, value: string) => {
-		if (!parsed) return
+		const inputName = getInputName(index)
+
+		if (!parsed || !inputName) return
 
 		setValue(index, value)
 
@@ -68,7 +90,7 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 									...action.values,
-									[index]: value
+									[index]: { value, name: inputName }
 								}
 							: action.values
 				}))
@@ -83,7 +105,7 @@ export const Sentence: FC<SentenceProps> = ({
 			<Accordion
 				className={cn(
 					"cursor-default hover:bg-white",
-					isValid && isComplete
+					isValid && isComplete && !error
 						? "border-plug-yellow hover:border-plug-yellow"
 						: "border-plug-red hover:border-plug-red",
 					className
@@ -94,7 +116,7 @@ export const Sentence: FC<SentenceProps> = ({
 				{...props}
 			>
 				<div className={cn("flex flex-row items-center font-bold")}>
-					<p className="flex w-full flex-wrap items-center gap-[4px]">
+					<div className="flex w-full flex-wrap items-center gap-[4px]">
 						<div className="relative h-6 w-10">
 							<Image
 								className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
@@ -125,7 +147,7 @@ export const Sentence: FC<SentenceProps> = ({
 								if (!input) return null
 
 								const value = getInputValue(inputIndex)
-								const error = getInputError(inputIndex)
+								const inputError = getInputError(inputIndex)
 								const dependentOnValue =
 									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									undefined
@@ -153,7 +175,7 @@ export const Sentence: FC<SentenceProps> = ({
 									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									input.dependentOn === undefined
 								const isEmpty = !value?.value.trim()
-								const isValid = !isEmpty && !error
+								const isValid = !isEmpty && !inputError && !error
 
 								return (
 									<>
@@ -334,7 +356,7 @@ export const Sentence: FC<SentenceProps> = ({
 															{isOptionBased && isEmpty
 																? "Choose option"
 																: isEmpty || error
-																	? error?.message || "Enter value"
+																	? inputError?.message || "Enter value"
 																	: parsed.inputs.length - 1 > inputIndex
 																		? "Next"
 																		: "Done"}
@@ -347,7 +369,7 @@ export const Sentence: FC<SentenceProps> = ({
 								)
 							})}
 						</div>
-					</p>
+					</div>
 
 					{preview === false && own && (
 						<Button

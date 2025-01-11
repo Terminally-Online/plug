@@ -1,8 +1,8 @@
 import { FC } from "react"
 
-import { Frame } from "@/components"
+import { Frame } from "@/components/app/frames/base"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const SimulationFrame: FC<{
 	index: number

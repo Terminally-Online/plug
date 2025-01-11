@@ -1,6 +1,7 @@
 import React, { FC, memo, useState } from "react"
 
-import { Accordion, Image } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { chains, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 

@@ -3,7 +3,7 @@ import { FC, HTMLAttributes, useMemo } from "react"
 import BoringAvatar from "boring-avatars"
 
 import { cn } from "@/lib"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 const breakpoints = 12
 const angles = 360

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
-import { Button, LandingContainer } from "@/components"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { Button } from "@/components/shared/buttons/button"
 import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 

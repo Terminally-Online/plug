@@ -3,9 +3,14 @@ import { FC, useCallback, useMemo } from "react"
 
 import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
 
-import { ActionPreview, Button, Counter, Frame, Image } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains } from "@/lib"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const RunFrame: FC<{
 	index: number
@@ -38,7 +43,7 @@ export const RunFrame: FC<{
 		queue({
 			workflowId: column.item,
 			startAt: column.schedule?.date?.from ?? new Date(),
-			endAt: column.schedule?.date?.to ?? new Date(),
+			endAt: column.schedule?.date?.to,
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
@@ -61,7 +66,7 @@ export const RunFrame: FC<{
 				{actions && actions.length > 0 ? (
 					<ActionPreview index={index} item={item} />
 				) : (
-					<div className="flex rounded-lg border-[2px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
+					<div className="flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
 						<p className="mx-auto max-w-[380px]">
 							No actions added and configured on this Plug yet. Add some actions to run and schedule it.
 						</p>

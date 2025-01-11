@@ -2,8 +2,9 @@ import { FC, useEffect } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { Frame } from "@/components"
-import { useColumnStore, usePlugData } from "@/state"
+import { Frame } from "@/components/app/frames/base"
+import { useColumnStore } from "@/state/columns"
+import { usePlugData } from "@/state/plugs"
 
 export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame, handle } = useColumnStore(index, "running")

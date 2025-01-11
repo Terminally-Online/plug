@@ -2,7 +2,9 @@ import { FC } from "react"
 
 import { Activity, Book, Twitter } from "lucide-react"
 
-import { Button, Image, LandingContainer } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { Button } from "@/components/shared/buttons/button"
 import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
@@ -30,9 +32,9 @@ export const Navbar: FC = () => {
 					<button onClick={() => handleCallToAction(routes.twitter)}>
 						<Twitter size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 					</button>
-					<button onClick={() => handleCallToAction(routes.posts)}>
+					{/* <button onClick={() => handleCallToAction(routes.posts)}>
 						<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
-					</button>
+					</button> */}
 				</div>
 
 				<div className="mx-8 hidden h-[2px] w-full bg-plug-green/10 xl:block" />
@@ -48,5 +50,3 @@ export const Navbar: FC = () => {
 		</LandingContainer>
 	)
 }
-
-export default Navbar

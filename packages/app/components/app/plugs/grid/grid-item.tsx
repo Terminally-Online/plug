@@ -2,9 +2,9 @@ import { FC } from "react"
 
 import { Workflow } from "@prisma/client"
 
-import { Accordion } from "@/components/shared"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { colors, formatTitle } from "@/lib"
-import { COLUMNS, useColumnStore } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 type Props = { index: number; from: string; plug: Workflow | undefined }
 

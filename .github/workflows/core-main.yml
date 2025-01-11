@@ -1,4 +1,4 @@
-name: Build Core
+name: Core - Build
 
 on:
   push:
@@ -57,7 +57,7 @@ jobs:
 
       - name: 📦 Install dependencies
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
           forge install
 
       - name: 📦 Build package

@@ -2,9 +2,13 @@ import { FC, useEffect } from "react"
 
 import { PencilLine, Settings } from "lucide-react"
 
-import { Button, Checkbox, Frame, Search } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Checkbox } from "@/components/app/inputs/checkbox"
+import { Search } from "@/components/app/inputs/search"
+import { Button } from "@/components/shared/buttons/button"
 import { cardColors, useDebounce } from "@/lib"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
 	const { isFrame } = useColumnStore(index, "manage")
@@ -60,7 +64,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 						{Object.keys(cardColors).map(color => (
 							<div
 								key={color}
-								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[2px]"
+								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[1px]"
 								style={{
 									borderColor:
 										plug.color === color
@@ -75,7 +79,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 								}
 							>
 								<div
-									className="h-full w-full rounded-full border-[2px] border-white transition-all duration-200 ease-in-out"
+									className="h-full w-full rounded-full border-[1px] border-white transition-all duration-200 ease-in-out"
 									style={{
 										background: cardColors[color as keyof typeof cardColors]
 									}}

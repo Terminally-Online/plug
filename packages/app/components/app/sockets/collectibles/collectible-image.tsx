@@ -2,7 +2,7 @@ import React, { FC, HTMLAttributes, useEffect, useRef, useState } from "react"
 
 import { TriangleAlert } from "lucide-react"
 
-import { Image } from "@/components"
+import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 
 export const CollectibleImage: FC<

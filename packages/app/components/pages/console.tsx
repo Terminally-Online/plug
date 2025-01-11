@@ -4,35 +4,14 @@ import { useEffect, useRef } from "react"
 
 import { LoaderCircle } from "lucide-react"
 
-import { AuthFrame, ConsoleColumnRow, ConsoleSidebar, PageContent, PageNavbar } from "@/components"
-import { LoginRequired } from "@/components/app/utils/login-required"
-import { ReferralRequired } from "@/components/app/utils/referral-required"
-import { useConnect, useMediaQuery } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugStore, useSocket, useSubscriptions } from "@/state"
+import { useMediaQuery } from "@/lib"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
+import { useSubscriptions } from "@/state/subscriptions"
 
-const MobilePage = () => {
-	return (
-		<>
-			<PageContent />
-			<PageNavbar />
-			<AuthFrame />
-		</>
-	)
-}
-
-const DesktopPage = () => {
-	const { account } = useConnect()
-	const { socket } = useSocket()
-
-	const needsReferral = Boolean(account.isAuthenticated && socket && !socket.identity?.referrerId)
-
-	return (
-		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
-			<ConsoleSidebar />
-			{!account.isAuthenticated ? <LoginRequired /> : needsReferral ? <ReferralRequired /> : <ConsoleColumnRow />}
-		</div>
-	)
-}
+import { DesktopConsole } from "./desktop"
+import { MobileConsole } from "./mobile"
 
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
@@ -49,9 +28,8 @@ export const ConsolePage = () => {
 			})
 	})
 
-	const { md } = useMediaQuery()
 	const router = useRouter()
-
+	const { md } = useMediaQuery()
 	const { socket } = useSocket()
 	const { columns, handle } = useColumnStore()
 	const { plugs } = usePlugStore()
@@ -110,7 +88,7 @@ export const ConsolePage = () => {
 	            <DeletedFrame />
 	        */}
 
-			{md ? <DesktopPage /> : <MobilePage />}
+			{md ? <DesktopConsole /> : <MobileConsole />}
 		</>
 	)
 }

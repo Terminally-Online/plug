@@ -175,7 +175,7 @@ export const formatForDisplay = (input: number | string, formatDecimals: boolean
 		return input.split("").reverse()
 	}
 
-	return input.split("").reverse()
+	return input?.split("").reverse()
 }
 
 export const frequencies = [

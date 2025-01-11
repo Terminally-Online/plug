@@ -4,10 +4,12 @@ import React, { FC, HTMLAttributes, useEffect, useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Carrot, Clock, Egg, Heart, PawPrintIcon } from "lucide-react"
 
-import { Button, Counter, DateSince } from "@/components"
-import { cn, greenGradientStyle, sunGradientStyle } from "@/lib"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
+import { DateSince } from "@/components/shared/utils/date-since"
+import { greenGradientStyle, sunGradientStyle } from "@/lib"
 import { api } from "@/server/client"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index }) => {
 	const { data: session } = useSession()

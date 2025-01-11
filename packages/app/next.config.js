@@ -11,6 +11,10 @@ const remotePatterns = [
 	},
 	{
 		protocol: "https",
+		hostname: "dweb.link"  // Add this IPFS gateway
+	},
+	{
+		protocol: "https",
 		hostname: "**"
 	}
 ]

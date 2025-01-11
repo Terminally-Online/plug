@@ -1,0 +1,102 @@
+name: Core - Publish Changesets
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+    paths:
+      - "packages/core/**"
+
+defaults:
+  run:
+    working-directory: packages/core
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-changeset:
+    name: 📝 Create Changeset
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ⚙️ Setup Action
+        uses: pnpm/action-setup@v4
+
+      - name: 📚 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🏷️ Determine Change Type
+        id: change-type
+        run: |
+          # Check for PR labels first
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'major') }}" == "true" ]]; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'minor') }}" == "true" ]]; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'patch') }}" == "true" ]]; then
+            echo "type=patch" >> $GITHUB_OUTPUT
+          else
+            # Fall back to commit message analysis
+            COMMITS=$(git log --format=%s origin/main..HEAD)
+            if echo "$COMMITS" | grep -q "^BREAKING CHANGE\|^[[:alpha:]]\+!:"; then
+              echo "type=major" >> $GITHUB_OUTPUT
+            elif echo "$COMMITS" | grep -q "^feat\|^feature:"; then
+              echo "type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "type=patch" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: 🔖 Create or Update Changeset
+        run: |
+          PR_URL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+          BRANCH_NAME="${{ github.head_ref }}"
+
+          echo "---
+          '@terminallyonline/plug-core': ${{ steps.change-type.outputs.type }}
+          ---
+
+          ## 🔄 PR Details
+          ${{ github.event.pull_request.title }}
+
+          > ${{ github.event.pull_request.body || 'No description provided.' }}
+
+          ## 📝 Changes
+          $(git log --format='- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))' origin/main..HEAD)
+
+          ## 🔍 Additional Context
+          - PR: [#${{ github.event.pull_request.number }}]($PR_URL)
+          - Branch: \`$BRANCH_NAME\`
+          - Author: @${{ github.event.pull_request.user.login }}
+          - Files Changed: $(git diff --name-only origin/main..HEAD | wc -l)
+
+          ## 📊 Stats
+          \`\`\`diff
+          $(git diff --shortstat origin/main..HEAD)
+          \`\`\`" > .changeset/pr-${{ github.event.pull_request.number }}.md
+
+      - name: 🔀 Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 🚀 Commit and Push Changeset
+        run: |
+          git add .changeset/pr-${{ github.event.pull_request.number }}.md
+          git commit -m "chore: update changeset for PR #${{ github.event.pull_request.number }}"
+          git push origin ${{ github.head_ref }}
