@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react"
 import { useAtom } from "jotai"
 
 import { api } from "@/server/client"
-import { plugsAtom, spreadPlugs } from "@/state"
+import { plugsAtom, spreadPlugs } from "@/state/plugs"
 
 export const useSubscriptions = () => {
 	const session = useSession()
