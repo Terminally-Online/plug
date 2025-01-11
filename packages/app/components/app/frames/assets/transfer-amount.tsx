@@ -2,7 +2,7 @@ import Image from "next/image"
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
 import { Frame } from "@/components/app/frames/base"
-import { TokenImage } from "@/components/app/sockets/tokens"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"

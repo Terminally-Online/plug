@@ -4,7 +4,7 @@ import { BadgeCheck, SearchIcon } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
-import { TokenImage } from "@/components/app/sockets/tokens"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { getChainId, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"

@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo, useRef, useState } from "react"
 
 import { TransferRecipient } from "@/components/app/frames/assets/transfer-recipient"
 import { Frame } from "@/components/app/frames/base"
-import { CollectibleImage } from "@/components/app/sockets/collectibles"
+import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
