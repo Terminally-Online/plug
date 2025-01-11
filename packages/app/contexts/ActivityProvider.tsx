@@ -1,7 +1,7 @@
 import { ContextType, createContext, FC, PropsWithChildren, useContext, useState } from "react"
 
 import { api, RouterOutputs } from "@/server/client"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
