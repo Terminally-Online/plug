@@ -20,7 +20,7 @@ import {
 
 import { TransferFrame } from "@/components/app/frames/assets/transfer"
 import { Frame } from "@/components/app/frames/base"
-import { CollectibleImage } from "@/components/app/sockets/collectibles"
+import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
 import { Image } from "@/components/app/utils/image"
 import {
 	chains,
