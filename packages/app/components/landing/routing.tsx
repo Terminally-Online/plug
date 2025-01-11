@@ -3,7 +3,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { Sun } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 export const Routing = () => {
 	const actions = [

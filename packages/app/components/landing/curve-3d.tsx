@@ -2,18 +2,15 @@ import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
+import { ActionBorrow } from "@/components/landing/actions/borrow"
+import { ActionBridge } from "@/components/landing/actions/bridge"
+import { ActionDiscover } from "@/components/landing/actions/discover"
+import { ActionEarn } from "@/components/landing/actions/earn"
+import { ActionTrade } from "@/components/landing/actions/harvest"
+import { ActionLiquidity } from "@/components/landing/actions/liquidity"
+import { ActionStaking } from "@/components/landing/actions/staking"
+import { ActionSwap } from "@/components/landing/actions/swap"
 import { useMediaQuery } from "@/lib"
-
-import {
-	ActionBorrow,
-	ActionBridge,
-	ActionDiscover,
-	ActionEarn,
-	ActionStaking,
-	ActionSwap,
-	ActionTrade
-} from "./actions"
-import { ActionLiquidity } from "./actions/liquidity"
 
 export const Curve3D = () => {
 	const containerRef = useRef<HTMLDivElement>(null)

@@ -2,9 +2,13 @@ import { FC, useEffect } from "react"
 
 import { PencilLine, Settings } from "lucide-react"
 
-import { Button, Checkbox, Frame, Search } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Checkbox } from "@/components/app/inputs/checkbox"
+import { Search } from "@/components/app/inputs/search"
+import { Button } from "@/components/shared/buttons/button"
 import { cardColors, useDebounce } from "@/lib"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
 	const { isFrame } = useColumnStore(index, "manage")

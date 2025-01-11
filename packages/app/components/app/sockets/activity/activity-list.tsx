@@ -1,6 +1,7 @@
 import { FC, HTMLAttributes, useMemo } from "react"
 
-import { ActivityItem, Callout } from "@/components"
+import { ActivityItem } from "@/components/app/sockets/activity/activity-item"
+import { Callout } from "@/components/app/utils/callout"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"

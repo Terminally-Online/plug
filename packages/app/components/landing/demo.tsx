@@ -4,7 +4,10 @@ import { useEffect } from "react"
 
 import { motion } from "framer-motion"
 
-import { Blob, ConsoleColumnRow, ConsoleSidebar, LandingContainer } from "@/components"
+import { ConsoleColumnRow } from "@/components/app/columns/column-row"
+import { ConsoleSidebar } from "@/components/app/sidebar"
+import { Blob } from "@/components/landing/blob"
+import { LandingContainer } from "@/components/landing/layout/container"
 import { routes, useMediaQuery } from "@/lib"
 
 const DemoApp = () => {

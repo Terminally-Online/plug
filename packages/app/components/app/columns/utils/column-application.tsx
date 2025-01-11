@@ -4,10 +4,12 @@ import { FC, HTMLAttributes, useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
 
-import { Button } from "@/components/shared"
+import { Button } from "@/components/shared/buttons/button"
 import { useBeforeInstall } from "@/contexts"
 import { cn, GTM_EVENTS, useAnalytics } from "@/lib"
-import { Flag, useColumnStore, useFlags } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { Flag } from "@/state/flags"
+import { useFlags } from "@/state/flags"
 
 export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({
 	index,

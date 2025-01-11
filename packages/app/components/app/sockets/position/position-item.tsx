@@ -1,9 +1,11 @@
 import { FC } from "react"
 
-import { Accordion, Counter, Image } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const SocketPositionItem: FC<{
 	index: number

@@ -8,7 +8,11 @@ import { Loader2 } from "lucide-react"
 
 import { useAtomValue, useSetAtom } from "jotai"
 
-import { Accordion, Animate, Button, Callout, Image } from "@/components"
+import { Animate } from "@/components/app/utils/animate"
+import { Callout } from "@/components/app/utils/callout"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Accordion } from "@/components/shared/utils/accordion"
 import {
 	cn,
 	CONNECTOR_ICON_OVERRIDE_MAP,
@@ -19,7 +23,8 @@ import {
 	useOrderedConnections,
 	useRecentConnectorId
 } from "@/lib"
-import { authenticationAtom, useColumnData, walletConnectURIMatrixAtom } from "@/state"
+import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state/authentication"
+import { useColumnData } from "@/state/columns"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3

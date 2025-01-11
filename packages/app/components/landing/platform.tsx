@@ -4,8 +4,8 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { LayoutDashboard, Sparkles, Wallet } from "lucide-react"
 
-import { InfoCard } from "./cards"
-import { LandingContainer } from "./layout"
+import { InfoCard } from "@/components/landing/cards/info"
+import { LandingContainer } from "@/components/landing/layout/container"
 
 const ITEMS = 24
 const PROTOCOLS = [

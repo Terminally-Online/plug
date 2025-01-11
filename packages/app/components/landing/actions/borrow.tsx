@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { motion, useAnimationFrame } from "framer-motion"
 import { HandCoins } from "lucide-react"
 
-import { Counter, InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
+import { Counter } from "@/components/shared/utils/counter"
 
 export const ActionBorrow = () => {
 	const [percentage, setPercentage] = useState(25)

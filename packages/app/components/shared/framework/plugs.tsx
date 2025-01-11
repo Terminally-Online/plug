@@ -2,9 +2,11 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { PlugZap, Puzzle } from "lucide-react"
 
-import { Callout, Header, PlugGrid } from "@/components"
+import { Header } from "@/components/app/layout/header"
+import { PlugGrid } from "@/components/app/plugs/grid/grid"
+import { Callout } from "@/components/app/utils/callout"
 import { api } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 const Discover: FC<{ index: number }> = ({ index }) => {
 	const { handle } = useColumnStore(index)

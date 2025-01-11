@@ -2,9 +2,12 @@ import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { Loader } from "lucide-react"
 
-import { Button } from "@/components/shared"
+import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
-import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSidebar, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
+import { useSidebar } from "@/state/sidebar"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {

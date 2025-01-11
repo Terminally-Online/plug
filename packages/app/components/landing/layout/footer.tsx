@@ -4,7 +4,7 @@ import { FC, useRef } from "react"
 import { motion, useSpring } from "framer-motion"
 import { useScroll, useTransform } from "framer-motion"
 
-import { LandingContainer } from "@/components"
+import { LandingContainer } from "@/components/landing/layout/container"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 
 export const LandingFooter: FC = () => {

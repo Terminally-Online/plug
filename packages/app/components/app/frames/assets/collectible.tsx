@@ -18,12 +18,14 @@ import {
 	Waypoints
 } from "lucide-react"
 
-import { CollectibleImage, Frame, Image } from "@/components"
+import { TransferFrame } from "@/components/app/frames/assets/transfer"
+import { Frame } from "@/components/app/frames/base"
+import { CollectibleImage } from "@/components/app/sockets/collectibles"
+import { Image } from "@/components/app/utils/image"
 import {
 	chains,
 	cn,
 	formatAddress,
-	formatLongString,
 	formatTitle,
 	formatTokenStandard,
 	getBlockExplorerAddress,
@@ -31,9 +33,7 @@ import {
 	getTextColor
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
-
-import { TransferFrame } from "./transfer"
+import { useColumnStore } from "@/state/columns"
 
 type Traits = Array<{ trait_type: string; value: string }>
 

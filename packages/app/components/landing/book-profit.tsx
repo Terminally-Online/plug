@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { Radar } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 export const BookProfit = () => {
 	return (
