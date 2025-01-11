@@ -3,8 +3,11 @@ import { useRouter } from "next/router"
 
 import { motion } from "framer-motion"
 
-import { Button, InfoCard, LandingContainer, StaticLayout } from "@/components"
 import { postAnimations } from "@/components/blog/animations"
+import { InfoCard } from "@/components/landing/cards/info"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { StaticLayout } from "@/components/landing/layout/static"
+import { Button } from "@/components/shared/buttons/button"
 import { getPosts, Post, routes } from "@/lib"
 
 export const getStaticProps = (async () => {

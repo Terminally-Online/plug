@@ -125,5 +125,3 @@ export const LandingFooter: FC = () => {
 		</div>
 	)
 }
-
-export default LandingFooter
