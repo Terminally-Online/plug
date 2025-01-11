@@ -62,7 +62,7 @@ jobs:
           NEXT_PUBLIC_WALLETCONNECT_ID=github-action 
           NEXT_PUBLIC_ALCHEMY_KEY=github-action 
           ADMIN_API_KEY=github-action" > .env
-          pnpm build --filter=app
+          pnpm build --filter=@terminallyonline/plug-app
 
       - name: 🔄 Install Vercel CLI
         if: github.ref == 'refs/heads/main'
