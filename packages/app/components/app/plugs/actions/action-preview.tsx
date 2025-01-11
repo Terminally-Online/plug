@@ -1,8 +1,8 @@
 import { FC } from "react"
 
-import { Sentence } from "@/components"
-import { Action, Actions } from "@/lib"
-import { usePlugData } from "@/state"
+import { Sentence } from "@/components/app/plugs/sentences/sentence"
+import { Actions } from "@/lib"
+import { usePlugData } from "@/state/plugs"
 
 export const ActionPreview: FC<{ index: number; item: string; actions?: Actions; errors?: Array<string | null> }> = ({
 	index,

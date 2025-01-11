@@ -2,9 +2,10 @@ import { FC } from "react"
 
 import { Clock } from "lucide-react"
 
-import { Button, Frame } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Button } from "@/components/shared/buttons/button"
 import { frequencies } from "@/lib"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 	const { column, isFrame, handle } = useColumnStore(index, "recurring")

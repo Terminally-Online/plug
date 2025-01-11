@@ -22,7 +22,8 @@ import plugCore from "@terminallyonline/plug-core/package.json"
 
 import { formatAddress, useClipboard } from "@/lib"
 import app from "@/package.json"
-import { Flag, useFlags, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { Flag, useFlags } from "@/state/flags"
 
 export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()

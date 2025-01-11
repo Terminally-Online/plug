@@ -3,7 +3,7 @@ import React from "react"
 import { motion } from "framer-motion"
 import { Droplets } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components/landing/cards/info"
 
 const generatePoints = (width: number, segments = 10) => {
 	const points = []

@@ -2,10 +2,13 @@ import { FC } from "react"
 
 import { BadgeCheck, SearchIcon } from "lucide-react"
 
-import { Accordion, Frame, Search, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Search } from "@/components/app/inputs/search"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { getChainId, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]

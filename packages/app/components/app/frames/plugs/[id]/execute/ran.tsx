@@ -2,9 +2,13 @@ import { FC } from "react"
 
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
-import { Button, Counter, Frame, Image } from "@/components"
-import { chains, cn } from "@/lib"
-import { useColumnStore, usePlugData } from "@/state"
+import { Frame } from "@/components/app/frames/base"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
+import { chains } from "@/lib"
+import { useColumnStore } from "@/state/columns"
+import { usePlugData } from "@/state/plugs"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const {

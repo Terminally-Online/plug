@@ -1,4 +1,5 @@
-import { Button, StaticLayout } from "@/components"
+import { StaticLayout } from "@/components/landing/layout/static"
+import { Button } from "@/components/shared/buttons/button"
 import { greenGradientStyle, routes } from "@/lib"
 
 const Page = () => (

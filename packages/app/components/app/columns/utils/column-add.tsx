@@ -15,9 +15,12 @@ import {
 	User
 } from "lucide-react"
 
-import { Accordion } from "@/components/shared"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
-import { COLUMNS, Flag, useColumnStore, useFlags, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { Flag, useFlags } from "@/state/flags"
+import { usePlugStore } from "@/state/plugs"
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]

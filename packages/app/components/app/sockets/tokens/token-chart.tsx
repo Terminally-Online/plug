@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import axios from "axios"
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-import { Button } from "@/components/shared"
+import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
 
 const periods = [

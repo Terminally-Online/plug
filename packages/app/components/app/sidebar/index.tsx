@@ -3,19 +3,19 @@ import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, Wallet, X } from "lucide-react"
 
-import {
-	Avatar,
-	ColumnAuthenticate,
-	ColumnCompanion,
-	ColumnSearch,
-	ColumnStats,
-	ColumnWallet,
-	Header,
-	Image
-} from "@/components"
+import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
+import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
+import { ColumnSearch } from "@/components/app/columns/utils/column-search"
+import { ColumnStats } from "@/components/app/columns/utils/column-stats"
+import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
+import { Header } from "@/components/app/layout/header"
+import { Avatar } from "@/components/app/sockets/profile"
+import { Image } from "@/components/app/utils/image"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { usePlugStore, useSidebar, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { usePlugStore } from "@/state/plugs"
+import { useSidebar } from "@/state/sidebar"
 
 const ConsoleSidebarAction: FC<
 	React.HTMLAttributes<HTMLDivElement> & {

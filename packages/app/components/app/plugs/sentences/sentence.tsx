@@ -1,13 +1,21 @@
 import { FC, HTMLAttributes } from "react"
 
-import { Hash, Slash, X } from "lucide-react"
+import { Hash, X } from "lucide-react"
 
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
-import { Accordion, Button, Checkbox, Counter, Frame, Image, Search, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Checkbox } from "@/components/app/inputs/checkbox"
+import { Search } from "@/components/app/inputs/search"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { api } from "@/server/client"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number

@@ -21,10 +21,10 @@ import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import {
 	authenticationLoadingAtom,
 	authenticationResponseAtom,
-	useColumnStore,
 	walletConnectProviderAtom,
 	walletConnectURIAtom
-} from "@/state"
+} from "@/state/authentication"
+import { useColumnStore } from "@/state/columns"
 
 const ConnectionContext = createContext<
 	| {

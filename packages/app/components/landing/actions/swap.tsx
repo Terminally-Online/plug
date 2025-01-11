@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { ReplaceAll } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components/landing/cards/info"
 
 const SYMBOLS = ["ETH", "BTC", "SOL", "AVAX", "MATIC", "UNI", "AAVE", "SUSHI", "YFI", "COMP", "MKR", "CRV"]
 

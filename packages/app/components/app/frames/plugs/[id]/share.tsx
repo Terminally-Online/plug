@@ -2,9 +2,12 @@ import { FC } from "react"
 
 import { Badge, Link, Send, Twitter } from "lucide-react"
 
-import { Button, Frame, Image } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
 import { routes, useClipboard } from "@/lib"
-import { useColumnStore, usePlugData } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugData } from "@/state/plugs"
 
 export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { isFrame } = useColumnStore(index, "share")
