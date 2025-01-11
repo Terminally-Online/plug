@@ -10,7 +10,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:release": "turbo run build --filter=!docs && changeset publish"
+    "changeset:release": "turbo run build --filter=!@terminallyonline/plug-docs && changeset publish"
   },
   "author": "nftchance",
   "dependencies": {
