@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: 📦 Install dependencies
-        run: pnpm install --filter @terminallyonline/plug-app
+        run: pnpm install
 
       - name: 🔥 Build Next (Not Deploying)
         if: github.ref != 'refs/heads/main'
