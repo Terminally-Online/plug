@@ -1,4 +1,4 @@
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 export const SocketProfile = () => {
 	const { socket } = useSocket()

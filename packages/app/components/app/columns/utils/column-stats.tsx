@@ -3,10 +3,12 @@ import React, { FC, useState } from "react"
 
 import { CheckCircle, Clipboard } from "lucide-react"
 
-import { Button, Counter, Search } from "@/components"
+import { Search } from "@/components/app/inputs/search"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 const GRADIENTS = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
 
@@ -228,7 +230,7 @@ export const ColumnStats: FC<{ index: number }> = () => {
 	}
 
 	return (
-		<div className="flex flex-col justify-between gap-4 overflow-y-scroll px-6 py-4 text-center">
+		<div className="flex h-full flex-col justify-between gap-4 overflow-y-scroll px-4 py-4 text-center">
 			<ProfileStats />
 
 			<div className="flex flex-col gap-2">

@@ -1,5 +1,5 @@
 {
-  "name": "plug-status",
+  "name": "@terminallyonline/plug-status",
   "version": "0.1.0",
   "private": true,
   "scripts": {

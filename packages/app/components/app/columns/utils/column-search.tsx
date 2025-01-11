@@ -2,7 +2,11 @@ import { FC, HTMLAttributes, useState } from "react"
 
 import { ImageIcon, LoaderCircle, Plug, SearchIcon } from "lucide-react"
 
-import { Button, PlugGrid, Search, SocketCollectionList, SocketTokenList } from "@/components"
+import { Search } from "@/components/app/inputs/search"
+import { PlugGrid } from "@/components/app/plugs/grid/grid"
+import { SocketCollectionList } from "@/components/app/sockets/collectibles/collection-list"
+import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
+import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
 import { useDebounce } from "@/lib/hooks"
 import { api } from "@/server/client"

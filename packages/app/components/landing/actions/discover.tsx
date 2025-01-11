@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { Telescope } from "lucide-react"
 
-import { InfoCard } from "../cards"
+import { InfoCard } from "@/components/landing/cards/info"
 
 const PLUGS = [
 	"Auto Compound",
@@ -62,7 +62,7 @@ export const ActionDiscover = () => {
 								duration: 2,
 								delay: columnIndex * 0.5
 							}}
-							className="relative flex h-20 h-full w-full items-center overflow-hidden rounded-lg rounded-sm border-[1px] border-plug-green/10 p-2 text-plug-white"
+							className="relative flex h-full w-full items-center overflow-hidden rounded-sm border-[1px] border-plug-green/10 p-2 text-plug-white"
 						>
 							<div style={{ backgroundColor: COLORS[index] }} className="absolute inset-0 -z-[1]" />
 							<p className="mt-auto font-bold">{plug}</p>

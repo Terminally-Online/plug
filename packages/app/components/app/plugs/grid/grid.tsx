@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { Workflow } from "@prisma/client"
 
-import { PlugGridItem } from "@/components"
+import { PlugGridItem } from "@/components/app/plugs/grid/grid-item"
 
 export const PlugGrid: FC<
 	React.HTMLAttributes<HTMLDivElement> & {

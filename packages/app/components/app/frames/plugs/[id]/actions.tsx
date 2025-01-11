@@ -2,9 +2,12 @@ import { FC, useMemo } from "react"
 
 import { Blocks, SearchIcon } from "lucide-react"
 
-import { ActionItem, Frame, Search } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Search } from "@/components/app/inputs/search"
+import { ActionItem } from "@/components/app/plugs/actions/action-item"
 import { useDebounce } from "@/lib"
-import { useActions, useColumnStore } from "@/state"
+import { useActions } from "@/state/actions"
+import { useColumnStore } from "@/state/columns"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumnStore(index, `${item}-actions`)

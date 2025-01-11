@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Handshake } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 interface Circle {
 	xPercent: number // Changed from x to xPercent

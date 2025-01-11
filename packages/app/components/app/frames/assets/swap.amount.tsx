@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from "react"
 
 import { formatUnits, getAddress, parseUnits } from "viem"
 
-import { ArrowRight, ArrowRightLeft, Bell, Loader, TriangleRight } from "lucide-react"
+import { ArrowRight, Bell, Loader, TriangleRight } from "lucide-react"
 
-import { Counter, Frame, SwapAmountInput, TokenImage } from "@/components"
+import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.input"
+import { Frame } from "@/components/app/frames/base"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -25,9 +28,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		handle: { frame }
 	} = useColumnStore(index, `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`)
 
-	const [tokenOutColor, setTokenOutColor] = useState("#000000")
-	const [tokenInColor, setTokenInColor] = useState("#000000")
-
 	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
 		const tokenInImplementation = tokenIn.implementations.find(
 			implementation => implementation?.chain === "ethereum"
@@ -39,6 +39,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		return { tokenOutImplementation, tokenInImplementation }
 	}, [tokenIn, tokenOut])
 
+	const [tokenOutColor, setTokenOutColor] = useState("#000000")
+	const [tokenInColor, setTokenInColor] = useState("#000000")
 	const [amounts, setAmounts] = useState({
 		[tokenOut.symbol]: {
 			precise: ((tokenOut.implementations[0].balance ?? 0) / 2).toString(),
@@ -49,6 +51,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			percentage: 0
 		}
 	})
+	const [debouncedAmount, setDebouncedAmount] = useState(((tokenOut.implementations[0].balance ?? 0) / 2).toString())
 
 	const isSufficientBalance =
 		tokenOutImplementation &&
@@ -69,10 +72,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					tokenOut: getAddress(
 						tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 					),
-					amountOut: parseUnits(
-						amounts[tokenOut.symbol]?.precise,
-						tokenOutImplementation?.decimals ?? 18
-					).toString()
+					amountOut: parseUnits(debouncedAmount, tokenOutImplementation?.decimals ?? 18).toString()
 				}
 			]
 		},
@@ -81,7 +81,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				isFrame &&
 				!!tokenInImplementation &&
 				!!tokenOutImplementation &&
-				amounts[tokenOut.symbol].precise !== "0" &&
+				debouncedAmount !== "0" &&
 				isSufficientBalance,
 			refetchInterval: 3500,
 			staleTime: 1000
@@ -109,6 +109,14 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			}
 		})
 	}, [tokenIn, tokenOut])
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedAmount(amounts[tokenOut.symbol]?.precise ?? "0")
+		}, 500)
+
+		return () => clearTimeout(timer)
+	}, [amounts[tokenOut.symbol]?.precise])
 
 	return (
 		<Frame

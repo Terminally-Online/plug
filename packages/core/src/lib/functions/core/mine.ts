@@ -1,8 +1,9 @@
-import { constantContracts, etchContracts } from '@/src/lib/constants'
-import { Contract } from '@/src/lib/types'
 import { exec, execSync } from 'child_process'
 import dedent from 'dedent'
 import { default as fs } from 'fs-extra'
+
+import { constantContracts, etchContracts } from '@/src/lib/constants'
+import { Contract } from '@/src/lib/types'
 
 const efficientAddressesPath = 'create2crunch/efficient_addresses.txt'
 
@@ -71,6 +72,7 @@ const create2 = () => {
 const prepare = (): Record<
 	string,
 	{
+		initCode: string
 		initCodeHash: string
 		deployment: Record<'salt' | 'address' | 'rarity', string>
 	}
@@ -105,6 +107,7 @@ const mine = async (contract: Contract): Promise<void> => {
 		const initCodeJson = JSON.parse(
 			fs.readFileSync(initCodePath).toString()
 		)
+		const initCode = initCodeJson['initcode']
 		const initCodeHash = initCodeJson['initcodeHash']
 
 		// ? Check if the initCodeHash is already in the addresses.json file and has a matching address.
@@ -112,7 +115,9 @@ const mine = async (contract: Contract): Promise<void> => {
 			const hasOwnProperty = addresses.hasOwnProperty(contract.name)
 			const property = addresses[contract.name]
 			if (hasOwnProperty && property.initCodeHash == initCodeHash) {
-				console.log(`✨︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.`)
+				console.log(
+					`✨︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.`
+				)
 				console.log(`	- Use --force to overwrite.`)
 				return resolve()
 			}
@@ -152,6 +157,7 @@ const mine = async (contract: Contract): Promise<void> => {
 			const [salt, address, rarity] = results[0]
 
 			addresses[contract.name] = {
+				initCode,
 				initCodeHash: initCodeHash,
 				deployment: { salt, address, rarity }
 			}

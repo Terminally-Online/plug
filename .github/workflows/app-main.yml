@@ -1,4 +1,4 @@
-name: Build and Deploy App
+name: App - Build and Deploy
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --filter @terminallyonline/plug-app
 
       - name: 🔥 Build Next (Not Deploying)
         if: github.ref != 'refs/heads/main'
@@ -62,7 +62,7 @@ jobs:
           NEXT_PUBLIC_WALLETCONNECT_ID=github-action 
           NEXT_PUBLIC_ALCHEMY_KEY=github-action 
           ADMIN_API_KEY=github-action" > .env
-          pnpm build --filter=app
+          pnpm build --filter=@terminallyonline/plug-app
 
       - name: 🔄 Install Vercel CLI
         if: github.ref == 'refs/heads/main'

@@ -2,7 +2,10 @@ import { useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
-import { Execution, LandingContainer, Recurring, Scheduled } from "@/components"
+import { Execution } from "@/components/landing/execution"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { Recurring } from "@/components/landing/recurring"
+import { Scheduled } from "@/components/landing/scheduled"
 
 export const Transactions = () => {
 	const containerRef = useRef<HTMLDivElement>(null)

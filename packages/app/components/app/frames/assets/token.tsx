@@ -2,12 +2,14 @@ import { FC, useMemo, useState } from "react"
 
 import { ArrowDownFromLine, ArrowRightLeft, MapIcon, Send } from "lucide-react"
 
-import { Counter, Frame, Image, SocketTokenPriceChart } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { SocketTokenPriceChart } from "@/components/app/sockets/tokens/token-chart"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { Image } from "@/components/app/utils/image"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
-
-import { TokenImage } from "../../sockets/tokens/token-image"
+import { useColumnStore } from "@/state/columns"
 
 export const TokenFrame: FC<{
 	index: number

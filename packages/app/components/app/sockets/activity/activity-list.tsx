@@ -1,15 +1,18 @@
 import { FC, HTMLAttributes, useMemo } from "react"
 
-import { ActivityItem, Callout } from "@/components"
+import { ActivityItem } from "@/components/app/sockets/activity/activity-item"
+import { Callout } from "@/components/app/utils/callout"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
-import { COLUMNS, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = COLUMNS.MOBILE_INDEX,
 	className,
 	...props
 }) => {
+	const { column } = useColumnStore(index, "simulation")
 	const { isAnonymous } = useSocket()
 	const { activities, isLoading } = useActivities()
 
@@ -18,6 +21,15 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 		return activities
 	}, [activities, isLoading])
 
+	const simulationId = useMemo(() => {
+		const prefix = "-simulation"
+		const isSimulation = column?.frame?.endsWith(prefix)
+
+		if (!isSimulation || !column?.frame) return
+
+		return column?.frame.split(prefix)[0]
+	}, [column?.frame])
+
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
 			<Callout.Anonymous index={index} viewing="activity" isAbsolute={true} />
@@ -25,7 +37,12 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 
 			<div className="flex flex-col gap-2">
 				{visibleActivities.map((activity, activityIndex) => (
-					<ActivityItem key={activity?.id || activityIndex} index={index} activity={activity} />
+					<ActivityItem
+						key={activity?.id || activityIndex}
+						index={index}
+						activity={activity}
+						simulationId={simulationId}
+					/>
 				))}
 			</div>
 		</div>

@@ -2,7 +2,7 @@ import { createRef, FC, useEffect, useRef } from "react"
 
 import { motion } from "framer-motion"
 
-import { Button } from "@/components"
+import { Button } from "@/components/shared/buttons/button"
 import { cn, tags } from "@/lib"
 
 // TODO: (#611) Remove this flag once we have tag functionality implemented in the backend.

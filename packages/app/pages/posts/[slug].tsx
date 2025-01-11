@@ -6,7 +6,10 @@ import ReactMarkdown from "react-markdown"
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 
-import { Counter, LandingContainer, postAnimations, StaticLayout } from "@/components"
+import { postAnimations } from "@/components/blog/animations"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { StaticLayout } from "@/components/landing/layout/static"
+import { Counter } from "@/components/shared/utils/counter"
 import { getFavicon, getPost, Post, PostLookup, posts } from "@/lib"
 
 export const dynamicParams = false

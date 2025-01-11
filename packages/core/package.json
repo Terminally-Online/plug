@@ -1,6 +1,6 @@
 {
-	"name": "@terminally-online/plug-core",
-	"version": "0.0.0",
+	"name": "@terminallyonline/plug-core",
+	"version": "0.0.1",
 	"author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
 	"maintainers": [
 		"🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
@@ -32,7 +32,6 @@
 		"plug:zod": "pnpm plug zod"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.1",
 		"@prb/test": "^0.6.4",
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
 		"@types/chai": "^4.3.14",

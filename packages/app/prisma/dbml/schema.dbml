@@ -62,6 +62,8 @@ Table UserSocket {
   updatedAt DateTime [default: `now()`, not null]
   admin Boolean [not null, default: false]
   socketAddress String [not null]
+  salt String
+  implementation String
   identity SocketIdentity
   workflow Workflow [not null]
   positions PositionCache [not null]
@@ -107,7 +109,8 @@ Table Execution {
   startAt DateTime [not null]
   endAt DateTime
   frequency Int [not null, default: 0]
-  nextSimulationAt DateTime [default: `now()`, not null]
+  periodEndAt DateTime
+  nextSimulationAt DateTime
   simulations Simulation [not null]
   workflow Workflow [not null]
   workflowId String [not null]
@@ -120,6 +123,7 @@ Table Simulation {
   status String [not null]
   result Json
   error String
+  errors String[] [not null]
   gasEstimate Float
   execution Execution [not null]
   executionId String [not null]
