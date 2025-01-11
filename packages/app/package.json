@@ -70,7 +70,7 @@
 		"react-use": "^17.5.0",
 		"recharts": "^2.13.2",
 		"sharp": "^0.33.5",
-		"superjson": "^2.2.1",
+		"superjson": "^2.2.2",
 		"tailwind-merge": "^2.5.4",
 		"utf-8-validate": "5.0.10",
 		"viem": "^2.21.37",
