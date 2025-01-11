@@ -3,7 +3,11 @@ import { FC, useCallback, useMemo } from "react"
 
 import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
 
-import { ActionPreview, Button, Counter, Frame, Image } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"

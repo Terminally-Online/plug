@@ -2,7 +2,9 @@ import { FC } from "react"
 
 import { Activity, Book, Twitter } from "lucide-react"
 
-import { Button, Image, LandingContainer } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { Button } from "@/components/shared/buttons/button"
 import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 

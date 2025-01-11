@@ -1,9 +1,8 @@
 import { useSession } from "next-auth/react"
 import { FC } from "react"
 
-import { useSocket } from "@/state"
-
-import { SocketAssets } from "../../sockets"
+import { SocketAssets } from "@/components/app/sockets/assets"
+import { useSocket } from "@/state/authentication"
 
 export const ColumnWallet: FC<{ index: number }> = () => {
 	const { data: session } = useSession()

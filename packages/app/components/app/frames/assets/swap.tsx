@@ -1,10 +1,9 @@
 import { FC, useState } from "react"
 
+import { SwapAmountFrame } from "@/components/app/frames/assets/swap.amount"
+import { SwapConfirmFrame } from "@/components/app/frames/assets/swap.confirm"
+import { SwapTokenFrame } from "@/components/app/frames/assets/swap.token"
 import { RouterOutputs } from "@/server/client"
-
-import { SwapAmountFrame } from "./swap.amount"
-import { SwapConfirmFrame } from "./swap.confirm"
-import { SwapTokenFrame } from "./swap.token"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]

@@ -1,6 +1,7 @@
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
-import { ColumnAdd, ConsoleColumn } from "@/components"
+import { ConsoleColumn } from "@/components/app/columns/column"
+import { ColumnAdd } from "@/components/app/columns/utils/column-add"
 import { useColumnStore } from "@/state/columns"
 
 export const ConsoleColumnRow = () => {

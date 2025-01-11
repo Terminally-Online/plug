@@ -15,7 +15,7 @@ import {
 	User
 } from "lucide-react"
 
-import { Accordion } from "@/components/shared"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"

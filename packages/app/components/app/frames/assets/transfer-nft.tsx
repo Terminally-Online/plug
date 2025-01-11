@@ -1,11 +1,14 @@
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
-import { Accordion, CollectibleImage, Counter, Frame, Image } from "@/components"
+import { TransferRecipient } from "@/components/app/frames/assets/transfer-recipient"
+import { Frame } from "@/components/app/frames/base"
+import { CollectibleImage } from "@/components/app/sockets/collectibles"
+import { Image } from "@/components/app/utils/image"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
-
-import { TransferRecipient } from "./transfer-recipient"
+import { useColumnStore } from "@/state/columns"
 
 export const TransferNFTFrame: FC<{
 	index: number

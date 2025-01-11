@@ -2,7 +2,7 @@ import { FC, memo, PropsWithChildren } from "react"
 
 import { useClient } from "wagmi"
 
-import { AccordionContent } from "@/components"
+import { AccordionContent } from "@/components/shared/utils/accordion-content"
 import { cn } from "@/lib"
 
 type Props = PropsWithChildren<{

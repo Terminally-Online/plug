@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { ChevronLeft } from "lucide-react"
 
-import { Button } from "@/components"
+import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib/utils"
 
 type Props = {

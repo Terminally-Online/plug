@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes, useEffect, useState } from "react"
 
-import { Counter } from "@/components"
+import { Counter } from "@/components/shared/utils/counter"
 import { getTimeInterval } from "@/lib"
 
 export const TimeUntil: FC<{ date: Date } & HTMLAttributes<HTMLParagraphElement>> = ({ date, ...props }) => {

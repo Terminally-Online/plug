@@ -6,7 +6,11 @@ import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
 
 import { SearchIcon } from "lucide-react"
 
-import { Accordion, Avatar, Frame, Search, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Search } from "@/components/app/inputs/search"
+import { Avatar } from "@/components/app/sockets/profile"
+import { TokenImage } from "@/components/app/sockets/tokens"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"

@@ -1,10 +1,12 @@
 import Image from "next/image"
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
-import { Counter, Frame, TokenImage } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { TokenImage } from "@/components/app/sockets/tokens"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 import { TransferRecipient } from "./transfer-recipient"
 
