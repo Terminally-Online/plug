@@ -1,22 +1,9 @@
 import { FC, useMemo } from "react"
 
-import {
-	AlertCircle,
-	Bell,
-	CheckCircle,
-	CircleDollarSign,
-	Clock10,
-	Loader,
-	MessageCircleQuestionIcon,
-	Pause,
-	Share,
-	XCircle
-} from "lucide-react"
+import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
 
 import { ExecutionFrame } from "@/components/app/frames/activity/execution"
-import { Frame } from "@/components/app/frames/base"
-import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
-import { Button } from "@/components/shared/buttons/button"
+import { SimulationFrame } from "@/components/app/frames/activity/simulation"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
@@ -106,13 +93,6 @@ export const ActivityItem: FC<{
 }> = ({ index, activity, simulationId }) => {
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
-	const simulation = useMemo(
-		() => activity?.simulations.find(sim => sim.id === simulationId),
-		[activity, simulationId]
-	)
-
-	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity])
-
 	return (
 		<>
 			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
@@ -159,73 +139,7 @@ export const ActivityItem: FC<{
 				icon={<ActivityIcon status={activity?.status ?? "pending"} />}
 				activity={activity}
 			/>
-
-			<Frame
-				index={index}
-				icon={<ActivityIcon status={simulation?.status ?? "pending"} />}
-				label={`Simulation ${formatTitle(simulation?.status ?? "Pending")}`}
-				visible={simulation !== undefined}
-				handleBack={() => handle.frame()}
-				hasOverlay={true}
-			>
-				{activity && (
-					<ActionPreview
-						index={index}
-						item={activity.workflow.id}
-						actions={actions}
-						errors={simulation?.errors ?? []}
-					/>
-				)}
-
-				{simulation?.error && (
-					<p className="mx-auto mt-4 px-8 text-center text-sm font-bold text-plug-red">
-						Warning: {simulation?.error}
-					</p>
-				)}
-
-				{simulation?.status === "success" ? (
-					<Button
-						className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
-						onClick={() => {}}
-					>
-						<Share size={18} className="opacity-60" />
-						Share
-					</Button>
-				) : (
-					<Button
-						className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
-						onClick={() => {}}
-					>
-						<MessageCircleQuestionIcon size={18} className="opacity-60" />
-						Get Help
-					</Button>
-				)}
-				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
-					<p className="font-bold opacity-40">Details</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
-				</div>
-				<p className="flex flex-row items-center justify-between gap-4 font-bold">
-					<Bell size={18} className="opacity-20" />
-					<span className="opacity-40">Status</span>{" "}
-					<span className="ml-auto">{formatTitle(simulation?.status ?? "pending")}</span>
-				</p>
-				<p className="flex flex-row items-center justify-between gap-4 font-bold">
-					<Clock10 size={18} className="opacity-20" />
-					<span className="opacity-40">Simulated</span>{" "}
-					<span className="ml-auto">
-						<DateSince date={new Date(simulation?.createdAt ?? new Date())} />
-					</span>
-				</p>
-				{simulation?.gasEstimate && (
-					<p className="flex flex-row items-center justify-between gap-4 font-bold">
-						<CircleDollarSign size={18} className="opacity-20" />
-						<span className="opacity-40">Fee</span>{" "}
-						<span className="group ml-auto flex cursor-pointer flex-row items-center gap-4">
-							<Counter count={simulation?.gasEstimate ?? 0} />
-						</span>
-					</p>
-				)}
-			</Frame>
+			<SimulationFrame index={index} activity={activity} simulationId={simulationId} />
 		</>
 	)
 }
