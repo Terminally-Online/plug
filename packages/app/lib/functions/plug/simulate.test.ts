@@ -56,11 +56,9 @@ describe("getNextSimulationAt", () => {
 			expect(result).toBeNull()
 		})
 
-		it("returns next simulation time if zero frequency experiences failure", () => {
+		it("returns null if zero frequency experiences failure - no retries", () => {
 			const result = getNextSimulationAt(singleUseExecution, FAILED_SIMULATION, NOW)
-			const expectedNext = new Date(NOW.getTime() + WORKFLOW.workflow.frequency * MINUTE)
-			expect(result?.nextSimulationAt).toEqual(expectedNext)
-			expect(result?.periodEndAt).toEqual(singleUseExecution.periodEndAt)
+			expect(result).toBeNull()
 		})
 	})
 

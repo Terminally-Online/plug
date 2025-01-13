@@ -19,14 +19,7 @@ export const getNextSimulationAt = (
 	const executionFrequency = execution.frequency * DAY
 
 	if (execution.endAt && now >= execution.endAt) return null
-	if (execution.frequency === 0 && simulation.status === "success") return null
-
-	if (execution.frequency === 0) {
-		return {
-			periodEndAt: execution.periodEndAt,
-			nextSimulationAt: new Date(now.getTime() + workflowFrequency)
-		}
-	}
+	if (execution.frequency === 0) return null
 
 	if (execution.frequency > 0 && execution.periodEndAt) {
 		if (simulation.status === "success") {
