@@ -48,9 +48,17 @@ export const socket = createTRPCRouter({
 			}
 		}
 
-		// NOTE: Need to add support for anonymous sockets/users here.
-		const { bytes, hex: salt } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
-		const { address: socketAddress, implementation } = getSocketAddress(bytes)
+		let socketAddress = ""
+		let salt = ""
+		let implementation = ""
+
+		if (ctx.session.address.startsWith("0x")) {
+			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
+			const socketDetails = getSocketAddress(bytes)
+			socketAddress = socketDetails.address
+			salt = hex
+			implementation = socketDetails.implementation
+		}
 
 		await ctx.db.userSocket.upsert({
 			where: { id: ctx.session.address },
