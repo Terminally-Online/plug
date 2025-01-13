@@ -16,6 +16,15 @@ The lifecycle pattern to execute a Plug is as follows:
 
 With this lifecycle running, we now have the ability to create Plugs, define their actions, queued a one-time or scheduled execution, the Solver building and simulating a transaction, and returning the results to the application that users use.
 
+## One-Time Executions
+
+In the application there exists the ability to both "run" and "schedule" an execution:
+
+- A run execution has no [frequency](#frequencies) and no [schedule](#schedules) set by the user.
+- A scheduled execution has a [frequency](#frequencies) and a [schedule](#schedules) set by the user.
+
+For one-time executions, the Solver will simulate the transaction once and attempt to build the transaction. If building and simulating is successful, the transaction will be executed. If the transaction is not successfully built or fails somewhere along the way, the Solver will return an error and the execution will be marked as failed without any retries to follow.
+
 ## Frequencies
 
 As a complete concept [frequencies](#frequencies) control a majority of the time-based logic in the Solver and supporting systems to ensure that simulations and executions are processed at the correct times.
