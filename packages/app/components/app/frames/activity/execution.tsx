@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 
@@ -26,21 +26,38 @@ export const ExecutionFrame: FC<{
 	const { isFrame, handle } = useColumnStore(index, `${activity?.id}-activity`)
 	const { handle: activityHandle } = useActivities()
 	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+	const loadMoreRef = useRef<HTMLDivElement>(null)
 
-	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity])
+	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity?.actions])
 
-	const visibleSimulations = useMemo(() => {
-		if (!activity?.simulations) return []
-		return activity.simulations.slice(0, visibleCount)
-	}, [activity?.simulations, visibleCount])
+	const { visibleSimulations, hasMore, totalSimulations } = useMemo(
+		() => ({
+			visibleSimulations: activity?.simulations?.slice(0, visibleCount) ?? [],
+			totalSimulations: activity?.simulations?.length ?? 0,
+			hasMore: visibleCount < (activity?.simulations?.length ?? 0)
+		}),
+		[activity?.simulations, visibleCount]
+	)
 
-	const totalSimulations = activity?.simulations?.length ?? 0
-	const hasMore = visibleCount < totalSimulations
-
-	// Reset visible count when activity changes
 	useEffect(() => {
+		if (!isFrame || !activity) return
 		setVisibleCount(ITEMS_PER_PAGE)
-	}, [activity?.id])
+
+		const observer = new IntersectionObserver(
+			entries => {
+				if (entries[0].isIntersecting && hasMore) {
+					setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, totalSimulations))
+				}
+			},
+			{ threshold: 0.1 }
+		)
+
+		if (loadMoreRef.current) {
+			observer.observe(loadMoreRef.current)
+		}
+
+		return () => observer.disconnect()
+	}, [isFrame, activity, hasMore, totalSimulations])
 
 	if (!activity) return null
 
@@ -184,7 +201,7 @@ export const ExecutionFrame: FC<{
 						)}
 
 						{visibleSimulations.map((simulation, index) => (
-							<Accordion key={index} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
+							<Accordion key={simulation.id} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
 								<div className="flex flex-row gap-2">
 									<ActivityIcon status={simulation.status} />
 									<div className="flex w-full flex-col">
@@ -208,17 +225,7 @@ export const ExecutionFrame: FC<{
 							</Accordion>
 						))}
 
-						{hasMore && (
-							<Button
-								variant="secondary"
-								className="mt-2 py-4"
-								onClick={() =>
-									setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, totalSimulations))
-								}
-							>
-								Load More ({totalSimulations - visibleCount} remaining)
-							</Button>
-						)}
+						{hasMore && <div ref={loadMoreRef} className="h-4" />}
 					</div>
 				</div>
 			</Frame>
