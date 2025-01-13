@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { FC, useMemo } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 
 import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 
@@ -16,6 +16,8 @@ import { cardColors, chains, cn, formatFrequency, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
+const ITEMS_PER_PAGE = 10
+
 export const ExecutionFrame: FC<{
 	index: number
 	icon: JSX.Element
@@ -23,8 +25,22 @@ export const ExecutionFrame: FC<{
 }> = ({ index, icon, activity }) => {
 	const { isFrame, handle } = useColumnStore(index, `${activity?.id}-activity`)
 	const { handle: activityHandle } = useActivities()
+	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
 	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity])
+
+	const visibleSimulations = useMemo(() => {
+		if (!activity?.simulations) return []
+		return activity.simulations.slice(0, visibleCount)
+	}, [activity?.simulations, visibleCount])
+
+	const totalSimulations = activity?.simulations?.length ?? 0
+	const hasMore = visibleCount < totalSimulations
+
+	// Reset visible count when activity changes
+	useEffect(() => {
+		setVisibleCount(ITEMS_PER_PAGE)
+	}, [activity?.id])
 
 	if (!activity) return null
 
@@ -167,7 +183,7 @@ export const ExecutionFrame: FC<{
 							</Accordion>
 						)}
 
-						{activity.simulations.map((simulation, index) => (
+						{visibleSimulations.map((simulation, index) => (
 							<Accordion key={index} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
 								<div className="flex flex-row gap-2">
 									<ActivityIcon status={simulation.status} />
@@ -191,6 +207,18 @@ export const ExecutionFrame: FC<{
 								</div>
 							</Accordion>
 						))}
+
+						{hasMore && (
+							<Button
+								variant="secondary"
+								className="mt-2 py-4"
+								onClick={() =>
+									setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, totalSimulations))
+								}
+							>
+								Load More ({totalSimulations - visibleCount} remaining)
+							</Button>
+						)}
 					</div>
 				</div>
 			</Frame>
