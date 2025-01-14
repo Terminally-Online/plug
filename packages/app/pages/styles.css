@@ -78,10 +78,16 @@ html,
 body {
 	background: #fdfff7;
 	min-height: 100vh;
+	overscroll-behavior: none; /* Block both x and y overscroll */
 }
 
 #__next {
 	min-height: 100vh;
+	overscroll-behavior: none;
+}
+
+.scrollable {
+	overscroll-behavior: contain;
 }
 
 .scrollbar-hide {
