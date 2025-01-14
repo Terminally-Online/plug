@@ -80,7 +80,7 @@ jobs:
       - name: 🚀 Deploy Project Artifacts to Vercel
         if: github.ref == 'refs/heads/main'
         run: |
-          vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }} --build-env VERCEL_PACKAGE_MANAGER=pnpm
+          vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }} --build-env VERCEL_PACKAGE_MANAGER=pnpm --build-env PNPM_FLAGS="--filter=@terminallyonline/plug-app..."
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
