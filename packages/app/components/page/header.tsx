@@ -80,15 +80,38 @@ const PlugHeader = () => {
 	)
 }
 
+const DiscoverHeader = () => {
+	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	return (
+		<Header
+			size="lg"
+			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+			label="Discover"
+		/>
+	)
+}
+
+const MyPlugsHeader = () => {
+	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	return (
+		<Header
+			size="lg"
+			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+			label="My Plugs"
+		/>
+	)
+}
+
 export const PageHeader = () => {
 	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
 
-	// Only show header when viewing a Plug
-	if (!column || column.key !== COLUMNS.KEYS.PLUG) return null
+	if (!column) return null
 
 	return (
 		<Container>
-			<PlugHeader />
+			{column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
+			{column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
+			{column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}
 		</Container>
 	)
 }

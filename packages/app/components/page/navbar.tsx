@@ -49,12 +49,12 @@ export const PageNavbar = () => {
 
                 {/* Create Plug Button */}
                 <button
-                    className="group flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-tr from-plug-green to-plug-yellow"
+                    className="group flex h-8 w-8 items-center justify-center rounded-md bg-plug-yellow text-plug-green transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
                     onClick={() => plugHandle.plug.add({ index: COLUMNS.MOBILE_INDEX })}
                 >
                     <Plus
                         size={24}
-                        className="text-white text-opacity-80 transition-all duration-200 ease-in-out group-hover:text-opacity-100"
+                        className="opacity-80 transition-all duration-200 ease-in-out group-hover:opacity-100"
                     />
                 </button>
 
