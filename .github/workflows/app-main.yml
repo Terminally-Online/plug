@@ -81,6 +81,15 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: pnpm install
 
+      - name: 🏗️ Build for Production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd packages/app
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
+
       - name: 🚀 Deploy Project Artifacts to Vercel
         if: github.ref == 'refs/heads/main'
         run: |
