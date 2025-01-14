@@ -1,11 +1,10 @@
 [profile.default]
     src = "src"
     out = "artifacts"
-    libs = ["node_modules", "lib"]
+    libs = ["lib"]
     remappings = [
-        "@prb/test/=node_modules/@prb/test/src/",
-        "ds-test/=node_modules/ds-test/src/",
-        "forge-std/=node_modules/forge-std/src/",
+        "@prb/test/=lib/prb-test/src/",
+        "forge-std/=lib/forge-std/src/",
         "@nftchance/plug-core/=node_modules/@nftchance/plug-core/src/",
         "solady/=node_modules/solady/src/",
     ]

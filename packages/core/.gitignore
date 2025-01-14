@@ -1,4 +1,3 @@
-
 # Generated file. Do not edit directly.
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
@@ -192,4 +191,3 @@ lcov.info
 
 ./core
 ./contracts
-/lib/**

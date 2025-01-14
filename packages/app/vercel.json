@@ -1,3 +1,4 @@
 {
-	"installCommand": "pnpm install --filter=@terminallyonline/plug-app..."
+	"installCommand": "cd ../.. && pnpm install --filter=@terminallyonline/plug-app...",
+	"buildCommand": "cd packages/app && pnpm build"
 }
