@@ -28,6 +28,11 @@ jobs:
       - name: 🛒 Checkout
         uses: actions/checkout@v4
 
+      - name: 🔧 Configure Git
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://".insteadOf "git://"
+
       - name: ⚙️  Setup Action
         uses: pnpm/action-setup@v4
         with:
