@@ -2,19 +2,21 @@ import { useSession } from "next-auth/react"
 import Avatar from "boring-avatars"
 import { motion } from "framer-motion"
 import { Bell, HousePlug, Plus, Search } from "lucide-react"
+import { memo } from "react"
 import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 import { useSocket } from "@/state/authentication"
 
-export const PageNavbar = () => {
+export const PageNavbar = memo(() => {
     const { data: session } = useSession()
     const { avatar } = useSocket()
     const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
     const { handle: plugHandle } = usePlugStore()
+    const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
 
-    if (!column) return null
+    if (!showNavbar) return null
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-plug-green/10 bg-white">
@@ -111,4 +113,5 @@ export const PageNavbar = () => {
             </div>
         </div>
     )
-}
+})
+PageNavbar.displayName = 'PageNavbar'
