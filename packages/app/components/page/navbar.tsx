@@ -36,13 +36,13 @@ export const PageNavbar = () => {
                 {/* Search Button */}
                 <button
                     className="group flex h-8 w-8 items-center justify-center"
-                    onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.SEARCH })}
+                    onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
                 >
                     <Search
                         size={24}
                         className={cn(
                             "text-black text-opacity-40 transition-all duration-200 ease-in-out group-hover:text-opacity-100",
-                            column?.key === COLUMNS.KEYS.SEARCH && "text-opacity-100"
+                            column?.key === COLUMNS.KEYS.HOME && "text-opacity-100"
                         )}
                     />
                 </button>
