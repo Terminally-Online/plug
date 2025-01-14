@@ -85,7 +85,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.1.0",
-		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
+		"@trivago/prettier-plugin-sort-imports": "^5.2.1",
 		"@types/cli-progress": "^3.11.6",
 		"@types/jest": "^29.5.14",
 		"@types/matter-js": "^0.19.7",
