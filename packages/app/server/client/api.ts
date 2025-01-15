@@ -12,7 +12,18 @@ export const api = createTRPCNext<AppRouter>({
 	config({ ctx }) {
 		return {
 			transformer: superjson,
-			links: createLinks(ctx)
+			links: createLinks({ ctx }),
+			queryClientConfig: {
+				defaultOptions: {
+					queries: {
+						retry: (failureCount, error: any) => {
+							if (error?.data?.code === "UNAUTHORIZED") return false
+							return failureCount < 2
+						},
+						staleTime: 5000
+					}
+				}
+			}
 		}
 	},
 	ssr: true

@@ -1,49 +1,42 @@
 import { NextPageContext } from "next"
+import { signIn } from "next-auth/react"
 
-import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
+import superjson from "superjson"
 
-import { env } from "@/env"
-import { type AppRouter } from "@/server/api/root"
+import { httpBatchLink, loggerLink } from "@trpc/client"
+import { TRPCClientError } from "@trpc/client"
 
-export const getBaseUrl = () => {
-	if (typeof window !== "undefined") return ""
+export function createLinks(ctx: { ctx?: NextPageContext }) {
+	const url = process.env.NEXT_PUBLIC_APP_URL
+		? `${process.env.NEXT_PUBLIC_APP_URL}/api/trpc`
+		: "http://localhost:3000/api/trpc"
 
-	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-
-	const envUrl = env.NEXT_PUBLIC_APP_URL
-
-	if (envUrl) return envUrl
-
-	return `http://localhost:${env.PORT}`
-}
-
-function getEndingLink(ctx: NextPageContext | undefined) {
-	if (typeof window === "undefined") {
-		return httpBatchLink({
-			url: `${getBaseUrl()}/api/trpc`,
+	return [
+		loggerLink({
+			enabled: opts =>
+				process.env.NODE_ENV === "development" || (opts.direction === "down" && opts.result instanceof Error)
+		}),
+		httpBatchLink({
+			url,
 			headers() {
-				if (!ctx?.req?.headers) {
-					return {}
+				if (ctx.ctx?.req) {
+					// Pass headers from SSR request
+					return {
+						...ctx.ctx.req.headers,
+						"x-ssr": "1"
+					}
 				}
-				return {
-					...ctx.req.headers,
-					"x-ssr": "1"
+				return {}
+			},
+			async onError(err) {
+				if (err.data?.code === "UNAUTHORIZED") {
+					// Instead of letting the error redirect to error page,
+					// we can handle session expiry by redirecting to sign in
+					if (typeof window !== "undefined") {
+						await signIn()
+					}
 				}
 			}
 		})
-	}
-	const client = createWSClient({
-		url: env.NEXT_PUBLIC_WS_URL
-	})
-	return wsLink<AppRouter>({
-		client
-	})
+	]
 }
-
-export const createLinks = (ctx: NextPageContext | undefined) => [
-	loggerLink({
-		enabled: opts =>
-			process.env.NODE_ENV === "development" || (opts.direction === "down" && opts.result instanceof Error)
-	}),
-	getEndingLink(ctx)
-]

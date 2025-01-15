@@ -24,6 +24,9 @@ declare module "next-auth" {
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export const authOptions: NextAuthOptions = {
+	pages: {
+		error: "/auth/error"
+	},
 	providers: [
 		CredentialsProvider({
 			name: "Ethereum",
