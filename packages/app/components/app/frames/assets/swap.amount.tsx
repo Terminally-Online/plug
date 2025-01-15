@@ -266,7 +266,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 										"flex flex-row items-center whitespace-nowrap group-hover:hidden",
 										meta?.priceImpact === undefined
 											? "opacity-40"
-											: meta?.priceImpact > 0
+											: meta?.priceImpact >= 0
 												? "text-plug-green"
 												: "text-red-500"
 									)}
