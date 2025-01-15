@@ -418,10 +418,6 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
 	// if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
 
-	console.log("socket", socket)
-	console.log("socket.id", socket?.id)
-	console.log("socketAddress", socketAddress)
-
 	// NOTE: The user can retrieve positions for their own address as well as the
 	// address of their socket. To power this, we store both caches relative to the user
 	// socket that was created once the user is authenticated.
@@ -439,8 +435,6 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 
 	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
 		await getZerionPositions(chains, socket.id, socketAddress)
-
-	console.log("went to find positions from cache")
 
 	return await findPositions(id, search)
 }
