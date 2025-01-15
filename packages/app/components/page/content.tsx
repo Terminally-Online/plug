@@ -9,16 +9,31 @@ import { SocketAssets } from "@/components/app/sockets/assets"
 import { SocketProfile } from "@/components/app/sockets/profile"
 import { Plugs } from "@/components/shared/framework/plugs"
 import { COLUMNS, useColumnData } from "@/state/columns"
+import { useSocket } from "@/state/authentication"
+import { ReferralRequired } from "@/components/app/utils/referral-required"
 
 export const PageContent = () => {
     const { data: session } = useSession()
+    const { socket } = useSocket()
     const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
 
+    const isAuthenticated = session?.user.id?.startsWith("0x")
+    const isReferred = Boolean(socket && socket.identity?.referrerId)
+
     // Show auth content if not logged in
-    if (!session?.user.id?.startsWith("0x")) {
+    if (!isAuthenticated) {
         return (
             <Container>
                 <ColumnAuthenticate index={COLUMNS.MOBILE_INDEX} />
+            </Container>
+        )
+    }
+
+    // Show referral screen if not referred
+    if (!isReferred) {
+        return (
+            <Container>
+                <ReferralRequired />
             </Container>
         )
     }
