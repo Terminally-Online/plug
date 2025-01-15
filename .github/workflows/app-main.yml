@@ -47,7 +47,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --filter=@terminallyonline/plug-app...
 
       - name: 🔥 Build Next (Not Deploying)
         if: github.ref != 'refs/heads/main'
@@ -73,18 +73,19 @@ jobs:
 
       - name: 🔗 Pull Vercel Environment Information
         if: github.ref == 'refs/heads/main'
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd packages/app
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
 
       - name: 🚀 Deploy Project Artifacts to Vercel
         if: github.ref == 'refs/heads/main'
         run: |
-          vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }} --build-env VERCEL_PACKAGE_MANAGER=pnpm
+          cd packages/app
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
 
       - name: ☢️  Purge CloudFlare
         if: github.ref == 'refs/heads/main'
