@@ -9,11 +9,14 @@ import { COLUMNS, useColumnData } from "@/state/columns"
 export const MobileConsole = memo(() => {
     const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
     
+    // Only show navbar if not on a Plug page
+    const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
+    
     return (
         <>
             <PageHeader />
             <PageContent />
-            <PageNavbar />
+            {showNavbar && <PageNavbar />}
             <AuthFrame />
         </>
     )

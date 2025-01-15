@@ -1,6 +1,5 @@
 import { useSession } from "next-auth/react"
-
-import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
+import { ChevronLeft, Ellipsis, GitFork, Share } from "lucide-react"
 
 import BlockiesSvg from "blockies-react-svg"
 
@@ -86,37 +85,69 @@ const PlugHeader = () => {
 }
 
 const DiscoverHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return (
-		<Header
-			size="lg"
-			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
-			label="Discover"
-		/>
-	)
+    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    return (
+        <Header
+            size="lg"
+            onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+            label="Discover"
+        />
+    )
 }
 
 const MyPlugsHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return (
-		<Header
-			size="lg"
-			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
-			label="My Plugs"
-		/>
-	)
+    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    return (
+        <Header
+            size="lg"
+            onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+            label="My Plugs"
+        />
+    )
+}
+
+const AuthenticateHeader = () => {
+    return (
+        <div className="flex flex-col border-b-[1px] border-plug-green/10">
+            <Header
+                size="lg"
+                label="Login"
+            />
+        </div>
+    )
+}
+
+const ProfileHeader = () => {
+    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    
+    return (
+        <Header
+            size="lg"
+            label="Profile"
+        />
+    )
 }
 
 export const PageHeader = () => {
-	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+    const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+    const { data: session } = useSession()
 
-	if (!column) return null
+    if (!column) return null
 
-	return (
-		<Container>
-			{column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
-			{column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
-			{column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}
-		</Container>
-	)
+    if (!session?.user.id?.startsWith("0x")) {
+        return (
+            <Container>
+                <AuthenticateHeader />
+            </Container>
+        )
+    }
+
+    return (
+        <Container>
+            {column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
+            {column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
+            {column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}
+            {column.key === COLUMNS.KEYS.PROFILE && <ProfileHeader />}
+        </Container>
+    )
 }
