@@ -1,4 +1,4 @@
-name: App - Build and Deploy
+name: Build and Deploy App
 
 on:
   push:
@@ -29,6 +29,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9.14.4
+
 
       - name: 📚 Setup Node
         uses: actions/setup-node@v4
@@ -79,7 +80,8 @@ jobs:
 
       - name: 🚀 Deploy Project Artifacts to Vercel
         if: github.ref == 'refs/heads/main'
-        run: vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }} --build-env VERCEL_PACKAGE_MANAGER=pnpm
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
