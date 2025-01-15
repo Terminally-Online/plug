@@ -32,14 +32,9 @@ export const RunFrame: FC<{
 	const isReady = useMemo(() => {
 		if (!actions || actions.length === 0) return false
 
-		setTimeout(() => {
-			const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
-			if (sentences.length === 0) return false
+		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
-			return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
-		}, 0)
-
-		return false
+		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
 	}, [actions, item])
 
 	const handleRun = useCallback(() => {

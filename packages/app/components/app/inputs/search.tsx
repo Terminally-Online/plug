@@ -12,6 +12,7 @@ type Props = {
 	search?: string
 	clear?: boolean
 	textArea?: boolean
+	isNumber?: boolean
 	handleSearch?: (search: string) => void
 	handleOnClick?: () => void
 } & PropsWithChildren &
@@ -24,6 +25,7 @@ export const Search: FC<Props> = ({
 	search,
 	clear = false,
 	textArea = false,
+	isNumber = false,
 	handleSearch,
 	handleOnClick,
 	className,
@@ -71,7 +73,7 @@ export const Search: FC<Props> = ({
 				{textArea === false ? (
 					<input
 						ref={ref as RefObject<HTMLInputElement>}
-						type="text"
+						type={isNumber ? "number" : "text"}
 						placeholder={placeholder}
 						className="w-full cursor-pointer bg-transparent font-bold outline-none"
 						value={search}
