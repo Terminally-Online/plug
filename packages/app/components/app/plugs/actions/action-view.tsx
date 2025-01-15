@@ -1,8 +1,13 @@
 import { FC, useMemo } from "react"
 
-import { Accordion, Callout, Image, Sentence } from "@/components"
+import { Sentence } from "@/components/app/plugs/sentences/sentence"
+import { Callout } from "@/components/app/utils/callout"
+import { Image } from "@/components/app/utils/image"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { Action, formatTitle, getValues } from "@/lib"
-import { useActions, useColumnData, usePlugStore } from "@/state"
+import { useActions } from "@/state/actions"
+import { useColumnData } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -57,7 +62,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 			{actions.map((action, actionIndex) => (
 				<Sentence
-					key={`${actionIndex}-sentence`}
+					key={`${index}-${actionIndex}-sentence`}
 					index={index}
 					item={item}
 					actionIndex={actionIndex}
@@ -80,7 +85,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 											...actions,
 											{
 												...suggestion,
-												values: getValues(
+												...getValues(
 													solverActions[suggestion.protocol].schema[suggestion.action]
 														.sentence
 												)

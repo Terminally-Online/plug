@@ -1,14 +1,14 @@
 {
-  "name": "@nftchance/plug-docs",
+  "name": "@terminallyonline/plug-docs",
+  "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "generate": "rm -rf ./generated/ && pnpm plug docs",
-    "dev": "pnpm generate && vitepress dev",
-    "build": "pnpm generate && vitepress build",
+    "generate": "pnpm plug docs",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
     "preview": "pnpm build && vitepress preview"
   },
   "dependencies": {
-    "@nftchance/plug-types": "^0.10.2",
     "fs-extra": "^11.2.0",
     "pathe": "^1.1.2",
     "vitepress": "^1.0.0-rc.24",

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { BookUp2 } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 const PAIRS = [
 	["DAI", "sDAI"],
@@ -40,7 +40,7 @@ export const ActionStaking = () => {
 		>
 			<div className="absolute inset-0 bottom-1/2 overflow-hidden">
 				<motion.div
-					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green/40 font-bold text-plug-green"
+					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[1px] border-dashed border-plug-green/40 font-bold text-plug-green"
 					animate={{
 						top: ["-35%", "100%"]
 					}}
@@ -57,7 +57,7 @@ export const ActionStaking = () => {
 			<div className="absolute inset-0 top-1/2 z-[999] h-[2px] overflow-hidden bg-plug-yellow" />
 			<div className="absolute inset-0 top-1/2 overflow-hidden">
 				<motion.div
-					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[2px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
+					className="absolute left-1/2 top-[-24rem] flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border-[1px] border-dashed border-plug-green bg-plug-yellow font-bold text-plug-green"
 					animate={{
 						top: ["-35%", "100%"]
 					}}

@@ -6,6 +6,15 @@ import (
 	"io"
 	"net/http"
 	"solver/utils"
+	"time"
+)
+
+var (
+	vaultsCache     []YearnVault
+	tokensCache     []Token
+	vaultsUpdatedAt int64
+	tokensUpdatedAt int64
+	cacheDuration   int64 = 300
 )
 
 type YearnVault struct {
@@ -43,6 +52,10 @@ type YearnVault struct {
 		TVL         float64 `json:"tvl"`
 		Price       float64 `json:"price"`
 	} `json:"tvl"`
+	Extra struct {
+		StakingRewardsAPR float64 `json:"stakingRewardsAPR"`
+		GammaRewardAPR    float64 `json:"gammaRewardAPR"`
+	} `json:"extra"`
 	APR struct {
 		Type   string  `json:"type"`
 		NetAPR float64 `json:"netAPR"`
@@ -56,9 +69,52 @@ type YearnVault struct {
 			NetAPR float64 `json:"netAPR"`
 		} `json:"forwardAPR"`
 	} `json:"apr"`
+	Details struct {
+		IsRetired     bool `json:"isRetired"`
+		IsHidden      bool `json:"isHidden"`
+		IsAggregator  bool `json:"isAggregator"`
+		IsBoosted     bool `json:"isBoosted"`
+		IsAutomated   bool `json:"isAutomated"`
+		IsHighlighted bool `json:"isHighlighted"`
+		IsPool        bool `json:"isPool"`
+	} `json:"details"`
+	Staking struct {
+		Address   string `json:"address"`
+		Available bool   `json:"available"`
+		Source    string `json:"source"`
+		Rewards   []struct {
+			Address    string  `json:"address"`
+			Name       string  `json:"name"`
+			Symbol     string  `json:"symbol"`
+			Decimals   int     `json:"decimals"`
+			Price      float64 `json:"price"`
+			IsFinished bool    `json:"isFinished"`
+			FinishedAt int64   `json:"finishedAt"`
+			APR        float64 `json:"apr"`
+			PerWeek    float64 `json:"perWeek"`
+		} `json:"rewards"`
+	} `json:"staking"`
 }
 
-func GetVaults() ([]YearnVault, error) {
+type Token struct {
+	Address  string `json:"address"`
+	Name     string `json:"name"`
+	Symbol   string `json:"symbol"`
+	LogoURI  string `json:"logoURI"`
+	ChainID  int    `json:"chainId"`
+	Decimals int    `json:"decimals"`
+}
+
+type TokenList struct {
+	Tokens []Token `json:"tokens"`
+}
+
+func GetVaults(force ...bool) ([]YearnVault, error) {
+	currentTime := time.Now().Unix()
+	if !((len(force) > 0 && force[0]) || vaultsCache == nil || (currentTime-vaultsUpdatedAt) >= cacheDuration) {
+		return vaultsCache, nil
+	}
+
 	url := "https://ydaemon.yearn.finance/1/vaults/all"
 	response, err := utils.MakeHTTPRequest(
 		url,
@@ -76,25 +132,15 @@ func GetVaults() ([]YearnVault, error) {
 
 	endorsedVaults := make([]YearnVault, 0)
 	for _, vault := range response {
-		if vault.Endorsed {
+		if vault.Endorsed && !vault.EmergencyShutdown && !vault.Details.IsRetired && !vault.Details.IsHidden {
 			endorsedVaults = append(endorsedVaults, vault)
 		}
 	}
 
+	vaultsCache = endorsedVaults
+	vaultsUpdatedAt = currentTime
+
 	return endorsedVaults, nil
-}
-
-type Token struct {
-	Address  string `json:"address"`
-	Name     string `json:"name"`
-	Symbol   string `json:"symbol"`
-	LogoURI  string `json:"logoURI"`
-	ChainID  int    `json:"chainId"`
-	Decimals int    `json:"decimals"`
-}
-
-type TokenList struct {
-	Tokens []Token `json:"tokens"`
 }
 
 func FetchTokenList(chainID int) ([]Token, error) {
@@ -122,7 +168,12 @@ func FetchTokenList(chainID int) ([]Token, error) {
 	return tokenList.Tokens, nil
 }
 
-func GenerateTokenList() ([]Token, error) {
+func GenerateTokenList(force ...bool) ([]Token, error) {
+	currentTime := time.Now().Unix()
+	if !((len(force) > 0 && force[0]) || tokensCache == nil || (currentTime-tokensUpdatedAt) >= cacheDuration) {
+		return tokensCache, nil
+	}
+
 	chainIDs := []int{1, 10, 8453}
 	var allTokens []Token
 
@@ -133,6 +184,9 @@ func GenerateTokenList() ([]Token, error) {
 		}
 		allTokens = append(allTokens, tokens...)
 	}
+
+	tokensCache = allTokens
+	tokensUpdatedAt = currentTime
 
 	return allTokens, nil
 }

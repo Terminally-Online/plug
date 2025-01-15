@@ -3,9 +3,8 @@ import { useEffect, useState } from "react"
 
 import { motion } from "framer-motion"
 
+import { LandingContainer } from "@/components/landing/layout/container"
 import { GTM_EVENTS, routes, useAnalytics, useMediaQuery } from "@/lib"
-
-import { LandingContainer } from "./layout"
 
 const blockchains = [
 	"/blockchain/arbitrum",

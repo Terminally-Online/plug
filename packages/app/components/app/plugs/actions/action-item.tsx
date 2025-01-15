@@ -1,8 +1,10 @@
 import { FC } from "react"
 
-import { Accordion, Image } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { ActionSchema, formatTitle, getValues } from "@/lib"
-import { useColumnStore, usePlugStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const ActionItem: FC<{
 	index: number
@@ -27,7 +29,7 @@ export const ActionItem: FC<{
 						{
 							protocol,
 							action: actionName,
-							values: getValues(action.schema[actionName].sentence)
+							...getValues(action.schema[actionName].sentence)
 						}
 					])
 				})
@@ -52,7 +54,10 @@ export const ActionItem: FC<{
 					/>
 				</div>
 
-				<p className="font-bold">{formatTitle(actionName)}</p>
+				<p className="font-bold">
+					<span className="opacity-40">{formatTitle(protocol)}: </span>
+					{formatTitle(actionName)}
+				</p>
 			</div>
 		</Accordion>
 	)

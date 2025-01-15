@@ -2,8 +2,10 @@ import { FC } from "react"
 
 import { Trash2 } from "lucide-react"
 
-import { Button, Frame } from "@/components"
-import { useColumnStore, usePlugStore } from "@/state"
+import { Frame } from "@/components/app/frames/base"
+import { Button } from "@/components/shared/buttons/button"
+import { useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
 	const { isFrame } = useColumnStore(index, "deleted")

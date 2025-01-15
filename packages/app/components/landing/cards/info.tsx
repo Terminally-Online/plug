@@ -1,6 +1,9 @@
+import Link from "next/link"
+import { useRouter } from "next/router"
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
 import { motion, MotionProps } from "framer-motion"
+import { ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -8,11 +11,20 @@ export const InfoCard: FC<
 	HTMLAttributes<HTMLDivElement> &
 		MotionProps &
 		PropsWithChildren<{
-			icon: ReactNode
+			icon?: ReactNode
 			text: string | React.ReactNode
 			description?: string
+			href?: string
 		}>
-> = ({ children, icon, text, description, className, ...props }) => {
+> = ({ children, icon, text, description, href, className, ...props }) => {
+	const router = useRouter()
+
+	const handleClick = () => {
+		if (href) {
+			router.push(href)
+		}
+	}
+
 	return (
 		<motion.div
 			className={cn(
@@ -21,19 +33,28 @@ export const InfoCard: FC<
 			)}
 			initial={{ transform: "translateY(20px)", opacity: 0 }}
 			whileInView={{
-				transform: ["translateY(0px)", "translateY(20px)"],
+				transform: ["translateY(20px)", "translateY(0px)"],
 				opacity: [0, 1]
 			}}
 			transition={{ duration: 0.3 }}
+			onClick={handleClick}
 			{...props}
 		>
 			<div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden rounded-xl">{children}</div>
 
 			<div className="flex-rows flex items-center gap-4">
-				<div className="mb-auto mt-1">{icon}</div>
+				{icon && <div className="mb-auto mt-1">{icon}</div>}
 				<div className="z-[10] flex flex-col gap-2 font-bold">
-					<h2 className="flex items-center gap-4 text-lg lg:text-2xl">{text}</h2>
+					<h2 className="flex items-center text-lg lg:text-2xl">{text}</h2>
 					{description && <p className="max-w-[480px] text-plug-green/40">{description}</p>}
+					{href && (
+						<Link href={href} className="mt-2 flex flex-row items-center gap-2 text-plug-green">
+							Read More
+							<span className="opacity-40 transition-opacity duration-300 group-hover:opacity-100">
+								<ArrowRight size={14} />
+							</span>
+						</Link>
+					)}
 				</div>
 			</div>
 		</motion.div>

@@ -1,9 +1,9 @@
 import { FC } from "react"
 
-import { RanFrame } from "./execute/ran"
-import { RecurringFrame } from "./execute/recurring"
-import { RunFrame } from "./execute/run"
-import { ScheduleFrame } from "./execute/schedule"
+import { RanFrame } from "@/components/app/frames/plugs/[id]/execute/ran"
+import { RecurringFrame } from "@/components/app/frames/plugs/[id]/execute/recurring"
+import { RunFrame } from "@/components/app/frames/plugs/[id]/execute/run"
+import { ScheduleFrame } from "@/components/app/frames/plugs/[id]/execute/schedule"
 
 export const ExecuteFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	return (

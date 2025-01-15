@@ -4,9 +4,11 @@ import { DayPicker } from "react-day-picker"
 
 import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
-import { Button, Dropdown, Frame } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Dropdown } from "@/components/app/inputs/dropdown"
+import { Button } from "@/components/shared/buttons/button"
 import { cn, frequencies } from "@/lib"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const ScheduleFrame: FC<{
 	index: number

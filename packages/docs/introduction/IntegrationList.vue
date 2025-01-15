@@ -73,8 +73,8 @@ const onMouseLeave = (event) => {
 
 const bigList = ["ens"];
 
-const toChainImagePath = (str) => `/plug/blockchain/${str}.png`;
-const toProtocolImagePath = (str) => `/plug/protocols/${str}.png`;
+const toChainImagePath = (str) => `/blockchain/${str}.png`;
+const toProtocolImagePath = (str) => `/protocols/${str}.png`;
 const getImagePath = (str) =>
   props.type === "chain" ? toChainImagePath(str) : toProtocolImagePath(str);
 

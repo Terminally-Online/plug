@@ -2,10 +2,14 @@ import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { Callout, CollectibleFrame, Search, SocketCollectionItem } from "@/components"
+import { CollectibleFrame } from "@/components/app/frames/assets/collectible"
+import { Search } from "@/components/app/inputs/search"
+import { SocketCollectionItem } from "@/components/app/sockets/collectibles/collection-item"
+import { Callout } from "@/components/app/utils/callout"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useHoldings, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { useHoldings } from "@/state/positions"
 
 export const SocketCollectionList: FC<
 	HTMLAttributes<HTMLDivElement> & {

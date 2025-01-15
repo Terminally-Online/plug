@@ -2,9 +2,14 @@ import { FC, HTMLAttributes } from "react"
 
 import { CircleDollarSign, ImageIcon } from "lucide-react"
 
-import { Callout, Header, SocketCollectionList, SocketPositionList, SocketTokenList } from "@/components"
+import { Header } from "@/components/app/layout/header"
+import { SocketCollectionList } from "@/components/app/sockets/collectibles/collection-list"
+import { SocketPositionList } from "@/components/app/sockets/position/position-list"
+import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
+import { Callout } from "@/components/app/utils/callout"
 import { cn } from "@/lib"
-import { useHoldings, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { useHoldings } from "@/state/positions"
 
 export const SocketAssets: FC<
 	HTMLAttributes<HTMLDivElement> & {

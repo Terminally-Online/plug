@@ -28,9 +28,9 @@ export const activity = createTRPCRouter({
 		.input(
 			z.object({
 				workflowId: z.string(),
+				frequency: z.number(),
 				startAt: z.date(),
-				endAt: z.date().optional(),
-				frequency: z.number().optional()
+				endAt: z.date().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
@@ -53,9 +53,13 @@ export const activity = createTRPCRouter({
 					data: {
 						workflowId: input.workflowId,
 						actions: workflow.actions,
+
+						frequency: input.frequency,
 						startAt: input.startAt,
 						endAt: input.endAt,
-						frequency: input.frequency,
+						periodEndAt: input.frequency
+							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
+							: null,
 						nextSimulationAt: input.startAt
 					},
 					include: {

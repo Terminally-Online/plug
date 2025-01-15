@@ -1,42 +1,59 @@
-![Plug core banner](/plug-core.png)
+## Foundry
 
-> [!NOTE]
-> This repository is a submodule of the larger [Plug monorepo](https://github.com/terminally-online/plug) that contains all the required pieces to run the entire Plug stack yourself.
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-The core package of Plug powers the building and verification of declarative messages in both a server-context and interactive-wallet environment using the connected wallet when possible.
+Foundry consists of:
 
-## Dependencies
+- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-In order to run `@terminally-online/plug-core` it is necessary to install all of the following dependencies first:
+## Documentation
 
-```ml
-├─ foundry - "Foundry is a blazing fast, portable and modular toolkit for Ethereum application."
-└─ pnpm — "Efficient package manager for Node modules."
-```
+https://book.getfoundry.sh/
 
-## Getting Started
-
-To run the tests of `@terminally-online/plug-core` is incredibly straightforward. Open your terminal and run:
+## Usage
 
 ```bash
-pnpm i
-forge test
+$ forge build
+$ forge test
 ```
 
-## Building The Address Libraries
+### Format
 
-In Plug we utilize a self-referencing architecture that enables the ability to mine addresses and then refer to the constants within that contract. This is done so that any time the `Factory` is updated, we do not need to worry about manually updating the address everywhere that it is used. To generate the proper files run:
-
-```bash
-pnpm build:mine:quick
+```shell
+$ forge fmt
 ```
 
-## Building The Package For Distribution
+### Gas Snapshots
 
-For version management assistance, `@terminally-online/plug-core` is built with the help of `@changesets/cli`. When it is time for a release simply open your terminal and run:
-
-```bash
-pnpm changeset add
+```shell
+$ forge snapshot
 ```
 
-With a changeset created all you have to do is submit your commit/PR to the repository. Everything else will be handled for you.
+### Anvil
+
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```

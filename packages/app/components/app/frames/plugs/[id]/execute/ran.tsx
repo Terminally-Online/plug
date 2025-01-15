@@ -2,12 +2,20 @@ import { FC } from "react"
 
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
-import { Counter, Frame, Image } from "@/components"
+import { Frame } from "@/components/app/frames/base"
+import { Image } from "@/components/app/utils/image"
+import { Button } from "@/components/shared/buttons/button"
+import { Counter } from "@/components/shared/utils/counter"
 import { chains } from "@/lib"
-import { useColumnStore, usePlugData } from "@/state"
+import { useColumnStore } from "@/state/columns"
+import { usePlugData } from "@/state/plugs"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame } = useColumnStore(index, "ran")
+	const {
+		column,
+		isFrame,
+		handle: { frame }
+	} = useColumnStore(index, "ran")
 	const { plug } = usePlugData(item)
 
 	if (!plug || !column) return null
@@ -22,12 +30,12 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 		>
 			<div className="flex flex-col">
 				<p className="mb-2 font-bold">
-					<span className="opacity-40">The run of</span>
+					<span className="opacity-40">The run of</span>{" "}
 					<span
-						className="rounded-lg bg-gradient-to-tr px-2 py-1 font-bold"
+						className="rounded-sm bg-gradient-to-tr px-2 font-bold"
 						style={{
-							background: `linear-gradient(to right, rgba(0,239,54,0.1), rgba(147,223,0,0.1))`,
-							color: `#00E100`
+							background: `linear-gradient(to right, rgba(56, 88, 66, 0.1), rgba(210, 243, 138, 0.1))`,
+							color: `#385842`
 						}}
 					>
 						{plug.name}
@@ -99,6 +107,10 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 						)}
 					</>
 				)}
+
+				<Button className="mt-4 py-4" onClick={() => frame()}>
+					Done
+				</Button>
 			</div>
 		</Frame>
 	)

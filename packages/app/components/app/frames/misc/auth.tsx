@@ -2,8 +2,9 @@ import { useSession } from "next-auth/react"
 
 import { User } from "lucide-react"
 
-import { AuthButton, Frame } from "@/components"
-import { useColumnStore } from "@/state"
+import { Frame } from "@/components/app/frames/base"
+import { AuthButton } from "@/components/shared/buttons/auth"
+import { useColumnStore } from "@/state/columns"
 
 export const AuthFrame = () => {
 	const index = -1

@@ -6,7 +6,6 @@ import React, { FC } from "react"
 import { GoogleTagManager } from "@next/third-parties/google"
 
 import { GTM_ID } from "@/lib"
-import { api } from "@/server/client"
 
 import "./styles.css"
 
@@ -59,4 +58,5 @@ const PlugApp: FC<AppProps> = ({ Component, pageProps }) => {
 	)
 }
 
-export default api.withTRPC(PlugApp)
+// export default api.withTRPC(PlugApp)
+export default PlugApp

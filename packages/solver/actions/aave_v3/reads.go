@@ -11,12 +11,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+var (
+	reservesCache   []aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData
+	lastCacheUpdate int64
+	cacheDuration   int64 = 300
+)
+
 func getReserves(force ...bool) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
 	currentTime := time.Now().Unix()
 	if !((len(force) > 0 && force[0]) || reservesCache == nil || (currentTime-lastCacheUpdate) >= cacheDuration) {
 		return reservesCache, nil
 	}
-	
+
 	provider, err := utils.GetProvider(1)
 	if err != nil {
 		return nil, err

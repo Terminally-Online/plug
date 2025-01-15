@@ -3,7 +3,8 @@ import { FC, PropsWithChildren, useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { CalendarClock } from "lucide-react"
 
-import { Image, InfoCard } from "@/components"
+import { Image } from "@/components/app/utils/image"
+import { InfoCard } from "@/components/landing/cards/info"
 import { formatTitle } from "@/lib"
 
 const actions = [
