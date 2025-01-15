@@ -12,7 +12,7 @@ export const api = createTRPCNext<AppRouter>({
 	config({ ctx }) {
 		return {
 			transformer: superjson,
-			links: createLinks({ ctx }),
+			links: createLinks(ctx),
 			queryClientConfig: {
 				defaultOptions: {
 					queries: {
