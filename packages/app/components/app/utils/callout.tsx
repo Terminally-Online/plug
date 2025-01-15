@@ -33,7 +33,9 @@ const Anonymous: FC<
 > = ({ index, viewing, isAbsolute = false, className, ...props }) => {
 	const { handleSidebar } = useSidebar()
 	const { isAnonymous } = useSocket()
+
 	if (isAnonymous === false) return null
+
 	return (
 		<>
 			{isAbsolute && (
@@ -124,7 +126,13 @@ const EmptyAssets: FC<
 		isReceivable?: boolean
 	}
 > = ({ index, isEmpty, isViewing = "assets", isReceivable = false, className, ...props }) => {
+	const {
+		is: { authenticating },
+		handleSidebar
+	} = useSidebar()
+
 	if (isEmpty === false) return null
+
 	return (
 		<>
 			<div
@@ -141,8 +149,8 @@ const EmptyAssets: FC<
 				{...props}
 			>
 				{isReceivable && (
-					<Button sizing="sm" onClick={() => {}}>
-						Deposit
+					<Button sizing="sm" onClick={() => handleSidebar("authenticating")}>
+						{authenticating ? "Depositing..." : "Deposit"}
 					</Button>
 				)}
 			</Base>
