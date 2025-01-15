@@ -3,9 +3,10 @@ import { FC, PropsWithChildren } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"
 
-import { Button, Header } from "@/components"
+import { Header } from "@/components/app/layout/header"
+import { Button } from "@/components/shared/buttons/button"
 import { cn, useMediaQuery } from "@/lib"
-import { COLUMNS, useColumnStore } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {

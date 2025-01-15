@@ -1,7 +1,9 @@
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-import { Button, Callout, StaticLayout } from "@/components"
+import { Callout } from "@/components/app/utils/callout"
+import { StaticLayout } from "@/components/landing/layout/static"
+import { Button } from "@/components/shared/buttons/button"
 import { GTM_EVENTS, useAnalytics } from "@/lib"
 
 const WAITLIST_FORM =

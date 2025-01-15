@@ -3,8 +3,10 @@ import { FC, useMemo } from "react"
 
 import { User } from "lucide-react"
 
-import { Button, Frame } from "@/components"
-import { useColumnData, useSidebar } from "@/state"
+import { Frame } from "@/components/app/frames/base"
+import { Button } from "@/components/shared/buttons/button"
+import { useColumnData } from "@/state/columns"
+import { useSidebar } from "@/state/sidebar"
 
 const FRAMES_REQUIRED_AUTH = ["schedule", "run"]
 

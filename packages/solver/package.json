@@ -1,9 +1,16 @@
 {
-  "name": "solver",
+  "name": "@terminallyonline/plug-solver",
   "version": "0.1.0",
   "license": "BUSL-1.1",
   "private": true,
   "scripts": {
-    "dev": "make api"
+    "clean": "rm -rf build bindings",
+    "api": "pnpm env:decrypt && go run cmd/api/main.go",
+    "cron": "pnpm env:decrypt && go run cmd/cron/main.go",
+    "references": "pnpm env:decrypt && mkdir -p abis && go run cmd/references/main.go",
+    "bindings": "pnpm env:decrypt && pnpm clean && pnpm references && mkdir -p bindings && go run cmd/bindings/main.go",
+    "env:encrypt": "go run cmd/env/main.go encrypt",
+    "env:decrypt": "go run cmd/env/main.go decrypt",
+    "dev": "pnpm api"
   }
 }

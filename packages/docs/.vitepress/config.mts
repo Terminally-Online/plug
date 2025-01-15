@@ -1,6 +1,8 @@
 import { defineConfig, HeadConfig } from "vitepress";
 
 export default defineConfig({
+  // base: "/plug/",
+
   title: "Plug Documentation",
   titleTemplate: ":title | Plug Documentation",
   description: "Documentation for the Plug protocol and application.",
@@ -56,6 +58,16 @@ export default defineConfig({
           {
             text: "Strategies",
             link: "/concepts/strategies",
+          },
+        ],
+      },
+
+      {
+        text: "Developer",
+        items: [
+          {
+            text: "Execution Lifecycle",
+            link: "/developer/lifecycle",
           },
         ],
       },

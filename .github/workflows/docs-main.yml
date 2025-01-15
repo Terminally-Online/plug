@@ -1,4 +1,4 @@
-name: Deploy Documentation
+name: Docs - Build and Deploy
 
 on:
   push:
@@ -35,6 +35,8 @@ jobs:
 
       - name: 📥 Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
 
       - name: 📚 Get pnpm store directory
         shell: bash
@@ -51,7 +53,7 @@ jobs:
 
       - name: 📦 Install dependencies
         run: |
-          pnpm install
+          pnpm install --filter=@terminallyonline/plug-docs...
 
       - name: 📄 Setup Pages
         uses: actions/configure-pages@v5
@@ -59,7 +61,6 @@ jobs:
       - name: 🫸  Build with VitePress
         run: |
           pnpm build
-          touch .vitepress/dist/.nojekyll
 
       - name: ⛅ Upload artifact
         uses: actions/upload-pages-artifact@v2

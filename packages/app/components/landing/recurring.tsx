@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { Wallet } from "lucide-react"
 
-import { InfoCard } from "@/components"
+import { InfoCard } from "@/components/landing/cards/info"
 
 export const Recurring = () => {
 	return (

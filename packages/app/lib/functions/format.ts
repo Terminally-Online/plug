@@ -25,7 +25,7 @@ export const formatBalance = (value: string | bigint | bigint | undefined, decim
 
 export const formatTitle = (title: string) =>
 	title
-		.replace("_", " ")
+		.replaceAll("_", " ")
 		.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, "$1$3 $2$4")
 		.split(" ")
 		.map(word => {
@@ -175,7 +175,7 @@ export const formatForDisplay = (input: number | string, formatDecimals: boolean
 		return input.split("").reverse()
 	}
 
-	return input.split("").reverse()
+	return input?.split("").reverse()
 }
 
 export const frequencies = [

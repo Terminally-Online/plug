@@ -4,7 +4,8 @@ import { createContext, FC, PropsWithChildren, useContext } from "react"
 import { useSetAtom } from "jotai"
 
 import { api } from "@/server/client"
-import { actionsAtom, socketModelAtom } from "@/state"
+import { actionsAtom } from "@/state/actions"
+import { socketModelAtom } from "@/state/authentication"
 
 /**
  * This is the data layer for the application. It is implemented as a context for simplicity
@@ -27,7 +28,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		onSuccess: data => setSocket(data)
 	})
 
-	api.solver.actions.get.useQuery(undefined, {
+	api.solver.actions.getSchemas.useQuery(undefined, {
 		onSuccess: data => setActions(data)
 	})
 

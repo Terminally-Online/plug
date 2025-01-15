@@ -1,18 +1,26 @@
 import React, { FC, memo, useState } from "react"
 
-import { Accordion, Counter, SocketTokenPercentages, TokenFrame, TokenImage, TransferFrame } from "@/components"
+import { SwapFrame } from "@/components/app/frames/assets/swap"
+import { TokenFrame } from "@/components/app/frames/assets/token"
+import { TransferFrame } from "@/components/app/frames/assets/transfer"
+import { TokenImage } from "@/components/app/sockets/tokens/token-image"
+import { SocketTokenPercentages } from "@/components/app/sockets/tokens/token-percentages"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 
-export const SocketTokenItem: FC<{
+type SocketTokenItemProps = {
 	index: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
-}> = memo(({ index, token }) => {
-	const { handle } = useColumnStore(index, `${token?.symbol}-token`)
+	isListToken?: boolean
+}
 
+export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, isListToken }) => {
+	const { handle } = useColumnStore(index, `${token?.symbol}-token`)
 	const [color, setColor] = useState(DEFAULT_TOKEN_COLOR)
 	const textColor = getTextColor(color)
 
@@ -26,38 +34,44 @@ export const SocketTokenItem: FC<{
 					</div>
 				) : (
 					<div className="flex flex-row items-center gap-4">
-						<TokenImage
-							logo={
-								token?.icon ||
-								`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-							}
-							symbol={token?.symbol}
-							handleColor={setColor}
-						/>
+						{token.implementations && token.implementations.length > 0 && (
+							<TokenImage
+								logo={
+									// @ts-ignore
+									token.icon?.url ||
+									token.icon ||
+									`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+								}
+								symbol={token.symbol}
+								handleColor={setColor}
+							/>
+						)}
 
 						<div className="flex w-full flex-col items-center tabular-nums">
 							<div className="flex w-full flex-row font-bold">
-								<p>{token?.name}</p>
-								<div className="ml-auto flex flex-row items-center">
-									{token.value && (
-										<React.Fragment>
-											$
-											<Counter count={token.value} decimals={2} />
-										</React.Fragment>
-									)}
-								</div>
+								<p>{token.name}</p>
+								<p className="ml-auto flex flex-row items-center">
+									$
+									<Counter
+										count={(token.value ?? token.price ?? 0).toLocaleString("en-US", {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										})}
+										decimals={2}
+									/>
+								</p>
 							</div>
 
 							<div className="flex w-full flex-row gap-4 font-bold">
 								<div className="flex flex-row items-center gap-2 truncate overflow-ellipsis">
-									<SocketTokenPercentages implementations={token.implementations} />
+									<SocketTokenPercentages implementations={token.implementations ?? []} />
 									<div className="flex flex-row items-center gap-1 truncate text-sm opacity-40">
-										<Counter count={token.balance} />
-										<p className="whitespace-nowrap">{token.symbol.toUpperCase()}</p>
+										<Counter count={token.balance ?? 0} />
+										<p className="whitespace-nowrap">{token.symbol?.toUpperCase()}</p>
 									</div>
 								</div>
 
-								<div
+								<p
 									className={cn(
 										"ml-auto flex flex-row items-center text-sm",
 										token.change === undefined
@@ -68,7 +82,7 @@ export const SocketTokenItem: FC<{
 									)}
 								>
 									<>
-										{token.change !== undefined ? (
+										{token.change ? (
 											<>
 												<Counter count={token.change} decimals={2} />%
 											</>
@@ -76,7 +90,11 @@ export const SocketTokenItem: FC<{
 											"-"
 										)}
 									</>
-								</div>
+								</p>
+
+								{/* <pre className="text-left text-xs">
+									{JSON.stringify({ ...token, description: "" }, null, 2)}
+								</pre> */}
 							</div>
 						</div>
 					</div>
@@ -87,6 +105,7 @@ export const SocketTokenItem: FC<{
 				<>
 					<TokenFrame index={index} token={token} color={color} textColor={textColor} />
 					<TransferFrame index={index} token={token} color={color} textColor={textColor} />
+					<SwapFrame index={index} tokenOut={token} color={color} textColor={textColor} />
 				</>
 			)}
 		</>

@@ -2,7 +2,9 @@ import { FC, useRef } from "react"
 
 import { motion, useScroll, useTransform } from "framer-motion"
 
-import { BookProfit, LandingContainer, Routing } from "@/components"
+import { BookProfit } from "@/components/landing/book-profit"
+import { LandingContainer } from "@/components/landing/layout/container"
+import { Routing } from "@/components/landing/routing"
 
 import { Underperforming } from "./underperforming"
 

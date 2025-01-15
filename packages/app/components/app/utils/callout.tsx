@@ -1,8 +1,13 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
-import { Button } from "@/components/shared"
+import { Loader } from "lucide-react"
+
+import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
-import { COLUMNS, useColumnData, useColumnStore, usePlugStore, useSidebar, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
+import { useSidebar } from "@/state/sidebar"
 
 const Base: FC<
 	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
@@ -52,6 +57,23 @@ const Anonymous: FC<
 		</>
 	)
 }
+
+const Loading: FC<
+	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
+		index: number
+	}
+> = ({ index, className, ...props }) => {
+	const { column } = useColumnData(index)
+
+	if (!column) return null
+
+	return (
+		<div className={cn("absolute bottom-0 left-0 right-0 top-0", className)} {...props}>
+			<Loader size={14} className="animate-spin" />
+		</div>
+	)
+}
+
 const EmptySearch: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		isEmpty: boolean
@@ -220,6 +242,7 @@ const EmptyActivity: FC<
 }
 export const Callout = Object.assign(Base, {
 	Anonymous,
+	Loading,
 	EmptySearch,
 	EmptyAssets,
 	EmptyPlugs,

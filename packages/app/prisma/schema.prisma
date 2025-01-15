@@ -136,8 +136,10 @@ model UserSocket {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  admin         Boolean @default(false)
-  socketAddress String
+  admin          Boolean @default(false)
+  socketAddress  String
+  salt           String?
+  implementation String?
 
   // ---------------------------------------------------------------------------
   // One-to-one
@@ -219,12 +221,15 @@ model Execution {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  status           String    @default("active")
-  actions          String    @default("[]")
-  startAt          DateTime
-  endAt            DateTime?
+  status  String @default("active")
+  actions String @default("[]")
+
+  startAt DateTime
+  endAt   DateTime?
+
   frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
-  nextSimulationAt DateTime  @default(now())
+  periodEndAt      DateTime?
+  nextSimulationAt DateTime?
 
   // ---------------------------------------------------------------------------
   // One-to-many
@@ -259,6 +264,7 @@ model Simulation {
   status      String
   result      Json?
   error       String?
+  errors      String[] @default([])
   gasEstimate Float?
 
   // ---------------------------------------------------------------------------

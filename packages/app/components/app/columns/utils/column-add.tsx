@@ -1,10 +1,26 @@
 import { useMemo } from "react"
 
-import { Activity, Cable, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, ShieldAlert, Star, User } from "lucide-react"
+import {
+	Activity,
+	Cable,
+	Cog,
+	Coins,
+	Globe,
+	ImageIcon,
+	PiggyBank,
+	Plug,
+	Plus,
+	ShieldAlert,
+	Star,
+	User
+} from "lucide-react"
 
-import { Accordion } from "@/components/shared"
+import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
-import { COLUMNS, Flag, useColumnStore, useFlags, usePlugStore, useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { Flag, useFlags } from "@/state/flags"
+import { usePlugStore } from "@/state/plugs"
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]
@@ -46,6 +62,11 @@ export const OPTIONS: Options = [
 		label: "POSITIONS",
 		description: "View your positions and manage them.",
 		icon: <PiggyBank size={14} className="opacity-40" />
+	},
+	{
+		label: "SETTINGS",
+		description: "View and manage your Plug settings.",
+		icon: <Cog size={14} className="opacity-40" />
 	}
 ] as const
 
@@ -66,7 +87,7 @@ export const ADMIN_OPTIONS: Options = [
 export const ColumnAdd = () => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
-	const { columns, handle } = useColumnStore()
+	const { handle } = useColumnStore()
 	const { handle: plugHandle } = usePlugStore()
 
 	const flagOptions = useMemo(() => {
@@ -91,8 +112,8 @@ export const ColumnAdd = () => {
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
-				columns.length === 2 && "ml-2"
+				"relative my-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
+				2 === 2 && "ml-2"
 			)}
 			style={{ minWidth: "480px" }}
 		>

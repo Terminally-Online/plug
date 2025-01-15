@@ -28,11 +28,15 @@ func New() actions.BaseProtocolHandler {
 
 func (h *Handler) init() *Handler {
 	h.schemas[types.ActionTransfer] = types.Schema{
-		Sentence: "Transfer {0<amount:uint256>} {1<token:address>} to {2<recipient:address>}.",
+		Sentence: "Transfer {0<amount:[(1.1)=721?1:uint256]>} {1<token:address:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}",
 	}
 
 	h.schemas[types.ActionTransferFrom] = types.Schema{
 		Sentence: "Transfer {0<amount:uint256>} {1<token:address>} to {2<recipient:address>}.",
+	}
+
+	h.schemas[types.ActionSwap] = types.Schema{
+		Sentence: "Swap {0<amount:uint256>} {1<tokenIn:address>} for {2<tokenOut:address>}.",
 	}
 
 	return h
@@ -56,6 +60,8 @@ func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage,
 		return HandleTransfer(rawInputs, params)
 	case types.ActionTransferFrom:
 		return HandleTransferFrom(rawInputs, params)
+	case types.ActionSwap:
+		return HandleSwap(rawInputs, params)
 	default:
 		return nil, fmt.Errorf("unsupported action: %s", action)
 	}

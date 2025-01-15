@@ -2,10 +2,14 @@ import { FC, HTMLAttributes, useMemo } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import { Callout, Container, PlugGrid, Search, Tags } from "@/components"
+import { Search } from "@/components/app/inputs/search"
+import { Tags } from "@/components/app/inputs/tags"
+import Container from "@/components/app/layout/container"
+import { PlugGrid } from "@/components/app/plugs/grid/grid"
+import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
-import { COLUMNS } from "@/state"
+import { COLUMNS } from "@/state/columns"
 
 export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,

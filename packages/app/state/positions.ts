@@ -45,20 +45,14 @@ const useFetchHoldings = (address: string) => {
 		[setPositions, setLastUpdateCache]
 	)
 
-	const shouldFetchPositions = useCallback(() => {
-		return Date.now() - lastUpdateCache.positions > CACHE_DURATION
-	}, [lastUpdateCache.positions])
-
-	const shouldFetchCollectibles = useCallback(() => {
-		return Date.now() - lastUpdateCache.collectibles > CACHE_DURATION
-	}, [lastUpdateCache.collectibles])
-
 	const {
 		data: positionsData,
 		isLoading: isLoadingPositions,
+		isSuccess: isSuccessPositions,
+		isFetching: isFetchingPositions,
 		refetch: refetchPositions
 	} = api.socket.balances.positions.useQuery(address, {
-		enabled: !!address && address.startsWith("0x") && shouldFetchPositions(),
+		enabled: !!address && address.startsWith("0x"),
 		onSuccess: updatePositions,
 		refetchInterval: CACHE_DURATION,
 		staleTime: CACHE_DURATION
@@ -67,9 +61,11 @@ const useFetchHoldings = (address: string) => {
 	const {
 		data: collectiblesData,
 		isLoading: isLoadingCollectibles,
+		isSuccess: isSuccessCollectibles,
+		isFetching: isFetchingCollectibles,
 		refetch: refetchCollectibles
 	} = api.socket.balances.collectibles.useQuery(address, {
-		enabled: !!address && address.startsWith("0x") && shouldFetchCollectibles(),
+		enabled: !!address && address.startsWith("0x"),
 		onSuccess: updateCollectibles,
 		refetchInterval: CACHE_DURATION,
 		staleTime: CACHE_DURATION
@@ -80,21 +76,22 @@ const useFetchHoldings = (address: string) => {
 		if (collectiblesData) updateCollectibles(collectiblesData)
 	}, [positionsData, collectiblesData, updatePositions, updateCollectibles])
 
-	const isLoading = isLoadingPositions || isLoadingCollectibles
+	const isLoading = isLoadingPositions || isLoadingCollectibles || isFetchingPositions || isFetchingCollectibles
+	const isSuccess = isSuccessPositions && isSuccessCollectibles
 
 	const refetch = useCallback(() => {
-		if (shouldFetchPositions()) refetchPositions()
-		if (shouldFetchCollectibles()) refetchCollectibles()
-	}, [shouldFetchPositions, shouldFetchCollectibles, refetchPositions, refetchCollectibles])
+		refetchPositions()
+		refetchCollectibles()
+	}, [refetchPositions, refetchCollectibles])
 
-	return { isLoading, refetch }
+	return { isLoading, isSuccess, refetch }
 }
 
 export const useHoldings = (providedAddress?: string) => {
 	const { socket } = useSocket()
 	const address = providedAddress || socket?.socketAddress || ""
 
-	const { isLoading, refetch: refetchHoldings } = useFetchHoldings(address ?? socket?.socketAddress)
+	const { isLoading, isSuccess, refetch: refetchHoldings } = useFetchHoldings(address ?? socket?.socketAddress)
 
 	const collectibles = useAtomValue(collectiblesFamily(address))
 	const positions = useAtomValue(positionsFamily(address))
@@ -105,6 +102,7 @@ export const useHoldings = (providedAddress?: string) => {
 		tokens: positions.tokens,
 		protocols: positions.protocols,
 		isLoading,
+		isSuccess,
 		refetchHoldings
 	}
 }

@@ -1,9 +1,12 @@
+import { ByteArray, bytesToHex, encodePacked, getContractAddress, toBytes } from "viem"
 import { mainnet } from "viem/chains"
 import { normalize } from "viem/ens"
 
 import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
+
+import { getSocketAddress, getSocketSalt } from "@terminallyonline/plug-core/lib"
 
 import { createClient, SOCKET_BASE_QUERY } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
@@ -13,10 +16,11 @@ import { companion } from "./companion"
 import { referral } from "./referral"
 import { stats } from "./stats"
 
-export const TEMPORARY_ADDRESS = "0x62180042606624f02d8a130da8a3171e9b33894d"
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
 
 const client = createClient(mainnet.id)
+
+export const MAGIC_NONCE = BigInt(1738)
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {
@@ -44,11 +48,25 @@ export const socket = createTRPCRouter({
 			}
 		}
 
+		let socketAddress = ""
+		let salt = ""
+		let implementation = ""
+
+		if (ctx.session.address.startsWith("0x")) {
+			const { bytes, hex } = getSocketSalt(MAGIC_NONCE, ctx.session.address as `0x${string}`)
+			const socketDetails = getSocketAddress(bytes)
+			socketAddress = socketDetails.address
+			salt = hex
+			implementation = socketDetails.implementation
+		}
+
 		await ctx.db.userSocket.upsert({
 			where: { id: ctx.session.address },
 			create: {
 				id: ctx.session.address,
-				socketAddress: TEMPORARY_ADDRESS,
+				socketAddress,
+				salt,
+				implementation,
 				identity: {
 					create: {
 						ens: {

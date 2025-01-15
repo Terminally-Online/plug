@@ -3,7 +3,7 @@ import { FC, HTMLAttributes, useMemo } from "react"
 import BoringAvatar from "boring-avatars"
 
 import { cn } from "@/lib"
-import { useSocket } from "@/state"
+import { useSocket } from "@/state/authentication"
 
 const breakpoints = 12
 const angles = 360
@@ -34,7 +34,7 @@ export const Avatar: FC<HTMLAttributes<HTMLDivElement> & { name: string; rotatio
 			style={{ filter: `hue-rotate(${hueRotation}deg)`, ...style }}
 			{...props}
 		>
-			<BoringAvatar variant="beam" name={name} size={"100%"} colors={["#00E100", "#A3F700"]} square />
+			<BoringAvatar variant="beam" name={name} size={"100%"} colors={["#385842", "#D2F38A"]} square />
 		</div>
 	)
 }

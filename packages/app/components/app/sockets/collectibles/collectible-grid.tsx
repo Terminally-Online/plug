@@ -1,8 +1,6 @@
-"use client"
-
 import { FC } from "react"
 
-import { SocketCollectibleItem } from "@/components"
+import { SocketCollectibleItem } from "@/components/app/sockets/collectibles/collectible-item"
 import { RouterOutputs } from "@/server/client"
 
 export const SocketCollectibleGrid: FC<{

@@ -3,18 +3,17 @@ import { FC, HTMLAttributes, useEffect, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
-import {
-	ActionsFrame,
-	ActionView,
-	AuthRequiredFrame,
-	Button,
-	ExecuteFrame,
-	ManagePlugFrame,
-	Search,
-	ShareFrame
-} from "@/components"
+import { AuthRequiredFrame } from "@/components/app/frames/misc/auth-required"
+import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
+import { ExecuteFrame } from "@/components/app/frames/plugs/[id]/execute"
+import { ManagePlugFrame } from "@/components/app/frames/plugs/[id]/manage"
+import { ShareFrame } from "@/components/app/frames/plugs/[id]/share"
+import { Search } from "@/components/app/inputs/search"
+import { ActionView } from "@/components/app/plugs/actions/action-view"
+import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
-import { COLUMNS, useColumnStore, usePlugData } from "@/state"
+import { COLUMNS, useColumnStore } from "@/state/columns"
+import { usePlugData } from "@/state/plugs"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
 	index = COLUMNS.MOBILE_INDEX,

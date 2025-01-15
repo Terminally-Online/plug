@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/actions/aave_v3"
+	"solver/actions/ens"
+	"solver/actions/morpho"
+	"solver/actions/nouns"
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
 	"solver/types"
@@ -18,9 +21,12 @@ type Solver struct {
 func New() *Solver {
 	return &Solver{
 		protocols: map[types.Protocol]actions.BaseProtocolHandler{
-			types.ProtocolPlug:  plug.New(),
+			types.ProtocolPlug:    plug.New(),
 			types.ProtocolAaveV3:  aave_v3.New(),
 			types.ProtocolYearnV3: yearn_v3.New(),
+			types.ProtocolENS:     ens.New(),
+			types.ProtocolNouns:   nouns.New(),
+			types.ProtocolMorpho:  morpho.New(),
 		},
 	}
 }
@@ -38,15 +44,19 @@ func (s *Solver) GetSupportedProtocols(action types.Action) []types.Protocol {
 	return supported
 }
 
-func (s *Solver) GetTransaction(action types.Action, rawInputs json.RawMessage, chainId int, from string) ([]*types.Transaction, error) {
-	var baseInputs types.BaseInputs
-	if err := json.Unmarshal(rawInputs, &baseInputs); err != nil {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from string) ([]*types.Transaction, error) {
+	var inputs types.BaseInputs
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
 	}
 
-	handler, exists := s.protocols[baseInputs.Protocol]
+	if err := inputs.Validate(); err != nil {
+		return nil, err
+	}
+
+	handler, exists := s.protocols[inputs.Protocol]
 	if !exists {
-		return nil, fmt.Errorf("unsupported protocol: %s", baseInputs.Protocol)
+		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
 	provider, err := utils.GetProvider(chainId)
@@ -60,7 +70,7 @@ func (s *Solver) GetTransaction(action types.Action, rawInputs json.RawMessage, 
 		From:     from,
 	}
 
-	return handler.GetTransaction(action, rawInputs, params)
+	return handler.GetTransaction(inputs.Action, rawInputs, params)
 }
 
 func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtocolHandler, bool) {
@@ -70,13 +80,4 @@ func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtoc
 
 func (s *Solver) GetProtocols() map[types.Protocol]actions.BaseProtocolHandler {
 	return s.protocols
-}
-
-func (s *Solver) SupportsAction(handler actions.BaseProtocolHandler, action types.Action) bool {
-	for _, a := range handler.GetActions() {
-		if a == action {
-			return true
-		}
-	}
-	return false
 }

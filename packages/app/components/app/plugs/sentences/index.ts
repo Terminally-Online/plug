@@ -1,1 +1,0 @@
-export { Sentence } from "./sentence"

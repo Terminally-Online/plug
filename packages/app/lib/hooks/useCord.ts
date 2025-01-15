@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -29,7 +29,7 @@ const initialState: CordState = {
 	validationErrors: new Map()
 }
 
-export const useCord = (sentence: string, values: Record<string, string | undefined>): UseCordReturn => {
+export const useCord = (sentence: string, values: Record<string, string | undefined>) => {
 	const [state, setState] = useState<CordState>(() => ({
 		...initialState,
 		values: createStateFromValues(values)
@@ -93,9 +93,16 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 					value
 				})
 
+				const dependentInputs = parsed.inputs.filter(input => input.dependentOn === index)
+				const newValues = new Map(result.value)
+
+				dependentInputs.forEach(input => {
+					newValues.delete(input.index)
+				})
+
 				setState(prev => ({
 					...prev,
-					values: result.value,
+					values: newValues,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
 								type: "validation",
@@ -109,6 +116,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 	}
 
 	const helpers = {
+		getInputName: useCallback((index: number) => parsed?.inputs[index].name, [parsed]),
 		getInputValue: useCallback((index: number) => state.values.get(index), [state.values]),
 		getInputError: useCallback((index: number) => state.validationErrors.get(index), [state.validationErrors]),
 		getDependentInputs: useCallback(
@@ -144,13 +152,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			return !hasEmptyValues
 		}, [parsedWithFilteredInputs, state.validationErrors, state.values])
 	}
-
-	useEffect(() => {
-		setState(prev => ({
-			...prev,
-			values: createStateFromValues(values)
-		}))
-	}, [values])
 
 	return {
 		state: {

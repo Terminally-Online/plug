@@ -157,3 +157,62 @@ export type ZerionCollectibles = {
 		}
 	}>
 }
+
+export type ZerionFungibles = {
+	links: {
+		self: string
+		next: string
+	}
+	data: Array<{
+		type: string
+		id: string
+		attributes: {
+			name: string
+			symbol: string
+			description: string
+			icon: {
+				url: string
+			}
+			flags: {
+				verified: boolean
+			}
+			external_links: Array<{
+				type: string
+				name: string
+				url: string
+			}>
+			implementations: Array<{
+				chain_id: string
+				address: string
+				decimals: number
+			}>
+			market_data: {
+				total_supply: number
+				circulating_supply: number
+				market_cap: number
+				fully_diluted_valuation: number
+				price: number
+				changes: {
+					percent_1d: number
+					percent_30d: number
+					percent_90d: number
+					percent_365d: number
+				}
+			}
+		}
+		relationships: {
+			chart_day: {
+				links: {
+					related: string
+				}
+				data: {
+					type: string
+					id: string
+				}
+			}
+		}
+		links: {
+			self: string
+		}
+	}>
+}

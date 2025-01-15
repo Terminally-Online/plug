@@ -1,11 +1,15 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 
 import { AlertCircle, CheckCircle, Loader, Pause, XCircle } from "lucide-react"
 
-import { Accordion, Counter, DateSince, ExecutionFrame } from "@/components"
-import { formatTitle } from "@/lib"
+import { ExecutionFrame } from "@/components/app/frames/activity/execution"
+import { SimulationFrame } from "@/components/app/frames/activity/simulation"
+import { Accordion } from "@/components/shared/utils/accordion"
+import { Counter } from "@/components/shared/utils/counter"
+import { DateSince } from "@/components/shared/utils/date-since"
+import { cardColors, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state"
+import { useColumnStore } from "@/state/columns"
 
 export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 	switch (status) {
@@ -14,6 +18,16 @@ export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 				<div className="relative h-10 min-w-10">
 					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
 					<Loader
+						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
+						size={16}
+					/>
+				</div>
+			)
+		case "completed":
+			return (
+				<div className="relative h-10 min-w-10">
+					<div className="absolute mt-8 h-48 w-10 rounded-full bg-blue-400 blur-2xl filter" />
+					<CheckCircle
 						className="absolute top-1/2 ml-auto h-4 w-6 -translate-y-1/2 text-center text-blue-400"
 						size={16}
 					/>
@@ -75,7 +89,8 @@ export const ActivityIcon: FC<{ status: string }> = ({ status }) => {
 export const ActivityItem: FC<{
 	index: number
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
-}> = ({ index, activity }) => {
+	simulationId: string | undefined
+}> = ({ index, activity, simulationId }) => {
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
 	return (
@@ -87,8 +102,15 @@ export const ActivityItem: FC<{
 						<p>.</p>
 					</div>
 				) : (
-					<div className="flex w-full flex-row">
+					<div className="flex w-full flex-row items-center">
 						<ActivityIcon status={activity.status} />
+
+						<div
+							className="mr-4 h-10 w-10 min-w-10 rounded-sm bg-plug-green/10"
+							style={{
+								backgroundImage: cardColors[activity.workflow.color]
+							}}
+						/>
 
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -112,9 +134,12 @@ export const ActivityItem: FC<{
 				)}
 			</Accordion>
 
-			{activity && (
-				<ExecutionFrame index={index} icon={<ActivityIcon status={activity.status} />} activity={activity} />
-			)}
+			<ExecutionFrame
+				index={index}
+				icon={<ActivityIcon status={activity?.status ?? "pending"} />}
+				activity={activity}
+			/>
+			<SimulationFrame index={index} activity={activity} simulationId={simulationId} />
 		</>
 	)
 }

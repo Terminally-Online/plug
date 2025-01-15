@@ -2,7 +2,7 @@ import { FC } from "react"
 
 import { motion } from "framer-motion"
 
-import { Button } from "@/components"
+import { Button } from "@/components/shared/buttons/button"
 import { env } from "@/env"
 import { GTM_EVENTS, routes, useAnalytics } from "@/lib"
 

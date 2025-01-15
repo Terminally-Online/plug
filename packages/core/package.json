@@ -1,12 +1,13 @@
 {
-	"name": "@terminally-online/plug-core",
-	"version": "0.0.0",
+	"name": "@terminallyonline/plug-core",
+	"version": "0.0.1",
 	"author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
 	"maintainers": [
 		"🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
 	],
 	"license": "BUSL-1.1",
 	"scripts": {
+		"prepare": "git rev-parse --git-dir > /dev/null 2>&1 && cd $(git rev-parse --show-toplevel) && git submodule update --init --recursive || echo 'Skipping Git submodule update (not a Git repository)'",
 		"prebuild:schema": "pnpm plug:schema",
 		"prebuild:zod": "pnpm plug:zod",
 		"prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
@@ -16,7 +17,7 @@
 		"prebuild:format": "prettier --write .",
 		"prebuild:package": "pnpm build:lint && rm -rf ./dist",
 		"prebuild": "run-s prebuild:*",
-		"build:contracts": "forge fmt && pnpm prebuild:artifacts && npx wagmi generate",
+		"build:contracts": "forge fmt && pnpm prebuild:artifacts && pnpm wagmi generate",
 		"build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
 		"build:format": "pnpm prettier --write .",
 		"build:mine": "pnpm build:contracts && pnpm tsx src/lib/functions/core/mine.ts && pnpm prebuild:etcher && forge test",
@@ -32,9 +33,8 @@
 		"plug:zod": "pnpm plug zod"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.1",
 		"@prb/test": "^0.6.4",
-		"@trivago/prettier-plugin-sort-imports": "^4.3.0",
+		"@trivago/prettier-plugin-sort-imports": "^5.2.1",
 		"@types/chai": "^4.3.14",
 		"@types/chai-as-promised": "^7.1.8",
 		"@types/fs-extra": "^11.0.4",
@@ -43,9 +43,7 @@
 		"@wagmi/cli": "^2.1.4",
 		"chai": "^5.1.0",
 		"dedent": "^1.5.3",
-		"ds-test": "github:dapphub/ds-test",
 		"execa": "^8.0.1",
-		"forge-std": "github:foundry-rs/forge-std#v1",
 		"fs-extra": "^11.2.0",
 		"nodemon": "^3.1.0",
 		"npm-run-all": "^4.1.5",
