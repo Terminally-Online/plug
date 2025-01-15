@@ -11,15 +11,15 @@ import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
 
-export const SocketAssets: FC<
-	HTMLAttributes<HTMLDivElement> & {
-		index?: number
-		address?: string
-		hasTokens?: boolean
-		hasPositions?: boolean
-		hasCollectibles?: boolean
-	}
-> = ({
+type SocketAssetsProps = HTMLAttributes<HTMLDivElement> & {
+	index?: number
+	address?: string
+	hasTokens?: boolean
+	hasPositions?: boolean
+	hasCollectibles?: boolean
+}
+
+export const SocketAssets: FC<SocketAssetsProps> = ({
 	index = -1,
 	address,
 	hasTokens = false,
@@ -38,10 +38,17 @@ export const SocketAssets: FC<
 				index={index}
 				isEmpty={[collectibles, tokens, protocols].every(basket => basket.length === 0)}
 			/>
+
 			{isAnonymous === false && (
 				<>
 					{hasTokens && tokens && tokens.length > 0 && (
-						<SocketTokenList className="h-max" index={index} expanded={true} isColumn={false} />
+						<SocketTokenList
+							className="h-max"
+							index={index}
+							expanded={true}
+							isColumn={false}
+							columnTokens={tokens}
+						/>
 					)}
 
 					{hasPositions && protocols && protocols.length > 0 && (
@@ -51,7 +58,12 @@ export const SocketAssets: FC<
 								icon={<CircleDollarSign size={14} className="opacity-40" />}
 								label="Positions"
 							/>
-							<SocketPositionList index={index} expanded={true} isColumn={false} />
+							<SocketPositionList
+								index={index}
+								expanded={true}
+								isColumn={false}
+								columnProtocols={protocols}
+							/>
 						</>
 					)}
 
@@ -62,7 +74,12 @@ export const SocketAssets: FC<
 								icon={<ImageIcon size={14} className="opacity-40" />}
 								label="Collectibles"
 							/>
-							<SocketCollectionList index={index} expanded={true} isColumn={false} />
+							<SocketCollectionList
+								index={index}
+								expanded={true}
+								isColumn={false}
+								columnCollectibles={collectibles}
+							/>
 						</>
 					)}
 				</>

@@ -34,8 +34,10 @@ export const SocketTokenList: FC<
 	})
 
 	const visibleTokens = useMemo(() => {
-		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0))
+		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0)) {
+			console.log("returning empty array")
 			return Array(5).fill(undefined)
+		}
 
 		const filteredTokens = tokens.filter(
 			token =>
@@ -53,7 +55,7 @@ export const SocketTokenList: FC<
 		const unownedTokens = searchedTokens?.filter(token => !ownedSymbols.includes(token.symbol))
 
 		return filteredTokens.concat(unownedTokens ?? [])
-	}, [isAnonymous, tokens, expanded, count, debouncedSearch, searchedTokens])
+	}, [isAnonymous, tokens, expanded, count, debouncedSearch, searchedTokens, search])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
@@ -81,12 +83,7 @@ export const SocketTokenList: FC<
 			</div>
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
-			<Callout.EmptyAssets
-				index={index}
-				isEmpty={!isAnonymous && search === "" && tokens.length === 0}
-				isViewing="tokens"
-				isReceivable={true}
-			/>
+			<Callout.EmptyAssets index={index} isEmpty={tokens.length === 0} isViewing="tokens" isReceivable={true} />
 		</div>
 	)
 })
