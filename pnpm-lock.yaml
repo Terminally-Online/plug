@@ -275,8 +275,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
       solady:
-        specifier: ^0.0.191
-        version: 0.0.191
+        specifier: ^0.0.294
+        version: 0.0.294
       viem:
         specifier: ^2.9.17
         version: 2.22.8(bufferutil@4.0.9)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.24.1)
@@ -7557,6 +7557,9 @@ packages:
 
   solady@0.0.191:
     resolution: {integrity: sha512-wiab1exBWHT7tLv8m+MnIppa0cn1PBhYskdYqe9/WYgL5Tn2cph5uZVLgy3H3fXXrya68Y5K5oe17hvOyrU87Q==}
+
+  solady@0.0.294:
+    resolution: {integrity: sha512-PKsTjxezVpTZr9eItphdSgHKmGgfRAWhbJ91YCzX9X30EkHKYiG0W0drkUumrlmUboWXyuI2DhIgfWUR4jaNiA==}
 
   solc@0.8.26:
     resolution: {integrity: sha512-yiPQNVf5rBFHwN6SIf3TUUvVAFKcQqmSUFeq+fb6pNRCo0ZCgpYOZDi3BVoezCPIAcKrVYd/qXlBLUP9wVrZ9g==}
@@ -17472,6 +17475,8 @@ snapshots:
       - supports-color
 
   solady@0.0.191: {}
+
+  solady@0.0.294: {}
 
   solc@0.8.26(debug@4.4.0):
     dependencies:
