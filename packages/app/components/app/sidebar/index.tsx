@@ -103,20 +103,13 @@ const ConsoleSidebarPane = () => {
 										? "Companion"
 										: is.stats
 											? "Stats"
-											: is.searching
-												? "Search"
-												: session?.user.id.startsWith("0x")
-													? "Wallet"
-													: "Login"
+											: session?.user.id.startsWith("0x")
+												? "Wallet"
+												: "Login"
 								}
 								size="md"
 								icon={
-									is.searching ? (
-										<SearchIcon
-											size={14}
-											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-										/>
-									) : is.stats ? (
+									is.stats ? (
 										<ChartBar
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -140,9 +133,7 @@ const ConsoleSidebarPane = () => {
 						</div>
 
 						<div className="h-full overflow-y-scroll">
-							{is.searching ? (
-								<ColumnSearch index={0} className="px-4" />
-							) : is.stats ? (
+							{is.stats ? (
 								<ColumnStats index={0} />
 							) : is.companion ? (
 								<ColumnCompanion index={0} />
@@ -216,19 +207,6 @@ export const ConsoleSidebar = () => {
 								isExpanded={is.expanded}
 								isPrimary={true}
 								onClick={() => handlePlugs.plug.add()}
-							/>
-
-							<ConsoleSidebarAction
-								icon={
-									<Search
-										size={14}
-										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-									/>
-								}
-								title="Search"
-								isExpanded={is.expanded}
-								isActive={is.searching}
-								onClick={() => handleSidebar("searching")}
 							/>
 
 							<ConsoleSidebarAction
