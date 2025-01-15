@@ -49,8 +49,8 @@ export const PageContent = () => {
     }
 
     // Add null check for handle
-    if (!column || column.key === COLUMNS.KEYS.PLUG) {
-        console.log("[PageContent] Redirecting to HOME")
+    if (!column) {
+        console.log("[PageContent] Redirecting to HOME - No column")
         if (!handle) {
             console.warn("[PageContent] Handle is undefined")
             return null
@@ -62,7 +62,10 @@ export const PageContent = () => {
         return null
     }
 
+    // Render the appropriate content based on column key
     switch (column.key) {
+        case COLUMNS.KEYS.PLUG:
+            return <Plug index={COLUMNS.MOBILE_INDEX} item={column.item} from={column.from} />
         case COLUMNS.KEYS.HOME:
             return (
                 <Container className="mb-24">
@@ -94,6 +97,6 @@ export const PageContent = () => {
             )
         default:
             console.warn("[PageContent] No matching column key:", column?.key)
-            return <></>
+            return null
     }
 }

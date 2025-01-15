@@ -52,7 +52,21 @@ export const PageNavbar = memo(() => {
                 {/* Create Plug Button */}
                 <button
                     className="group flex h-8 w-8 items-center justify-center rounded-md bg-plug-yellow text-plug-green transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
-                    onClick={() => plugHandle.plug.add({ index: COLUMNS.MOBILE_INDEX })}
+                    onClick={async () => {
+                        const result = await plugHandle.plug.add({ 
+                            index: COLUMNS.MOBILE_INDEX,
+                            from: COLUMNS.KEYS.HOME 
+                        });
+                        
+                        // Only navigate if we have a plug ID
+                        if (result?.plug?.id) {
+                            handle.navigate({ 
+                                index: COLUMNS.MOBILE_INDEX, 
+                                key: COLUMNS.KEYS.PLUG,
+                                item: result.plug.id
+                            });
+                        }
+                    }}
                 >
                     <Plus
                         size={24}
