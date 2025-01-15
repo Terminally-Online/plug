@@ -27,15 +27,11 @@ jobs:
 
       - name: ⚙️  Setup Action
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.14.4
-
 
       - name: 📚 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "pnpm"
 
       - name: 🫙 Restore cache
         uses: actions/cache@v4
@@ -47,25 +43,12 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: 📦 Install dependencies
-        run: pnpm install --filter=@terminallyonline/plug-app...
+        run: pnpm install
 
       - name: 🔥 Build Next (Not Deploying)
         if: github.ref != 'refs/heads/main'
         run: |
-          cd packages/app
-          echo "ENCRYPTION_KEY=github-action 
-          DATABASE_URL=postgresql://postgres:postgres@localhost:5434/postgres 
-          NEXTAUTH_URL=http://localhost:3000 
-          NEXTAUTH_SECRET=github-action 
-          OPENSEA_KEY=github-action 
-          ZERION_KEY=github-action 
-          NEXT_PUBLIC_EARLY_ACCESS=false 
-          NEXT_PUBLIC_APP_URL=http://localhost:3000 
-          NEXT_PUBLIC_WS_URL=ws://localhost:3001 
-          NEXT_PUBLIC_WALLETCONNECT_ID=github-action 
-          NEXT_PUBLIC_ALCHEMY_KEY=github-action 
-          ADMIN_API_KEY=github-action" > .env
-          pnpm build --filter=@terminallyonline/plug-app
+          ENCRYPTION_KEY=github-action DATABASE_URL=postgresql://postgres:postgres@localhost:5434/postgres NEXTAUTH_URL=http://localhost:3000 NEXTAUTH_SECRET=github-action OPENSEA_KEY=github-action ZERION_KEY=github-action NEXT_PUBLIC_EARLY_ACCESS=false NEXT_PUBLIC_APP_URL=http://localhost:3000 NEXT_PUBLIC_WS_URL=ws://localhost:3001 NEXT_PUBLIC_WALLETCONNECT_ID=github-action NEXT_PUBLIC_ALCHEMY_KEY=github-action pnpm build --filter=app
 
       - name: 🔄 Install Vercel CLI
         if: github.ref == 'refs/heads/main'
@@ -73,19 +56,18 @@ jobs:
 
       - name: 🔗 Pull Vercel Environment Information
         if: github.ref == 'refs/heads/main'
-        run: |
-          cd packages/app
-          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
 
       - name: 🚀 Deploy Project Artifacts to Vercel
         if: github.ref == 'refs/heads/main'
         run: |
-          cd packages/app
-          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --archive=tgz --prod --token=${{ secrets.VERCEL_TOKEN }} --build-env VERCEL_PACKAGE_MANAGER=pnpm
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.APP_VERCEL_PROJECT_ID }}
 
       - name: ☢️  Purge CloudFlare
         if: github.ref == 'refs/heads/main'
