@@ -237,7 +237,7 @@ export const ConsoleColumn: FC<{
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
 									<ConsoleSettings index={column.index} className="px-4 pt-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
-									<ColumnApplication index={column.index} className="pt-4" />
+									<ColumnApplication index={column.index} />
 								) : (
 									<React.Fragment></React.Fragment>
 								)}
