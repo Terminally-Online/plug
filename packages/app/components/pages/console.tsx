@@ -34,6 +34,13 @@ export const ConsolePage = () => {
 	const { columns, handle } = useColumnStore()
 	const { plugs } = usePlugStore()
 
+	console.log("[ConsolePage] Render", {
+		socket: !!socket,
+		md: md,
+		columnsLength: columns.length,
+		hasPlugs: plugs.length > 0
+	})
+
 	useEffect(() => {
 		if (!socket || !socket.identity) return
 

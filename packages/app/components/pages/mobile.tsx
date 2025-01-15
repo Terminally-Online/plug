@@ -11,6 +11,12 @@ export const MobileConsole = memo(() => {
     
     // Only show navbar if not on a Plug page
     const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
+
+    console.log("[MobileConsole] Render", {
+        hasColumn: !!column,
+        columnKey: column?.key,
+        showNavbar
+    })
     
     return (
         <>

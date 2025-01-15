@@ -8,17 +8,27 @@ import { SocketActivity } from "@/components/app/sockets/activity/activity-list"
 import { SocketAssets } from "@/components/app/sockets/assets"
 import { SocketProfile } from "@/components/app/sockets/profile"
 import { Plugs } from "@/components/shared/framework/plugs"
-import { COLUMNS, useColumnData } from "@/state/columns"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 import { useSocket } from "@/state/authentication"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
 
 export const PageContent = () => {
     const { data: session } = useSession()
     const { socket } = useSocket()
-    const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+    const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
 
     const isAuthenticated = session?.user.id?.startsWith("0x")
     const isReferred = Boolean(socket && socket.identity?.referrerId)
+
+    console.log("[PageContent] Render", {
+        hasSession: !!session,
+        isAuthenticated,
+        hasSocket: !!socket,
+        isReferred,
+        hasColumn: !!column,
+        columnKey: column?.key,
+        hasHandle: !!handle
+    })
 
     // Show auth content if not logged in
     if (!isAuthenticated) {
@@ -38,7 +48,19 @@ export const PageContent = () => {
         )
     }
 
-    if (!column) return null
+    // Add null check for handle
+    if (!column || column.key === COLUMNS.KEYS.PLUG) {
+        console.log("[PageContent] Redirecting to HOME")
+        if (!handle) {
+            console.warn("[PageContent] Handle is undefined")
+            return null
+        }
+        handle.navigate({ 
+            index: COLUMNS.MOBILE_INDEX, 
+            key: COLUMNS.KEYS.HOME 
+        })
+        return null
+    }
 
     switch (column.key) {
         case COLUMNS.KEYS.HOME:
@@ -51,12 +73,6 @@ export const PageContent = () => {
             return <PlugsDiscover className="pt-4" />
         case COLUMNS.KEYS.MY_PLUGS:
             return <PlugsMine className="pt-4" />
-        case COLUMNS.KEYS.PLUG:
-            return (
-                <Container>
-                    <Plug item={column.item} />
-                </Container>
-            )
         case COLUMNS.KEYS.ACTIVITY:
             return (
                 <Container className="pt-4">
@@ -77,6 +93,7 @@ export const PageContent = () => {
                 </Container>
             )
         default:
+            console.warn("[PageContent] No matching column key:", column?.key)
             return <></>
     }
 }
