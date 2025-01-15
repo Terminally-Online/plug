@@ -31,7 +31,7 @@ export default function AuthError() {
 			<div className="w-full max-w-md rounded-lg border-[2px] border-plug-green/10 p-6 shadow-sm">
 				<div className="mb-8 space-y-2 text-center">
 					<h1 className="text-xl font-semibold tracking-tight">
-						You've encounted an: <span className="opacity-60">Authentication Error</span>. This has been
+						You have encounted an: <span className="opacity-60">Authentication Error</span>. This has been
 						relayed to our team.
 					</h1>
 					<p className="mx-auto max-w-[280px] text-sm font-bold opacity-60">{message}</p>
