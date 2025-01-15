@@ -36,6 +36,7 @@ jobs:
           node-version: 18
 
       - name: 📦 Install dependencies
+        if: github.ref != 'refs/heads/main'
         run: pnpm install --filter=@terminallyonline/plug-app...
 
       - name: 🔥 Build Next (Not Deploying)
