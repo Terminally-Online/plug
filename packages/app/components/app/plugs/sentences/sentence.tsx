@@ -194,7 +194,10 @@ export const Sentence: FC<SentenceProps> = ({
 										>
 											{(option && option.label) ||
 												value?.value ||
-												input.name ||
+												input.name
+													?.replaceAll("_", " ")
+													.replace(/([A-Z])/g, " $1")
+													.toLowerCase() ||
 												`Input #${input.index}`}
 										</button>
 
