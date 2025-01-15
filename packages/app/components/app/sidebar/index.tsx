@@ -135,7 +135,7 @@ const ConsoleSidebarPane = () => {
 								}
 								nextPadded={false}
 								nextOnClick={() => handleActivePane(null)}
-								nextLabel={<X size={14} />}
+								nextLabel={account.isAuthenticated ? <X size={14} /> : undefined}
 							/>
 						</div>
 
@@ -261,7 +261,7 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
-					{account.isAuthenticated && (
+					{(account.address || account.isAuthenticated) && (
 						<>
 							<ConsoleSidebarAction
 								className={cn(is.expanded && "pr-16")}
