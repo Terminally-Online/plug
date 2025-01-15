@@ -34,6 +34,9 @@ var (
 	Mainnet = &Network{
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
+			"weth": {
+				"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+			},
 			"aave_v3": {
 				"pool":                  "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 				"ui_pool_data_provider": "0x194324C9Af7f56E22F1614dD82E18621cb9238E7",
