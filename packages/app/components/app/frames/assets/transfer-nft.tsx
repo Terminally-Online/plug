@@ -304,12 +304,12 @@ export const TransferNFTFrame: FC<{
 					<button
 						className={cn(
 							"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
-							!isReady && "bg-white"
+							isReady === false && "transparent"
 						)}
 						style={{
-							backgroundColor: isReady ? color : "#FFFFFF",
+							backgroundColor: isReady ? color : "transparent",
 							color: isReady ? textColor : color,
-							borderColor: isReady ? "#FFFFFF" : color
+							borderColor: isReady ? "transparent" : color
 						}}
 						disabled={!isReady}
 					>
