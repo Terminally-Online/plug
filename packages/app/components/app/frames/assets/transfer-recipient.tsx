@@ -2,6 +2,8 @@ import Image from "next/image"
 import { FC, HTMLAttributes } from "react"
 
 import { isAddress, zeroAddress } from "viem"
+import { mainnet } from "viem/chains"
+import { normalize } from "viem/ens"
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi"
 
 import { SearchIcon } from "lucide-react"
@@ -43,10 +45,11 @@ export const TransferRecipient: FC<
 	const { account } = useConnect()
 
 	const { data: ensAddress } = useEnsAddress({
-		name: address,
+		name: normalize(address),
 		query: {
 			enabled: address?.endsWith("eth") || false
-		}
+		},
+		chainId: mainnet.id
 	})
 	const {
 		data: ensName,
@@ -56,13 +59,15 @@ export const TransferRecipient: FC<
 		address: ensAddress ?? (address as `0x${string}`),
 		query: {
 			enabled: (ensAddress ?? address ?? "").startsWith("0x") === true
-		}
+		},
+		chainId: mainnet.id
 	})
 	const { data: ensAvatar } = useEnsAvatar({
 		name: ensName ?? "",
 		query: {
 			enabled: ensName !== undefined || address?.endsWith(".eth") || false
-		}
+		},
+		chainId: mainnet.id
 	})
 
 	const Badge = () => {
