@@ -180,14 +180,16 @@ export const Sentence: FC<SentenceProps> = ({
 											className={cn(
 												"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
 												!isValid ? "text-plug-red" : "text-plug-green",
-												own === true ? "cursor-pointer" : "cursor-default"
+												own && !preview ? "cursor-pointer" : "cursor-default"
 											)}
 											style={{
 												background: !isValid
 													? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
 													: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
 											}}
-											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
+											onClick={() =>
+												own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
+											}
 										>
 											{(option && option.label) ||
 												value?.value ||
