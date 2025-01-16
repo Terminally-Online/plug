@@ -6,7 +6,7 @@ import { getCsrfToken } from "next-auth/react"
 import { parseSiweMessage } from "viem/siwe"
 
 import { env } from "@/env"
-import { createClient } from "@/lib"
+import { ChainId, createClient } from "@/lib"
 
 declare module "next-auth" {
 	interface Session extends DefaultSession {
@@ -47,8 +47,6 @@ export const authOptions: NextAuthOptions = {
 			async authorize(credentials, req) {
 				if (!credentials?.message || !credentials?.signature || !credentials?.chainId) return null
 
-				console.log("Verifying credentials")
-
 				const unauthenticatedPairs = ["0x0", "0xdemo"]
 				if (
 					unauthenticatedPairs.includes(credentials.message) ||
@@ -66,10 +64,7 @@ export const authOptions: NextAuthOptions = {
 
 				try {
 					const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || "")
-
-					console.log("Creating client")
-					const client = createClient(Number(credentials.chainId))
-					console.log("Created client")
+					const client = createClient(Number(credentials.chainId) as ChainId)
 					const valid = await client.verifySiweMessage({
 						message: credentials.message,
 						signature: credentials.signature as `0x${string}`,
@@ -78,7 +73,6 @@ export const authOptions: NextAuthOptions = {
 							req: { headers: req.headers }
 						})
 					})
-					console.log("Verified message")
 					if (valid) {
 						const address = parseSiweMessage(credentials.message).address as string
 						return { id: address }
@@ -94,7 +88,6 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async session({ session, token }: { session: any; token: any }) {
 			if (token.sub.startsWith("anonymous") || token.sub.startsWith("demo")) {
-				// Create a hot id for the user that is uniquely identifying to the time it was created.
 				session.address = token.sub
 				session.user = {
 					id: token.sub,
