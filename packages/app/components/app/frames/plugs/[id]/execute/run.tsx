@@ -54,22 +54,28 @@ export const RunFrame: FC<{
 	const supportedChains = useMemo(() => {
 		if (!actions || !solverActions) return []
 
-		const chainIds = new Set<number>()
-
-		actions.forEach(action => {
+		const actionChains = actions.map(action => {
 			const protocol = action.protocol
 			const protocolSchema = solverActions[protocol]
+			const chains = new Set<number>()
 
 			if (protocolSchema?.metadata.chains) {
 				protocolSchema.metadata.chains.forEach(chainId => {
 					if (connectedChains.some(chain => chain.id === chainId)) {
-						chainIds.add(chainId)
+						chains.add(chainId)
 					}
 				})
 			}
+
+			return chains
 		})
 
-		return Array.from(chainIds) as ChainId[]
+		const sharedChains = actionChains.reduce((acc, chains) => {
+			if (acc.size === 0) return chains
+			return new Set([...acc].filter(chainId => chains.has(chainId)))
+		}, new Set<number>())
+
+		return Array.from(sharedChains) as ChainId[]
 	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
@@ -205,6 +211,20 @@ export const RunFrame: FC<{
 							</span>{" "}
 							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 								<Counter count={actions?.length ?? 0} />
+							</span>
+						</p>
+
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-max flex-row items-center gap-4">
+								<Waypoints size={18} className="opacity-20" />
+								<span className="opacity-40">Supported Chains</span>
+							</span>{" "}
+							<span className="flex flex-row items-center font-bold">
+								{supportedChains.map(chain => (
+									<div className="-ml-1" key={chain}>
+										<ChainImage chainId={chain} size="xs" />
+									</div>
+								))}
 							</span>
 						</p>
 
