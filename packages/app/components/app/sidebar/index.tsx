@@ -27,19 +27,21 @@ const ConsoleSidebarAction: FC<
 > = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
 	<div
 		className={cn(
-			"group relative mx-auto flex h-8 w-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-plug-green/5",
-			isActive && "bg-plug-green/5 hover:bg-white",
-			isPrimary && "group-hover: border-plug-yellow bg-plug-yellow text-plug-green",
+			"group relative mr-auto flex h-10 w-full cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 py-2 transition-all duration-200 ease-in-out",
+			isActive && "bg-plug-green/10 hover:bg-white",
+			isPrimary
+				? "border-plug-yellow bg-plug-yellow text-plug-green hover:brightness-105"
+				: "text-black hover:bg-plug-green/10",
 			className
 		)}
 		{...props}
 	>
-		{icon}
+		<div className="opacity-60">{icon}</div>
 
 		<p
 			className={cn(
-				"mr-auto whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out",
-				isExpanded === false ? "hidden" : "group-hover:opacity-80"
+				"mr-auto whitespace-nowrap font-bold opacity-80 transition-all duration-200 ease-in-out",
+				isExpanded === false ? "hidden" : "group-hover:opacity-100"
 			)}
 		>
 			{isExpanded ? title : "."}
@@ -170,10 +172,10 @@ export const ConsoleSidebar = () => {
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
-			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-plug-green/10 py-4">
-				<div className={cn("flex w-full flex-col gap-4 p-2")}>
+			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-4 pt-2">
+				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 						onClick={() => handleSidebar("authenticating")}
 					>
 						{avatar ? (
@@ -233,7 +235,7 @@ export const ConsoleSidebar = () => {
 					)}
 				</div>
 
-				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
+				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
 					{(account.address || account.isAuthenticated) && (
 						<>
 							{socket?.admin && (
