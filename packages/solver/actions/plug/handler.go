@@ -18,7 +18,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Plug",
-			Icon:   "https://onplug.io/favicon.ico",
+			Icon:   "/protocols/plug.png",
 			Tags:   []string{"defi"},
 			Chains: utils.Mainnet.ChainIds,
 		},

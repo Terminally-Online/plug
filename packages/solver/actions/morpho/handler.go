@@ -31,7 +31,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Morpho",
-			Icon:   "https://cdn.morpho.org/v2/assets/icons/butterfly-light.svg",
+			Icon:   "/protocols/morpho.png",
 			Tags:   []string{"lending", "defi"},
 			Chains: utils.Mainnet.ChainIds,
 		},
