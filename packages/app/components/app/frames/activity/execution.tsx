@@ -1,5 +1,4 @@
-import Image from "next/image"
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useMemo, useRef, useState } from "react"
 
 import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 
