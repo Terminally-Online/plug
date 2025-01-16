@@ -345,6 +345,19 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					</>
 				)}
 
+				{tokenOutImplementation?.chain && (
+					<p className="flex flex-row justify-between font-bold">
+						<span className="flex w-max flex-row items-center gap-4">
+							<Waypoints size={18} className="opacity-20" />
+							<span className="opacity-40">Chain</span>
+						</span>{" "}
+						<span className="flex flex-row items-center gap-2 font-bold">
+							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
+							{getChainName(getChainId(tokenOutImplementation.chain))}
+						</span>
+					</p>
+				)}
+
 				<p className="flex flex-row justify-between font-bold">
 					<span className="flex w-full flex-row items-center gap-4">
 						<CircleDollarSign size={18} className="opacity-20" />
@@ -359,19 +372,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						</span>
 					</span>
 				</p>
-
-				{tokenOutImplementation?.chain && (
-					<p className="flex flex-row justify-between font-bold">
-						<span className="flex w-max flex-row items-center gap-4">
-							<Waypoints size={18} className="opacity-20" />
-							<span className="opacity-40">Chain</span>
-						</span>{" "}
-						<span className="flex flex-row items-center gap-2 font-bold">
-							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
-							{getChainName(getChainId(tokenOutImplementation.chain))}
-						</span>
-					</p>
-				)}
 			</div>
 
 			<div className="mx-6 my-4 flex flex-col gap-4">

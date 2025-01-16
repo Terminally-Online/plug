@@ -1,6 +1,8 @@
 import { useSession } from "next-auth/react"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
+import { anvil, mainnet } from "viem/chains"
+
 import { motion } from "framer-motion"
 import {
 	AlertTriangle,
@@ -8,6 +10,7 @@ import {
 	CheckCircle,
 	CircleDollarSign,
 	Eye,
+	Globe,
 	Hash,
 	Library,
 	Pause,
@@ -22,9 +25,11 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { connectedChains } from "@/contexts"
+import { env } from "@/env"
 import { ChainId, chains, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { useColumnStore } from "@/state/columns"
+import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 
 export const RunFrame: FC<{
@@ -32,6 +37,7 @@ export const RunFrame: FC<{
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
+	const { getFlag } = useFlags()
 	const {
 		column,
 		isFrame,
@@ -43,7 +49,6 @@ export const RunFrame: FC<{
 			plug: { queue }
 		}
 	} = usePlugStore(item)
-
 	const [solverActions] = useActions()
 
 	// TODO: The functionality for this was not finished because right now our in our environment we only have
@@ -54,29 +59,32 @@ export const RunFrame: FC<{
 	const supportedChains = useMemo(() => {
 		if (!actions || !solverActions) return []
 
-		const actionChains = actions.map(action => {
-			const protocol = action.protocol
-			const protocolSchema = solverActions[protocol]
-			const chains = new Set<number>()
+		return Array.from(
+			actions
+				.map(action => {
+					const protocol = action.protocol
+					const protocolSchema = solverActions[protocol]
+					const chains = new Set<number>()
 
-			if (protocolSchema?.metadata.chains) {
-				protocolSchema.metadata.chains.forEach(chainId => {
-					if (connectedChains.some(chain => chain.id === chainId)) {
-						chains.add(chainId)
+					if (protocolSchema?.metadata.chains) {
+						protocolSchema.metadata.chains.forEach(chainId => {
+							if (!connectedChains.some(chain => chain.id === chainId)) return
+
+							const isDev = getFlag(Flag.SHOW_DEVELOPER)
+							if ((isDev && chainId === mainnet.id) || (!isDev && chainId === anvil.id)) return
+
+							chains.add(chainId)
+						})
 					}
+
+					return chains
 				})
-			}
-
-			return chains
-		})
-
-		const sharedChains = actionChains.reduce((acc, chains) => {
-			if (acc.size === 0) return chains
-			return new Set([...acc].filter(chainId => chains.has(chainId)))
-		}, new Set<number>())
-
-		return Array.from(sharedChains) as ChainId[]
-	}, [actions, solverActions])
+				.reduce((acc, chains) => {
+					if (acc.size === 0) return chains
+					return new Set([...acc].filter(chainId => chains.has(chainId)))
+				}, new Set<number>())
+		) as ChainId[]
+	}, [actions, solverActions, getFlag])
 
 	const chain = useMemo(() => {
 		if (!supportedChains || supportedChains.length === 0) return null
@@ -147,7 +155,7 @@ export const RunFrame: FC<{
 							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
-						{solverActions && (
+						{/* {solverActions && (
 							<p className="relative flex flex-row gap-4 font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Library size={18} className="opacity-20" />
@@ -212,21 +220,23 @@ export const RunFrame: FC<{
 							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 								<Counter count={actions?.length ?? 0} />
 							</span>
-						</p>
+						</p> */}
 
-						<p className="flex flex-row justify-between font-bold">
-							<span className="flex w-max flex-row items-center gap-4">
-								<Waypoints size={18} className="opacity-20" />
-								<span className="opacity-40">Supported Chains</span>
-							</span>{" "}
-							<span className="group flex flex-row items-center font-bold">
-								{supportedChains.map(chain => (
-									<div className="-ml-1 transition-all duration-100 group-hover:ml-1" key={chain}>
-										<ChainImage chainId={chain} size="xs" />
-									</div>
-								))}
-							</span>
-						</p>
+						{supportedChains.length !== 1 && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-max flex-row items-center gap-4">
+									<Globe size={18} className="opacity-20" />
+									<span className="opacity-40">Supported Chains</span>
+								</span>{" "}
+								<span className="group flex flex-row items-center font-bold">
+									{supportedChains.map(chain => (
+										<div className="-ml-1 transition-all duration-100 group-hover:ml-1" key={chain}>
+											<ChainImage chainId={chain} size="xs" />
+										</div>
+									))}
+								</span>
+							</p>
+						)}
 
 						{chain && (
 							<p className="flex flex-row justify-between font-bold">

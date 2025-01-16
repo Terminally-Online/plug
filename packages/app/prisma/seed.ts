@@ -36,6 +36,7 @@ const seedSockets = async () => {
 		await prisma.userSocket.upsert({
 			where: { id: socket.address },
 			update: {
+				admin: true,
 				socketAddress,
 				salt,
 				implementation,
@@ -70,6 +71,7 @@ const seedSockets = async () => {
 			},
 			create: {
 				id: socket.address,
+				admin: true,
 				socketAddress,
 				salt,
 				implementation,
