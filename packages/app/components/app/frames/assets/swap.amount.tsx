@@ -118,13 +118,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		}, 500)
 
 		return () => clearTimeout(timer)
-	}, [amounts[tokenOut.symbol]?.precise])
+	}, [amounts, tokenOut])
 
 	return (
 		<Frame
 			index={index}
 			icon={
-				<div className="-gap-2 relative flex flex-row items-center">
+				<div className="group relative flex flex-row items-center">
 					<div className="relative h-8 w-10">
 						<TokenImage
 							logo={
@@ -136,7 +136,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							handleColor={setTokenOutColor}
 						/>
 					</div>
-					<div className="relative -ml-4 h-8 w-10">
+					<div className="relative -ml-4 h-8 w-10 transition-all duration-100 group-hover:ml-0">
 						<TokenImage
 							logo={
 								tokenIn?.icon ||
