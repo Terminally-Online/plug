@@ -13,6 +13,7 @@ import { Image } from "@/components/app/utils/image"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { useSocket } from "@/state/authentication"
+import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
@@ -26,20 +27,14 @@ const ConsoleSidebarAction: FC<
 > = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
 	<div
 		className={cn(
-			"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-2 transition-all duration-200 ease-in-out",
+			"group relative mx-auto flex h-8 w-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-plug-green/5",
+			isActive && "bg-plug-green/5 hover:bg-white",
+			isPrimary && "group-hover: border-plug-yellow bg-plug-yellow text-plug-green",
 			className
 		)}
 		{...props}
 	>
-		<div
-			className={cn(
-				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-plug-green/5",
-				isActive && "bg-plug-green/5 hover:bg-white",
-				isPrimary && "group-hover: border-plug-yellow bg-plug-yellow text-plug-green"
-			)}
-		>
-			{icon}
-		</div>
+		{icon}
 
 		<p
 			className={cn(
@@ -164,6 +159,7 @@ const ConsoleSidebarPane = () => {
 export const ConsoleSidebar = () => {
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
+	const { handleFlag, getFlag } = useFlags()
 	const { socket } = useSocket()
 
 	const { avatar } = useSocket()
@@ -240,6 +236,25 @@ export const ConsoleSidebar = () => {
 				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
 					{(account.address || account.isAuthenticated) && (
 						<>
+							{socket?.admin && (
+								<ConsoleSidebarAction
+									className={cn(
+										is.expanded && "pr-16",
+										getFlag(Flag.SHOW_DEVELOPER) &&
+											"border-plug-yellow bg-plug-yellow text-plug-green"
+									)}
+									icon={
+										<Code
+											size={14}
+											className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+										/>
+									}
+									title="Developer"
+									isExpanded={is.expanded}
+									onClick={() => handleFlag(Flag.SHOW_DEVELOPER, !getFlag(Flag.SHOW_DEVELOPER))}
+								/>
+							)}
+
 							<ConsoleSidebarAction
 								className={cn(is.expanded && "pr-16")}
 								icon={

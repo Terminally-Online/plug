@@ -3,11 +3,13 @@ import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 export enum Flag {
-	SHOW_PWA
+	SHOW_PWA,
+	SHOW_DEVELOPER
 }
 
 const DEFAULT_FLAGS: Partial<Record<keyof typeof Flag, true>> = {
-	SHOW_PWA: true
+	SHOW_PWA: true,
+	SHOW_DEVELOPER: true
 }
 
 const setBit = (bitmap: number, position: number): number => bitmap | (1 << position)
