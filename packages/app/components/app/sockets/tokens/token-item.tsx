@@ -11,6 +11,8 @@ import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../chains/chain.image"
+
 const DEFAULT_TOKEN_COLOR = "#ffffff"
 
 type SocketTokenItemProps = {
@@ -64,7 +66,15 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 
 							<div className="flex w-full flex-row gap-4 font-bold">
 								<div className="flex flex-row items-center gap-2 truncate overflow-ellipsis">
-									<SocketTokenPercentages implementations={token.implementations ?? []} />
+									<div className="flex flex-row items-center">
+										{token.implementations?.map((implementation, implementationIndex) => (
+											<ChainImage
+												key={implementationIndex}
+												chainId={getChainId(implementation.chain)}
+												size="xs"
+											/>
+										))}
+									</div>
 									<div className="flex flex-row items-center gap-1 truncate text-sm opacity-40">
 										<Counter count={token.balance ?? 0} />
 										<p className="whitespace-nowrap">{token.symbol?.toUpperCase()}</p>
