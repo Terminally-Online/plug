@@ -1,5 +1,5 @@
 import { createPublicClient, extractChain, http } from "viem"
-import { anvil, base, mainnet, optimism } from "viem/chains"
+import { base, mainnet, optimism } from "viem/chains"
 
 import { env } from "@/env"
 import { Chain, RPCType } from "@/lib/types"
@@ -25,13 +25,38 @@ export const chains = {
 			...getAppRPCs("eth-mainnet")
 		}
 	} as const satisfies Chain,
-	[anvil.id]: {
-		...anvil,
+	[31337]: {
+		id: 31337,
+		name: "Anvil",
+		nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+		blockExplorers: {
+			default: {
+				name: "Etherscan",
+				url: "https://etherscan.io",
+				apiUrl: "https://api.etherscan.io/api"
+			}
+		},
+		contracts: {
+			ensRegistry: {
+				address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+			},
+			ensUniversalResolver: {
+				address: "0xce01f8eee7E479C928F8919abD53E553a36CeF67",
+				blockCreated: 19_258_213
+			},
+			multicall3: {
+				address: "0xca11bde05977b3631167028862be2a173976ca11",
+				blockCreated: 14_353_601
+			}
+		},
 		alchemyPrefix: "eth-mainnet-forked",
 		color: "#FAFF00",
 		logo: "/protocols/plug.png",
 		rpcUrls: {
-			...anvil.rpcUrls,
+			default: {
+				http: [ANVIL_RPC],
+				webSocket: [ANVIL_RPC]
+			},
 			[RPCType.AppOnly]: {
 				http: [ANVIL_RPC],
 				webSocket: [ANVIL_RPC]
