@@ -163,7 +163,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, err
 	}
 
-	healthFactor, err := getHealthFactor(params.From)
+	healthFactor, err := getHealthFactor(params.ChainId, params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get health factor: %v", err)
 	}
@@ -197,7 +197,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 
 	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
-	reserves, err := getReserves(true)
+	reserves, err := getReserves(params.ChainId)
 	if err != nil {
 		return nil, err
 	}

@@ -34,7 +34,8 @@ func New() actions.BaseProtocolHandler {
 }
 
 func (h *Handler) init() *Handler {
-	collateralOptions, borrowOptions, err := GetOptions()
+	// TODO: Support chain based responses.
+	collateralOptions, borrowOptions, err := GetOptions(1)
 	if err != nil {
 		return nil
 	}

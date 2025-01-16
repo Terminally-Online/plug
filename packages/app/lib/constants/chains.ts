@@ -13,7 +13,7 @@ const getAppRPCs = (prefix: string) => {
 	}
 }
 
-export const ANVIL_RPC = "http://127.0.0.1:8545"
+export const ANVIL_RPC = "127.0.0.1:8545"
 export const chains = {
 	[mainnet.id]: {
 		...mainnet,
@@ -54,12 +54,12 @@ export const chains = {
 		logo: "/protocols/plug.png",
 		rpcUrls: {
 			default: {
-				http: [ANVIL_RPC],
-				webSocket: [ANVIL_RPC]
+				http: [`http://${ANVIL_RPC}`],
+				webSocket: [`ws://${ANVIL_RPC}`]
 			},
 			[RPCType.AppOnly]: {
-				http: [ANVIL_RPC],
-				webSocket: [ANVIL_RPC]
+				http: [`http://${ANVIL_RPC}`],
+				webSocket: [`ws://${ANVIL_RPC}`]
 			}
 		}
 	} as const satisfies Chain,

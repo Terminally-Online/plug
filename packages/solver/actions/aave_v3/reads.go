@@ -17,13 +17,13 @@ var (
 	cacheDuration   int64 = 300
 )
 
-func getReserves(force ...bool) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
+func getReserves(chainId int, force ...bool) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
 	currentTime := time.Now().Unix()
 	if !((len(force) > 0 && force[0]) || reservesCache == nil || (currentTime-lastCacheUpdate) >= cacheDuration) {
 		return reservesCache, nil
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,8 @@ func getReserves(force ...bool) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProv
 	return reserves, nil
 }
 
-func getHealthFactor(userAddress string) (*big.Int, error) {
-	provider, err := utils.GetProvider(1)
+func getHealthFactor(chainId int, userAddress string) (*big.Int, error) {
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
