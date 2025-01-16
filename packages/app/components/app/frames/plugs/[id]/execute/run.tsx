@@ -1,22 +1,17 @@
 import { useSession } from "next-auth/react"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
-import { anvil } from "viem/chains"
-
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import {
 	AlertTriangle,
 	Calendar,
 	CheckCircle,
-	ChevronLeft,
-	ChevronRight,
 	CircleDollarSign,
 	Eye,
 	Hash,
 	Library,
 	Pause,
 	Play,
-	PlayIcon,
 	Waypoints
 } from "lucide-react"
 

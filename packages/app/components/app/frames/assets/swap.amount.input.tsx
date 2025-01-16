@@ -6,6 +6,8 @@ import { Counter } from "@/components/shared/utils/counter"
 import { chains, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
+
 type Token =
 	| RouterOutputs["socket"]["balances"]["positions"]["tokens"][number]
 	| RouterOutputs["solver"]["tokens"]["get"][number]
@@ -128,13 +130,7 @@ export const SwapAmountInput: FC<SwapAmountInputProps> = ({ token, color, amount
 						<div className="flex flex-col items-center">
 							<p className="mr-auto font-bold">{token.symbol}</p>
 							<div className="relative flex flex-row items-center gap-2">
-								<Image
-									className="h-4 w-4 rounded-full"
-									src={chains[getChainId(token.implementations[0].chain)].logo}
-									alt=""
-									width={24}
-									height={24}
-								/>
+								<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
 								<p className="flex flex-row text-sm font-bold text-black/40">
 									<Counter count={amounts?.percentage ?? 0} decimals={0} />%
 								</p>
