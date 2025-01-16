@@ -87,14 +87,11 @@ const usePlugActions = () => {
 	})
 
 	return {
-		add: (data?: { index?: number; from?: string }) => addMutation.mutate(data),
-		edit: (data: { id: string } & WorkflowData) => editMutation.mutate(data),
-		delete: (data: { plug: string; index: number; from?: string | null }) => deleteMutation.mutate(data),
-		fork: (data: { plug: string; index: number; from: string }) => forkMutation.mutate(data),
-		queue: (
-			data: { workflowId: string; chainId: number; startAt: Date; endAt?: Date; frequency: number },
-			options: { onSuccess?: (data: NonNullable<typeof queueMutation.data>) => void }
-		) => queueMutation.mutate(data, options)
+		add: addMutation.mutate,
+		edit: editMutation.mutate,
+		delete: deleteMutation.mutate,
+		fork: forkMutation.mutate,
+		queue: queueMutation.mutate
 	}
 }
 
@@ -182,7 +179,7 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 			tag: setTag,
 			plug: usePlugActions(),
 			action: {
-				edit: (data: { id?: string; actions: string }) => actionMutation.mutate(data)
+				edit: actionMutation.mutate
 			}
 		},
 		solver: {
