@@ -222,6 +222,7 @@ model Execution {
   // Fields
   // ---------------------------------------------------------------------------
   status  String @default("active")
+  chainId Int    @default(1)
   actions String @default("[]")
 
   startAt DateTime

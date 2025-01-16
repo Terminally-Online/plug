@@ -91,10 +91,11 @@ export const RunFrame: FC<{
 	}, [actions, item])
 
 	const handleRun = useCallback(() => {
-		if (!column || !column.item) return
+		if (!column || !column.item || !chain) return
 
 		queue({
 			workflowId: column.item,
+			chainId: chain,
 			startAt: column.schedule?.date?.from ?? new Date(),
 			endAt: column.schedule?.date?.to,
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")

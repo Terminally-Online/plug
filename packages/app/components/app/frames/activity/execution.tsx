@@ -12,9 +12,11 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { TimeUntil } from "@/components/shared/utils/time-until"
 import { useActivities } from "@/contexts"
-import { cardColors, chains, cn, formatFrequency, formatTitle } from "@/lib"
+import { cardColors, ChainId, chains, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
+
+import { ChainImage } from "../../sockets/chains/chain.image"
 
 const ITEMS_PER_PAGE = 10
 
@@ -134,20 +136,26 @@ export const ExecutionFrame: FC<{
 							</span>{" "}
 							{formatTitle(activity.status)}
 						</p>
+
+						<p className="flex w-full flex-row items-center gap-4 font-bold">
+							<Waypoints size={18} className="opacity-20" />
+							<span className="mr-auto opacity-40">Chain</span>
+							<span className="flex flex-row items-center gap-2">
+								<ChainImage chainId={activity.chainId as ChainId} size="xs" />
+								{getChainName(activity.chainId as ChainId)}
+							</span>
+						</p>
+
+						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+							<p className="font-bold opacity-40">Schedule</p>
+							<div className="h-[2px] w-full bg-plug-green/10" />
+						</div>
 						<p className="flex flex-row justify-between font-bold">
 							<span className="flex w-full flex-row items-center gap-4">
 								<Calendar size={18} className="opacity-20" />
 								<span className="opacity-40">Frequency</span>
 							</span>{" "}
 							{formatFrequency(activity.frequency)}
-						</p>
-						<p className="flex w-full flex-row items-center gap-4 font-bold">
-							<Waypoints size={18} className="opacity-20" />
-							<span className="mr-auto opacity-40">Chain</span>
-							<span className="flex flex-row items-center gap-2">
-								<Image className="h-4 w-4" src={chains[1].logo} alt="ethereum" width={24} height={24} />
-								Ethereum
-							</span>
 						</p>
 						<p className="flex flex-row justify-between font-bold">
 							<span className="flex w-full flex-row items-center gap-4">
