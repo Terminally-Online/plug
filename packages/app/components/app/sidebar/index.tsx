@@ -240,11 +240,7 @@ export const ConsoleSidebar = () => {
 						<>
 							{socket?.admin && (
 								<ConsoleSidebarAction
-									className={cn(
-										is.expanded && "pr-16",
-										getFlag(Flag.SHOW_DEVELOPER) &&
-											"border-plug-yellow bg-plug-yellow text-plug-green"
-									)}
+									className={cn(is.expanded && "pr-16")}
 									icon={
 										<Code
 											size={14}
@@ -253,6 +249,7 @@ export const ConsoleSidebar = () => {
 									}
 									title="Developer"
 									isExpanded={is.expanded}
+									isPrimary={getFlag(Flag.SHOW_DEVELOPER)}
 									onClick={() => handleFlag(Flag.SHOW_DEVELOPER, !getFlag(Flag.SHOW_DEVELOPER))}
 								/>
 							)}
