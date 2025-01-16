@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { ChevronLeft, Ellipsis, GitFork, Share } from "lucide-react"
+import { ChevronLeft, Ellipsis, GitFork, Share, HelpCircle, LogOut } from "lucide-react"
 
 import BlockiesSvg from "blockies-react-svg"
 
@@ -11,6 +11,7 @@ import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/l
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 
 const PlugHeader = () => {
     const { data: session } = useSession()
@@ -118,13 +119,27 @@ const AuthenticateHeader = () => {
 }
 
 const ProfileHeader = () => {
-    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    const { disconnect } = useDisconnect(true) // Changed to true to match desktop
     
+    if (!column) return null
+
     return (
-        <Header
-            size="lg"
-            label="Profile"
-        />
+        <div className="flex flex-col border-b-[1px] border-plug-green/10">
+            <Header
+                size="lg"
+                label="Profile"
+                nextLabel={
+                    <button 
+                        className="flex items-center gap-2 p-2 rounded-md hover:bg-plug-green/5 transition-colors text-red-500"
+                        onClick={() => disconnect()}  // Simplified to match desktop
+                    >
+                        <LogOut size={16} />
+                        Logout
+                    </button>
+                }
+            />
+        </div>
     )
 }
 

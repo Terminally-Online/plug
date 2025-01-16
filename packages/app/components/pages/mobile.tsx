@@ -1,6 +1,7 @@
 import { memo } from "react"
 
 import { AuthFrame } from "@/components/app/frames/misc/auth"
+import { InfoFrame } from "@/components/app/frames/misc/info"
 import { PageContent } from "@/components/page/content"
 import { PageNavbar } from "@/components/page/navbar"
 import { PageHeader } from "@/components/page/header"
@@ -24,6 +25,7 @@ export const MobileConsole = memo(() => {
             <PageContent />
             {showNavbar && <PageNavbar />}
             <AuthFrame />
+            <InfoFrame />
         </>
     )
 })
