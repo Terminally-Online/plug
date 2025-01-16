@@ -82,7 +82,12 @@ export const ExecutionFrame: FC<{
 				hasOverlay={true}
 			>
 				<div className="flex flex-col">
-					<ActionPreview index={index} item={activity.workflow.id} actions={actions} />
+					<ActionPreview
+						index={index}
+						item={activity.workflow.id}
+						actions={actions}
+						errors={visibleSimulations[0]?.errors ?? []}
+					/>
 
 					<div className="my-4 flex flex-row items-center gap-2">
 						<Button
