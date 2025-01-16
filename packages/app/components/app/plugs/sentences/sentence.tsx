@@ -45,13 +45,9 @@ export const Sentence: FC<SentenceProps> = ({
 		actions: plugActions,
 		handle: {
 			action: { edit }
-		}
-	} = usePlugStore(item)
-
-	const { data: solverActions } = api.solver.actions.getSchemas.useQuery({
-		protocol: action.protocol,
-		action: action.action
-	})
+		},
+		solver: { actions: solverActions }
+	} = usePlugStore(item, action)
 
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
@@ -111,6 +107,7 @@ export const Sentence: FC<SentenceProps> = ({
 					className
 				)}
 				data-sentence
+				data-chains={actionSchema.metadata.chains.join(",")}
 				data-valid={isValid && isComplete}
 				data-action-preview={item}
 				{...props}

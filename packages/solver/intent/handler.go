@@ -43,8 +43,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		for protocol, handler := range h.solver.GetProtocols() {
 			protocolSchema := types.ProtocolSchema{
 				Metadata: types.ProtocolMetadata{
-					Icon: handler.GetIcon(),
-					Tags: handler.GetTags(),
+					Icon:   handler.GetIcon(),
+					Tags:   handler.GetTags(),
+					Chains: handler.GetChains(),
 				},
 				Schema: make(map[types.Action]types.Schema),
 			}
@@ -80,8 +81,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	if action == "" {
 		protocolSchema := types.ProtocolSchema{
 			Metadata: types.ProtocolMetadata{
-				Icon: handler.GetIcon(),
-				Tags: handler.GetTags(),
+				Icon:   handler.GetIcon(),
+				Tags:   handler.GetTags(),
+				Chains: handler.GetChains(),
 			},
 			Schema: make(map[types.Action]types.Schema),
 		}
@@ -114,8 +116,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	protocolSchema := types.ProtocolSchema{
 		Metadata: types.ProtocolMetadata{
-			Icon: handler.GetIcon(),
-			Tags: handler.GetTags(),
+			Icon:   handler.GetIcon(),
+			Tags:   handler.GetTags(),
+			Chains: handler.GetChains(),
 		},
 		Schema: map[types.Action]types.Schema{
 			action: *schema,

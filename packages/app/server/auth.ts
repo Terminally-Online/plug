@@ -5,7 +5,6 @@ import { getCsrfToken } from "next-auth/react"
 
 import { parseSiweMessage } from "viem/siwe"
 
-import { env } from "@/env"
 import { ChainId, createClient } from "@/lib"
 
 declare module "next-auth" {

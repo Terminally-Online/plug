@@ -6,8 +6,9 @@ import (
 )
 
 type ProtocolMetadata struct {
-	Icon string   `json:"icon"`
-	Tags []string `json:"tags"`
+	Icon   string   `json:"icon"`
+	Tags   []string `json:"tags"`
+	Chains []int    `json:"chains"`
 }
 
 type ProtocolSchema struct {

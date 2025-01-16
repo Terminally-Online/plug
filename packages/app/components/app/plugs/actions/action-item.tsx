@@ -6,6 +6,8 @@ import { ActionSchema, formatTitle, getValues } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
+
 export const ActionItem: FC<{
 	index: number
 	item: string
@@ -58,6 +60,16 @@ export const ActionItem: FC<{
 					<span className="opacity-40">{formatTitle(protocol)}: </span>
 					{formatTitle(actionName)}
 				</p>
+
+				<div className="ml-auto flex flex-row items-center">
+					{action.metadata.chains.map(chain => (
+						<>
+							<div key={chain} className="-ml-1">
+								<ChainImage chainId={chain} />
+							</div>
+						</>
+					))}
+				</div>
 			</div>
 		</Accordion>
 	)

@@ -1,4 +1,3 @@
-import { ByteArray, bytesToHex, encodePacked, getContractAddress, toBytes } from "viem"
 import { mainnet } from "viem/chains"
 import { normalize } from "viem/ens"
 
@@ -17,10 +16,10 @@ import { referral } from "./referral"
 import { stats } from "./stats"
 
 const ENS_CACHE_TIME = 24 * 60 * 60 * 1000
-
-const client = createClient(mainnet.id)
-
 export const MAGIC_NONCE = BigInt(1738)
+
+// NOTE: This client can be only mainnet because it is only used for ENS lookups
+const client = createClient(mainnet.id)
 
 export const socket = createTRPCRouter({
 	get: anonymousProtectedProcedure.query(async ({ ctx }) => {

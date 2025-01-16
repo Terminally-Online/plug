@@ -19,6 +19,7 @@ var (
 )
 
 type Network struct {
+	ChainIds   []int
 	Explorer   string
 	References map[string]map[string]string
 }
@@ -32,6 +33,7 @@ var (
 	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 	Mainnet = &Network{
+		ChainIds: []int{1, 31337},
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"weth": {

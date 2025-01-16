@@ -1,14 +1,33 @@
 import { useSession } from "next-auth/react"
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback, useMemo, useState } from "react"
 
-import { Calendar, CircleDollarSign, Eye, Pause, Play, Waypoints } from "lucide-react"
+import { anvil } from "viem/chains"
+
+import { AnimatePresence, motion } from "framer-motion"
+import {
+	AlertTriangle,
+	Calendar,
+	ChevronLeft,
+	ChevronRight,
+	CircleDollarSign,
+	Eye,
+	Hash,
+	Library,
+	Pause,
+	Play,
+	PlayIcon,
+	Waypoints
+} from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { ActionPreview } from "@/components/app/plugs/actions/action-preview"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains } from "@/lib"
+import { connectedChains } from "@/contexts"
+import { ChainId, chains, cn, formatTitle, getChainName } from "@/lib"
+import { useActions } from "@/state/actions"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
@@ -28,6 +47,39 @@ export const RunFrame: FC<{
 			plug: { queue }
 		}
 	} = usePlugStore(item)
+
+	const [solverActions] = useActions()
+
+	const [currentChainIndex, setCurrentChainIndex] = useState(0)
+	const [direction, setDirection] = useState<"left" | "right">("right")
+
+	const supportedChains = useMemo(() => {
+		if (!actions || !solverActions) return []
+
+		const chainIds = new Set<number>()
+
+		actions.forEach(action => {
+			const protocol = action.protocol
+			const protocolSchema = solverActions[protocol]
+
+			if (protocolSchema?.metadata.chains) {
+				protocolSchema.metadata.chains.forEach(chainId => {
+					if (connectedChains.some(chain => chain.id === chainId)) {
+						chainIds.add(chainId)
+					}
+				})
+			}
+		})
+
+		return Array.from(chainIds) as ChainId[]
+	}, [actions, solverActions])
+
+	const chain = useMemo(() => {
+		if (!supportedChains || supportedChains.length === 0) return null
+		if (supportedChains.length === 1) return supportedChains[0]
+
+		return supportedChains[currentChainIndex]
+	}, [supportedChains, currentChainIndex])
 
 	const isReady = useMemo(() => {
 		if (!actions || actions.length === 0) return false
@@ -57,7 +109,13 @@ export const RunFrame: FC<{
 			index={index}
 			className="z-[2]"
 			icon={<Eye size={18} className="opacity-40" />}
-			label="Preview"
+			label={
+				<>
+					<span className="text-lg font-bold">
+						<span className="opacity-40">Run:</span> Preview
+					</span>
+				</>
+			}
 			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
 			handleBack={column.schedule ? () => frame("schedule") : undefined}
@@ -73,30 +131,109 @@ export const RunFrame: FC<{
 					</div>
 				)}
 
-				<div className="mb-2 mt-4 flex flex-row items-center gap-4">
-					<p className="font-bold opacity-40">Transaction</p>
-					<div className="h-[2px] w-full bg-plug-green/10" />
-				</div>
+				{isReady && (
+					<>
+						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
+							<p className="font-bold opacity-40">Details</p>
+							<div className="h-[2px] w-full bg-plug-green/10" />
+						</div>
 
-				<p className="flex w-full flex-row items-center gap-4 font-bold">
-					<Waypoints size={18} className="opacity-20" />
-					<span className="mr-auto opacity-40">Chain</span>
-					<span className="flex flex-row items-center gap-2">
-						<Image className="h-4 w-4" src={chains[1].logo} alt="ethereum" width={24} height={24} />
-						Ethereum
-					</span>
-				</p>
+						{solverActions && (
+							<p className="relative flex flex-row gap-4 font-bold">
+								<span className="flex w-max flex-row items-center gap-4">
+									<Library size={18} className="opacity-20" />
+									<span className="opacity-40">Protocols</span>
+								</span>{" "}
+								<div className="relative ml-auto flex w-[45%] overflow-hidden">
+									{actions.length >= 3 && (
+										<>
+											<div className="absolute left-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-r from-plug-white to-transparent" />
+											<div className="absolute right-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-l from-plug-white to-transparent" />
+										</>
+									)}
 
-				<p className="flex flex-row justify-between font-bold">
-					<span className="flex w-full flex-row items-center gap-4">
-						<CircleDollarSign size={18} className="opacity-20" />
-						<span className="opacity-40">Fee</span>
-					</span>{" "}
-					<span className="flex w-full flex-row justify-end gap-2">
-						<span className="opacity-40">0.0011 ETH</span>
-						<span>$4.19</span>
-					</span>
-				</p>
+									<motion.div
+										className="ml-auto flex flex-row items-center justify-start gap-1 font-bold tabular-nums"
+										animate={{
+											x: actions.length >= 3 ? ["0%", "-50%"] : 0
+										}}
+										transition={{
+											duration: actions.length >= 3 ? actions.length * 7 : 0,
+											ease: "linear",
+											repeat: Infinity,
+											repeatDelay: 0
+										}}
+									>
+										{[...Array(actions.length >= 3 ? 6 : 1)].map((_, i) => (
+											<div key={i} className="flex flex-row items-center gap-4">
+												{Array.from(new Set(actions?.map(action => action.protocol))).map(
+													protocol => (
+														<div
+															key={protocol}
+															className={cn(
+																"flex w-max flex-row items-center gap-2",
+																actions.length >= 3 && "ml-4"
+															)}
+														>
+															<Image
+																src={solverActions[protocol]?.metadata.icon ?? ""}
+																alt={formatTitle(protocol)}
+																width={48}
+																height={48}
+																className="mr-1 h-4 w-4 rounded-[4px]"
+															/>
+															<span className="whitespace-nowrap">
+																{formatTitle(protocol)}
+															</span>
+														</div>
+													)
+												)}
+											</div>
+										))}
+									</motion.div>
+								</div>
+							</p>
+						)}
+
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-full flex-row items-center gap-4">
+								<Hash size={18} className="opacity-20" />
+								<span className="opacity-40">Actions</span>
+							</span>{" "}
+							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<Counter count={actions?.length ?? 0} />
+							</span>
+						</p>
+
+						{chain && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-max flex-row items-center gap-4">
+									<Waypoints size={18} className="opacity-20" />
+									<span className="opacity-40">Chain</span>
+								</span>{" "}
+								<span className="flex flex-row items-center gap-1 font-bold">
+									<ChainImage chainId={chain} size="xs" />
+									{getChainName(chain)}
+								</span>
+							</p>
+						)}
+
+						<p className="flex flex-row justify-between font-bold">
+							<span className="flex w-full flex-row items-center gap-4">
+								<CircleDollarSign size={18} className="opacity-20" />
+								<span className="opacity-40">Fee</span>
+							</span>{" "}
+							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<span className="ml-2 flex flex-row items-center">
+									$<Counter count={0.049} />
+								</span>
+								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+									<Counter count={0.00011} /> ETH
+								</span>
+							</span>
+						</p>
+					</>
+				)}
 
 				{column.schedule && (
 					<>
@@ -141,7 +278,22 @@ export const RunFrame: FC<{
 					onClick={handleRun}
 					disabled={!isReady}
 				>
-					{isReady ? "Run" : actions?.length === 0 ? "No Actions Added" : "Required Inputs Incomplete"}
+					{isReady ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<Play size={14} className="opacity-60" />
+							Run
+						</span>
+					) : actions?.length === 0 ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<AlertTriangle size={14} className="opacity-60" />
+							No Actions Added
+						</span>
+					) : (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<AlertTriangle size={14} className="opacity-60" />
+							Required Inputs Incomplete
+						</span>
+					)}
 				</Button>
 			</div>
 		</Frame>

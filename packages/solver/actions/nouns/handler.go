@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 var (
@@ -26,7 +27,7 @@ func New() actions.BaseProtocolHandler {
 			Name:   "Nouns",
 			Icon:   "https://nouns.wtf/favicon.ico",
 			Tags:   []string{"nft"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h
