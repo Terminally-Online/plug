@@ -7,8 +7,9 @@ const outputString = `   ◍ Plug Anvil Fork Network`
 function startAnvilFork() {
 	const forkUrl = `https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`
 	const blockNumber = "19250000" // We can make this configurable later if needed
+	const chainId = "31337" // Anvil's default chain ID
 
-	const anvil = spawn("anvil", ["--fork-url", forkUrl, "--fork-block-number", blockNumber])
+	const anvil = spawn("anvil", ["--fork-url", forkUrl, "--fork-block-number", blockNumber, "--chain-id", chainId])
 
 	anvil.stdout.on("data", data => {
 		console.log(data.toString())
@@ -37,7 +38,7 @@ function startAnvilFork() {
 	console.log(`${outputString}
    - URL: http://127.0.0.1:8545
    - Block: ${blockNumber}
-   - Chain ID: 1
+   - Chain ID: ${chainId}
 `)
 }
 
