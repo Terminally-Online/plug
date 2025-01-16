@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, useCallback, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { anvil } from "viem/chains"
 
@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import {
 	AlertTriangle,
 	Calendar,
+	CheckCircle,
 	ChevronLeft,
 	ChevronRight,
 	CircleDollarSign,
@@ -51,7 +52,7 @@ export const RunFrame: FC<{
 	const [solverActions] = useActions()
 
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
-	const [direction, setDirection] = useState<"left" | "right">("right")
+	const [ran, setRan] = useState(false)
 
 	const supportedChains = useMemo(() => {
 		if (!actions || !solverActions) return []
@@ -99,8 +100,12 @@ export const RunFrame: FC<{
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		})
 
-		frame("ran")
-	}, [column, queue, frame])
+		setRan(true)
+	}, [column, queue])
+
+	useEffect(() => {
+		if ((isFrame && session && session.user.anonymous === false) || false) setRan(false)
+	}, [isFrame])
 
 	if (!column) return null
 
@@ -108,11 +113,11 @@ export const RunFrame: FC<{
 		<Frame
 			index={index}
 			className="z-[2]"
-			icon={<Eye size={18} className="opacity-40" />}
+			icon={ran ? <CheckCircle size={18} className="opacity-40" /> : <Eye size={18} className="opacity-40" />}
 			label={
 				<>
 					<span className="text-lg font-bold">
-						<span className="opacity-40">Run:</span> Preview
+						<span className="opacity-40">Run:</span> {ran ? "Queued" : "Preview"}
 					</span>
 				</>
 			}
@@ -158,7 +163,7 @@ export const RunFrame: FC<{
 											x: actions.length >= 3 ? ["0%", "-50%"] : 0
 										}}
 										transition={{
-											duration: actions.length >= 3 ? actions.length * 7 : 0,
+											duration: actions.length >= 3 ? actions.length * 10 : 0,
 											ease: "linear",
 											repeat: Infinity,
 											repeatDelay: 0
@@ -211,7 +216,7 @@ export const RunFrame: FC<{
 									<Waypoints size={18} className="opacity-20" />
 									<span className="opacity-40">Chain</span>
 								</span>{" "}
-								<span className="flex flex-row items-center gap-1 font-bold">
+								<span className="flex flex-row items-center gap-2 font-bold">
 									<ChainImage chainId={chain} size="xs" />
 									{getChainName(chain)}
 								</span>
@@ -224,11 +229,11 @@ export const RunFrame: FC<{
 								<span className="opacity-40">Fee</span>
 							</span>{" "}
 							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<span className="ml-2 flex flex-row items-center">
-									$<Counter count={0.049} />
-								</span>
 								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
 									<Counter count={0.00011} /> ETH
+								</span>
+								<span className="ml-2 flex flex-row items-center">
+									$<Counter count={0.049} />
 								</span>
 							</span>
 						</p>
@@ -275,10 +280,15 @@ export const RunFrame: FC<{
 				<Button
 					variant={isReady ? "primary" : "primaryDisabled"}
 					className="mt-4 w-full py-4"
-					onClick={handleRun}
+					onClick={ran ? () => frame() : handleRun}
 					disabled={!isReady}
 				>
-					{isReady ? (
+					{ran ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<CheckCircle size={14} className="opacity-60" />
+							Done
+						</span>
+					) : isReady ? (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<Play size={14} className="opacity-60" />
 							Run
