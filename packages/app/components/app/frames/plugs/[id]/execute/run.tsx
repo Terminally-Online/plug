@@ -51,6 +51,8 @@ export const RunFrame: FC<{
 
 	const [solverActions] = useActions()
 
+	// TODO: The functionality for this was not finished because right now our in our environment we only have
+	//       one chain that is valid at any given time.
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
 	const [ran, setRan] = useState(false)
 
@@ -102,11 +104,11 @@ export const RunFrame: FC<{
 		})
 
 		setRan(true)
-	}, [column, queue])
+	}, [column, queue, chain])
 
 	useEffect(() => {
 		if ((isFrame && session && session.user.anonymous === false) || false) setRan(false)
-	}, [isFrame])
+	}, [isFrame, session])
 
 	if (!column) return null
 
