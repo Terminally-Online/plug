@@ -132,8 +132,7 @@ export const ActivityItem: FC<{
 										</>
 									) : activity.frequency !== 0 ? (
 										<>
-											<span className="opacity-60">→</span>
-											"∞"
+											<span className="opacity-60">→</span>∞
 										</>
 									) : (
 										""

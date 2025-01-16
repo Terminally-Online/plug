@@ -223,20 +223,22 @@ export const RunFrame: FC<{
 							</p>
 						)}
 
-						<p className="flex flex-row justify-between font-bold">
-							<span className="flex w-full flex-row items-center gap-4">
-								<CircleDollarSign size={18} className="opacity-20" />
-								<span className="opacity-40">Fee</span>
-							</span>{" "}
-							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-									<Counter count={0.00011} /> ETH
+						{!column.schedule && (
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<CircleDollarSign size={18} className="opacity-20" />
+									<span className="opacity-40">Fee</span>
+								</span>{" "}
+								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+										<Counter count={0.00011} /> ETH
+									</span>
+									<span className="ml-2 flex flex-row items-center">
+										$<Counter count={0.049} />
+									</span>
 								</span>
-								<span className="ml-2 flex flex-row items-center">
-									$<Counter count={0.049} />
-								</span>
-							</span>
-						</p>
+							</p>
+						)}
 					</>
 				)}
 
