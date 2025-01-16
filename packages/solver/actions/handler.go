@@ -2,6 +2,7 @@ package actions
 
 import (
 	"encoding/json"
+	"fmt"
 	"solver/types"
 
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -18,7 +19,7 @@ type BaseProtocolHandler interface {
 	GetTags() []string
 	GetActions() []types.Action
 	GetChains() []int
-	GetSchema(action types.Action) (*types.Schema, error)
+	GetSchema(chainId string, action types.Action) (*types.Schema, error)
 	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 
@@ -57,4 +58,17 @@ func (p Protocol) GetActions() []types.Action {
 		actions = append(actions, action)
 	}
 	return actions
+}
+
+func (p Protocol) GetSchemas() map[types.Action]types.Schema {
+	return p.SchemaProvider.GetSchemas()
+}
+
+func (p Protocol) GetSchema(chainId string, action types.Action) (*types.Schema, error) {
+	schemas := p.SchemaProvider.GetSchemas()
+	schema, exists := schemas[action]
+	if !exists {
+		return nil, fmt.Errorf("unsupported action: %s", action)
+	}
+	return &schema, nil
 }
