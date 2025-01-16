@@ -7,6 +7,7 @@
 	],
 	"license": "BUSL-1.1",
 	"scripts": {
+		"prepare": "git rev-parse --git-dir > /dev/null 2>&1 && cd $(git rev-parse --show-toplevel) && git submodule update --init --recursive || echo 'Skipping Git submodule update (not a Git repository)'",
 		"prebuild:schema": "pnpm plug:schema",
 		"prebuild:zod": "pnpm plug:zod",
 		"prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
@@ -42,9 +43,7 @@
 		"@wagmi/cli": "^2.1.4",
 		"chai": "^5.1.0",
 		"dedent": "^1.5.3",
-		"ds-test": "https://github.com/dapphub/ds-test.git",
 		"execa": "^8.0.1",
-		"forge-std": "https://github.com/foundry-rs/forge-std.git#v1",
 		"fs-extra": "^11.2.0",
 		"nodemon": "^3.1.0",
 		"npm-run-all": "^4.1.5",

@@ -27,11 +27,8 @@ jobs:
     steps:
       - name: 🛒 Checkout
         uses: actions/checkout@v4
-
-      - name: 🔧 Configure Git
-        run: |
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config --global url."https://".insteadOf "git://"
+        with:
+          submodules: recursive
 
       - name: ⚙️  Setup Action
         uses: pnpm/action-setup@v4
@@ -63,9 +60,7 @@ jobs:
           version: nightly
 
       - name: 📦 Install dependencies
-        run: |
-          pnpm install --filter=@terminallyonline/plug-core...
-          forge install
+        run: pnpm install --filter=@terminallyonline/plug-core...
 
       - name: 📦 Build package
         run: pnpm build

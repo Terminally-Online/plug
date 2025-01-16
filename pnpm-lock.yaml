@@ -317,15 +317,9 @@ importers:
       dedent:
         specifier: ^1.5.3
         version: 1.5.3
-      ds-test:
-        specifier: https://github.com/dapphub/ds-test.git
-        version: git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
       execa:
         specifier: ^8.0.1
         version: 8.0.1
-      forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#v1
-        version: git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -4515,10 +4509,6 @@ packages:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
 
-  ds-test@git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0:
-    resolution: {commit: e282159d5170298eb2455a6c05280ab5a73a4ef0, repo: git@github.com:dapphub/ds-test.git, type: git}
-    version: 1.0.0
-
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
@@ -5029,10 +5019,6 @@ packages:
   foreground-child@3.3.0:
     resolution: {integrity: sha512-Ld2g8rrAyMYFXBhEqMz8ZAHBi4J4uS1i/CxGMDnjyFWddMXLVcDp051DZfu+t7+ab7Wv6SMqpWmyFIj5UbfFvg==}
     engines: {node: '>=14'}
-
-  forge-std@git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66:
-    resolution: {commit: b93cf4bc34ff214c099dc970b153f85ade8c9f66, repo: git@github.com:foundry-rs/forge-std.git, type: git}
-    version: 1.9.5
 
   form-data-encoder@2.1.4:
     resolution: {integrity: sha512-yDYSgNMraqvnxiEXO4hi88+YZxaHC6QKzb5N84iRCTDeRO7ZALpir/lVmf/uXUhnwUr2O4HU8s/n6x+yNjQkHw==}
@@ -13745,8 +13731,6 @@ snapshots:
 
   dotenv@8.6.0: {}
 
-  ds-test@git+https://git@github.com:dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0: {}
-
   dunder-proto@1.0.1:
     dependencies:
       call-bind-apply-helpers: 1.0.1
@@ -14571,8 +14555,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
-
-  forge-std@git+https://git@github.com:foundry-rs/forge-std.git#b93cf4bc34ff214c099dc970b153f85ade8c9f66: {}
 
   form-data-encoder@2.1.4: {}
 
