@@ -22,7 +22,7 @@ import {
 import plugCore from "@terminallyonline/plug-core/package.json"
 
 import { env } from "@/env"
-import { formatAddress, getChainName, useClipboard, useConnect } from "@/lib"
+import { ChainId, formatAddress, getChainName, useClipboard, useConnect } from "@/lib"
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
@@ -51,7 +51,7 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<Waypoints size={14} className="opacity-20" />
 				<span className="opacity-40">Connected Chain</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-4">
-					{getChainName(chainId)} ({chainId})
+					{getChainName(chainId as ChainId)} ({chainId})
 				</span>
 			</p>
 
