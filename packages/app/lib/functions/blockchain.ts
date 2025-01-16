@@ -21,6 +21,8 @@ export const getBlockExplorerBlock = (chainId: ChainId, block: string | undefine
 
 export const getChainId = (chainName: string) => {
 	switch (chainName) {
+		case "anvil":
+			return 31337
 		case "ethereum":
 			return 1
 		case "optimism":
