@@ -64,25 +64,6 @@ export const OPTIONS: Options = [
 		label: "POSITIONS",
 		description: "View your positions and manage them.",
 		icon: <PiggyBank size={14} className="opacity-40" />
-	},
-	{
-		label: "SETTINGS",
-		description: "View and manage your Plug settings.",
-		icon: <Cog size={14} className="opacity-40" />
-	}
-] as const
-
-export const ADMIN_OPTIONS: Options = [
-	...OPTIONS,
-	{
-		label: "ADMIN",
-		description: "View and manage the admin panel.",
-		icon: <ShieldAlert size={14} className="opacity-40" />
-	},
-	{
-		label: "PROFILE",
-		description: "View your profile.",
-		icon: <User size={14} className="opacity-40" />
 	}
 ] as const
 
@@ -108,8 +89,15 @@ export const ColumnAdd = () => {
 	const isApproved = Boolean(socket?.identity?.approvedAt)
 	if (!isApproved) return null
 
-	const isAdmin = socket?.admin ?? false
-	const options = isAdmin ? ADMIN_OPTIONS : [...OPTIONS, ...flagOptions]
+	const options = [
+		...OPTIONS,
+		...flagOptions,
+		{
+			label: "SETTINGS",
+			description: "View and manage your Plug settings.",
+			icon: <Cog size={14} className="opacity-40" />
+		}
+	]
 
 	return (
 		<>

@@ -6,7 +6,7 @@ import { Draggable } from "@hello-pangea/dnd"
 
 import { ConsoleAdmin } from "@/components/app/columns/admin/column-admin"
 import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
-import { ADMIN_OPTIONS, ColumnAdd } from "@/components/app/columns/utils/column-add"
+import { ColumnAdd } from "@/components/app/columns/utils/column-add"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
 import { Header } from "@/components/app/layout/header"
 import { PlugsDiscover } from "@/components/app/plugs/discover"
@@ -102,18 +102,6 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											<p className="rounded-sm p-1">
-												{ADMIN_OPTIONS.find(option => option.label === column.key)?.icon ?? (
-													<>
-														{column.key === COLUMNS.KEYS.PLUG ? (
-															<PlugIcon size={14} className="opacity-40" />
-														) : (
-															<Star size={14} className="opacity-40" />
-														)}
-													</>
-												)}
-											</p>
-
 											{column.from && (
 												<Button
 													variant="secondary"
