@@ -35,6 +35,8 @@ import {
 import { api, RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
+
 type Traits = Array<{ trait_type: string; value: string }>
 
 export const CollectibleFrame: FC<{
@@ -235,13 +237,7 @@ export const CollectibleFrame: FC<{
 								<Waypoints size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Chain</span>
 								<span className="flex flex-row items-center gap-2">
-									<Image
-										className="h-4 w-4"
-										src={chains[getChainId(collection.chain)].logo}
-										alt={collection.chain}
-										width={24}
-										height={24}
-									/>
+									<ChainImage chainId={getChainId(collection.chain)} size="xs" />
 									{formatTitle(collection.chain)}
 								</span>
 							</p>

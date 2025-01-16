@@ -11,6 +11,8 @@ import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
+
 export const TokenFrame: FC<{
 	index: number
 	token?: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -227,13 +229,7 @@ export const TokenFrame: FC<{
 			<div className="relative mt-2 flex w-full flex-col gap-2 px-6 pb-4">
 				{token.implementations.map((implementation, index) => (
 					<div key={index} className="flex flex-row items-center gap-4">
-						<Image
-							src={chains[getChainId(implementation.chain)].logo}
-							alt={implementation.chain}
-							className="h-6 w-6 rounded-full"
-							width={24}
-							height={24}
-						/>
+						<ChainImage chainId={getChainId(implementation.chain)} size="sm" />
 
 						<p className="mr-auto font-bold">{formatTitle(implementation.chain ?? "Unknown")}</p>
 
