@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useMemo, useState } from "react"
 
 import { anvil, mainnet } from "viem/chains"
 
@@ -7,7 +7,6 @@ import { motion } from "framer-motion"
 import {
 	AlertTriangle,
 	Calendar,
-	CheckCircle,
 	CircleDollarSign,
 	Eye,
 	Globe,
@@ -15,6 +14,7 @@ import {
 	Library,
 	Pause,
 	Play,
+	Send,
 	Waypoints
 } from "lucide-react"
 
@@ -25,8 +25,7 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { connectedChains } from "@/contexts"
-import { env } from "@/env"
-import { ChainId, chains, cn, formatTitle, getChainName } from "@/lib"
+import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { Flag, useFlags } from "@/state/flags"
@@ -156,7 +155,7 @@ export const RunFrame: FC<{
 							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
-						{/* {solverActions && (
+						{solverActions && (
 							<p className="relative flex flex-row gap-4 font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Library size={18} className="opacity-20" />
@@ -221,7 +220,7 @@ export const RunFrame: FC<{
 							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
 								<Counter count={actions?.length ?? 0} />
 							</span>
-						</p> */}
+						</p>
 
 						{supportedChains.length !== 1 && (
 							<p className="flex flex-row justify-between font-bold">
@@ -316,13 +315,8 @@ export const RunFrame: FC<{
 				>
 					{isReady ? (
 						<span className="flex flex-row items-center justify-center gap-2">
-							<CheckCircle size={14} className="opacity-60" />
-							Done
-						</span>
-					) : isReady ? (
-						<span className="flex flex-row items-center justify-center gap-2">
-							<Play size={14} className="opacity-60" />
-							Run
+							<Send size={14} className="opacity-60" />
+							Submit
 						</span>
 					) : actions?.length === 0 ? (
 						<span className="flex flex-row items-center justify-center gap-2">
