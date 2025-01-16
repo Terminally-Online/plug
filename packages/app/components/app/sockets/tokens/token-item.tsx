@@ -35,19 +35,21 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 						<p>.</p>
 					</div>
 				) : (
-					<div className="flex flex-row items-center gap-4">
-						{token.implementations && token.implementations.length > 0 && (
-							<TokenImage
-								logo={
-									// @ts-ignore
-									token.icon?.url ||
-									token.icon ||
-									`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
-								}
-								symbol={token.symbol}
-								handleColor={setColor}
-							/>
-						)}
+					<div className="flex w-full flex-row items-center gap-4">
+						<div className="relative h-10 min-w-10">
+							{token.implementations && token.implementations.length > 0 && (
+								<TokenImage
+									logo={
+										// @ts-ignore
+										token.icon?.url ||
+										token.icon ||
+										`https://token-icons.llamao.fi/icons/tokens/${getChainId(token.implementations[0].chain)}/${token.implementations[0].contract}?h=240&w=240`
+									}
+									symbol={token.symbol}
+									handleColor={setColor}
+								/>
+							)}
+						</div>
 
 						<div className="flex w-full flex-col items-center tabular-nums">
 							<div className="flex w-full flex-row font-bold">
