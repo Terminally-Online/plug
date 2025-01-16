@@ -219,9 +219,9 @@ export const RunFrame: FC<{
 								<Waypoints size={18} className="opacity-20" />
 								<span className="opacity-40">Supported Chains</span>
 							</span>{" "}
-							<span className="flex flex-row items-center font-bold">
+							<span className="group flex flex-row items-center font-bold">
 								{supportedChains.map(chain => (
-									<div className="-ml-1" key={chain}>
+									<div className="-ml-1 transition-all duration-100 group-hover:ml-1" key={chain}>
 										<ChainImage chainId={chain} size="xs" />
 									</div>
 								))}
