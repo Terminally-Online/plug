@@ -9,6 +9,7 @@
 		"predev:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
 		"predev:tokens": "pnpm tsx ./lib/scripts/token-list.ts",
 		"predev:md": "pnpm tsx ./lib/scripts/md.ts",
+		"dev:anvil": "tsx ./lib/scripts/anvil.ts",
 		"dev:wss": "tsx watch ./server/ws.dev.ts --tsconfig tsconfig.json",
 		"dev:next": "next dev --turbo",
 		"predev": "run-s predev:*",
