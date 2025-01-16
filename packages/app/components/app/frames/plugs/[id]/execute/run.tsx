@@ -28,7 +28,7 @@ import { connectedChains } from "@/contexts"
 import { env } from "@/env"
 import { ChainId, chains, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
-import { useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 
@@ -41,7 +41,7 @@ export const RunFrame: FC<{
 	const {
 		column,
 		isFrame,
-		handle: { frame }
+		handle: { frame, navigate }
 	} = useColumnStore(index, "run")
 	const {
 		actions,
@@ -54,7 +54,6 @@ export const RunFrame: FC<{
 	// TODO: The functionality for this was not finished because right now our in our environment we only have
 	//       one chain that is valid at any given time.
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
-	const [ran, setRan] = useState(false)
 
 	const supportedChains = useMemo(() => {
 		if (!actions || !solverActions) return []
@@ -104,20 +103,22 @@ export const RunFrame: FC<{
 	const handleRun = useCallback(() => {
 		if (!column || !column.item || !chain) return
 
-		queue({
-			workflowId: column.item,
-			chainId: chain,
-			startAt: column.schedule?.date?.from ?? new Date(),
-			endAt: column.schedule?.date?.to,
-			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
-		})
-
-		setRan(true)
-	}, [column, queue, chain])
-
-	useEffect(() => {
-		if ((isFrame && session && session.user.anonymous === false) || false) setRan(false)
-	}, [isFrame, session])
+		queue(
+			{
+				workflowId: column.item,
+				chainId: chain,
+				startAt: column.schedule?.date?.from ?? new Date(),
+				endAt: column.schedule?.date?.to,
+				frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+			},
+			{
+				onSuccess: data => {
+					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+					frame(`${data.id}-activity`)
+				}
+			}
+		)
+	}, [index, column, chain, queue, navigate, frame])
 
 	if (!column) return null
 
@@ -125,11 +126,11 @@ export const RunFrame: FC<{
 		<Frame
 			index={index}
 			className="z-[2]"
-			icon={ran ? <CheckCircle size={18} className="opacity-40" /> : <Eye size={18} className="opacity-40" />}
+			icon={<Eye size={18} className="opacity-40" />}
 			label={
 				<>
 					<span className="text-lg font-bold">
-						<span className="opacity-40">Run:</span> {ran ? "Queued" : "Preview"}
+						<span className="opacity-40">Run:</span> Preview
 					</span>
 				</>
 			}
@@ -310,10 +311,10 @@ export const RunFrame: FC<{
 				<Button
 					variant={isReady ? "primary" : "primaryDisabled"}
 					className="mt-4 w-full py-4"
-					onClick={ran ? () => frame() : handleRun}
+					onClick={handleRun}
 					disabled={!isReady}
 				>
-					{ran ? (
+					{isReady ? (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<CheckCircle size={14} className="opacity-60" />
 							Done
