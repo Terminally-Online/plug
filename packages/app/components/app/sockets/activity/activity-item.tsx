@@ -125,8 +125,19 @@ export const ActivityItem: FC<{
 								<p>{formatTitle(activity.status)}</p>
 								<p className="flex flex-row gap-2">
 									<Counter count={activity.startAt.toLocaleDateString()} />
-									<span className="opacity-60">→</span>
-									{activity.endAt ? <Counter count={activity.endAt.toLocaleDateString()} /> : "∞"}
+									{activity.endAt ? (
+										<>
+											<span className="opacity-60">→</span>
+											<Counter count={activity.endAt.toLocaleDateString()} />
+										</>
+									) : activity.frequency !== 0 ? (
+										<>
+											<span className="opacity-60">→</span>
+											"∞"
+										</>
+									) : (
+										""
+									)}
 								</p>
 							</div>
 						</div>
