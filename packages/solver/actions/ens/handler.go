@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 var (
@@ -26,7 +27,7 @@ func New() actions.BaseProtocolHandler {
 			Name:   "ENS",
 			Icon:   "https://app.ens.domains/favicon.ico",
 			Tags:   []string{"naming", "web3"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h

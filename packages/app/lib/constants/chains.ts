@@ -27,7 +27,7 @@ export const chains = {
 	} as const satisfies Chain,
 	[31337]: {
 		id: 31337,
-		name: "Anvil",
+		name: "Plug",
 		nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
 		blockExplorers: {
 			default: {

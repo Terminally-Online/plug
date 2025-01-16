@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 type Handler struct {
@@ -19,7 +20,7 @@ func New() actions.BaseProtocolHandler {
 			Name:   "Yearn V3",
 			Icon:   "https://yearn.fi/favicons/favicon.ico",
 			Tags:   []string{"yield", "defi"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h
