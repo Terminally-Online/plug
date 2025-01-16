@@ -40,9 +40,8 @@ export const getChainId = (chainName: string) => {
 
 export const getChainName = (chainId: ChainId) => {
 	const chain = chains[chainId]
-	if (chainId === 31337) {
-		return env.NEXT_PUBLIC_DEVELOPMENT ? "Local Fork" : "Anvil"
-	}
+
+	if (chainId === 31337) return "Plug"
 	return chain.name
 }
 
