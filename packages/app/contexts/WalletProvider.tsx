@@ -26,8 +26,11 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
+// Use fork network in development, mainnet in production
+const defaultChain = env.NEXT_PUBLIC_DEVELOPMENT ? chains[ChainIds.MainnetFork] : chains[ChainIds.Mainnet]
+
 export const wagmiConfig = createConfig({
-	chains: [chains[ChainIds.Mainnet]],
+	chains: [defaultChain],
 	connectors: [
 		injectedWithFallback(),
 		walletConnect(WALLETCONNECT_PARAMS),
