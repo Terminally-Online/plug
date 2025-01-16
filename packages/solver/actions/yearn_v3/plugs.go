@@ -199,7 +199,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("staking not available for vault: %s", inputs.TokenIn)
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +275,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("redeem not available for vault: %s", inputs.Token)
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -335,7 +335,7 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, fmt.Errorf("redeem not available for vault: %s", inputs.Token)
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}

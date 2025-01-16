@@ -32,7 +32,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get provider: %v", err)
 	}
@@ -102,7 +102,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	price, err := GetRentPrice(*name, big.NewInt(secondsPerYear))
+	price, err := GetRentPrice(params.ChainId, *name, big.NewInt(secondsPerYear))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get rent price: %v", err)
 	}
@@ -136,7 +136,7 @@ func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	price, err := GetRentPrice(*name, inputs.Duration)
+	price, err := GetRentPrice(params.ChainId, *name, inputs.Duration)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get rent price: %v", err)
 	}
@@ -171,7 +171,7 @@ func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.Handl
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	expiry, err := GetNameExpiry(*name)
+	expiry, err := GetNameExpiry(params.ChainId, *name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get name expiry: %v", err)
 	}
@@ -199,7 +199,7 @@ func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	expiry, err := GetNameExpiry(*name)
+	expiry, err := GetNameExpiry(params.ChainId, *name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get name expiry: %v", err)
 	}
@@ -229,7 +229,7 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	price, err := GetRentPrice(*name, inputs.Duration)
+	price, err := GetRentPrice(params.ChainId, *name, inputs.Duration)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get renewal price: %v", err)
 	}

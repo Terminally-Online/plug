@@ -12,8 +12,8 @@ var (
 	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
 )
 
-func GetCollateralAssetOptions() ([]types.Option, error) {
-	reserves, err := getReserves()
+func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
+	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +60,8 @@ func GetCollateralAssetOptions() ([]types.Option, error) {
 	return options, nil
 }
 
-func GetBorrowAssetOptions() ([]types.Option, error) {
-	reserves, err := getReserves()
+func GetBorrowAssetOptions(chainId int) ([]types.Option, error) {
+	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -96,12 +96,12 @@ func GetBorrowAssetOptions() ([]types.Option, error) {
 	return options, nil
 }
 
-func GetOptions() ([]types.Option, []types.Option, error) {
-	collateralOptions, err := GetCollateralAssetOptions()
+func GetOptions(chainId int) ([]types.Option, []types.Option, error) {
+	collateralOptions, err := GetCollateralAssetOptions(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
-	debtOptions, err := GetBorrowAssetOptions()
+	debtOptions, err := GetBorrowAssetOptions(chainId)
 	if err != nil {
 		return nil, nil, err
 	}

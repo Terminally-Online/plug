@@ -16,8 +16,6 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
-var ethPrice float64 = 2000.0 // Default price
-
 type SwapInputs struct {
 	TokenIn   string `json:"tokenIn"`
 	TokenOut  string `json:"tokenOut"`
@@ -79,7 +77,7 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
-	tokenType, err := getTokenType(inputs.Token)
+	tokenType, err := getTokenType(params.ChainId, inputs.Token)
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
@@ -90,7 +88,7 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 }
 
 // handleEthWethSwap handles direct conversions between ETH and WETH
-func handleEthWethSwap(inputs SwapInputs, params actions.HandlerParams, wethAddress string) ([]*types.Transaction, error) {
+func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]*types.Transaction, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(inputs.TokenOut, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
