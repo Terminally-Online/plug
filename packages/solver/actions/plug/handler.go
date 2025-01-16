@@ -43,17 +43,7 @@ func (h *Handler) init() *Handler {
 	return h
 }
 
-func (h *Handler) GetSchemas() map[types.Action]types.Schema {
-	return h.schemas
-}
-
-func (h *Handler) GetSchema(action types.Action) (*types.Schema, error) {
-	schema, exists := h.schemas[action]
-	if !exists {
-		return nil, fmt.Errorf("unsupported action: %s", action)
-	}
-	return &schema, nil
-}
+// Removed GetSchemas() and GetSchema() implementations since they are now provided by Protocol struct
 
 func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	switch action {

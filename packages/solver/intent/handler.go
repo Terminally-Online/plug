@@ -35,6 +35,7 @@ func NewHandler(solver *solver.Solver) *Handler {
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
 	action := types.Action(r.URL.Query().Get("action"))
+	chainId := r.URL.Query().Get("chainId")
 
 	// Case 1: No protocol - return all schemas for all protocols without fields included.
 	if protocol == "" {
@@ -51,7 +52,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for _, supportedAction := range handler.GetActions() {
-				schema, err := handler.GetSchema(supportedAction)
+				schema, err := handler.GetSchema(chainId, supportedAction)
 				if err != nil {
 					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 					return
@@ -89,7 +90,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, supportedAction := range handler.GetActions() {
-			schema, err := handler.GetSchema(supportedAction)
+			schema, err := handler.GetSchema(chainId, supportedAction)
 			if err != nil {
 				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 				return
@@ -108,7 +109,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Case 3: Protocol and action - return specific schema
-	schema, err := handler.GetSchema(action)
+	schema, err := handler.GetSchema(chainId, action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
