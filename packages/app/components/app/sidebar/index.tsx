@@ -1,11 +1,10 @@
 import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, Wallet, X } from "lucide-react"
+import { Cat, ChartBar, Code, LogOut, PanelRightOpen, Plus, ScanFace, Wallet, X } from "lucide-react"
 
 import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
 import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
-import { ColumnSearch } from "@/components/app/columns/utils/column-search"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"

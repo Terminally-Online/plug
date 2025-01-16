@@ -44,9 +44,10 @@ const widthAtom = atom(
 
 export const useSidebar = () => {
 	const [sidebarState] = useAtom(sidebarAtom)
+	const [width, setWidth] = useAtom(widthAtom)
+
 	const [, toggleExpanded] = useAtom(expandedAtom)
 	const [, setActivePane] = useAtom(activePaneAtom)
-	const [width, setWidth] = useAtom(widthAtom)
 
 	return {
 		is: {
