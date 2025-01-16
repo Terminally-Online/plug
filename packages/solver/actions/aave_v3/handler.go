@@ -24,7 +24,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Aave V3",
-			Icon:   "https://app.aave.com/favicon.ico",
+			Icon:   "https://onplug.io/protocols/aave.png",
 			Tags:   []string{"lending", "defi"},
 			Chains: utils.Mainnet.ChainIds,
 		},

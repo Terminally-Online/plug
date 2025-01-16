@@ -18,7 +18,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Yearn V3",
-			Icon:   "https://yearn.fi/favicons/favicon.ico",
+			Icon:   "https://onplug.io/protocols/yearn.png",
 			Tags:   []string{"yield", "defi"},
 			Chains: utils.Mainnet.ChainIds,
 		},

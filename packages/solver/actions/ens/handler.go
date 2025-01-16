@@ -25,7 +25,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "ENS",
-			Icon:   "https://app.ens.domains/favicon.ico",
+			Icon:   "https://onplug.io/protocols/ens.png",
 			Tags:   []string{"naming", "web3"},
 			Chains: utils.Mainnet.ChainIds,
 		},

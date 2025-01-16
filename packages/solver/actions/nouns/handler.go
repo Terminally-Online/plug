@@ -25,7 +25,7 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Nouns",
-			Icon:   "https://nouns.wtf/favicon.ico",
+			Icon:   "https://onplug.io/protocols/nouns.png",
 			Tags:   []string{"nft"},
 			Chains: utils.Mainnet.ChainIds,
 		},
