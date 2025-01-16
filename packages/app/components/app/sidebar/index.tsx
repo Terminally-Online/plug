@@ -47,7 +47,7 @@ const ConsoleSidebarAction: FC<
 	</div>
 )
 
-const ConsoleSidebarPane = () => {
+export const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { data: session } = useSession()
@@ -285,7 +285,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			<ConsoleSidebarPane />
+			{/* <ConsoleSidebarPane /> */}
 		</div>
 	)
 }
