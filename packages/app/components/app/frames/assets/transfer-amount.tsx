@@ -8,6 +8,7 @@ import { chains, cn, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
 
 type Implementation = NonNullable<
@@ -233,7 +234,9 @@ export const TransferAmountFrame: FC<{
 				}
 				label={`${index === -2 ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
-				handleBack={index !== -2 ? () => handle.frame(`${token.symbol}-transfer-recipient`) : undefined}
+				handleBack={() =>
+					handle.frame(index !== -2 ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+				}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
@@ -260,16 +263,14 @@ export const TransferAmountFrame: FC<{
 						</div>
 
 						<div className="flex flex-row items-center justify-between gap-4 px-6">
-							<p className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<Image
-									src={chains[1].logo}
-									alt={"ethereum"}
-									className="mr-2 h-4 w-4 rounded-full"
-									width={24}
-									height={24}
-								/>
-								$0.50
-								<span className="ml-auto pl-2 opacity-40">~11 secs</span>
+							<p className="flex flex-row items-center gap-2 font-bold tabular-nums">
+								<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
+								<span className="flex flex-row items-center">
+									$<Counter count={0.51} />
+								</span>
+								<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+									<Counter count={0.00111} /> ETH
+								</span>
 							</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
