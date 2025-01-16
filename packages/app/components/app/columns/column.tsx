@@ -225,17 +225,17 @@ export const ConsoleColumn: FC<{
 										className="px-4 pt-4"
 									/>
 								) : column.key === COLUMNS.KEYS.ACTIVITY ? (
-									<SocketActivity index={column.index} className="px-4 pt-4" />
+									<SocketActivity index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.TOKENS ? (
-									<SocketTokenList index={column.index} expanded={true} className="px-4 pt-4" />
+									<SocketTokenList index={column.index} expanded={true} className="p-4" />
 								) : column.key === COLUMNS.KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={column.index} expanded={true} className="px-4 pt-4" />
+									<SocketCollectionList index={column.index} expanded={true} className="p-4" />
 								) : column.key === COLUMNS.KEYS.POSITIONS ? (
-									<SocketPositionList index={column.index} className="px-4 pt-4" />
+									<SocketPositionList index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.ADMIN ? (
-									<ConsoleAdmin index={column.index} className="px-4 pt-4" />
+									<ConsoleAdmin index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
-									<ConsoleSettings index={column.index} className="px-4 pt-4" />
+									<ConsoleSettings index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} />
 								) : (
