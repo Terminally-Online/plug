@@ -87,7 +87,7 @@ export const ADMIN_OPTIONS: Options = [
 export const ColumnAdd = () => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
-	const { handle } = useColumnStore()
+	const { columns, handle } = useColumnStore()
 	const { handle: plugHandle } = usePlugStore()
 
 	const flagOptions = useMemo(() => {
@@ -112,7 +112,8 @@ export const ColumnAdd = () => {
 	return (
 		<div
 			className={cn(
-				"relative my-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white"
+				"relative my-2 mr-48 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
+				columns.some(column => column.index >= 0) ? "" : "ml-2"
 			)}
 			style={{ minWidth: "480px" }}
 		>
