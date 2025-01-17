@@ -66,9 +66,7 @@ export const ReferralRequired: FC = () => {
 						Enter the referral code you received to get started or request one by tagging{" "}
 						<button
 							onClick={handleRequestAccess}
-							style={{
-								...greenGradientStyle
-							}}
+							className="text-plug-green hover:opacity-80"
 						>
 							@onplug_io
 						</button>{" "}
@@ -105,7 +103,7 @@ export const ReferralRequired: FC = () => {
 									className={cn(
 										"w-full rounded-lg py-4 font-bold",
 										referralCode && isLoading === false
-											? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
+											? "cursor-pointer bg-plug-yellow text-plug-green"
 											: "border-[1px] border-plug-green bg-white text-plug-green"
 									)}
 									onClick={() => referralCode && mutate(referralCode)}
