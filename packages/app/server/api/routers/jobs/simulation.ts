@@ -18,6 +18,7 @@ export const simulation = createTRPCRouter({
 				take: input?.count ?? 100,
 				select: {
 					id: true,
+					chainId: true,
 					actions: true,
 					workflow: {
 						select: {
@@ -52,7 +53,7 @@ export const simulation = createTRPCRouter({
 
 				return {
 					id: queuedWorkflow.id,
-					chainId: 1,
+					chainId: queuedWorkflow.chainId,
 					from: queuedWorkflow.workflow.socket.socketAddress,
 					inputs
 				}
