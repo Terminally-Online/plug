@@ -150,14 +150,14 @@ export const PageHeader = () => {
 
     if (!session?.user.id?.startsWith("0x")) {
         return (
-            <Container>
+            <Container className="sticky top-0 z-10 bg-white border-b border-plug-green/10">
                 <AuthenticateHeader />
             </Container>
         )
     }
 
     return (
-        <Container>
+        <Container className="sticky top-0 z-10 bg-white border-b border-plug-green/10">
             {column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
             {column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
             {column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}

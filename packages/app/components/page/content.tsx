@@ -15,20 +15,22 @@ import { Button } from "@/components/shared/buttons/button"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 
 const ProfileContent = () => {
-    const { data: session } = useSession()
+    // Changed from data: session to sessionData to avoid conflict
+    const { data: sessionData } = useSession()
     const { socket } = useSocket()
     
-    if (!socket || !session?.user.id) return null
+    if (!socket || !sessionData?.user.id) return null
     
     return (
-        <div className="flex flex-col gap-4 p-4">
-            {/* Show user's assets using existing SocketAssets component */}
-            <SocketAssets 
-                index={COLUMNS.MOBILE_INDEX} 
-                address={session.user.id} 
-                hasTokens 
-                hasCollectibles 
-            />
+        <div className="flex flex-col h-[calc(100vh-8rem)]">
+            <div className="flex-1 overflow-y-auto p-4">
+                <SocketAssets 
+                    index={COLUMNS.MOBILE_INDEX} 
+                    address={sessionData.user.id} 
+                    hasTokens 
+                    hasCollectibles 
+                />
+            </div>
         </div>
     )
 }
