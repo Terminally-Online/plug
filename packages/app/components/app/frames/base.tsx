@@ -82,8 +82,12 @@ export const Frame: FC<Props> = ({
 							<Header
 								size="md"
 								className={cn("h-10", "bg-white")}
-								icon={icon}
-								label={label}
+								label={
+									<div className="flex items-center gap-2">
+										{icon}
+										{label}
+									</div>
+								}
 								nextPadded={false}
 								nextOnClick={() => handle.frame(undefined)}
 								nextLabel={
