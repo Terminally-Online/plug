@@ -25,6 +25,10 @@ type BaseProtocolHandler interface {
 	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 
+// Handler function types
+type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
+type OptionsHandler func(chainId int) (map[int]types.SchemaOptions, error)
+
 type Protocol struct {
 	Name            string
 	Icon            string
@@ -32,6 +36,9 @@ type Protocol struct {
 	Chains          []int
 	Schemas         map[types.Action]types.ChainSchema
 	OptionsProvider types.OptionsProvider
+	// Add maps for handlers
+	txHandlers  map[types.Action]TransactionHandler
+	optHandlers map[types.Action]OptionsHandler
 }
 
 type BaseHandler struct {
@@ -46,25 +53,51 @@ var (
 	errFailedOptions     = "failed to get options: %w"
 )
 
-func NewBaseHandler(name string, icon string, tags []string, chains []int, sentences map[types.Action]string, optionsProvider types.OptionsProvider) *BaseHandler {
-	// Pre-allocate schemas map with exact size
-	schemas := make(map[types.Action]types.ChainSchema, len(sentences))
+type ActionDefinition struct {
+	Sentence string
+	Handler  TransactionHandler
+}
 
-	// Pre-allocate actions slice for pre-warming
-	actions := make([]types.Action, 0, len(sentences))
-
-	// Initialize schemas and collect actions
-	for action, sentence := range sentences {
-		schemas[action] = types.ChainSchema{
-			Schema: types.Schema{
-				Sentence: sentence,
-			},
-		}
-		actions = append(actions, action)
+func NewBaseHandler(
+	name string,
+	icon string,
+	tags []string,
+	chains []int,
+	actionDefinitions map[types.Action]ActionDefinition,
+	optionsProvider types.OptionsProvider,
+) *BaseHandler {
+	// Extract sentences and handlers from definitions
+	sentences := make(map[types.Action]string, len(actionDefinitions))
+	transactions := make(map[types.Action]TransactionHandler, len(actionDefinitions))
+	for action, def := range actionDefinitions {
+		sentences[action] = def.Sentence
+		transactions[action] = def.Handler
 	}
 
-	// Create cached options provider
+	// Create options handlers for each action
+	getOptionsFor := func(action types.Action) OptionsHandler {
+		return func(chainId int) (map[int]types.SchemaOptions, error) {
+			return optionsProvider.GetOptions(chainId, action)
+		}
+	}
+
+	optHandlers := make(map[types.Action]OptionsHandler, len(actionDefinitions))
+	for action := range actionDefinitions {
+		optHandlers[action] = getOptionsFor(action)
+	}
+
+	// Create cached provider
 	cachedProvider := types.NewCachedOptionsProvider(optionsProvider)
+
+	// Initialize schemas
+	schemas := make(map[types.Action]types.ChainSchema, len(actionDefinitions))
+	for action, def := range actionDefinitions {
+		schemas[action] = types.ChainSchema{
+			Schema: types.Schema{
+				Sentence: def.Sentence,
+			},
+		}
+	}
 
 	// Create the handler
 	handler := &BaseHandler{
@@ -75,10 +108,16 @@ func NewBaseHandler(name string, icon string, tags []string, chains []int, sente
 			Chains:          chains,
 			Schemas:         schemas,
 			OptionsProvider: cachedProvider,
+			txHandlers:      transactions,
+			optHandlers:     optHandlers,
 		},
 	}
 
 	// Start pre-warming cache in background
+	actions := make([]types.Action, 0, len(actionDefinitions))
+	for action := range actionDefinitions {
+		actions = append(actions, action)
+	}
 	go func() {
 		for _, chainId := range chains {
 			cachedProvider.PreWarmCache(chainId, actions)
@@ -86,6 +125,19 @@ func NewBaseHandler(name string, icon string, tags []string, chains []int, sente
 	}()
 
 	return handler
+}
+
+// Options provider that uses the handler map
+type handlerOptionsProvider struct {
+	handlers map[types.Action]OptionsHandler
+}
+
+func (p *handlerOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	handler, exists := p.handlers[action]
+	if !exists {
+		return nil, fmt.Errorf(errUnsupportedAction, action)
+	}
+	return handler(chainId)
 }
 
 func (h *BaseHandler) GetName() string {
@@ -149,4 +201,13 @@ func (h *BaseHandler) GetSchema(chainId string, action types.Action) (*types.Cha
 	}
 
 	return &chainSchema, nil
+}
+
+// Update GetTransaction to use the handler map
+func (h *BaseHandler) GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error) {
+	handler, exists := h.protocol.txHandlers[action]
+	if !exists {
+		return nil, fmt.Errorf(errUnsupportedAction, action)
+	}
+	return handler(rawInputs, params)
 }
