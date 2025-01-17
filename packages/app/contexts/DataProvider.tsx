@@ -28,9 +28,12 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 		onSuccess: data => setSocket(data)
 	})
 
-	api.solver.actions.getSchemas.useQuery(undefined, {
-		onSuccess: data => setActions(data)
-	})
+	api.solver.actions.getSchemas.useQuery(
+		{ chainId: 1 },
+		{
+			onSuccess: data => setActions(data)
+		}
+	)
 
 	return (
 		<DataContext.Provider
