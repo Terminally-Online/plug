@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 )
@@ -90,26 +89,20 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []Action) {
 	const maxWorkers = 4
 	sem := make(chan struct{}, maxWorkers)
 
-	log.Printf("Pre-warming cache for chain %d (%d actions)...\n", chainId, len(actions))
-	start := time.Now()
-
 	completed := 0
-	var mu sync.Mutex 
+	var mu sync.Mutex
 
 	for _, action := range actions {
-		sem <- struct{}{} 
+		sem <- struct{}{}
 		go func(action Action) {
 			defer func() {
-				<-sem 
+				<-sem
 				mu.Lock()
 				completed++
-				if completed == len(actions) {
-					log.Printf("Finished pre-warming cache for chain %d in %v\n", chainId, time.Since(start))
-				}
 				mu.Unlock()
 			}()
 			if _, err := c.GetOptions(chainId, action); err != nil {
-				log.Printf("Failed to pre-warm cache for chain %d action %s: %v\n", chainId, action, err)
+				// Silently continue on error
 			}
 		}(action)
 	}
