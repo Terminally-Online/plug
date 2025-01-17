@@ -94,14 +94,14 @@ export const LandingActionCard: FC<Props> = ({
 			<div className="flex flex-row gap-2 text-xs font-bold">
 				<div
 					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
-					style={{ backgroundColor: tagColors[color] }}
+					style={{ backgroundColor: tagColors[color as keyof typeof tagColors] }}
 				>
 					<GitFork size={16} className="opacity-40" />
 					<motion.span className="tabular-nums">{forksRounded}</motion.span> Forks
 				</div>
 				<div
 					className="flex flex-row items-center gap-1 rounded-full px-2 py-1"
-					style={{ backgroundColor: tagColors[color] }}
+					style={{ backgroundColor: tagColors[color as keyof typeof tagColors] }}
 				>
 					<Zap size={16} className="opacity-40" />
 					<motion.span className="tabular-nums">{runsRounded}</motion.span> Runs

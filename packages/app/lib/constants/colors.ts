@@ -9,7 +9,7 @@ export const colors = {
 	magenta: "#EB8AF3",
 	purple: "#9F8AF3",
 	aave: "#9896FF",
-	ens: "#0080BC", 
+	ens: "#0080BC",
 	morpho: "#2470FF",
 	nouns: "#EFC950",
 	yearn: "#0657F9",
