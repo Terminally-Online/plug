@@ -189,7 +189,7 @@ export const ConsoleColumn: FC<{
 											)}
 										</div>
 									}
-									nextPadded={false}
+									// nextPadded={false}
 									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
 									nextLabel={
 										<X
