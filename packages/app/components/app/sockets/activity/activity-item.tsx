@@ -97,7 +97,7 @@ export const ActivityItem: FC<{
 
 	return (
 		<>
-			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
+			<Accordion loading={activity === undefined} onExpand={() => handle.frame(`${activity?.id}-activity`)}>
 				{activity === undefined ? (
 					<div className="invisible">
 						<p>.</p>

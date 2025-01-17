@@ -32,7 +32,7 @@ export const plugs = createTRPCRouter({
 			const workflows = await ctx.db.workflow.findMany({
 				where: {
 					id: { in: input.ids },
-					isPrivate: false
+					OR: [{ isPrivate: false }, { socketId: ctx.session?.address }]
 				}
 			})
 

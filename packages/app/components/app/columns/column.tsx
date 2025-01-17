@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, useCallback, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -27,35 +27,101 @@ const MAX_COLUMN_WIDTH = 680
 
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
+// Memoized column content component to prevent unnecessary re-renders
+const ColumnContent: FC<{
+	columnKey: string
+	index: number
+	item?: string
+	from?: string
+}> = React.memo(({ columnKey, index, item, from }) => {
+	if (columnKey === COLUMNS.KEYS.ADD) return <ColumnAdd index={index} />
+	if (columnKey === COLUMNS.KEYS.DISCOVER) return <PlugsDiscover index={index} className="pt-4" />
+	if (columnKey === COLUMNS.KEYS.MY_PLUGS) return <PlugsMine index={index} className="pt-4" />
+	if (columnKey === COLUMNS.KEYS.PLUG) return <Plug index={index} item={item} from={from} className="px-4 pt-4" />
+	if (columnKey === COLUMNS.KEYS.ACTIVITY) return <SocketActivity index={index} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.TOKENS) return <SocketTokenList index={index} expanded={true} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.COLLECTIBLES)
+		return <SocketCollectionList index={index} expanded={true} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.POSITIONS) return <SocketPositionList index={index} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.ADMIN) return <ConsoleAdmin index={index} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.SETTINGS) return <ConsoleSettings index={index} className="p-4" />
+	if (columnKey === COLUMNS.KEYS.APPLICATION) return <ColumnApplication index={index} />
+	return null
+})
+ColumnContent.displayName = "ColumnContent"
+
+// Memoized header actions to prevent unnecessary re-renders
+const HeaderActions: FC<{
+	plug?: any
+	socket?: any
+	onFrame: () => void
+	onRemove: () => void
+}> = React.memo(({ plug, socket, onFrame, onRemove }) => {
+	const [copied, setCopied] = useState(false)
+
+	const handleShare = useCallback(async () => {
+		try {
+			const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
+			await navigator.clipboard.writeText(shareUrl)
+			setCopied(true)
+			setTimeout(() => setCopied(false), 2000)
+		} catch (err) {
+			console.error("Failed to copy link:", err)
+		}
+	}, [plug, socket])
+
+	if (!plug) return null
+
+	return (
+		<div className="flex flex-row items-center justify-end gap-4">
+			<Button variant="secondary" className="rounded-sm p-1" onClick={handleShare}>
+				{copied ? (
+					<Check size={14} className="opacity-60 transition-all" />
+				) : (
+					<Share size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />
+				)}
+			</Button>
+
+			<Button variant="secondary" className="rounded-sm p-1" onClick={onFrame}>
+				<Settings size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />
+			</Button>
+
+			<Button variant="secondary" className="rounded-sm p-1" onClick={onRemove}>
+				<X size={14} className="opacity-60 transition-opacity group-hover:opacity-100" />
+			</Button>
+		</div>
+	)
+})
+HeaderActions.displayName = "HeaderActions"
+
 export const ConsoleColumn: FC<{
 	id: number
-}> = ({ id }) => {
+}> = React.memo(({ id }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
-
-	const {
-		column,
-		handle: { frame, remove, resize, navigate }
-	} = useColumnStore(id)
+	const { column, handle } = useColumnStore(id)
 	const { plug } = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
-	const [copied, setCopied] = useState(false)
 
+	// Handle column resizing
 	useEffect(() => {
-		if (!column) return
+		if (!column || !resizeRef.current) return
 
 		const handleMouseMove = (e: MouseEvent) => {
-			if (!resizeRef.current || !isResizing) return
-
-			setWidth(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left))
+			if (!isResizing || !resizeRef.current) return
+			const rect = resizeRef.current.getBoundingClientRect()
+			const newWidth = getBoundedWidth(e.clientX - rect.left)
+			setWidth(newWidth)
 		}
 
 		const handleMouseUp = () => {
+			if (!isResizing) return
 			setIsResizing(false)
 
-			resize({
+			// Only update the column width when we finish resizing
+			handle.resize({
 				index: column.index,
 				width
 			})
@@ -64,13 +130,22 @@ export const ConsoleColumn: FC<{
 		if (isResizing) {
 			window.addEventListener("mousemove", handleMouseMove)
 			window.addEventListener("mouseup", handleMouseUp)
+			document.body.style.userSelect = "none" // Prevent text selection while resizing
 		}
 
 		return () => {
 			window.removeEventListener("mousemove", handleMouseMove)
 			window.removeEventListener("mouseup", handleMouseUp)
+			document.body.style.userSelect = "" // Reset user select
 		}
-	}, [resize, column, width, isResizing])
+	}, [column, isResizing, width, handle])
+
+	// Initialize width from column
+	useEffect(() => {
+		if (column?.width && !isResizing) {
+			setWidth(column.width)
+		}
+	}, [column?.width, isResizing])
 
 	if (!column) return null
 
@@ -106,10 +181,7 @@ export const ConsoleColumn: FC<{
 												<Button
 													variant="secondary"
 													onClick={() =>
-														navigate({
-															index: column.index,
-															key: column.from
-														})
+														handle.navigate({ index: column.index, key: column.from })
 													}
 													className="rounded-sm p-1"
 												>
@@ -136,59 +208,16 @@ export const ConsoleColumn: FC<{
 												</p>
 											</div>
 
-											{plug && (
-												<div className="flex flex-row items-center justify-end gap-4">
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={async () => {
-															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
-																await navigator.clipboard.writeText(shareUrl)
-																setCopied(true)
-																setTimeout(() => setCopied(false), 2000)
-															} catch (err) {
-																console.error("Failed to copy link:", err)
-															}
-														}}
-													>
-														{copied ? (
-															<Check size={14} className="opacity-60 transition-all" />
-														) : (
-															<Share
-																size={14}
-																className="opacity-60 transition-opacity group-hover:opacity-100"
-															/>
-														)}
-													</Button>
-
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={() => frame("manage")}
-													>
-														<Settings
-															size={14}
-															className="opacity-60 transition-opacity group-hover:opacity-100"
-														/>
-													</Button>
-
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={() => remove(column.index)}
-													>
-														<X
-															size={14}
-															className="opacity-60 transition-opacity group-hover:opacity-100"
-														/>
-													</Button>
-												</div>
-											)}
+											<HeaderActions
+												plug={plug}
+												socket={socket}
+												onFrame={() => handle.frame("manage")}
+												onRemove={() => handle.remove(column.index)}
+											/>
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
+									nextOnClick={plug === undefined ? () => handle.remove(column.index) : undefined}
 									nextLabel={
 										<X
 											size={14}
@@ -199,36 +228,12 @@ export const ConsoleColumn: FC<{
 							</div>
 
 							<div className="flex-1 overflow-y-auto rounded-b-lg">
-								{column.key === COLUMNS.KEYS.ADD ? (
-									<ColumnAdd />
-								) : column.key === COLUMNS.KEYS.DISCOVER ? (
-									<PlugsDiscover index={column.index} className="pt-4" />
-								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (
-									<PlugsMine index={column.index} className="pt-4" />
-								) : column.key === COLUMNS.KEYS.PLUG ? (
-									<Plug
-										index={column.index}
-										item={column.item}
-										from={column.from}
-										className="px-4 pt-4"
-									/>
-								) : column.key === COLUMNS.KEYS.ACTIVITY ? (
-									<SocketActivity index={column.index} className="p-4" />
-								) : column.key === COLUMNS.KEYS.TOKENS ? (
-									<SocketTokenList index={column.index} expanded={true} className="p-4" />
-								) : column.key === COLUMNS.KEYS.COLLECTIBLES ? (
-									<SocketCollectionList index={column.index} expanded={true} className="p-4" />
-								) : column.key === COLUMNS.KEYS.POSITIONS ? (
-									<SocketPositionList index={column.index} className="p-4" />
-								) : column.key === COLUMNS.KEYS.ADMIN ? (
-									<ConsoleAdmin index={column.index} className="p-4" />
-								) : column.key === COLUMNS.KEYS.SETTINGS ? (
-									<ConsoleSettings index={column.index} className="p-4" />
-								) : column.key === COLUMNS.KEYS.APPLICATION ? (
-									<ColumnApplication index={column.index} />
-								) : (
-									<React.Fragment></React.Fragment>
-								)}
+								<ColumnContent
+									columnKey={column.key ?? ""}
+									index={column.index}
+									item={column.item}
+									from={column.from}
+								/>
 							</div>
 						</div>
 
@@ -248,4 +253,5 @@ export const ConsoleColumn: FC<{
 			</Draggable>
 		</div>
 	)
-}
+})
+ConsoleColumn.displayName = "ConsoleColumn"

@@ -13,7 +13,7 @@ import { ActionView } from "@/components/app/plugs/actions/action-view"
 import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
 import { COLUMNS, useColumnStore } from "@/state/columns"
-import { usePlugData } from "@/state/plugs"
+import { usePlugStore } from "@/state/plugs"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
 	index = COLUMNS.MOBILE_INDEX,
@@ -23,7 +23,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 }) => {
 	const { data: session } = useSession()
 	const { handle } = useColumnStore(index)
-	const { plug } = usePlugData(item)
+	const { plug } = usePlugStore(item)
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
 
@@ -35,8 +35,6 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 		handle.frame(`${item}-actions`)
 		setHasOpenedActions(true)
 	}, [item, handle, plug, hasOpenedActions])
-
-	if (!plug || !session) return null
 
 	return (
 		<div {...props}>

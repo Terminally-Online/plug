@@ -5,7 +5,7 @@ import { Loader } from "lucide-react"
 import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumn, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
@@ -64,17 +64,11 @@ const Loading: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
 	}
-> = ({ index, className, ...props }) => {
-	const { column } = useColumnData(index)
-
-	if (!column) return null
-
-	return (
-		<div className={cn("absolute bottom-0 left-0 right-0 top-0", className)} {...props}>
-			<Loader size={14} className="animate-spin" />
-		</div>
-	)
-}
+> = ({ index, className, ...props }) => (
+	<div className={cn("absolute bottom-0 left-0 right-0 top-0", className)} {...props}>
+		<Loader size={14} className="animate-spin" />
+	</div>
+)
 
 const EmptySearch: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
@@ -84,6 +78,7 @@ const EmptySearch: FC<
 	}
 > = ({ isEmpty, search, handleSearch, className, ...props }) => {
 	if (isEmpty === false) return null
+
 	return (
 		<>
 			<div
@@ -163,9 +158,11 @@ const EmptyPlugs: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column } = useColumnData(index)
+	const column = useColumn(index)
 	const { handle } = usePlugStore()
-	if (!column || isEmpty === false) return null
+
+	if (isEmpty === false) return null
+
 	return (
 		<>
 			<div
@@ -194,8 +191,8 @@ const EmptyPlug: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column } = useColumnData(index)
-	if (!column || isEmpty === false) return null
+	if (isEmpty === false) return null
+
 	return (
 		<Base
 			className={cn("my-52", className)}

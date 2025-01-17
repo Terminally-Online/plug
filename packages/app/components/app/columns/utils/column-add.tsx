@@ -67,10 +67,10 @@ export const OPTIONS: Options = [
 	}
 ] as const
 
-export const ColumnAdd = () => {
+export const ColumnAdd = ({ index }: { index: number }) => {
 	const { getFlag } = useFlags()
+	const { handle } = useColumnStore()
 	const { socket } = useSocket()
-	const { columns, handle } = useColumnStore()
 	const { handle: plugHandle } = usePlugStore()
 
 	const flagOptions = useMemo(() => {
@@ -104,7 +104,7 @@ export const ColumnAdd = () => {
 			<div
 				className={cn(
 					"relative my-2 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
-					columns.some(column => column.index >= 0) ? "" : "ml-2"
+					index >= 0 ? "" : "ml-2"
 				)}
 				style={{ minWidth: "480px" }}
 			>

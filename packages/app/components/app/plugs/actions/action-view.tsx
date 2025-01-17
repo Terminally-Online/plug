@@ -6,7 +6,7 @@ import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Action, formatTitle, getValues } from "@/lib"
 import { useActions } from "@/state/actions"
-import { useColumnData } from "@/state/columns"
+import { useColumn, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
@@ -20,11 +20,9 @@ const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): R
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	const { column } = useColumnData(index)
+	const { column } = useColumnStore(index)
 	const [solverActions] = useActions()
-
-	const { item } = column ?? {}
-	const { plug, own, actions, handle } = usePlugStore(item)
+	const { plug, own, actions, handle } = usePlugStore(column?.item ?? "")
 
 	const baseSuggestions = useMemo(
 		() =>
@@ -54,17 +52,17 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 			.slice(0, 3)
 	}, [baseSuggestions, actions])
 
-	if (!item || !plug) return null
+	if (!plug) return null
 
 	return (
-		<div className="mb-72 flex flex-col">
+		<div className="mb-72 flex flex-col gap-2">
 			<Callout.EmptyPlug index={index} isEmpty={actions.length === 0} />
 
 			{actions.map((action, actionIndex) => (
 				<Sentence
 					key={`${index}-${actionIndex}-sentence`}
 					index={index}
-					item={item}
+					item={column?.item ?? ""}
 					actionIndex={actionIndex}
 					action={action}
 				/>

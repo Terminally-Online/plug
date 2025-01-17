@@ -397,9 +397,9 @@ export const Sentence: FC<SentenceProps> = ({
 				</div>
 			</Accordion>
 
-			{preview === false && actionIndex < plugActions.length - 1 && (
+			{/* {preview === false && actionIndex < plugActions.length - 1 && (
 				<div className="mx-auto h-2 w-[2px] bg-plug-green/5" />
-			)}
+			)} */}
 		</>
 	)
 }

@@ -1,16 +1,22 @@
+import React from "react"
+
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn } from "@/components/app/columns/column"
 import { ColumnAdd } from "@/components/app/columns/utils/column-add"
-import { useColumnStore } from "@/state/columns"
+import { useColumnList } from "@/state/columns"
 
 import { ConsoleSidebarPane } from "../sidebar"
 
+// Memoized column component that only re-renders when necessary
+const MemoizedColumn = React.memo(({ id, index }: { id: number; index: number }) => <ConsoleColumn id={index} />)
+MemoizedColumn.displayName = "MemoizedColumn"
+
 export const ConsoleColumnRow = () => {
-	const { columns, handle } = useColumnStore()
+	const { columnIds, handle } = useColumnList()
 
 	const onDragEnd = (result: DropResult) => {
-		if (!columns || !result.destination) return
+		if (!result.destination) return
 
 		handle.move({
 			from: result.source.index,
@@ -26,19 +32,16 @@ export const ConsoleColumnRow = () => {
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (
 						<div ref={provided.innerRef} className="flex flex-row" {...provided.droppableProps}>
-							{columns
-								.filter(column => column?.index >= 0)
-								.sort((a, b) => a.index - b.index)
-								.map(column => (
-									<ConsoleColumn key={String(column.id)} id={column.index} />
-								))}
+							{columnIds.map((id, index) => (
+								<MemoizedColumn key={id} id={id} index={index} />
+							))}
 							{provided.placeholder}
 						</div>
 					)}
 				</Droppable>
 			</DragDropContext>
 
-			<ColumnAdd />
+			<ColumnAdd index={columnIds.length - 2} />
 		</div>
 	)
 }

@@ -1,9 +1,9 @@
-import { FC, HTMLAttributes, useMemo, useState } from "react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
 import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
 
-import { Workflow } from "@prisma/client"
+import { useAtom } from "jotai"
 
 import { Search } from "@/components/app/inputs/search"
 import { Tags } from "@/components/app/inputs/tags"
@@ -14,6 +14,7 @@ import { cn, useSearch } from "@/lib"
 import { api } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { COLUMNS } from "@/state/columns"
+import { plugOrderAtom, plugsMapAtom } from "@/state/plugs"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
@@ -24,10 +25,8 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const { search, tag, handleSearch, handleTag } = useSearch()
 	const { scrollYProgress } = useScroll()
 
-	const [plugs, setPlugs] = useState<{
-		count?: number
-		plugs: Array<Workflow>
-	}>({ plugs: [] })
+	const [plugsMap, setPlugsMap] = useAtom(plugsMapAtom)
+	const [order, setOrder] = useAtom(plugOrderAtom)
 
 	const { fetchNextPage, isLoading } = api.plugs.infinite.useInfiniteQuery(
 		{
@@ -42,28 +41,55 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 				return lastPage.nextCursor
 			},
 			onSuccess(data) {
-				setPlugs(() => ({
-					count: data.pages[data.pages.length - 1].count,
-					plugs: data.pages.flatMap(page => page.plugs)
-				}))
+				// Update both map and order
+				const newPlugsMap: Record<string, any> = {}
+				const newOrder: string[] = []
+
+				data.pages.forEach(page => {
+					page.plugs.forEach(plug => {
+						newPlugsMap[plug.id] = plug
+						if (!order.includes(plug.id)) {
+							newOrder.push(plug.id)
+						}
+					})
+				})
+
+				setPlugsMap(prev => ({ ...prev, ...newPlugsMap }))
+				if (newOrder.length > 0) {
+					setOrder(prev => [...prev, ...newOrder])
+				}
 			}
 		}
 	)
 
 	const visiblePlugs = useMemo(() => {
-		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
+		if (!socket?.id || (Object.keys(plugsMap).length === 0 && search === "")) {
+			return Array(12).fill(undefined)
+		}
 
-		return plugs.plugs
-	}, [plugs, search])
+		return order
+			.map(id => plugsMap[id])
+			.filter(plug => {
+				if (!plug) return false
+				if (plug.socketId !== socket.id) return false
+				if (search && !plug.name.toLowerCase().includes(search.toLowerCase())) return false
+				if (tag !== "" && !plug.tags?.includes(tag)) return false
+				return true
+			})
+	}, [plugsMap, order, socket?.id, search, tag])
 
 	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (!plugs || isLoading || latest < 0.8) return
-		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
+		if (isLoading || latest < 0.8) return
+		const totalPlugs = Object.values(plugsMap).filter(p => p.socketId === socket?.id).length
+		if (totalPlugs > visiblePlugs.length) fetchNextPage()
 	})
+
+	const isEmpty = visiblePlugs.length === 0 && search === "" && tag === ""
+	const isEmptySearch = (search !== "" || tag !== "") && visiblePlugs.length === 0
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{(search !== "" || (plugs && plugs.plugs.length > 0)) && (
+			{(search !== "" || visiblePlugs.some(Boolean)) && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
@@ -77,17 +103,13 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
 
-			<Callout.EmptySearch
-				isEmpty={(search !== "" || tag !== "") && plugs && plugs.count === 0}
-				search={search || tag}
-				handleSearch={handleSearch}
-			/>
+			<Callout.EmptySearch isEmpty={isEmptySearch} search={search || tag} handleSearch={handleSearch} />
 
 			<Container>
 				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
-			<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />
+			<Callout.EmptyPlugs index={index} isEmpty={isEmpty} />
 		</div>
 	)
 }

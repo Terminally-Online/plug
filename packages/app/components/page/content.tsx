@@ -7,10 +7,10 @@ import { SocketActivity } from "@/components/app/sockets/activity/activity-list"
 import { SocketAssets } from "@/components/app/sockets/assets"
 import { SocketProfile } from "@/components/app/sockets/profile"
 import { Plugs } from "@/components/shared/framework/plugs"
-import { COLUMNS, useColumnData } from "@/state/columns"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 export const PageContent = () => {
-	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+	const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
 
 	if (!column) return null
 

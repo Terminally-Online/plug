@@ -37,9 +37,9 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	className,
 	...props
 }) => {
-	const { column } = useColumnStore(index, "simulation")
+	const { column } = useColumnStore(index)
 	const { isAnonymous } = useSocket()
-	const { activities, isLoading } = useActivities()
+	const { activities } = useActivities()
 
 	const simulationId = useMemo(() => {
 		const prefix = "-simulation"
