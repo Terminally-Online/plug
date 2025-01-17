@@ -45,13 +45,9 @@ export const Sentence: FC<SentenceProps> = ({
 		actions: plugActions,
 		handle: {
 			action: { edit }
-		}
-	} = usePlugStore(item)
-
-	const { data: solverActions } = api.solver.actions.getSchemas.useQuery({
-		protocol: action.protocol,
-		action: action.action
-	})
+		},
+		solver: { actions: solverActions }
+	} = usePlugStore(item, action)
 
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
@@ -74,7 +70,7 @@ export const Sentence: FC<SentenceProps> = ({
 
 	const parts = parsed ? parsed.template.split(/(\{[^}]+\})/g) : []
 
-	const handleValue = (index: number, value: string) => {
+	const handleValue = (index: number, value: string, isNumber?: boolean) => {
 		const inputName = getInputName(index)
 
 		if (!parsed || !inputName) return
@@ -90,7 +86,7 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 									...action.values,
-									[index]: { value, name: inputName }
+									[index]: { value: isNumber ? parseInt(value) : value, name: inputName }
 								}
 							: action.values
 				}))
@@ -111,6 +107,7 @@ export const Sentence: FC<SentenceProps> = ({
 					className
 				)}
 				data-sentence
+				data-chains={actionSchema.metadata.chains.join(",")}
 				data-valid={isValid && isComplete}
 				data-action-preview={item}
 				{...props}
@@ -174,7 +171,7 @@ export const Sentence: FC<SentenceProps> = ({
 								const isReady =
 									(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 									input.dependentOn === undefined
-								const isEmpty = !value?.value.trim()
+								const isEmpty = !value?.value
 								const isValid = !isEmpty && !inputError && !error
 
 								return (
@@ -183,18 +180,23 @@ export const Sentence: FC<SentenceProps> = ({
 											className={cn(
 												"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
 												!isValid ? "text-plug-red" : "text-plug-green",
-												own === true ? "cursor-pointer" : "cursor-default"
+												own && !preview ? "cursor-pointer" : "cursor-default"
 											)}
 											style={{
 												background: !isValid
 													? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
 													: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
 											}}
-											onClick={() => (own ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
+											onClick={() =>
+												own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
+											}
 										>
 											{(option && option.label) ||
 												value?.value ||
-												input.name ||
+												input.name
+													?.replaceAll("_", " ")
+													.replace(/([A-Z])/g, " $1")
+													.toLowerCase() ||
 												`Input #${input.index}`}
 										</button>
 
@@ -254,7 +256,14 @@ export const Sentence: FC<SentenceProps> = ({
 														icon={<Hash size={14} />}
 														placeholder={getInputPlaceholder(input.type)}
 														search={value?.value}
-														handleSearch={data => handleValue(input.index, data)}
+														handleSearch={data =>
+															handleValue(
+																input.index,
+																data,
+																input.type?.toString().includes("int")
+															)
+														}
+														isNumber={input.type?.toString().includes("int")}
 													/>
 												)}
 
@@ -342,7 +351,7 @@ export const Sentence: FC<SentenceProps> = ({
 													)}
 													<div className="mb-4 px-6">
 														<Button
-															variant={!isEmpty && !error ? "primary" : "disabled"}
+															variant={!isEmpty && !error ? "primary" : "primaryDisabled"}
 															className="w-full py-4"
 															onClick={() =>
 																frame(
@@ -351,7 +360,7 @@ export const Sentence: FC<SentenceProps> = ({
 																		: undefined
 																)
 															}
-															disabled={isEmpty || error !== undefined}
+															disabled={isEmpty || error}
 														>
 															{isOptionBased && isEmpty
 																? "Choose option"

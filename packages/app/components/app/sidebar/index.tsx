@@ -1,11 +1,10 @@
 import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Search, SearchIcon, Wallet, X } from "lucide-react"
+import { Cat, ChartBar, Code, LogOut, PanelRightOpen, Plus, ScanFace, Wallet, X } from "lucide-react"
 
 import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
 import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
-import { ColumnSearch } from "@/components/app/columns/utils/column-search"
 import { ColumnStats } from "@/components/app/columns/utils/column-stats"
 import { ColumnWallet } from "@/components/app/columns/utils/column-wallet"
 import { Header } from "@/components/app/layout/header"
@@ -14,6 +13,7 @@ import { Image } from "@/components/app/utils/image"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { useSocket } from "@/state/authentication"
+import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
@@ -27,25 +27,21 @@ const ConsoleSidebarAction: FC<
 > = ({ icon, isExpanded, isPrimary = false, isActive = false, className, title, ...props }) => (
 	<div
 		className={cn(
-			"group mr-auto flex h-8 w-full cursor-pointer select-none flex-row items-center justify-center gap-4 p-2 transition-all duration-200 ease-in-out",
+			"group relative mr-auto flex h-10 w-full cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 py-2 transition-all duration-200 ease-in-out",
+			isActive && "bg-plug-green/10 hover:bg-white",
+			isPrimary
+				? "border-plug-yellow bg-plug-yellow text-plug-green hover:brightness-105"
+				: "text-black hover:bg-plug-green/10",
 			className
 		)}
 		{...props}
 	>
-		<div
-			className={cn(
-				"group relative flex h-8 cursor-pointer flex-row items-center justify-center gap-4 rounded-sm border-[1px] border-plug-green/10 bg-white p-4 px-2 transition-all duration-200 ease-in-out group-hover:bg-plug-green/5",
-				isActive && "bg-plug-green/5 hover:bg-white",
-				isPrimary && "group-hover: border-plug-yellow bg-plug-yellow text-plug-green"
-			)}
-		>
-			{icon}
-		</div>
+		<div className="opacity-60">{icon}</div>
 
 		<p
 			className={cn(
-				"mr-auto whitespace-nowrap font-bold opacity-40 transition-all duration-200 ease-in-out",
-				isExpanded === false ? "hidden" : "group-hover:opacity-80"
+				"mr-auto whitespace-nowrap font-bold opacity-80 transition-all duration-200 ease-in-out",
+				isExpanded === false ? "hidden" : "group-hover:opacity-100"
 			)}
 		>
 			{isExpanded ? title : "."}
@@ -53,7 +49,7 @@ const ConsoleSidebarAction: FC<
 	</div>
 )
 
-const ConsoleSidebarPane = () => {
+export const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { data: session } = useSession()
@@ -103,20 +99,13 @@ const ConsoleSidebarPane = () => {
 										? "Companion"
 										: is.stats
 											? "Stats"
-											: is.searching
-												? "Search"
-												: session?.user.id.startsWith("0x")
-													? "Wallet"
-													: "Login"
+											: session?.user.id.startsWith("0x")
+												? "Wallet"
+												: "Login"
 								}
 								size="md"
 								icon={
-									is.searching ? (
-										<SearchIcon
-											size={14}
-											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
-										/>
-									) : is.stats ? (
+									is.stats ? (
 										<ChartBar
 											size={14}
 											className="m-1 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -135,14 +124,12 @@ const ConsoleSidebarPane = () => {
 								}
 								nextPadded={false}
 								nextOnClick={() => handleActivePane(null)}
-								nextLabel={<X size={14} />}
+								nextLabel={account.isAuthenticated ? <X size={14} /> : undefined}
 							/>
 						</div>
 
 						<div className="h-full overflow-y-scroll">
-							{is.searching ? (
-								<ColumnSearch index={0} className="px-4" />
-							) : is.stats ? (
+							{is.stats ? (
 								<ColumnStats index={0} />
 							) : is.companion ? (
 								<ColumnCompanion index={0} />
@@ -172,8 +159,10 @@ const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
+	const { data: session } = useSession()
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
+	const { handleFlag, getFlag } = useFlags()
 	const { socket } = useSocket()
 
 	const { avatar } = useSocket()
@@ -184,10 +173,10 @@ export const ConsoleSidebar = () => {
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
-			<div className="flex h-full w-max flex-col items-center border-r-[1px] border-plug-green/10 py-4">
-				<div className={cn("flex w-full flex-col gap-4 p-2")}>
+			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-4 pt-2">
+				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mx-2 mb-4 h-10 w-10 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
 						onClick={() => handleSidebar("authenticating")}
 					>
 						{avatar ? (
@@ -220,19 +209,6 @@ export const ConsoleSidebar = () => {
 
 							<ConsoleSidebarAction
 								icon={
-									<Search
-										size={14}
-										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-									/>
-								}
-								title="Search"
-								isExpanded={is.expanded}
-								isActive={is.searching}
-								onClick={() => handleSidebar("searching")}
-							/>
-
-							<ConsoleSidebarAction
-								icon={
 									<ChartBar
 										size={14}
 										className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
@@ -260,9 +236,25 @@ export const ConsoleSidebar = () => {
 					)}
 				</div>
 
-				<div className="mt-auto flex w-full flex-col items-center gap-4 p-2">
-					{account.isAuthenticated && (
+				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
+					{(account.address || account.isAuthenticated) && (
 						<>
+							{socket?.admin && (
+								<ConsoleSidebarAction
+									className={cn(is.expanded && "pr-16")}
+									icon={
+										<Code
+											size={14}
+											className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
+										/>
+									}
+									title="Developer"
+									isExpanded={is.expanded}
+									isPrimary={getFlag(Flag.SHOW_DEVELOPER)}
+									onClick={() => handleFlag(Flag.SHOW_DEVELOPER, !getFlag(Flag.SHOW_DEVELOPER))}
+								/>
+							)}
+
 							<ConsoleSidebarAction
 								className={cn(is.expanded && "pr-16")}
 								icon={
@@ -293,7 +285,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			<ConsoleSidebarPane />
+			{session?.user.id.startsWith("0x") === false && <ConsoleSidebarPane />}
 		</div>
 	)
 }

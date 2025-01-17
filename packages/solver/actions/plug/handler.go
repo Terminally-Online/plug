@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 type Handler struct {
@@ -17,9 +18,9 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Plug",
-			Icon:   "https://onplug.io/favicon.ico",
+			Icon:   "https://onplug.io/protocols/plug.png",
 			Tags:   []string{"defi"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h

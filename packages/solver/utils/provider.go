@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"os"
+
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
@@ -24,6 +25,8 @@ func GetProvider(chainId int) (*ethclient.Client, error) {
 	switch chainId {
 	case 1:
 		rpcURL = "wss://eth-mainnet.g.alchemy.com/v2/%v"
+	case 31337:
+		rpcURL = "wss://127.0.0.1:8545"
 	case 11155111:
 		rpcURL = "wss://eth-sepolia.g.alchemy.com/v2/%v"
 	case 10:

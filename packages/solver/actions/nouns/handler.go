@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 var (
@@ -24,9 +25,9 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Nouns",
-			Icon:   "https://nouns.wtf/favicon.ico",
+			Icon:   "https://onplug.io/protocols/nouns.png",
 			Tags:   []string{"nft"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h

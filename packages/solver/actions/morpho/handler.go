@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/actions"
 	"solver/types"
+	"solver/utils"
 )
 
 var (
@@ -30,9 +31,9 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Morpho",
-			Icon:   "https://cdn.morpho.org/v2/assets/icons/butterfly-light.svg",
+			Icon:   "https://onplug.io/protocols/morpho.png",
 			Tags:   []string{"lending", "defi"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h

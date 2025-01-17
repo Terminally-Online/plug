@@ -2,9 +2,12 @@ import { FC } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
+import { connectedChains } from "@/contexts"
 import { ActionSchema, formatTitle, getValues } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+
+import { ChainImage } from "../../sockets/chains/chain.image"
 
 export const ActionItem: FC<{
 	index: number
@@ -58,6 +61,16 @@ export const ActionItem: FC<{
 					<span className="opacity-40">{formatTitle(protocol)}: </span>
 					{formatTitle(actionName)}
 				</p>
+
+				<div className="ml-auto flex flex-row items-center">
+					{action.metadata.chains
+						.filter(chain => connectedChains.some(c => c.id === chain))
+						.map(chain => (
+							<div key={chain} className="-ml-1">
+								<ChainImage chainId={chain} />
+							</div>
+						))}
+				</div>
 			</div>
 		</Accordion>
 	)

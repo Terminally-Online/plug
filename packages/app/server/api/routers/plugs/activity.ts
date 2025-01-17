@@ -28,6 +28,7 @@ export const activity = createTRPCRouter({
 		.input(
 			z.object({
 				workflowId: z.string(),
+				chainId: z.number(),
 				frequency: z.number(),
 				startAt: z.date(),
 				endAt: z.date().optional()
@@ -52,6 +53,7 @@ export const activity = createTRPCRouter({
 				const execution = await ctx.db.execution.create({
 					data: {
 						workflowId: input.workflowId,
+						chainId: input.chainId,
 						actions: workflow.actions,
 
 						frequency: input.frequency,

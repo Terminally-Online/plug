@@ -43,8 +43,8 @@ Which will translate to the bytecode of:
 	8063XXXXXXXX14
 	8063selector14
 */
-func getTokenType(address string) (*int, error) {
-	provider, err := utils.GetProvider(1)
+func getTokenType(chainId int, address string) (*int, error) {
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}

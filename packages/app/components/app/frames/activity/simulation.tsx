@@ -52,7 +52,18 @@ export const SimulationFrame: FC<{
 					Share
 				</Button>
 			) : (
-				<Button className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" onClick={() => {}}>
+				<Button 
+					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" 
+					onClick={() => {
+						const message = [
+							`Socket: ${activity.workflow.socketId}`,
+							`Simulation ${simulation.id}`
+						].join(' - ');
+						
+						const encodedMessage = encodeURIComponent(message);
+						window.open(`https://t.me/evmchance?text=${encodedMessage}`, '_blank');
+					}}
+				>
 					<MessageCircleQuestionIcon size={18} className="opacity-60" />
 					Get Help
 				</Button>

@@ -24,9 +24,9 @@ func New() actions.BaseProtocolHandler {
 		schemas: make(map[types.Action]types.Schema),
 		Protocol: actions.Protocol{
 			Name:   "Aave V3",
-			Icon:   "https://app.aave.com/favicon.ico",
+			Icon:   "https://onplug.io/protocols/aave.png",
 			Tags:   []string{"lending", "defi"},
-			Chains: []int{1},
+			Chains: utils.Mainnet.ChainIds,
 		},
 	}
 	h.Protocol.SchemaProvider = h
@@ -34,7 +34,8 @@ func New() actions.BaseProtocolHandler {
 }
 
 func (h *Handler) init() *Handler {
-	collateralOptions, borrowOptions, err := GetOptions()
+	// TODO: Support chain based responses.
+	collateralOptions, borrowOptions, err := GetOptions(1)
 	if err != nil {
 		return nil
 	}

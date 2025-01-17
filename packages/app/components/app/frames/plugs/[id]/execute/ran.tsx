@@ -3,6 +3,7 @@ import { FC } from "react"
 import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
+import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
@@ -41,8 +42,8 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 						{plug.name}
 					</span>{" "}
 					<span className="opacity-40">
-						was successfully scheduled. Your intent will be regularly simulated and automatically executed
-						when as soon as it is ready.
+						was successfully scheduled. Your execution will be regularly simulated and automatically
+						executed when as soon as it is ready.
 					</span>
 				</p>
 
@@ -55,7 +56,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 					<Waypoints size={18} className="opacity-20" />
 					<span className="mr-auto opacity-40">Chain</span>
 					<span className="flex flex-row items-center gap-2">
-						<Image className="h-4 w-4" src={chains[1].logo} alt="ethereum" width={24} height={24} />
+						<ChainImage chainId={1} size="xs" />
 						Ethereum
 					</span>
 				</p>

@@ -39,9 +39,9 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 
 	return (
 		<div className={cn("flex h-full items-center justify-center overflow-x-hidden", className)} {...props}>
-			<div className="absolute top-0 h-1/4 w-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[320px] filter" />
-
 			<div className="relative h-full w-full overflow-hidden font-bold">
+				<div className="absolute top-0 h-1/4 w-full bg-gradient-to-tr from-plug-green to-plug-yellow blur-[320px] filter" />
+
 				<motion.div
 					className="absolute left-[-5%] top-[-5%] flex h-[110%] w-[110%] skew-x-[10deg] items-center justify-center mix-blend-overlay"
 					initial={{ scale: 1.4 }}

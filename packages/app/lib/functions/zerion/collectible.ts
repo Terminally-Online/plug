@@ -142,7 +142,6 @@ export const getCollectibles = async (
 	})
 
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-	if (socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
 
 	// NOTE: The user can retrieve collectibles for their own address as well as the
 	// address of their socket. To power this, we store both caches relative to the user

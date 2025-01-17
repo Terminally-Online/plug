@@ -137,7 +137,8 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			() =>
 				parsedWithFilteredInputs?.inputs.every(input => {
 					const value = state.values.get(input.index)
-					return value !== undefined && value.value.trim() !== ""
+					return value !== undefined
+					// return value !== undefined && value.value.trim() !== ""
 				}) ?? false,
 			[parsedWithFilteredInputs, state.values]
 		),
@@ -146,9 +147,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			// Check for validation errors
 			if (state.validationErrors.size > 0) return false
 			// Check that all values that exist are non-empty strings
-			const hasEmptyValues = Array.from(state.values.values()).some(
-				value => !value?.value || value.value.trim() === ""
-			)
+			const hasEmptyValues = Array.from(state.values.values()).some(value => !value?.value)
 			return !hasEmptyValues
 		}, [parsedWithFilteredInputs, state.validationErrors, state.values])
 	}

@@ -87,12 +87,11 @@ const usePlugActions = () => {
 	})
 
 	return {
-		add: (data?: { index?: number; from?: string }) => addMutation.mutate(data),
-		edit: (data: { id: string } & WorkflowData) => editMutation.mutate(data),
-		delete: (data: { plug: string; index: number; from?: string | null }) => deleteMutation.mutate(data),
-		fork: (data: { plug: string; index: number; from: string }) => forkMutation.mutate(data),
-		queue: (data: { workflowId: string; startAt: Date; endAt?: Date; frequency: number }) =>
-			queueMutation.mutate(data)
+		add: addMutation.mutate,
+		edit: editMutation.mutate,
+		delete: deleteMutation.mutate,
+		fork: forkMutation.mutate,
+		queue: queueMutation.mutate
 	}
 }
 
@@ -117,7 +116,7 @@ export const usePlugSubscriptions = () => {
 	})
 }
 
-export const usePlugStore = (id?: string) => {
+export const usePlugStore = (id?: string, action?: { protocol: string; action: string }) => {
 	const session = useSession()
 	const { columns } = useColumnStore()
 
@@ -127,6 +126,11 @@ export const usePlugStore = (id?: string) => {
 	const [viewedPlugs, setViewedPlugs] = useAtom(viewedPlugsAtom)
 
 	const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
+
+	const { data: solverActions } = api.solver.actions.getSchemas.useQuery(
+		{ protocol: action?.protocol, action: action?.action },
+		{ enabled: Boolean(action) }
+	)
 
 	api.plugs.get.useQuery(
 		{ ids, viewed: Array.from(viewedPlugs) },
@@ -175,8 +179,11 @@ export const usePlugStore = (id?: string) => {
 			tag: setTag,
 			plug: usePlugActions(),
 			action: {
-				edit: (data: { id?: string; actions: string }) => actionMutation.mutate(data)
+				edit: actionMutation.mutate
 			}
+		},
+		solver: {
+			actions: solverActions
 		}
 	}
 }

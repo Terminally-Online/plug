@@ -2,9 +2,10 @@ import React, { FC, memo, useState } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { chains, formatTitle, getChainId } from "@/lib"
+import { ChainId, chains, formatTitle, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 
+import { ChainImage } from "../chains/chain.image"
 import { SocketCollectibleGrid } from "./collectible-grid"
 
 export const SocketCollectionItem: FC<{
@@ -52,14 +53,8 @@ export const SocketCollectionItem: FC<{
 
 					<div className="flex w-min flex-col truncate overflow-ellipsis">
 						<p className="truncate font-bold">{formatTitle(collection.name.toLowerCase())}</p>
-						<div className="flex w-max flex-row items-center gap-2">
-							<Image
-								src={chains[getChainId(collection.chain)].logo}
-								alt={collection.name}
-								className="z-1 relative h-4 w-4 rounded-full bg-plug-green/10"
-								width={48}
-								height={48}
-							/>
+						<div className="relative flex w-max flex-row items-center gap-2">
+							<ChainImage chainId={getChainId(collection.chain)} size="xs" />
 							<p className="text-sm font-bold opacity-40">
 								{collection.collectibles.length} Token
 								{collection.collectibles.length > 1 && "s"}

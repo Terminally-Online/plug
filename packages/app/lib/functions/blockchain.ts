@@ -1,3 +1,4 @@
+import { env } from "@/env"
 import { ChainId, chains } from "@/lib"
 
 export const getBlockExplorerUrl = (chainId: keyof typeof chains) => {
@@ -20,16 +21,28 @@ export const getBlockExplorerBlock = (chainId: ChainId, block: string | undefine
 }
 
 export const getChainId = (chainName: string) => {
-	switch (chainName) {
+	switch (chainName.toLowerCase()) {
+		case "anvil":
+		case "local":
+		case "fork":
+			return 31337
 		case "ethereum":
+		case "mainnet":
 			return 1
 		case "optimism":
 			return 10
 		case "base":
 			return 8453
 		default:
-			return 1
+			return env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1
 	}
+}
+
+export const getChainName = (chainId: ChainId) => {
+	const chain = chains[chainId]
+
+	if (chainId === 31337) return "Plug"
+	return chain.name
 }
 
 export const ASSET_COLORS = [

@@ -36,8 +36,6 @@ export const ReferralRequired: FC = () => {
 
 	const [referralCode, setReferralAddress] = useState("")
 
-	const isVisible = Boolean(account.isAuthenticated && socket && !socket.identity?.approvedAt)
-
 	const handleRequestAccess = async () => {
 		const randomTweet = TWEET_TEMPLATES[Math.floor(Math.random() * TWEET_TEMPLATES.length)]
 		const tweetText = encodeURIComponent(randomTweet + `\n\nMy address: ${account.address}`)
@@ -58,8 +56,6 @@ export const ReferralRequired: FC = () => {
 
 		mutate(referralCode)
 	}, [referralCode, mutate])
-
-	if (!isVisible) return null
 
 	return (
 		<div className="flex w-full flex-col items-start justify-between bg-white p-2">

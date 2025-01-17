@@ -21,8 +21,8 @@ func GetName(name string) (*string, error) {
 	return &name, nil
 }
 
-func GetRentPrice(name string, duration *big.Int) (*ens_registrar_controller.IPriceOraclePrice, error) {
-	provider, err := utils.GetProvider(1)
+func GetRentPrice(chainId int, name string, duration *big.Int) (*ens_registrar_controller.IPriceOraclePrice, error) {
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +41,8 @@ func GetRentPrice(name string, duration *big.Int) (*ens_registrar_controller.IPr
 }
 
 // GetNameExpiry returns the unix timestamp at which an ENS name registration expires
-func GetNameExpiry(name string) (*big.Int, error) {
-	provider, err := utils.GetProvider(1)
+func GetNameExpiry(chainId int, name string) (*big.Int, error) {
+	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}

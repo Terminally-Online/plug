@@ -37,6 +37,10 @@ const MINUTE = 60 * 1000
 const POSITIONS_CACHE_TIME = 60 * MINUTE
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
+	console.log("address being queried", socketAddress ?? socketId)
+	console.log("socketAddress", socketAddress)
+	console.log("socketId", socketId)
+
 	const response = await axios.get(
 		`https://api.zerion.io/v1/wallets/${socketAddress ?? socketId}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
@@ -48,6 +52,8 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 	)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	console.log("response", response.data)
 
 	const data: ZerionPositions = response.data
 
@@ -410,7 +416,7 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	})
 
 	if (socket === null) throw new TRPCError({ code: "NOT_FOUND" })
-	if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
+	// if (socketAddress && socket.socketAddress !== socketAddress) throw new TRPCError({ code: "FORBIDDEN" })
 
 	// NOTE: The user can retrieve positions for their own address as well as the
 	// address of their socket. To power this, we store both caches relative to the user
@@ -428,7 +434,7 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	})
 
 	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
-		await getZerionPositions(chains, socket.id, socket.socketAddress)
+		await getZerionPositions(chains, socket.id, socketAddress)
 
 	return await findPositions(id, search)
 }

@@ -35,6 +35,8 @@ import {
 import { api, RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
+
 type Traits = Array<{ trait_type: string; value: string }>
 
 export const CollectibleFrame: FC<{
@@ -102,7 +104,7 @@ export const CollectibleFrame: FC<{
 				hasChildrenPadding={false}
 				hasOverlay
 			>
-				<div className="flex flex-col gap-2 px-6 pb-4">
+				<div className="flex flex-col gap-2 px-6">
 					<CollectibleImage
 						video={collectible?.videoUrl?.includes("mp4") ? collectible?.videoUrl : undefined}
 						image={collectible?.imageUrl ?? undefined}
@@ -110,65 +112,59 @@ export const CollectibleFrame: FC<{
 						name={collectible?.name || collection.name}
 					/>
 
-					<p className="pt-4 text-lg font-bold">{collectible?.name}</p>
+					<p className="pt-2 text-left text-lg font-bold">{collectible?.name}</p>
 
 					{collection.description && (
-						<div
-							className={cn(
-								"relative flex flex-col gap-2 overflow-y-hidden transition-all duration-200 ease-in-out",
-								expanded === false ? "max-h-[60px]" : "h-auto max-h-[1000px]"
+						<>
+							<div className="inline-flex gap-2">
+								<ReactMarkdown
+									className="relative z-10 w-full text-left text-sm font-bold opacity-60"
+									components={{
+										p: ({ children }) => <p className="mb-4">{children}</p>,
+										a: ({ node, children, ...props }) => (
+											<a
+												{...props}
+												className="relative z-20 cursor-pointer transition-opacity duration-200 hover:opacity-80"
+												style={{ color: metadata?.color ?? "" }}
+												target="_blank"
+												rel="noopener noreferrer"
+												onClick={e => {
+													e.preventDefault()
+													e.stopPropagation()
+													if (props.href) {
+														window.open(props.href, "_blank", "noopener,noreferrer")
+													}
+												}}
+											>
+												{children}
+											</a>
+										)
+									}}
+								>
+									{expanded
+										? `${collection.description.trim()}`
+										: `${collection.description.trim().slice(0, 120)}...`}
+								</ReactMarkdown>
+							</div>
+
+							{collection.description.trim().length > 120 && (
+								<>
+									<button
+										className="mb-2 mr-auto flex flex-row items-center gap-2 text-sm font-bold"
+										onClick={() => setExpanded(!expanded)}
+									>
+										{expanded ? "Read Less" : "Read More"}
+										<ChevronDown
+											size={18}
+											className={cn(
+												"ml-auto opacity-40 transition-all duration-200 ease-in-out",
+												expanded && "rotate-180"
+											)}
+										/>
+									</button>
+								</>
 							)}
-						>
-							<ReactMarkdown
-								className="relative z-10 w-full text-sm font-bold opacity-60"
-								components={{
-									p: ({ children }) => <p className="mb-4">{children}</p>,
-									a: ({ node, children, ...props }) => (
-										<a
-											{...props}
-											className="relative z-20 cursor-pointer transition-opacity duration-200 hover:opacity-80"
-											style={{ color: metadata?.color ?? "" }}
-											target="_blank"
-											rel="noopener noreferrer"
-											onClick={e => {
-												e.preventDefault()
-												e.stopPropagation()
-												if (props.href) {
-													window.open(props.href, "_blank", "noopener,noreferrer")
-												}
-											}}
-										>
-											{children}
-										</a>
-									)
-								}}
-							>
-								{collection.description}
-							</ReactMarkdown>
-
-							<div
-								className={cn(
-									"absolute bottom-0 left-0 right-0 top-0 h-full bg-gradient-to-b from-white/0 transition-all duration-200 ease-in-out",
-									expanded === false ? "to-white" : "to-white/0"
-								)}
-							/>
-						</div>
-					)}
-
-					{collection.description && (
-						<button
-							className="mr-auto flex flex-row items-center gap-2 text-sm font-bold"
-							onClick={() => setExpanded(!expanded)}
-						>
-							{expanded ? "Read Less" : "Read More"}
-							<ChevronDown
-								size={18}
-								className={cn(
-									"ml-auto opacity-40 transition-all duration-200 ease-in-out",
-									expanded && "rotate-180"
-								)}
-							/>
-						</button>
+						</>
 					)}
 				</div>
 
@@ -241,13 +237,7 @@ export const CollectibleFrame: FC<{
 								<Waypoints size={18} className="opacity-20" />
 								<span className="mr-auto opacity-40">Chain</span>
 								<span className="flex flex-row items-center gap-2">
-									<Image
-										className="h-4 w-4"
-										src={chains[getChainId(collection.chain)].logo}
-										alt={collection.chain}
-										width={24}
-										height={24}
-									/>
+									<ChainImage chainId={getChainId(collection.chain)} size="xs" />
 									{formatTitle(collection.chain)}
 								</span>
 							</p>

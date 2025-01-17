@@ -26,7 +26,7 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("amount must be greater than zero")
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("percent must be greater than zero")
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, fmt.Errorf("trait type and trait must be provided")
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +196,7 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 		return nil, err
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +234,7 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, fmt.Errorf("min must be less than max")
 	}
 
-	provider, err := utils.GetProvider(1)
+	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err
 	}

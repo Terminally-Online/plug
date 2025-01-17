@@ -2,15 +2,17 @@ import { useEffect, useMemo, useState } from "react"
 
 import { formatUnits, getAddress, parseUnits } from "viem"
 
-import { ArrowRight, Bell, Loader, TriangleRight } from "lucide-react"
+import { ArrowRight, Bell, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
 
 import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.input"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getTextColor } from "@/lib"
+import { cn, getChainId, getChainName, getTextColor } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
+
+import { ChainImage } from "../../sockets/chains/chain.image"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -116,13 +118,13 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		}, 500)
 
 		return () => clearTimeout(timer)
-	}, [amounts[tokenOut.symbol]?.precise])
+	}, [amounts, tokenOut])
 
 	return (
 		<Frame
 			index={index}
 			icon={
-				<div className="-gap-2 relative flex flex-row items-center">
+				<div className="group relative flex flex-row items-center">
 					<div className="relative h-8 w-10">
 						<TokenImage
 							logo={
@@ -134,7 +136,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 							handleColor={setTokenOutColor}
 						/>
 					</div>
-					<div className="relative -ml-4 h-8 w-10">
+					<div className="relative -ml-4 h-8 w-10 transition-all duration-100 group-hover:ml-0">
 						<TokenImage
 							logo={
 								tokenIn?.icon ||
@@ -248,36 +250,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				</div>
 
 				<div className="mb-2 flex flex-row items-center justify-between gap-4 px-6">
-					{meta && (
-						<p className="flex w-full flex-row items-center gap-2 font-bold tabular-nums">
-							<span className="group flex w-max flex-row items-center gap-2">
-								<TriangleRight size={14} className="opacity-40" />{" "}
-								<span className="flex flex-row items-center whitespace-nowrap opacity-40 group-hover:hidden">
-									{meta?.slippage >= 0 && "+"}
-									<Counter count={meta?.slippage} />%
-								</span>
-								<span className="hidden opacity-40 group-hover:flex">Slippage</span>
-							</span>
-							<span className="opacity-20">|</span>
-							<span className="group flex w-max flex-row items-center gap-2">
-								<Bell size={14} className="opacity-40" />{" "}
-								<span
-									className={cn(
-										"flex flex-row items-center whitespace-nowrap group-hover:hidden",
-										meta?.priceImpact === undefined
-											? "opacity-40"
-											: meta?.priceImpact > 0
-												? "text-plug-green"
-												: "text-red-500"
-									)}
-								>
-									{meta?.priceImpact >= 0 && "+"}
-									<Counter count={meta?.priceImpact * 100} />%
-								</span>
-								<span className="hidden opacity-40 group-hover:flex">Price Impact</span>
-							</span>
-						</p>
-					)}
 					<button
 						className="ml-auto font-bold text-black/40 hover:brightness-105"
 						onClick={() =>
@@ -300,6 +272,106 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						Max
 					</button>{" "}
 				</div>
+			</div>
+
+			<div className="px-6">
+				<div className="mb-2 flex flex-row items-center gap-4">
+					<p className="font-bold opacity-40">Details</p>
+					<div className="h-[2px] w-full bg-plug-green/10" />
+				</div>
+
+				{/* {token.implementations[0].chain && (
+					<p className="flex flex-row justify-between font-bold">
+						<span className="flex w-max flex-row items-center gap-4">
+							<Waypoints size={18} className="opacity-20" />
+							<span className="opacity-40">Chain</span>
+						</span>{" "}
+						<span className="flex flex-row items-center gap-2 font-bold">
+							<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
+							{getChainName(getChainId(token.implementations[0].chain))}
+						</span>
+					</p>
+				)} */}
+
+				{meta && (
+					<>
+						<p className="flex flex-row justify-between font-bold tabular-nums">
+							<span className="flex w-full flex-row items-center gap-4">
+								<TriangleRight size={18} className="opacity-20" />
+								<span className="opacity-40">Slippage</span>
+							</span>{" "}
+							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<span className="ml-auto flex flex-row items-center gap-1 pl-2">
+									<span
+										className={cn(
+											"flex flex-row items-center whitespace-nowrap group-hover:hidden",
+											meta?.slippage === undefined
+												? "opacity-40"
+												: meta?.priceImpact >= 0
+													? ""
+													: "text-red-500"
+										)}
+									>
+										{meta?.slippage > 0 && "+"}
+										<Counter count={meta?.slippage} />%
+									</span>
+								</span>
+							</span>
+						</p>
+
+						<p className="flex flex-row justify-between font-bold tabular-nums">
+							<span className="flex w-full flex-row items-center gap-4">
+								<Bell size={18} className="opacity-20" />
+								<span className="opacity-40">Price Impact</span>
+							</span>{" "}
+							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+								<span className="ml-auto flex flex-row items-center gap-1 pl-2">
+									<span
+										className={cn(
+											"flex flex-row items-center whitespace-nowrap group-hover:hidden",
+											meta?.priceImpact === undefined
+												? "opacity-40"
+												: meta?.priceImpact >= 0
+													? ""
+													: "text-red-500"
+										)}
+									>
+										{meta?.priceImpact > 0 && "+"}
+										<Counter count={meta?.priceImpact * 100} />%
+									</span>
+								</span>
+							</span>
+						</p>
+					</>
+				)}
+
+				{tokenOutImplementation?.chain && (
+					<p className="flex flex-row justify-between font-bold">
+						<span className="flex w-max flex-row items-center gap-4">
+							<Waypoints size={18} className="opacity-20" />
+							<span className="opacity-40">Chain</span>
+						</span>{" "}
+						<span className="flex flex-row items-center gap-2 font-bold">
+							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
+							{getChainName(getChainId(tokenOutImplementation.chain))}
+						</span>
+					</p>
+				)}
+
+				<p className="flex flex-row justify-between font-bold">
+					<span className="flex w-full flex-row items-center gap-4">
+						<CircleDollarSign size={18} className="opacity-20" />
+						<span className="opacity-40">Fee</span>
+					</span>{" "}
+					<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+						<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+							<Counter count={0.00011} /> ETH
+						</span>
+						<span className="ml-2 flex flex-row items-center">
+							$<Counter count={0.049} />
+						</span>
+					</span>
+				</p>
 			</div>
 
 			<div className="mx-6 my-4 flex flex-col gap-4">

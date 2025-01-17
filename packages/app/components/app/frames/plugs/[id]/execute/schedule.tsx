@@ -23,7 +23,11 @@ export const ScheduleFrame: FC<{
 		<Frame
 			index={index}
 			icon={<CalendarPlus size={18} className="opacity-40" />}
-			label="Schedule"
+			label={
+				<span className="text-lg font-bold">
+					<span className="opacity-40">Run:</span> Schedule
+				</span>
+			}
 			visible={(isFrame && session && session.user.anonymous === false) || false}
 			hasOverlay={true}
 		>

@@ -1,13 +1,14 @@
 import { FC, PropsWithChildren } from "react"
 
-import { createClient } from "viem"
+import { Chain, createClient } from "viem"
+import { mainnet } from "viem/chains"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
 import { env } from "@/env"
-import { ChainIds, chains } from "@/lib/constants/chains"
+import { ANVIL_RPC, chains } from "@/lib/constants/chains"
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
-import { RPCType } from "@/lib/types/chain"
+import { RPCType } from "@/lib/types"
 
 declare module "wagmi" {
 	interface Register {
@@ -26,8 +27,14 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
+// In development, include both mainnet and fork. In production, just mainnet
+const mainnetChain = chains[mainnet.id]
+const anvilChain = chains[31337]
+
+export const connectedChains = env.NEXT_PUBLIC_DEVELOPMENT ? [anvilChain, mainnetChain] : [mainnetChain]
+
 export const wagmiConfig = createConfig({
-	chains: [chains[ChainIds.Mainnet]],
+	chains: Object.values(connectedChains) as Chain[] as [Chain, ...Chain[]],
 	connectors: [
 		injectedWithFallback(),
 		walletConnect(WALLETCONNECT_PARAMS),

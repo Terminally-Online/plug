@@ -1,13 +1,16 @@
 import Image from "next/image"
 import { FC, useCallback, useMemo, useRef, useState } from "react"
 
+import { CircleDollarSign, Waypoints } from "lucide-react"
+
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains, cn, formatTitle, getChainId } from "@/lib"
+import { chains, cn, formatTitle, getChainId, getChainName } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 
+import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
 
 type Implementation = NonNullable<
@@ -233,7 +236,9 @@ export const TransferAmountFrame: FC<{
 				}
 				label={`${index === -2 ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
-				handleBack={index !== -2 ? () => handle.frame(`${token.symbol}-transfer-recipient`) : undefined}
+				handleBack={() =>
+					handle.frame(index !== -2 ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+				}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
@@ -260,17 +265,6 @@ export const TransferAmountFrame: FC<{
 						</div>
 
 						<div className="flex flex-row items-center justify-between gap-4 px-6">
-							<p className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<Image
-									src={chains[1].logo}
-									alt={"ethereum"}
-									className="mr-2 h-4 w-4 rounded-full"
-									width={24}
-									height={24}
-								/>
-								$0.50
-								<span className="ml-auto pl-2 opacity-40">~11 secs</span>
-							</p>
 							<p
 								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
 								onClick={() =>
@@ -283,6 +277,41 @@ export const TransferAmountFrame: FC<{
 								style={{ color: (column?.transfer?.percentage ?? 0) < 100 ? color : undefined }}
 							>
 								Max
+							</p>
+						</div>
+
+						<div className="px-6">
+							<div className="mb-2 flex flex-row items-center gap-4">
+								<p className="font-bold opacity-40">Details</p>
+								<div className="h-[2px] w-full bg-plug-green/10" />
+							</div>
+
+							{token.implementations[0].chain && (
+								<p className="flex flex-row justify-between font-bold">
+									<span className="flex w-max flex-row items-center gap-4">
+										<Waypoints size={18} className="opacity-20" />
+										<span className="opacity-40">Chain</span>
+									</span>{" "}
+									<span className="flex flex-row items-center gap-2 font-bold">
+										<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
+										{getChainName(getChainId(token.implementations[0].chain))}
+									</span>
+								</p>
+							)}
+
+							<p className="flex flex-row justify-between font-bold">
+								<span className="flex w-full flex-row items-center gap-4">
+									<CircleDollarSign size={18} className="opacity-20" />
+									<span className="opacity-40">Fee</span>
+								</span>{" "}
+								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
+									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
+										<Counter count={0.00011} /> ETH
+									</span>
+									<span className="ml-2 flex flex-row items-center">
+										$<Counter count={0.049} />
+									</span>
+								</span>
 							</p>
 						</div>
 					</div>
