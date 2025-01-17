@@ -1,6 +1,5 @@
 import { useSession } from "next-auth/react"
-
-import { ChevronLeft, Ellipsis, GitFork, Plus, Share } from "lucide-react"
+import { ChevronLeft, Ellipsis, GitFork, Share, HelpCircle, LogOut } from "lucide-react"
 
 import BlockiesSvg from "blockies-react-svg"
 
@@ -12,6 +11,7 @@ import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/l
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 
 const PlugHeader = () => {
     const { data: session } = useSession()
@@ -86,37 +86,82 @@ const PlugHeader = () => {
 }
 
 const DiscoverHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return (
-		<Header
-			size="lg"
-			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
-			label="Discover"
-		/>
-	)
+    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    return (
+        <Header
+            size="lg"
+            onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+            label="Discover"
+        />
+    )
 }
 
 const MyPlugsHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return (
-		<Header
-			size="lg"
-			onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
-			label="My Plugs"
-		/>
-	)
+    const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    return (
+        <Header
+            size="lg"
+            onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })}
+            label="My Plugs"
+        />
+    )
+}
+
+const AuthenticateHeader = () => {
+    return (
+        <div className="flex flex-col border-b-[1px] border-plug-green/10">
+            <Header
+                size="lg"
+                label="Login"
+            />
+        </div>
+    )
+}
+
+const ProfileHeader = () => {
+    const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
+    const { disconnect } = useDisconnect(true)
+    
+    if (!column) return null
+
+    return (
+        <div className="flex flex-col border-b-[1px] border-plug-green/10">
+            <Header
+                size="lg"
+                label="Profile"
+                nextLabel={
+                    <button 
+                        className="flex items-center gap-2 p-2 hover:bg-red-50 rounded-md transition-colors text-red-500"
+                        onClick={() => disconnect()}
+                    >
+                        <LogOut size={16} />
+                    </button>
+                }
+            />
+        </div>
+    )
 }
 
 export const PageHeader = () => {
-	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+    const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+    const { data: session } = useSession()
 
-	if (!column) return null
+    if (!column) return null
 
-	return (
-		<Container>
-			{column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
-			{column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
-			{column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}
-		</Container>
-	)
+    if (!session?.user.id?.startsWith("0x")) {
+        return (
+            <Container className="sticky top-0 z-10 bg-white border-b border-plug-green/10">
+                <AuthenticateHeader />
+            </Container>
+        )
+    }
+
+    return (
+        <Container className="sticky top-0 z-10 bg-white border-b border-plug-green/10">
+            {column.key === COLUMNS.KEYS.PLUG && <PlugHeader />}
+            {column.key === COLUMNS.KEYS.DISCOVER && <DiscoverHeader />}
+            {column.key === COLUMNS.KEYS.MY_PLUGS && <MyPlugsHeader />}
+            {column.key === COLUMNS.KEYS.PROFILE && <ProfileHeader />}
+        </Container>
+    )
 }

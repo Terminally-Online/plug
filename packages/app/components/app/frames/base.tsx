@@ -80,15 +80,23 @@ export const Frame: FC<Props> = ({
 								</Button>
 							)}
 							<Header
-								variant="frame"
 								size="md"
-								className="h-10"
-								icon={icon}
-								label={label}
+								className={cn("h-10", "bg-white")}
+								label={
+									<div className="flex items-center gap-2">
+										{icon}
+										{label}
+									</div>
+								}
 								nextPadded={false}
-								nextOnClick={() => handle.frame()}
-								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}
-								nextEmpty={next !== undefined}
+								nextOnClick={() => handle.frame(undefined)}
+								nextLabel={
+									<X
+										size={14}
+										className="opacity-60 transition-opacity group-hover:opacity-100"
+									/>
+								}
+								nextEmpty={false}
 							/>
 						</div>
 						<div

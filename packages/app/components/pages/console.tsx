@@ -34,19 +34,12 @@ export const ConsolePage = () => {
 	const { columns, handle } = useColumnStore()
 	const { plugs } = usePlugStore()
 
-	useEffect(() => {
-		if (!socket || !socket.identity) return
-
-		if (socket.identity.approvedAt && socket.identity.referralCode && !router.query.rfid) {
-			router.replace(
-				{
-					query: { ...router.query, rfid: socket.identity.referralCode }
-				},
-				undefined,
-				{ shallow: true }
-			)
-		}
-	}, [socket, router])
+	console.log("[ConsolePage] Render", {
+		socket: !!socket,
+		md: md,
+		columnsLength: columns.length,
+		hasPlugs: plugs.length > 0
+	})
 
 	useEffect(() => {
 		const plugId = router.query.plug as string

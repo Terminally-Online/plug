@@ -143,7 +143,9 @@ export const ConsoleColumn: FC<{
 														className="rounded-sm p-1"
 														onClick={async () => {
 															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
+																const shareUrl = `${window.location.origin}/app?plug=${plug.id}${
+																	socket?.identity?.referralCode ? `&rfid=${socket.identity.referralCode}` : ''
+																}`
 																await navigator.clipboard.writeText(shareUrl)
 																setCopied(true)
 																setTimeout(() => setCopied(false), 2000)
@@ -187,7 +189,7 @@ export const ConsoleColumn: FC<{
 											)}
 										</div>
 									}
-									nextPadded={false}
+									// nextPadded={false}
 									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
 									nextLabel={
 										<X
