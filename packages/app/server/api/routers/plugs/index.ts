@@ -5,11 +5,10 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 
 import { colors } from "@/lib"
+import { action } from "@/server/api/routers/plugs/action"
+import { activity } from "@/server/api/routers/plugs/activity"
 import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
-
-import { action } from "./action"
-import { activity } from "./activity"
 
 const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
@@ -267,6 +266,7 @@ export const plugs = createTRPCRouter({
 			z.object({
 				id: z.string().optional(),
 				name: z.string(),
+				namedAt: z.date().optional(),
 				color: z.string(),
 				isPrivate: z.boolean()
 			})

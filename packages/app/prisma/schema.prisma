@@ -181,9 +181,11 @@ model Workflow {
   // ---------------------------------------------------------------------------
   // Core
   // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  namedAt   DateTime?
+  renamedAt DateTime?
 
   // ---------------------------------------------------------------------------
   // Fields

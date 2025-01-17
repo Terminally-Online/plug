@@ -22,6 +22,8 @@ import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
+import { SparklingText } from "../utils/sparkling-text"
+
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
 
@@ -102,13 +104,13 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											{column.from && (
+											{column.key !== COLUMNS.KEYS.ADD && (
 												<Button
 													variant="secondary"
 													onClick={() =>
 														navigate({
 															index: column.index,
-															key: column.from
+															key: column.from ?? COLUMNS.KEYS.ADD
 														})
 													}
 													className="rounded-sm p-1"
@@ -126,14 +128,26 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
+											<div className="relative mr-auto">
+												<SparklingText
+													className="text-lg font-bold"
+													sparkles={Boolean(
+														plug?.renamedAt &&
+															plug.renamedAt > (plug.createdAt ?? 0) &&
+															plug.renamedAt !== plug.createdAt
+													)}
+													sparkleKey={plug?.renamedAt?.getTime()}
+													color={cardColors[plug?.color ?? "yellow"]}
+													item={column.item ?? ""}
+												>
 													{formatTitle(
-														plug
+														plug &&
+															column.key === COLUMNS.KEYS.PLUG &&
+															column.item !== undefined
 															? plug.name
 															: (column.key?.replace("_", " ").toLowerCase() ?? "ERROR")
 													)}
-												</p>
+												</SparklingText>
 											</div>
 
 											{plug && (
@@ -200,7 +214,7 @@ export const ConsoleColumn: FC<{
 
 							<div className="flex-1 overflow-y-auto rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
-									<ColumnAdd />
+									<ColumnAdd index={column.index} />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
 									<PlugsDiscover index={column.index} className="pt-4" />
 								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (

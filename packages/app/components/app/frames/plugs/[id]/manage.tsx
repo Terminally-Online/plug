@@ -14,15 +14,13 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 	const { isFrame } = useColumnStore(index, "manage")
 	const { plug, handle } = usePlugStore(item)
 
-	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
+	const handleNameChange = (newName: string) => {
+		if (!plug || !newName || newName === plug.name) return
 
-	useEffect(() => {
-		if (!plug || nameRef.current === debouncedName) return
+		handle.plug.edit({ ...plug, name: newName, namedAt: new Date() })
+	}
 
-		nameRef.current = debouncedName
-
-		handle.plug.edit({ ...plug, name: debouncedName })
-	}, [nameRef, plug, debouncedName, handle])
+	const [name, _, handleName] = useDebounce(plug?.name ?? "", 1000, handleNameChange)
 
 	if (!plug) return null
 
@@ -51,7 +49,8 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 						handleChange={(checked: boolean) =>
 							handle.plug.edit({
 								...plug,
-								isPrivate: checked
+								isPrivate: checked,
+								namedAt: undefined
 							})
 						}
 					/>
@@ -74,7 +73,8 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 								onClick={() =>
 									handle.plug.edit({
 										...plug,
-										color
+										color,
+										namedAt: undefined
 									})
 								}
 							>
