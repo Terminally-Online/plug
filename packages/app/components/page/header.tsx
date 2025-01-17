@@ -120,7 +120,7 @@ const AuthenticateHeader = () => {
 
 const ProfileHeader = () => {
     const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
-    const { disconnect } = useDisconnect(true) // Changed to true to match desktop
+    const { disconnect } = useDisconnect(true)
     
     if (!column) return null
 
@@ -131,11 +131,10 @@ const ProfileHeader = () => {
                 label="Profile"
                 nextLabel={
                     <button 
-                        className="flex items-center gap-2 p-2 rounded-md hover:bg-plug-green/5 transition-colors text-red-500"
-                        onClick={() => disconnect()}  // Simplified to match desktop
+                        className="flex items-center gap-2 p-2 hover:bg-red-50 rounded-md transition-colors text-red-500"
+                        onClick={() => disconnect()}
                     >
                         <LogOut size={16} />
-                        Logout
                     </button>
                 }
             />

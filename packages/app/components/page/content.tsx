@@ -11,6 +11,27 @@ import { Plugs } from "@/components/shared/framework/plugs"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { useSocket } from "@/state/authentication"
 import { ReferralRequired } from "@/components/app/utils/referral-required"
+import { Button } from "@/components/shared/buttons/button"
+import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
+
+const ProfileContent = () => {
+    const { data: session } = useSession()
+    const { socket } = useSocket()
+    
+    if (!socket || !session?.user.id) return null
+    
+    return (
+        <div className="flex flex-col gap-4 p-4">
+            {/* Show user's assets using existing SocketAssets component */}
+            <SocketAssets 
+                index={COLUMNS.MOBILE_INDEX} 
+                address={session.user.id} 
+                hasTokens 
+                hasCollectibles 
+            />
+        </div>
+    )
+}
 
 export const PageContent = () => {
     const { data: session } = useSession()
@@ -62,6 +83,14 @@ export const PageContent = () => {
         return null
     }
 
+    if (column.key === COLUMNS.KEYS.PROFILE) {
+        return (
+            <Container>
+                <ProfileContent />
+            </Container>
+        )
+    }
+
     // Render the appropriate content based on column key
     switch (column.key) {
         case COLUMNS.KEYS.PLUG:
@@ -80,13 +109,6 @@ export const PageContent = () => {
             return (
                 <Container className="pt-4">
                     <SocketActivity />
-                </Container>
-            )
-        case COLUMNS.KEYS.PROFILE:
-            return (
-                <Container className="pt-4">
-                    <SocketProfile />
-                    <SocketAssets />
                 </Container>
             )
         case COLUMNS.KEYS.AUTHENTICATE:
