@@ -34,6 +34,7 @@ func main() {
 
 	log.Printf("Starting %d cron jobs...", len(cron.CronJobs))
 	go cronJob.Start()
+	log.Printf("Started %d cron jobs...", len(cron.CronJobs))
 
 	solver := solver.New()
 	router := router.SetupRouter(solver)
