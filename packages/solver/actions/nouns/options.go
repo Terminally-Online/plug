@@ -47,7 +47,7 @@ func GetTraitOptions() ([]types.Option, map[string][]types.Option, error) {
 		return nil, nil, err
 	}
 
-	traitData, err := os.ReadFile("actions/nouns/traits.json")
+	traitData, err := os.ReadFile("actions/nouns/resources/traits.json")
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read traits.json: %v", err)
 	}
