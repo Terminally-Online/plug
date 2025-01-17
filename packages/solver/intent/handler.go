@@ -3,6 +3,7 @@ package intent
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/big"
 	"net/http"
 	"os"
@@ -147,6 +148,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	transactionsBatch := make([]*types.Transaction, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
+		log.Println("chainId", req.ChainId)
 		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
 		if err != nil {
 			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
