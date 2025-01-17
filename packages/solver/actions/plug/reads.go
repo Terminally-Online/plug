@@ -66,9 +66,9 @@ func getTokenType(chainId int, address string) (*int, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Unsupported token type")
+	return nil, fmt.Errorf("unsupported token type")
 }
 
 func getProxyTokenType(_ *ethclient.Client, _ string) (*int, error) {
-	return nil, fmt.Errorf("Proxies not supported at this time.")
+	return nil, fmt.Errorf("proxies not supported at this time")
 }

@@ -37,7 +37,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	action := types.Action(r.URL.Query().Get("action"))
 	chainId := r.URL.Query().Get("chainId")
 
-	// Case 1: No protocol - return all schemas for all protocols without fields included.
+	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
 		allSchemas := make(map[types.Protocol]types.ProtocolSchema)
 
@@ -51,17 +51,14 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 				Schema: make(map[types.Action]types.Schema),
 			}
 
+			// Get all schemas without options
+			schemas := handler.GetSchemas()
 			for _, supportedAction := range handler.GetActions() {
-				schema, err := handler.GetSchema(chainId, supportedAction)
-				if err != nil {
-					utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-					return
+				if chainSchema, ok := schemas[supportedAction]; ok {
+					protocolSchema.Schema[supportedAction] = types.Schema{
+						Sentence: chainSchema.Schema.Sentence,
+					}
 				}
-
-				schemaCopy := types.Schema{
-					Sentence: schema.Sentence,
-				}
-				protocolSchema.Schema[supportedAction] = schemaCopy
 			}
 			allSchemas[protocol] = protocolSchema
 		}
@@ -78,7 +75,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Case 2: Protocol only - return all schemas for that protocol with fields included.
+	// Case 2: Protocol only - return all schemas for that protocol without options.
 	if action == "" {
 		protocolSchema := types.ProtocolSchema{
 			Metadata: types.ProtocolMetadata{
@@ -89,13 +86,13 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			Schema: make(map[types.Action]types.Schema),
 		}
 
+		schemas := handler.GetSchemas()
 		for _, supportedAction := range handler.GetActions() {
-			schema, err := handler.GetSchema(chainId, supportedAction)
-			if err != nil {
-				utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-				return
+			if chainSchema, ok := schemas[supportedAction]; ok {
+				protocolSchema.Schema[supportedAction] = types.Schema{
+					Sentence: chainSchema.Schema.Sentence,
+				}
 			}
-			protocolSchema.Schema[supportedAction] = *schema
 		}
 
 		response := map[types.Protocol]types.ProtocolSchema{
@@ -109,7 +106,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Case 3: Protocol and action - return specific schema
-	schema, err := handler.GetSchema(chainId, action)
+	chainSchema, err := handler.GetSchema(chainId, action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
@@ -122,7 +119,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			Chains: handler.GetChains(),
 		},
 		Schema: map[types.Action]types.Schema{
-			action: *schema,
+			action: chainSchema.Schema,
 		},
 	}
 
