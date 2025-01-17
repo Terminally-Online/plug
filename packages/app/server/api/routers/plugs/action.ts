@@ -112,9 +112,9 @@ export const action = createTRPCRouter({
 				}
 			})
 
-			ctx.emitter.emit(events.edit, plug)
+			ctx.emitter.emit(events.edit, updated)
 
-			return plug
+			return updated
 		})
 })
 
@@ -122,21 +122,16 @@ export const action = createTRPCRouter({
 const getDominantProtocol = (actions: Actions): string => {
 	if (!actions?.length) return "plug"
 
-	// Count protocol frequency
 	const protocolFrequency: Record<string, number> = {}
 
 	for (const action of actions) {
 		if (!action?.protocol) continue
 
-		// Normalize protocol name
-		const normalizedProtocol = action.protocol
-			.split("_")[0] // Remove version numbers
-			.toLowerCase()
+		const normalizedProtocol = action.protocol.split("_")[0].toLowerCase()
 
 		protocolFrequency[normalizedProtocol] = (protocolFrequency[normalizedProtocol] || 0) + 1
 	}
 
-	// Find protocol with highest frequency
 	const entries = Object.entries(protocolFrequency)
 	if (!entries.length) return "plug"
 
