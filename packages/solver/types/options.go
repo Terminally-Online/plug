@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -23,6 +24,16 @@ type OptionsProvider interface {
 	GetOptions(chainId int, action Action) (map[int]SchemaOptions, error)
 }
 
+// Cache error messages
+var (
+	errFailedGetOptions = "failed to get options: %w"
+)
+
+type cacheKey struct {
+	chainId int
+	action  Action
+}
+
 type cachedOptions struct {
 	options map[int]SchemaOptions
 	expiry  time.Time
@@ -34,22 +45,18 @@ type CachedOptionsProvider struct {
 	mu       sync.RWMutex
 }
 
-type cacheKey struct {
-	chainId int
-	action  Action
-}
-
 func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
+	// Pre-allocate cache map with a reasonable initial size
 	return &CachedOptionsProvider{
 		provider: provider,
-		cache:    make(map[cacheKey]cachedOptions),
+		cache:    make(map[cacheKey]cachedOptions, 32), // Space for 32 action/chain combinations
 	}
 }
 
 func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]SchemaOptions, error) {
 	key := cacheKey{chainId: chainId, action: action}
 
-	// Try to get from cache first
+	// Try to get from cache first using RLock
 	c.mu.RLock()
 	if cached, ok := c.cache[key]; ok && time.Now().Before(cached.expiry) {
 		c.mu.RUnlock()
@@ -60,10 +67,15 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]
 	// If not in cache or expired, get fresh options
 	options, err := c.provider.GetOptions(chainId, action)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get options: %w", err)
+		return nil, fmt.Errorf(errFailedGetOptions, err)
 	}
 
-	// Update cache
+	// Pre-allocate the options map if needed
+	if options == nil {
+		options = make(map[int]SchemaOptions)
+	}
+
+	// Update cache with write lock
 	c.mu.Lock()
 	c.cache[key] = cachedOptions{
 		options: options,
@@ -75,13 +87,34 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]
 }
 
 func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []Action) {
-	go func() {
-		for _, action := range actions {
-			// Fetch options and store in cache
+	const maxWorkers = 4
+	sem := make(chan struct{}, maxWorkers)
+
+	log.Printf("Pre-warming cache for chain %d (%d actions)...\n", chainId, len(actions))
+	start := time.Now()
+
+	completed := 0
+	var mu sync.Mutex 
+
+	for _, action := range actions {
+		sem <- struct{}{} 
+		go func(action Action) {
+			defer func() {
+				<-sem 
+				mu.Lock()
+				completed++
+				if completed == len(actions) {
+					log.Printf("Finished pre-warming cache for chain %d in %v\n", chainId, time.Since(start))
+				}
+				mu.Unlock()
+			}()
 			if _, err := c.GetOptions(chainId, action); err != nil {
-				// Just log the error and continue, don't block other actions
-				fmt.Printf("Failed to pre-warm cache for action %s: %v\n", action, err)
+				log.Printf("Failed to pre-warm cache for chain %d action %s: %v\n", chainId, action, err)
 			}
-		}
-	}()
+		}(action)
+	}
+
+	for i := 0; i < maxWorkers; i++ {
+		sem <- struct{}{}
+	}
 }
