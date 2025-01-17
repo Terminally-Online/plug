@@ -10,6 +10,32 @@ const (
 	secondsPerYear  = 31557600
 )
 
+type EnsOptionsProvider struct{}
+
+func (p *EnsOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	durationOptions, err := GetDurationOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	switch action {
+	case types.ActionRenew:
+		return map[int]types.SchemaOptions{
+			1: {Simple: durationOptions},
+		}, nil
+	case types.Action(RenewalPrice):
+		return map[int]types.SchemaOptions{
+			1: {Simple: durationOptions},
+		}, nil
+	case types.Action(TimeLeft):
+		return map[int]types.SchemaOptions{
+			1: {Simple: durationOptions},
+		}, nil
+	default:
+		return nil, nil
+	}
+}
+
 func GetDurationOptions() ([]types.Option, error) {
 	return []types.Option{
 		{

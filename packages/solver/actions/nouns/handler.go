@@ -13,57 +13,34 @@ var (
 	HasTrait              = "has_trait"
 	IsTokenId             = "is_token_id"
 	CurrentBidWithinRange = "current_bid_within_range"
+
+	sentences = map[types.Action]string{
+		types.ActionBid:                     "Bid on noun with {0<amount:uint256>} ETH.",
+		types.Action(IncreaseBid):           "Outbid the current bid by {0<percent:uint256>}%.",
+		types.Action(HasTrait):              "Bid on noun that has a {0<traitType:string>} of {0=>1<trait:string>}.",
+		types.Action(IsTokenId):             "Bid on noun when token id is {0<id:uint256>}.",
+		types.Action(CurrentBidWithinRange): "Current bid for noun is greater than {0<min:uint256>} ETH and less than {1<max:uint256>} ETH.",
+	}
 )
 
-type Handler struct {
-	schemas map[types.Action]types.Schema
-	actions.Protocol
+type Nouns struct {
+	*actions.BaseHandler
 }
 
 func New() actions.BaseProtocolHandler {
-	h := &Handler{
-		schemas: make(map[types.Action]types.Schema),
-		Protocol: actions.Protocol{
-			Name:   "Nouns",
-			Icon:   "https://onplug.io/protocols/nouns.png",
-			Tags:   []string{"nft"},
-			Chains: utils.Mainnet.ChainIds,
-		},
+	return &Nouns{
+		BaseHandler: actions.NewBaseHandler(
+			"Nouns",
+			"https://onplug.io/protocols/nouns.png",
+			[]string{"nft"},
+			utils.Mainnet.ChainIds,
+			sentences,
+			&NounsOptionsProvider{},
+		),
 	}
-	h.Protocol.SchemaProvider = h
-	return h.init()
 }
 
-func (h *Handler) init() *Handler {
-	traitTypeOptions, traitOptions, err := GetTraitOptions()
-	if err != nil {
-		return nil
-	}
-
-	h.schemas[types.ActionBid] = types.Schema{
-		Sentence: "Bid on noun with {0<amount:uint256>} ETH.",
-	}
-	h.schemas[types.Action(IncreaseBid)] = types.Schema{
-		Sentence: "Outbid the current bid by {0<percent:uint256>}%.",
-	}
-	h.schemas[types.Action(HasTrait)] = types.Schema{
-		Sentence: "Bid on noun that has a {0<traitType:string>} of {0=>1<trait:string>}.",
-		Options: map[int]types.SchemaOptions{
-			0: {Simple: traitTypeOptions},
-			1: {Complex: traitOptions},
-		},
-	}
-	h.schemas[types.Action(IsTokenId)] = types.Schema{
-		Sentence: "Bid on noun when token id is {0<id:uint256>}.",
-	}
-	h.schemas[types.Action(CurrentBidWithinRange)] = types.Schema{
-		Sentence: "Current bid for noun is greater than {0<min:uint256>} ETH and less than {1<max:uint256>} ETH.",
-	}
-
-	return h
-}
-
-func (h *Handler) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func (nouns *Nouns) GetTransaction(action types.Action, rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	switch action {
 	case types.ActionBid:
 		return HandleActionBid(rawInputs, params)

@@ -16,22 +16,9 @@ type ProtocolSchema struct {
 	Schema   map[Action]Schema `json:"schema"`
 }
 
-type Option struct {
-	Value string `json:"value"`
-	Name  string `json:"name"`
-	Label string `json:"label"`
-	Info  string `json:"info,omitempty"`
-	Icon  string `json:"icon,omitempty"`
-}
-
 type Schema struct {
 	Sentence string                `json:"sentence"`
 	Options  map[int]SchemaOptions `json:"options,omitempty"`
-}
-
-type SchemaOptions struct {
-	Simple  []Option            `json:"-"`
-	Complex map[string][]Option `json:"-"`
 }
 
 func (o SchemaOptions) MarshalJSON() ([]byte, error) {
@@ -64,3 +51,8 @@ var (
 		{Label: "greater than", Name: "Greater Than", Value: "1"},
 	}
 )
+
+// ChainSchema represents a schema with chain-specific options
+type ChainSchema struct {
+	Schema Schema `json:"schema"`
+}
