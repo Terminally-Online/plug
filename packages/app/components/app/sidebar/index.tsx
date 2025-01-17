@@ -159,6 +159,7 @@ export const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
+	const { data: session } = useSession()
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { handleFlag, getFlag } = useFlags()
@@ -284,7 +285,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			{/* <ConsoleSidebarPane /> */}
+			{session?.user.id.startsWith("0x") === false && <ConsoleSidebarPane />}
 		</div>
 	)
 }
