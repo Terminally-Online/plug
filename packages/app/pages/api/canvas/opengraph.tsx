@@ -156,8 +156,7 @@ export default async function handler(req: NextRequest) {
         </div>
 
         <svg
-          tw="absolute bottom-0 left-0 right-0 z-[4]"
-          width="100%"
+          // @ts-ignore 
           tw="absolute bottom-0 left-0 right-0 z-[4]"
           width="100%"
           height="50%"
