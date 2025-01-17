@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 
 import { Bell, CircleDollarSign, Clock10, MessageCircleQuestionIcon, Share } from "lucide-react"
 
@@ -11,16 +11,45 @@ import { DateSince } from "@/components/shared/utils/date-since"
 import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
+import { useActions } from "@/state/actions"
 
 export const SimulationFrame: FC<{
 	index: number
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 	simulationId: string | undefined
 }> = ({ index, activity, simulationId }) => {
+	const [solverActions] = useActions()
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
 	const simulation = activity?.simulations.find(sim => sim.id === simulationId)
 	const actions = JSON.parse(activity?.actions ?? "[]")
+
+	const handleShare = useCallback(() => { 
+		if (!activity) return;
+
+		try {
+			const workflowActions: Array<{protocol: string, action: string}> = JSON.parse(activity.actions);
+			const cleanedActions = workflowActions.map((action) => ({
+				protocol: action.protocol?.toLowerCase?.(),
+				sentence: solverActions[action.protocol]["schema"][action.action].sentence
+			}));
+			console.log("cleanedActions", cleanedActions)
+			const params = new URLSearchParams({
+				name: activity.workflow.name.slice(0, 100), // Reasonable name length
+				protocols: cleanedActions.map(a => a.protocol).join(','),
+				sentences: cleanedActions.map(a => a.sentence).join(',')
+			});
+			const url = `/api/canvas/opengraph?${params.toString()}`;
+
+			console.log('Debug - OpenGraph URL:', url);
+			window.open(url, '_blank');
+		} catch (e) {
+			console.error("Share generation failed:", e, {
+				workflowId: activity.workflow.id,
+				actions: activity.workflow.actions
+			});
+		}
+	}, [activity, solverActions])
 
 	if (!activity || !simulation) return null
 
@@ -47,7 +76,10 @@ export const SimulationFrame: FC<{
 			)}
 
 			{simulation.status === "success" ? (
-				<Button className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" onClick={() => {}}>
+				<Button 
+					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" 
+					onClick={handleShare}
+				>
 					<Share size={18} className="opacity-60" />
 					Share
 				</Button>
