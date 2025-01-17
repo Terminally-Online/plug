@@ -152,6 +152,7 @@ Table Protocol {
   name String [pk]
   icon String [not null]
   url String [not null]
+  color String
   positions Position [not null]
 }
 

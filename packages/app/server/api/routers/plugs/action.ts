@@ -5,6 +5,7 @@ import { z } from "zod"
 import Anthropic from "@anthropic-ai/sdk"
 
 import { env } from "@/env"
+import { Actions } from "@/lib/types"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 export const events = {
@@ -36,6 +37,7 @@ export const action = createTRPCRouter({
 			// TODO: (#611) Update the tags of the Plug based on the protocol/action pair.
 			const tags: string[] = []
 			const actions = JSON.parse(input.actions)
+			const dominantProtocol = getDominantProtocol(actions)
 
 			void (async (namedAt: Date | null, renamedAt: Date | null) => {
 				// NOTE: If the user has ever named this plug disable auto-naming completely.
@@ -105,12 +107,38 @@ export const action = createTRPCRouter({
 				data: {
 					actions: input.actions,
 					tags,
+					color: dominantProtocol,
 					updatedAt: new Date()
 				}
 			})
 
-			ctx.emitter.emit(events.edit, updated)
+			ctx.emitter.emit(events.edit, plug)
 
-			return updated
+			return plug
 		})
 })
+
+// Helper function to get dominant protocol
+const getDominantProtocol = (actions: Actions): string => {
+	if (!actions?.length) return "plug"
+
+	// Count protocol frequency
+	const protocolFrequency: Record<string, number> = {}
+
+	for (const action of actions) {
+		if (!action?.protocol) continue
+
+		// Normalize protocol name
+		const normalizedProtocol = action.protocol
+			.split("_")[0] // Remove version numbers
+			.toLowerCase()
+
+		protocolFrequency[normalizedProtocol] = (protocolFrequency[normalizedProtocol] || 0) + 1
+	}
+
+	// Find protocol with highest frequency
+	const entries = Object.entries(protocolFrequency)
+	if (!entries.length) return "plug"
+
+	return entries.reduce((a, b) => (a[1] > b[1] ? a : b))[0]
+}
