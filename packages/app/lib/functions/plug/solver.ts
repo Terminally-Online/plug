@@ -7,7 +7,7 @@ import { ActionSchemas } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
-export const getSchemas = async (protocol?: string, action?: string): Promise<ActionSchemas> => {
+export const getSchemas = async (protocol?: string, action?: string, chainId: number = 1): Promise<ActionSchemas> => {
 	const cacheKey = `${protocol}-${action}`
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
@@ -17,7 +17,8 @@ export const getSchemas = async (protocol?: string, action?: string): Promise<Ac
 	const response = await axios.get(url, {
 		params: {
 			protocol,
-			action
+			action,
+			chainId: 1
 		}
 	})
 

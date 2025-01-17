@@ -128,7 +128,7 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 	const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
 
 	const { data: solverActions } = api.solver.actions.getSchemas.useQuery(
-		{ protocol: action?.protocol, action: action?.action },
+		{ protocol: action?.protocol, action: action?.action, chainId: 1 },
 		{ enabled: Boolean(action) }
 	)
 
