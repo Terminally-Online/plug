@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react"
-import { FC, ReactNode, useEffect, useRef, useState } from "react"
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { formatAddress } from "@/lib"
 
 import { Cat, ChartBar, Code, LogOut, PanelRightOpen, Plus, ScanFace, Wallet, X } from "lucide-react"
 
@@ -163,11 +164,15 @@ export const ConsoleSidebar = () => {
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { handleFlag, getFlag } = useFlags()
-	const { socket } = useSocket()
-
-	const { avatar } = useSocket()
-	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
+	const { socket, avatar } = useSocket()
 	const { is, toggleExpanded, handleSidebar } = useSidebar()
+
+	const displayName = useMemo(() => {
+		if (!socket?.identity?.ens?.name) {
+			return socket?.id ? formatAddress(socket.id) : ""
+		}
+		return socket.identity.ens.name
+	}, [socket?.identity?.ens?.name, socket?.id])
 
 	const showRestrictedOptions = account.isAuthenticated && socket?.identity?.referrerId !== null
 
@@ -176,19 +181,26 @@ export const ConsoleSidebar = () => {
 			<div className="flex h-full flex-col items-center border-r-[1px] border-plug-green/10 p-4 pt-2">
 				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
-						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
+						className="relative mb-4 flex w-full flex-row items-center gap-4"
 						onClick={() => handleSidebar("authenticating")}
 					>
-						{avatar ? (
-							<Image
-								src={avatar}
-								alt="ENS Avatar"
-								width={64}
-								height={64}
-								className="h-full w-full rounded-sm"
-							/>
-						) : (
-							<Avatar name={socket?.id ?? ""} />
+						<div className="h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out">
+							{avatar ? (
+								<Image
+									src={avatar}
+									alt="ENS Avatar"
+									width={64}
+									height={64}
+									className="h-full w-full rounded-sm"
+								/>
+							) : (
+								<Avatar name={socket?.id ?? ""} />
+							)}
+						</div>
+						{is.expanded && displayName && (
+							<p className="truncate font-bold">
+								{displayName}
+							</p>
 						)}
 					</button>
 
