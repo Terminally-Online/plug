@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, ReactNode, useEffect, useRef, useState } from "react"
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react"
 import { formatAddress } from "@/lib"
 
 import { Cat, ChartBar, Code, LogOut, PanelRightOpen, Plus, ScanFace, Wallet, X } from "lucide-react"
@@ -164,11 +164,15 @@ export const ConsoleSidebar = () => {
 	const { account } = useConnect()
 	const { disconnect } = useDisconnect(true)
 	const { handleFlag, getFlag } = useFlags()
-	const { socket } = useSocket()
-
-	const { avatar } = useSocket()
-	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
+	const { socket, avatar } = useSocket()
 	const { is, toggleExpanded, handleSidebar } = useSidebar()
+
+	const displayName = useMemo(() => {
+		if (!socket?.identity?.ens?.name) {
+			return socket?.id ? formatAddress(socket.id) : ""
+		}
+		return socket.identity.ens.name
+	}, [socket?.identity?.ens?.name, socket?.id])
 
 	const showRestrictedOptions = account.isAuthenticated && socket?.identity?.referrerId !== null
 
@@ -193,10 +197,9 @@ export const ConsoleSidebar = () => {
 								<Avatar name={socket?.id ?? ""} />
 							)}
 						</div>
-						{/* Show ENS name or formatted address when expanded */}
-						{is.expanded && (
+						{is.expanded && displayName && (
 							<p className="truncate font-bold">
-								{socket?.identity?.ens?.name || formatAddress(socket?.id ?? "")}
+								{displayName}
 							</p>
 						)}
 					</button>
