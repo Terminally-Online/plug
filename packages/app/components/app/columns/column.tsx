@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, GitFork, PlugIcon, Settings, Share, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -38,7 +38,13 @@ export const ConsoleColumn: FC<{
 		column,
 		handle: { frame, remove, resize, navigate }
 	} = useColumnStore(id)
-	const { plug } = usePlugStore(column?.item ?? "")
+	const {
+		plug,
+		own,
+		handle: {
+			plug: { fork }
+		}
+	} = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
@@ -151,7 +157,7 @@ export const ConsoleColumn: FC<{
 											</div>
 
 											{plug && (
-												<div className="flex flex-row items-center justify-end gap-4">
+												<>
 													<Button
 														variant="secondary"
 														className="rounded-sm p-1"
@@ -179,30 +185,38 @@ export const ConsoleColumn: FC<{
 													<Button
 														variant="secondary"
 														className="rounded-sm p-1"
-														onClick={() => frame("manage")}
+														onClick={() =>
+															fork({
+																index: column.index,
+																from: column.from ?? COLUMNS.KEYS.ADD,
+																plug: plug?.id ?? ""
+															})
+														}
 													>
-														<Settings
+														<GitFork
 															size={14}
 															className="opacity-60 transition-opacity group-hover:opacity-100"
 														/>
 													</Button>
+												</>
+											)}
 
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={() => remove(column.index)}
-													>
-														<X
-															size={14}
-															className="opacity-60 transition-opacity group-hover:opacity-100"
-														/>
-													</Button>
-												</div>
+											{plug && own && (
+												<Button
+													variant="secondary"
+													className="rounded-sm p-1"
+													onClick={() => frame("manage")}
+												>
+													<Settings
+														size={14}
+														className="opacity-60 transition-opacity group-hover:opacity-100"
+													/>
+												</Button>
 											)}
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
+									nextOnClick={() => remove(column.index)}
 									nextLabel={
 										<X
 											size={14}

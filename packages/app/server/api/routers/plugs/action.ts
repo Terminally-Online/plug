@@ -43,7 +43,7 @@ export const action = createTRPCRouter({
 				// NOTE: If the user has ever named this plug disable auto-naming completely.
 				if (namedAt) return
 				// NOTE: If it was renamed in the last 10 minutes, we don't want to rename it again.
-				if (renamedAt && Date.now() - renamedAt.getTime() < 30 * 1000) return
+				// if (renamedAt && Date.now() - renamedAt.getTime() < 30 * 1000) return
 				// NOTE: If it does not yet have action context we want to set the name to "Untitled Plug".
 				if (actions.length <= 1) return
 
@@ -93,7 +93,6 @@ export const action = createTRPCRouter({
 					]
 				})
 				const name = message.content[0].type === "text" ? message.content[0].text : undefined
-				console.log("NAME CHOSEN", name)
 				const namedPlug = await ctx.db.workflow.update({
 					where: { id: input.id },
 					data: { name, renamedAt: new Date() }

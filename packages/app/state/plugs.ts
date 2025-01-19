@@ -65,7 +65,16 @@ const usePlugActions = () => {
 	})
 
 	const deleteMutation = api.plugs.delete.useMutation({
-		onSuccess: (_, variables) => setPlugs(prev => prev.filter(plug => plug.id !== variables.plug))
+		onSuccess: (result, variables) => {
+			setPlugs(prev => prev.filter(plug => plug.id !== variables.plug))
+
+			handle.navigate({
+				key: COLUMNS.KEYS.MY_PLUGS,
+				index: result.index
+			})
+
+			handle.frame()
+		}
 	})
 
 	const forkMutation = api.plugs.fork.useMutation({

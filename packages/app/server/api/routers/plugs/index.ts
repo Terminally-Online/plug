@@ -136,7 +136,10 @@ export const plugs = createTRPCRouter({
 				},
 				cursor: cursor ? { id: cursor } : undefined,
 				take: input.limit + 1,
-				orderBy: { createdAt: "asc" }
+				orderBy: { createdAt: "asc" },
+				include: {
+					socket: true
+				}
 			})
 
 			let nextCursor: typeof cursor | undefined = undefined
@@ -163,43 +166,118 @@ export const plugs = createTRPCRouter({
 		)
 		.query(async ({ input, ctx }) => {
 			try {
-				if (input.target === "mine")
-					return await ctx.db.workflow.findMany({
+				const addForkCounts = async (ctx: any, workflows: any[]) => {
+					const forkCounts = await Promise.all(
+						workflows.map(async workflow => ({
+							id: workflow.id,
+							forks: await ctx.db.workflow.count({
+								where: { workflowForkedId: workflow.id }
+							})
+						}))
+					)
+					return workflows.map(workflow => ({
+						...workflow,
+						forkCount: forkCounts.find(f => f.id === workflow.id)?.forks ?? 0
+					}))
+				}
+
+				if (input.target === "mine") {
+					const workflows = await ctx.db.workflow.findMany({
 						where: {
 							socketId: ctx.session.address
 						},
 						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
+						},
+						include: {
+							socket: { include: { identity: { include: { ens: true } } } },
+							_count: {
+								select: {
+									executions: true
+								}
+							},
+							views: {
+								where: {
+									date: {
+										gte: new Date(new Date().setDate(new Date().getDate() - 7))
+									}
+								},
+								select: {
+									views: true
+								}
+							}
 						}
 					})
+					return addForkCounts(ctx, workflows)
+				}
 
 				if (input.target === "curated")
-					return await ctx.db.workflow.findMany({
+					return addForkCounts(
+						ctx,
+						await ctx.db.workflow.findMany({
+							where: {
+								isPrivate: false,
+								isCurated: true,
+								actions: { not: "[]" }
+							},
+							take: input.limit ? input.limit : undefined,
+							orderBy: {
+								updatedAt: "desc"
+							},
+							include: {
+								socket: { include: { identity: { include: { ens: true } } } },
+								_count: {
+									select: {
+										executions: true
+									}
+								},
+								views: {
+									where: {
+										date: {
+											gte: new Date(new Date().setDate(new Date().getDate() - 7)) // Last 7 days
+										}
+									},
+									select: {
+										views: true
+									}
+								}
+							}
+						})
+					)
+
+				return addForkCounts(
+					ctx,
+					await ctx.db.workflow.findMany({
 						where: {
 							isPrivate: false,
-							isCurated: true,
+							socketId: {
+								not: ctx.session.address
+							},
 							actions: { not: "[]" }
 						},
 						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
+						},
+						include: {
+							socket: { include: { identity: { include: { ens: true } } } },
+							_count: {
+								select: {
+									executions: true
+								}
+							},
+							views: {
+								where: {
+									date: {
+										gte: new Date(new Date().setDate(new Date().getDate() - 7)) // Last 7 days
+									}
+								},
+								select: { views: true }
+							}
 						}
 					})
-
-				return await ctx.db.workflow.findMany({
-					where: {
-						isPrivate: false,
-						socketId: {
-							not: ctx.session.address
-						},
-						actions: { not: "[]" }
-					},
-					take: input.limit ? input.limit : undefined,
-					orderBy: {
-						updatedAt: "desc"
-					}
-				})
+				)
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
