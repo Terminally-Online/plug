@@ -39,7 +39,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📦 Install dependencies
-        run: pnpm install
+        run: pnpm install --filter=@terminallyonline/plug-cdn
 
       - name: Deploy to Cloudflare R2
         run: pnpm exec wrangler r2 bucket put cdn
