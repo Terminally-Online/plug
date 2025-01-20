@@ -97,7 +97,7 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 									...action.values,
-									[index]: { value: isNumber ? parseInt(value) : value, name: inputName }
+									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
 								}
 							: action.values
 				}))
