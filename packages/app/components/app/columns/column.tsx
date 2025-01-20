@@ -156,8 +156,8 @@ export const ConsoleColumn: FC<{
 												</SparklingText>
 											</div>
 
-											<div className="ml-auto flex w-max flex-row items-center justify-end gap-4">
-												{plug && (
+											{plug && (
+												<div className="ml-auto flex w-max flex-row items-center justify-end gap-4">
 													<>
 														<Button
 															variant="secondary"
@@ -203,36 +203,38 @@ export const ConsoleColumn: FC<{
 															/>
 														</Button>
 													</>
-												)}
 
-												{plug && own && (
+													{plug && own && (
+														<Button
+															variant="secondary"
+															className="rounded-sm p-1"
+															onClick={() => frame("manage")}
+														>
+															<Settings
+																size={14}
+																className="opacity-60 transition-opacity group-hover:opacity-100"
+															/>
+														</Button>
+													)}
+
 													<Button
 														variant="secondary"
 														className="rounded-sm p-1"
-														onClick={() => frame("manage")}
+														onClick={() => remove(column.index)}
 													>
-														<Settings
+														<X
 															size={14}
 															className="opacity-60 transition-opacity group-hover:opacity-100"
 														/>
 													</Button>
-												)}
-
-												<Button
-													variant="secondary"
-													className="rounded-sm p-1"
-													onClick={() => remove(column.index)}
-												>
-													<X
-														size={14}
-														className="opacity-60 transition-opacity group-hover:opacity-100"
-													/>
-												</Button>
-											</div>
+												</div>
+											)}
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={!plug ? () => remove(column.index) : undefined}
+									nextOnClick={
+										column.key !== COLUMNS.KEYS.PLUG ? () => remove(column.index) : undefined
+									}
 									nextLabel={
 										<X
 											size={14}
