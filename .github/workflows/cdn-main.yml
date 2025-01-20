@@ -11,6 +11,10 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 defaults:
   run:
     working-directory: packages/cdn
@@ -47,10 +51,18 @@ jobs:
         run: |
           # Try to create bucket, ignore error if it already exists
           pnpm exec wrangler r2 bucket create plug-cdn || true
-          # Then upload all files from the current directory
-          for file in $(find . -type f -not -path "./node_modules/*" -not -name "package.json"); do
-            pnpm exec wrangler r2 object put plug-cdn/"${file:2}" --file="$file"
-          done
+
+          # Create a temporary file list
+          find . -type f -not -path "./node_modules/*" -not -name "package.json" > files_to_upload.txt
+
+          # Upload files in parallel using xargs (10 concurrent uploads)
+          cat files_to_upload.txt | xargs -P 10 -I {} bash -c '
+            file="$1"
+            pnpm exec wrangler r2 object put --bucket=plug-cdn "${file:2}" --file="$file"
+          ' -- {}
+
+          # Cleanup
+          rm files_to_upload.txt
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
