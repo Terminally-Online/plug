@@ -263,7 +263,7 @@ importers:
   packages/cdn:
     dependencies:
       wrangler:
-        specifier: ^3.28.2
+        specifier: ^3.90.0
         version: 3.103.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   packages/core:
