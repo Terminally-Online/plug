@@ -44,10 +44,10 @@ jobs:
       - name: Deploy to Cloudflare R2
         run: |
           # Try to create bucket, ignore error if it already exists
-          pnpm exec wrangler r2 bucket create cdn || true
+          pnpm exec wrangler r2 bucket create plug-cdn || true
           # Then upload all files from the current directory
           for file in $(find . -type f -not -path "./node_modules/*" -not -name "package.json"); do
-            pnpm exec wrangler r2 object put cdn/"${file:2}" --file="$file"
+            pnpm exec wrangler r2 object put plug-cdn/"${file:2}" --file="$file"
           done
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
