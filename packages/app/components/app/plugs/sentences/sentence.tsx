@@ -285,8 +285,7 @@ export const Sentence: FC<SentenceProps> = ({
 																handleValue(
 																	input.index,
 																	data,
-																	input.type?.toString().includes("int") ||
-																		input.type?.toString().includes("float")
+																	input.type?.toString().includes("int")
 																)
 															}
 															isNumber={
