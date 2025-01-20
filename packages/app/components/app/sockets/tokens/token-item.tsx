@@ -4,7 +4,6 @@ import { SwapFrame } from "@/components/app/frames/assets/swap"
 import { TokenFrame } from "@/components/app/frames/assets/token"
 import { TransferFrame } from "@/components/app/frames/assets/transfer"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { SocketTokenPercentages } from "@/components/app/sockets/tokens/token-percentages"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
@@ -51,9 +50,9 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 							)}
 						</div>
 
-						<div className="flex w-full flex-col items-center tabular-nums">
+						<div className="flex w-full flex-col items-center truncate overflow-ellipsis tabular-nums">
 							<div className="flex w-full flex-row font-bold">
-								<p>{token.name}</p>
+								<p className="truncate whitespace-nowrap font-bold">{token.name}</p>
 								<p className="ml-auto flex flex-row items-center">
 									$
 									<Counter
