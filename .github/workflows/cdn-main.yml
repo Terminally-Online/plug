@@ -42,7 +42,13 @@ jobs:
         run: pnpm install --filter=@terminallyonline/plug-cdn
 
       - name: Deploy to Cloudflare R2
-        run: pnpm exec wrangler r2 bucket put cdn
+        run: |
+          # First ensure the bucket exists
+          pnpm exec wrangler r2 bucket create cdn --if-not-exists
+          # Then upload all files from the current directory
+          for file in $(find . -type f -not -path "./node_modules/*" -not -name "package.json"); do
+            pnpm exec wrangler r2 object put cdn/"${file:2}" --file="$file"
+          done
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
