@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "cdn/**"
+      - "cdn/**/*"
+      - ".github/workflows/cdn-main.yml"
 
   workflow_dispatch:
 
