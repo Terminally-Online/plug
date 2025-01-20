@@ -58,7 +58,7 @@ jobs:
           # Upload files in parallel using xargs (10 concurrent uploads)
           cat files_to_upload.txt | xargs -P 10 -I {} bash -c '
             file="$1"
-            pnpm exec wrangler r2 object put --bucket=plug-cdn "${file:2}" --file="$file"
+            pnpm exec wrangler r2 object put plug-cdn/"${file:2}" --file="$file"
           ' -- {}
 
           # Cleanup
