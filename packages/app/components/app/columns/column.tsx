@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -144,7 +144,9 @@ export const ConsoleColumn: FC<{
 														onClick={async () => {
 															try {
 																const shareUrl = `${window.location.origin}/app?plug=${plug.id}${
-																	socket?.identity?.referralCode ? `&rfid=${socket.identity.referralCode}` : ''
+																	socket?.identity?.referralCode
+																		? `&rfid=${socket.identity.referralCode}`
+																		: ""
 																}`
 																await navigator.clipboard.writeText(shareUrl)
 																setCopied(true)
@@ -189,7 +191,6 @@ export const ConsoleColumn: FC<{
 											)}
 										</div>
 									}
-									// nextPadded={false}
 									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
 									nextLabel={
 										<X
