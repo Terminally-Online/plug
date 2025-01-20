@@ -43,8 +43,8 @@ jobs:
 
       - name: Deploy to Cloudflare R2
         run: |
-          # First ensure the bucket exists
-          pnpm exec wrangler r2 bucket create cdn --if-not-exists
+          # Try to create bucket, ignore error if it already exists
+          pnpm exec wrangler r2 bucket create cdn || true
           # Then upload all files from the current directory
           for file in $(find . -type f -not -path "./node_modules/*" -not -name "package.json"); do
             pnpm exec wrangler r2 object put cdn/"${file:2}" --file="$file"
