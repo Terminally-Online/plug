@@ -44,10 +44,10 @@ jobs:
       - name: Deploy to Cloudflare R2
         run: |
           # Try to create bucket, ignore error if it already exists
-          pnpm exec wrangler r2 bucket create cdn || true
+          pnpm exec wrangler r2 bucket create plug-cdn || true
 
           # Get list of files in R2
-          R2_FILES=$(pnpm exec wrangler r2 object list cdn --json | jq -r '.[].key')
+          R2_FILES=$(pnpm exec wrangler r2 object list plug-cdn --json | jq -r '.[].key')
 
           # Get list of local files (excluding node_modules and package.json)
           LOCAL_FILES=$(find . -type f -not -path "./node_modules/*" -not -name "package.json" | sed 's|^./||')
@@ -56,13 +56,13 @@ jobs:
           for file in $R2_FILES; do
             if ! echo "$LOCAL_FILES" | grep -q "^$file$"; then
               echo "Deleting $file from R2..."
-              pnpm exec wrangler r2 object delete cdn/"$file"
+              pnpm exec wrangler r2 object delete plug-cdn/"$file"
             fi
           done
 
           # Upload/update local files
           for file in $(find . -type f -not -path "./node_modules/*" -not -name "package.json"); do
-            pnpm exec wrangler r2 object put cdn/"${file:2}" --file="$file"
+            pnpm exec wrangler r2 object put plug-cdn/"${file:2}" --file="$file"
           done
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
