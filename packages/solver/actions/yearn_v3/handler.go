@@ -42,6 +42,7 @@ var (
 			Handler:  HandleActionRedeemMax,
 		},
 		types.ConstraintAPY: {
+			Type:     types.TypeConstraint,
 			Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:uint256>}%.",
 			Handler:  HandleConstraintAPY,
 		},

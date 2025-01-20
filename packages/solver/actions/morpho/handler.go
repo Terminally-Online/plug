@@ -58,10 +58,12 @@ var (
 			Handler:  HandleClaimRewards,
 		},
 		types.ConstraintHealthFactor: {
+			Type:     types.TypeConstraint,
 			Sentence: "Health factor in {0<market:string>} is {1<operator:int8>} than {2<threshold:uint256>}.",
 			Handler:  HandleConstraintHealthFactor,
 		},
 		types.ConstraintAPY: {
+			Type:     types.TypeConstraint,
 			Sentence: "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:uint256>}%.",
 			Handler:  HandleConstraintAPY,
 		},

@@ -34,10 +34,12 @@ var (
 			Handler:  HandleActionWithdraw,
 		},
 		types.ConstraintHealthFactor: {
+			Type:     types.TypeConstraint,
 			Sentence: "Health factor is {0<operator:int8>} than {1<threshold:uint256>}",
 			Handler:  HandleConstraintHealthFactor,
 		},
 		types.ConstraintAPY: {
+			Type:     types.TypeConstraint,
 			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:uint256>}%",
 			Handler:  HandleConstraintAPY,
 		},

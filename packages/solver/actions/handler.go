@@ -54,6 +54,7 @@ var (
 )
 
 type ActionDefinition struct {
+	Type     string `default:"action"`
 	Sentence string
 	Handler  TransactionHandler
 }
@@ -94,6 +95,12 @@ func NewBaseHandler(
 	for action, def := range actionDefinitions {
 		schemas[action] = types.ChainSchema{
 			Schema: types.Schema{
+				Type: func() string {
+					if def.Type == "" {
+						return types.TypeAction
+					}
+					return def.Type
+				}(),
 				Sentence: def.Sentence,
 			},
 		}
