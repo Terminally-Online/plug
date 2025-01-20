@@ -3,6 +3,9 @@ package types
 type Action string
 
 const (
+	TypeAction     string = "action"
+	TypeConstraint string = "constraint"
+
 	ActionDeposit      Action = "deposit"
 	ActionBorrow       Action = "borrow"
 	ActionRedeem       Action = "redeem"

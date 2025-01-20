@@ -28,15 +28,18 @@ var (
 			Handler:  HandleActionIncreaseBid,
 		},
 		types.Action(HasTrait): {
-			Sentence: "Bid on noun that has a {0<traitType:string>} of {0=>1<trait:string>}.",
+			Type:     types.TypeConstraint,
+			Sentence: "Noun that has a {0<traitType:string>} of {0=>1<trait:string>}.",
 			Handler:  HandleConstraintHasTrait,
 		},
 		types.Action(IsTokenId): {
-			Sentence: "Bid on noun when token id is {0<id:uint256>}.",
+			Type:     types.TypeConstraint,
+			Sentence: "Current Noun action is for token id {0<id:uint256>}.",
 			Handler:  HandleConstraintIsTokenId,
 		},
 		types.Action(CurrentBidWithinRange): {
-			Sentence: "Current bid for noun is greater than {0<min:uint256>} ETH and less than {1<max:uint256>} ETH.",
+			Type:     types.TypeConstraint,
+			Sentence: "Bid for Noun is greater than {0<min:uint256>} ETH and less than {1<max:uint256>} ETH.",
 			Handler:  HandleConstraintCurrentBidWithinRange,
 		},
 	}

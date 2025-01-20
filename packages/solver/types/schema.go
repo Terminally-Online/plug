@@ -17,6 +17,7 @@ type ProtocolSchema struct {
 }
 
 type Schema struct {
+	Type     string                `default:"action" json:"type"`
 	Sentence string                `json:"sentence"`
 	Options  map[int]SchemaOptions `json:"options,omitempty"`
 }
@@ -52,7 +53,7 @@ var (
 	}
 )
 
-// ChainSchema represents a schema with chain-specific options
 type ChainSchema struct {
+	Type   string `default:"action" json:"type"`
 	Schema Schema `json:"schema"`
 }
