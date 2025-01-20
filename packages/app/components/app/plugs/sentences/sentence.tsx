@@ -374,11 +374,6 @@ export const Sentence: FC<SentenceProps> = ({
 														</>
 													)}
 												</div>
-												Is Complete: {isComplete ? "true" : "false"}
-												Is Valid: {isValid ? "true" : "false"}
-												Error: {error}
-												Validation Errors: {JSON.stringify(validationErrors)}
-												Parsed: {JSON.stringify(parsed)}
 												<div className="mt-auto bg-white">
 													<div className="relative">
 														{options && options.length > 0 && (
