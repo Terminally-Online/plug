@@ -102,9 +102,9 @@ func IsBytes(value string, size int) bool {
 	return len(value) == size*2
 }
 
-func FloatToUint(value *big.Float, decimals uint8) (*big.Int, error) {
+func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
     // Create a copy of the input value to avoid modifying it
-    result := new(big.Float).Copy(value)
+    result := new(big.Float).SetFloat64(value)
     
     // Calculate 10^decimals
     multiplier := new(big.Int).Exp(

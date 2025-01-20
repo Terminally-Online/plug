@@ -21,7 +21,7 @@ var (
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
-		MaxPrice *big.Float `json:"maxPrice"`
+		MaxPrice float64   `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
@@ -48,6 +48,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	var secret [32]byte
 	nameAndAddr := append([]byte(*name), common.HexToAddress(params.From).Bytes()...)
 	copy(secret[:], nameAndAddr)
+	// TODO: exclusive transaction shiiii
 	commitment, err := registrar.MakeCommitment(
 		utils.BuildCallOpts(params.From, big.NewInt(1)),
 		*name,
@@ -113,7 +114,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	}
 
 	if price.Base.Cmp(maxPrice) > 0 {
-		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, inputs.MaxPrice)
+		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPrice)
 	}
 
 	return []*types.Transaction{{
@@ -219,10 +220,15 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
-		MaxPrice *big.Int `json:"price"`
+		MaxPrice float64   `json:"price"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal renewal price inputs: %v", err)
+	}
+
+	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, uint8(18))
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}
 
 	name, err := GetName(inputs.Name)
@@ -235,7 +241,7 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get renewal price: %v", err)
 	}
 
-	maxPriceWei := new(big.Int).Mul(inputs.MaxPrice, big.NewInt(1e18))
+	maxPriceWei := new(big.Int).Mul(maxPrice, big.NewInt(1e18))
 
 	if price.Base.Cmp(maxPriceWei) > 0 {
 		return nil, fmt.Errorf("renewal price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPriceWei)
