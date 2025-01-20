@@ -52,7 +52,21 @@ jobs:
           # Try to create bucket, ignore error if it already exists
           pnpm exec wrangler r2 bucket create plug-cdn || true
 
-          # Create a temporary file list
+          # Get list of files in R2
+          R2_FILES=$(pnpm exec wrangler r2 object list plug-cdn --json | jq -r '.[].key')
+
+          # Get list of local files (excluding node_modules and package.json)
+          LOCAL_FILES=$(find . -type f -not -path "./node_modules/*" -not -name "package.json" | sed 's|^./||')
+
+          # Create a list of files to delete (files in R2 but not locally)
+          echo "$R2_FILES" | while read -r r2_file; do
+            if [ ! -z "$r2_file" ] && ! echo "$LOCAL_FILES" | grep -q "^$r2_file$"; then
+              echo "Deleting $r2_file from R2..."
+              pnpm exec wrangler r2 object delete plug-cdn/"$r2_file"
+            fi
+          done
+
+          # Create a temporary file list for uploads
           find . -type f -not -path "./node_modules/*" -not -name "package.json" > files_to_upload.txt
 
           # Upload files in parallel using xargs (30 concurrent uploads)
