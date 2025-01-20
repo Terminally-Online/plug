@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "cdn/**"
-  
+
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,18 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: ⚙️  Setup Action
+        uses: pnpm/action-setup@v4
+
+      - name: 📚 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
       - name: Deploy to Cloudflare R2
         uses: cloudflare/wrangler-action@v3
