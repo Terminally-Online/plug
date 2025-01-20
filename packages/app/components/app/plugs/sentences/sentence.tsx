@@ -194,7 +194,7 @@ export const Sentence: FC<SentenceProps> = ({
 									const isValid = !isEmpty && !inputError && !error
 
 									return (
-										<>
+										<span key={partIndex}>
 											<button
 												className={cn(
 													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
@@ -403,7 +403,7 @@ export const Sentence: FC<SentenceProps> = ({
 													</div>
 												</div>
 											</Frame>
-										</>
+										</span>
 									)
 								})}
 							</div>
