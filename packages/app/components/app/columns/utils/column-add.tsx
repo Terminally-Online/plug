@@ -1,21 +1,7 @@
 import Link from "next/link"
 import { useMemo } from "react"
 
-import {
-	Activity,
-	Cable,
-	Cog,
-	Coins,
-	ExternalLink,
-	Globe,
-	ImageIcon,
-	PiggyBank,
-	Plug,
-	Plus,
-	ShieldAlert,
-	Star,
-	User
-} from "lucide-react"
+import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
@@ -67,7 +53,7 @@ export const OPTIONS: Options = [
 	}
 ] as const
 
-export const ColumnAdd = () => {
+export const ColumnAdd = ({ index }: { index: number }) => {
 	const { getFlag } = useFlags()
 	const { socket } = useSocket()
 	const { columns, handle } = useColumnStore()
@@ -99,25 +85,30 @@ export const ColumnAdd = () => {
 		}
 	]
 
+	const isBody = index != columns.length - 2
+
 	return (
 		<>
 			<div
 				className={cn(
-					"relative my-2 flex select-none flex-col rounded-lg border-[1px] border-plug-green/10 bg-white",
+					"relative flex select-none flex-col rounded-lg",
+					!isBody && "my-2 border-[1px] border-plug-green/10 bg-white",
 					columns.some(column => column.index >= 0) ? "" : "ml-2"
 				)}
 				style={{ minWidth: "480px" }}
 			>
-				<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
-					<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
-						<Plus size={18} className="opacity-40" />
-						<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
+				{!isBody && (
+					<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
+						<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
+							<Plus size={18} className="opacity-40" />
+							<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
+						</div>
 					</div>
-				</div>
+				)}
 
 				<div className="h-full overflow-y-scroll">
 					<div className="flex h-full flex-col gap-2 p-4">
-						<Accordion key={"add"} onExpand={() => plugHandle.plug.add()}>
+						<Accordion key={"add"} onExpand={() => plugHandle.plug.add(isBody ? { index } : undefined)}>
 							<div className="flex flex-row items-center gap-2">
 								<div className="flex h-10 w-10 min-w-10 items-center justify-center">
 									<Plug size={14} className="opacity-40" />
@@ -132,9 +123,11 @@ export const ColumnAdd = () => {
 						{options.map(option => (
 							<Accordion
 								key={option.label}
-								onExpand={() => {
-									handle.add({ key: option.label })
-								}}
+								onExpand={() =>
+									isBody
+										? handle.navigate({ index, key: option.label })
+										: handle.add({ key: option.label })
+								}
 							>
 								<div className="flex flex-row items-center gap-2">
 									<div className="flex h-10 w-10 min-w-10 items-center justify-center">
@@ -150,24 +143,6 @@ export const ColumnAdd = () => {
 						))}
 					</div>
 				</div>
-			</div>
-
-			<div className="mx-4 my-2 mr-48 flex w-max flex-col items-start justify-end font-bold">
-				<Link
-					href="/terms"
-					className="group flex flex-row items-center gap-1 whitespace-nowrap transition-all duration-200 ease-in-out hover:opacity-100"
-				>
-					<span className="opacity-40 group-hover:opacity-100">Terms of Service</span>
-					<ExternalLink size={14} className="opacity-40 group-hover:opacity-100" />
-				</Link>
-				<Link
-					href="/privacy"
-					className="group flex flex-row items-center gap-1 whitespace-nowrap transition-all duration-200 ease-in-out hover:opacity-100"
-				>
-					<span className="opacity-40 group-hover:opacity-100">Privacy Policy</span>
-					<ExternalLink size={14} className="opacity-40 group-hover:opacity-100" />
-				</Link>
-				<p className="whitespace-nowrap opacity-40">A ⚫ Terminally Online project.</p>
 			</div>
 		</>
 	)

@@ -34,7 +34,7 @@ export const Accordion: FC<Props> = memo(
 		return (
 			<button
 				className={cn(
-					"group flex h-min w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-plug-green/10 outline-none",
+					"group flex w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-plug-green/10 outline-none",
 					expanded && "bg-plug-green/5 hover:bg-white",
 					loading
 						? "animate-loading bg-gradient-animated bg-[length:200%_200%]"
@@ -48,7 +48,7 @@ export const Accordion: FC<Props> = memo(
 			>
 				{noPaddingChildren}
 
-				<div className={cn("flex h-min w-full flex-col", noPadding === false && "p-4")}>
+				<div className={cn("flex h-full w-full flex-col", noPadding === false && "p-4")}>
 					{children}
 
 					{accordion && <AccordionContent expanded={expanded}>{accordion}</AccordionContent>}

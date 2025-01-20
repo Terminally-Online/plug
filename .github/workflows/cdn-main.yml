@@ -1,0 +1,75 @@
+name: CDN - Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cdn/**"
+      - "cdn/**/*"
+      - ".github/workflows/cdn-main.yml"
+
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+defaults:
+  run:
+    working-directory: packages/cdn
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: ⚙️  Setup Action
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
+
+      - name: 📚 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: 📦 Install dependencies
+        run: pnpm install --filter=@terminallyonline/plug-cdn
+
+      - name: Deploy to Cloudflare R2
+        run: |
+          # Try to create bucket, ignore error if it already exists
+          pnpm exec wrangler r2 bucket create plug-cdn || true
+
+          # Create a temporary file list
+          find . -type f -not -path "./node_modules/*" -not -name "package.json" > files_to_upload.txt
+
+          # Upload files in parallel using xargs (30 concurrent uploads)
+          cat files_to_upload.txt | xargs -P 30 -I {} bash -c '
+            file="$1"
+            pnpm exec wrangler r2 object put plug-cdn/"${file:2}" --file="$file"
+          ' -- {}
+
+          # Cleanup
+          rm files_to_upload.txt
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Purge Cache
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'

@@ -7,6 +7,25 @@ import (
 	"solver/types"
 )
 
+type NounsOptionsProvider struct{}
+
+func (p *NounsOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	traitTypeOptions, traitOptions, err := GetTraitOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	switch action {
+	case types.Action(HasTrait):
+		return map[int]types.SchemaOptions{
+			0: {Simple: traitTypeOptions},
+			1: {Complex: traitOptions},
+		}, nil
+	default:
+		return nil, nil // Most actions don't have options
+	}
+}
+
 func GetTraitTypeOptions() ([]types.Option, error) {
 	fields := []string{"background", "body", "accessory", "head", "glasses"}
 
@@ -28,7 +47,7 @@ func GetTraitOptions() ([]types.Option, map[string][]types.Option, error) {
 		return nil, nil, err
 	}
 
-	traitData, err := os.ReadFile("actions/nouns/traits.json")
+	traitData, err := os.ReadFile("actions/nouns/resources/traits.json")
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read traits.json: %v", err)
 	}

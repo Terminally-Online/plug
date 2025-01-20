@@ -12,6 +12,61 @@ var (
 	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
 )
 
+type AaveOptionsProvider struct{}
+
+func (p *AaveOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	collateralOptions, borrowOptions, err := GetOptions(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	switch action {
+	case types.ActionDeposit:
+		return map[int]types.SchemaOptions{
+			0: {Simple: collateralOptions},
+		}, nil
+	case types.ActionBorrow:
+		return map[int]types.SchemaOptions{
+			0: {Simple: borrowOptions},
+		}, nil
+	case types.ActionRepay:
+		return map[int]types.SchemaOptions{
+			0: {Simple: borrowOptions},
+		}, nil
+	case types.ActionWithdraw:
+		return map[int]types.SchemaOptions{
+			0: {Simple: collateralOptions},
+		}, nil
+	case types.ConstraintHealthFactor:
+		return map[int]types.SchemaOptions{
+			0: {Simple: types.BaseThresholdFields},
+		}, nil
+	case types.ConstraintAPY:
+		aggregatedOptions := func() []types.Option {
+			seen := make(map[string]bool)
+			options := make([]types.Option, 0)
+			for _, opt := range append(collateralOptions, borrowOptions...) {
+				if !seen[opt.Value] {
+					seen[opt.Value] = true
+					opt.Info = ""
+					options = append(options, opt)
+				}
+			}
+			return options
+		}()
+		return map[int]types.SchemaOptions{
+			0: {Simple: []types.Option{
+				{Label: "Borrow", Name: "Borrow", Value: "-1"},
+				{Label: "Deposit", Name: "Deposit", Value: "1"},
+			}},
+			1: {Simple: aggregatedOptions},
+			2: {Simple: types.BaseThresholdFields},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unsupported action for options: %s", action)
+	}
+}
+
 func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {

@@ -5,6 +5,82 @@ import (
 	"solver/types"
 )
 
+type MorphoOptionsProvider struct{}
+
+func (p *MorphoOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
+	if err != nil {
+		return nil, err
+	}
+	marketOptions, marketAndVaultOptions, err := GetMarketAndVaultOptions()
+	if err != nil {
+		return nil, err
+	}
+	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions()
+	if err != nil {
+		return nil, err
+	}
+	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions()
+	if err != nil {
+		return nil, err
+	}
+	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	switch action {
+	case types.Action(ActionEarn):
+		return map[int]types.SchemaOptions{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+		}, nil
+	case types.Action(ActionSupplyCollateral):
+		return map[int]types.SchemaOptions{
+			1: {Simple: collateralOptions},
+			2: {Complex: collateralToMarketOptions},
+		}, nil
+	case types.Action(ActionWithdraw):
+		return map[int]types.SchemaOptions{
+			1: {Simple: supplyAndCollateralTokenOptions},
+			2: {Complex: supplyAndCollateralTokenToMarketOptions},
+		}, nil
+	case types.Action(ActionWithdrawAll):
+		return map[int]types.SchemaOptions{
+			0: {Simple: supplyAndCollateralTokenOptions},
+			1: {Complex: supplyAndCollateralTokenToMarketOptions},
+		}, nil
+	case types.Action(ActionBorrow):
+		return map[int]types.SchemaOptions{
+			1: {Simple: borrowOptions},
+			2: {Complex: borrowToMarketOptions},
+		}, nil
+	case types.Action(ActionRepay):
+		return map[int]types.SchemaOptions{
+			1: {Simple: borrowOptions},
+			2: {Complex: borrowToMarketOptions},
+		}, nil
+	case types.Action(ActionRepayAll):
+		return map[int]types.SchemaOptions{
+			0: {Simple: borrowOptions},
+			1: {Complex: borrowToMarketOptions},
+		}, nil
+	case types.ConstraintHealthFactor:
+		return map[int]types.SchemaOptions{
+			0: {Simple: marketOptions},
+			1: {Simple: types.BaseThresholdFields},
+		}, nil
+	case types.Action(ConstraintAPY):
+		return map[int]types.SchemaOptions{
+			0: {Simple: types.BaseLendActionTypeFields},
+			1: {Simple: marketAndVaultOptions},
+			2: {Simple: types.BaseThresholdFields},
+		}, nil
+	default:
+		return nil, nil
+	}
+}
+
 func GetSupplyTokenToVaultOptions() ([]types.Option, map[string][]types.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {

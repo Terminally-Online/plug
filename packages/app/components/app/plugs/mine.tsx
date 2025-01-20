@@ -1,9 +1,7 @@
-import { FC, HTMLAttributes, useMemo, useState } from "react"
+import { useSession } from "next-auth/react"
+import { FC, HTMLAttributes, useMemo } from "react"
 
-import { useMotionValueEvent, useScroll } from "framer-motion"
 import { SearchIcon } from "lucide-react"
-
-import { Workflow } from "@prisma/client"
 
 import { Search } from "@/components/app/inputs/search"
 import { Tags } from "@/components/app/inputs/tags"
@@ -11,59 +9,25 @@ import { Container } from "@/components/app/layout/container"
 import { PlugGrid } from "@/components/app/plugs/grid/grid"
 import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
-import { api } from "@/server/client"
-import { useSocket } from "@/state/authentication"
 import { COLUMNS } from "@/state/columns"
+import { usePlugStore } from "@/state/plugs"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
 	className,
 	...props
 }) => {
-	const { socket } = useSocket()
+	const { data: session } = useSession()
 	const { search, tag, handleSearch, handleTag } = useSearch()
-	const { scrollYProgress } = useScroll()
-
-	const [plugs, setPlugs] = useState<{
-		count?: number
-		plugs: Array<Workflow>
-	}>({ plugs: [] })
-
-	const { fetchNextPage, isLoading } = api.plugs.infinite.useInfiniteQuery(
-		{
-			address: socket?.id,
-			search,
-			tag,
-			limit: 40
-		},
-		{
-			enabled: socket?.id !== undefined,
-			getNextPageParam(lastPage) {
-				return lastPage.nextCursor
-			},
-			onSuccess(data) {
-				setPlugs(() => ({
-					count: data.pages[data.pages.length - 1].count,
-					plugs: data.pages.flatMap(page => page.plugs)
-				}))
-			}
-		}
-	)
+	const { plugs } = usePlugStore()
 
 	const visiblePlugs = useMemo(() => {
-		if (plugs === undefined || (plugs.count === 0 && search === "")) return Array(12).fill(undefined)
-
-		return plugs.plugs
-	}, [plugs, search])
-
-	useMotionValueEvent(scrollYProgress, "change", latest => {
-		if (!plugs || isLoading || latest < 0.8) return
-		if ((plugs.count ?? 0) > plugs.plugs.length) fetchNextPage()
-	})
+		return plugs.filter(plug => plug.socketId === session?.user?.id)
+	}, [plugs, session?.user?.id])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{(search !== "" || (plugs && plugs.plugs.length > 0)) && (
+			{(search !== "" || (visiblePlugs && visiblePlugs.length > 0)) && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
@@ -78,7 +42,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 			{visiblePlugs.some(plug => Boolean(plug)) && <Tags tag={tag} handleTag={handleTag} />}
 
 			<Callout.EmptySearch
-				isEmpty={(search !== "" || tag !== "") && plugs && plugs.count === 0}
+				isEmpty={(search !== "" || tag !== "") && visiblePlugs && visiblePlugs.length === 0}
 				search={search || tag}
 				handleSearch={handleSearch}
 			/>
@@ -87,7 +51,10 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
-			<Callout.EmptyPlugs index={index} isEmpty={search === "" && tag === "" && plugs && plugs.count === 0} />
+			<Callout.EmptyPlugs
+				index={index}
+				isEmpty={search === "" && tag === "" && visiblePlugs && visiblePlugs.length === 0}
+			/>
 		</div>
 	)
 }

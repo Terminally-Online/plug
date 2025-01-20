@@ -6,6 +6,68 @@ import (
 	"strings"
 )
 
+type YearnV3OptionsProvider struct{}
+
+func (p *YearnV3OptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+	underlyingAssetOptions, err := GetUnderlyingAssetOptions()
+	if err != nil {
+		return nil, err
+	}
+	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions()
+	if err != nil {
+		return nil, err
+	}
+	availableStakingGuageOptions, err := GetAvailableStakingGuageOptions()
+	if err != nil {
+		return nil, err
+	}
+	vaultOptions, err := GetVaultOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	switch action {
+	case types.ActionDeposit:
+		return map[int]types.SchemaOptions{
+			1: {Simple: underlyingAssetOptions},
+			2: {Complex: underlyingAssetToVaultOptions},
+		}, nil
+	case types.ActionWithdraw:
+		return map[int]types.SchemaOptions{
+			1: {Simple: underlyingAssetOptions},
+			2: {Complex: underlyingAssetToVaultOptions},
+		}, nil
+	case types.ActionWithdrawMax:
+		return map[int]types.SchemaOptions{
+			0: {Simple: underlyingAssetOptions},
+			1: {Complex: underlyingAssetToVaultOptions},
+		}, nil
+	case types.ActionStake:
+		return map[int]types.SchemaOptions{
+			1: {Simple: availableStakingGuageOptions},
+		}, nil
+	case types.ActionStakeMax:
+		return map[int]types.SchemaOptions{
+			0: {Simple: availableStakingGuageOptions},
+		}, nil
+	case types.ActionRedeem:
+		return map[int]types.SchemaOptions{
+			1: {Simple: availableStakingGuageOptions},
+		}, nil
+	case types.ActionRedeemMax:
+		return map[int]types.SchemaOptions{
+			0: {Simple: availableStakingGuageOptions},
+		}, nil
+	case types.ConstraintAPY:
+		return map[int]types.SchemaOptions{
+			0: {Simple: vaultOptions},
+			1: {Simple: types.BaseThresholdFields},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unsupported action for options: %s", action)
+	}
+}
+
 func GetUnderlyingAssetOptions() ([]types.Option, error) {
 	tokens, err := GenerateTokenList()
 	if err != nil {

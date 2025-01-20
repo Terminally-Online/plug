@@ -5,11 +5,10 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 
 import { colors } from "@/lib"
+import { action } from "@/server/api/routers/plugs/action"
+import { activity } from "@/server/api/routers/plugs/activity"
 import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
-
-import { action } from "./action"
-import { activity } from "./activity"
 
 const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
 export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
@@ -137,7 +136,10 @@ export const plugs = createTRPCRouter({
 				},
 				cursor: cursor ? { id: cursor } : undefined,
 				take: input.limit + 1,
-				orderBy: { createdAt: "asc" }
+				orderBy: { createdAt: "asc" },
+				include: {
+					socket: true
+				}
 			})
 
 			let nextCursor: typeof cursor | undefined = undefined
@@ -164,43 +166,103 @@ export const plugs = createTRPCRouter({
 		)
 		.query(async ({ input, ctx }) => {
 			try {
-				if (input.target === "mine")
-					return await ctx.db.workflow.findMany({
+				const addForkCounts = async (ctx: any, workflows: any[]) => {
+					const forkCounts = await Promise.all(
+						workflows.map(async workflow => ({
+							id: workflow.id,
+							forks: await ctx.db.workflow.count({
+								where: { workflowForkedId: workflow.id }
+							})
+						}))
+					)
+					return workflows.map(workflow => ({
+						...workflow,
+						forkCount: forkCounts.find(f => f.id === workflow.id)?.forks ?? 0
+					}))
+				}
+
+				if (input.target === "mine") {
+					const workflows = await ctx.db.workflow.findMany({
 						where: {
 							socketId: ctx.session.address
 						},
 						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
+						},
+						include: {
+							socket: { include: { identity: { include: { ens: true } } } },
+							_count: {
+								select: {
+									executions: true
+								}
+							},
+							views: {
+								select: {
+									views: true
+								}
+							}
 						}
 					})
+					return addForkCounts(ctx, workflows)
+				}
 
 				if (input.target === "curated")
-					return await ctx.db.workflow.findMany({
+					return addForkCounts(
+						ctx,
+						await ctx.db.workflow.findMany({
+							where: {
+								isPrivate: false,
+								isCurated: true,
+								actions: { not: "[]" }
+							},
+							take: input.limit ? input.limit : undefined,
+							orderBy: {
+								updatedAt: "desc"
+							},
+							include: {
+								socket: { include: { identity: { include: { ens: true } } } },
+								_count: {
+									select: {
+										executions: true
+									}
+								},
+								views: {
+									select: {
+										views: true
+									}
+								}
+							}
+						})
+					)
+
+				return addForkCounts(
+					ctx,
+					await ctx.db.workflow.findMany({
 						where: {
 							isPrivate: false,
-							isCurated: true,
+							socketId: {
+								not: ctx.session.address
+							},
 							actions: { not: "[]" }
 						},
 						take: input.limit ? input.limit : undefined,
 						orderBy: {
 							updatedAt: "desc"
+						},
+						include: {
+							socket: { include: { identity: { include: { ens: true } } } },
+							_count: {
+								select: {
+									executions: true
+								}
+							},
+							views: {
+								select: { views: true }
+							}
 						}
 					})
-
-				return await ctx.db.workflow.findMany({
-					where: {
-						isPrivate: false,
-						socketId: {
-							not: ctx.session.address
-						},
-						actions: { not: "[]" }
-					},
-					take: input.limit ? input.limit : undefined,
-					orderBy: {
-						updatedAt: "desc"
-					}
-				})
+				)
 			} catch (error) {
 				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
@@ -267,6 +329,7 @@ export const plugs = createTRPCRouter({
 			z.object({
 				id: z.string().optional(),
 				name: z.string(),
+				namedAt: z.date().optional(),
 				color: z.string(),
 				isPrivate: z.boolean()
 			})

@@ -14,15 +14,13 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 	const { isFrame } = useColumnStore(index, "manage")
 	const { plug, handle } = usePlugStore(item)
 
-	const [name, debouncedName, handleName, nameRef] = useDebounce(plug?.name ?? "", 1000)
+	const handleNameChange = (newName: string) => {
+		if (!plug || !newName || newName === plug.name) return
 
-	useEffect(() => {
-		if (!plug || nameRef.current === debouncedName) return
+		handle.plug.edit({ ...plug, name: newName, namedAt: new Date() })
+	}
 
-		nameRef.current = debouncedName
-
-		handle.plug.edit({ ...plug, name: debouncedName })
-	}, [nameRef, plug, debouncedName, handle])
+	const [name, _, handleName] = useDebounce(plug?.name ?? "", 1000, handleNameChange)
 
 	if (!plug) return null
 
@@ -30,7 +28,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 		<Frame
 			index={index}
 			className="z-[2]"
-			icon={<Settings size={18} />}
+			icon={<Settings size={18} className="opacity-40" />}
 			label="Manage Plug"
 			visible={isFrame}
 			hasChildrenPadding={false}
@@ -43,55 +41,9 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 					handleSearch={handleName}
 				/>
 
-				<div className="flex flex-row items-center gap-2">
-					<p className="mr-auto font-bold">Private</p>
-
-					<Checkbox
-						checked={plug.isPrivate}
-						handleChange={(checked: boolean) =>
-							handle.plug.edit({
-								...plug,
-								isPrivate: checked
-							})
-						}
-					/>
-				</div>
-
-				<div className="flex flex-row items-center gap-2">
-					<p className="font-bold">Color</p>
-
-					<div className="ml-auto flex flex-wrap items-center gap-1">
-						{Object.keys(cardColors).map(color => (
-							<div
-								key={color}
-								className="group flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-[1px]"
-								style={{
-									borderColor:
-										plug.color === color
-											? cardColors[color as keyof typeof cardColors]
-											: "transparent"
-								}}
-								onClick={() =>
-									handle.plug.edit({
-										...plug,
-										color
-									})
-								}
-							>
-								<div
-									className="h-full w-full rounded-full border-[1px] border-white transition-all duration-200 ease-in-out"
-									style={{
-										background: cardColors[color as keyof typeof cardColors]
-									}}
-								/>
-							</div>
-						))}
-					</div>
-				</div>
-
 				<Button
 					variant="destructive"
-					className="w-full"
+					className="w-full py-4"
 					onClick={() => handle.plug.delete({ plug: plug.id, index, from })}
 				>
 					Delete

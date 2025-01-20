@@ -7,7 +7,13 @@ export const colors = {
 	cyan: "#8AF3E6",
 	blue: "#8AAEF3",
 	magenta: "#EB8AF3",
-	purple: "#9F8AF3"
+	purple: "#9F8AF3",
+	aave: "#9896FF",
+	ens: "#0080BC",
+	morpho: "#2470FF",
+	nouns: "#EFC950",
+	yearn: "#0657F9",
+	plug: "#D2F38A"
 } as const
 
 export const tagColors = {
