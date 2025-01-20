@@ -19,6 +19,7 @@ export type ActionSchema = {
 	schema: Record<
 		string,
 		{
+			type: string
 			sentence: string
 			options?: Record<string, Options | Record<string, Options>>
 		}
