@@ -3,8 +3,7 @@ import { defineConfig, HeadConfig } from "vitepress";
 export default defineConfig({
   // base: "/plug/",
 
-  title: "Plug Documentation",
-  titleTemplate: ":title | Plug Documentation",
+  titleTemplate: ":title | Plug",
   description: "Documentation for the Plug protocol and application.",
 
   appearance: false,
@@ -15,7 +14,8 @@ export default defineConfig({
   },
 
   themeConfig: {
-    logo: "/favicon.ico",
+    logo: "/logo.png",
+    siteTitle: false,
     externalLinkIcon: true,
 
     nav: [{ text: "Home", link: "https://www.onplug.io" }],
@@ -29,12 +29,12 @@ export default defineConfig({
             text: "Introduction",
             link: "/",
           },
+          // {
+          //   text: "Integrations",
+          //   link: "/introduction/integrations",
+          // },
           {
-            text: "Integrations",
-            link: "/introduction/integrations",
-          },
-          {
-            text: "Frequently Asked Questions",
+            text: "FAQ",
             link: "/introduction/frequently-asked-questions",
           },
         ],
@@ -44,30 +44,20 @@ export default defineConfig({
         text: "Core Concepts",
         items: [
           {
-            text: "Architecture",
-            link: "/concepts/architecture",
+            text: "Actions",
+            link: "/concepts/actions",
           },
           {
             text: "Constraints",
             link: "/concepts/constraints",
           },
           {
-            text: "Actions",
-            link: "/concepts/actions",
+            text: "Plugs",
+            link: "/concepts/plugs",
           },
           {
-            text: "Strategies",
-            link: "/concepts/strategies",
-          },
-        ],
-      },
-
-      {
-        text: "Developer",
-        items: [
-          {
-            text: "Execution Lifecycle",
-            link: "/developer/lifecycle",
+            text: "Lifecycle",
+            link: "/concepts/lifecycle",
           },
         ],
       },
