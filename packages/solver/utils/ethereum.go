@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/big"
 	"regexp"
 	"slices"
@@ -99,4 +100,27 @@ func IsBytes(value string, size int) bool {
 
 	value = strings.TrimPrefix(value, "0x")
 	return len(value) == size*2
+}
+
+func FloatToUint(value *big.Float, decimals uint8) (*big.Int, error) {
+    // Create a copy of the input value to avoid modifying it
+    result := new(big.Float).Copy(value)
+    
+    // Calculate 10^decimals
+    multiplier := new(big.Int).Exp(
+        big.NewInt(10), 
+        big.NewInt(int64(decimals)), 
+        nil,
+    )
+    
+    // Multiply result by 10^decimals
+    result.Mul(result, new(big.Float).SetInt(multiplier))
+    
+    // Convert to int and check for accuracy
+    intValue, accuracy := result.Int(nil)
+    if accuracy != big.Exact {
+        return nil, fmt.Errorf("loss of precision when converting %v to uint with %d decimals", value, decimals)
+    }
+    
+    return intValue, nil
 }

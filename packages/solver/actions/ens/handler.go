@@ -20,7 +20,7 @@ var (
 
 	schemas = map[types.Action]actions.ActionDefinition{
 		types.ActionBuy: {
-			Sentence: "Buy ENS {0<name:string>} with a max price of {1<maxPrice:uint256>} ETH.",
+			Sentence: "Buy ENS {0<name:string>} with a max price of {1<maxPrice:string>} ETH.",
 			Handler:  HandleActionBuy,
 		},
 		types.ActionRenew: {

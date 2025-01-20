@@ -21,10 +21,15 @@ var (
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
-		MaxPrice *big.Int `json:"maxPrice"`
+		MaxPrice *big.Float `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
+	}
+
+	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, uint8(18))
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}
 
 	name, err := GetName(inputs.Name)
@@ -107,7 +112,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get rent price: %v", err)
 	}
 
-	if price.Base.Cmp(inputs.MaxPrice) > 0 {
+	if price.Base.Cmp(maxPrice) > 0 {
 		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, inputs.MaxPrice)
 	}
 
