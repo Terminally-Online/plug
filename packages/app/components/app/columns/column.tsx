@@ -101,7 +101,7 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"group relative z-[30] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[30] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging ? "bg-plug-green/5" : "hover:bg-plug-green/5"
 								)}
 								{...provided.dragHandleProps}
@@ -134,7 +134,7 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											<div className="relative mr-auto">
+											<div className="top-0 z-[31] flex w-max flex-row items-center gap-2 overflow-hidden">
 												<SparklingText
 													className="text-lg font-bold"
 													sparkles={Boolean(
@@ -156,67 +156,83 @@ export const ConsoleColumn: FC<{
 												</SparklingText>
 											</div>
 
-											{plug && (
-												<>
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={async () => {
-															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
-																await navigator.clipboard.writeText(shareUrl)
-																setCopied(true)
-																setTimeout(() => setCopied(false), 2000)
-															} catch (err) {
-																console.error("Failed to copy link:", err)
+											<div className="ml-auto flex w-max flex-row items-center justify-end gap-4">
+												{plug && (
+													<>
+														<Button
+															variant="secondary"
+															className="rounded-sm p-1"
+															onClick={async () => {
+																try {
+																	const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
+																	await navigator.clipboard.writeText(shareUrl)
+																	setCopied(true)
+																	setTimeout(() => setCopied(false), 2000)
+																} catch (err) {
+																	console.error("Failed to copy link:", err)
+																}
+															}}
+														>
+															{copied ? (
+																<Check
+																	size={14}
+																	className="opacity-60 transition-all"
+																/>
+															) : (
+																<Share
+																	size={14}
+																	className="opacity-60 transition-opacity group-hover:opacity-100"
+																/>
+															)}
+														</Button>
+
+														<Button
+															variant="secondary"
+															className="rounded-sm p-1"
+															onClick={() =>
+																fork({
+																	index: column.index,
+																	from: column.from ?? COLUMNS.KEYS.ADD,
+																	plug: plug?.id ?? ""
+																})
 															}
-														}}
-													>
-														{copied ? (
-															<Check size={14} className="opacity-60 transition-all" />
-														) : (
-															<Share
+														>
+															<GitFork
 																size={14}
 																className="opacity-60 transition-opacity group-hover:opacity-100"
 															/>
-														)}
-													</Button>
+														</Button>
+													</>
+												)}
 
+												{plug && own && (
 													<Button
 														variant="secondary"
 														className="rounded-sm p-1"
-														onClick={() =>
-															fork({
-																index: column.index,
-																from: column.from ?? COLUMNS.KEYS.ADD,
-																plug: plug?.id ?? ""
-															})
-														}
+														onClick={() => frame("manage")}
 													>
-														<GitFork
+														<Settings
 															size={14}
 															className="opacity-60 transition-opacity group-hover:opacity-100"
 														/>
 													</Button>
-												</>
-											)}
+												)}
 
-											{plug && own && (
 												<Button
 													variant="secondary"
 													className="rounded-sm p-1"
-													onClick={() => frame("manage")}
+													onClick={() => remove(column.index)}
 												>
-													<Settings
+													<X
 														size={14}
 														className="opacity-60 transition-opacity group-hover:opacity-100"
 													/>
 												</Button>
-											)}
+											</div>
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={() => remove(column.index)}
+									nextOnClick={!plug ? () => remove(column.index) : undefined}
 									nextLabel={
 										<X
 											size={14}

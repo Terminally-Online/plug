@@ -50,29 +50,12 @@ export const SparklingText: FC<
 	>
 > = memo(({ children, item, color, sparkles = true, sparkleKey, ...props }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
-	const measureRef = useRef<HTMLDivElement>(null)
 	const previousSparkleKey = useRef<number | undefined>()
 	const previousItem = useRef<string | undefined>()
 	const hasAnimated = useRef(false)
 
 	const [sparkleCount, setSparkleCount] = useState(0)
 	const [bounds, setBounds] = useState({ top: 0, left: 0, width: 0, height: 0 })
-	const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-
-	useEffect(() => {
-		if (sparkleKey !== previousSparkleKey.current) {
-			console.log("Key changed:", {
-				previousKey: previousSparkleKey.current,
-				newKey: sparkleKey,
-				sparkles,
-				children: children?.toString()
-			})
-			if (previousSparkleKey.current !== undefined) {
-				hasAnimated.current = true
-			}
-			previousSparkleKey.current = sparkleKey
-		}
-	}, [sparkleKey, sparkles, children])
 
 	useEffect(() => {
 		if (!containerRef.current) return
@@ -97,13 +80,6 @@ export const SparklingText: FC<
 		return () => {
 			observer.disconnect()
 		}
-	}, [children])
-
-	useEffect(() => {
-		if (!measureRef.current) return
-
-		const rect = measureRef.current.getBoundingClientRect()
-		setDimensions({ width: rect.width, height: rect.height })
 	}, [children])
 
 	const generateSparklePositions = useCallback(() => {
@@ -138,79 +114,59 @@ export const SparklingText: FC<
 	}, [sparkleKey, item])
 
 	return (
-		<div style={{ position: "relative" }}>
-			<div
-				ref={measureRef}
-				style={{
-					position: "absolute",
-					visibility: "hidden",
-					height: "auto",
-					width: "auto",
-					whiteSpace: "nowrap"
-				}}
-			>
-				{children}
-			</div>
+		<p
+			{...props}
+			ref={containerRef}
+			className={cn(props.className, "relative w-full truncate overflow-ellipsis whitespace-nowrap")}
+		>
+			{children}
 
-			<div
-				{...props}
-				ref={containerRef}
-				className={cn(props.className, "relative")}
-				style={{
-					...props.style,
-					width: dimensions.width > 0 ? dimensions.width : "auto",
-					height: dimensions.height > 0 ? dimensions.height : "auto"
-				}}
-			>
-				{children}
-
-				{sparkles && previousSparkleKey.current !== undefined && hasAnimated.current && (
-					<AnimatePresence>
+			{sparkles && previousSparkleKey.current !== undefined && hasAnimated.current && (
+				<AnimatePresence>
+					<motion.div
+						key={sparkleKey}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							pointerEvents: "none",
+							zIndex: 1000
+						}}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.1 }}
+						onAnimationStart={() => {
+							console.log("Animation starting:", {
+								sparkleKey,
+								previousKey: previousSparkleKey.current
+							})
+						}}
+					>
 						<motion.div
-							key={sparkleKey}
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								right: 0,
-								bottom: 0,
-								pointerEvents: "none",
-								zIndex: 1000
-							}}
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.1 }}
-							onAnimationStart={() => {
-								console.log("Animation starting:", {
-									sparkleKey,
-									previousKey: previousSparkleKey.current
-								})
-							}}
+							initial={{ opacity: 1 }}
+							animate={{ opacity: 0 }}
+							transition={{ duration: 0.2, delay: 2.8 }}
 						>
-							<motion.div
-								initial={{ opacity: 1 }}
-								animate={{ opacity: 0 }}
-								transition={{ duration: 0.2, delay: 2.8 }}
-							>
-								{generateSparklePositions().map((pos, i) => (
-									<Sparkle
-										key={i}
-										delay={pos.delay}
-										color={color ?? "#FFF"}
-										style={{
-											position: "absolute",
-											left: pos.left,
-											top: pos.top
-										}}
-									/>
-								))}
-							</motion.div>
+							{generateSparklePositions().map((pos, i) => (
+								<Sparkle
+									key={i}
+									delay={pos.delay}
+									color={color ?? "#FFF"}
+									style={{
+										position: "absolute",
+										left: pos.left,
+										top: pos.top
+									}}
+								/>
+							))}
 						</motion.div>
-					</AnimatePresence>
-				)}
-			</div>
-		</div>
+					</motion.div>
+				</AnimatePresence>
+			)}
+		</p>
 	)
 })
 
