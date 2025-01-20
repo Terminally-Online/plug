@@ -74,5 +74,5 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{
               "hosts": ["cdn.onplug.io"],
-              "purge_everything": false
+              "purge_everything": true
             }'
