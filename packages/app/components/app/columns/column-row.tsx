@@ -1,3 +1,7 @@
+import Link from "next/link"
+
+import { ExternalLink } from "lucide-react"
+
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn } from "@/components/app/columns/column"
@@ -38,7 +42,25 @@ export const ConsoleColumnRow = () => {
 				</Droppable>
 			</DragDropContext>
 
-			<ColumnAdd />
+			<ColumnAdd index={columns.length - 2} />
+
+			<div className="mx-4 my-2 mr-48 flex w-max flex-col items-start justify-end font-bold">
+				<Link
+					href="/terms"
+					className="group flex flex-row items-center gap-1 whitespace-nowrap transition-all duration-200 ease-in-out hover:opacity-100"
+				>
+					<span className="opacity-40 group-hover:opacity-100">Terms of Service</span>
+					<ExternalLink size={14} className="opacity-40 group-hover:opacity-100" />
+				</Link>
+				<Link
+					href="/privacy"
+					className="group flex flex-row items-center gap-1 whitespace-nowrap transition-all duration-200 ease-in-out hover:opacity-100"
+				>
+					<span className="opacity-40 group-hover:opacity-100">Privacy Policy</span>
+					<ExternalLink size={14} className="opacity-40 group-hover:opacity-100" />
+				</Link>
+				<p className="whitespace-nowrap opacity-40">A ⚫ Terminally Online project.</p>
+			</div>
 		</div>
 	)
 }

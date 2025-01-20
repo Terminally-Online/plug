@@ -12,9 +12,7 @@ import { usePlugStore } from "@/state/plugs"
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
 
-	actions.forEach(action => {
-		protocolFrequency[action.protocol] = (protocolFrequency[action.protocol] || 0) + 1
-	})
+	actions.forEach(action => (protocolFrequency[action.protocol] = (protocolFrequency[action.protocol] || 0) + 1))
 
 	return protocolFrequency
 }

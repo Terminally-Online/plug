@@ -1,14 +1,13 @@
 import { FC } from "react"
 
-import { Workflow } from "@prisma/client"
-
 import { PlugGridItem } from "@/components/app/plugs/grid/grid-item"
+import { RouterOutputs } from "@/server/client"
 
 export const PlugGrid: FC<
 	React.HTMLAttributes<HTMLDivElement> & {
 		index: number
 		from: string
-		plugs: Array<Workflow | undefined> | undefined
+		plugs: Array<RouterOutputs["plugs"]["all"][number] | undefined> | undefined
 		count?: number
 	}
 > = ({ index, from, plugs, count, ...props }) => {

@@ -86,6 +86,8 @@ Table Workflow {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  namedAt DateTime
+  renamedAt DateTime
   name String [not null, default: 'Untitled Plug']
   isCurated Boolean [not null, default: false]
   isPrivate Boolean [not null, default: false]

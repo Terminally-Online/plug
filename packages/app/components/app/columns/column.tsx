@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, GitFork, PlugIcon, Settings, Share, Star, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -22,6 +22,8 @@ import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
+import { SparklingText } from "../utils/sparkling-text"
+
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
 
@@ -36,7 +38,13 @@ export const ConsoleColumn: FC<{
 		column,
 		handle: { frame, remove, resize, navigate }
 	} = useColumnStore(id)
-	const { plug } = usePlugStore(column?.item ?? "")
+	const {
+		plug,
+		own,
+		handle: {
+			plug: { fork }
+		}
+	} = usePlugStore(column?.item ?? "")
 	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
@@ -93,7 +101,7 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"group relative z-[30] flex cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[30] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging ? "bg-plug-green/5" : "hover:bg-plug-green/5"
 								)}
 								{...provided.dragHandleProps}
@@ -102,13 +110,13 @@ export const ConsoleColumn: FC<{
 									size="md"
 									label={
 										<div className="flex w-full flex-row items-center gap-4">
-											{column.from && (
+											{column.key !== COLUMNS.KEYS.ADD && (
 												<Button
 													variant="secondary"
 													onClick={() =>
 														navigate({
 															index: column.index,
-															key: column.from
+															key: column.from ?? COLUMNS.KEYS.ADD
 														})
 													}
 													className="rounded-sm p-1"
@@ -126,42 +134,78 @@ export const ConsoleColumn: FC<{
 												/>
 											)}
 
-											<div className="relative mr-auto overflow-hidden truncate overflow-ellipsis whitespace-nowrap">
-												<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">
+											<div className="top-0 z-[31] flex w-max flex-row items-center gap-2 overflow-hidden">
+												<SparklingText
+													className="text-lg font-bold"
+													sparkles={Boolean(
+														plug?.renamedAt &&
+															plug.renamedAt > (plug.createdAt ?? 0) &&
+															plug.renamedAt !== plug.createdAt
+													)}
+													sparkleKey={plug?.renamedAt?.getTime()}
+													color={cardColors[plug?.color ?? "yellow"]}
+													item={column.item ?? ""}
+												>
 													{formatTitle(
-														plug
+														plug &&
+															column.key === COLUMNS.KEYS.PLUG &&
+															column.item !== undefined
 															? plug.name
 															: (column.key?.replace("_", " ").toLowerCase() ?? "ERROR")
 													)}
-												</p>
+												</SparklingText>
 											</div>
 
-											{plug && (
-												<div className="flex flex-row items-center justify-end gap-4">
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={async () => {
-															try {
-																const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
-																await navigator.clipboard.writeText(shareUrl)
-																setCopied(true)
-																setTimeout(() => setCopied(false), 2000)
-															} catch (err) {
-																console.error("Failed to copy link:", err)
+											<div className="ml-auto flex w-max flex-row items-center justify-end gap-4">
+												{plug && (
+													<>
+														<Button
+															variant="secondary"
+															className="rounded-sm p-1"
+															onClick={async () => {
+																try {
+																	const shareUrl = `${window.location.origin}/app?plug=${plug.id}&rfid=${socket?.identity?.referralCode}`
+																	await navigator.clipboard.writeText(shareUrl)
+																	setCopied(true)
+																	setTimeout(() => setCopied(false), 2000)
+																} catch (err) {
+																	console.error("Failed to copy link:", err)
+																}
+															}}
+														>
+															{copied ? (
+																<Check
+																	size={14}
+																	className="opacity-60 transition-all"
+																/>
+															) : (
+																<Share
+																	size={14}
+																	className="opacity-60 transition-opacity group-hover:opacity-100"
+																/>
+															)}
+														</Button>
+
+														<Button
+															variant="secondary"
+															className="rounded-sm p-1"
+															onClick={() =>
+																fork({
+																	index: column.index,
+																	from: column.from ?? COLUMNS.KEYS.ADD,
+																	plug: plug?.id ?? ""
+																})
 															}
-														}}
-													>
-														{copied ? (
-															<Check size={14} className="opacity-60 transition-all" />
-														) : (
-															<Share
+														>
+															<GitFork
 																size={14}
 																className="opacity-60 transition-opacity group-hover:opacity-100"
 															/>
-														)}
-													</Button>
+														</Button>
+													</>
+												)}
 
+												{plug && own && (
 													<Button
 														variant="secondary"
 														className="rounded-sm p-1"
@@ -172,23 +216,23 @@ export const ConsoleColumn: FC<{
 															className="opacity-60 transition-opacity group-hover:opacity-100"
 														/>
 													</Button>
+												)}
 
-													<Button
-														variant="secondary"
-														className="rounded-sm p-1"
-														onClick={() => remove(column.index)}
-													>
-														<X
-															size={14}
-															className="opacity-60 transition-opacity group-hover:opacity-100"
-														/>
-													</Button>
-												</div>
-											)}
+												<Button
+													variant="secondary"
+													className="rounded-sm p-1"
+													onClick={() => remove(column.index)}
+												>
+													<X
+														size={14}
+														className="opacity-60 transition-opacity group-hover:opacity-100"
+													/>
+												</Button>
+											</div>
 										</div>
 									}
 									nextPadded={false}
-									nextOnClick={plug === undefined ? () => remove(column.index) : undefined}
+									nextOnClick={!plug ? () => remove(column.index) : undefined}
 									nextLabel={
 										<X
 											size={14}
@@ -200,7 +244,7 @@ export const ConsoleColumn: FC<{
 
 							<div className="flex-1 overflow-y-auto rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
-									<ColumnAdd />
+									<ColumnAdd index={column.index} />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
 									<PlugsDiscover index={column.index} className="pt-4" />
 								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (

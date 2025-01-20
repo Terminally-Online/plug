@@ -40,7 +40,9 @@ const usePlugActions = () => {
 		onSuccess: result => {
 			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spreadPlugs(prev, result.plug))
 
-			if (result.index)
+			console.log(result)
+
+			if (result.index !== undefined)
 				handle.navigate({
 					key: COLUMNS.KEYS.PLUG,
 					index: result.index,
@@ -63,7 +65,16 @@ const usePlugActions = () => {
 	})
 
 	const deleteMutation = api.plugs.delete.useMutation({
-		onSuccess: (_, variables) => setPlugs(prev => prev.filter(plug => plug.id !== variables.plug))
+		onSuccess: (result, variables) => {
+			setPlugs(prev => prev.filter(plug => plug.id !== variables.plug))
+
+			handle.navigate({
+				key: COLUMNS.KEYS.MY_PLUGS,
+				index: result.index
+			})
+
+			handle.frame()
+		}
 	})
 
 	const forkMutation = api.plugs.fork.useMutation({
@@ -132,12 +143,27 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 		{ enabled: Boolean(action) }
 	)
 
+	api.plugs.all.useQuery(
+		{ target: "mine" },
+		{
+			enabled: Boolean(session.data),
+			onSuccess: data =>
+				setPlugs(prev => {
+					const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+					return [...prev, ...uniqueData]
+				})
+		}
+	)
+
 	api.plugs.get.useQuery(
 		{ ids, viewed: Array.from(viewedPlugs) },
 		{
 			enabled: Boolean(session.data) && ids.length > 0,
 			onSuccess: data => {
-				setPlugs(prev => data.map(plug => prev.find(p => p.id === plug.id) ?? plug))
+				setPlugs(prev => {
+					const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+					return [...prev, ...uniqueData]
+				})
 				setViewedPlugs(prev => {
 					const newSet = new Set([...Array.from(prev)].slice(-49))
 					data.forEach(plug => newSet.add(plug.id))
