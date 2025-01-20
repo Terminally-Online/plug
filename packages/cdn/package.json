@@ -1,7 +1,7 @@
 {
-  "name": "@terminallyonline/plug-cdn",
+  "name": "@terminallyonline/cdn",
   "private": true,
   "dependencies": {
-    "wrangler": "^3.28.2"
+    "wrangler": "^3.90.0"
   }
 }
