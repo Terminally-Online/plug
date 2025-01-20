@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, GitFork, PlugIcon, Settings, Share, Star, X } from "lucide-react"
+import { Check, ChevronLeft, GitFork, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
