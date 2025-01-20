@@ -63,7 +63,7 @@ export const Sentence: FC<SentenceProps> = ({
 	)
 
 	const {
-		state: { parsed },
+		state: { parsed, validationErrors },
 		actions: { setValue },
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
@@ -97,7 +97,7 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 									...action.values,
-									[index]: { value: isNumber ? parseInt(value) : value, name: inputName }
+									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
 								}
 							: action.values
 				}))
@@ -285,10 +285,14 @@ export const Sentence: FC<SentenceProps> = ({
 																handleValue(
 																	input.index,
 																	data,
-																	input.type?.toString().includes("int")
+																	input.type?.toString().includes("int") ||
+																		input.type?.toString().includes("float")
 																)
 															}
-															isNumber={input.type?.toString().includes("int")}
+															isNumber={
+																input.type?.toString().includes("int") ||
+																input.type?.toString().includes("float")
+															}
 														/>
 													)}
 
@@ -370,7 +374,6 @@ export const Sentence: FC<SentenceProps> = ({
 														</>
 													)}
 												</div>
-
 												<div className="mt-auto bg-white">
 													<div className="relative">
 														{options && options.length > 0 && (

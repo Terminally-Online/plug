@@ -147,8 +147,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 			// Check for validation errors
 			if (state.validationErrors.size > 0) return false
 			// Check that all values that exist are non-empty strings
-			const hasEmptyValues = Array.from(state.values.values()).some(value => !value?.value)
-			return !hasEmptyValues
+			return !Array.from(state.values.values()).some(value => value?.value === "")
 		}, [parsedWithFilteredInputs, state.validationErrors, state.values])
 	}
 

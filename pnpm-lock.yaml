@@ -58,8 +58,8 @@ importers:
         specifier: ^4.18.0
         version: 4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0)
       '@terminallyonline/cord':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.2
+        version: 0.3.2
       '@terminallyonline/plug-core':
         specifier: ^0.0.1
         version: 0.0.1(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)
@@ -3020,8 +3020,8 @@ packages:
       react-native:
         optional: true
 
-  '@terminallyonline/cord@0.3.0':
-    resolution: {integrity: sha512-jMRlKUl8nUybybMjshqaPWLtbW3m9y/kOpNfpZykWa5dxMYJsipZSZ7Ptp5Y9WkdD48nWmKJ8W3FIEUBByWvsQ==}
+  '@terminallyonline/cord@0.3.2':
+    resolution: {integrity: sha512-pKKBtInlhIhVjvYrL+VlAdI58L3lHU290XYT6+p4rOO+8bK1UYGuQyY+YkQ9tF+8CBX1WVT/1WZSU1Ht1yQI7w==}
 
   '@terminallyonline/plug-core@0.0.1':
     resolution: {integrity: sha512-WI7Pk8O3WZKlQtbLFZrE88A9wTsYeoT+UfdjrfSLNzoJ0a+Gs2t53Uyz1sgFuePCnE/gObILmaVp9RrnzSrmvg==}
@@ -11957,7 +11957,7 @@ snapshots:
     optionalDependencies:
       react-dom: 18.3.1(react@18.2.0)
 
-  '@terminallyonline/cord@0.3.0': {}
+  '@terminallyonline/cord@0.3.2': {}
 
   '@terminallyonline/plug-core@0.0.1(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)':
     dependencies:
