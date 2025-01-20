@@ -52,6 +52,9 @@ jobs:
           # Try to create bucket, ignore error if it already exists
           pnpm exec wrangler r2 bucket create plug-cdn || true
 
+          # Create a temporary file list
+          find . -type f -not -path "./node_modules/*" -not -name "package.json" > files_to_upload.txt
+
           # Upload files in parallel using xargs (30 concurrent uploads)
           cat files_to_upload.txt | xargs -P 30 -I {} bash -c '
             file="$1"
