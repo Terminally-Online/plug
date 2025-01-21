@@ -4,12 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"solver/types"
-	"solver/utils"
-)
-
-var (
-	uiPoolDataProviderAddress  = utils.Mainnet.References["aave_v3"]["ui_pool_data_provider"]
-	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
 )
 
 type AaveOptionsProvider struct{}

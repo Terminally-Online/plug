@@ -27,7 +27,11 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, utils.ErrABIFailed("ERC20")
 	}
-	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(poolAddress), inputs.AmountIn)
+	approveCalldata, err := erc20Abi.Pack(
+		"approve", 
+		common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]), 
+		inputs.AmountIn,
+	)	
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
@@ -50,7 +54,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		To:   inputs.TokenIn,
 		Data: "0x" + common.Bytes2Hex(approveCalldata),
 	}, {
-		To:   poolAddress,
+		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
 		Data: "0x" + common.Bytes2Hex(depositCalldata),
 	}}, nil
 }
@@ -80,7 +84,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 	}
 
 	return []*types.Transaction{{
-		To:   poolAddress,
+		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
 		Data: "0x" + common.Bytes2Hex(calldata),
 	}}, nil
 }
@@ -98,7 +102,11 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	if err != nil {
 		return nil, utils.ErrABIFailed("ERC20")
 	}
-	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(poolAddress), inputs.AmountIn)
+	approveCalldata, err := erc20Abi.Pack(
+		"approve", 
+		common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]), 
+		inputs.AmountIn,
+	)
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
@@ -121,7 +129,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		To:   inputs.TokenIn,
 		Data: "0x" + common.Bytes2Hex(approveCalldata),
 	}, {
-		To:   poolAddress,
+		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
 		Data: "0x" + common.Bytes2Hex(repayCalldata),
 	}}, nil
 }
@@ -149,7 +157,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	}
 
 	return []*types.Transaction{{
-		To:   poolAddress,
+		To:   utils.Networks[params.ChainId].References["aave"]["pool"],
 		Data: "0x" + common.Bytes2Hex(calldata),
 	}}, nil
 }
