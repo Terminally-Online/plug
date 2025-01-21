@@ -8,7 +8,7 @@ import (
 
 var (
 	name = "Yearn V3"
-	icon = "https://onplug.io/protocols/yearn.png"
+	icon = "https://cdn.onplug.io/protocols/yearn.png"
 	tags = []string{"yield", "defi"}
 
 	chains  = utils.Mainnet.ChainIds

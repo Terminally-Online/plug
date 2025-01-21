@@ -9,7 +9,7 @@ import (
 
 var (
 	name = "Aave V3"
-	icon = "https://onplug.io/protocols/aave.png"
+	icon = "https://cdn.onplug.io/protocols/aave.png"
 	tags = []string{"lending", "defi"}
 
 	chains           = utils.Mainnet.ChainIds

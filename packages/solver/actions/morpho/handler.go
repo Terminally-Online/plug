@@ -8,7 +8,7 @@ import (
 
 var (
 	name = "Morpho"
-	icon = "https://onplug.io/protocols/morpho.png"
+	icon = "https://cdn.onplug.io/protocols/morpho.png"
 	tags = []string{"lending", "defi"}
 
 	chains = utils.Mainnet.ChainIds

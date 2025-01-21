@@ -8,7 +8,7 @@ import (
 
 var (
 	name = "Nouns"
-	icon = "https://onplug.io/protocols/nouns.png"
+	icon = "https://cdn.onplug.io/protocols/nouns.png"
 	tags = []string{"nft"}
 
 	chains = utils.Mainnet.ChainIds
