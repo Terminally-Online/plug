@@ -56,6 +56,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			for _, supportedAction := range handler.GetActions() {
 				if chainSchema, ok := schemas[supportedAction]; ok {
 					protocolSchema.Schema[supportedAction] = types.Schema{
+						Type:     chainSchema.Schema.Type,
 						Sentence: chainSchema.Schema.Sentence,
 					}
 				}
@@ -90,6 +91,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		for _, supportedAction := range handler.GetActions() {
 			if chainSchema, ok := schemas[supportedAction]; ok {
 				protocolSchema.Schema[supportedAction] = types.Schema{
+					Type:     chainSchema.Schema.Type,
 					Sentence: chainSchema.Schema.Sentence,
 				}
 			}

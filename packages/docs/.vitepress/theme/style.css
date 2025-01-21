@@ -174,3 +174,7 @@ a {
 code {
   font-weight: 700 !important;
 }
+
+.content-body { 
+  background: #fefff7 !important;
+}

@@ -91,13 +91,20 @@ export const RunFrame: FC<{
 		return supportedChains[currentChainIndex]
 	}, [supportedChains, currentChainIndex])
 
+	const isActionful = useMemo(() => {
+		if (!solverActions) return false
+
+		return actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
+	}, [actions, solverActions])
+
 	const isReady = useMemo(() => {
 		if (!actions || actions.length === 0) return false
+		if (!isActionful) return false
 
 		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
 		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
-	}, [actions, item])
+	}, [isActionful, actions, item])
 
 	const handleRun = useCallback(() => {
 		if (!column || !column.item || !chain) return
@@ -317,6 +324,11 @@ export const RunFrame: FC<{
 						<span className="flex flex-row items-center justify-center gap-2">
 							<Send size={14} className="opacity-60" />
 							Submit
+						</span>
+					) : !isActionful ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<AlertTriangle size={14} className="opacity-60" />
+							Only Constraints Added
 						</span>
 					) : actions?.length === 0 ? (
 						<span className="flex flex-row items-center justify-center gap-2">

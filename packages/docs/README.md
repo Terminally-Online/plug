@@ -24,22 +24,6 @@ pnpm i
 pnpm dev
 ```
 
-## Generating Static References
-
-Plug is built with a self documenting architecture. This means, that any time the core underlying packages are updated you automatically have access to the newest versions without having to write the documentation for them yourself.
-
-To generate the references you simply run:
-
-```bash
-pnpm generate
-```
-
-Sometimes, you will find that you (or the documentation package in general), are using an old version of Plug. To update to the latest `types` package open your terminal and run:
-
-```bash
-pnpm i @nftchance/plug-types@latest
-```
-
 ## Deploying
 
 The documentation package is built using GitHub pages to keep things extremely simple and cheap. There is no manual deploy process, but this architecture also means that there are no `preview` deploys.

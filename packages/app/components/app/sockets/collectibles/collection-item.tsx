@@ -52,7 +52,9 @@ export const SocketCollectionItem: FC<{
 					</div>
 
 					<div className="flex w-min flex-col truncate overflow-ellipsis">
-						<p className="truncate font-bold">{formatTitle(collection.name.toLowerCase())}</p>
+						<p className="truncate whitespace-nowrap font-bold">
+							{formatTitle(collection.name.toLowerCase())}
+						</p>
 						<div className="relative flex w-max flex-row items-center gap-2">
 							<ChainImage chainId={getChainId(collection.chain)} size="xs" />
 							<p className="text-sm font-bold opacity-40">
