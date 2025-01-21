@@ -84,6 +84,10 @@ var (
 		return ServerError{Message: fmt.Sprintf("Calling contract failed: %s", error)}
 	}
 
+	ErrBuildFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
+	}
+
 	ErrTransactionFailed = func(error string) ServerError {
 		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
 	}
