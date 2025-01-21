@@ -1,4 +1,4 @@
-package intent
+package router
 
 import (
 	"encoding/json"
@@ -22,17 +22,17 @@ type IntentRequest struct {
 	Inputs  []json.RawMessage `json:"inputs"`
 }
 
-type Handler struct {
+type IntentHandler struct {
 	solver *solver.Solver
 }
 
-func NewHandler(solver *solver.Solver) *Handler {
-	return &Handler{
+func NewIntentHandler(solver *solver.Solver) *IntentHandler {
+	return &IntentHandler{
 		solver: solver,
 	}
 }
 
-func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
 	action := types.Action(r.URL.Query().Get("action"))
 	chainId := r.URL.Query().Get("chainId")
@@ -41,7 +41,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	if protocol == "" {
 		allSchemas := make(map[types.Protocol]types.ProtocolSchema)
 
-		for protocol, handler := range h.solver.GetProtocols() {
+		for protocol, handler := range intentHandler.solver.GetProtocols() {
 			protocolSchema := types.ProtocolSchema{
 				Metadata: types.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
@@ -70,7 +70,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler, exists := h.solver.GetProtocolHandler(types.Protocol(protocol))
+	handler, exists := intentHandler.solver.GetProtocolHandler(types.Protocol(protocol))
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -134,14 +134,14 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
+func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request) {
 	var req IntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := h.validateRequest(&req); err != nil {
+	if err := intentHandler.validateRequest(&req); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -149,7 +149,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	transactionsBatch := make([]*types.Transaction, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
-		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
+		transactions, err := intentHandler.solver.GetTransaction(inputs, req.ChainId, req.From)
 		if err != nil {
 			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 			return
@@ -244,7 +244,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) validateRequest(req *IntentRequest) error {
+func (intentHandler *IntentHandler) validateRequest(req *IntentRequest) error {
 	if req.ChainId == 0 {
 		return fmt.Errorf("chainId is required")
 	}
