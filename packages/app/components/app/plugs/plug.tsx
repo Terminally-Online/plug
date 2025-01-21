@@ -22,7 +22,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { handle } = useColumnStore(index)
+	const { column, handle: { frame, schedule } } = useColumnStore(index)
 	const { plug } = usePlugData(item)
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
@@ -32,11 +32,11 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	useEffect(() => {
 		if (!plug || plug.actions !== "[]" || hasOpenedActions) return
 
-		handle.frame(`${item}-actions`)
+		frame(`${item}-actions`)
 		setHasOpenedActions(true)
-	}, [item, handle, plug, hasOpenedActions])
+	}, [item, plug, hasOpenedActions, frame])
 
-	if (!plug || !session) return null
+	if (!plug || !session || !column) return null
 
 	return (
 		<div {...props}>
@@ -56,7 +56,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						className="px-4 pt-16"
 						icon={<SearchIcon size={14} className="opacity-60" />}
 						placeholder="Search protocols and actions"
-						handleOnClick={() => handle.frame(`${item}-actions`)}
+						handleOnClick={() => frame(`${item}-actions`)}
 					/>
 				)}
 
@@ -65,14 +65,14 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							handle.schedule() // NOTE: Clear the schedule when we have a one-off run use.
-							handle.frame("run")
+							schedule() // NOTE: Clear the schedule when we have a one-off run use.
+							frame("run")
 						}}
 					>
 						Run
 					</Button>
 
-					<Button className="w-full py-4" onClick={() => handle.frame("schedule")}>
+					<Button className="w-full py-4" onClick={() => frame("schedule")}>
 						Schedule
 					</Button>
 				</div>
