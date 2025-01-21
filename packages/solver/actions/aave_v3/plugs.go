@@ -21,16 +21,16 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		Amount string   `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %w", err)
 	}
 
 	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 	amount, err := utils.StringToUint(inputs.Amount, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert deposit amount to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -72,7 +72,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs types.BorrowInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %w", err)
 	}
 	if err := inputs.Validate(); err != nil {
 		return nil, err
@@ -80,11 +80,11 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	tokenOut, decimals, err := utils.ParseAddressAndDecimals(inputs.TokenOut)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 	amountOut, err := utils.StringToUint(inputs.AmountOut, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert borrow amount to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -111,7 +111,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs types.RepayInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal repay inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
 	}
 	if err := inputs.Validate(); err != nil {
 		return nil, err
@@ -119,11 +119,11 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 	tokenIn, decimals, err := utils.ParseAddressAndDecimals(inputs.TokenIn)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 	amountIn, err := utils.StringToUint(inputs.AmountIn, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert repayment amount to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert repayment amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -165,7 +165,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs types.WithdrawInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
 	}
 	if err := inputs.Validate(); err != nil {
 		return nil, err
@@ -173,11 +173,11 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 
 	tokenOut, decimals, err := utils.ParseAddressAndDecimals(inputs.TokenOut)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 	amountOut, err := utils.StringToUint(inputs.AmountOut, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %w", err)
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -202,7 +202,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs types.ThresholdInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal health factor inputs")
+		return nil, fmt.Errorf("failed to unmarshal health factor inputs: %w", err)
 	}
 	if err := inputs.Validate(); err != nil {
 		return nil, err
@@ -211,12 +211,12 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	// aavev3 uses 18 decimals for their health factor https://github.com/aave/aave-v3-core/blob/782f51917056a53a2c228701058a6c3fb233684a/test-suites/emode.spec.ts#L555
 	threshold, err := utils.StringToUint(inputs.Threshold, 18)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert threshold to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
 	healthFactor, err := getHealthFactor(params.ChainId, params.From)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get health factor: %v", err)
+		return nil, fmt.Errorf("failed to get health factor: %w", err)
 	}
 
 	switch inputs.Operator {
@@ -249,7 +249,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
     // Convert threshold percentage to RAY units (27 decimals)
 	threshold, err := utils.StringToUint(inputs.Threshold, 27)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert deposit amount to uint: %v", err)
+		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
 	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
