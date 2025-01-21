@@ -21,13 +21,13 @@ var (
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
-		MaxPrice float64   `json:"maxPrice"`
+		MaxPrice string   `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
 	}
 
-	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, 18)
+	maxPrice, err := utils.StringToUint(inputs.MaxPrice, 18)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}
@@ -220,13 +220,13 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
-		MaxPrice float64   `json:"price"`
+		MaxPrice string   `json:"price"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal renewal price inputs: %v", err)
 	}
 
-	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, 18)
+	maxPrice, err := utils.StringToUint(inputs.MaxPrice, 18)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}

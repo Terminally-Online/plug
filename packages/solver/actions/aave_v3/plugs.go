@@ -18,20 +18,17 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	var inputs struct {
 		types.BaseInputs
 		Token  string   `json:"token"`
-		Amount float64   `json:"amount"`
+		Amount string   `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
-	}
-	if inputs.Amount < 0 || inputs.Amount > float64(utils.Uint256Max.Int64()) {
-		return nil, utils.ErrInvalidField("amount", fmt.Sprintf("%f", inputs.Amount))
 	}
 
 	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
 	if err != nil {
 		return nil, err
 	}
-	amount, err := utils.FloatToUint(inputs.Amount, decimals)
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %v", err)
 	}
@@ -85,7 +82,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 	if err != nil {
 		return nil, err
 	}
-	amountOut, err := utils.FloatToUint(inputs.AmountOut, decimals)
+	amountOut, err := utils.StringToUint(inputs.AmountOut, decimals)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert borrow amount to uint: %v", err)
 	}
@@ -124,7 +121,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	if err != nil {
 		return nil, err
 	}
-	amountIn, err := utils.FloatToUint(inputs.AmountIn, decimals)
+	amountIn, err := utils.StringToUint(inputs.AmountIn, decimals)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert repayment amount to uint: %v", err)
 	}
@@ -178,7 +175,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, err
 	}
-	amountOut, err := utils.FloatToUint(inputs.AmountOut, decimals)
+	amountOut, err := utils.StringToUint(inputs.AmountOut, decimals)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %v", err)
 	}
@@ -212,7 +209,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	}
 
 	// aavev3 uses 18 decimals for their health factor https://github.com/aave/aave-v3-core/blob/782f51917056a53a2c228701058a6c3fb233684a/test-suites/emode.spec.ts#L555
-	threshold, err := utils.FloatToUint(inputs.Threshold, 18)
+	threshold, err := utils.StringToUint(inputs.Threshold, 18)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert threshold to uint: %v", err)
 	}
@@ -225,11 +222,11 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	switch inputs.Operator {
 	case -1:
 		if healthFactor.Cmp(threshold) >= 0 {
-			return nil, fmt.Errorf("current health factor %.2f is not less than threshold %.2f", healthFactor, inputs.Threshold)
+			return nil, fmt.Errorf("current health factor %.2f is not less than threshold %.2f", healthFactor, threshold)
 		}
 	case 1:
 		if healthFactor.Cmp(threshold) <= 0 {
-			return nil, fmt.Errorf("current health factor %.2f is not greater than threshold %.2f", healthFactor, inputs.Threshold)
+			return nil, fmt.Errorf("current health factor %.2f is not greater than threshold %.2f", healthFactor, threshold)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
@@ -243,14 +240,14 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		Direction int        `json:"direction"` // -1 for borrow, 1 for deposit
 		Token     string     `json:"token"`     // Underlying token address
 		Operator  int        `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold float64     `json:"threshold"` // Percentage
+		Threshold string     `json:"threshold"` // Percentage
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
 	}
 
     // Convert threshold percentage to RAY units (27 decimals)
-	threshold, err := utils.FloatToUint(inputs.Threshold, 27)
+	threshold, err := utils.StringToUint(inputs.Threshold, 27)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %v", err)
 	}

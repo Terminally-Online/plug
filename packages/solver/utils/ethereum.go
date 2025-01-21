@@ -126,6 +126,29 @@ func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
     return intValue, nil
 }
 
+func StringToUint(value string, decimals uint8) (*big.Int, error) {
+	// Parse the input value
+	result, ok := new(big.Int).SetString(value, 10)
+	if !ok {
+		return nil, fmt.Errorf("failed to parse %s as a decimal number", value)
+	}
+    if result.Sign() < 0 || result.Cmp(Uint256Max) > 0 {
+		return nil, fmt.Errorf("failed to convert %s string amount to uint", result)
+	}
+	
+	// Calculate 10^decimals
+	multiplier := new(big.Int).Exp(
+		big.NewInt(10), 
+		big.NewInt(int64(decimals)), 
+		nil,
+	)
+	
+	// Multiply result by 10^decimals
+	result.Mul(result, multiplier)
+	
+	return result, nil
+}
+
 func ParseAddressAndDecimals(input string) (address string, decimals uint8, err error) {
 	parts := strings.Split(input, ":")
 	if len(parts) != 2 {
