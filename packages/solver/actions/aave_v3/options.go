@@ -17,7 +17,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId int, action types.Action) (map[
 	switch action {
 	case types.ActionDeposit:
 		return map[int]types.SchemaOptions{
-			0: {Simple: collateralOptions},
+			1: {Simple: collateralOptions},
 		}, nil
 	case types.ActionBorrow:
 		return map[int]types.SchemaOptions{
