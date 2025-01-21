@@ -55,7 +55,6 @@ const primaryColumnsAtom = atom(
 )
 
 const columnAtomsAtom = splitAtom(columnsStorageAtom)
-
 const columnByIndexAtom = atom(get => {
 	const columnAtoms = get(columnAtomsAtom)
 	return (searchIndex: number): Column | undefined => {
@@ -150,7 +149,6 @@ export const useColumnStore = (index?: number, key?: string) => {
 
 		remove: useCallback(
 			(index: number) => {
-				// Find by array position with OFFSET
 				const targetAtom = columnAtoms[index + COLUMNS.OFFSET]
 				if (!targetAtom) return
 
@@ -159,7 +157,6 @@ export const useColumnStore = (index?: number, key?: string) => {
 					atom: targetAtom
 				})
 
-				// Update indices after removal
 				setColumns(prev =>
 					prev.map((col, idx) => ({
 						...col,
@@ -173,16 +170,6 @@ export const useColumnStore = (index?: number, key?: string) => {
 		move: useCallback(
 			({ from, to }: { from: number; to: number }) => {
 				if (from === to) return
-
-				// const fromAtom = columnAtoms[from + COLUMNS.OFFSET]
-				// const toAtom = columnAtoms[to + COLUMNS.OFFSET]
-				// if (!fromAtom || !toAtom) return
-
-				// columnDispatch({
-				// 	type: "move",
-				// 	atom: fromAtom,
-				// 	before: toAtom
-				// })
 
 				setColumns(prev => {
 					const updatedColumns = [...prev]
@@ -198,6 +185,7 @@ export const useColumnStore = (index?: number, key?: string) => {
 			({ index, width }: { index: number; width: number }) => {
 				setColumns(prev => {
 					const targetColumn = prev.find(col => col.index === index)
+
 					if (!targetColumn || targetColumn.width === width) return prev
 
 					return prev.map(col => (col.index === index ? { ...col, width } : col))
@@ -225,17 +213,18 @@ export const useColumnStore = (index?: number, key?: string) => {
 			[index, key, setColumns]
 		),
 
+
+		chain: useCallback((chain?: number) =>
+			setColumns(prev => {
+				return prev.map(col => (col.index === index ? { ...col, chain } : col))
+			})
+			, [index, setColumns]),
+
 		schedule: useCallback(
-			(schedule?: Schedule) => {
-				if (index === undefined) return
-
-				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index)
-					if (!targetColumn || targetColumn.schedule === schedule) return prev
-
-					return prev.map(col => (col.index === index ? { ...col, schedule } : col))
-				})
-			},
+			(schedule?: Schedule) => setColumns(prev => {
+				return prev.map(col => (col.index === index ? { ...col, schedule } : col))
+			})
+			,
 			[index, setColumns]
 		),
 
