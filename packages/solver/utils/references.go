@@ -69,6 +69,19 @@ var (
 			},
 		},
 	}
+
+	Base = &Network{
+		ChainIds: []int{8453,84532},
+		Explorer: "https://api.basescan.org/api",
+		References: map[string]map[string]string{
+			"aave_v3": {
+				"pool":                  "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+				"ui_pool_data_provider": "0x68100bD5345eA474D93577127C11F39FF8463e93",
+			},
+		},
+	}
+
+	 Networks = []*Network{Mainnet, Base}
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {
@@ -176,12 +189,27 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 }
 
 func GenerateReferences() error {
-	for folderName, contracts := range Mainnet.References {
-		for contractName, address := range contracts {
-			if err := GenerateReference(Mainnet.Explorer, folderName, contractName, address, retries); err != nil {
-				return err
+	processed := make(map[string]bool)
+
+	for _, network := range Networks {
+		for folderName, contracts := range network.References {
+			for contractName, address := range contracts {
+				key := fmt.Sprintf("%s:%s", folderName, contractName)
+				
+				if processed[key] {
+					fmt.Printf("Skipping %s/%s on %s - already processed\n", 
+						folderName, contractName, network.Explorer)
+					continue
+				}
+
+				if err := GenerateReference(network.Explorer, folderName, contractName, address, retries); err != nil {
+					return err
+				}
+				
+				processed[key] = true
 			}
 		}
 	}
+
 	return nil
 }
