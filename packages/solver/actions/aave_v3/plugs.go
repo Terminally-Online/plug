@@ -14,7 +14,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// TODO: Need to use the proper pool address based on the token that is being deposited.
 func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
 		types.BaseInputs
