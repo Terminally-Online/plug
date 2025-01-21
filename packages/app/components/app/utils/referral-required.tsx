@@ -75,7 +75,7 @@ export const ReferralRequired: FC = () => {
 
 					<div className="w-full space-y-6">
 						{isSuccess && (
-							<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
+							<div className="w-full rounded-lg border border-plug-yellow bg-plug-yellow p-4 text-sm text-plug-yellow">
 								Successfully approved! If you are not redirected in a few seconds, please refresh the
 								page.
 							</div>

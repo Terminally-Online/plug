@@ -318,17 +318,17 @@ export const RunFrame: FC<{
 							<Send size={14} className="opacity-60" />
 							Submit
 						</span>
-					) : !isActionful ? (
-						<span className="flex flex-row items-center justify-center gap-2">
-							<AlertTriangle size={14} className="opacity-60" />
-							Only Constraints Added
-						</span>
 					) : actions?.length === 0 ? (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							No Actions Added
 						</span>
-					) : (
+					) : !isActionful ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<AlertTriangle size={14} className="opacity-60" />
+							Only Constraints Added
+						</span>
+					) :  (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							Required Inputs Incomplete
