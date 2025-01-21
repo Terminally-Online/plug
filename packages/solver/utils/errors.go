@@ -91,4 +91,8 @@ var (
 	ErrTransactionFailed = func(error string) ServerError {
 		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
 	}
+
+	ErrHttpFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
+	}
 )

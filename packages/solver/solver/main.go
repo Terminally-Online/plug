@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"os"
 	"solver/actions"
 	"solver/actions/aave_v3"
@@ -14,6 +15,11 @@ import (
 	"solver/actions/yearn_v3"
 	"solver/types"
 	"solver/utils"
+	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type Solver struct {
@@ -165,21 +171,64 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transacti
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetSimulation(id string, transactions []*types.Transaction) (SimulationRequest, error) {
-	// NOTE: If there was no transaction to execute we will return a warning because
-	//       we will be halting the simulation of this workflow.
-	if len(transactions) == 0 {
-		return SimulationRequest{
-			Id:     id,
-			Status: "warning",
-			Error:  "has no transactions to execute",
-		}, nil
+func (s *Solver) GetPlugs(from string, transactions []*types.Transaction) (*types.Plugs, error) {
+	// Generate the encoded solver value so that the smart contract can decode it.
+	// Note: Used in Solidity with:
+	// 		body: `(uint48 expiration, address solver))`
+	// 		encode: `abi.encode(uint48(0), msg.sender)`
+	// 		decode: `abi.decode(data, (uint48, address))`
+	solverArguments := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 48}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}
+	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
+
+	solver, err := solverArguments.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
+	if err != nil {
+		return nil, utils.ErrBuildFailed("failed to pack solver: " + err.Error())
 	}
 
+	saltArguments := abi.Arguments{
+		{Type: abi.Type{T: abi.UintTy, Size: 96}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+		{Type: abi.Type{T: abi.AddressTy}},
+	}
+	salt, err := saltArguments.Pack(
+		big.NewInt(time.Now().Unix()),
+		common.HexToAddress(from),
+		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
+		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
+	)
+	if err != nil {
+		return nil, utils.ErrBuildFailed("failed to pack salt: " + err.Error())
+	}
+
+	// TODO: Implement the EIP-712 signing schema.
+	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	if err != nil {
+		return nil, utils.ErrBuildFailed(err.Error())
+	}
+
+	plugsHash := crypto.Keccak256Hash([]byte(from), []byte(salt), []byte(solver))
+	signature, err := crypto.Sign(plugsHash.Bytes(), privateKey)
+	if err != nil {
+		return nil, utils.ErrBuildFailed(err.Error())
+	}
+
+	return &types.Plugs{
+		Plug: types.Plug{
+			Socket: from,
+			Plugs:  transactions,
+			Solver: "0x" + common.Bytes2Hex(solver),
+			Salt:   "0x" + common.Bytes2Hex(salt),
+		},
+		Signature: "0x" + common.Bytes2Hex(signature),
+	}, nil
+}
+
+func (s *Solver) GetSimulation(id string, plugs *types.Plugs) (SimulationRequest, error) {
 	// NOTE: This is where we will pick back up for simulation integration.
-	// TODO: This is where we would simulate the transaction and return a real
-	//       simulation response however for now we are just returning everything
-	//       as a success if it made it this far.
 
 	return SimulationRequest{
 		Id:          id,

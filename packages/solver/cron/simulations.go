@@ -19,9 +19,23 @@ func Simulations() {
 		if err != nil {
 			log.Println(err.Error())
 		}
-		simulation, err := solverHandler.GetSimulation(execution.Id, transactions)
+		plugs, err := solverHandler.GetPlugs(execution.From, transactions)
 		if err != nil {
-			log.Println(err.Error())
+			simulations = append(simulations, solver.SimulationRequest{
+				Id:     execution.Id,
+				Status: "failure",
+				Error:  err.Error(),
+			})
+			continue
+		}
+		simulation, err := solverHandler.GetSimulation(execution.Id, plugs)
+		if err != nil {
+			simulations = append(simulations, solver.SimulationRequest{
+				Id:     execution.Id,
+				Status: "failure",
+				Error:  err.Error(),
+			})
+			continue
 		}
 		simulations = append(simulations, simulation)
 	}
