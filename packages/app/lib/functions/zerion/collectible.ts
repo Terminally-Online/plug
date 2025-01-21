@@ -135,7 +135,7 @@ const findCollectibles = async (cacheId?: string) => {
 export const getCollectibles = async (
 	address: string,
 	socketAddress?: string,
-	chains: string[] = ["ethereum"]
+	chains: string[] = ["base"]
 ): Promise<Awaited<ReturnType<typeof findCollectibles>>> => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }

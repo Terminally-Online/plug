@@ -48,12 +48,13 @@ type Tokens = {
 	}
 }[]
 
-export const getTokens = async (search: string = "", chains: string[] = ["ethereum"]): Promise<Tokens> => {
-	// if (cache.has(search)) {
-	// 	const cached = cache.get(search)
+export const getTokens = async (search: string = "", chains: string[] = ["base"]): Promise<Tokens> => {
+	const cacheKey = `${chains.join(",")}-${search}`
+	if (cache.has(cacheKey)) {
+		const cached = cache.get(search)
 
-	// 	if (cached && cached.timestamp + SEARCH_TOKENS_CACHE_TIME > Date.now()) return cached.tokens
-	// }
+		if (cached && cached.timestamp + SEARCH_TOKENS_CACHE_TIME > Date.now()) return cached.tokens
+	}
 
 	const response = await axios.get(
 		`https://api.zerion.io/v1/fungibles/?currency=usd&page[size]=100&filter[search_query]=${search}&sort=-market_data.market_cap&filter[implementation_chain_id]=${chains.join(",")}`,
@@ -83,7 +84,7 @@ export const getTokens = async (search: string = "", chains: string[] = ["ethere
 			}))
 	}))
 
-	cache.set(search, { timestamp: Date.now(), tokens })
+	cache.set(cacheKey, { timestamp: Date.now(), tokens })
 
 	return tokens
 }
