@@ -18,29 +18,29 @@ var (
 
 	schemas = map[types.Action]actions.ActionDefinition{
 		types.ActionDeposit: {
-			Sentence: "Deposit {0<tokenIn:address>} {1<amountIn:uint256>}",
+			Sentence: "Deposit {0<tokenIn:address:uint8>} {1<amountIn:float>}",
 			Handler:  HandleActionDeposit,
 		},
 		types.ActionBorrow: {
-			Sentence: "Borrow {0<tokenOut:address>} {1<amountOut:uint256>}",
+			Sentence: "Borrow {0<tokenOut:address:uint8>} {1<amountOut:float>}",
 			Handler:  HandleActionBorrow,
 		},
 		types.ActionRepay: {
-			Sentence: "Repay {0<tokenIn:address>} {1<amountIn:uint256>}",
+			Sentence: "Repay {0<tokenIn:address:uint8>} {1<amountIn:float>}",
 			Handler:  HandleActionRepay,
 		},
 		types.ActionWithdraw: {
-			Sentence: "Withdraw {0<tokenOut:address>} {1<amountOut:uint256>}",
+			Sentence: "Withdraw {0<tokenOut:address:uint8>} {1<amountOut:float>}",
 			Handler:  HandleActionWithdraw,
 		},
 		types.ConstraintHealthFactor: {
 			Type:     types.TypeConstraint,
-			Sentence: "Health factor is {0<operator:int8>} than {1<threshold:uint256>}",
+			Sentence: "Health factor is {0<operator:int8>} than {1<threshold:float>}",
 			Handler:  HandleConstraintHealthFactor,
 		},
 		types.ConstraintAPY: {
 			Type:     types.TypeConstraint,
-			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:uint256>}%",
+			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:float>}%",
 			Handler:  HandleConstraintAPY,
 		},
 	}

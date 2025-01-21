@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -123,4 +124,22 @@ func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
     }
     
     return intValue, nil
+}
+
+func ParseAddressAndDecimals(input string) (address string, decimals uint8, err error) {
+	parts := strings.Split(input, ":")
+	if len(parts) != 2 {
+		return "", 0, fmt.Errorf("invalid input format: %s", input)
+	}
+	
+	if !IsAddress(parts[0]) {
+		return "", 0, fmt.Errorf("invalid address: %s", parts[0])
+	}
+	
+	decimals64, err := strconv.ParseUint(parts[1], 10, 8)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to parse decimals: %v", err)
+	}
+	
+	return parts[0], uint8(decimals64), nil
 }
