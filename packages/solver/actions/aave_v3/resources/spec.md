@@ -13,11 +13,13 @@ Integrating a new contract requires two sets of action files, a generalized acti
 
 Aave uses a modular framework for interacting with its contracts. Each pool represents an underlying asset and debt mode. To retrieve all of the reserve assets supported by the Aave protocol, we can use the `UIPoolDataProvider` contract to retrieve all of the supported reserve assets as well as their associated underlying assets, (debt mode) pools, all the associated APYS, etc.
 
-When interacting with a specific pool, you need to target the precise pool address and not a generic one. This address is provided by `getReservesData` for a specific asset/pool.
+- When interacting with a specific pool, you may choose to target the precise pool address and not a generic one. 
+    - This address is provided by `getReservesData` for a specific asset/pool.
+    - In most cases it will be best to just use the pool router that is the listed contract under `Pool` on the directory (for each chain).
+- When sending assets into the pool, a leading approval transaction is required so that the contract can pull it in.
 
-When sending assets into the pool, a leading approval transaction is required so that the contract can pull it in.
-
-To get the health factor of a user's account, we can use the `getUserAccountData` function.
+- To get the address of a specific pool you will find the reserve object for a specific asset and then reference the value of `ATokenAddress`.
+- To get the health factor of a user's account, we can use the `getUserAccountData` function.
 
 ## Scope
 

@@ -15,7 +15,7 @@ var (
 	chains  = append(utils.Mainnet.ChainIds, utils.Base.ChainIds...)
 	schemas = map[types.Action]actions.ActionDefinition{
 		types.ActionDeposit: {
-			Sentence: "Deposit {0<tokenIn:address>} {1<amountIn:uint256>}",
+			Sentence: "Deposit {0<amount:uint256>} {1<token:address>}",
 			Handler:  HandleActionDeposit,
 		},
 		types.ActionBorrow: {
