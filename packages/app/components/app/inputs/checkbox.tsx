@@ -14,18 +14,17 @@ type Props = {
 export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false }) => (
 	<button
 		className={cn(
-			"h-min w-min rounded-[4px] border-2",
+			"h-min w-min rounded-xs border-2",
 			disabled === false
-				? "cursor-pointer border-plug-green"
-				: "cursor-not-allowed border-plug-green/10"
+				? "cursor-pointer border-plug-yellow"
+				: "cursor-not-allowed border-plug-yellow/10"
 		)}
 		onClick={() => disabled === false && handleChange(!checked)}
 	>
 		<motion.div
-			className="rounded-4"
 			initial={{ background: "transparent" }}
 			animate={{
-				background: checked ? "#385842" : "transparent"
+				background: checked ? "#D2F38A" : "transparent" // Using plug-yellow color when checked
 			}}
 			transition={{ duration: 0.2, ease: "easeInOut" }}
 		>
@@ -33,7 +32,7 @@ export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false })
 				size={14}
 				strokeWidth={3}
 				className={cn(
-					checked ? "text-plug-yellow" : "text-transparent"
+					checked ? "text-[#385842]" : "text-transparent" // Using plug-green color for check
 				)}
 			/>
 		</motion.div>
