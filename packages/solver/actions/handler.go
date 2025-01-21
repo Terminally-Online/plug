@@ -25,7 +25,6 @@ type BaseProtocolHandler interface {
 	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 }
 
-// Handler function types
 type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
 type OptionsHandler func(chainId int) (map[int]types.SchemaOptions, error)
 
@@ -36,7 +35,7 @@ type Protocol struct {
 	Chains          []int
 	Schemas         map[types.Action]types.ChainSchema
 	OptionsProvider types.OptionsProvider
-	// Add maps for handlers
+
 	txHandlers  map[types.Action]TransactionHandler
 	optHandlers map[types.Action]OptionsHandler
 }
@@ -45,7 +44,6 @@ type BaseHandler struct {
 	protocol Protocol
 }
 
-// Common error messages
 var (
 	errUnsupportedAction = "unsupported action: %s"
 	errInvalidChainID    = "invalid chain id: %s"
@@ -134,19 +132,6 @@ func NewBaseHandler(
 	return handler
 }
 
-// Options provider that uses the handler map
-type handlerOptionsProvider struct {
-	handlers map[types.Action]OptionsHandler
-}
-
-func (p *handlerOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
-	handler, exists := p.handlers[action]
-	if !exists {
-		return nil, fmt.Errorf(errUnsupportedAction, action)
-	}
-	return handler(chainId)
-}
-
 func (h *BaseHandler) GetName() string {
 	return h.protocol.Name
 }
@@ -188,7 +173,6 @@ func (h *BaseHandler) GetSchema(chainId string, action types.Action) (*types.Cha
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
 		}
 
-		// Check if this chain is supported
 		supported := false
 		for _, supportedChainId := range h.protocol.Chains {
 			if supportedChainId == chainIdInt {
@@ -210,7 +194,6 @@ func (h *BaseHandler) GetSchema(chainId string, action types.Action) (*types.Cha
 	return &chainSchema, nil
 }
 
-// Update GetTransaction to use the handler map
 func (h *BaseHandler) GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error) {
 	handler, exists := h.protocol.txHandlers[action]
 	if !exists {

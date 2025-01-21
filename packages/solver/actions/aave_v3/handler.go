@@ -12,10 +12,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/aave.png"
 	tags = []string{"lending", "defi"}
 
-	chains           = append(utils.Mainnet.ChainIds, utils.Base.ChainIds...)
-	poolAddress      = utils.Mainnet.References["aave_v3"]["pool"]
-	interestRateMode = new(big.Int).SetUint64(2)
-
+	chains  = append(utils.Mainnet.ChainIds, utils.Base.ChainIds...)
 	schemas = map[types.Action]actions.ActionDefinition{
 		types.ActionDeposit: {
 			Sentence: "Deposit {0<tokenIn:address>} {1<amountIn:uint256>}",
@@ -44,6 +41,8 @@ var (
 			Handler:  HandleConstraintAPY,
 		},
 	}
+
+	interestRateMode = new(big.Int).SetUint64(2)
 )
 
 func New() actions.BaseProtocolHandler {
