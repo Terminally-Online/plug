@@ -12,7 +12,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/aave.png"
 	tags = []string{"lending", "defi"}
 
-	chains           = utils.Mainnet.ChainIds
+	chains           = append(utils.Mainnet.ChainIds, utils.Base.ChainIds...)
 	poolAddress      = utils.Mainnet.References["aave_v3"]["pool"]
 	interestRateMode = new(big.Int).SetUint64(2)
 

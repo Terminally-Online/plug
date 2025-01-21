@@ -241,6 +241,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "newSanctionsOracle",
+        "type": "address"
+      }
+    ],
+    "name": "SanctionsOracleSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -298,7 +311,7 @@
             "type": "bool"
           }
         ],
-        "internalType": "struct INounsAuctionHouseV2.AuctionV2View",
+        "internalType": "struct INounsAuctionHouseV3.AuctionV2View",
         "name": "",
         "type": "tuple"
       }
@@ -474,7 +487,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct INounsAuctionHouseV2.Settlement[]",
+        "internalType": "struct INounsAuctionHouseV3.Settlement[]",
         "name": "settlements",
         "type": "tuple[]"
       }
@@ -530,7 +543,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct INounsAuctionHouseV2.Settlement[]",
+        "internalType": "struct INounsAuctionHouseV3.Settlement[]",
         "name": "settlements",
         "type": "tuple[]"
       }
@@ -586,7 +599,7 @@
             "type": "uint32"
           }
         ],
-        "internalType": "struct INounsAuctionHouseV2.Settlement[]",
+        "internalType": "struct INounsAuctionHouseV3.Settlement[]",
         "name": "settlements",
         "type": "tuple[]"
       }
@@ -610,6 +623,11 @@
         "internalType": "uint8",
         "name": "_minBidIncrementPercentage",
         "type": "uint8"
+      },
+      {
+        "internalType": "contract IChainalysisSanctionsList",
+        "name": "_sanctionsOracle",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -697,6 +715,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "sanctionsOracle",
+    "outputs": [
+      {
+        "internalType": "contract IChainalysisSanctionsList",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint8",
@@ -734,7 +765,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct INounsAuctionHouseV2.SettlementNoClientId[]",
+        "internalType": "struct INounsAuctionHouseV3.SettlementNoClientId[]",
         "name": "settlements",
         "type": "tuple[]"
       }
@@ -753,6 +784,19 @@
       }
     ],
     "name": "setReservePrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newSanctionsOracle",
+        "type": "address"
+      }
+    ],
+    "name": "setSanctionsOracle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
