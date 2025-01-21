@@ -29,7 +29,7 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 	})
 
 	api.solver.actions.getSchemas.useQuery(
-		{ chainId: 1 },
+		{ chainId: 8453 },
 		{
 			onSuccess: data => setActions(data)
 		}

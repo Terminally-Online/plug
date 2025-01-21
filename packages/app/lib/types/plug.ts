@@ -1,6 +1,7 @@
 import { DateRange } from "react-day-picker"
 
-import { ChainId, frequencies } from "@/lib"
+import { frequencies } from "@/lib"
+import { connectedChains } from "@/contexts"
 
 export type Options = {
 	value: string
@@ -14,7 +15,7 @@ export type ActionSchema = {
 	metadata: {
 		icon: string
 		tags: Array<string>
-		chains: Array<ChainId>
+		chains: Array<typeof connectedChains[number]['id']>
 	}
 	schema: Record<
 		string,
