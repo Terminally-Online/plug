@@ -2,8 +2,6 @@ package router
 
 import (
 	"net/http"
-	"solver/intent"
-	"solver/paymaster"
 	"solver/solver"
 
 	"github.com/gorilla/mux"
@@ -13,11 +11,10 @@ func SetupRouter(solver *solver.Solver) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(JsonContentTypeMiddleware)
 
-	intentHandler := intent.NewHandler(solver)
+	intentHandler := NewIntentHandler(solver)
 
 	r.HandleFunc("/intent", intentHandler.Get).Methods("GET")
 	r.HandleFunc("/intent", intentHandler.Post).Methods("POST")
-	r.HandleFunc("/payment", paymaster.Get).Methods("GET")
 
 	return r
 }

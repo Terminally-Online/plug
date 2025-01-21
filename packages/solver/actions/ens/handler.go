@@ -8,7 +8,7 @@ import (
 
 var (
 	name = "ENS"
-	icon = "https://onplug.io/protocols/ens.png"
+	icon = "https://cdn.onplug.io/protocols/ens.png"
 	tags = []string{"naming", "web3"}
 
 	chains = utils.Mainnet.ChainIds

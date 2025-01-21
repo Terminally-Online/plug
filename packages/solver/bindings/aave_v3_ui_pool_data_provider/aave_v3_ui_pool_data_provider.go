@@ -29,6 +29,16 @@ var (
 	_ = abi.ConvertType
 )
 
+// DataTypesEModeCategory is an auto generated low-level Go binding around an user-defined struct.
+type DataTypesEModeCategory struct {
+	Ltv                  uint16
+	LiquidationThreshold uint16
+	LiquidationBonus     uint16
+	CollateralBitmap     *big.Int
+	Label                string
+	BorrowableBitmap     *big.Int
+}
+
 // IUiPoolDataProviderV3AggregatedReserveData is an auto generated low-level Go binding around an user-defined struct.
 type IUiPoolDataProviderV3AggregatedReserveData struct {
 	UnderlyingAsset                common.Address
@@ -41,31 +51,22 @@ type IUiPoolDataProviderV3AggregatedReserveData struct {
 	ReserveFactor                  *big.Int
 	UsageAsCollateralEnabled       bool
 	BorrowingEnabled               bool
-	StableBorrowRateEnabled        bool
 	IsActive                       bool
 	IsFrozen                       bool
 	LiquidityIndex                 *big.Int
 	VariableBorrowIndex            *big.Int
 	LiquidityRate                  *big.Int
 	VariableBorrowRate             *big.Int
-	StableBorrowRate               *big.Int
 	LastUpdateTimestamp            *big.Int
 	ATokenAddress                  common.Address
-	StableDebtTokenAddress         common.Address
 	VariableDebtTokenAddress       common.Address
 	InterestRateStrategyAddress    common.Address
 	AvailableLiquidity             *big.Int
-	TotalPrincipalStableDebt       *big.Int
-	AverageStableRate              *big.Int
-	StableDebtLastUpdateTimestamp  *big.Int
 	TotalScaledVariableDebt        *big.Int
 	PriceInMarketReferenceCurrency *big.Int
 	PriceOracle                    common.Address
 	VariableRateSlope1             *big.Int
 	VariableRateSlope2             *big.Int
-	StableRateSlope1               *big.Int
-	StableRateSlope2               *big.Int
-	BaseStableBorrowRate           *big.Int
 	BaseVariableBorrowRate         *big.Int
 	OptimalUsageRatio              *big.Int
 	IsPaused                       bool
@@ -76,14 +77,8 @@ type IUiPoolDataProviderV3AggregatedReserveData struct {
 	FlashLoanEnabled               bool
 	DebtCeiling                    *big.Int
 	DebtCeilingDecimals            *big.Int
-	EModeCategoryId                uint8
 	BorrowCap                      *big.Int
 	SupplyCap                      *big.Int
-	EModeLtv                       uint16
-	EModeLiquidationThreshold      uint16
-	EModeLiquidationBonus          uint16
-	EModePriceSource               common.Address
-	EModeLabel                     string
 	BorrowableInIsolation          bool
 	VirtualAccActive               bool
 	VirtualUnderlyingBalance       *big.Int
@@ -97,20 +92,23 @@ type IUiPoolDataProviderV3BaseCurrencyInfo struct {
 	NetworkBaseTokenPriceDecimals     uint8
 }
 
+// IUiPoolDataProviderV3Emode is an auto generated low-level Go binding around an user-defined struct.
+type IUiPoolDataProviderV3Emode struct {
+	Id    uint8
+	EMode DataTypesEModeCategory
+}
+
 // IUiPoolDataProviderV3UserReserveData is an auto generated low-level Go binding around an user-defined struct.
 type IUiPoolDataProviderV3UserReserveData struct {
-	UnderlyingAsset                 common.Address
-	ScaledATokenBalance             *big.Int
-	UsageAsCollateralEnabledOnUser  bool
-	StableBorrowRate                *big.Int
-	ScaledVariableDebt              *big.Int
-	PrincipalStableDebt             *big.Int
-	StableBorrowLastUpdateTimestamp *big.Int
+	UnderlyingAsset                common.Address
+	ScaledATokenBalance            *big.Int
+	UsageAsCollateralEnabledOnUser bool
+	ScaledVariableDebt             *big.Int
 }
 
 // AaveV3UiPoolDataProviderMetaData contains all meta data concerning the AaveV3UiPoolDataProvider contract.
 var AaveV3UiPoolDataProviderMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"_networkBaseTokenPriceInUsdProxyAggregator\",\"type\":\"address\"},{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"_marketReferenceCurrencyPriceInUsdProxyAggregator\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ETH_CURRENCY_UNIT\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MKR_ADDRESS\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bytes32\",\"type\":\"bytes32\"}],\"name\":\"bytes32ToString\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"getReservesData\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"underlyingAsset\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseLTVasCollateral\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveLiquidationThreshold\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveLiquidationBonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveFactor\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"usageAsCollateralEnabled\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"borrowingEnabled\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"stableBorrowRateEnabled\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isFrozen\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"liquidityIndex\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"variableBorrowIndex\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"liquidityRate\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"variableBorrowRate\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"stableBorrowRate\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"lastUpdateTimestamp\",\"type\":\"uint40\"},{\"internalType\":\"address\",\"name\":\"aTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"stableDebtTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"variableDebtTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"interestRateStrategyAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"availableLiquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalPrincipalStableDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"averageStableRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"stableDebtLastUpdateTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalScaledVariableDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"priceInMarketReferenceCurrency\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"priceOracle\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"variableRateSlope1\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"variableRateSlope2\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"stableRateSlope1\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"stableRateSlope2\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseStableBorrowRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseVariableBorrowRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"optimalUsageRatio\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPaused\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isSiloedBorrowing\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"accruedToTreasury\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"unbacked\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"isolationModeTotalDebt\",\"type\":\"uint128\"},{\"internalType\":\"bool\",\"name\":\"flashLoanEnabled\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"debtCeiling\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"debtCeilingDecimals\",\"type\":\"uint256\"},{\"internalType\":\"uint8\",\"name\":\"eModeCategoryId\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"borrowCap\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"supplyCap\",\"type\":\"uint256\"},{\"internalType\":\"uint16\",\"name\":\"eModeLtv\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"eModeLiquidationThreshold\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"eModeLiquidationBonus\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"eModePriceSource\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"eModeLabel\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"borrowableInIsolation\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"virtualAccActive\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"virtualUnderlyingBalance\",\"type\":\"uint128\"}],\"internalType\":\"structIUiPoolDataProviderV3.AggregatedReserveData[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"marketReferenceCurrencyUnit\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"marketReferenceCurrencyPriceInUsd\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"networkBaseTokenPriceInUsd\",\"type\":\"int256\"},{\"internalType\":\"uint8\",\"name\":\"networkBaseTokenPriceDecimals\",\"type\":\"uint8\"}],\"internalType\":\"structIUiPoolDataProviderV3.BaseCurrencyInfo\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"getReservesList\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"getUserReservesData\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"underlyingAsset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"scaledATokenBalance\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"usageAsCollateralEnabledOnUser\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"stableBorrowRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"scaledVariableDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"principalStableDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"stableBorrowLastUpdateTimestamp\",\"type\":\"uint256\"}],\"internalType\":\"structIUiPoolDataProviderV3.UserReserveData[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"marketReferenceCurrencyPriceInUsdProxyAggregator\",\"outputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"networkBaseTokenPriceInUsdProxyAggregator\",\"outputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"_networkBaseTokenPriceInUsdProxyAggregator\",\"type\":\"address\"},{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"_marketReferenceCurrencyPriceInUsdProxyAggregator\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ETH_CURRENCY_UNIT\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MKR_ADDRESS\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_bytes32\",\"type\":\"bytes32\"}],\"name\":\"bytes32ToString\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"getEModes\",\"outputs\":[{\"components\":[{\"internalType\":\"uint8\",\"name\":\"id\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"uint16\",\"name\":\"ltv\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"liquidationThreshold\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"liquidationBonus\",\"type\":\"uint16\"},{\"internalType\":\"uint128\",\"name\":\"collateralBitmap\",\"type\":\"uint128\"},{\"internalType\":\"string\",\"name\":\"label\",\"type\":\"string\"},{\"internalType\":\"uint128\",\"name\":\"borrowableBitmap\",\"type\":\"uint128\"}],\"internalType\":\"structDataTypes.EModeCategory\",\"name\":\"eMode\",\"type\":\"tuple\"}],\"internalType\":\"structIUiPoolDataProviderV3.Emode[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"getReservesData\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"underlyingAsset\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseLTVasCollateral\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveLiquidationThreshold\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveLiquidationBonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveFactor\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"usageAsCollateralEnabled\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"borrowingEnabled\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isFrozen\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"liquidityIndex\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"variableBorrowIndex\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"liquidityRate\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"variableBorrowRate\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"lastUpdateTimestamp\",\"type\":\"uint40\"},{\"internalType\":\"address\",\"name\":\"aTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"variableDebtTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"interestRateStrategyAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"availableLiquidity\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalScaledVariableDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"priceInMarketReferenceCurrency\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"priceOracle\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"variableRateSlope1\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"variableRateSlope2\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"baseVariableBorrowRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"optimalUsageRatio\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPaused\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isSiloedBorrowing\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"accruedToTreasury\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"unbacked\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"isolationModeTotalDebt\",\"type\":\"uint128\"},{\"internalType\":\"bool\",\"name\":\"flashLoanEnabled\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"debtCeiling\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"debtCeilingDecimals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"borrowCap\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"supplyCap\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"borrowableInIsolation\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"virtualAccActive\",\"type\":\"bool\"},{\"internalType\":\"uint128\",\"name\":\"virtualUnderlyingBalance\",\"type\":\"uint128\"}],\"internalType\":\"structIUiPoolDataProviderV3.AggregatedReserveData[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"marketReferenceCurrencyUnit\",\"type\":\"uint256\"},{\"internalType\":\"int256\",\"name\":\"marketReferenceCurrencyPriceInUsd\",\"type\":\"int256\"},{\"internalType\":\"int256\",\"name\":\"networkBaseTokenPriceInUsd\",\"type\":\"int256\"},{\"internalType\":\"uint8\",\"name\":\"networkBaseTokenPriceDecimals\",\"type\":\"uint8\"}],\"internalType\":\"structIUiPoolDataProviderV3.BaseCurrencyInfo\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"getReservesList\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contractIPoolAddressesProvider\",\"name\":\"provider\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"getUserReservesData\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"underlyingAsset\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"scaledATokenBalance\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"usageAsCollateralEnabledOnUser\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"scaledVariableDebt\",\"type\":\"uint256\"}],\"internalType\":\"structIUiPoolDataProviderV3.UserReserveData[]\",\"name\":\"\",\"type\":\"tuple[]\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"marketReferenceCurrencyPriceInUsdProxyAggregator\",\"outputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"networkBaseTokenPriceInUsdProxyAggregator\",\"outputs\":[{\"internalType\":\"contractIEACAggregatorProxy\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // AaveV3UiPoolDataProviderABI is the input ABI used to generate the binding from.
@@ -352,9 +350,40 @@ func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCallerSession) Bytes32T
 	return _AaveV3UiPoolDataProvider.Contract.Bytes32ToString(&_AaveV3UiPoolDataProvider.CallOpts, _bytes32)
 }
 
+// GetEModes is a free data retrieval call binding the contract method 0x6f90b9d1.
+//
+// Solidity: function getEModes(address provider) view returns((uint8,(uint16,uint16,uint16,uint128,string,uint128))[])
+func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCaller) GetEModes(opts *bind.CallOpts, provider common.Address) ([]IUiPoolDataProviderV3Emode, error) {
+	var out []interface{}
+	err := _AaveV3UiPoolDataProvider.contract.Call(opts, &out, "getEModes", provider)
+
+	if err != nil {
+		return *new([]IUiPoolDataProviderV3Emode), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]IUiPoolDataProviderV3Emode)).(*[]IUiPoolDataProviderV3Emode)
+
+	return out0, err
+
+}
+
+// GetEModes is a free data retrieval call binding the contract method 0x6f90b9d1.
+//
+// Solidity: function getEModes(address provider) view returns((uint8,(uint16,uint16,uint16,uint128,string,uint128))[])
+func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderSession) GetEModes(provider common.Address) ([]IUiPoolDataProviderV3Emode, error) {
+	return _AaveV3UiPoolDataProvider.Contract.GetEModes(&_AaveV3UiPoolDataProvider.CallOpts, provider)
+}
+
+// GetEModes is a free data retrieval call binding the contract method 0x6f90b9d1.
+//
+// Solidity: function getEModes(address provider) view returns((uint8,(uint16,uint16,uint16,uint128,string,uint128))[])
+func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCallerSession) GetEModes(provider common.Address) ([]IUiPoolDataProviderV3Emode, error) {
+	return _AaveV3UiPoolDataProvider.Contract.GetEModes(&_AaveV3UiPoolDataProvider.CallOpts, provider)
+}
+
 // GetReservesData is a free data retrieval call binding the contract method 0xec489c21.
 //
-// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint8,uint256,uint256,uint16,uint16,uint16,address,string,bool,bool,uint128)[], (uint256,int256,int256,uint8))
+// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint40,address,address,address,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint256,uint256,bool,bool,uint128)[], (uint256,int256,int256,uint8))
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCaller) GetReservesData(opts *bind.CallOpts, provider common.Address) ([]IUiPoolDataProviderV3AggregatedReserveData, IUiPoolDataProviderV3BaseCurrencyInfo, error) {
 	var out []interface{}
 	err := _AaveV3UiPoolDataProvider.contract.Call(opts, &out, "getReservesData", provider)
@@ -372,14 +401,14 @@ func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCaller) GetReservesData
 
 // GetReservesData is a free data retrieval call binding the contract method 0xec489c21.
 //
-// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint8,uint256,uint256,uint16,uint16,uint16,address,string,bool,bool,uint128)[], (uint256,int256,int256,uint8))
+// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint40,address,address,address,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint256,uint256,bool,bool,uint128)[], (uint256,int256,int256,uint8))
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderSession) GetReservesData(provider common.Address) ([]IUiPoolDataProviderV3AggregatedReserveData, IUiPoolDataProviderV3BaseCurrencyInfo, error) {
 	return _AaveV3UiPoolDataProvider.Contract.GetReservesData(&_AaveV3UiPoolDataProvider.CallOpts, provider)
 }
 
 // GetReservesData is a free data retrieval call binding the contract method 0xec489c21.
 //
-// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint8,uint256,uint256,uint16,uint16,uint16,address,string,bool,bool,uint128)[], (uint256,int256,int256,uint8))
+// Solidity: function getReservesData(address provider) view returns((address,string,string,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,uint128,uint128,uint128,uint128,uint40,address,address,address,uint256,uint256,uint256,address,uint256,uint256,uint256,uint256,bool,bool,uint128,uint128,uint128,bool,uint256,uint256,uint256,uint256,bool,bool,uint128)[], (uint256,int256,int256,uint8))
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCallerSession) GetReservesData(provider common.Address) ([]IUiPoolDataProviderV3AggregatedReserveData, IUiPoolDataProviderV3BaseCurrencyInfo, error) {
 	return _AaveV3UiPoolDataProvider.Contract.GetReservesData(&_AaveV3UiPoolDataProvider.CallOpts, provider)
 }
@@ -417,7 +446,7 @@ func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCallerSession) GetReser
 
 // GetUserReservesData is a free data retrieval call binding the contract method 0x51974cc0.
 //
-// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256,uint256,uint256,uint256)[], uint8)
+// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256)[], uint8)
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCaller) GetUserReservesData(opts *bind.CallOpts, provider common.Address, user common.Address) ([]IUiPoolDataProviderV3UserReserveData, uint8, error) {
 	var out []interface{}
 	err := _AaveV3UiPoolDataProvider.contract.Call(opts, &out, "getUserReservesData", provider, user)
@@ -435,14 +464,14 @@ func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCaller) GetUserReserves
 
 // GetUserReservesData is a free data retrieval call binding the contract method 0x51974cc0.
 //
-// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256,uint256,uint256,uint256)[], uint8)
+// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256)[], uint8)
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderSession) GetUserReservesData(provider common.Address, user common.Address) ([]IUiPoolDataProviderV3UserReserveData, uint8, error) {
 	return _AaveV3UiPoolDataProvider.Contract.GetUserReservesData(&_AaveV3UiPoolDataProvider.CallOpts, provider, user)
 }
 
 // GetUserReservesData is a free data retrieval call binding the contract method 0x51974cc0.
 //
-// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256,uint256,uint256,uint256)[], uint8)
+// Solidity: function getUserReservesData(address provider, address user) view returns((address,uint256,bool,uint256)[], uint8)
 func (_AaveV3UiPoolDataProvider *AaveV3UiPoolDataProviderCallerSession) GetUserReservesData(provider common.Address, user common.Address) ([]IUiPoolDataProviderV3UserReserveData, uint8, error) {
 	return _AaveV3UiPoolDataProvider.Contract.GetUserReservesData(&_AaveV3UiPoolDataProvider.CallOpts, provider, user)
 }

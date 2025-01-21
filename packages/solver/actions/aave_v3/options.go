@@ -4,12 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"solver/types"
-	"solver/utils"
-)
-
-var (
-	uiPoolDataProviderAddress  = utils.Mainnet.References["aave_v3"]["ui_pool_data_provider"]
-	poolAddressProviderAddress = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
 )
 
 type AaveOptionsProvider struct{}
@@ -23,7 +17,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId int, action types.Action) (map[
 	switch action {
 	case types.ActionDeposit:
 		return map[int]types.SchemaOptions{
-			0: {Simple: collateralOptions},
+			1: {Simple: collateralOptions},
 		}, nil
 	case types.ActionBorrow:
 		return map[int]types.SchemaOptions{

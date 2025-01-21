@@ -8,7 +8,7 @@ import (
 
 var (
 	name = "Plug"
-	icon = "https://onplug.io/protocols/plug.png"
+	icon = "https://cdn.onplug.io/protocols/plug.png"
 	tags = []string{"defi"}
 
 	chains = utils.Mainnet.ChainIds

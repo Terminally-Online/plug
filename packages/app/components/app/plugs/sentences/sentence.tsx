@@ -292,6 +292,7 @@ export const Sentence: FC<SentenceProps> = ({
 																input.type?.toString().includes("int") ||
 																input.type?.toString().includes("float")
 															}
+															focus={true}
 														/>
 													)}
 

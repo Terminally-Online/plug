@@ -40,8 +40,9 @@ var (
 				"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 			},
 			"aave_v3": {
-				"pool":                  "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
-				"ui_pool_data_provider": "0x194324C9Af7f56E22F1614dD82E18621cb9238E7",
+				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+				"ui_pool_data_provider":    "0x3F78BBD206e4D3c504Eb854232EdA7e47E9Fd8FC",
+				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
 			},
 			"yearn_v3": {
 				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",
@@ -69,6 +70,20 @@ var (
 			},
 		},
 	}
+
+	Base = &Network{
+		ChainIds: []int{8453},
+		Explorer: "https://api.basescan.org/api",
+		References: map[string]map[string]string{
+			"aave_v3": {
+				"pool":                     "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+				"ui_pool_data_provider":    "0x68100bD5345eA474D93577127C11F39FF8463e93",
+				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
+			},
+		},
+	}
+
+	Networks = map[int]*Network{1: Mainnet, 31337: Mainnet, 8453: Base}
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {
@@ -176,12 +191,27 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 }
 
 func GenerateReferences() error {
-	for folderName, contracts := range Mainnet.References {
-		for contractName, address := range contracts {
-			if err := GenerateReference(Mainnet.Explorer, folderName, contractName, address, retries); err != nil {
-				return err
+	processed := make(map[string]bool)
+
+	for _, network := range Networks {
+		for folderName, contracts := range network.References {
+			for contractName, address := range contracts {
+				key := fmt.Sprintf("%s:%s", folderName, contractName)
+
+				if processed[key] {
+					fmt.Printf("Skipping %s/%s on %s - already processed\n",
+						folderName, contractName, network.Explorer)
+					continue
+				}
+
+				if err := GenerateReference(network.Explorer, folderName, contractName, address, retries); err != nil {
+					return err
+				}
+
+				processed[key] = true
 			}
 		}
 	}
+
 	return nil
 }
