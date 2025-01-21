@@ -27,7 +27,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
 	}
 
-	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, uint8(18))
+	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, 18)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}
@@ -226,7 +226,7 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to unmarshal renewal price inputs: %v", err)
 	}
 
-	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, uint8(18))
+	maxPrice, err := utils.FloatToUint(inputs.MaxPrice, 18)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert ens max price to uint: %v", err)
 	}
@@ -241,10 +241,8 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get renewal price: %v", err)
 	}
 
-	maxPriceWei := new(big.Int).Mul(maxPrice, big.NewInt(1e18))
-
-	if price.Base.Cmp(maxPriceWei) > 0 {
-		return nil, fmt.Errorf("renewal price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPriceWei)
+	if price.Base.Cmp(maxPrice) > 0 {
+		return nil, fmt.Errorf("renewal price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPrice)
 	}
 
 	return []*types.Transaction{}, nil

@@ -29,7 +29,7 @@ var (
 		},
 		types.Action(RenewalPrice): {
 			Type:     types.TypeConstraint,
-			Sentence: "Price to renew ENS {0<name:string>} for {1<duration:uint256>} is less than {2<price:uint256>} ETH.",
+			Sentence: "Price to renew ENS {0<name:string>} for {1<duration:uint256>} is less than {2<price:float>} ETH.",
 			Handler:  HandleConstraintRenewalPrice,
 		},
 		types.Action(GracePeriod): {
