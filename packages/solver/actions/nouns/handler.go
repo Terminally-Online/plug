@@ -20,11 +20,11 @@ var (
 
 	schemas = map[types.Action]actions.ActionDefinition{
 		types.ActionBid: {
-			Sentence: "Bid on noun with {0<amount:uint256>} ETH.",
+			Sentence: "Bid on noun with {0<amount:string>} ETH.",
 			Handler:  HandleActionBid,
 		},
 		types.Action(IncreaseBid): {
-			Sentence: "Outbid the current bid by {0<percent:uint256>}%.",
+			Sentence: "Outbid the current bid by {0<percent:string>}%.",
 			Handler:  HandleActionIncreaseBid,
 		},
 		types.Action(HasTrait): {
@@ -39,7 +39,7 @@ var (
 		},
 		types.Action(CurrentBidWithinRange): {
 			Type:     types.TypeConstraint,
-			Sentence: "Bid for Noun is greater than {0<min:uint256>} ETH and less than {1<max:uint256>} ETH.",
+			Sentence: "Bid for Noun is greater than {0<min:string>} ETH and less than {1<max:string>} ETH.",
 			Handler:  HandleConstraintCurrentBidWithinRange,
 		},
 	}
