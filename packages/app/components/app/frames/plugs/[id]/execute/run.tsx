@@ -1,8 +1,6 @@
 import { useSession } from "next-auth/react"
 import { FC, useCallback, useMemo, useState } from "react"
 
-import { anvil, mainnet } from "viem/chains"
-
 import { motion } from "framer-motion"
 import {
 	AlertTriangle,
@@ -28,7 +26,6 @@ import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { COLUMNS, useColumnStore } from "@/state/columns"
-import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 
 export const RunFrame: FC<{
@@ -36,7 +33,6 @@ export const RunFrame: FC<{
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
-	const { getFlag } = useFlags()
 	const {
 		column,
 		isFrame,
@@ -68,9 +64,6 @@ export const RunFrame: FC<{
 						protocolSchema.metadata.chains.forEach(chainId => {
 							if (!connectedChains.some(chain => chain.id === chainId)) return
 
-							const isDev = getFlag(Flag.SHOW_DEVELOPER)
-							if ((isDev && chainId === mainnet.id) || (!isDev && chainId === anvil.id)) return
-
 							chains.add(chainId)
 						})
 					}
@@ -82,7 +75,7 @@ export const RunFrame: FC<{
 					return new Set([...acc].filter(chainId => chains.has(chainId)))
 				}, new Set<number>())
 		) as ChainId[]
-	}, [actions, solverActions, getFlag])
+	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
 		if (!supportedChains || supportedChains.length === 0) return null
