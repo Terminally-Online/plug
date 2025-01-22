@@ -1,12 +1,16 @@
 package utils
 
 import (
+	"context"
+	"fmt"
 	"math/big"
+	"os"
 	"regexp"
-	"slices"
-	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
@@ -15,6 +19,16 @@ var (
 
 	TokenStandards = []int{0, 20, 721, 1155}
 	VaultStandards = []int{4626}
+
+	addressPattern = regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`)
+	hexPattern     = regexp.MustCompile("^(0x)?[0-9a-fA-F]+$")
+
+	Uint8Max   = new(big.Int).SetUint64(0xFF)
+	Uint16Max  = new(big.Int).SetUint64(0xFFFF)
+	Uint32Max  = new(big.Int).SetUint64(0xFFFFFFFF)
+	Uint64Max  = new(big.Int).SetUint64(0xFFFFFFFFFFFFFFFF)
+	Uint128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
+	Uint256Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
 
 	SelectorLookup                   = "8063%s14"
 	UpgradableImplementationSelector = "5c60da1b"
@@ -32,73 +46,55 @@ var (
 	}
 )
 
-var (
-	addressPattern = regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`)
-	hexPattern     = regexp.MustCompile("^(0x)?[0-9a-fA-F]+$")
-)
-
-var (
-	Uint8Max   = new(big.Int).SetUint64(0xFF)
-	Uint16Max  = new(big.Int).SetUint64(0xFFFF)
-	Uint32Max  = new(big.Int).SetUint64(0xFFFFFFFF)
-	Uint64Max  = new(big.Int).SetUint64(0xFFFFFFFFFFFFFFFF)
-	Uint128Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 128), big.NewInt(1))
-	Uint256Max = new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(1))
-)
-
-func IsSupportedTokenStandard(standard int) bool {
-	return slices.Contains(TokenStandards, standard)
-}
-
-func IsSupportedVaultStandard(standard int) bool {
-	return slices.Contains(VaultStandards, standard)
-}
-
-func IsSupportedProtocol(protocols []string, slug string) bool {
-	return slices.Contains(protocols, slug)
-}
-
-func IsAddress(s string) bool {
-	return addressPattern.MatchString(s)
-}
-
-func IsHex(s string) bool {
-	return hexPattern.MatchString(s)
-}
-
-func IsUint(value string, bits int) bool {
-	value = strings.TrimPrefix(value, "0x")
-	n, ok := new(big.Int).SetString(value, 16)
-	if !ok {
-		return false
+func GetProvider(chainId int) (*ethclient.Client, error) {
+	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
+	if alchemyAPIKey == "" {
+		return nil, ErrEnvironmentVarNotSet("ALCHEMY_API_KEY")
 	}
 
-	var max *big.Int
-	switch bits {
-	case 8:
-		max = Uint8Max
-	case 16:
-		max = Uint16Max
-	case 32:
-		max = Uint32Max
-	case 64:
-		max = Uint64Max
-	case 128:
-		max = Uint128Max
-	case 256:
-		max = Uint256Max
+	var rpcURL string
+	switch chainId {
+	case 1:
+		rpcURL = fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+	case 31337:
+		rpcURL = "http://127.0.0.1:8545"
+	case 11155111:
+		rpcURL = fmt.Sprintf("wss://eth-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+	case 10:
+		rpcURL = fmt.Sprintf("wss://opt-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+	case 11155420:
+		rpcURL = fmt.Sprintf("wss://opt-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+	case 8453:
+		rpcURL = fmt.Sprintf("wss://base-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+	case 84532:
+		rpcURL = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
 	default:
-		return false
+		return nil, ErrInvalidChainId("chainId", chainId)
 	}
 
-	return n.Sign() >= 0 && n.Cmp(max) <= 0 || n.Cmp(max) == 0
+	ethClient, err := ethclient.Dial(rpcURL)
+	if err != nil {
+		return nil, ErrEthClientFailed(err.Error())
+	}
+
+	return ethClient, nil
 }
 
-func IsBytes(value string, size int) bool {
-	if !hexPattern.MatchString(value) {
-		return false
+func BuildCallOpts(address string, value *big.Int) *bind.CallOpts {
+	return &bind.CallOpts{
+		From: common.HexToAddress(address),
+		Pending: true,
+		Context: context.Background(),
 	}
+}
 
-	value = strings.TrimPrefix(value, "0x")
-	return len(value) == size*2
+func BuildTransactionOpts(address string, value *big.Int) *bind.TransactOpts {
+	return &bind.TransactOpts{
+		From: common.HexToAddress(address),
+		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
+			return tx, nil
+		},
+		NoSend:    true,
+		Value:     value,
+	}
 }
