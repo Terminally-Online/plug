@@ -69,7 +69,7 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 				icon: <Star size={14} className="opacity-40" />
 			})
 		
-		if (socket?.isAdmin) {
+		if (socket?.admin) {
 			options.push({
 				label: "ADMIN",
 				description: "Manage administrative settings.",
