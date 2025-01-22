@@ -80,12 +80,14 @@ export const Frame: FC<Props> = ({
 								</Button>
 							)}
 							<Header
+								variant="frame"
 								size="md"
 								className="h-10"
 								label={label}
 								nextOnClick={() => handle.frame()}
 								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}
 								nextEmpty={next !== undefined}
+								nextPadded={false}
 							/>
 						</div>
 						<div
