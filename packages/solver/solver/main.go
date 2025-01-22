@@ -13,13 +13,13 @@ import (
 	"solver/actions/nouns"
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
+	"solver/solver/signature"
 	"solver/types"
 	"solver/utils"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type Solver struct {
@@ -171,12 +171,11 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transacti
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetPlugs(from string, transactions []*types.Transaction) (*types.Plugs, error) {
-	// NOTE: Generate the encoded solver value so that the smart contract can decode it.
-	//	 Used in Solidity with:
-	// 		body: `(uint48 expiration, address solver))`
-	// 		encode: `abi.encode(uint48(0), msg.sender)`
-	// 		decode: `abi.decode(data, (uint48, address))`
+func (s *Solver) GetPlugs(chainId int, from string, transactions []*types.Transaction) (*signature.LivePlugs, error) {
+	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
+	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
+	//       end up having the case where things are Plugs are not properly executed because they are being
+	//       executed 10k blocks late after it was held from execution.
 	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
 	solver, err := abi.Arguments{
 		{Type: abi.Type{T: abi.UintTy, Size: 48}},
@@ -200,33 +199,37 @@ func (s *Solver) GetPlugs(from string, transactions []*types.Transaction) (*type
 	if err != nil {
 		return nil, utils.ErrBuildFailed("failed to pack salt: " + err.Error())
 	}
-
-	// TODO: Implement the EIP-712 signing schema.
-	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	var plugArray []signature.Plug
+	for _, transaction := range transactions {
+		plugArray = append(plugArray, signature.Plug{
+			Target: common.HexToAddress(transaction.To),
+			Value:  &transaction.Value,
+			Data:   transaction.Data,
+		})
+	}
+	plugs := signature.Plugs{
+		Socket: common.HexToAddress(from),
+		Plugs:  transactions,
+		Solver: solver,
+		Salt:   salt,
+	}
+	plugsSignature, err := signature.GetSignature(
+		big.NewInt(int64(chainId)),
+		common.HexToAddress(from),
+		plugs,
+	)
 	if err != nil {
-		return nil, utils.ErrBuildFailed(err.Error())
+		return nil, utils.ErrBuildFailed("failed to sign: " + err.Error())
 	}
 
-	plugsHash := crypto.Keccak256Hash([]byte(from), []byte(salt), []byte(solver))
-	signature, err := crypto.Sign(plugsHash.Bytes(), privateKey)
-	if err != nil {
-		return nil, utils.ErrBuildFailed(err.Error())
-	}
-
-	return &types.Plugs{
-		Plug: types.Plug{
-			Socket: from,
-			Plugs:  transactions,
-			Solver: "0x" + common.Bytes2Hex(solver),
-			Salt:   "0x" + common.Bytes2Hex(salt),
-		},
-		Signature: "0x" + common.Bytes2Hex(signature),
+	return &signature.LivePlugs{
+		Plugs:     plugs,
+		Signature: plugsSignature,
 	}, nil
 }
 
-func (s *Solver) GetSimulation(id string, plugs *types.Plugs) (SimulationRequest, error) {
+func (s *Solver) GetSimulation(id string, plugs *signature.LivePlugs) (SimulationRequest, error) {
 	// NOTE: This is where we will pick back up for simulation integration.
-
 	return SimulationRequest{
 		Id:          id,
 		Status:      "success",

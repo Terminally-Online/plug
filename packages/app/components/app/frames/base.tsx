@@ -80,6 +80,7 @@ export const Frame: FC<Props> = ({
 								</Button>
 							)}
 							<Header
+								variant="frame"
 								size="md"
 								className="h-10"
 								label={label}
