@@ -4,7 +4,7 @@ import { Check, ChevronLeft, GitFork, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
-import { ConsoleAdmin } from "@/components/app/columns/admin/column-admin"
+import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
 import { ColumnAdd } from "@/components/app/columns/utils/column-add"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
