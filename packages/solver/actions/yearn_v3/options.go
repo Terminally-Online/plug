@@ -3,13 +3,12 @@ package yearn_v3
 import (
 	"fmt"
 	"solver/actions"
-	"solver/types"
 	"strings"
 )
 
 type YearnV3OptionsProvider struct{}
 
-func (p *YearnV3OptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
+func (p *YearnV3OptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
 	underlyingAssetOptions, err := GetUnderlyingAssetOptions()
 	if err != nil {
 		return nil, err
@@ -29,47 +28,47 @@ func (p *YearnV3OptionsProvider) GetOptions(chainId int, action string) (map[int
 
 	switch action {
 	case actions.ActionDeposit:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: underlyingAssetOptions},
 			2: {Complex: underlyingAssetToVaultOptions},
 		}, nil
 	case actions.ActionWithdraw:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: underlyingAssetOptions},
 			2: {Complex: underlyingAssetToVaultOptions},
 		}, nil
 	case actions.ActionWithdrawMax:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: underlyingAssetOptions},
 			1: {Complex: underlyingAssetToVaultOptions},
 		}, nil
 	case actions.ActionStake:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: availableStakingGuageOptions},
 		}, nil
 	case actions.ActionStakeMax:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: availableStakingGuageOptions},
 		}, nil
 	case actions.ActionRedeem:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: availableStakingGuageOptions},
 		}, nil
 	case actions.ActionRedeemMax:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: availableStakingGuageOptions},
 		}, nil
 	case actions.ConstraintAPY:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: vaultOptions},
-			1: {Simple: types.BaseThresholdFields},
+			1: {Simple: actions.BaseThresholdFields},
 		}, nil
 	default:
 		return nil, fmt.Errorf("unsupported action for options: %s", action)
 	}
 }
 
-func GetUnderlyingAssetOptions() ([]types.Option, error) {
+func GetUnderlyingAssetOptions() ([]actions.Option, error) {
 	tokens, err := GenerateTokenList()
 	if err != nil {
 		return nil, err
@@ -85,14 +84,14 @@ func GetUnderlyingAssetOptions() ([]types.Option, error) {
 		return nil, err
 	}
 
-	tokenMap := make(map[string]types.Option)
+	tokenMap := make(map[string]actions.Option)
 
 	for _, vault := range vaults {
 		lowerAddr := strings.ToLower(vault.Token.Address)
 
 		if _, exists := tokenMap[lowerAddr]; !exists {
 			if token, ok := tokenDetails[lowerAddr]; ok {
-				tokenMap[lowerAddr] = types.Option{
+				tokenMap[lowerAddr] = actions.Option{
 					Value: token.Address,
 					Name:  token.Name,
 					Label: token.Symbol,
@@ -102,7 +101,7 @@ func GetUnderlyingAssetOptions() ([]types.Option, error) {
 		}
 	}
 
-	options := make([]types.Option, 0, len(tokenMap))
+	options := make([]actions.Option, 0, len(tokenMap))
 	for _, option := range tokenMap {
 		options = append(options, option)
 	}
@@ -110,15 +109,15 @@ func GetUnderlyingAssetOptions() ([]types.Option, error) {
 	return options, nil
 }
 
-func GetUnderlyingAssetToVaultOptions() (map[string][]types.Option, error) {
+func GetUnderlyingAssetToVaultOptions() (map[string][]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, err
 	}
 
-	tokenMap := make(map[string][]types.Option)
+	tokenMap := make(map[string][]actions.Option)
 	for _, vault := range vaults {
-		tokenMap[vault.Token.Address] = append(tokenMap[vault.Token.Address], types.Option{
+		tokenMap[vault.Token.Address] = append(tokenMap[vault.Token.Address], actions.Option{
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
@@ -129,19 +128,19 @@ func GetUnderlyingAssetToVaultOptions() (map[string][]types.Option, error) {
 	return tokenMap, nil
 }
 
-func GetAvailableStakingGuageOptions() ([]types.Option, error) {
+func GetAvailableStakingGuageOptions() ([]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, err
 	}
 
-	var options []types.Option
+	var options []actions.Option
 	for _, vault := range vaults {
 		if !vault.Staking.Available || vault.Staking.Address == "" {
 			continue
 		}
 
-		options = append(options, types.Option{
+		options = append(options, actions.Option{
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
@@ -152,15 +151,15 @@ func GetAvailableStakingGuageOptions() ([]types.Option, error) {
 	return options, nil
 }
 
-func GetVaultOptions() ([]types.Option, error) {
+func GetVaultOptions() ([]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, err
 	}
 
-	var options []types.Option
+	var options []actions.Option
 	for _, vault := range vaults {
-		options = append(options, types.Option{
+		options = append(options, actions.Option{
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,

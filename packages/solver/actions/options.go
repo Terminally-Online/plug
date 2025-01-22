@@ -1,7 +1,7 @@
-package types
+package actions
 
 import (
-	"fmt"
+	"solver/utils"
 	"sync"
 	"time"
 )
@@ -14,44 +14,40 @@ type Option struct {
 	Info  string `json:"info,omitempty"`
 }
 
-type SchemaOptions struct {
+type Options struct {
 	Simple  []Option            `json:"simple,omitempty"`
 	Complex map[string][]Option `json:"complex,omitempty"`
 }
 
-type OptionsProvider interface {
-	GetOptions(chainId int, action string) (map[int]SchemaOptions, error)
-}
-
-var (
-	errFailedGetOptions = "failed to get options: %w"
-)
-
-type cacheKey struct {
+type OptionCacheKey struct {
 	chainId int
 	action  string
 }
 
-type cachedOptions struct {
-	options map[int]SchemaOptions
+type CachedOptions struct {
+	options map[int]Options
 	expiry  time.Time
+}
+
+type OptionsProvider interface {
+	GetOptions(chainId int, action string) (map[int]Options, error)
 }
 
 type CachedOptionsProvider struct {
 	provider OptionsProvider
-	cache    map[cacheKey]cachedOptions
+	cache    map[OptionCacheKey]CachedOptions
 	mu       sync.RWMutex
 }
 
 func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 	return &CachedOptionsProvider{
 		provider: provider,
-		cache:    make(map[cacheKey]cachedOptions, 32),
+		cache:    make(map[OptionCacheKey]CachedOptions, 32),
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]SchemaOptions, error) {
-	key := cacheKey{chainId: chainId, action: action}
+func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]Options, error) {
+	key := OptionCacheKey{chainId: chainId, action: action}
 
 	c.mu.RLock()
 	if cached, ok := c.cache[key]; ok && time.Now().Before(cached.expiry) {
@@ -62,15 +58,15 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]
 
 	options, err := c.provider.GetOptions(chainId, action)
 	if err != nil {
-		return nil, fmt.Errorf(errFailedGetOptions, err)
+		return nil, utils.ErrOptionsFailed(err.Error())
 	}
 
 	if options == nil {
-		options = make(map[int]SchemaOptions)
+		options = make(map[int]Options)
 	}
 
 	c.mu.Lock()
-	c.cache[key] = cachedOptions{
+	c.cache[key] = CachedOptions{
 		options: options,
 		expiry:  time.Now().Add(30 * time.Minute),
 	}

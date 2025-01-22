@@ -88,6 +88,10 @@ var (
 		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
 	}
 
+	ErrOptionsFailed = func(error string) ServerError {
+		return ServerError{Message: fmt.Sprintf("Building options failed: %s", error)}
+	}
+
 	ErrTransactionFailed = func(error string) ServerError {
 		return ServerError{Message: fmt.Sprintf("Building transaction failed: %s", error)}
 	}

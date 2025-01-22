@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"math/big"
 	"solver/actions"
-	"solver/types"
 )
 
 type AaveOptionsProvider struct{}
 
-func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
+func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
 	collateralOptions, borrowOptions, err := GetOptions(chainId)
 	if err != nil {
 		return nil, err
@@ -17,29 +16,29 @@ func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]ty
 
 	switch action {
 	case actions.ActionDeposit:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: collateralOptions},
 		}, nil
 	case actions.ActionBorrow:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionRepay:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionWithdraw:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: collateralOptions},
 		}, nil
 	case actions.ConstraintHealthFactor:
-		return map[int]types.SchemaOptions{
-			0: {Simple: types.BaseThresholdFields},
+		return map[int]actions.Options{
+			0: {Simple: actions.BaseThresholdFields},
 		}, nil
 	case actions.ConstraintAPY:
-		aggregatedOptions := func() []types.Option {
+		aggregatedOptions := func() []actions.Option {
 			seen := make(map[string]bool)
-			options := make([]types.Option, 0)
+			options := make([]actions.Option, 0)
 			for _, opt := range append(collateralOptions, borrowOptions...) {
 				if !seen[opt.Value] {
 					seen[opt.Value] = true
@@ -49,26 +48,26 @@ func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]ty
 			}
 			return options
 		}()
-		return map[int]types.SchemaOptions{
-			0: {Simple: []types.Option{
+		return map[int]actions.Options{
+			0: {Simple: []actions.Option{
 				{Label: "Borrow", Name: "Borrow", Value: "-1"},
 				{Label: "Deposit", Name: "Deposit", Value: "1"},
 			}},
 			1: {Simple: aggregatedOptions},
-			2: {Simple: types.BaseThresholdFields},
+			2: {Simple: actions.BaseThresholdFields},
 		}, nil
 	default:
 		return nil, fmt.Errorf("unsupported action for options: %s", action)
 	}
 }
 
-func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
+func GetCollateralAssetOptions(chainId int) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	options := make([]types.Option, 0)
+	options := make([]actions.Option, 0)
 	for _, reserve := range reserves {
 		// TODO: (#12) Does not include 'Isolated' assets as optional collateral due to the nuance of
 		// variable allowance. For this to be supported, we need arrow function support across
@@ -98,7 +97,7 @@ func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
 		} else {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
-		options = append(options, types.Option{
+		options = append(options, actions.Option{
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
@@ -110,13 +109,13 @@ func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
 	return options, nil
 }
 
-func GetBorrowAssetOptions(chainId int) ([]types.Option, error) {
+func GetBorrowAssetOptions(chainId int) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	options := make([]types.Option, 0)
+	options := make([]actions.Option, 0)
 	for _, reserve := range reserves {
 		if !reserve.BorrowingEnabled {
 			continue
@@ -134,7 +133,7 @@ func GetBorrowAssetOptions(chainId int) ([]types.Option, error) {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
 
-		options = append(options, types.Option{
+		options = append(options, actions.Option{
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, reserve.UnderlyingAsset.String()),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
@@ -146,7 +145,7 @@ func GetBorrowAssetOptions(chainId int) ([]types.Option, error) {
 	return options, nil
 }
 
-func GetOptions(chainId int) ([]types.Option, []types.Option, error) {
+func GetOptions(chainId int) ([]actions.Option, []actions.Option, error) {
 	collateralOptions, err := GetCollateralAssetOptions(chainId)
 	if err != nil {
 		return nil, nil, err

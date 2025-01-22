@@ -6,9 +6,9 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"solver/actions"
 	"solver/solver"
 	"solver/solver/signature"
-	"solver/types"
 	"solver/utils"
 	"time"
 
@@ -40,23 +40,23 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 
 	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
-		allSchemas := make(map[string]types.ProtocolSchema)
+		allSchemas := make(map[string]actions.ProtocolSchema)
 
 		for protocol, handler := range intentHandler.solver.GetProtocols() {
-			protocolSchema := types.ProtocolSchema{
-				Metadata: types.ProtocolMetadata{
+			protocolSchema := actions.ProtocolSchema{
+				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
 					Tags:   handler.GetTags(),
 					Chains: handler.GetChains(),
 				},
-				Schema: make(map[string]types.Schema),
+				Schema: make(map[string]actions.Schema),
 			}
 
 			// Get all schemas without options
 			schemas := handler.GetSchemas()
 			for _, supportedAction := range handler.GetActions() {
 				if chainSchema, ok := schemas[supportedAction]; ok {
-					protocolSchema.Schema[supportedAction] = types.Schema{
+					protocolSchema.Schema[supportedAction] = actions.Schema{
 						Type:     chainSchema.Schema.Type,
 						Sentence: chainSchema.Schema.Sentence,
 					}
@@ -79,26 +79,26 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 
 	// Case 2: Protocol only - return all schemas for that protocol without options.
 	if action == "" {
-		protocolSchema := types.ProtocolSchema{
-			Metadata: types.ProtocolMetadata{
+		protocolSchema := actions.ProtocolSchema{
+			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.GetIcon(),
 				Tags:   handler.GetTags(),
 				Chains: handler.GetChains(),
 			},
-			Schema: make(map[string]types.Schema),
+			Schema: make(map[string]actions.Schema),
 		}
 
 		schemas := handler.GetSchemas()
 		for _, supportedAction := range handler.GetActions() {
 			if chainSchema, ok := schemas[supportedAction]; ok {
-				protocolSchema.Schema[supportedAction] = types.Schema{
+				protocolSchema.Schema[supportedAction] = actions.Schema{
 					Type:     chainSchema.Schema.Type,
 					Sentence: chainSchema.Schema.Sentence,
 				}
 			}
 		}
 
-		response := map[string]types.ProtocolSchema{
+		response := map[string]actions.ProtocolSchema{
 			protocol: protocolSchema,
 		}
 
@@ -115,18 +115,18 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	protocolSchema := types.ProtocolSchema{
-		Metadata: types.ProtocolMetadata{
+	protocolSchema := actions.ProtocolSchema{
+		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.GetIcon(),
 			Tags:   handler.GetTags(),
 			Chains: handler.GetChains(),
 		},
-		Schema: map[string]types.Schema{
+		Schema: map[string]actions.Schema{
 			action: chainSchema.Schema,
 		},
 	}
 
-	response := map[string]types.ProtocolSchema{
+	response := map[string]actions.ProtocolSchema{
 		protocol: protocolSchema,
 	}
 

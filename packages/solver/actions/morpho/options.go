@@ -3,12 +3,11 @@ package morpho
 import (
 	"fmt"
 	"solver/actions"
-	"solver/types"
 )
 
 type MorphoOptionsProvider struct{}
 
-func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
+func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
 	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
 	if err != nil {
 		return nil, err
@@ -32,69 +31,69 @@ func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]
 
 	switch action {
 	case ActionEarn:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: supplyTokenOptions},
 			2: {Complex: supplyTokenToVaultOptions},
 		}, nil
 	case ActionSupplyCollateral:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: collateralOptions},
 			2: {Complex: collateralToMarketOptions},
 		}, nil
 	case ActionWithdraw:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: supplyAndCollateralTokenOptions},
 			2: {Complex: supplyAndCollateralTokenToMarketOptions},
 		}, nil
 	case ActionWithdrawAll:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: supplyAndCollateralTokenOptions},
 			1: {Complex: supplyAndCollateralTokenToMarketOptions},
 		}, nil
 	case ActionBorrow:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		}, nil
 	case ActionRepay:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		}, nil
 	case ActionRepayAll:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: borrowOptions},
 			1: {Complex: borrowToMarketOptions},
 		}, nil
 	case actions.ConstraintHealthFactor:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			0: {Simple: marketOptions},
-			1: {Simple: types.BaseThresholdFields},
+			1: {Simple: actions.BaseThresholdFields},
 		}, nil
 	case ConstraintAPY:
-		return map[int]types.SchemaOptions{
-			0: {Simple: types.BaseLendActionTypeFields},
+		return map[int]actions.Options{
+			0: {Simple: actions.BaseLendActionTypeFields},
 			1: {Simple: marketAndVaultOptions},
-			2: {Simple: types.BaseThresholdFields},
+			2: {Simple: actions.BaseThresholdFields},
 		}, nil
 	default:
 		return nil, nil
 	}
 }
 
-func GetSupplyTokenToVaultOptions() ([]types.Option, map[string][]types.Option, error) {
+func GetSupplyTokenToVaultOptions() ([]actions.Option, map[string][]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	seenToken := make(map[string]bool)
-	tokenOptions := make([]types.Option, 0)
-	tokenToVaultOptions := make(map[string][]types.Option)
+	tokenOptions := make([]actions.Option, 0)
+	tokenToVaultOptions := make(map[string][]actions.Option)
 
 	for _, vault := range vaults {
 		if !seenToken[vault.Asset.Address] {
-			tokenOptions = append(tokenOptions, types.Option{
+			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: vault.Asset.Address,
@@ -103,7 +102,7 @@ func GetSupplyTokenToVaultOptions() ([]types.Option, map[string][]types.Option, 
 			seenToken[vault.Asset.Address] = true
 		}
 
-		tokenToVaultOptions[vault.Asset.Address] = append(tokenToVaultOptions[vault.Asset.Address], types.Option{
+		tokenToVaultOptions[vault.Asset.Address] = append(tokenToVaultOptions[vault.Asset.Address], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
@@ -115,7 +114,7 @@ func GetSupplyTokenToVaultOptions() ([]types.Option, map[string][]types.Option, 
 	return tokenOptions, tokenToVaultOptions, nil
 }
 
-func GetMarketAndVaultOptions() ([]types.Option, []types.Option, error) {
+func GetMarketAndVaultOptions() ([]actions.Option, []actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, nil, err
@@ -126,9 +125,9 @@ func GetMarketAndVaultOptions() ([]types.Option, []types.Option, error) {
 		return nil, nil, err
 	}
 
-	marketOptions := make([]types.Option, 0)
+	marketOptions := make([]actions.Option, 0)
 	for _, market := range markets {
-		marketOptions = append(marketOptions, types.Option{
+		marketOptions = append(marketOptions, actions.Option{
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
@@ -136,10 +135,10 @@ func GetMarketAndVaultOptions() ([]types.Option, []types.Option, error) {
 		})
 	}
 
-	marketAndVaultOptions := make([]types.Option, len(marketOptions))
+	marketAndVaultOptions := make([]actions.Option, len(marketOptions))
 	copy(marketAndVaultOptions, marketOptions)
 	for _, vault := range vaults {
-		marketAndVaultOptions = append(marketAndVaultOptions, types.Option{
+		marketAndVaultOptions = append(marketAndVaultOptions, actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
@@ -151,8 +150,8 @@ func GetMarketAndVaultOptions() ([]types.Option, []types.Option, error) {
 }
 
 func GetCollateralTokenToMarketOptions() (
-	[]types.Option,
-	map[string][]types.Option,
+	[]actions.Option,
+	map[string][]actions.Option,
 	error,
 ) {
 	markets, err := GetMarkets()
@@ -161,12 +160,12 @@ func GetCollateralTokenToMarketOptions() (
 	}
 
 	seenCollateral := make(map[string]bool)
-	tokenOptions := make([]types.Option, 0)
-	tokenToMarketOptions := make(map[string][]types.Option)
+	tokenOptions := make([]actions.Option, 0)
+	tokenToMarketOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
 		if !seenCollateral[market.CollateralAsset.Address] {
-			tokenOptions = append(tokenOptions, types.Option{
+			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: market.CollateralAsset.Address,
@@ -177,7 +176,7 @@ func GetCollateralTokenToMarketOptions() (
 
 		tokenToMarketOptions[market.CollateralAsset.Address] = append(
 			tokenToMarketOptions[market.CollateralAsset.Address],
-			types.Option{
+			actions.Option{
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
@@ -190,19 +189,19 @@ func GetCollateralTokenToMarketOptions() (
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetBorrowTokenToMarketOptions() ([]types.Option, map[string][]types.Option, error) {
+func GetBorrowTokenToMarketOptions() ([]actions.Option, map[string][]actions.Option, error) {
 	markets, err := GetMarkets()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	seenLoanAssets := make(map[string]bool)
-	tokenOptions := make([]types.Option, 0)
-	tokenToMarketOptions := make(map[string][]types.Option)
+	tokenOptions := make([]actions.Option, 0)
+	tokenToMarketOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
 		if !seenLoanAssets[market.LoanAsset.Address] {
-			tokenOptions = append(tokenOptions, types.Option{
+			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.LoanAsset.Symbol,
 				Name:  market.LoanAsset.Name,
 				Value: market.LoanAsset.Address,
@@ -211,7 +210,7 @@ func GetBorrowTokenToMarketOptions() ([]types.Option, map[string][]types.Option,
 			seenLoanAssets[market.LoanAsset.Address] = true
 		}
 
-		tokenToMarketOptions[market.LoanAsset.Address] = append(tokenToMarketOptions[market.LoanAsset.Address], types.Option{
+		tokenToMarketOptions[market.LoanAsset.Address] = append(tokenToMarketOptions[market.LoanAsset.Address], actions.Option{
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
@@ -223,7 +222,7 @@ func GetBorrowTokenToMarketOptions() ([]types.Option, map[string][]types.Option,
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetSupplyAndCollateralTokenToMarketOptions() ([]types.Option, map[string][]types.Option, error) {
+func GetSupplyAndCollateralTokenToMarketOptions() ([]actions.Option, map[string][]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, nil, err
@@ -235,12 +234,12 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]types.Option, map[string][]
 	}
 
 	seenToken := make(map[string]bool)
-	tokenOptions := make([]types.Option, 0)
-	tokenToMarketAndVaultOptions := make(map[string][]types.Option)
+	tokenOptions := make([]actions.Option, 0)
+	tokenToMarketAndVaultOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
 		if !seenToken[market.CollateralAsset.Address] {
-			tokenOptions = append(tokenOptions, types.Option{
+			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: market.CollateralAsset.Address,
@@ -249,7 +248,7 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]types.Option, map[string][]
 			seenToken[market.CollateralAsset.Address] = true
 		}
 
-		tokenToMarketAndVaultOptions[market.CollateralAsset.Address] = append(tokenToMarketAndVaultOptions[market.LoanAsset.Address], types.Option{
+		tokenToMarketAndVaultOptions[market.CollateralAsset.Address] = append(tokenToMarketAndVaultOptions[market.LoanAsset.Address], actions.Option{
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
@@ -260,7 +259,7 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]types.Option, map[string][]
 
 	for _, vault := range vaults {
 		if !seenToken[vault.Asset.Address] {
-			tokenOptions = append(tokenOptions, types.Option{
+			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: vault.Asset.Address,
@@ -269,7 +268,7 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]types.Option, map[string][]
 			seenToken[vault.Asset.Address] = true
 		}
 
-		tokenToMarketAndVaultOptions[vault.Asset.Address] = append(tokenToMarketAndVaultOptions[vault.Asset.Address], types.Option{
+		tokenToMarketAndVaultOptions[vault.Asset.Address] = append(tokenToMarketAndVaultOptions[vault.Asset.Address], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,

@@ -1,4 +1,4 @@
-package types
+package actions
 
 import (
 	"encoding/json"
@@ -16,20 +16,25 @@ type ProtocolSchema struct {
 	Schema   map[string]Schema `json:"schema"`
 }
 
+type ChainSchema struct {
+	Type   string `default:"action" json:"type"`
+	Schema Schema `json:"schema"`
+}
+
 type Schema struct {
 	Type     string                `default:"action" json:"type"`
 	Sentence string                `json:"sentence"`
-	Options  map[int]SchemaOptions `json:"options,omitempty"`
+	Options  map[int]Options `json:"options,omitempty"`
 }
 
-func (o SchemaOptions) MarshalJSON() ([]byte, error) {
+func (o Options) MarshalJSON() ([]byte, error) {
 	if o.Simple != nil {
 		return json.Marshal(o.Simple)
 	}
 	return json.Marshal(o.Complex)
 }
 
-func (o *SchemaOptions) UnmarshalJSON(data []byte) error {
+func (o *Options) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &o.Simple); err == nil {
 		return nil
 	}
@@ -52,8 +57,3 @@ var (
 		{Label: "greater than", Name: "Greater Than", Value: "1"},
 	}
 )
-
-type ChainSchema struct {
-	Type   string `default:"action" json:"type"`
-	Schema Schema `json:"schema"`
-}

@@ -3,7 +3,6 @@ package ens
 import (
 	"fmt"
 	"solver/actions"
-	"solver/types"
 )
 
 const (
@@ -13,7 +12,7 @@ const (
 
 type EnsOptionsProvider struct{}
 
-func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
+func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
 	durationOptions, err := GetDurationOptions()
 	if err != nil {
 		return nil, err
@@ -21,15 +20,15 @@ func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]typ
 
 	switch action {
 	case actions.ActionRenew:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil
 	case actions.ConstraintPrice:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil
 	case TimeLeft:
-		return map[int]types.SchemaOptions{
+		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil
 	default:
@@ -37,8 +36,8 @@ func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]typ
 	}
 }
 
-func GetDurationOptions() ([]types.Option, error) {
-	return []types.Option{
+func GetDurationOptions() ([]actions.Option, error) {
+	return []actions.Option{
 		{
 			Value: fmt.Sprint(secondsPerMonth),
 			Label: "1 Month",

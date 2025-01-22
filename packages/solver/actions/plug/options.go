@@ -1,9 +1,11 @@
 package plug
 
-import "solver/types"
+import (
+	"solver/actions"
+)
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
+func (p *PlugOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
 	return nil, nil
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/solver/signature"
-	"solver/types"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -21,21 +20,21 @@ type BaseProtocolHandler interface {
 	GetTags() []string
 	GetActions() []string
 	GetChains() []int
-	GetSchema(chainId string, action string) (*types.ChainSchema, error)
-	GetSchemas() map[string]types.ChainSchema
+	GetSchema(chainId string, action string) (*ChainSchema, error)
+	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
 
 type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
-type OptionsHandler func(chainId int) (map[int]types.SchemaOptions, error)
+type OptionsHandler func(chainId int) (map[int]Options, error)
 
 type Protocol struct {
 	Name            string
 	Icon            string
 	Tags            []string
 	Chains          []int
-	OptionsProvider types.OptionsProvider
-	Schemas         map[string]types.ChainSchema
+	OptionsProvider OptionsProvider
+	Schemas         map[string]ChainSchema
 	txHandlers      map[string]TransactionHandler
 	optHandlers     map[string]OptionsHandler
 }
@@ -63,7 +62,7 @@ func NewBaseHandler(
 	tags []string,
 	chains []int,
 	actionDefinitions map[string]ActionDefinition,
-	optionsProvider types.OptionsProvider,
+	optionsProvider OptionsProvider,
 ) *BaseHandler {
 	// Extract sentences and handlers from definitions
 	sentences := make(map[string]string, len(actionDefinitions))
@@ -75,7 +74,7 @@ func NewBaseHandler(
 
 	// Create options handlers for each action
 	getOptionsFor := func(action string) OptionsHandler {
-		return func(chainId int) (map[int]types.SchemaOptions, error) {
+		return func(chainId int) (map[int]Options, error) {
 			return optionsProvider.GetOptions(chainId, action)
 		}
 	}
@@ -86,13 +85,13 @@ func NewBaseHandler(
 	}
 
 	// Create cached provider
-	cachedProvider := types.NewCachedOptionsProvider(optionsProvider)
+	cachedProvider := NewCachedOptionsProvider(optionsProvider)
 
 	// Initialize schemas
-	schemas := make(map[string]types.ChainSchema, len(actionDefinitions))
+	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
-		schemas[action] = types.ChainSchema{
-			Schema: types.Schema{
+		schemas[action] = ChainSchema{
+			Schema: Schema{
 				Type: func() string {
 					if def.Type == "" {
 						return TypeAction
@@ -157,11 +156,11 @@ func (h *BaseHandler) GetActions() []string {
 	return actions
 }
 
-func (h *BaseHandler) GetSchemas() map[string]types.ChainSchema {
+func (h *BaseHandler) GetSchemas() map[string]ChainSchema {
 	return h.protocol.Schemas
 }
 
-func (h *BaseHandler) GetSchema(chainId string, action string) (*types.ChainSchema, error) {
+func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, error) {
 	chainSchema, exists := h.protocol.Schemas[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)
