@@ -102,7 +102,7 @@ func GetCollateralAssetOptions(chainId int) ([]types.Option, error) {
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info:  rate,
-			Value: reserve.UnderlyingAsset.String(),
+			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
 		})
 	}
 
@@ -138,7 +138,7 @@ func GetBorrowAssetOptions(chainId int) ([]types.Option, error) {
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info:  rate,
-			Value: reserve.UnderlyingAsset.String(),
+			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
 		})
 	}
 

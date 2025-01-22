@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"math/big"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -99,4 +101,92 @@ func IsBytes(value string, size int) bool {
 
 	value = strings.TrimPrefix(value, "0x")
 	return len(value) == size*2
+}
+
+func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
+    // Create a copy of the input value to avoid modifying it
+    result := new(big.Float).SetFloat64(value)
+    
+    // Calculate 10^decimals
+    multiplier := new(big.Int).Exp(
+        big.NewInt(10), 
+        big.NewInt(int64(decimals)), 
+        nil,
+    )
+    
+    // Multiply result by 10^decimals
+    result.Mul(result, new(big.Float).SetInt(multiplier))
+    
+    // Convert to int and check for accuracy
+    intValue, accuracy := result.Int(nil)
+    if accuracy != big.Exact {
+        return nil, fmt.Errorf("loss of precision when converting %v to uint with %d decimals", value, decimals)
+    }
+    
+    return intValue, nil
+}
+
+func StringToUint(value string, decimals uint8) (*big.Int, error) {
+    // Split on decimal point
+    parts := strings.Split(value, ".")
+    if len(parts) > 2 {
+        return nil, fmt.Errorf("invalid decimal number format: %s", value)
+    }
+
+    // Handle the integer part
+    intPart, ok := new(big.Int).SetString(parts[0], 10)
+    if !ok {
+        return nil, fmt.Errorf("failed to parse %s as a decimal number", value)
+    }
+
+    // Calculate 10^decimals
+    multiplier := new(big.Int).Exp(
+        big.NewInt(10),
+        big.NewInt(int64(decimals)),
+        nil,
+    )
+
+    // Multiply integer part by multiplier
+    result := new(big.Int).Mul(intPart, multiplier)
+
+    // Handle decimal part if it exists
+    if len(parts) == 2 {
+        decimalPart := parts[1]
+        if len(decimalPart) > int(decimals) {
+            decimalPart = decimalPart[:decimals] // truncate extra precision
+        } else {
+            // Pad with zeros if needed
+            decimalPart = decimalPart + strings.Repeat("0", int(decimals)-len(decimalPart))
+        }
+        
+        fraction, ok := new(big.Int).SetString(decimalPart, 10)
+        if !ok {
+            return nil, fmt.Errorf("failed to parse decimal part: %s", decimalPart)
+        }
+        result.Add(result, fraction)
+    }
+
+    if result.Sign() < 0 || result.Cmp(Uint256Max) > 0 {
+        return nil, fmt.Errorf("failed to convert %s string amount to uint", value)
+    }
+
+    return result, nil
+}
+
+func ParseAddressAndDecimals(input string) (address string, decimals uint8, err error) {
+	parts := strings.Split(input, ":")
+	if len(parts) != 2 {
+		return "", 0, fmt.Errorf("invalid input format: %s", input)
+	}
+	
+	if !IsAddress(parts[0]) {
+		return "", 0, fmt.Errorf("invalid address: %s", parts[0])
+	}
+	
+	decimals64, err := strconv.ParseUint(parts[1], 10, 8)
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to parse decimals: %v", err)
+	}
+	
+	return parts[0], uint8(decimals64), nil
 }

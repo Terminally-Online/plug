@@ -11,6 +11,7 @@ import (
 	"solver/bindings/morpho_vault"
 	"solver/types"
 	"solver/utils"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -20,12 +21,22 @@ func HandleEarn(
 	params actions.HandlerParams,
 ) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string   `json:"amount"`
 		Token  string   `json:"token"`
 		Vault  string   `json:"vault"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %w", err)
+	}
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert earn amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -35,7 +46,7 @@ func HandleEarn(
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
 		common.HexToAddress(inputs.Vault),
-		inputs.Amount,
+		amount,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack approve calldata: %w", err)
@@ -47,7 +58,7 @@ func HandleEarn(
 	}
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
-		inputs.Amount,
+		amount,
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
@@ -56,7 +67,7 @@ func HandleEarn(
 
 	return []*types.Transaction{
 		{
-			To:   inputs.Token,
+			To:   token,
 			Data: "0x" + common.Bytes2Hex(approveCalldata),
 		},
 		{
@@ -71,12 +82,22 @@ func HandleSupplyCollateral(
 	params actions.HandlerParams,
 ) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string   `json:"amount"`
 		Token  string   `json:"token"`
 		Target string   `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal supply collateral inputs: %w", err)
+	}
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -91,7 +112,7 @@ func HandleSupplyCollateral(
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
 		common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
-		inputs.Amount,
+		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
@@ -104,7 +125,7 @@ func HandleSupplyCollateral(
 	supplyCollateralCalldata, err := morphoAbi.Pack(
 		"supplyCollateral",
 		market.Params,
-		inputs.Amount,
+		amount,
 		common.HexToAddress(params.From),
 		[]byte{},
 	)
@@ -114,7 +135,7 @@ func HandleSupplyCollateral(
 
 	return []*types.Transaction{
 		{
-			To:   inputs.Token,
+			To:   token,
 			Data: "0x" + common.Bytes2Hex(approveCalldata),
 		},
 		{
@@ -126,12 +147,22 @@ func HandleSupplyCollateral(
 
 func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string `json:"amount"`
 		Token  string   `json:"token"`
 		Target string   `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
+	}
+
+	_, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert withdraw collateral amount to uint: %w", err)
 	}
 
 	if len(inputs.Target) == 42 {
@@ -146,7 +177,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		}
 		withdrawCalldata, err := vaultAbi.Pack(
 			"withdraw",
-			inputs.Amount,
+			amount,
 			common.HexToAddress(params.From),
 			common.HexToAddress(params.From),
 		)
@@ -174,7 +205,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	withdrawCalldata, err := morphoAbi.Pack(
 		"withdraw",
 		market.Params,
-		inputs.Amount,
+		amount,
 		big.NewInt(0),
 		common.HexToAddress(params.From),
 		common.HexToAddress(params.From),
@@ -283,12 +314,22 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string   `json:"amount"`
 		Token  string   `json:"token"`
 		Target string   `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw collateral inputs: %w", err)
+	}
+
+	_, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -303,7 +344,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*t
 	borrowCalldata, err := morphoAbi.Pack(
 		"borrow",
 		market.Params,
-		inputs.Amount,
+		amount,
 		big.NewInt(0),
 		common.HexToAddress(params.From),
 		common.HexToAddress(params.From),
@@ -322,12 +363,22 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*t
 
 func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string   `json:"amount"`
 		Token  string   `json:"token"`
 		Target string   `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
+	}
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert repay amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -336,7 +387,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*ty
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
 		utils.Mainnet.References["morpho"]["router"]),
-		inputs.Amount,
+		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
@@ -353,7 +404,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*ty
 	repayCalldata, err := morphoAbi.Pack(
 		"repay",
 		market.Params,
-		inputs.Amount,
+		amount,
 		big.NewInt(0),
 		common.HexToAddress(params.From),
 		[]byte{},
@@ -364,7 +415,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*ty
 
 	return []*types.Transaction{
 		{
-			To:   inputs.Token,
+			To:   token,
 			Data: "0x" + common.Bytes2Hex(approveCalldata),
 		},
 		{
@@ -381,6 +432,11 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay max inputs: %w", err)
+	}
+
+	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -441,7 +497,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	return []*types.Transaction{
 		{
-			To:   inputs.Token,
+			To:   token,
 			Data: "0x" + common.Bytes2Hex(approveCalldata),
 		},
 		{
@@ -498,11 +554,14 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	var inputs struct {
 		Target    string     `json:"target"`
 		Operator  int8       `json:"operator"`
-		Threshold *big.Float `json:"threshold"`
+		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor constraint inputs: %w", err)
 	}
+
+	// Morpho has health factor formatted as a WAD (18 decimals)
+	threshold, err := utils.StringToUint(inputs.Threshold, 18)
 
 	market, err := GetMarket(inputs.Target)
 	if err != nil {
@@ -534,16 +593,16 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		mulDivDown(position.Collateral, market.State.Price, OraclePriceScale),
 		market.LLTV,
 	)
-	healthFactor := new(big.Float).SetInt(wDivDown(maxBorrow, borrowAssets))
+	healthFactor := wDivDown(maxBorrow, borrowAssets)
 
 	switch inputs.Operator {
 	case -1:
-		if healthFactor.Cmp(inputs.Threshold) >= 0 {
-			return nil, fmt.Errorf("health factor %.2f is not less than threshold %.2f", healthFactor, inputs.Threshold)
+		if healthFactor.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("health factor %.2f is not less than threshold %.2f", healthFactor, threshold)
 		}
 	case 1:
-		if healthFactor.Cmp(inputs.Threshold) <= 0 {
-			return nil, fmt.Errorf("health factor %.2f is not greater than threshold %.2f", healthFactor, inputs.Threshold)
+		if healthFactor.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("health factor %.2f is not greater than threshold %.2f", healthFactor, threshold)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
@@ -557,10 +616,15 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		Direction int     `json:"direction"` // -1 for borrow, 1 for deposit
 		Target    string  `json:"target"`    // Underlying market or vault
 		Operator  int     `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold float64 `json:"threshold"` // Percentage
+		Threshold string  `json:"threshold"` // Percentage
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs: %w", err)
+	}
+
+	thresholdFloat, err := strconv.ParseFloat(inputs.Threshold, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse threshold float: %w", err)
 	}
 
 	var currentRate float64
@@ -593,12 +657,12 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 	switch inputs.Operator {
 	case -1:
-		if currentRate >= inputs.Threshold {
-			return nil, fmt.Errorf("current rate %.2f%% is not less than threshold %.2f%%", currentRate, inputs.Threshold)
+		if currentRate >= thresholdFloat {
+			return nil, fmt.Errorf("current rate %.2f%% is not less than threshold %.2f%%", currentRate, thresholdFloat)
 		}
 	case 1:
-		if currentRate <= inputs.Threshold {
-			return nil, fmt.Errorf("current rate %.2f%% is not greater than threshold %.2f%%", currentRate, inputs.Threshold)
+		if currentRate <= thresholdFloat {
+			return nil, fmt.Errorf("current rate %.2f%% is not greater than threshold %.2f%%", currentRate, thresholdFloat)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
