@@ -1,9 +1,14 @@
 package utils
 
 import (
+	"context"
 	"fmt"
+	"math/big"
 	"os"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -39,4 +44,23 @@ func GetProvider(chainId int) (*ethclient.Client, error) {
 	}
 
 	return ethClient, nil
+}
+
+func BuildCallOpts(address string, value *big.Int) *bind.CallOpts {
+	return &bind.CallOpts{
+		From: common.HexToAddress(address),
+		Pending: true,
+		Context: context.Background(),
+	}
+}
+
+func BuildTransactionOpts(address string, value *big.Int) *bind.TransactOpts {
+	return &bind.TransactOpts{
+		From: common.HexToAddress(address),
+		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
+			return tx, nil
+		},
+		NoSend:    true,
+		Value:     value,
+	}
 }
