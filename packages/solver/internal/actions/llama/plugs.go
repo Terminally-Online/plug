@@ -2,7 +2,7 @@ package llama
 
 import (
 	"encoding/json"
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/solver/signature"
 )
 

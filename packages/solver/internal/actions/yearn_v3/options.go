@@ -2,7 +2,7 @@ package yearn_v3
 
 import (
 	"fmt"
-	"solver/actions"
+	"solver/internal/actions"
 	"strings"
 )
 

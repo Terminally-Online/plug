@@ -1,7 +1,7 @@
 package plug
 
 import (
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 

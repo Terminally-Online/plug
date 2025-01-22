@@ -2,7 +2,7 @@ package morpho
 
 import (
 	"fmt"
-	"solver/actions"
+	"solver/internal/actions"
 )
 
 type MorphoOptionsProvider struct{}

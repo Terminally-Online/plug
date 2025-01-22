@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"solver/actions"
+	"solver/internal/actions"
 )
 
 type NounsOptionsProvider struct{}

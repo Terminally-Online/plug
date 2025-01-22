@@ -2,7 +2,7 @@ package ens
 
 import (
 	"fmt"
-	"solver/actions"
+	"solver/internal/actions"
 )
 
 const (

@@ -3,7 +3,7 @@ package aave_v3
 import (
 	"fmt"
 	"math/big"
-	"solver/actions"
+	"solver/internal/actions"
 )
 
 type AaveOptionsProvider struct{}

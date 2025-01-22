@@ -2,7 +2,7 @@ package aave_v3
 
 import (
 	"math/big"
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 

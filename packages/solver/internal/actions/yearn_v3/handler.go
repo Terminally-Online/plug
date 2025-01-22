@@ -1,7 +1,7 @@
 package yearn_v3
 
 import (
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 

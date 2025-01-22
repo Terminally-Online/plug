@@ -1,7 +1,7 @@
 package nouns
 
 import (
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 

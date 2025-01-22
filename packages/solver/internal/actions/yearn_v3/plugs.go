@@ -6,10 +6,10 @@ import (
 	"math/big"
 	"strings"
 
-	"solver/actions"
 	"solver/bindings/erc_20"
 	"solver/bindings/yearn_v3_gauge"
 	"solver/bindings/yearn_v3_pool"
+	"solver/internal/actions"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 

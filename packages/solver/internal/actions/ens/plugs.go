@@ -6,8 +6,8 @@ import (
 	"math/big"
 	"time"
 
-	"solver/actions"
 	"solver/bindings/ens_registrar_controller"
+	"solver/internal/actions"
 	"solver/internal/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"

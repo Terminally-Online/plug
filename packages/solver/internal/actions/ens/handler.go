@@ -1,7 +1,7 @@
 package ens
 
 import (
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 
@@ -12,8 +12,8 @@ var (
 
 	chains = references.Mainnet.ChainIds
 
-	GracePeriod  = "grace_period"
-	TimeLeft     = "time_left"
+	GracePeriod = "grace_period"
+	TimeLeft    = "time_left"
 
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionBuy: {

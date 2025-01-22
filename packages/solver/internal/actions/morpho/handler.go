@@ -1,7 +1,7 @@
 package morpho
 
 import (
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/references"
 )
 

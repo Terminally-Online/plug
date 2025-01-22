@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"solver/actions"
+	"solver/internal/actions"
 	"solver/internal/solver"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
