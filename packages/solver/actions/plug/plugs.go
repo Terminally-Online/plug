@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"solver/actions"
+	"solver/actions/llama"
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
 	"solver/cmd/references"
@@ -133,7 +134,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 
 	// Get current ETH price
 	var ethPrice float64
-	ethPrices, err := utils.GetPrices([]string{"ethereum:0x0000000000000000000000000000000000000000"})
+	ethPrices, err := llama.GetPrices([]string{"ethereum:0x0000000000000000000000000000000000000000"})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch ETH price: %v", err)
 	}
