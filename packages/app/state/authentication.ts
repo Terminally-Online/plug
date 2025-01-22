@@ -47,8 +47,10 @@ export const socketAtom = atom(get => {
 
 	const name = socket?.identity?.ens?.name ?? undefined
 	const avatar = socket?.identity?.ens?.avatar ?? undefined
+	const isAdmin = socket?.admin ?? false
 
 	return {
+		isAdmin,
 		isDemo,
 		isAnonymous,
 		isApproved,

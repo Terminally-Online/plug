@@ -24,6 +24,7 @@ import (
 
 type Solver struct {
 	protocols map[types.Protocol]actions.BaseProtocolHandler
+	isStopped  bool
 }
 
 func New() *Solver {
@@ -36,6 +37,7 @@ func New() *Solver {
 			types.ProtocolNouns:   nouns.New(),
 			types.ProtocolMorpho:  morpho.New(),
 		},
+		isStopped: false,
 	}
 }
 
@@ -234,8 +236,24 @@ func (s *Solver) GetSimulation(id string, plugs *types.Plugs) (SimulationRequest
 	}, nil
 }
 
-func (s *Solver) GetRun(transactions []*types.Transaction) {
+func (s *Solver) Stop() {
+	s.isStopped = true
+}
+
+func (s *Solver) Start() {
+	s.isStopped = false
+}
+
+func (s *Solver) IsStopped() bool {
+	return s.isStopped
+}
+
+func (s *Solver) GetRun(transactions []*types.Transaction) error {
+	if s.isStopped {
+		return fmt.Errorf("solver is currently stopped")
+	}
 	// TODO: Run the transactions through the entrypoint with our executor account.
+	return nil
 }
 
 func (s *Solver) PostSimulations(simulations []SimulationRequest) error {
