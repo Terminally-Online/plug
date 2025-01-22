@@ -1,7 +1,7 @@
 import { FC, HTMLAttributes } from "react"
 import { Button } from "@/components/shared/buttons/button"
 import { api } from "@/server/client"
-import { Square, Play } from "lucide-react"
+import { Square, PlaySquare, Loader, PlayIcon } from "lucide-react"
 
 export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const solverStatus = api.jobs.maintenance.getSolverStatus.useQuery(undefined, {
@@ -34,14 +34,14 @@ export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 				variant={isStopped ? "primary" : "destructive"}
 				onClick={toggleSolver}
 				disabled={toggleSolverMutation.isLoading || solverStatus.isLoading}
-				className="h-8 w-8 p-0"
+				className="h-8 w-8 p-0 flex items-center justify-center"
 			>
-				{toggleSolverMutation.isLoading ? (
-					<span className="animate-spin">⌛</span>
+				{toggleSolverMutation.isLoading || solverStatus.isLoading ? (
+					<Loader className="h-4 w-4 animate-spin" />
 				) : isStopped ? (
-					<Play className="h-4 w-4" />
+					<PlayIcon className="h-4 w-4 fill-current" />
 				) : (
-					<Square className="h-4 w-4" />
+					<Square className="h-4 w-4 fill-current" />
 				)}
 			</Button>
 		</div>

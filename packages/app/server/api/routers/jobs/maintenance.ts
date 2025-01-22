@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { getMetadataForToken } from "@/lib/opensea/metadata"
 
-import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
+import { apiKeyProcedure, createTRPCRouter, protectedProcedure } from "../../trpc"
 import { TRPCError } from "@trpc/server"
 
 const CLEANUP_OLDER_THAN_DAYS = 7
@@ -57,11 +57,23 @@ export const maintenance = createTRPCRouter({
 			return results
 		}),
 
-	getSolverStatus: apiKeyProcedure.query(async ({ ctx }) => {
+	getSolverStatus: protectedProcedure.query(async ({ ctx }) => {
+		// First check if the user is an admin
+		const socket = await ctx.db.userSocket.findFirst({
+			where: { id: ctx.session?.address }
+		})
+		
+		if (!socket?.admin) {
+			throw new TRPCError({
+				code: 'UNAUTHORIZED',
+				message: 'Admin access required'
+			})
+		}
+
 		try {
 			const response = await fetch(`${process.env.SOLVER_URL}/admin/solver/status`, {
 				headers: {
-					'x-api-key': process.env.ADMIN_API_KEY ?? ""
+					'x-api-key': process.env.ADMIN_API_KEY ?? "",
 				}
 			})
 
@@ -79,7 +91,7 @@ export const maintenance = createTRPCRouter({
 		}
 	}),
 
-	toggleSolverPause: apiKeyProcedure
+	toggleSolverPause: protectedProcedure
 		.input(z.object({ action: z.enum(["start", "stop"]) }))
 		.mutation(async ({ input, ctx }) => {
 			// Check if user is admin
