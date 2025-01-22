@@ -66,8 +66,8 @@ export const Header: FC<Props> = ({
 						href={nextHref}
 						onClick={nextOnClick}
 						className={cn(
-							"outline-none",
-							size === "md" && nextPadded === true ? "rounded-sm px-2 py-1 text-xs" : "rounded-sm p-1",
+							"outline-none h-8 w-8 p-0 flex items-center justify-center",
+							size === "md" && nextPadded === true ? "rounded-sm" : "rounded-sm",
 							children === undefined && "ml-auto"
 						)}
 					>
