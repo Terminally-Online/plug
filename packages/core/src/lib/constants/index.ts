@@ -1,5 +1,6 @@
 import { Contract } from '@/src/lib/types'
 
+export * from "./bundle"
 export * from "./schema"
 
 export const contractsPath = 'src/contracts'
