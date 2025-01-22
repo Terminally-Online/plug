@@ -9,8 +9,8 @@ import (
 	"solver/actions"
 	"solver/bindings/ens_registrar_controller"
 	"solver/internal/references"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

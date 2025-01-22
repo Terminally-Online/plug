@@ -2,7 +2,7 @@ package cron
 
 import (
 	"log"
-	"solver/solver"
+	"solver/internal/solver"
 )
 
 func Simulations() {

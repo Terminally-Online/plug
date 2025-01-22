@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"solver/utils"
+	"solver/internal/utils"
 )
 
 const (

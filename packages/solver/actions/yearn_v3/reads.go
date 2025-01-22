@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"solver/utils"
+	"solver/internal/utils"
 	"time"
 )
 

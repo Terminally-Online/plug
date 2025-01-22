@@ -1,7 +1,7 @@
 package actions
 
 import (
-	"solver/utils"
+	"solver/internal/utils"
 	"sync"
 	"time"
 )

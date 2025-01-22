@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"solver/internal/references"
-	"solver/utils"
+	"solver/internal/utils"
 
 	"github.com/joho/godotenv"
 )

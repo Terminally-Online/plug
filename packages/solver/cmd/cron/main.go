@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"solver/internal/cron"
-	"solver/utils"
+	"solver/internal/utils"
 	"time"
 
 	"github.com/joho/godotenv"

@@ -6,7 +6,7 @@ import (
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/internal/references"
-	"solver/utils"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

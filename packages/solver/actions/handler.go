@@ -3,7 +3,7 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
-	"solver/solver/signature"
+	"solver/internal/solver/signature"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/ethclient"

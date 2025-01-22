@@ -13,8 +13,8 @@ import (
 	"solver/actions/nouns"
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"

@@ -5,7 +5,7 @@ import (
 	"log"
 	"math/big"
 	"os"
-	"solver/utils"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"

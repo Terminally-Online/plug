@@ -10,8 +10,8 @@ import (
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
 	"solver/internal/references"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"

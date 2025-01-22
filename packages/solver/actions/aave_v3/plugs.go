@@ -9,8 +9,8 @@ import (
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
 	"solver/internal/references"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

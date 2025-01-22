@@ -10,8 +10,8 @@ import (
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
 	"solver/internal/references"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

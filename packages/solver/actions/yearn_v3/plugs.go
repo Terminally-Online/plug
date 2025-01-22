@@ -10,8 +10,8 @@ import (
 	"solver/bindings/erc_20"
 	"solver/bindings/yearn_v3_gauge"
 	"solver/bindings/yearn_v3_pool"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

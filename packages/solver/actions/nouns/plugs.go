@@ -9,8 +9,8 @@ import (
 	"solver/bindings/nouns_auction_house"
 	"solver/bindings/nouns_token"
 	"solver/internal/references"
-	"solver/solver/signature"
-	"solver/utils"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )

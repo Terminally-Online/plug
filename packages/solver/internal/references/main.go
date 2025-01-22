@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"solver/utils"
+	"solver/internal/utils"
 	"strings"
 	"time"
 )
@@ -203,4 +203,3 @@ func GenerateReferences() error {
 
 	return nil
 }
-

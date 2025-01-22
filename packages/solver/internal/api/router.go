@@ -1,8 +1,8 @@
-package router
+package api
 
 import (
 	"net/http"
-	"solver/solver"
+	"solver/internal/solver"
 
 	"github.com/gorilla/mux"
 )

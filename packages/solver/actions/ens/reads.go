@@ -8,7 +8,7 @@ import (
 	"solver/bindings/ens_base_registrar"
 	"solver/bindings/ens_registrar_controller"
 	"solver/internal/references"
-	"solver/utils"
+	"solver/internal/utils"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
