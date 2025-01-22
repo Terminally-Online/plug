@@ -2,6 +2,7 @@ package ens
 
 import (
 	"fmt"
+	"solver/actions"
 	"solver/types"
 )
 
@@ -12,22 +13,22 @@ const (
 
 type EnsOptionsProvider struct{}
 
-func (p *EnsOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
 	durationOptions, err := GetDurationOptions()
 	if err != nil {
 		return nil, err
 	}
 
 	switch action {
-	case types.ActionRenew:
+	case actions.ActionRenew:
 		return map[int]types.SchemaOptions{
 			1: {Simple: durationOptions},
 		}, nil
-	case types.Action(RenewalPrice):
+	case actions.ConstraintPrice:
 		return map[int]types.SchemaOptions{
 			1: {Simple: durationOptions},
 		}, nil
-	case types.Action(TimeLeft):
+	case TimeLeft:
 		return map[int]types.SchemaOptions{
 			1: {Simple: durationOptions},
 		}, nil

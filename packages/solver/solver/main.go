@@ -14,7 +14,6 @@ import (
 	"solver/actions/plug"
 	"solver/actions/yearn_v3"
 	"solver/solver/signature"
-	"solver/types"
 	"solver/utils"
 	"time"
 
@@ -23,33 +22,33 @@ import (
 )
 
 type Solver struct {
-	protocols map[types.Protocol]actions.BaseProtocolHandler
+	protocols map[string]actions.BaseProtocolHandler
 }
 
 func New() *Solver {
 	return &Solver{
-		protocols: map[types.Protocol]actions.BaseProtocolHandler{
-			types.ProtocolPlug:    plug.New(),
-			types.ProtocolAaveV3:  aave_v3.New(),
-			types.ProtocolYearnV3: yearn_v3.New(),
-			types.ProtocolENS:     ens.New(),
-			types.ProtocolNouns:   nouns.New(),
-			types.ProtocolMorpho:  morpho.New(),
+		protocols: map[string]actions.BaseProtocolHandler{
+			actions.ProtocolPlug:    plug.New(),
+			actions.ProtocolAaveV3:  aave_v3.New(),
+			actions.ProtocolYearnV3: yearn_v3.New(),
+			actions.ProtocolENS:     ens.New(),
+			actions.ProtocolNouns:   nouns.New(),
+			actions.ProtocolMorpho:  morpho.New(),
 		},
 	}
 }
 
-func (s *Solver) GetProtocols() map[types.Protocol]actions.BaseProtocolHandler {
+func (s *Solver) GetProtocols() map[string]actions.BaseProtocolHandler {
 	return s.protocols
 }
 
-func (s *Solver) GetProtocolHandler(protocol types.Protocol) (actions.BaseProtocolHandler, bool) {
+func (s *Solver) GetProtocolHandler(protocol string) (actions.BaseProtocolHandler, bool) {
 	handler, exists := s.protocols[protocol]
 	return handler, exists
 }
 
-func (s *Solver) GetSupportedProtocols(action types.Action) []types.Protocol {
-	supported := make([]types.Protocol, 0)
+func (s *Solver) GetSupportedProtocols(action string) []string {
+	supported := make([]string, 0)
 	for protocol, handler := range s.protocols {
 		for _, supportedAction := range handler.GetActions() {
 			if supportedAction == action {
@@ -81,13 +80,12 @@ func (s *Solver) GetExecutions() (ExecutionsRequest, error) {
 }
 
 func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from string) ([]signature.Plug, error) {
-	var inputs types.BaseInputs
+	var inputs struct {
+		Protocol string `json:"protocol"`
+		Action   string `json:"action"`
+	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
-	}
-
-	if err := inputs.Validate(); err != nil {
-		return nil, err
 	}
 
 	handler, exists := s.protocols[inputs.Protocol]

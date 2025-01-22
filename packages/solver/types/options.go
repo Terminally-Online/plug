@@ -20,17 +20,16 @@ type SchemaOptions struct {
 }
 
 type OptionsProvider interface {
-	GetOptions(chainId int, action Action) (map[int]SchemaOptions, error)
+	GetOptions(chainId int, action string) (map[int]SchemaOptions, error)
 }
 
-// Cache error messages
 var (
 	errFailedGetOptions = "failed to get options: %w"
 )
 
 type cacheKey struct {
 	chainId int
-	action  Action
+	action  string
 }
 
 type cachedOptions struct {
@@ -45,17 +44,15 @@ type CachedOptionsProvider struct {
 }
 
 func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
-	// Pre-allocate cache map with a reasonable initial size
 	return &CachedOptionsProvider{
 		provider: provider,
-		cache:    make(map[cacheKey]cachedOptions, 32), // Space for 32 action/chain combinations
+		cache:    make(map[cacheKey]cachedOptions, 32),
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]SchemaOptions, error) {
+func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]SchemaOptions, error) {
 	key := cacheKey{chainId: chainId, action: action}
 
-	// Try to get from cache first using RLock
 	c.mu.RLock()
 	if cached, ok := c.cache[key]; ok && time.Now().Before(cached.expiry) {
 		c.mu.RUnlock()
@@ -63,18 +60,15 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]
 	}
 	c.mu.RUnlock()
 
-	// If not in cache or expired, get fresh options
 	options, err := c.provider.GetOptions(chainId, action)
 	if err != nil {
 		return nil, fmt.Errorf(errFailedGetOptions, err)
 	}
 
-	// Pre-allocate the options map if needed
 	if options == nil {
 		options = make(map[int]SchemaOptions)
 	}
 
-	// Update cache with write lock
 	c.mu.Lock()
 	c.cache[key] = cachedOptions{
 		options: options,
@@ -85,7 +79,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action Action) (map[int]
 	return options, nil
 }
 
-func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []Action) {
+func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []string) {
 	const maxWorkers = 4
 	sem := make(chan struct{}, maxWorkers)
 
@@ -94,7 +88,7 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []Action) {
 
 	for _, action := range actions {
 		sem <- struct{}{}
-		go func(action Action) {
+		go func(action string) {
 			defer func() {
 				<-sem
 				mu.Lock()

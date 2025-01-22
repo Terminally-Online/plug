@@ -4,6 +4,6 @@ import "solver/types"
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+func (p *PlugOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
 	return nil, nil
 }

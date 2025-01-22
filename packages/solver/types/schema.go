@@ -13,7 +13,7 @@ type ProtocolMetadata struct {
 
 type ProtocolSchema struct {
 	Metadata ProtocolMetadata  `json:"metadata"`
-	Schema   map[Action]Schema `json:"schema"`
+	Schema   map[string]Schema `json:"schema"`
 }
 
 type Schema struct {

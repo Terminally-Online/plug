@@ -9,14 +9,14 @@ import (
 
 type NounsOptionsProvider struct{}
 
-func (p *NounsOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+func (p *NounsOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
 	traitTypeOptions, traitOptions, err := GetTraitOptions()
 	if err != nil {
 		return nil, err
 	}
 
 	switch action {
-	case types.Action(HasTrait):
+	case HasTrait:
 		return map[int]types.SchemaOptions{
 			0: {Simple: traitTypeOptions},
 			1: {Complex: traitOptions},

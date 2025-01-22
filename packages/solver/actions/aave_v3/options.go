@@ -3,39 +3,40 @@ package aave_v3
 import (
 	"fmt"
 	"math/big"
+	"solver/actions"
 	"solver/types"
 )
 
 type AaveOptionsProvider struct{}
 
-func (p *AaveOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
 	collateralOptions, borrowOptions, err := GetOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
 
 	switch action {
-	case types.ActionDeposit:
+	case actions.ActionDeposit:
 		return map[int]types.SchemaOptions{
 			1: {Simple: collateralOptions},
 		}, nil
-	case types.ActionBorrow:
+	case actions.ActionBorrow:
 		return map[int]types.SchemaOptions{
 			0: {Simple: borrowOptions},
 		}, nil
-	case types.ActionRepay:
+	case actions.ActionRepay:
 		return map[int]types.SchemaOptions{
 			0: {Simple: borrowOptions},
 		}, nil
-	case types.ActionWithdraw:
+	case actions.ActionWithdraw:
 		return map[int]types.SchemaOptions{
 			0: {Simple: collateralOptions},
 		}, nil
-	case types.ConstraintHealthFactor:
+	case actions.ConstraintHealthFactor:
 		return map[int]types.SchemaOptions{
 			0: {Simple: types.BaseThresholdFields},
 		}, nil
-	case types.ConstraintAPY:
+	case actions.ConstraintAPY:
 		aggregatedOptions := func() []types.Option {
 			seen := make(map[string]bool)
 			options := make([]types.Option, 0)

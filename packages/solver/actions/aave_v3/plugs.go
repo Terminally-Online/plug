@@ -9,7 +9,6 @@ import (
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
 	"solver/solver/signature"
-	"solver/types"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -17,7 +16,6 @@ import (
 
 func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		types.BaseInputs
 		Token  string   `json:"token"`
 		Amount *big.Int `json:"amount"`
 	}
@@ -65,12 +63,12 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 }
 
 func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs types.BorrowInputs
+	var inputs struct {
+		Token  string   `json:"token"`
+		Amount *big.Int `json:"amount"`
+	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %v", err)
-	}
-	if err := inputs.Validate(); err != nil {
-		return nil, err
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -78,8 +76,8 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrABIFailed("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("borrow",
-		common.HexToAddress(inputs.TokenOut),
-		inputs.AmountOut,
+		common.HexToAddress(inputs.Token),
+		inputs.Amount,
 		interestRateMode,
 		uint16(0),
 		common.HexToAddress(params.From),
@@ -95,12 +93,12 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 }
 
 func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs types.RepayInputs
+	var inputs struct {
+		Token  string  `json:"token"`  // Address of the token to repay.
+		Amount big.Int `json:"amount"` // Raw amount of tokens to repay.
+	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %v", err)
-	}
-	if err := inputs.Validate(); err != nil {
-		return nil, err
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -110,7 +108,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
 		common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
-		inputs.AmountIn,
+		inputs.Amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransactionFailed(err.Error())
@@ -121,8 +119,8 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrABIFailed("AaveV3Pool")
 	}
 	repayCalldata, err := poolAbi.Pack("repay",
-		common.HexToAddress(inputs.TokenIn),
-		inputs.AmountIn,
+		common.HexToAddress(inputs.Token),
+		inputs.Amount,
 		interestRateMode,
 		common.HexToAddress(params.From),
 	)
@@ -131,7 +129,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(inputs.TokenIn),
+		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
 		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
@@ -140,12 +138,13 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 }
 
 func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs types.WithdrawInputs
+	var inputs struct {
+		Token  string   `json:"token"`  // Address of the token to receive (redeeming for).
+		Amount *big.Int `json:"amount"` // Raw amount of tokens to send.
+	}
+
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %v", err)
-	}
-	if err := inputs.Validate(); err != nil {
-		return nil, err
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -153,8 +152,8 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrABIFailed("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("withdraw",
-		common.HexToAddress(inputs.TokenOut),
-		inputs.AmountOut,
+		common.HexToAddress(inputs.Token),
+		inputs.Amount,
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
@@ -168,12 +167,12 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 }
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs types.ThresholdInputs
+	var inputs struct {
+		Operator  int        `json:"operator"`  // The operator to use for the threshold comparison.
+		Threshold *big.Float `json:"threshold"` // The threshold value to compare against.
+	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor inputs")
-	}
-	if err := inputs.Validate(); err != nil {
-		return nil, err
 	}
 
 	healthFactor, err := getHealthFactor(params.ChainId, params.From)

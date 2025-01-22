@@ -35,12 +35,12 @@ func NewIntentHandler(solver *solver.Solver) *IntentHandler {
 
 func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
-	action := types.Action(r.URL.Query().Get("action"))
+	action := r.URL.Query().Get("action")
 	chainId := r.URL.Query().Get("chainId")
 
 	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
-		allSchemas := make(map[types.Protocol]types.ProtocolSchema)
+		allSchemas := make(map[string]types.ProtocolSchema)
 
 		for protocol, handler := range intentHandler.solver.GetProtocols() {
 			protocolSchema := types.ProtocolSchema{
@@ -49,7 +49,7 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 					Tags:   handler.GetTags(),
 					Chains: handler.GetChains(),
 				},
-				Schema: make(map[types.Action]types.Schema),
+				Schema: make(map[string]types.Schema),
 			}
 
 			// Get all schemas without options
@@ -71,7 +71,7 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	handler, exists := intentHandler.solver.GetProtocolHandler(types.Protocol(protocol))
+	handler, exists := intentHandler.solver.GetProtocolHandler(protocol)
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -85,7 +85,7 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 				Tags:   handler.GetTags(),
 				Chains: handler.GetChains(),
 			},
-			Schema: make(map[types.Action]types.Schema),
+			Schema: make(map[string]types.Schema),
 		}
 
 		schemas := handler.GetSchemas()
@@ -98,8 +98,8 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 			}
 		}
 
-		response := map[types.Protocol]types.ProtocolSchema{
-			types.Protocol(protocol): protocolSchema,
+		response := map[string]types.ProtocolSchema{
+			protocol: protocolSchema,
 		}
 
 		if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -121,13 +121,13 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 			Tags:   handler.GetTags(),
 			Chains: handler.GetChains(),
 		},
-		Schema: map[types.Action]types.Schema{
+		Schema: map[string]types.Schema{
 			action: chainSchema.Schema,
 		},
 	}
 
-	response := map[types.Protocol]types.ProtocolSchema{
-		types.Protocol(protocol): protocolSchema,
+	response := map[string]types.ProtocolSchema{
+		protocol: protocolSchema,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {

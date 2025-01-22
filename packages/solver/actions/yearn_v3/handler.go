@@ -2,7 +2,6 @@ package yearn_v3
 
 import (
 	"solver/actions"
-	"solver/types"
 	"solver/utils"
 )
 
@@ -12,37 +11,37 @@ var (
 	tags = []string{"yield", "defi"}
 
 	chains  = utils.Mainnet.ChainIds
-	schemas = map[types.Action]actions.ActionDefinition{
-		types.ActionDeposit: {
+	schemas = map[string]actions.ActionDefinition{
+		actions.ActionDeposit: {
 			Sentence: "Deposit {0<amount:uint256>} {1<token:address>} into {1=>2<vault:address>}.",
 			Handler:  HandleActionDeposit,
 		},
-		types.ActionWithdraw: {
+		actions.ActionWithdraw: {
 			Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<vault:address>}.",
 			Handler:  HandleActionWithdraw,
 		},
-		// types.ActionWithdrawMax: {
+		// actions.ActionWithdrawMax: {
 		// 	Sentence: "Withdraw max {0<token:address>} from {0=>1<vault:address>}",
 		// 	Handler:  HandleActionWithdrawMax,
 		// },
-		types.ActionStake: {
+		actions.ActionStake: {
 			Sentence: "Stake {0<amount:uint256>} {1<token:address>}",
 			Handler:  HandleActionStake,
 		},
-		types.ActionStakeMax: {
+		actions.ActionStakeMax: {
 			Sentence: "Stake max {0<token:address>}",
 			Handler:  HandleActionStakeMax,
 		},
-		types.ActionRedeem: {
+		actions.ActionRedeem: {
 			Sentence: "Redeem {0<amount:uint256>} {1<token:address>}",
 			Handler:  HandleActionRedeem,
 		},
-		types.ActionRedeemMax: {
+		actions.ActionRedeemMax: {
 			Sentence: "Redeem max staking rewards for {0<token:address>}",
 			Handler:  HandleActionRedeemMax,
 		},
-		types.ConstraintAPY: {
-			Type:     types.TypeConstraint,
+		actions.ConstraintAPY: {
+			Type:     actions.TypeConstraint,
 			Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:uint256>}%.",
 			Handler:  HandleConstraintAPY,
 		},

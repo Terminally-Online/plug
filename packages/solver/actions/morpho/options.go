@@ -2,12 +2,13 @@ package morpho
 
 import (
 	"fmt"
+	"solver/actions"
 	"solver/types"
 )
 
 type MorphoOptionsProvider struct{}
 
-func (p *MorphoOptionsProvider) GetOptions(chainId int, action types.Action) (map[int]types.SchemaOptions, error) {
+func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]types.SchemaOptions, error) {
 	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
 	if err != nil {
 		return nil, err
@@ -30,47 +31,47 @@ func (p *MorphoOptionsProvider) GetOptions(chainId int, action types.Action) (ma
 	}
 
 	switch action {
-	case types.Action(ActionEarn):
+	case ActionEarn:
 		return map[int]types.SchemaOptions{
 			1: {Simple: supplyTokenOptions},
 			2: {Complex: supplyTokenToVaultOptions},
 		}, nil
-	case types.Action(ActionSupplyCollateral):
+	case ActionSupplyCollateral:
 		return map[int]types.SchemaOptions{
 			1: {Simple: collateralOptions},
 			2: {Complex: collateralToMarketOptions},
 		}, nil
-	case types.Action(ActionWithdraw):
+	case ActionWithdraw:
 		return map[int]types.SchemaOptions{
 			1: {Simple: supplyAndCollateralTokenOptions},
 			2: {Complex: supplyAndCollateralTokenToMarketOptions},
 		}, nil
-	case types.Action(ActionWithdrawAll):
+	case ActionWithdrawAll:
 		return map[int]types.SchemaOptions{
 			0: {Simple: supplyAndCollateralTokenOptions},
 			1: {Complex: supplyAndCollateralTokenToMarketOptions},
 		}, nil
-	case types.Action(ActionBorrow):
+	case ActionBorrow:
 		return map[int]types.SchemaOptions{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		}, nil
-	case types.Action(ActionRepay):
+	case ActionRepay:
 		return map[int]types.SchemaOptions{
 			1: {Simple: borrowOptions},
 			2: {Complex: borrowToMarketOptions},
 		}, nil
-	case types.Action(ActionRepayAll):
+	case ActionRepayAll:
 		return map[int]types.SchemaOptions{
 			0: {Simple: borrowOptions},
 			1: {Complex: borrowToMarketOptions},
 		}, nil
-	case types.ConstraintHealthFactor:
+	case actions.ConstraintHealthFactor:
 		return map[int]types.SchemaOptions{
 			0: {Simple: marketOptions},
 			1: {Simple: types.BaseThresholdFields},
 		}, nil
-	case types.Action(ConstraintAPY):
+	case ConstraintAPY:
 		return map[int]types.SchemaOptions{
 			0: {Simple: types.BaseLendActionTypeFields},
 			1: {Simple: marketAndVaultOptions},
