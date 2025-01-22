@@ -172,29 +172,26 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transacti
 }
 
 func (s *Solver) GetPlugs(from string, transactions []*types.Transaction) (*types.Plugs, error) {
-	// Generate the encoded solver value so that the smart contract can decode it.
-	// Note: Used in Solidity with:
+	// NOTE: Generate the encoded solver value so that the smart contract can decode it.
+	//	 Used in Solidity with:
 	// 		body: `(uint48 expiration, address solver))`
 	// 		encode: `abi.encode(uint48(0), msg.sender)`
 	// 		decode: `abi.decode(data, (uint48, address))`
-	solverArguments := abi.Arguments{
+	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
+	solver, err := abi.Arguments{
 		{Type: abi.Type{T: abi.UintTy, Size: 48}},
 		{Type: abi.Type{T: abi.AddressTy}},
-	}
-	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
-
-	solver, err := solverArguments.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
+	}.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
 	if err != nil {
 		return nil, utils.ErrBuildFailed("failed to pack solver: " + err.Error())
 	}
 
-	saltArguments := abi.Arguments{
+	salt, err := abi.Arguments{
 		{Type: abi.Type{T: abi.UintTy, Size: 96}},
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.AddressTy}},
 		{Type: abi.Type{T: abi.AddressTy}},
-	}
-	salt, err := saltArguments.Pack(
+	}.Pack(
 		big.NewInt(time.Now().Unix()),
 		common.HexToAddress(from),
 		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
