@@ -8,7 +8,7 @@ import (
 	"solver/bindings/nouns_art"
 	"solver/bindings/nouns_auction_house"
 	"solver/bindings/nouns_token"
-	"solver/cmd/references"
+	"solver/internal/references"
 	"solver/solver/signature"
 	"solver/utils"
 

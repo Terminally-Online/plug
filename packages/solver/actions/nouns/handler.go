@@ -2,7 +2,7 @@ package nouns
 
 import (
 	"solver/actions"
-	"solver/cmd/references"
+	"solver/internal/references"
 )
 
 var (

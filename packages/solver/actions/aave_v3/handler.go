@@ -3,7 +3,7 @@ package aave_v3
 import (
 	"math/big"
 	"solver/actions"
-	"solver/cmd/references"
+	"solver/internal/references"
 )
 
 var (

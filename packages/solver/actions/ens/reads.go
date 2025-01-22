@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"solver/bindings/ens_base_registrar"
 	"solver/bindings/ens_registrar_controller"
-	"solver/cmd/references"
+	"solver/internal/references"
 	"solver/utils"
 	"strings"
 

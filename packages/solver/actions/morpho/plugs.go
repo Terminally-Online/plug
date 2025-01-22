@@ -9,7 +9,7 @@ import (
 	"solver/bindings/morpho_distributor"
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
-	"solver/cmd/references"
+	"solver/internal/references"
 	"solver/solver/signature"
 	"solver/utils"
 

@@ -8,7 +8,7 @@ import (
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
-	"solver/cmd/references"
+	"solver/internal/references"
 	"solver/solver/signature"
 	"solver/utils"
 

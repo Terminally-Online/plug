@@ -9,7 +9,7 @@ import (
 	"solver/actions/llama"
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
-	"solver/cmd/references"
+	"solver/internal/references"
 	"solver/solver/signature"
 	"solver/utils"
 	"strings"

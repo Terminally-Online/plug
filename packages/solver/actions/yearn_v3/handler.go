@@ -2,7 +2,7 @@ package yearn_v3
 
 import (
 	"solver/actions"
-	"solver/cmd/references"
+	"solver/internal/references"
 )
 
 var (

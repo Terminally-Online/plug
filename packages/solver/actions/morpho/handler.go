@@ -2,7 +2,7 @@ package morpho
 
 import (
 	"solver/actions"
-	"solver/cmd/references"
+	"solver/internal/references"
 )
 
 var (

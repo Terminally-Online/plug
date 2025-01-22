@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"solver/cron"
+	"solver/internal/cron"
 	"solver/utils"
 	"time"
 
