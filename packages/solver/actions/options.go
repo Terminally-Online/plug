@@ -58,7 +58,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]
 
 	options, err := c.provider.GetOptions(chainId, action)
 	if err != nil {
-		return nil, utils.ErrOptionsFailed(err.Error())
+		return nil, utils.ErrOptions(err.Error())
 	}
 
 	if options == nil {

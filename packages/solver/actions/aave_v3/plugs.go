@@ -24,12 +24,12 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 	if inputs.Amount.Cmp(big.NewInt(0)) >= 0 && inputs.Amount.Cmp(utils.Uint256Max) > 0 {
-		return nil, utils.ErrInvalidField("amount", inputs.Amount.String())
+		return nil, utils.ErrField("amount", inputs.Amount.String())
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
@@ -37,12 +37,12 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		inputs.Amount,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV3Pool")
+		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	depositCalldata, err := poolAbi.Pack("deposit",
 		common.HexToAddress(inputs.Token),
@@ -51,7 +51,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		uint16(0),
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -74,7 +74,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV3Pool")
+		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("borrow",
 		common.HexToAddress(inputs.Token),
@@ -84,7 +84,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -104,7 +104,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
@@ -112,12 +112,12 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		inputs.Amount,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV3Pool")
+		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	repayCalldata, err := poolAbi.Pack("repay",
 		common.HexToAddress(inputs.Token),
@@ -126,7 +126,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -150,7 +150,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("AaveV3Pool")
+		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("withdraw",
 		common.HexToAddress(inputs.Token),
@@ -158,7 +158,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{

@@ -76,13 +76,13 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 
 	registrarAbi, err := ens_registrar_controller.EnsRegistrarControllerMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ENSRegistrarController")
+		return nil, utils.ErrABI("ENSRegistrarController")
 	}
 
 	if !hasCommitment {
 		commitCalldata, err := registrarAbi.Pack("commit", commitment)
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 		return []signature.Plug{{
 			To:        common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
@@ -103,7 +103,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		0,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	price, err := GetRentPrice(params.ChainId, *name, big.NewInt(secondsPerYear))
@@ -143,12 +143,12 @@ func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 	registrarAbi, err := ens_registrar_controller.EnsRegistrarControllerMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ENSRegistrarController")
+		return nil, utils.ErrABI("ENSRegistrarController")
 	}
 
 	renewCalldata, err := registrarAbi.Pack("renew", name, inputs.Duration)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{

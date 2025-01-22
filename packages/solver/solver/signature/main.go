@@ -28,7 +28,7 @@ func GetHash[T any](data T) [32]byte {
 func GetSignature(chainId *big.Int, socket common.Address, plug Plugs) ([]byte, error) {
 	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
 	if err != nil {
-		return nil, utils.ErrBuildFailed(err.Error())
+		return nil, utils.ErrBuild(err.Error())
 	}
 
 	domainHash := GetHash(EIP712Domain{

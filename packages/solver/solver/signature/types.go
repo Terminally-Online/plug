@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	eip712Types = map[string]interface{}{
+	Eip712Types = map[string]interface{}{
 		"EIP712Domain": []interface{}{
 			map[string]interface{}{"name": "name", "type": "string"},
 			map[string]interface{}{"name": "version", "type": "string"},

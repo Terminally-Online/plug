@@ -156,14 +156,14 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, 
 	// If there were any errors we will return a failure.
 	for _, err := range errors {
 		if err != nil {
-			return nil, utils.ErrBuildFailed(err.Error())
+			return nil, utils.ErrBuild(err.Error())
 		}
 	}
 
 	// If there was no transaction to execute we will return a warning because
 	// we will be halting the simulation of this workflow.
 	if len(transactionsBatch) == 0 {
-		return nil, utils.ErrBuildFailed("no transactions to execute")
+		return nil, utils.ErrBuild("no transactions to execute")
 	}
 
 	return transactionsBatch, nil
@@ -180,7 +180,7 @@ func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plu
 		{Type: abi.Type{T: abi.AddressTy}},
 	}.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
 	if err != nil {
-		return nil, utils.ErrBuildFailed("failed to pack solver: " + err.Error())
+		return nil, utils.ErrBuild("failed to pack solver: " + err.Error())
 	}
 
 	salt, err := abi.Arguments{
@@ -195,7 +195,7 @@ func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plu
 		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
 	)
 	if err != nil {
-		return nil, utils.ErrBuildFailed("failed to pack salt: " + err.Error())
+		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
 	}
 	plugs := signature.Plugs{
 		Socket: common.HexToAddress(from),
@@ -209,7 +209,7 @@ func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plu
 		plugs,
 	)
 	if err != nil {
-		return nil, utils.ErrBuildFailed("failed to sign: " + err.Error())
+		return nil, utils.ErrBuild("failed to sign: " + err.Error())
 	}
 
 	return &signature.LivePlugs{

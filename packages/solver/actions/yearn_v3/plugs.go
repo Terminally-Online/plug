@@ -49,20 +49,20 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(inputs.Vault), inputs.Amount)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	vaultAbi, err := yearn_v3_pool.YearnV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Pool")
+		return nil, utils.ErrABI("YearnV3Pool")
 	}
 	depositCalldata, err := vaultAbi.Pack("deposit", inputs.Amount, common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -107,11 +107,11 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 
 	vaultAbi, err := yearn_v3_pool.YearnV3PoolMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Pool")
+		return nil, utils.ErrABI("YearnV3Pool")
 	}
 	depositCalldata, err := vaultAbi.Pack("deposit", inputs.Amount, common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -149,20 +149,20 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(targetVault.Staking.Address), inputs.Amount)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Gauge")
+		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 	stakeCalldata, err := gaugeAbi.Pack("deposit", inputs.Amount, common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -222,20 +222,20 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(targetVault.Staking.Address), balance)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Gauge")
+		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -297,12 +297,12 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Gauge")
+		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
 	calldata, err := gaugeAbi.Pack("redeem", inputs.Amount, common.HexToAddress(params.From), common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -357,12 +357,12 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 
 	gaugeAbi, err := yearn_v3_gauge.YearnV3GaugeMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("YearnV3Gauge")
+		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
 	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, common.HexToAddress(params.From), common.HexToAddress(params.From))
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{

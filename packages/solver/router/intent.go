@@ -218,14 +218,14 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 
 	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
 	if err != nil {
-		utils.Error(w, err, http.StatusInternalServerError)
+		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	plugsHash := crypto.Keccak256Hash([]byte(req.From), []byte(salt), []byte(solver))
 	signedPlugsHash, err := crypto.Sign(plugsHash.Bytes(), privateKey)
 	if err != nil {
-		utils.Error(w, err, http.StatusInternalServerError)
+		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

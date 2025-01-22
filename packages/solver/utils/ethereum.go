@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"os"
-	"regexp"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -19,9 +18,6 @@ var (
 
 	TokenStandards = []int{0, 20, 721, 1155}
 	VaultStandards = []int{4626}
-
-	addressPattern = regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`)
-	hexPattern     = regexp.MustCompile("^(0x)?[0-9a-fA-F]+$")
 
 	Uint8Max   = new(big.Int).SetUint64(0xFF)
 	Uint16Max  = new(big.Int).SetUint64(0xFFFF)
@@ -69,12 +65,12 @@ func GetProvider(chainId int) (*ethclient.Client, error) {
 	case 84532:
 		rpcURL = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
 	default:
-		return nil, ErrInvalidChainId("chainId", chainId)
+		return nil, ErrChainId("chainId", chainId)
 	}
 
 	ethClient, err := ethclient.Dial(rpcURL)
 	if err != nil {
-		return nil, ErrEthClientFailed(err.Error())
+		return nil, ErrEthClient(err.Error())
 	}
 
 	return ethClient, nil

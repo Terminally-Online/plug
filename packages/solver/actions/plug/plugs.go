@@ -52,7 +52,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 
 	calldata, err := erc20Abi.Pack("transfer",
@@ -60,7 +60,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		&inputs.Amount,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	return []signature.Plug{{
@@ -81,7 +81,7 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	tokenType, err := getTokenType(params.ChainId, inputs.Token)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	log.Printf("%d", *tokenType)
@@ -107,14 +107,14 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 
 	wethAbi, err := weth_address.WethAddressMetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("WETH")
+		return nil, utils.ErrABI("WETH")
 	}
 
 	var tx signature.Plug
 	if isEthToWeth {
 		calldata, err := wethAbi.Pack("deposit")
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 		tx = signature.Plug{
 			To:    common.HexToAddress(wethAddress),
@@ -124,7 +124,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 	} else {
 		calldata, err := wethAbi.Pack("withdraw", amountOut)
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 		tx = signature.Plug{
 			To:   common.HexToAddress(wethAddress),
@@ -243,7 +243,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 	if value.Cmp(big.NewInt(0)) == 0 {
 		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 		if err != nil {
-			return nil, utils.ErrABIFailed("ERC20")
+			return nil, utils.ErrABI("ERC20")
 		}
 
 		amountOut, ok := new(big.Int).SetString(inputs.AmountOut, 10)
@@ -256,7 +256,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 			amountOut,
 		)
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 
 		transactions = append([]signature.Plug{{
@@ -301,12 +301,12 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	if strings.EqualFold(inputs.Token, wethAddress) {
 		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)
 		if err != nil {
-			return nil, utils.ErrContractFailed(wethAddress)
+			return nil, utils.ErrContract(wethAddress)
 		}
 
 		calldata, err := wethContract.WethAddressTransactor.Withdraw(utils.BuildTransactionOpts(params.From, nil), &inputs.Amount)
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 
 		return []signature.Plug{{
@@ -318,12 +318,12 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	if common.HexToAddress(inputs.Token) == utils.NativeTokenAddress {
 		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)
 		if err != nil {
-			return nil, utils.ErrContractFailed(wethAddress)
+			return nil, utils.ErrContract(wethAddress)
 		}
 
 		calldata, err := wethContract.WethAddressTransactor.Deposit(utils.BuildTransactionOpts(params.From, &inputs.Amount))
 		if err != nil {
-			return nil, utils.ErrTransactionFailed(err.Error())
+			return nil, utils.ErrTransaction(err.Error())
 		}
 
 		return []signature.Plug{{

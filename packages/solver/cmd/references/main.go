@@ -123,7 +123,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 
 		fmt.Printf("Failed to get source for %s/%s: %s.\n", folderName, contractName, result)
 		if !shouldRetry {
-			return utils.ErrExplorerFailed(result)
+			return utils.ErrExplorer(result)
 		}
 		fmt.Printf("Retrying %d more times before aborting.\n", retries)
 

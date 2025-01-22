@@ -28,7 +28,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
@@ -78,7 +78,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
@@ -86,7 +86,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		inputs.Amount,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
@@ -311,14 +311,14 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
 		references.Mainnet.References["morpho"]["router"]),
 		inputs.Amount,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -387,14 +387,14 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABIFailed("ERC20")
+		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
 		references.Mainnet.References["morpho"]["router"]),
 		borrowAssets,
 	)
 	if err != nil {
-		return nil, utils.ErrTransactionFailed(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	morphoAbi, err := morpho_router.MorphoRouterMetaData.GetAbi()
