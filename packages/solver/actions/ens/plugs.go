@@ -8,7 +8,7 @@ import (
 
 	"solver/actions"
 	"solver/bindings/ens_registrar_controller"
-	"solver/types"
+	"solver/solver/signature"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -18,7 +18,7 @@ var (
 	resolver = "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
 )
 
-func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		MaxPrice *big.Int `json:"maxPrice"`
@@ -80,9 +80,9 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
-		return []*types.Transaction{{
-			To:        utils.Mainnet.References["ens"]["registrar_controller"],
-			Data:      "0x" + common.Bytes2Hex(commitCalldata),
+		return []signature.Plug{{
+			To:        common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+			Data:      commitCalldata,
 			Exclusive: true,
 		}}, nil
 	}
@@ -111,14 +111,14 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, inputs.MaxPrice)
 	}
 
-	return []*types.Transaction{{
-		To:    utils.Mainnet.References["ens"]["registrar_controller"],
-		Data:  "0x" + common.Bytes2Hex(registerCalldata),
-		Value: *price.Base,
+	return []signature.Plug{{
+		To:    common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+		Data:  registerCalldata,
+		Value: price.Base,
 	}}, nil
 }
 
-func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
@@ -147,14 +147,14 @@ func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:    utils.Mainnet.References["ens"]["registrar_controller"],
-		Data:  "0x" + common.Bytes2Hex(renewCalldata),
-		Value: *price.Base,
+	return []signature.Plug{{
+		To:    common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+		Data:  renewCalldata,
+		Value: price.Base,
 	}}, nil
 }
 
-func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name string `json:"name"`
 	}
@@ -175,13 +175,13 @@ func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.Handl
 	gracePeriodEnd := new(big.Int).Add(expiry, big.NewInt(60*60*24*90))
 	now := big.NewInt(time.Now().Unix())
 	if now.Cmp(expiry) > 0 && now.Cmp(gracePeriodEnd) < 0 {
-		return []*types.Transaction{}, nil
+		return nil, nil
 	}
 
 	return nil, fmt.Errorf("ENS %s is not in renewal grace period", inputs.Name)
 }
 
-func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
@@ -207,10 +207,10 @@ func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, fmt.Errorf("time remaining (%v seconds) is not less than threshold (%v seconds)", remaining, inputs.Duration)
 	}
 
-	return []*types.Transaction{}, nil
+	return nil, nil
 }
 
-func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
@@ -236,5 +236,5 @@ func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("renewal price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPriceWei)
 	}
 
-	return []*types.Transaction{}, nil
+	return nil, nil
 }

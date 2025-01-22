@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	domainName        = "My DApp"
-	domainVersion     = "1"
+	domainName    = "My DApp"
+	domainVersion = "1"
 )
 
 func GetHash[T any](data T) [32]byte {
@@ -38,9 +38,9 @@ func GetSignature(chainId *big.Int, socket common.Address, plug Plugs) ([]byte, 
 		VerifyingContract: socket,
 	})
 	messageHash := GetHash(Plug{
-		Target: common.HexToAddress("0xRecipientAddress"),
-		Value:  big.NewInt(0),
-		Data:   []byte{},
+		To:    common.HexToAddress("0xRecipientAddress"),
+		Data:  []byte{},
+		Value: big.NewInt(0),
 	})
 	signatureHash := crypto.Keccak256(append(
 		domainHash[:],

@@ -8,7 +8,7 @@ import (
 	"solver/actions"
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
-	"solver/types"
+	"solver/solver/signature"
 	"solver/utils"
 	"strings"
 
@@ -22,7 +22,7 @@ type SwapInputs struct {
 	AmountOut string `json:"amountOut"`
 }
 
-func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token     string  `json:"token"`     // Address of the token to transfer.
 		Recipient string  `json:"recipient"` // Address of the recipient.
@@ -42,9 +42,9 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 			nil,
 		)
 
-		return []*types.Transaction{{
-			To:    inputs.Recipient,
-			Value: *transaction.Value(),
+		return []signature.Plug{{
+			To:    common.HexToAddress(inputs.Recipient),
+			Value: transaction.Value(),
 		}}, nil
 	}
 
@@ -61,13 +61,13 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.Token,
-		Data: "0x" + common.Bytes2Hex(calldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: calldata,
 	}}, nil
 }
 
-func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token     string  `json:"token"`     // Address of the token to transfer.
 		Recipient string  `json:"recipient"` // Address of the recipient.
@@ -84,11 +84,11 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	log.Printf("%d", *tokenType)
 
-	return []*types.Transaction{}, nil
+	return []signature.Plug{}, nil
 }
 
 // handleEthWethSwap handles direct conversions between ETH and WETH
-func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]*types.Transaction, error) {
+func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(inputs.TokenOut, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
@@ -108,25 +108,25 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		return nil, utils.ErrABIFailed("WETH")
 	}
 
-	var tx *types.Transaction
+	var tx signature.Plug
 	if isEthToWeth {
 		calldata, err := wethAbi.Pack("deposit")
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
-		tx = &types.Transaction{
-			To:    wethAddress,
-			Value: *amountOut,
-			Data:  "0x" + common.Bytes2Hex(calldata),
+		tx = signature.Plug{
+			To:    common.HexToAddress(wethAddress),
+			Data:  calldata,
+			Value: amountOut,
 		}
 	} else {
 		calldata, err := wethAbi.Pack("withdraw", amountOut)
 		if err != nil {
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
-		tx = &types.Transaction{
-			To:   wethAddress,
-			Data: "0x" + common.Bytes2Hex(calldata),
+		tx = signature.Plug{
+			To:   common.HexToAddress(wethAddress),
+			Data: calldata,
 		}
 	}
 
@@ -149,7 +149,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		sellSymbol = "ETH"
 	}
 
-	return []*types.Transaction{{
+	return []signature.Plug{{
 		To:    tx.To,
 		Data:  tx.Data,
 		Value: tx.Value,
@@ -190,7 +190,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 }
 
 // handleBebopSwap handles swaps through the Bebop API
-func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]*types.Transaction, error) {
+func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
 	bebopApiUrl := fmt.Sprintf("https://api.bebop.xyz/pmm/ethereum/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
 		inputs.TokenIn,
 		inputs.TokenOut,
@@ -221,10 +221,10 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]*types.
 		return nil, fmt.Errorf("failed to parse value: %s", quoteResponse.Tx.Value)
 	}
 
-	transactions := []*types.Transaction{{
-		To:    quoteResponse.Tx.To,
-		Data:  quoteResponse.Tx.Data,
-		Value: *value,
+	transactions := []signature.Plug{{
+		To:    common.HexToAddress(quoteResponse.Tx.To),
+		Data:  common.FromHex(quoteResponse.Tx.Data),
+		Value: value,
 		Meta: BebopTransactionMeta{
 			Expiry:             quoteResponse.Expiry,
 			Slippage:           quoteResponse.Slippage,
@@ -257,16 +257,16 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]*types.
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 
-		transactions = append([]*types.Transaction{{
-			To:   inputs.TokenOut,
-			Data: "0x" + common.Bytes2Hex(approveCalldata),
+		transactions = append([]signature.Plug{{
+			To:   common.HexToAddress(inputs.TokenOut),
+			Data: approveCalldata,
 		}}, transactions...)
 	}
 
 	return transactions, nil
 }
 
-func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs SwapInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
@@ -285,7 +285,7 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]*typ
 	return handleBebopSwap(inputs, params)
 }
 
-func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string  `json:"token"`
 		Amount big.Int `json:"amount"`
@@ -307,9 +307,9 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]*typ
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 
-		return []*types.Transaction{{
-			To:   inputs.Token,
-			Data: "0x" + common.Bytes2Hex(calldata.Data()),
+		return []signature.Plug{{
+			To:   common.HexToAddress(inputs.Token),
+			Data: calldata.Data(),
 		}}, nil
 	}
 
@@ -324,10 +324,10 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]*typ
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 
-		return []*types.Transaction{{
-			To:    wethAddress,
-			Value: inputs.Amount,
-			Data:  "0x" + common.Bytes2Hex(calldata.Data()),
+		return []signature.Plug{{
+			To:    common.HexToAddress(wethAddress),
+			Data:  calldata.Data(),
+			Value: &inputs.Amount,
 		}}, nil
 	}
 

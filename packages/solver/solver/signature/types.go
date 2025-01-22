@@ -33,26 +33,28 @@ var (
 )
 
 type EIP712Domain struct {
-	Name              string
-	Version           string
-	ChainId           *big.Int
-	VerifyingContract common.Address
+	Name              string         `json:"name"`
+	Version           string         `json:"version"`
+	ChainId           *big.Int       `json:"chainId"`
+	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
 type Plug struct {
-	Target common.Address
-	Value  *big.Int
-	Data   []byte
+	To        common.Address `json:"to"`
+	Data      []byte         `json:"data"`
+	Value     *big.Int       `json:"value"`
+	Exclusive bool           `json:"exclusive,omitempty"`
+	Meta      interface{}    `json:"meta,omitempty"`
 }
 
 type Plugs struct {
-	Socket common.Address
-	Plugs  []Plug
-	Solver []byte
-	Salt   []byte
+	Socket common.Address `json:"socket"`
+	Plugs  []Plug         `json:"plugs"`
+	Solver []byte         `json:"solver"`
+	Salt   []byte         `json:"salt"`
 }
 
 type LivePlugs struct {
-	Plugs     Plugs
-	Signature []byte
+	Plugs     Plugs  `json:"plugs"`
+	Signature []byte `json:"signature"`
 }

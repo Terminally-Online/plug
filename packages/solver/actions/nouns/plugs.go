@@ -8,13 +8,13 @@ import (
 	"solver/bindings/nouns_art"
 	"solver/bindings/nouns_auction_house"
 	"solver/bindings/nouns_token"
-	"solver/types"
+	"solver/solver/signature"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 	}
@@ -50,14 +50,14 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, err
 	}
 
-	return []*types.Transaction{{
-		To:    utils.Mainnet.References["nouns"]["auction_house"],
-		Data:  "0x" + common.Bytes2Hex(bidCalldata),
-		Value: *new(big.Int).Mul(inputs.Amount, big.NewInt(1e18)),
+	return []signature.Plug{{
+		To:    common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]),
+		Data:  bidCalldata,
+		Value: new(big.Int).Mul(inputs.Amount, big.NewInt(1e18)),
 	}}, nil
 }
 
-func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Percent *big.Int `json:"percent"`
 	}
@@ -98,14 +98,14 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, err
 	}
 
-	return []*types.Transaction{{
-		To:    utils.Mainnet.References["nouns"]["auction_house"],
-		Data:  "0x" + common.Bytes2Hex(bidCalldata),
-		Value: *bid,
+	return []signature.Plug{{
+		To:    common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]),
+		Data:  bidCalldata,
+		Value: bid,
 	}}, nil
 }
 
-func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		TraitType string `json:"traitType"`
 		Trait     string `json:"trait"`
@@ -188,7 +188,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	return nil, nil
 }
 
-func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Id *big.Int `json:"id"`
 	}
@@ -217,7 +217,7 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 	return nil, nil
 }
 
-func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Min *big.Int `json:"min"`
 		Max *big.Int `json:"max"`

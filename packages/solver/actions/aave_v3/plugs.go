@@ -8,13 +8,14 @@ import (
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
+	"solver/solver/signature"
 	"solver/types"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		types.BaseInputs
 		Token  string   `json:"token"`
@@ -54,16 +55,16 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.Token,
-		Data: "0x" + common.Bytes2Hex(approveCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
 	}, {
-		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
-		Data: "0x" + common.Bytes2Hex(depositCalldata),
+		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		Data: depositCalldata,
 	}}, nil
 }
 
-func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs types.BorrowInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %v", err)
@@ -87,13 +88,13 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
-		Data: "0x" + common.Bytes2Hex(calldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		Data: calldata,
 	}}, nil
 }
 
-func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs types.RepayInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %v", err)
@@ -129,16 +130,16 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.TokenIn,
-		Data: "0x" + common.Bytes2Hex(approveCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.TokenIn),
+		Data: approveCalldata,
 	}, {
-		To:   utils.Networks[params.ChainId].References["aave_v3"]["pool"],
-		Data: "0x" + common.Bytes2Hex(repayCalldata),
+		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		Data: repayCalldata,
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs types.WithdrawInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %v", err)
@@ -160,13 +161,13 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   utils.Networks[params.ChainId].References["aave"]["pool"],
-		Data: "0x" + common.Bytes2Hex(calldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave"]["pool"]),
+		Data: calldata,
 	}}, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs types.ThresholdInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor inputs")
@@ -194,10 +195,10 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
-	return []*types.Transaction{}, nil
+	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Direction int        `json:"direction"` // -1 for borrow, 1 for deposit
 		Token     string     `json:"token"`     // Underlying token address
@@ -252,5 +253,5 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
-	return []*types.Transaction{}, nil
+	return nil, nil
 }

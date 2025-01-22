@@ -9,16 +9,13 @@ import (
 	"solver/bindings/morpho_distributor"
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
-	"solver/types"
+	"solver/solver/signature"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleEarn(
-	rawInputs json.RawMessage,
-	params actions.HandlerParams,
-) ([]*types.Transaction, error) {
+func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -54,22 +51,16 @@ func HandleEarn(
 		return nil, fmt.Errorf("failed to pack deposit calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   inputs.Token,
-			Data: "0x" + common.Bytes2Hex(approveCalldata),
-		},
-		{
-			To:   inputs.Vault,
-			Data: "0x" + common.Bytes2Hex(depositCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
+	}, {
+		To:   common.HexToAddress(inputs.Vault),
+		Data: depositCalldata,
+	}}, nil
 }
 
-func HandleSupplyCollateral(
-	rawInputs json.RawMessage,
-	params actions.HandlerParams,
-) ([]*types.Transaction, error) {
+func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -112,19 +103,16 @@ func HandleSupplyCollateral(
 		return nil, fmt.Errorf("failed to pack supply calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   inputs.Token,
-			Data: "0x" + common.Bytes2Hex(approveCalldata),
-		},
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(supplyCollateralCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
+	}, {
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: supplyCollateralCalldata,
+	}}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -154,12 +142,10 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 		}
 
-		return []*types.Transaction{
-			{
-				To:   inputs.Target,
-				Data: "0x" + common.Bytes2Hex(withdrawCalldata),
-			},
-		}, nil
+		return []signature.Plug{{
+			To:   common.HexToAddress(inputs.Target),
+			Data: withdrawCalldata,
+		}}, nil
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -183,15 +169,13 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(withdrawCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: withdrawCalldata,
+	}}, nil
 }
 
-func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Target string `json:"target"`
@@ -229,12 +213,10 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 		}
 
-		return []*types.Transaction{
-			{
-				To:   inputs.Target,
-				Data: "0x" + common.Bytes2Hex(withdrawCalldata),
-			},
-		}, nil
+		return []signature.Plug{{
+			To:   common.HexToAddress(inputs.Target),
+			Data: withdrawCalldata,
+		}}, nil
 	}
 
 	market, err := GetMarket(inputs.Target)
@@ -273,15 +255,13 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(withdrawCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: withdrawCalldata,
+	}}, nil
 }
 
-func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -312,15 +292,13 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]*t
 		return nil, fmt.Errorf("failed to pack borrow calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(borrowCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: borrowCalldata,
+	}}, nil
 }
 
-func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -362,19 +340,16 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]*ty
 		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   inputs.Token,
-			Data: "0x" + common.Bytes2Hex(approveCalldata),
-		},
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(repayCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
+	}, {
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: repayCalldata,
+	}}, nil
 }
 
-func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Target string `json:"target"`
@@ -439,19 +414,16 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
 	}
 
-	return []*types.Transaction{
-		{
-			To:   inputs.Token,
-			Data: "0x" + common.Bytes2Hex(approveCalldata),
-		},
-		{
-			To:   utils.Mainnet.References["morpho"]["router"],
-			Data: "0x" + common.Bytes2Hex(repayCalldata),
-		},
-	}, nil
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
+	}, {
+		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		Data: repayCalldata,
+	}}, nil
 }
 
-func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	distributions, err := GetDistributions(params.From, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get distributions: %w", err)
@@ -465,7 +437,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to get morpho distributor abi: %w", err)
 	}
 
-	claims := []*types.Transaction{}
+	claims := []signature.Plug{}
 	for _, distribution := range distributions {
 		claimable, ok := new(big.Int).SetString(distribution.Claimable, 10)
 		if !ok {
@@ -485,16 +457,16 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack claim calldata: %w", err)
 		}
-		claims = append(claims, &types.Transaction{
-			To:   distribution.Distributor.Address,
-			Data: "0x" + common.Bytes2Hex(claimCalldata),
+		claims = append(claims, signature.Plug{
+			To:   common.HexToAddress(distribution.Distributor.Address),
+			Data: claimCalldata,
 		})
 	}
 
 	return claims, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Target    string     `json:"target"`
 		Operator  int8       `json:"operator"`
@@ -552,7 +524,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Direction int     `json:"direction"` // -1 for borrow, 1 for deposit
 		Target    string  `json:"target"`    // Underlying market or vault

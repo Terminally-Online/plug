@@ -3,6 +3,7 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/solver/signature"
 	"solver/types"
 	"strconv"
 
@@ -22,10 +23,10 @@ type BaseProtocolHandler interface {
 	GetChains() []int
 	GetSchema(chainId string, action types.Action) (*types.ChainSchema, error)
 	GetSchemas() map[types.Action]types.ChainSchema
-	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
+	GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
 
-type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error)
+type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 type OptionsHandler func(chainId int) (map[int]types.SchemaOptions, error)
 
 type Protocol struct {
@@ -194,7 +195,11 @@ func (h *BaseHandler) GetSchema(chainId string, action types.Action) (*types.Cha
 	return &chainSchema, nil
 }
 
-func (h *BaseHandler) GetTransaction(action types.Action, rawInputs json.RawMessage, params HandlerParams) ([]*types.Transaction, error) {
+func (h *BaseHandler) GetTransaction(
+	action types.Action,
+	rawInputs json.RawMessage,
+	params HandlerParams,
+) ([]signature.Plug, error) {
 	handler, exists := h.protocol.txHandlers[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)

@@ -80,7 +80,7 @@ func (s *Solver) GetExecutions() (ExecutionsRequest, error) {
 	return response, nil
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from string) ([]*types.Transaction, error) {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from string) ([]signature.Plug, error) {
 	var inputs types.BaseInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
@@ -109,9 +109,9 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from str
 	return handler.GetTransaction(inputs.Action, rawInputs, params)
 }
 
-func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transaction, error) {
+func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, error) {
 	var breakOuter bool
-	transactionsBatch := make([]*types.Transaction, 0)
+	transactionsBatch := make([]signature.Plug, 0)
 	errors := make([]error, len(execution.Inputs))
 	for i, input := range execution.Inputs {
 		inputMap := map[string]interface{}{
@@ -142,7 +142,7 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transacti
 			if transaction.Exclusive {
 				// NOTE: Set the field to false to avoid tarnishing the response shape.
 				transaction.Exclusive = false
-				transactionsBatch = []*types.Transaction{transaction}
+				transactionsBatch = []signature.Plug{transaction}
 				breakOuter = true
 				break
 			}
@@ -171,7 +171,7 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]*types.Transacti
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetPlugs(chainId int, from string, transactions []*types.Transaction) (*signature.LivePlugs, error) {
+func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plug) (*signature.LivePlugs, error) {
 	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
 	//       end up having the case where things are Plugs are not properly executed because they are being
@@ -198,14 +198,6 @@ func (s *Solver) GetPlugs(chainId int, from string, transactions []*types.Transa
 	)
 	if err != nil {
 		return nil, utils.ErrBuildFailed("failed to pack salt: " + err.Error())
-	}
-	var plugArray []signature.Plug
-	for _, transaction := range transactions {
-		plugArray = append(plugArray, signature.Plug{
-			Target: common.HexToAddress(transaction.To),
-			Value:  &transaction.Value,
-			Data:   transaction.Data,
-		})
 	}
 	plugs := signature.Plugs{
 		Socket: common.HexToAddress(from),
@@ -237,7 +229,7 @@ func (s *Solver) GetSimulation(id string, plugs *signature.LivePlugs) (Simulatio
 	}, nil
 }
 
-func (s *Solver) GetRun(transactions []*types.Transaction) {
+func (s *Solver) GetRun(transactions []signature.Plug) {
 	// TODO: Run the transactions through the entrypoint with our executor account.
 }
 

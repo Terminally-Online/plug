@@ -10,13 +10,13 @@ import (
 	"solver/bindings/erc_20"
 	"solver/bindings/yearn_v3_gauge"
 	"solver/bindings/yearn_v3_pool"
-	"solver/types"
+	"solver/solver/signature"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -65,16 +65,16 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.Token,
-		Data: "0x" + common.Bytes2Hex(approveCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
 	}, {
-		To:   inputs.Vault,
-		Data: "0x" + common.Bytes2Hex(depositCalldata),
+		To:   common.HexToAddress(inputs.Vault),
+		Data: depositCalldata,
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -114,13 +114,13 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.Vault,
-		Data: "0x" + common.Bytes2Hex(depositCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Vault),
+		Data: depositCalldata,
 	}}, nil
 }
 
-func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -165,16 +165,16 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.Token,
-		Data: "0x" + common.Bytes2Hex(approveCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.Token),
+		Data: approveCalldata,
 	}, {
-		To:   targetVault.Staking.Address,
-		Data: "0x" + common.Bytes2Hex(stakeCalldata),
+		To:   common.HexToAddress(targetVault.Staking.Address),
+		Data: stakeCalldata,
 	}}, nil
 }
 
-func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		TokenIn string `json:"token"`
 	}
@@ -238,16 +238,16 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   inputs.TokenIn,
-		Data: "0x" + common.Bytes2Hex(approveCalldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(inputs.TokenIn),
+		Data: approveCalldata,
 	}, {
-		To:   targetVault.Staking.Address,
-		Data: "0x" + common.Bytes2Hex(stakeCalldata),
+		To:   common.HexToAddress(targetVault.Staking.Address),
+		Data: stakeCalldata,
 	}}, nil
 }
 
-func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount *big.Int `json:"amount"`
 		Token  string   `json:"token"`
@@ -305,13 +305,13 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   targetVault.Staking.Address,
-		Data: "0x" + common.Bytes2Hex(calldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(targetVault.Staking.Address),
+		Data: calldata,
 	}}, nil
 }
 
-func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Token string `json:"token"`
 	}
@@ -365,13 +365,13 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, utils.ErrTransactionFailed(err.Error())
 	}
 
-	return []*types.Transaction{{
-		To:   targetVault.Staking.Address,
-		Data: "0x" + common.Bytes2Hex(calldata),
+	return []signature.Plug{{
+		To:   common.HexToAddress(targetVault.Staking.Address),
+		Data: calldata,
 	}}, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]*types.Transaction, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Vault     string     `json:"token"`
 		Operator  int        `json:"operator"`
@@ -415,5 +415,5 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
-	return []*types.Transaction{}, nil
+	return nil, nil
 }

@@ -3,24 +3,26 @@ package solver
 import (
 	"math/big"
 	"os"
-	"solver/types"
+	"solver/solver/signature"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
-	mockPlug = types.Plug{
-		Socket: "0x62180042606624f02d8a130da8a3171e9b33894d",
-		Plugs: []types.Transaction{{
-			To:    "0x",
-			Data:  "0x",
-			Value: *big.NewInt(0),
+	mockPlugs = signature.Plugs{
+		Socket: common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
+		Plugs: []signature.Plug{{
+			To:    common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
+			Data:  []byte{},
+			Value: big.NewInt(0),
 		}},
-		Solver: "0x62180042606624f02d8a130da8a3171e9b33894d",
-		Salt:   "1234567890",
+		Solver: []byte{},
+		Salt:   []byte{},
 	}
-	mockPlugs = types.Plugs{
-		Plug:      mockPlug,
-		Signature: "0x",
+	mockLivePlugs = signature.LivePlugs{
+		Plugs:      mockPlugs,
+		Signature: []byte{},
 	}
 )
 

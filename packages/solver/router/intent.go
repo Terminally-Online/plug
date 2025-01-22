@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"solver/solver"
+	"solver/solver/signature"
 	"solver/types"
 	"solver/utils"
 	"time"
@@ -146,7 +147,7 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	transactionsBatch := make([]*types.Transaction, 0)
+	transactionsBatch := make([]signature.Plug, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
 		transactions, err := intentHandler.solver.GetTransaction(inputs, req.ChainId, req.From)
@@ -163,7 +164,7 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 			if transaction.Exclusive {
 				// NOTE: Set the field to false to avoid tarnishing the response shape.
 				transaction.Exclusive = false
-				transactionsBatch = []*types.Transaction{transaction}
+				transactionsBatch = []signature.Plug{transaction}
 				breakOuter = true
 				break
 			}
@@ -215,7 +216,6 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// TODO: Implement the EIP-712 signing schema.
 	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
 	if err != nil {
 		utils.Error(w, err, http.StatusInternalServerError)
@@ -223,20 +223,20 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 	}
 
 	plugsHash := crypto.Keccak256Hash([]byte(req.From), []byte(salt), []byte(solver))
-	signature, err := crypto.Sign(plugsHash.Bytes(), privateKey)
+	signedPlugsHash, err := crypto.Sign(plugsHash.Bytes(), privateKey)
 	if err != nil {
 		utils.Error(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	response := types.Plugs{
-		Plug: types.Plug{
-			Socket: req.From,
+	response := signature.LivePlugs{
+		Plugs: signature.Plugs{
+			Socket: common.HexToAddress(req.From),
 			Plugs:  transactionsBatch,
-			Solver: "0x" + common.Bytes2Hex(solver),
-			Salt:   "0x" + common.Bytes2Hex(salt),
+			Solver: solver,
+			Salt:   salt,
 		},
-		Signature: "0x" + common.Bytes2Hex(signature),
+		Signature: signedPlugsHash,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
