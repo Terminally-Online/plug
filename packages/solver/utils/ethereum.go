@@ -19,6 +19,8 @@ var (
 	SelectorLookup                   = "8063%s14"
 	UpgradableImplementationSelector = "5c60da1b"
 
+	NativeTransferGas = uint64(21000)
+
 	// NOTE: 20 & 721 share the definition of transferFrom, but the it will hit for 20 before 721.
 	TokenSelectors = []struct {
 		Selector string

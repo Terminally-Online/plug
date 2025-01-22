@@ -85,12 +85,3 @@ var (
 		return ValidationError{Field: field, Message: fmt.Sprintf("%s is not a valid target", value)}
 	}
 )
-
-func Contains(arr []string, value string) bool {
-	for _, v := range arr {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
