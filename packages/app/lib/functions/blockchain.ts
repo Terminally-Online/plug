@@ -22,16 +22,14 @@ export const getBlockExplorerBlock = (chainId: ChainId, block: string | undefine
 
 // Build map of normalized chain names to chain IDs
 const CHAIN_NAME_MAP = Object.entries(chains).reduce((acc, [id, chain]) => {
-	const chainId = Number(id)
-	// Add standard name
+	const chainId = Number(id) as ChainId
 	acc[chain.name.toLowerCase()] = chainId
-	// Add alchemy prefix as alternative
 	acc[chain.alchemyPrefix] = chainId
 	return acc
-}, {} as Record<string, number>)
+}, {} as Record<string, ChainId>)
 
 // Add additional aliases
-const CHAIN_ALIASES: Record<string, number> = {
+const CHAIN_ALIASES: Record<string, ChainId> = {
 	"eth": 1,
 	"ethereum": 1,
 	"mainnet": 1,
@@ -40,11 +38,11 @@ const CHAIN_ALIASES: Record<string, number> = {
 	"fork": 31337,
 	"plug": 31337,
 	"op": 10
-}
+} as const
 
 const NORMALIZED_CHAIN_MAP = { ...CHAIN_NAME_MAP, ...CHAIN_ALIASES } as const
 
-export const getChainId = (chainName: string | undefined) => {
+export const getChainId = (chainName: string | undefined): ChainId => {
 	if (!chainName) return env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1
 	return NORMALIZED_CHAIN_MAP[chainName.toLowerCase()] ?? (env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1)
 }
