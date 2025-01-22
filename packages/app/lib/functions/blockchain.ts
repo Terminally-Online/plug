@@ -20,22 +20,33 @@ export const getBlockExplorerBlock = (chainId: ChainId, block: string | undefine
 	return `${getBlockExplorerUrl(chainId)}/block/${block}`
 }
 
-export const getChainId = (chainName: string) => {
-	switch (chainName.toLowerCase()) {
-		case "anvil":
-		case "local":
-		case "fork":
-			return 31337
-		case "ethereum":
-		case "mainnet":
-			return 1
-		case "optimism":
-			return 10
-		case "base":
-			return 8453
-		default:
-			return env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1
-	}
+// Build map of normalized chain names to chain IDs
+const CHAIN_NAME_MAP = Object.entries(chains).reduce((acc, [id, chain]) => {
+	const chainId = Number(id)
+	// Add standard name
+	acc[chain.name.toLowerCase()] = chainId
+	// Add alchemy prefix as alternative
+	acc[chain.alchemyPrefix] = chainId
+	return acc
+}, {} as Record<string, number>)
+
+// Add additional aliases
+const CHAIN_ALIASES: Record<string, number> = {
+	"eth": 1,
+	"ethereum": 1,
+	"mainnet": 1,
+	"anvil": 31337,
+	"local": 31337,
+	"fork": 31337,
+	"plug": 31337,
+	"op": 10
+}
+
+const NORMALIZED_CHAIN_MAP = { ...CHAIN_NAME_MAP, ...CHAIN_ALIASES } as const
+
+export const getChainId = (chainName: string | undefined) => {
+	if (!chainName) return env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1
+	return NORMALIZED_CHAIN_MAP[chainName.toLowerCase()] ?? (env.NEXT_PUBLIC_DEVELOPMENT ? 31337 : 1)
 }
 
 export const getChainName = (chainId: ChainId) => {
