@@ -8,6 +8,7 @@ import (
 
 	"solver/actions"
 	"solver/bindings/ens_registrar_controller"
+	"solver/cmd/references"
 	"solver/solver/signature"
 	"solver/utils"
 
@@ -36,7 +37,10 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	if err != nil {
 		return nil, fmt.Errorf("failed to get provider: %v", err)
 	}
-	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]), provider)
+	registrar, err := ens_registrar_controller.NewEnsRegistrarController(
+		common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
+		provider,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get registrar: %v", err)
 	}
@@ -81,7 +85,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 			return nil, utils.ErrTransactionFailed(err.Error())
 		}
 		return []signature.Plug{{
-			To:        common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+			To:        common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 			Data:      commitCalldata,
 			Exclusive: true,
 		}}, nil
@@ -112,7 +116,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	}
 
 	return []signature.Plug{{
-		To:    common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+		To:    common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 		Data:  registerCalldata,
 		Value: price.Base,
 	}}, nil
@@ -148,7 +152,7 @@ func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	return []signature.Plug{{
-		To:    common.HexToAddress(utils.Mainnet.References["ens"]["registrar_controller"]),
+		To:    common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 		Data:  renewCalldata,
 		Value: price.Base,
 	}}, nil

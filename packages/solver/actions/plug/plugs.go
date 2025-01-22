@@ -8,6 +8,7 @@ import (
 	"solver/actions"
 	"solver/bindings/erc_20"
 	"solver/bindings/weth_address"
+	"solver/cmd/references"
 	"solver/solver/signature"
 	"solver/utils"
 	"strings"
@@ -272,7 +273,7 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
 	}
 
-	wethAddress := utils.Mainnet.References["weth"]["address"]
+	wethAddress := references.Mainnet.References["weth"]["address"]
 
 	// Try ETH ↔ WETH conversion first
 	if txs, err := handleEthWethSwap(inputs, params, wethAddress); err != nil {
@@ -294,7 +295,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to unmarshal wrap inputs: %v", err)
 	}
 
-	wethAddress := utils.Mainnet.References["weth"]["address"]
+	wethAddress := references.Mainnet.References["weth"]["address"]
 
 	if strings.EqualFold(inputs.Token, wethAddress) {
 		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)

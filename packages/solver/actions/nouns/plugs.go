@@ -8,6 +8,7 @@ import (
 	"solver/bindings/nouns_art"
 	"solver/bindings/nouns_auction_house"
 	"solver/bindings/nouns_token"
+	"solver/cmd/references"
 	"solver/solver/signature"
 	"solver/utils"
 
@@ -30,7 +31,10 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	if err != nil {
 		return nil, err
 	}
-	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]), provider)
+	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
+		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +55,7 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	}
 
 	return []signature.Plug{{
-		To:    common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]),
+		To:    common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:  bidCalldata,
 		Value: new(big.Int).Mul(inputs.Amount, big.NewInt(1e18)),
 	}}, nil
@@ -73,7 +77,10 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 	if err != nil {
 		return nil, err
 	}
-	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]), provider)
+	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
+		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +106,7 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 	}
 
 	return []signature.Plug{{
-		To:    common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]),
+		To:    common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:  bidCalldata,
 		Value: bid,
 	}}, nil
@@ -122,7 +129,10 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	if err != nil {
 		return nil, err
 	}
-	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]), provider)
+	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
+		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +141,10 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	if err != nil {
 		return nil, err
 	}
-	nounsToken, err := nouns_token.NewNounsToken(common.HexToAddress(utils.Mainnet.References["nouns"]["token"]), provider)
+	nounsToken, err := nouns_token.NewNounsToken(
+		common.HexToAddress(references.Mainnet.References["nouns"]["token"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +154,10 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, err
 	}
 
-	art, err := nouns_art.NewNounsArt(common.HexToAddress(utils.Mainnet.References["nouns"]["art"]), provider)
+	art, err := nouns_art.NewNounsArt(
+		common.HexToAddress(references.Mainnet.References["nouns"]["art"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +216,10 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 	if err != nil {
 		return nil, err
 	}
-	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]), provider)
+	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
+		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +257,10 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 	if err != nil {
 		return nil, err
 	}
-	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(common.HexToAddress(utils.Mainnet.References["nouns"]["auction_house"]), provider)
+	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
+		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
+		provider,
+	)
 	if err != nil {
 		return nil, err
 	}

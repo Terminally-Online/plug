@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"solver/bindings/ens_base_registrar"
 	"solver/bindings/ens_registrar_controller"
+	"solver/cmd/references"
 	"solver/utils"
 	"strings"
 
@@ -53,7 +54,7 @@ func GetNameExpiry(chainId int, name string) (*big.Int, error) {
 
 	// Create contract instance for BaseRegistrar
 	baseRegistrar, err := ens_base_registrar.NewEnsBaseRegistrar( // Update constructor name
-		common.HexToAddress(utils.Mainnet.References["ens"]["base_registrar"]),
+		common.HexToAddress(references.Mainnet.References["ens"]["base_registrar"]),
 		provider,
 	)
 	if err != nil {

@@ -2,7 +2,7 @@ package yearn_v3
 
 import (
 	"solver/actions"
-	"solver/utils"
+	"solver/cmd/references"
 )
 
 var (
@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/yearn.png"
 	tags = []string{"yield", "defi"}
 
-	chains  = utils.Mainnet.ChainIds
+	chains  = references.Mainnet.ChainIds
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
 			Sentence: "Deposit {0<amount:uint256>} {1<token:address>} into {1=>2<vault:address>}.",

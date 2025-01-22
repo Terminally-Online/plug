@@ -8,6 +8,7 @@ import (
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
+	"solver/cmd/references"
 	"solver/solver/signature"
 	"solver/utils"
 
@@ -32,7 +33,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		inputs.Amount,
 	)
 	if err != nil {
@@ -57,7 +58,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		Data: depositCalldata,
 	}}, nil
 }
@@ -87,7 +88,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		Data: calldata,
 	}}, nil
 }
@@ -107,7 +108,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		inputs.Amount,
 	)
 	if err != nil {
@@ -132,7 +133,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave_v3"]["pool"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		Data: repayCalldata,
 	}}, nil
 }
@@ -161,7 +162,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(utils.Networks[params.ChainId].References["aave"]["pool"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave"]["pool"]),
 		Data: calldata,
 	}}, nil
 }

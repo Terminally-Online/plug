@@ -3,7 +3,7 @@ package aave_v3
 import (
 	"math/big"
 	"solver/actions"
-	"solver/utils"
+	"solver/cmd/references"
 )
 
 var (
@@ -11,7 +11,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/aave.png"
 	tags = []string{"lending", "defi"}
 
-	chains  = append(utils.Mainnet.ChainIds, utils.Base.ChainIds...)
+	chains  = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
 			Sentence: "Deposit {0<amount:uint256>} {1<token:address>}",

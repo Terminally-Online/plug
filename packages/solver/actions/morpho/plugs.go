@@ -9,6 +9,7 @@ import (
 	"solver/bindings/morpho_distributor"
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
+	"solver/cmd/references"
 	"solver/solver/signature"
 	"solver/utils"
 
@@ -81,7 +82,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		inputs.Amount,
 	)
 	if err != nil {
@@ -107,7 +108,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: supplyCollateralCalldata,
 	}}, nil
 }
@@ -170,7 +171,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
@@ -224,7 +225,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {
@@ -256,7 +257,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
@@ -293,7 +294,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: borrowCalldata,
 	}}, nil
 }
@@ -313,7 +314,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrABIFailed("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		utils.Mainnet.References["morpho"]["router"]),
+		references.Mainnet.References["morpho"]["router"]),
 		inputs.Amount,
 	)
 	if err != nil {
@@ -344,7 +345,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: repayCalldata,
 	}}, nil
 }
@@ -363,7 +364,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {
@@ -389,7 +390,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrABIFailed("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		utils.Mainnet.References["morpho"]["router"]),
+		references.Mainnet.References["morpho"]["router"]),
 		borrowAssets,
 	)
 	if err != nil {
@@ -418,7 +419,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		To:   common.HexToAddress(inputs.Token),
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		Data: repayCalldata,
 	}}, nil
 }
@@ -482,7 +483,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	}
 
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(utils.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {

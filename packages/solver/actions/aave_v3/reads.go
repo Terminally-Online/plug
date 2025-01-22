@@ -5,6 +5,7 @@ import (
 	"os"
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
+	"solver/cmd/references"
 	"solver/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -16,7 +17,7 @@ func getReserves(chainId int) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProvid
 		return nil, err
 	}
 	dataProvider, err := aave_v3_ui_pool_data_provider.NewAaveV3UiPoolDataProvider(
-		common.HexToAddress(utils.Networks[chainId].References["aave_v3"]["ui_pool_data_provider"]),
+		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_data_provider"]),
 		provider,
 	)
 	if err != nil {
@@ -24,7 +25,7 @@ func getReserves(chainId int) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProvid
 	}
 	reserves, _, err := dataProvider.GetReservesData(
 		utils.BuildCallOpts(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)),
-		common.HexToAddress(utils.Networks[chainId].References["aave_v3"]["ui_pool_address_provider"]),
+		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_address_provider"]),
 	)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func getHealthFactor(chainId int, userAddress string) (*big.Int, error) {
 		return nil, err
 	}
 	pool, err := aave_v3_pool.NewAaveV3Pool(
-		common.HexToAddress(utils.Networks[chainId].References["aave"]["pool"]),
+		common.HexToAddress(references.Networks[chainId].References["aave"]["pool"]),
 		provider,
 	)
 	if err != nil {

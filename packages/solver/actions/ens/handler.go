@@ -2,7 +2,7 @@ package ens
 
 import (
 	"solver/actions"
-	"solver/utils"
+	"solver/cmd/references"
 )
 
 var (
@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/ens.png"
 	tags = []string{"naming", "web3"}
 
-	chains = utils.Mainnet.ChainIds
+	chains = references.Mainnet.ChainIds
 
 	GracePeriod  = "grace_period"
 	TimeLeft     = "time_left"

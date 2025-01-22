@@ -2,7 +2,7 @@ package nouns
 
 import (
 	"solver/actions"
-	"solver/utils"
+	"solver/cmd/references"
 )
 
 var (
@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/nouns.png"
 	tags = []string{"nft"}
 
-	chains = utils.Mainnet.ChainIds
+	chains = references.Mainnet.ChainIds
 
 	IncreaseBid           = "increase_bid"
 	HasTrait              = "has_trait"

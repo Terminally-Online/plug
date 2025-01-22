@@ -2,7 +2,7 @@ package plug
 
 import (
 	"solver/actions"
-	"solver/utils"
+	"solver/cmd/references"
 )
 
 var (
@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/plug.png"
 	tags = []string{"defi"}
 
-	chains = utils.Mainnet.ChainIds
+	chains = references.Mainnet.ChainIds
 
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionTransfer: {
