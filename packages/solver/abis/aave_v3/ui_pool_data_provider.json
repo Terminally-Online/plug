@@ -68,6 +68,69 @@
         "type": "address"
       }
     ],
+    "name": "getEModes",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint16",
+                "name": "ltv",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "liquidationThreshold",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "liquidationBonus",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint128",
+                "name": "collateralBitmap",
+                "type": "uint128"
+              },
+              {
+                "internalType": "string",
+                "name": "label",
+                "type": "string"
+              },
+              {
+                "internalType": "uint128",
+                "name": "borrowableBitmap",
+                "type": "uint128"
+              }
+            ],
+            "internalType": "struct DataTypes.EModeCategory",
+            "name": "eMode",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProviderV3.Emode[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
     "name": "getReservesData",
     "outputs": [
       {
@@ -124,11 +187,6 @@
           },
           {
             "internalType": "bool",
-            "name": "stableBorrowRateEnabled",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
             "name": "isActive",
             "type": "bool"
           },
@@ -158,11 +216,6 @@
             "type": "uint128"
           },
           {
-            "internalType": "uint128",
-            "name": "stableBorrowRate",
-            "type": "uint128"
-          },
-          {
             "internalType": "uint40",
             "name": "lastUpdateTimestamp",
             "type": "uint40"
@@ -170,11 +223,6 @@
           {
             "internalType": "address",
             "name": "aTokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "stableDebtTokenAddress",
             "type": "address"
           },
           {
@@ -190,21 +238,6 @@
           {
             "internalType": "uint256",
             "name": "availableLiquidity",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalPrincipalStableDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "averageStableRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "stableDebtLastUpdateTimestamp",
             "type": "uint256"
           },
           {
@@ -230,21 +263,6 @@
           {
             "internalType": "uint256",
             "name": "variableRateSlope2",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "stableRateSlope1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "stableRateSlope2",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "baseStableBorrowRate",
             "type": "uint256"
           },
           {
@@ -298,11 +316,6 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint8",
-            "name": "eModeCategoryId",
-            "type": "uint8"
-          },
-          {
             "internalType": "uint256",
             "name": "borrowCap",
             "type": "uint256"
@@ -311,31 +324,6 @@
             "internalType": "uint256",
             "name": "supplyCap",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint16",
-            "name": "eModeLtv",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "eModeLiquidationThreshold",
-            "type": "uint16"
-          },
-          {
-            "internalType": "uint16",
-            "name": "eModeLiquidationBonus",
-            "type": "uint16"
-          },
-          {
-            "internalType": "address",
-            "name": "eModePriceSource",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "eModeLabel",
-            "type": "string"
           },
           {
             "internalType": "bool",
@@ -441,22 +429,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "stableBorrowRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "scaledVariableDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "principalStableDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "stableBorrowLastUpdateTimestamp",
             "type": "uint256"
           }
         ],

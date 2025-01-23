@@ -18,7 +18,7 @@ export const getSchemas = async (protocol?: string, action?: string, chainId: nu
 		params: {
 			protocol,
 			action,
-			chainId: 1
+			chainId
 		}
 	})
 

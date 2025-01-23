@@ -29,8 +29,8 @@ var (
 	_ = abi.ConvertType
 )
 
-// INounsAuctionHouseV2AuctionV2View is an auto generated low-level Go binding around an user-defined struct.
-type INounsAuctionHouseV2AuctionV2View struct {
+// INounsAuctionHouseV3AuctionV2View is an auto generated low-level Go binding around an user-defined struct.
+type INounsAuctionHouseV3AuctionV2View struct {
 	NounId    *big.Int
 	Amount    *big.Int
 	StartTime *big.Int
@@ -39,8 +39,8 @@ type INounsAuctionHouseV2AuctionV2View struct {
 	Settled   bool
 }
 
-// INounsAuctionHouseV2Settlement is an auto generated low-level Go binding around an user-defined struct.
-type INounsAuctionHouseV2Settlement struct {
+// INounsAuctionHouseV3Settlement is an auto generated low-level Go binding around an user-defined struct.
+type INounsAuctionHouseV3Settlement struct {
 	BlockTimestamp uint32
 	Amount         *big.Int
 	Winner         common.Address
@@ -48,8 +48,8 @@ type INounsAuctionHouseV2Settlement struct {
 	ClientId       uint32
 }
 
-// INounsAuctionHouseV2SettlementNoClientId is an auto generated low-level Go binding around an user-defined struct.
-type INounsAuctionHouseV2SettlementNoClientId struct {
+// INounsAuctionHouseV3SettlementNoClientId is an auto generated low-level Go binding around an user-defined struct.
+type INounsAuctionHouseV3SettlementNoClientId struct {
 	BlockTimestamp uint32
 	Amount         *big.Int
 	Winner         common.Address
@@ -58,7 +58,7 @@ type INounsAuctionHouseV2SettlementNoClientId struct {
 
 // NounsAuctionHouseMetaData contains all meta data concerning the NounsAuctionHouse contract.
 var NounsAuctionHouseMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"contractINounsToken\",\"name\":\"_nouns\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_weth\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_duration\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"extended\",\"type\":\"bool\"}],\"name\":\"AuctionBid\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"AuctionBidWithClientId\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"}],\"name\":\"AuctionCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"}],\"name\":\"AuctionExtended\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBidIncrementPercentage\",\"type\":\"uint256\"}],\"name\":\"AuctionMinBidIncrementPercentageUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"reservePrice\",\"type\":\"uint256\"}],\"name\":\"AuctionReservePriceUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"AuctionSettled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"AuctionSettledWithClientId\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timeBuffer\",\"type\":\"uint256\"}],\"name\":\"AuctionTimeBufferUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"MAX_TIME_BUFFER\",\"outputs\":[{\"internalType\":\"uint56\",\"name\":\"\",\"type\":\"uint56\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"auction\",\"outputs\":[{\"components\":[{\"internalType\":\"uint96\",\"name\":\"nounId\",\"type\":\"uint96\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"startTime\",\"type\":\"uint40\"},{\"internalType\":\"uint40\",\"name\":\"endTime\",\"type\":\"uint40\"},{\"internalType\":\"addresspayable\",\"name\":\"bidder\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"settled\",\"type\":\"bool\"}],\"internalType\":\"structINounsAuctionHouseV2.AuctionV2View\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"auctionStorage\",\"outputs\":[{\"internalType\":\"uint96\",\"name\":\"nounId\",\"type\":\"uint96\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"startTime\",\"type\":\"uint40\"},{\"internalType\":\"uint40\",\"name\":\"endTime\",\"type\":\"uint40\"},{\"internalType\":\"addresspayable\",\"name\":\"bidder\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"settled\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"name\":\"biddingClient\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"name\":\"createBid\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"createBid\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"duration\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"auctionCount\",\"type\":\"uint256\"}],\"name\":\"getPrices\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"prices\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"auctionCount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlements\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV2.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlements\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV2.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlementsFromIdtoTimestamp\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV2.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint192\",\"name\":\"_reservePrice\",\"type\":\"uint192\"},{\"internalType\":\"uint56\",\"name\":\"_timeBuffer\",\"type\":\"uint56\"},{\"internalType\":\"uint8\",\"name\":\"_minBidIncrementPercentage\",\"type\":\"uint8\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minBidIncrementPercentage\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nouns\",\"outputs\":[{\"internalType\":\"contractINounsToken\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reservePrice\",\"outputs\":[{\"internalType\":\"uint192\",\"name\":\"\",\"type\":\"uint192\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"_minBidIncrementPercentage\",\"type\":\"uint8\"}],\"name\":\"setMinBidIncrementPercentage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"internalType\":\"structINounsAuctionHouseV2.SettlementNoClientId[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"name\":\"setPrices\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint192\",\"name\":\"_reservePrice\",\"type\":\"uint192\"}],\"name\":\"setReservePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint56\",\"name\":\"_timeBuffer\",\"type\":\"uint56\"}],\"name\":\"setTimeBuffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleAuction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleCurrentAndCreateNewAuction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timeBuffer\",\"outputs\":[{\"internalType\":\"uint56\",\"name\":\"\",\"type\":\"uint56\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endId\",\"type\":\"uint256\"}],\"name\":\"warmUpSettlementState\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"weth\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"contractINounsToken\",\"name\":\"_nouns\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_weth\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_duration\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"extended\",\"type\":\"bool\"}],\"name\":\"AuctionBid\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"AuctionBidWithClientId\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"}],\"name\":\"AuctionCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"}],\"name\":\"AuctionExtended\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minBidIncrementPercentage\",\"type\":\"uint256\"}],\"name\":\"AuctionMinBidIncrementPercentageUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"reservePrice\",\"type\":\"uint256\"}],\"name\":\"AuctionReservePriceUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"AuctionSettled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"AuctionSettledWithClientId\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timeBuffer\",\"type\":\"uint256\"}],\"name\":\"AuctionTimeBufferUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newSanctionsOracle\",\"type\":\"address\"}],\"name\":\"SanctionsOracleSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"MAX_TIME_BUFFER\",\"outputs\":[{\"internalType\":\"uint56\",\"name\":\"\",\"type\":\"uint56\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"auction\",\"outputs\":[{\"components\":[{\"internalType\":\"uint96\",\"name\":\"nounId\",\"type\":\"uint96\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"startTime\",\"type\":\"uint40\"},{\"internalType\":\"uint40\",\"name\":\"endTime\",\"type\":\"uint40\"},{\"internalType\":\"addresspayable\",\"name\":\"bidder\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"settled\",\"type\":\"bool\"}],\"internalType\":\"structINounsAuctionHouseV3.AuctionV2View\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"auctionStorage\",\"outputs\":[{\"internalType\":\"uint96\",\"name\":\"nounId\",\"type\":\"uint96\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"},{\"internalType\":\"uint128\",\"name\":\"amount\",\"type\":\"uint128\"},{\"internalType\":\"uint40\",\"name\":\"startTime\",\"type\":\"uint40\"},{\"internalType\":\"uint40\",\"name\":\"endTime\",\"type\":\"uint40\"},{\"internalType\":\"addresspayable\",\"name\":\"bidder\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"settled\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"name\":\"biddingClient\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"name\":\"createBid\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"name\":\"createBid\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"duration\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"auctionCount\",\"type\":\"uint256\"}],\"name\":\"getPrices\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"prices\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"auctionCount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlements\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV3.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlements\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV3.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"skipEmptyValues\",\"type\":\"bool\"}],\"name\":\"getSettlementsFromIdtoTimestamp\",\"outputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"clientId\",\"type\":\"uint32\"}],\"internalType\":\"structINounsAuctionHouseV3.Settlement[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint192\",\"name\":\"_reservePrice\",\"type\":\"uint192\"},{\"internalType\":\"uint56\",\"name\":\"_timeBuffer\",\"type\":\"uint56\"},{\"internalType\":\"uint8\",\"name\":\"_minBidIncrementPercentage\",\"type\":\"uint8\"},{\"internalType\":\"contractIChainalysisSanctionsList\",\"name\":\"_sanctionsOracle\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minBidIncrementPercentage\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"nouns\",\"outputs\":[{\"internalType\":\"contractINounsToken\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"reservePrice\",\"outputs\":[{\"internalType\":\"uint192\",\"name\":\"\",\"type\":\"uint192\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sanctionsOracle\",\"outputs\":[{\"internalType\":\"contractIChainalysisSanctionsList\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"_minBidIncrementPercentage\",\"type\":\"uint8\"}],\"name\":\"setMinBidIncrementPercentage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint32\",\"name\":\"blockTimestamp\",\"type\":\"uint32\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nounId\",\"type\":\"uint256\"}],\"internalType\":\"structINounsAuctionHouseV3.SettlementNoClientId[]\",\"name\":\"settlements\",\"type\":\"tuple[]\"}],\"name\":\"setPrices\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint192\",\"name\":\"_reservePrice\",\"type\":\"uint192\"}],\"name\":\"setReservePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newSanctionsOracle\",\"type\":\"address\"}],\"name\":\"setSanctionsOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint56\",\"name\":\"_timeBuffer\",\"type\":\"uint56\"}],\"name\":\"setTimeBuffer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleAuction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settleCurrentAndCreateNewAuction\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timeBuffer\",\"outputs\":[{\"internalType\":\"uint56\",\"name\":\"\",\"type\":\"uint56\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"unpause\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"startId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endId\",\"type\":\"uint256\"}],\"name\":\"warmUpSettlementState\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"weth\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // NounsAuctionHouseABI is the input ABI used to generate the binding from.
@@ -241,15 +241,15 @@ func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) MAXTIMEBUFFER() (*big.
 // Auction is a free data retrieval call binding the contract method 0x7d9f6db5.
 //
 // Solidity: function auction() view returns((uint96,uint128,uint40,uint40,address,bool))
-func (_NounsAuctionHouse *NounsAuctionHouseCaller) Auction(opts *bind.CallOpts) (INounsAuctionHouseV2AuctionV2View, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCaller) Auction(opts *bind.CallOpts) (INounsAuctionHouseV3AuctionV2View, error) {
 	var out []interface{}
 	err := _NounsAuctionHouse.contract.Call(opts, &out, "auction")
 
 	if err != nil {
-		return *new(INounsAuctionHouseV2AuctionV2View), err
+		return *new(INounsAuctionHouseV3AuctionV2View), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(INounsAuctionHouseV2AuctionV2View)).(*INounsAuctionHouseV2AuctionV2View)
+	out0 := *abi.ConvertType(out[0], new(INounsAuctionHouseV3AuctionV2View)).(*INounsAuctionHouseV3AuctionV2View)
 
 	return out0, err
 
@@ -258,14 +258,14 @@ func (_NounsAuctionHouse *NounsAuctionHouseCaller) Auction(opts *bind.CallOpts) 
 // Auction is a free data retrieval call binding the contract method 0x7d9f6db5.
 //
 // Solidity: function auction() view returns((uint96,uint128,uint40,uint40,address,bool))
-func (_NounsAuctionHouse *NounsAuctionHouseSession) Auction() (INounsAuctionHouseV2AuctionV2View, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseSession) Auction() (INounsAuctionHouseV3AuctionV2View, error) {
 	return _NounsAuctionHouse.Contract.Auction(&_NounsAuctionHouse.CallOpts)
 }
 
 // Auction is a free data retrieval call binding the contract method 0x7d9f6db5.
 //
 // Solidity: function auction() view returns((uint96,uint128,uint40,uint40,address,bool))
-func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) Auction() (INounsAuctionHouseV2AuctionV2View, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) Auction() (INounsAuctionHouseV3AuctionV2View, error) {
 	return _NounsAuctionHouse.Contract.Auction(&_NounsAuctionHouse.CallOpts)
 }
 
@@ -435,15 +435,15 @@ func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetPrices(auctionCount
 // GetSettlements is a free data retrieval call binding the contract method 0xaf64dd30.
 //
 // Solidity: function getSettlements(uint256 auctionCount, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements(opts *bind.CallOpts, auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements(opts *bind.CallOpts, auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	var out []interface{}
 	err := _NounsAuctionHouse.contract.Call(opts, &out, "getSettlements", auctionCount, skipEmptyValues)
 
 	if err != nil {
-		return *new([]INounsAuctionHouseV2Settlement), err
+		return *new([]INounsAuctionHouseV3Settlement), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV2Settlement)).(*[]INounsAuctionHouseV2Settlement)
+	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV3Settlement)).(*[]INounsAuctionHouseV3Settlement)
 
 	return out0, err
 
@@ -452,29 +452,29 @@ func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements(opts *bind.Cal
 // GetSettlements is a free data retrieval call binding the contract method 0xaf64dd30.
 //
 // Solidity: function getSettlements(uint256 auctionCount, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlements(auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlements(auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlements(&_NounsAuctionHouse.CallOpts, auctionCount, skipEmptyValues)
 }
 
 // GetSettlements is a free data retrieval call binding the contract method 0xaf64dd30.
 //
 // Solidity: function getSettlements(uint256 auctionCount, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlements(auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlements(auctionCount *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlements(&_NounsAuctionHouse.CallOpts, auctionCount, skipEmptyValues)
 }
 
 // GetSettlements0 is a free data retrieval call binding the contract method 0xb1296a94.
 //
 // Solidity: function getSettlements(uint256 startId, uint256 endId, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements0(opts *bind.CallOpts, startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements0(opts *bind.CallOpts, startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	var out []interface{}
 	err := _NounsAuctionHouse.contract.Call(opts, &out, "getSettlements0", startId, endId, skipEmptyValues)
 
 	if err != nil {
-		return *new([]INounsAuctionHouseV2Settlement), err
+		return *new([]INounsAuctionHouseV3Settlement), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV2Settlement)).(*[]INounsAuctionHouseV2Settlement)
+	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV3Settlement)).(*[]INounsAuctionHouseV3Settlement)
 
 	return out0, err
 
@@ -483,29 +483,29 @@ func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlements0(opts *bind.Ca
 // GetSettlements0 is a free data retrieval call binding the contract method 0xb1296a94.
 //
 // Solidity: function getSettlements(uint256 startId, uint256 endId, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlements0(startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlements0(startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlements0(&_NounsAuctionHouse.CallOpts, startId, endId, skipEmptyValues)
 }
 
 // GetSettlements0 is a free data retrieval call binding the contract method 0xb1296a94.
 //
 // Solidity: function getSettlements(uint256 startId, uint256 endId, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlements0(startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlements0(startId *big.Int, endId *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlements0(&_NounsAuctionHouse.CallOpts, startId, endId, skipEmptyValues)
 }
 
 // GetSettlementsFromIdtoTimestamp is a free data retrieval call binding the contract method 0x09b85709.
 //
 // Solidity: function getSettlementsFromIdtoTimestamp(uint256 startId, uint256 endTimestamp, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlementsFromIdtoTimestamp(opts *bind.CallOpts, startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlementsFromIdtoTimestamp(opts *bind.CallOpts, startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	var out []interface{}
 	err := _NounsAuctionHouse.contract.Call(opts, &out, "getSettlementsFromIdtoTimestamp", startId, endTimestamp, skipEmptyValues)
 
 	if err != nil {
-		return *new([]INounsAuctionHouseV2Settlement), err
+		return *new([]INounsAuctionHouseV3Settlement), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV2Settlement)).(*[]INounsAuctionHouseV2Settlement)
+	out0 := *abi.ConvertType(out[0], new([]INounsAuctionHouseV3Settlement)).(*[]INounsAuctionHouseV3Settlement)
 
 	return out0, err
 
@@ -514,14 +514,14 @@ func (_NounsAuctionHouse *NounsAuctionHouseCaller) GetSettlementsFromIdtoTimesta
 // GetSettlementsFromIdtoTimestamp is a free data retrieval call binding the contract method 0x09b85709.
 //
 // Solidity: function getSettlementsFromIdtoTimestamp(uint256 startId, uint256 endTimestamp, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlementsFromIdtoTimestamp(startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseSession) GetSettlementsFromIdtoTimestamp(startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlementsFromIdtoTimestamp(&_NounsAuctionHouse.CallOpts, startId, endTimestamp, skipEmptyValues)
 }
 
 // GetSettlementsFromIdtoTimestamp is a free data retrieval call binding the contract method 0x09b85709.
 //
 // Solidity: function getSettlementsFromIdtoTimestamp(uint256 startId, uint256 endTimestamp, bool skipEmptyValues) view returns((uint32,uint256,address,uint256,uint32)[] settlements)
-func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlementsFromIdtoTimestamp(startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV2Settlement, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) GetSettlementsFromIdtoTimestamp(startId *big.Int, endTimestamp *big.Int, skipEmptyValues bool) ([]INounsAuctionHouseV3Settlement, error) {
 	return _NounsAuctionHouse.Contract.GetSettlementsFromIdtoTimestamp(&_NounsAuctionHouse.CallOpts, startId, endTimestamp, skipEmptyValues)
 }
 
@@ -680,6 +680,37 @@ func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) ReservePrice() (*big.I
 	return _NounsAuctionHouse.Contract.ReservePrice(&_NounsAuctionHouse.CallOpts)
 }
 
+// SanctionsOracle is a free data retrieval call binding the contract method 0xb3df4df9.
+//
+// Solidity: function sanctionsOracle() view returns(address)
+func (_NounsAuctionHouse *NounsAuctionHouseCaller) SanctionsOracle(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _NounsAuctionHouse.contract.Call(opts, &out, "sanctionsOracle")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// SanctionsOracle is a free data retrieval call binding the contract method 0xb3df4df9.
+//
+// Solidity: function sanctionsOracle() view returns(address)
+func (_NounsAuctionHouse *NounsAuctionHouseSession) SanctionsOracle() (common.Address, error) {
+	return _NounsAuctionHouse.Contract.SanctionsOracle(&_NounsAuctionHouse.CallOpts)
+}
+
+// SanctionsOracle is a free data retrieval call binding the contract method 0xb3df4df9.
+//
+// Solidity: function sanctionsOracle() view returns(address)
+func (_NounsAuctionHouse *NounsAuctionHouseCallerSession) SanctionsOracle() (common.Address, error) {
+	return _NounsAuctionHouse.Contract.SanctionsOracle(&_NounsAuctionHouse.CallOpts)
+}
+
 // TimeBuffer is a free data retrieval call binding the contract method 0xec91f2a4.
 //
 // Solidity: function timeBuffer() view returns(uint56)
@@ -784,25 +815,25 @@ func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) CreateBid0(nounId 
 	return _NounsAuctionHouse.Contract.CreateBid0(&_NounsAuctionHouse.TransactOpts, nounId, clientId)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x9903cce6.
+// Initialize is a paid mutator transaction binding the contract method 0xbc88b003.
 //
-// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseTransactor) Initialize(opts *bind.TransactOpts, _reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8) (*types.Transaction, error) {
-	return _NounsAuctionHouse.contract.Transact(opts, "initialize", _reservePrice, _timeBuffer, _minBidIncrementPercentage)
+// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage, address _sanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseTransactor) Initialize(opts *bind.TransactOpts, _reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8, _sanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.contract.Transact(opts, "initialize", _reservePrice, _timeBuffer, _minBidIncrementPercentage, _sanctionsOracle)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x9903cce6.
+// Initialize is a paid mutator transaction binding the contract method 0xbc88b003.
 //
-// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseSession) Initialize(_reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8) (*types.Transaction, error) {
-	return _NounsAuctionHouse.Contract.Initialize(&_NounsAuctionHouse.TransactOpts, _reservePrice, _timeBuffer, _minBidIncrementPercentage)
+// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage, address _sanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseSession) Initialize(_reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8, _sanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.Contract.Initialize(&_NounsAuctionHouse.TransactOpts, _reservePrice, _timeBuffer, _minBidIncrementPercentage, _sanctionsOracle)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0x9903cce6.
+// Initialize is a paid mutator transaction binding the contract method 0xbc88b003.
 //
-// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) Initialize(_reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8) (*types.Transaction, error) {
-	return _NounsAuctionHouse.Contract.Initialize(&_NounsAuctionHouse.TransactOpts, _reservePrice, _timeBuffer, _minBidIncrementPercentage)
+// Solidity: function initialize(uint192 _reservePrice, uint56 _timeBuffer, uint8 _minBidIncrementPercentage, address _sanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) Initialize(_reservePrice *big.Int, _timeBuffer *big.Int, _minBidIncrementPercentage uint8, _sanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.Contract.Initialize(&_NounsAuctionHouse.TransactOpts, _reservePrice, _timeBuffer, _minBidIncrementPercentage, _sanctionsOracle)
 }
 
 // Pause is a paid mutator transaction binding the contract method 0x8456cb59.
@@ -871,21 +902,21 @@ func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) SetMinBidIncrement
 // SetPrices is a paid mutator transaction binding the contract method 0xa94dd8a0.
 //
 // Solidity: function setPrices((uint32,uint256,address,uint256)[] settlements) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseTransactor) SetPrices(opts *bind.TransactOpts, settlements []INounsAuctionHouseV2SettlementNoClientId) (*types.Transaction, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseTransactor) SetPrices(opts *bind.TransactOpts, settlements []INounsAuctionHouseV3SettlementNoClientId) (*types.Transaction, error) {
 	return _NounsAuctionHouse.contract.Transact(opts, "setPrices", settlements)
 }
 
 // SetPrices is a paid mutator transaction binding the contract method 0xa94dd8a0.
 //
 // Solidity: function setPrices((uint32,uint256,address,uint256)[] settlements) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseSession) SetPrices(settlements []INounsAuctionHouseV2SettlementNoClientId) (*types.Transaction, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseSession) SetPrices(settlements []INounsAuctionHouseV3SettlementNoClientId) (*types.Transaction, error) {
 	return _NounsAuctionHouse.Contract.SetPrices(&_NounsAuctionHouse.TransactOpts, settlements)
 }
 
 // SetPrices is a paid mutator transaction binding the contract method 0xa94dd8a0.
 //
 // Solidity: function setPrices((uint32,uint256,address,uint256)[] settlements) returns()
-func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) SetPrices(settlements []INounsAuctionHouseV2SettlementNoClientId) (*types.Transaction, error) {
+func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) SetPrices(settlements []INounsAuctionHouseV3SettlementNoClientId) (*types.Transaction, error) {
 	return _NounsAuctionHouse.Contract.SetPrices(&_NounsAuctionHouse.TransactOpts, settlements)
 }
 
@@ -908,6 +939,27 @@ func (_NounsAuctionHouse *NounsAuctionHouseSession) SetReservePrice(_reservePric
 // Solidity: function setReservePrice(uint192 _reservePrice) returns()
 func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) SetReservePrice(_reservePrice *big.Int) (*types.Transaction, error) {
 	return _NounsAuctionHouse.Contract.SetReservePrice(&_NounsAuctionHouse.TransactOpts, _reservePrice)
+}
+
+// SetSanctionsOracle is a paid mutator transaction binding the contract method 0x9ddd8982.
+//
+// Solidity: function setSanctionsOracle(address newSanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseTransactor) SetSanctionsOracle(opts *bind.TransactOpts, newSanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.contract.Transact(opts, "setSanctionsOracle", newSanctionsOracle)
+}
+
+// SetSanctionsOracle is a paid mutator transaction binding the contract method 0x9ddd8982.
+//
+// Solidity: function setSanctionsOracle(address newSanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseSession) SetSanctionsOracle(newSanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.Contract.SetSanctionsOracle(&_NounsAuctionHouse.TransactOpts, newSanctionsOracle)
+}
+
+// SetSanctionsOracle is a paid mutator transaction binding the contract method 0x9ddd8982.
+//
+// Solidity: function setSanctionsOracle(address newSanctionsOracle) returns()
+func (_NounsAuctionHouse *NounsAuctionHouseTransactorSession) SetSanctionsOracle(newSanctionsOracle common.Address) (*types.Transaction, error) {
+	return _NounsAuctionHouse.Contract.SetSanctionsOracle(&_NounsAuctionHouse.TransactOpts, newSanctionsOracle)
 }
 
 // SetTimeBuffer is a paid mutator transaction binding the contract method 0x0ba4e9ea.
@@ -2612,6 +2664,140 @@ func (_NounsAuctionHouse *NounsAuctionHouseFilterer) WatchPaused(opts *bind.Watc
 func (_NounsAuctionHouse *NounsAuctionHouseFilterer) ParsePaused(log types.Log) (*NounsAuctionHousePaused, error) {
 	event := new(NounsAuctionHousePaused)
 	if err := _NounsAuctionHouse.contract.UnpackLog(event, "Paused", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// NounsAuctionHouseSanctionsOracleSetIterator is returned from FilterSanctionsOracleSet and is used to iterate over the raw logs and unpacked data for SanctionsOracleSet events raised by the NounsAuctionHouse contract.
+type NounsAuctionHouseSanctionsOracleSetIterator struct {
+	Event *NounsAuctionHouseSanctionsOracleSet // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *NounsAuctionHouseSanctionsOracleSetIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(NounsAuctionHouseSanctionsOracleSet)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(NounsAuctionHouseSanctionsOracleSet)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *NounsAuctionHouseSanctionsOracleSetIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *NounsAuctionHouseSanctionsOracleSetIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// NounsAuctionHouseSanctionsOracleSet represents a SanctionsOracleSet event raised by the NounsAuctionHouse contract.
+type NounsAuctionHouseSanctionsOracleSet struct {
+	NewSanctionsOracle common.Address
+	Raw                types.Log // Blockchain specific contextual infos
+}
+
+// FilterSanctionsOracleSet is a free log retrieval operation binding the contract event 0xa917c3b8ce8404f93eeba37a73e16eefcc65cf43ec166ab2a230571577b0695f.
+//
+// Solidity: event SanctionsOracleSet(address newSanctionsOracle)
+func (_NounsAuctionHouse *NounsAuctionHouseFilterer) FilterSanctionsOracleSet(opts *bind.FilterOpts) (*NounsAuctionHouseSanctionsOracleSetIterator, error) {
+
+	logs, sub, err := _NounsAuctionHouse.contract.FilterLogs(opts, "SanctionsOracleSet")
+	if err != nil {
+		return nil, err
+	}
+	return &NounsAuctionHouseSanctionsOracleSetIterator{contract: _NounsAuctionHouse.contract, event: "SanctionsOracleSet", logs: logs, sub: sub}, nil
+}
+
+// WatchSanctionsOracleSet is a free log subscription operation binding the contract event 0xa917c3b8ce8404f93eeba37a73e16eefcc65cf43ec166ab2a230571577b0695f.
+//
+// Solidity: event SanctionsOracleSet(address newSanctionsOracle)
+func (_NounsAuctionHouse *NounsAuctionHouseFilterer) WatchSanctionsOracleSet(opts *bind.WatchOpts, sink chan<- *NounsAuctionHouseSanctionsOracleSet) (event.Subscription, error) {
+
+	logs, sub, err := _NounsAuctionHouse.contract.WatchLogs(opts, "SanctionsOracleSet")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(NounsAuctionHouseSanctionsOracleSet)
+				if err := _NounsAuctionHouse.contract.UnpackLog(event, "SanctionsOracleSet", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseSanctionsOracleSet is a log parse operation binding the contract event 0xa917c3b8ce8404f93eeba37a73e16eefcc65cf43ec166ab2a230571577b0695f.
+//
+// Solidity: event SanctionsOracleSet(address newSanctionsOracle)
+func (_NounsAuctionHouse *NounsAuctionHouseFilterer) ParseSanctionsOracleSet(log types.Log) (*NounsAuctionHouseSanctionsOracleSet, error) {
+	event := new(NounsAuctionHouseSanctionsOracleSet)
+	if err := _NounsAuctionHouse.contract.UnpackLog(event, "SanctionsOracleSet", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

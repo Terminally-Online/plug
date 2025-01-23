@@ -59,16 +59,14 @@ export const ReferralRequired: FC = () => {
 
 	return (
 		<div className="flex w-full flex-col items-start justify-between bg-white p-2">
-			<div className="flex h-full w-full items-center justify-center rounded-lg border-[1px] border-plug-green/10">
+			<div className="flex h-full w-full items-center justify-center md:rounded-lg md:border-[1px] md:border-plug-green/10">
 				<div className="flex max-w-[480px] flex-col items-center">
 					<h1 className="text-2xl font-bold">Get Access to Plug.</h1>
 					<p className="mb-8 text-center font-bold text-black/40">
 						Enter the referral code you received to get started or request one by tagging{" "}
 						<button
 							onClick={handleRequestAccess}
-							style={{
-								...greenGradientStyle
-							}}
+							className="text-plug-green hover:opacity-80"
 						>
 							@onplug_io
 						</button>{" "}
@@ -77,7 +75,7 @@ export const ReferralRequired: FC = () => {
 
 					<div className="w-full space-y-6">
 						{isSuccess && (
-							<div className="w-full rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">
+							<div className="w-full rounded-lg border border-plug-yellow bg-plug-yellow p-4 text-sm text-plug-yellow">
 								Successfully approved! If you are not redirected in a few seconds, please refresh the
 								page.
 							</div>
@@ -105,7 +103,7 @@ export const ReferralRequired: FC = () => {
 									className={cn(
 										"w-full rounded-lg py-4 font-bold",
 										referralCode && isLoading === false
-											? "cursor-pointer bg-gradient-to-tr from-plug-green to-plug-yellow text-white"
+											? "cursor-pointer bg-plug-yellow text-plug-green"
 											: "border-[1px] border-plug-green bg-white text-plug-green"
 									)}
 									onClick={() => referralCode && mutate(referralCode)}

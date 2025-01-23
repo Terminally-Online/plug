@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const response = await fetch(`${BASE_URL}/domain/history?domain=plug`);

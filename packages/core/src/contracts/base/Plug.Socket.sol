@@ -182,11 +182,11 @@ contract PlugSocket is
             /// @dev If the call has an associated value, ensure the contract
             ///      has enough balance to cover the cost of the call.
             if (address(this).balance < action.value) {
-                revert PlugLib.ValueInvalid(action.target, action.value, address(this).balance);
+                revert PlugLib.ValueInvalid(action.to, action.value, address(this).balance);
             }
 
             ($results[i].success, $results[i].result) =
-                action.target.call{ value: action.value }(action.data[1:]);
+                action.to.call{ value: action.value }(action.data[1:]);
 
             /// @dev If the call failed, bubble up the revert reason if needed.
             PlugLib.bubbleRevert($results[i].success, $results[i].result);

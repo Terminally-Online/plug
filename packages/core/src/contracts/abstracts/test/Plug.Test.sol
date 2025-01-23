@@ -470,7 +470,7 @@ abstract contract TestPlug is TestPlus {
     }
 
     function createPlug(
-        address $target,
+        address $to,
         uint256 $value,
         bytes memory $data,
         uint8 $plugType
@@ -479,11 +479,8 @@ abstract contract TestPlug is TestPlus {
         pure
         returns (PlugTypesLib.Plug memory $plug)
     {
-        $plug = PlugTypesLib.Plug({
-            target: $target,
-            value: $value,
-            data: abi.encodePacked($plugType, $data)
-        });
+        $plug =
+            PlugTypesLib.Plug({ to: $to, data: abi.encodePacked($plugType, $data), value: $value });
     }
 
     function createPlug(

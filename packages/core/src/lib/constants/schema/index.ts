@@ -9,9 +9,9 @@ export const EIP712_TYPES = {
 
 export const LIVE_PLUGS_TYPES = {
     Plug: [
-        { name: "target", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "data", type: "bytes" }
+        { name: "to", type: "address" },
+        { name: "data", type: "bytes" },
+        { name: "value", type: "uint256" }
     ],
     Plugs: [
         { name: "socket", type: "address" },

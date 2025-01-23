@@ -11,6 +11,7 @@ type Props = {
 	placeholder: string
 	search?: string
 	clear?: boolean
+	focus?: boolean
 	textArea?: boolean
 	isNumber?: boolean
 	handleSearch?: (search: string) => void
@@ -24,6 +25,7 @@ export const Search: FC<Props> = ({
 	placeholder,
 	search,
 	clear = false,
+	focus = false,
 	textArea = false,
 	isNumber = false,
 	handleSearch,
@@ -48,16 +50,24 @@ export const Search: FC<Props> = ({
 
 		if (textArea === false || !ref.current) return
 
-		ref.current?.addEventListener("input", handleResize, false)
-		ref.current?.addEventListener("change", handleResize)
+		const currentRef = ref.current
+
+		currentRef?.addEventListener("input", handleResize, false)
+		currentRef?.addEventListener("change", handleResize)
 		window.addEventListener("resize", handleResize)
 
 		return () => {
-			ref.current?.removeEventListener("input", handleResize, false)
-			ref.current?.removeEventListener("change", handleResize)
+			currentRef?.removeEventListener("input", handleResize, false)
+			currentRef?.removeEventListener("change", handleResize)
 			window.removeEventListener("resize", handleResize)
 		}
 	}, [textArea, ref])
+
+	useEffect(() => {
+		if (!focus || !ref.current) return
+
+		ref.current.focus({ preventScroll: true })
+	}, [focus, ref])
 
 	return (
 		<div className={cn("group flex flex-col gap-2", className)}>

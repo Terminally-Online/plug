@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { useMemo } from "react"
 
-import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star } from "lucide-react"
+import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
@@ -68,9 +68,17 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 				description: "Install Plug as an app on your device.",
 				icon: <Star size={14} className="opacity-40" />
 			})
+		
+		if (socket?.admin) {
+			options.push({
+				label: "ADMIN",
+				description: "Manage administrative settings.",
+				icon: <LockIcon size={14} className="opacity-40" />
+			})
+		}
 
 		return options
-	}, [getFlag])
+	}, [getFlag, socket])
 
 	const isApproved = Boolean(socket?.identity?.approvedAt)
 	if (!isApproved) return null

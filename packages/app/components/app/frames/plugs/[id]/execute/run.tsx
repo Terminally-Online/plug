@@ -1,8 +1,6 @@
 import { useSession } from "next-auth/react"
 import { FC, useCallback, useMemo, useState } from "react"
 
-import { anvil, mainnet } from "viem/chains"
-
 import { motion } from "framer-motion"
 import {
 	AlertTriangle,
@@ -28,7 +26,6 @@ import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { COLUMNS, useColumnStore } from "@/state/columns"
-import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 
 export const RunFrame: FC<{
@@ -36,7 +33,6 @@ export const RunFrame: FC<{
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
-	const { getFlag } = useFlags()
 	const {
 		column,
 		isFrame,
@@ -68,9 +64,6 @@ export const RunFrame: FC<{
 						protocolSchema.metadata.chains.forEach(chainId => {
 							if (!connectedChains.some(chain => chain.id === chainId)) return
 
-							const isDev = getFlag(Flag.SHOW_DEVELOPER)
-							if ((isDev && chainId === mainnet.id) || (!isDev && chainId === anvil.id)) return
-
 							chains.add(chainId)
 						})
 					}
@@ -82,7 +75,7 @@ export const RunFrame: FC<{
 					return new Set([...acc].filter(chainId => chains.has(chainId)))
 				}, new Set<number>())
 		) as ChainId[]
-	}, [actions, solverActions, getFlag])
+	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
 		if (!supportedChains || supportedChains.length === 0) return null
@@ -91,13 +84,20 @@ export const RunFrame: FC<{
 		return supportedChains[currentChainIndex]
 	}, [supportedChains, currentChainIndex])
 
+	const isActionful = useMemo(() => {
+		if (!solverActions) return false
+
+		return actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
+	}, [actions, solverActions])
+
 	const isReady = useMemo(() => {
 		if (!actions || actions.length === 0) return false
+		if (!isActionful) return false
 
 		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
 		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
-	}, [actions, item])
+	}, [isActionful, actions, item])
 
 	const handleRun = useCallback(() => {
 		if (!column || !column.item || !chain) return
@@ -323,7 +323,12 @@ export const RunFrame: FC<{
 							<AlertTriangle size={14} className="opacity-60" />
 							No Actions Added
 						</span>
-					) : (
+					) : !isActionful ? (
+						<span className="flex flex-row items-center justify-center gap-2">
+							<AlertTriangle size={14} className="opacity-60" />
+							Only Constraints Added
+						</span>
+					) :  (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							Required Inputs Incomplete

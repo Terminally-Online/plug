@@ -2,7 +2,6 @@ import { Contract } from '@/src/lib/types'
 
 export * from "./bundle"
 export * from "./schema"
-export * from "./solver"
 
 export const contractsPath = 'src/contracts'
 

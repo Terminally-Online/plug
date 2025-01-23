@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"solver/utils"
+	"solver/internal/references"
+	"solver/internal/utils"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -15,7 +17,7 @@ func main() {
 	}
 
 	fmt.Println("Starting contract reference generation...")
-	if err := utils.GenerateReferences(); err != nil {
+	if err := references.GenerateReferences(); err != nil {
 		fmt.Printf("Error generating bindings: %v\n", err)
 		os.Exit(1)
 	}

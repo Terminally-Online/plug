@@ -33,9 +33,16 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 						: undefined
 				}
 				loading={!plug}
-				className="relative flex h-[160px] w-full flex-col overflow-hidden bg-plug-white text-left"
+				className={cn("relative flex h-[160px] w-full flex-col overflow-hidden text-left", !!plug && "bg-plug-white")}
 				noPadding
 			>
+				{plug === undefined ? (
+					<div className="invisible">
+						<p>.</p>
+						<p>.</p>
+					</div>
+				) : (
+						<>
 				<div className="relative z-[999] flex h-full w-full flex-row justify-between bg-plug-white p-4 transition-all duration-200 ease-in-out group-hover:bg-transparent">
 					<div className="mt-auto flex flex-col">
 						<p className="flex flex-row gap-2 truncate text-sm font-bold tabular-nums">
@@ -120,6 +127,8 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 						</div>
 					)}
 				</div>
+						</>
+				)}
 			</Accordion>
 		</>
 	)

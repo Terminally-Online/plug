@@ -198,11 +198,6 @@ export const plugs = createTRPCRouter({
 								}
 							},
 							views: {
-								where: {
-									date: {
-										gte: new Date(new Date().setDate(new Date().getDate() - 7))
-									}
-								},
 								select: {
 									views: true
 								}
@@ -233,11 +228,6 @@ export const plugs = createTRPCRouter({
 									}
 								},
 								views: {
-									where: {
-										date: {
-											gte: new Date(new Date().setDate(new Date().getDate() - 7)) // Last 7 days
-										}
-									},
 									select: {
 										views: true
 									}
@@ -268,11 +258,6 @@ export const plugs = createTRPCRouter({
 								}
 							},
 							views: {
-								where: {
-									date: {
-										gte: new Date(new Date().setDate(new Date().getDate() - 7)) // Last 7 days
-									}
-								},
 								select: { views: true }
 							}
 						}

@@ -239,22 +239,6 @@ export const ConsoleSidebar = () => {
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
 					{(account.address || account.isAuthenticated) && (
 						<>
-							{socket?.admin && (
-								<ConsoleSidebarAction
-									className={cn(is.expanded && "pr-16")}
-									icon={
-										<Code
-											size={14}
-											className="opacity-60 transition-all duration-200 ease-in-out group-hover:opacity-100"
-										/>
-									}
-									title="Developer"
-									isExpanded={is.expanded}
-									isPrimary={getFlag(Flag.SHOW_DEVELOPER)}
-									onClick={() => handleFlag(Flag.SHOW_DEVELOPER, !getFlag(Flag.SHOW_DEVELOPER))}
-								/>
-							)}
-
 							<ConsoleSidebarAction
 								className={cn(is.expanded && "pr-16")}
 								icon={

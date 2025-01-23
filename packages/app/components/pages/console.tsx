@@ -1,17 +1,27 @@
-import { signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/router"
-import { useEffect, useRef } from "react"
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 
-import { LoaderCircle } from "lucide-react"
 
-import { useMediaQuery } from "@/lib"
-import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
-import { useSubscriptions } from "@/state/subscriptions"
 
-import { DesktopConsole } from "./desktop"
-import { MobileConsole } from "./mobile"
+import { LoaderCircle } from "lucide-react";
+
+
+
+import { useMediaQuery } from "@/lib";
+import { useSocket } from "@/state/authentication";
+import { COLUMNS, useColumnStore } from "@/state/columns";
+import { usePlugStore } from "@/state/plugs";
+import { useSubscriptions } from "@/state/subscriptions";
+
+
+
+import { DesktopConsole } from "./desktop";
+import { MobileConsole } from "./mobile";
+
+
+
+
 
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
@@ -37,7 +47,7 @@ export const ConsolePage = () => {
 	useEffect(() => {
 		if (!socket || !socket.identity) return
 
-		if (socket.identity.approvedAt && socket.identity.referralCode && !router.query.rfid) {
+		if (socket.identity.referrerId && socket.identity.referralCode && !router.query.rfid) {
 			router.replace(
 				{
 					query: { ...router.query, rfid: socket.identity.referralCode }

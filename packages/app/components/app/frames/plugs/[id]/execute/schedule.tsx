@@ -72,10 +72,10 @@ export const ScheduleFrame: FC<{
 						),
 						day_range_end: "day-range-end",
 						day_selected:
-							"bg-gradient-to-tr from-plug-green to-plug-yellow text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+							"bg-gradient-to-tr from-plug-yellow to-plug-yellow text-plug-green hover:bg-primary hover:brightness-105 focus:brightness-105",
 						day_today: "bg-accent text-accent-foreground",
 						day_disabled: "text-black/40",
-						day_range_middle: "aria-selected:bg-accent aria-selected:text-primary-foreground",
+						day_range_middle: "aria-selected:bg-plug-yellow aria-selected:text-text-plug-green",
 						day_hidden: "invisible"
 					}}
 					components={{

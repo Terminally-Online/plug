@@ -1,12 +1,12 @@
 import { FC, PropsWithChildren } from "react"
 
 import { Chain, createClient } from "viem"
-import { mainnet } from "viem/chains"
+import { anvil, base, mainnet } from "viem/chains"
 import { createConfig, http, WagmiProvider } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
 import { env } from "@/env"
-import { ANVIL_RPC, chains } from "@/lib/constants/chains"
+import { chains } from "@/lib/constants/chains"
 import { injectedWithFallback } from "@/lib/functions/wallet/connector"
 import { RPCType } from "@/lib/types"
 
@@ -27,11 +27,7 @@ export const WALLETCONNECT_PARAMS = {
 	showQrModal: false
 }
 
-// In development, include both mainnet and fork. In production, just mainnet
-const mainnetChain = chains[mainnet.id]
-const anvilChain = chains[31337]
-
-export const connectedChains = env.NEXT_PUBLIC_DEVELOPMENT ? [anvilChain, mainnetChain] : [mainnetChain]
+export const connectedChains = [chains[base.id]]
 
 export const wagmiConfig = createConfig({
 	chains: Object.values(connectedChains) as Chain[] as [Chain, ...Chain[]],

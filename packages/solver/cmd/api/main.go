@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
-	"solver/cron"
-	"solver/router"
-	"solver/solver"
-	"solver/utils"
+	"solver/internal/api"
+	"solver/internal/cron"
+	"solver/internal/solver"
+	"solver/internal/utils"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -37,7 +37,7 @@ func main() {
 	log.Printf("Started %d cron jobs...", len(cron.CronJobs))
 
 	solver := solver.New()
-	router := router.SetupRouter(solver)
+	router := api.SetupRouter(solver)
 
 	log.Println("Server is running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

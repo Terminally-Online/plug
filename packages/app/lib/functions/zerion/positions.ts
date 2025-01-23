@@ -37,10 +37,6 @@ const MINUTE = 60 * 1000
 const POSITIONS_CACHE_TIME = 60 * MINUTE
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
-	console.log("address being queried", socketAddress ?? socketId)
-	console.log("socketAddress", socketAddress)
-	console.log("socketId", socketId)
-
 	const response = await axios.get(
 		`https://api.zerion.io/v1/wallets/${socketAddress ?? socketId}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chains.join(",")}&filter[trash]=only_non_trash&sort=value`,
 		{
@@ -52,8 +48,6 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 	)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
-
-	console.log("response", response.data)
 
 	const data: ZerionPositions = response.data
 
@@ -410,7 +404,7 @@ const findPositions = async (id: string, search: string = "") => {
  * @throws {TRPCError} Throws a NOT_FOUND error if the socket is not found.
  * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
  */
-export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["ethereum"]) => {
+export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["base"]) => {
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})

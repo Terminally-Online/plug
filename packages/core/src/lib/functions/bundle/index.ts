@@ -1,4 +1,5 @@
 export * from './addresses'
+export * from './config'
 export * from './evm'
 export * from './gitignore'
 export * from './tsup'
