@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"solver/cron"
-	"solver/utils"
+	"solver/internal/cron"
+	"solver/internal/utils"
 	"time"
 
 	"github.com/joho/godotenv"
