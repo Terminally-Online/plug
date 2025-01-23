@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"solver/internal/api"
 	"solver/internal/cron"
-	"solver/internal/solver"
 	"solver/internal/utils"
 	"time"
 
@@ -36,8 +35,7 @@ func main() {
 	go cronJob.Start()
 	log.Printf("Started %d cron jobs...", len(cron.CronJobs))
 
-	solver := solver.New()
-	router := api.SetupRouter(solver)
+	router := api.SetupRouter()
 
 	log.Println("Server is running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
