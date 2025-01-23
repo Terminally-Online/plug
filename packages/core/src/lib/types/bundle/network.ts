@@ -1,8 +1,3 @@
-// import { Collector, Executor } from "@/src/core"
-// import { References } from "@/src/lib"
-
-// export type Collectors = Array<Collector<any, any>>
-// export type Executors = Array<Executor<any, any>>
 export type Processes = Record<string, any>
 
 export type Retries = {
@@ -27,4 +22,4 @@ export type NetworkReferences = Partial<{
 export type NetworkConfig = {
 }
 
-export type Network = NetworkBase & NetworkReferences 
+export type Network = NetworkBase & NetworkReferences
