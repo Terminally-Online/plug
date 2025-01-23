@@ -18,12 +18,12 @@ import (
 )
 
 type Handler struct {
-	solver *solver.Solver
+	Solver *solver.Solver
 }
 
 func New() *Handler {
 	return &Handler{
-		solver: solver.New(),
+		Solver: solver.New(),
 	}
 }
 
@@ -36,7 +36,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
-		for protocol, handler := range h.solver.GetProtocols() {
+		for protocol, handler := range h.Solver.GetProtocols() {
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
@@ -65,7 +65,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler, exists := h.solver.GetProtocolHandler(protocol)
+	handler, exists := h.Solver.GetProtocolHandler(protocol)
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -136,20 +136,10 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.ChainId == 0 {
-		utils.MakeHttpError(w, "'chainId' is required", http.StatusBadRequest)
-		return
-	}
-
-	if req.From == "" {
-		utils.MakeHttpError(w, "'from' is required", http.StatusBadRequest)
-		return
-	}
-
 	transactionsBatch := make([]signature.Plug, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
-		transactions, err := h.solver.GetTransaction(inputs, req.ChainId, req.From)
+		transactions, err := h.Solver.GetTransaction(inputs, req.ChainId, req.From)
 		if err != nil {
 			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 			return
@@ -244,7 +234,7 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetKill(w http.ResponseWriter, r *http.Request) {
-	response := KillResponse{Killed: h.solver.IsKilled}
+	response := KillResponse{Killed: h.Solver.IsKilled}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
@@ -252,9 +242,9 @@ func (h *Handler) GetKill(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) PostKill(w http.ResponseWriter, r *http.Request) {
-	h.solver.IsKilled = !h.solver.IsKilled
+	h.Solver.IsKilled = !h.Solver.IsKilled
 
-	response := KillResponse{Killed: h.solver.IsKilled}
+	response := KillResponse{Killed: h.Solver.IsKilled}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return

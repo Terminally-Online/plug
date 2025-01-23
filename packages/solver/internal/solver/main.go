@@ -231,9 +231,6 @@ func (s *Solver) GetSimulation(id string, plugs *signature.LivePlugs) (Simulatio
 }
 
 func (s *Solver) GetRun(transactions []signature.Plug) error {
-	if s.IsKilled {
-		return fmt.Errorf("solver is currently stopped")
-	}
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"net/http"
 	"solver/internal/api/middleware"
 	"solver/internal/api/solver"
 
@@ -9,26 +8,21 @@ import (
 )
 
 func SetupRouter() *mux.Router {
-	r := mux.NewRouter()
-	r.Use(JsonContentTypeMiddleware)
+	s := solver.New()
+	m := middleware.New(s.Solver)
 
-	middleware := middleware.New()
-	solver := solver.New()
+	r := mux.NewRouter()
+	r.Use(m.Json)
 
 	protected := r.PathPrefix("").Subrouter()
-	protected.Use(middleware.ApiKeyRequired)
+	protected.Use(m.ApiKey)
+	protected.Use(m.KillSwitch)
 
-	r.HandleFunc("/solver", solver.GetIntent).Methods("GET")
-	r.HandleFunc("/solver", solver.PostIntent).Methods("POST")
-	r.HandleFunc("/solver/kill", solver.GetKill).Methods("GET")
-	r.HandleFunc("/solver/kill", solver.PostKill).Methods("GET")
+	r.HandleFunc("/solver", s.GetIntent).Methods("GET")
+	r.HandleFunc("/solver", s.PostIntent).Methods("POST")
+	r.HandleFunc("/solver/kill", s.GetKill).Methods("GET")
+	r.HandleFunc("/solver/kill", s.PostKill).Methods("POST")
 
 	return r
 }
 
-func JsonContentTypeMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
-	})
-}
