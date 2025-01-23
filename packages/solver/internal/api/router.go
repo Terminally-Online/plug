@@ -12,9 +12,14 @@ func SetupRouter(solver *solver.Solver) *mux.Router {
 	r.Use(JsonContentTypeMiddleware)
 
 	intentHandler := NewIntentHandler(solver)
+	adminHandler := NewAdminHandler(solver)
 
+	// Intent routes
 	r.HandleFunc("/intent", intentHandler.Get).Methods("GET")
 	r.HandleFunc("/intent", intentHandler.Post).Methods("POST")
+
+	// Admin routes
+	r.HandleFunc("/admin/solver/status", adminHandler.authMiddleware(adminHandler.HandleSolverStatus)).Methods("GET", "POST")
 
 	return r
 }

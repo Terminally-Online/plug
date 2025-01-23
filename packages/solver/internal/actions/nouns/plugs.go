@@ -17,14 +17,15 @@ import (
 
 func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount *big.Int `json:"amount"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, err
 	}
 
-	if inputs.Amount.Sign() <= 0 {
-		return nil, fmt.Errorf("amount must be greater than zero")
+	amount, err := utils.StringToUint(inputs.Amount, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert big amount to uint: %w", err)
 	}
 
 	provider, err := utils.GetProvider(params.ChainId)
@@ -57,20 +58,21 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	return []signature.Plug{{
 		To:    common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:  bidCalldata,
-		Value: new(big.Int).Mul(inputs.Amount, big.NewInt(1e18)),
+		Value: new(big.Int).Mul(amount, big.NewInt(1e18)),
 	}}, nil
 }
 
 func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Percent *big.Int `json:"percent"`
+		Percent string `json:"percent"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, err
 	}
 
-	if inputs.Percent.Sign() <= 0 {
-		return nil, fmt.Errorf("percent must be greater than zero")
+	percent, err := utils.StringToUint(inputs.Percent, 0)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert percent to uint: %w", err)
 	}
 
 	provider, err := utils.GetProvider(params.ChainId)
@@ -92,7 +94,10 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 
 	bid := new(big.Int).Mul(
 		auction.Amount,
-		new(big.Int).Add(big.NewInt(1), inputs.Percent.Div(inputs.Percent, big.NewInt(100))),
+		new(big.Int).Add(
+			big.NewInt(1),
+			new(big.Int).Div(percent, big.NewInt(100)),
+		),
 	)
 
 	auctionHouseAbi, err := nouns_auction_house.NounsAuctionHouseMetaData.GetAbi()
@@ -238,18 +243,23 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 
 func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Min *big.Int `json:"min"`
-		Max *big.Int `json:"max"`
+		Min string `json:"min"`
+		Max string `json:"max"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, err
 	}
 
-	if inputs.Min.Sign() <= 0 || inputs.Max.Sign() <= 0 {
-		return nil, fmt.Errorf("min and max must be greater than zero")
+	min, err := utils.StringToUint(inputs.Min, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert min to uint: %w", err)
+	}
+	max, err := utils.StringToUint(inputs.Max, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert max to uint: %w", err)
 	}
 
-	if inputs.Min.Cmp(inputs.Max) >= 0 {
+	if min.Cmp(max) >= 0 {
 		return nil, fmt.Errorf("min must be less than max")
 	}
 
@@ -270,7 +280,7 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, err
 	}
 
-	if auction.Amount.Cmp(inputs.Min) < 0 || auction.Amount.Cmp(inputs.Max) > 0 {
+	if auction.Amount.Cmp(min) < 0 || auction.Amount.Cmp(max) > 0 {
 		return nil, fmt.Errorf("current bid is not within range")
 	}
 

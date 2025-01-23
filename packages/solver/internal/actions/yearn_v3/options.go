@@ -17,7 +17,7 @@ func (p *YearnV3OptionsProvider) GetOptions(chainId int, action string) (map[int
 	if err != nil {
 		return nil, err
 	}
-	availableStakingGuageOptions, err := GetAvailableStakingGuageOptions()
+	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions()
 	if err != nil {
 		return nil, err
 	}
@@ -44,19 +44,19 @@ func (p *YearnV3OptionsProvider) GetOptions(chainId int, action string) (map[int
 		}, nil
 	case actions.ActionStake:
 		return map[int]actions.Options{
-			1: {Simple: availableStakingGuageOptions},
+			1: {Simple: availableStakingGaugeOptions},
 		}, nil
 	case actions.ActionStakeMax:
 		return map[int]actions.Options{
-			0: {Simple: availableStakingGuageOptions},
+			0: {Simple: availableStakingGaugeOptions},
 		}, nil
 	case actions.ActionRedeem:
 		return map[int]actions.Options{
-			1: {Simple: availableStakingGuageOptions},
+			1: {Simple: availableStakingGaugeOptions},
 		}, nil
 	case actions.ActionRedeemMax:
 		return map[int]actions.Options{
-			0: {Simple: availableStakingGuageOptions},
+			0: {Simple: availableStakingGaugeOptions},
 		}, nil
 	case actions.ConstraintAPY:
 		return map[int]actions.Options{
@@ -92,7 +92,7 @@ func GetUnderlyingAssetOptions() ([]actions.Option, error) {
 		if _, exists := tokenMap[lowerAddr]; !exists {
 			if token, ok := tokenDetails[lowerAddr]; ok {
 				tokenMap[lowerAddr] = actions.Option{
-					Value: token.Address,
+					Value: fmt.Sprintf("%s:%d", token.Address, token.Decimals),
 					Name:  token.Name,
 					Label: token.Symbol,
 					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Token.Address),
@@ -128,7 +128,7 @@ func GetUnderlyingAssetToVaultOptions() (map[string][]actions.Option, error) {
 	return tokenMap, nil
 }
 
-func GetAvailableStakingGuageOptions() ([]actions.Option, error) {
+func GetAvailableStakingGaugeOptions() ([]actions.Option, error) {
 	vaults, err := GetVaults()
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func GetAvailableStakingGuageOptions() ([]actions.Option, error) {
 		}
 
 		options = append(options, actions.Option{
-			Value: vault.Address,
+			Value: fmt.Sprintf("%s:%d", vault.Address, vault.Decimals),
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Address),

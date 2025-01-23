@@ -96,7 +96,7 @@ func GetSupplyTokenToVaultOptions() ([]actions.Option, map[string][]actions.Opti
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
-				Value: vault.Asset.Address,
+				Value: fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals),
 				Icon:  vault.Asset.LogoURI,
 			})
 			seenToken[vault.Asset.Address] = true
@@ -105,7 +105,7 @@ func GetSupplyTokenToVaultOptions() ([]actions.Option, map[string][]actions.Opti
 		tokenToVaultOptions[vault.Asset.Address] = append(tokenToVaultOptions[vault.Asset.Address], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
-			Value: vault.Address,
+			Value: fmt.Sprintf("%s:%d", vault.Address, vault.Asset.Decimals),
 			Icon:  vault.Metadata.Image,
 			Info:  fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
 		})
@@ -168,7 +168,7 @@ func GetCollateralTokenToMarketOptions() (
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
-				Value: market.CollateralAsset.Address,
+				Value: fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals),
 				Icon:  market.CollateralAsset.LogoURI,
 			})
 			seenCollateral[market.CollateralAsset.Address] = true
@@ -204,7 +204,7 @@ func GetBorrowTokenToMarketOptions() ([]actions.Option, map[string][]actions.Opt
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.LoanAsset.Symbol,
 				Name:  market.LoanAsset.Name,
-				Value: market.LoanAsset.Address,
+				Value: fmt.Sprintf("%s:%d", market.LoanAsset.Address, market.LoanAsset.Decimals),
 				Icon:  market.LoanAsset.LogoURI,
 			})
 			seenLoanAssets[market.LoanAsset.Address] = true
@@ -242,7 +242,7 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]actions.Option, map[string]
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
-				Value: market.CollateralAsset.Address,
+				Value: fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals),
 				Icon:  market.CollateralAsset.LogoURI,
 			})
 			seenToken[market.CollateralAsset.Address] = true
@@ -262,7 +262,7 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]actions.Option, map[string]
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
-				Value: vault.Asset.Address,
+				Value: fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals),
 				Icon:  vault.Asset.LogoURI,
 			})
 			seenToken[vault.Asset.Address] = true

@@ -17,14 +17,20 @@ import (
 
 func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string   `json:"token"`
-		Amount *big.Int `json:"amount"`
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %w", err)
 	}
-	if inputs.Amount.Cmp(big.NewInt(0)) >= 0 && inputs.Amount.Cmp(utils.Uint256Max) > 0 {
-		return nil, utils.ErrField("amount", inputs.Amount.String())
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -34,7 +40,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
 		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
-		inputs.Amount,
+		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -45,8 +51,8 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	depositCalldata, err := poolAbi.Pack("deposit",
-		common.HexToAddress(inputs.Token),
-		inputs.Amount,
+		token,
+		amount,
 		common.HexToAddress(params.From),
 		uint16(0),
 	)
@@ -55,7 +61,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(inputs.Token),
+		To:   *token,
 		Data: approveCalldata,
 	}, {
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
@@ -65,11 +71,20 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 
 func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string   `json:"token"`
-		Amount *big.Int `json:"amount"`
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %w", err)
+	}
+
+	tokenOut, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+	amountOut, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -77,8 +92,8 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("borrow",
-		common.HexToAddress(inputs.Token),
-		inputs.Amount,
+		tokenOut,
+		amountOut,
 		interestRateMode,
 		uint16(0),
 		common.HexToAddress(params.From),
@@ -95,11 +110,20 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 
 func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string  `json:"token"`  // Address of the token to repay.
-		Amount big.Int `json:"amount"` // Raw amount of tokens to repay.
+		Token  string `json:"token"`  // Address of the token to repay.
+		Amount string `json:"amount"` // Raw amount of tokens to repay.
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal repay inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
+	}
+
+	tokenIn, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+	amountIn, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert repayment amount to uint: %w", err)
 	}
 
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
@@ -109,7 +133,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
 		common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
-		inputs.Amount,
+		amountIn,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -120,8 +144,8 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	repayCalldata, err := poolAbi.Pack("repay",
-		common.HexToAddress(inputs.Token),
-		inputs.Amount,
+		tokenIn,
+		amountIn,
 		interestRateMode,
 		common.HexToAddress(params.From),
 	)
@@ -130,7 +154,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(inputs.Token),
+		To:   *tokenIn,
 		Data: approveCalldata,
 	}, {
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
@@ -140,12 +164,21 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string   `json:"token"`  // Address of the token to receive (redeeming for).
-		Amount *big.Int `json:"amount"` // Raw amount of tokens to send.
+		Token  string `json:"token"`  // Address of the token to receive (redeeming for).
+		Amount string `json:"amount"` // Raw amount of tokens to send.
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
+	}
+
+	tokenOut, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+	amountOut, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %w", err)
 	}
 
 	poolAbi, err := aave_v3_pool.AaveV3PoolMetaData.GetAbi()
@@ -153,8 +186,8 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrABI("AaveV3Pool")
 	}
 	calldata, err := poolAbi.Pack("withdraw",
-		common.HexToAddress(inputs.Token),
-		inputs.Amount,
+		tokenOut,
+		amountOut,
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
@@ -169,27 +202,33 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Operator  int        `json:"operator"`  // The operator to use for the threshold comparison.
-		Threshold *big.Float `json:"threshold"` // The threshold value to compare against.
+		Operator  int    `json:"operator"`  // The operator to use for the threshold comparison.
+		Threshold string `json:"threshold"` // The threshold value to compare against.
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal health factor inputs")
+		return nil, fmt.Errorf("failed to unmarshal health factor inputs: %w", err)
+	}
+
+	// NOTE: Aave v3 uses 18 decimals for their health factor.
+	//      https://github.com/aave/aave-v3-core/blob/782f51917056a53a2c228701058a6c3fb233684a/test-suites/emode.spec.ts#L555
+	threshold, err := utils.StringToUint(inputs.Threshold, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
 	healthFactor, err := getHealthFactor(params.ChainId, params.From)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get health factor: %v", err)
+		return nil, fmt.Errorf("failed to get health factor: %w", err)
 	}
 
-	healthFactorFloat := new(big.Float).SetInt(healthFactor)
 	switch inputs.Operator {
 	case -1:
-		if healthFactorFloat.Cmp(inputs.Threshold) >= 0 {
-			return nil, fmt.Errorf("current health factor %.2f is not less than threshold %.2f", healthFactorFloat, inputs.Threshold)
+		if healthFactor.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("current health factor %.2f is not less than threshold %.2f", healthFactor, threshold)
 		}
 	case 1:
-		if healthFactorFloat.Cmp(inputs.Threshold) <= 0 {
-			return nil, fmt.Errorf("current health factor %.2f is not greater than threshold %.2f", healthFactorFloat, inputs.Threshold)
+		if healthFactor.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("current health factor %.2f is not greater than threshold %.2f", healthFactor, threshold)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
@@ -200,13 +239,19 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Direction int        `json:"direction"` // -1 for borrow, 1 for deposit
-		Token     string     `json:"token"`     // Underlying token address
-		Operator  int        `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold *big.Float `json:"threshold"` // Percentage
+		Direction int    `json:"direction"` // -1 for borrow, 1 for deposit
+		Token     string `json:"token"`     // Underlying token address
+		Operator  int    `json:"operator"`  // -1 for less than, 1 for greater than
+		Threshold string `json:"threshold"` // Percentage
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
+	}
+
+	// Convert threshold percentage to RAY units (27 decimals)
+	threshold, err := utils.StringToUint(inputs.Threshold, 27)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
 	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
@@ -235,19 +280,15 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	default:
 		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
 	}
-	rateFloat := new(big.Float).Quo(
-		new(big.Float).SetInt(rate),
-		new(big.Float).SetInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(25), nil)),
-	)
 
 	switch inputs.Operator {
 	case -1:
-		if rateFloat.Cmp(inputs.Threshold) >= 0 {
-			return nil, fmt.Errorf("current rate %.2f%% is not less than threshold %.2f%%", rateFloat, inputs.Threshold)
+		if rate.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("current rate %.2f%% is not less than threshold %.2f%%", rate, threshold)
 		}
 	case 1:
-		if rateFloat.Cmp(inputs.Threshold) <= 0 {
-			return nil, fmt.Errorf("current rate %.2f%% is not greater than threshold %.2f%%", rateFloat, inputs.Threshold)
+		if rate.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("current rate %.2f%% is not greater than threshold %.2f%%", rate, threshold)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)

@@ -25,31 +25,31 @@ var (
 
 	schemas = map[string]actions.ActionDefinition{
 		ActionEarn: {
-			Sentence: "Earn by depositing {0<amount:uint256>} {1<token:address>} to {1=>2<vault:string>}.",
+			Sentence: "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}.",
 			Handler:  HandleEarn,
 		},
 		ActionSupplyCollateral: {
-			Sentence: "Supply {0<amount:uint256>} {1<token:address>} as collateral to {1=>2<market:string>}.",
+			Sentence: "Supply {0<amount:float>} {1<token:address:uint8>} as collateral to {1=>2<market:string>}.",
 			Handler:  HandleSupplyCollateral,
 		},
 		ActionWithdraw: {
-			Sentence: "Withdraw {0<amount:uint256>} {1<token:address>} from {1=>2<target:string>}.",
+			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<target:string>}.",
 			Handler:  HandleWithdraw,
 		},
 		ActionWithdrawAll: {
-			Sentence: "Withdraw all {0<token:address>} from {0=>1<target:string>}.",
+			Sentence: "Withdraw all {0<token:address:uint8>} from {0=>1<target:string>}.",
 			Handler:  HandleWithdrawAll,
 		},
 		ActionBorrow: {
-			Sentence: "Borrow {0<amount:uint256>} {1<token:address>} from {1=>2<market:string>}.",
+			Sentence: "Borrow {0<amount:float>} {1<token:address:uint8>} from {1=>2<market:string>}.",
 			Handler:  HandleBorrow,
 		},
 		ActionRepay: {
-			Sentence: "Repay {0<amount:uint256>} {1<token:address>} to {1=>2<market:string>}.",
+			Sentence: "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<market:string>}.",
 			Handler:  HandleRepay,
 		},
 		ActionRepayAll: {
-			Sentence: "Repay all {0<token:address>} to {0=>1<market:string>}.",
+			Sentence: "Repay all {0<token:address:uint8>} to {0=>1<market:string>}.",
 			Handler:  HandleRepayAll,
 		},
 		ActionClaimRewards: {
@@ -58,12 +58,12 @@ var (
 		},
 		actions.ConstraintHealthFactor: {
 			Type:     actions.TypeConstraint,
-			Sentence: "Health factor in {0<market:string>} is {1<operator:int8>} than {2<threshold:uint256>}.",
+			Sentence: "Health factor in {0<market:string>} is {1<operator:int8>} than {2<threshold:float>}.",
 			Handler:  HandleConstraintHealthFactor,
 		},
 		actions.ConstraintAPY: {
 			Type:     actions.TypeConstraint,
-			Sentence: "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:uint256>}%.",
+			Sentence: "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
 			Handler:  HandleConstraintAPY,
 		},
 	}

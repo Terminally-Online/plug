@@ -26,19 +26,24 @@ type SwapInputs struct {
 
 func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string  `json:"token"`     // Address of the token to transfer.
-		Recipient string  `json:"recipient"` // Address of the recipient.
-		Amount    big.Int `json:"amount"`    // Raw amount of tokens to transfer.
+		Token     string `json:"token"`     // Address of the token to transfer.
+		Recipient string `json:"recipient"` // Address of the recipient.
+		Amount    string `json:"amount"`    // Raw amount of tokens to transfer.
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
 	if common.HexToAddress(inputs.Token) == utils.NativeTokenAddress {
+		amount, err := utils.StringToUint(inputs.Amount, 18)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert native transfer amount to uint: %w", err)
+		}
+
 		transaction := ethtypes.NewTransaction(
 			0,
 			common.HexToAddress(inputs.Recipient),
-			&inputs.Amount,
+			amount,
 			utils.NativeTransferGas,
 			big.NewInt(0),
 			nil,
@@ -55,9 +60,19 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrABI("ERC20")
 	}
 
+	decimals, err := getERC20Decimals(params.ChainId, inputs.Token)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, *decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert transfer amount to uint: %w", err)
+	}
+
 	calldata, err := erc20Abi.Pack("transfer",
 		common.HexToAddress(inputs.Recipient),
-		&inputs.Amount,
+		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -276,6 +291,18 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 
 	wethAddress := references.Mainnet.References["weth"]["address"]
 
+	decimals, err := getERC20Decimals(params.ChainId, inputs.TokenOut)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	adjustedAmount, err := utils.StringToUint(inputs.AmountOut, *decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert swap amount to uint: %w", err)
+	}
+
+	inputs.AmountOut = adjustedAmount.String()
+
 	// Try ETH ↔ WETH conversion first
 	if txs, err := handleEthWethSwap(inputs, params, wethAddress); err != nil {
 		return nil, err
@@ -289,14 +316,19 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 
 func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string  `json:"token"`
-		Amount big.Int `json:"amount"`
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal wrap inputs: %v", err)
 	}
 
-	wethAddress := references.Mainnet.References["weth"]["address"]
+	amount, err := utils.StringToUint(inputs.Amount, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert wrap amount to uint: %w", err)
+	}
+
+	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
 
 	if strings.EqualFold(inputs.Token, wethAddress) {
 		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)
@@ -304,7 +336,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrContract(wethAddress)
 		}
 
-		calldata, err := wethContract.WethAddressTransactor.Withdraw(utils.BuildTransactionOpts(params.From, nil), &inputs.Amount)
+		calldata, err := wethContract.WethAddressTransactor.Withdraw(utils.BuildTransactionOpts(params.From, nil), amount)
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
@@ -321,15 +353,15 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrContract(wethAddress)
 		}
 
-		calldata, err := wethContract.WethAddressTransactor.Deposit(utils.BuildTransactionOpts(params.From, &inputs.Amount))
+		calldata, err := wethContract.WethAddressTransactor.Deposit(utils.BuildTransactionOpts(params.From, amount))
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
 
 		return []signature.Plug{{
 			To:    common.HexToAddress(wethAddress),
+			Value: amount,
 			Data:  calldata.Data(),
-			Value: &inputs.Amount,
 		}}, nil
 	}
 

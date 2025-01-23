@@ -14,29 +14,29 @@ var (
 	chains  = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
-			Sentence: "Deposit {0<amount:uint256>} {1<token:address>}",
+			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>}",
 			Handler:  HandleActionDeposit,
 		},
 		actions.ActionBorrow: {
-			Sentence: "Borrow {0<tokenOut:address>} {1<amountOut:uint256>}",
+			Sentence: "Borrow {0<tokenOut:address:uint8>} {1<amountOut:float>}",
 			Handler:  HandleActionBorrow,
 		},
 		actions.ActionRepay: {
-			Sentence: "Repay {0<tokenIn:address>} {1<amountIn:uint256>}",
+			Sentence: "Repay {0<tokenIn:address:uint8>} {1<amountIn:float>}",
 			Handler:  HandleActionRepay,
 		},
 		actions.ActionWithdraw: {
-			Sentence: "Withdraw {0<tokenOut:address>} {1<amountOut:uint256>}",
+			Sentence: "Withdraw {0<tokenOut:address:uint8>} {1<amountOut:float>}",
 			Handler:  HandleActionWithdraw,
 		},
 		actions.ConstraintHealthFactor: {
 			Type:     actions.TypeConstraint,
-			Sentence: "Health factor is {0<operator:int8>} than {1<threshold:uint256>}",
+			Sentence: "Health factor is {0<operator:int8>} than {1<threshold:float>}",
 			Handler:  HandleConstraintHealthFactor,
 		},
 		actions.ConstraintAPY: {
 			Type:     actions.TypeConstraint,
-			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:uint256>}%",
+			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:float>}%",
 			Handler:  HandleConstraintAPY,
 		},
 	}

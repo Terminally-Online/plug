@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"solver/bindings/erc_20"
 	"solver/internal/utils"
 	"strings"
 
@@ -67,6 +68,25 @@ func getTokenType(chainId int, address string) (*int, error) {
 	}
 
 	return nil, fmt.Errorf("unsupported token type")
+}
+
+func getERC20Decimals(chainId int, address string) (*uint8, error) {
+	provider, err := utils.GetProvider(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	contract, err := erc_20.NewErc20(common.HexToAddress(address), provider)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
+	}
+
+	decimals, err := contract.Decimals(nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get decimals: %v", err)
+	}
+
+	return &decimals, nil
 }
 
 func getProxyTokenType(_ *ethclient.Client, _ string) (*int, error) {
