@@ -22,7 +22,7 @@ import (
 )
 
 type Solver struct {
-	IsKilled bool
+	IsKilled  bool
 	protocols map[string]actions.BaseProtocolHandler
 }
 
@@ -199,7 +199,6 @@ func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plu
 	if err != nil {
 		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
 	}
-
 	plugs := signature.Plugs{
 		Socket: common.HexToAddress(from),
 		Plugs:  transactions,
