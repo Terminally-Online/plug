@@ -8,7 +8,7 @@ import (
 
 	"solver/bindings/ens_registrar_controller"
 	"solver/internal/actions"
-	"solver/internal/references"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 

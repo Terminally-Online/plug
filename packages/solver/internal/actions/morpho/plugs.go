@@ -9,7 +9,7 @@ import (
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
 	"solver/internal/actions"
-	"solver/internal/references"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"

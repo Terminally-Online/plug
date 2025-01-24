@@ -9,7 +9,7 @@ import (
 	"solver/bindings/weth_address"
 	"solver/internal/actions"
 	"solver/internal/actions/llama"
-	"solver/internal/references"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"

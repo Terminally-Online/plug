@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"solver/internal/references"
+	"solver/internal/bindings/references"
 	"solver/internal/utils"
 
 	"github.com/joho/godotenv"
