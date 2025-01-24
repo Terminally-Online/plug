@@ -4,6 +4,12 @@
 
 ### Minor Changes
 
+- 0fc126a: chore: migrate package into plug monorepo
+
+## 0.1.0
+
+### Minor Changes
+
 - 4ad053e: feat: type and architecture cleanup
 
 ### Patch Changes
