@@ -4,10 +4,9 @@ import (
 	"log"
 	"net/http"
 	"solver/internal/api"
+	"solver/internal/api/solver"
 	"solver/internal/cron"
-	"solver/internal/solver"
 	"solver/internal/utils"
-	"time"
 
 	"github.com/joho/godotenv"
 	scheduler "github.com/robfig/cron"
@@ -19,26 +18,30 @@ func main() {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
 	}
 
-	location, err := time.LoadLocation("America/New_York")
-	if err != nil {
-		log.Fatal(err)
-	}
-	cronJob := scheduler.NewWithLocation(location)
+	s := solver.New()
 
-	for _, job := range cron.CronJobs {
-		err = cronJob.AddFunc(job.Schedule, job.Job)
+	var CronJobs = []struct {
+		Schedule string
+		Job      func()
+	}{
+		{"0 0 0 * * *", cron.AnonymousUsers},                     // At the start of every day
+		{"0 */5 * * * *", cron.CollectibleMetadata},              // Every 5 minutes
+		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }}, // Every 1 minute
+	}
+
+	schedule := scheduler.New()
+	for _, job := range CronJobs {
+		err = schedule.AddFunc(job.Schedule, job.Job)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	log.Printf("Starting %d cron jobs...", len(cron.CronJobs))
-	go cronJob.Start()
-	log.Printf("Started %d cron jobs...", len(cron.CronJobs))
+	go schedule.Start()
+	log.Printf("Started %d cron jobs...", len(CronJobs))
 
-	solver := solver.New()
-	router := api.SetupRouter(solver)
+	router := api.SetupRouter(s)
 
-	log.Println("Server is running on http://localhost:8080")
+	log.Println("Started server on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

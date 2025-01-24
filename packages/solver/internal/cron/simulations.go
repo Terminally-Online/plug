@@ -5,21 +5,26 @@ import (
 	"solver/internal/solver"
 )
 
-func Simulations() {
-	solverHandler := solver.New()
+func Simulations(s *solver.Solver) {
+	// NOTE: If the solver has had its kill switch toggled prevent the running any
+	//       new simulation processes that would retrieve, build and execute the
+	//       active executions that the application endpoint provides.
+	if s.IsKilled {
+		return
+	}
 
-	executions, err := solverHandler.GetExecutions()
+	executions, err := s.GetExecutions()
 	if err != nil {
 		return
 	}
 
 	var simulations []solver.SimulationRequest
 	for _, execution := range executions.Result.Data.Json {
-		transactions, err := solverHandler.GetTransactions(execution)
+		transactions, err := s.GetTransactions(execution)
 		if err != nil {
 			log.Println(err.Error())
 		}
-		plugs, err := solverHandler.GetPlugs(execution.ChainId, execution.From, transactions)
+		plugs, err := s.GetPlugs(execution.ChainId, execution.From, transactions)
 		if err != nil {
 			simulations = append(simulations, solver.SimulationRequest{
 				Id:     execution.Id,
@@ -28,7 +33,7 @@ func Simulations() {
 			})
 			continue
 		}
-		simulation, err := solverHandler.GetSimulation(execution.Id, plugs)
+		simulation, err := s.GetSimulation(execution.Id, plugs)
 		if err != nil {
 			simulations = append(simulations, solver.SimulationRequest{
 				Id:     execution.Id,
@@ -43,7 +48,7 @@ func Simulations() {
 		return
 	}
 
-	if err := solverHandler.PostSimulations(simulations); err != nil {
+	if err := s.PostSimulations(simulations); err != nil {
 		log.Println(err.Error())
 	}
 }

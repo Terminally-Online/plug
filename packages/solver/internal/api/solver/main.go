@@ -1,4 +1,4 @@
-package api
+package solver
 
 import (
 	"encoding/json"
@@ -17,23 +17,17 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-type IntentRequest struct {
-	ChainId int               `json:"chainId"`
-	From    string            `json:"from"`
-	Inputs  []json.RawMessage `json:"inputs"`
+type Handler struct {
+	Solver *solver.Solver
 }
 
-type IntentHandler struct {
-	solver *solver.Solver
-}
-
-func NewIntentHandler(solver *solver.Solver) *IntentHandler {
-	return &IntentHandler{
-		solver: solver,
+func New() *Handler {
+	return &Handler{
+		Solver: solver.New(),
 	}
 }
 
-func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
 	chainId := r.URL.Query().Get("chainId")
@@ -42,7 +36,7 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
-		for protocol, handler := range intentHandler.solver.GetProtocols() {
+		for protocol, handler := range h.Solver.GetProtocols() {
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
@@ -71,7 +65,7 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	handler, exists := intentHandler.solver.GetProtocolHandler(protocol)
+	handler, exists := h.Solver.GetProtocolHandler(protocol)
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -135,22 +129,17 @@ func (intentHandler *IntentHandler) Get(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 	var req IntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := intentHandler.validateRequest(&req); err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	transactionsBatch := make([]signature.Plug, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
-		transactions, err := intentHandler.solver.GetTransaction(inputs, req.ChainId, req.From)
+		transactions, err := h.Solver.GetTransaction(inputs, req.ChainId, req.From)
 		if err != nil {
 			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 			return
@@ -244,14 +233,21 @@ func (intentHandler *IntentHandler) Post(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (intentHandler *IntentHandler) validateRequest(req *IntentRequest) error {
-	if req.ChainId == 0 {
-		return fmt.Errorf("chainId is required")
+func (h *Handler) GetKill(w http.ResponseWriter, r *http.Request) {
+	response := KillResponse{Killed: h.Solver.IsKilled}
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
 	}
-
-	if req.From == "" {
-		return fmt.Errorf("from address is required")
-	}
-
-	return nil
 }
+
+func (h *Handler) PostKill(w http.ResponseWriter, r *http.Request) {
+	h.Solver.IsKilled = !h.Solver.IsKilled
+
+	response := KillResponse{Killed: h.Solver.IsKilled}
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+

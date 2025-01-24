@@ -22,12 +22,13 @@ import (
 )
 
 type Solver struct {
+	IsKilled  bool
 	protocols map[string]actions.BaseProtocolHandler
-	isStopped bool
 }
 
 func New() *Solver {
 	return &Solver{
+		IsKilled: false,
 		protocols: map[string]actions.BaseProtocolHandler{
 			actions.ProtocolPlug:    plug.New(),
 			actions.ProtocolAaveV3:  aave_v3.New(),
@@ -36,7 +37,6 @@ func New() *Solver {
 			actions.ProtocolNouns:   nouns.New(),
 			actions.ProtocolMorpho:  morpho.New(),
 		},
-		isStopped: false,
 	}
 }
 
@@ -229,23 +229,7 @@ func (s *Solver) GetSimulation(id string, plugs *signature.LivePlugs) (Simulatio
 	}, nil
 }
 
-// TODO: Internalize this logic where it belongs.
-func (s *Solver) Stop() {
-	s.isStopped = true
-}
-
-func (s *Solver) Start() {
-	s.isStopped = false
-}
-
-func (s *Solver) IsStopped() bool {
-	return s.isStopped
-}
-
 func (s *Solver) GetRun(transactions []signature.Plug) error {
-	if s.isStopped {
-		return fmt.Errorf("solver is currently stopped")
-	}
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }
