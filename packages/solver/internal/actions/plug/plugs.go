@@ -289,7 +289,7 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
 	}
 
-	wethAddress := references.Mainnet.References["weth"]["address"]
+	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
 
 	decimals, err := getERC20Decimals(params.ChainId, inputs.TokenOut)
 	if err != nil {

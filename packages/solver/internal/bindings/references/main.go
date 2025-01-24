@@ -77,6 +77,9 @@ var (
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 			},
+			"weth": {
+				"address": "0x4200000000000000000000000000000000000006",
+			},
 			"yearn_v3": {
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
