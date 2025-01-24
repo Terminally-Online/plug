@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.2.0
+
+### Minor Changes
+
+- c7731ab: chore: force new version
+
 ## 0.1.0
 
 ### Minor Changes
