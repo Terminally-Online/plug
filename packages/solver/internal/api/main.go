@@ -15,13 +15,15 @@ func SetupRouter(s *solver.Handler) *mux.Router {
 
 	protected := r.PathPrefix("").Subrouter()
 	protected.Use(m.ApiKey)
-	protected.Use(m.KillSwitch)
 
-	r.HandleFunc("/solver", s.GetIntent).Methods("GET")
-	r.HandleFunc("/solver", s.PostIntent).Methods("POST")
-	r.HandleFunc("/solver/kill", s.GetKill).Methods("GET")
-	r.HandleFunc("/solver/kill", s.PostKill).Methods("POST")
+	protectedKillable := r.PathPrefix("").Subrouter()
+	protectedKillable.Use(m.ApiKey)
+	protectedKillable.Use(m.KillSwitch)
+
+	protectedKillable.HandleFunc("/solver", s.GetIntent).Methods("GET")
+	protectedKillable.HandleFunc("/solver", s.PostIntent).Methods("POST")
+	protected.HandleFunc("/solver/kill", s.GetKill).Methods("GET")
+	protected.HandleFunc("/solver/kill", s.PostKill).Methods("POST")
 
 	return r
 }
-
