@@ -12,7 +12,7 @@ export const getSchemas = async (protocol?: string, action?: string, chainId: nu
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
 
-	const url = `${env.SOLVER_URL}/intent`
+	const url = `${env.SOLVER_URL}/solver`
 
 	const response = await axios.get(url, {
 		params: {
@@ -38,7 +38,7 @@ export const getTransaction = async (input: {
 		[key: string]: string | number
 	}>
 }) => {
-	const response = await axios.post(`${env.SOLVER_URL}/intent`, input)
+	const response = await axios.post(`${env.SOLVER_URL}/solver`, input)
 
 	return response.data
 }
