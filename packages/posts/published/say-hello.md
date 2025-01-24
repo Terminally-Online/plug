@@ -36,7 +36,7 @@ I've created a special access code for early readers: [abcd-1234-efgh-5678]. Use
 
 Follow our journey:
 
-- Twitter: [[@onplug_io]](https://twitter.com/onplug_io)
+- Twitter: [@onplug_io](https://twitter.com/onplug_io)
 - Documentation: [docs.onplug.io](https://docs.onplug.io)
 
 See you onchain,
