@@ -19,11 +19,23 @@ defaults:
     working-directory: packages/core
 
 jobs:
+  wait-for-release:
+    name: ⏰ Wait for Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for NPM publish
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: "⛅ Release"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 20
+
   build:
-    strategy:
-      fail-fast: true
     name: 👁️ Build and Keep Artifacts
     runs-on: ubuntu-latest
+    needs: wait-for-release
+    if: ${{ always() }}
     steps:
       - name: 🛒 Checkout
         uses: actions/checkout@v4
