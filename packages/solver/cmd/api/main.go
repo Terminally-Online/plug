@@ -20,10 +20,6 @@ func main() {
 
 	s := solver.New()
 
-	// TODO: (#370) The cron jobs and api router need to share the same instance of the
-	//       solver so that if it is killed with the kill switch we need to halt the api
-	//       and the cron jobs so that we have complete coverage.
-
 	var CronJobs = []struct {
 		Schedule string
 		Job      func()
