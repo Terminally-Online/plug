@@ -7,8 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter() *mux.Router {
-	s := solver.New()
+func SetupRouter(s *solver.Handler) *mux.Router {
 	m := middleware.New(s.Solver)
 
 	r := mux.NewRouter()

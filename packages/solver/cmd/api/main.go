@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"solver/internal/api"
+	"solver/internal/api/solver"
 	"solver/internal/cron"
 	"solver/internal/utils"
 
@@ -17,21 +18,33 @@ func main() {
 		log.Fatal(utils.ErrEnvironmentNotInitialized(err.Error()).Error())
 	}
 
-	// TODO: (#370) The cron jobs and api router need to share the same instance of the 
+	s := solver.New()
+
+	// TODO: (#370) The cron jobs and api router need to share the same instance of the
 	//       solver so that if it is killed with the kill switch we need to halt the api
 	//       and the cron jobs so that we have complete coverage.
-	cronJob := scheduler.New()
-	for _, job := range cron.CronJobs {
-		err = cronJob.AddFunc(job.Schedule, job.Job)
+
+	var CronJobs = []struct {
+		Schedule string
+		Job      func()
+	}{
+		{"0 0 0 * * *", cron.AnonymousUsers},                     // At the start of every day
+		{"0 */5 * * * *", cron.CollectibleMetadata},              // Every 5 minutes
+		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }}, // Every 1 minute
+	}
+
+	schedule := scheduler.New()
+	for _, job := range CronJobs {
+		err = schedule.AddFunc(job.Schedule, job.Job)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	go cronJob.Start()
-	log.Printf("Started %d cron jobs...", len(cron.CronJobs))
+	go schedule.Start()
+	log.Printf("Started %d cron jobs...", len(CronJobs))
 
-	router := api.SetupRouter()
+	router := api.SetupRouter(s)
 
 	log.Println("Started server on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
