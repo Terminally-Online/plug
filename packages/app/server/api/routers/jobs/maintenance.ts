@@ -57,12 +57,11 @@ export const maintenance = createTRPCRouter({
 			return results
 		}),
 
-	getSolverStatus: protectedProcedure.query(async ({ ctx }) => {
+	getIsSolverKilled: protectedProcedure.query(async ({ ctx }) => {
 		// First check if the user is an admin
 		const socket = await ctx.db.userSocket.findFirst({
 			where: { id: ctx.session?.address }
 		})
-		
 		if (!socket?.admin) {
 			throw new TRPCError({
 				code: 'UNAUTHORIZED',
@@ -71,7 +70,7 @@ export const maintenance = createTRPCRouter({
 		}
 
 		try {
-			const response = await fetch(`${process.env.SOLVER_URL}/admin/solver/status`, {
+			const response = await fetch(`${process.env.SOLVER_URL}/solver/kill`, {
 				headers: {
 					'x-api-key': process.env.ADMIN_API_KEY ?? "",
 				}
@@ -82,23 +81,21 @@ export const maintenance = createTRPCRouter({
 			}
 
 			const data = await response.json()
-			return { status: data.status as "running" | "stopped" }
+			return { killed: data.killed }
 		} catch (error) {
 			throw new TRPCError({
 				code: 'INTERNAL_SERVER_ERROR',
-				message: `Failed to get solver status: ${error}`
+				message: `Failed to get solver kill status: ${error}`
 			})
 		}
 	}),
 
-	toggleSolverPause: protectedProcedure
-		.input(z.object({ action: z.enum(["start", "stop"]) }))
-		.mutation(async ({ input, ctx }) => {
+	toggleSolverKill: protectedProcedure
+		.mutation(async ({ ctx }) => {
 			// Check if user is admin
 			const socket = await ctx.db.userSocket.findFirst({
 				where: { id: ctx.session?.address }
 			})
-			
 			if (!socket?.admin) {
 				throw new TRPCError({
 					code: 'UNAUTHORIZED',
@@ -107,13 +104,11 @@ export const maintenance = createTRPCRouter({
 			}
 
 			try {
-				const response = await fetch(`${process.env.SOLVER_URL}/admin/solver/status`, {
+				const response = await fetch(`${process.env.SOLVER_URL}/solver/kill`, {
 					method: 'POST',
 					headers: {
 						'x-api-key': process.env.ADMIN_API_KEY ?? "",
-						'Content-Type': 'application/json'
 					},
-					body: JSON.stringify({ action: input.action })
 				})
 
 				if (!response.ok) {
@@ -121,11 +116,11 @@ export const maintenance = createTRPCRouter({
 				}
 
 				const data = await response.json()
-				return { success: true, action: input.action, status: data.status }
+				return { killed: data.killed }
 			} catch (error) {
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
-					message: `Failed to ${input.action} solver: ${error}`
+					message: `Failed to toggle solver kill: ${error}`
 				})
 			}
 		})
