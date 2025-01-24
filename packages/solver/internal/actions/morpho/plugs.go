@@ -92,7 +92,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -155,7 +155,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target)
+		_, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
@@ -180,7 +180,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		}}, nil
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -217,7 +217,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target)
+		_, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
@@ -251,7 +251,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		}}, nil
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -313,7 +313,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -372,7 +372,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -415,7 +415,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -539,7 +539,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to convert health factor threshold to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -605,7 +605,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 	var currentRate float64
 	if len(inputs.Target) == 42 {
-		vault, err := GetVault(inputs.Target)
+		vault, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch vault: %w", err)
 		}
@@ -616,7 +616,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 		currentRate = vault.DailyApys.NetApy * 100
 	} else {
-		market, err := GetMarket(inputs.Target)
+		market, err := GetMarket(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch market: %w", err)
 		}

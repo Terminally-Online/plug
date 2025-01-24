@@ -8,23 +8,23 @@ import (
 type MorphoOptionsProvider struct{}
 
 func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
-	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
+	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	marketOptions, marketAndVaultOptions, err := GetMarketAndVaultOptions()
+	marketOptions, marketAndVaultOptions, err := GetMarketAndVaultOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions()
+	collateralOptions, collateralToMarketOptions, err := GetCollateralTokenToMarketOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions()
+	borrowOptions, borrowToMarketOptions, err := GetBorrowTokenToMarketOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions()
+	supplyAndCollateralTokenOptions, supplyAndCollateralTokenToMarketOptions, err := GetSupplyAndCollateralTokenToMarketOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +81,8 @@ func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]
 	}
 }
 
-func GetSupplyTokenToVaultOptions() ([]actions.Option, map[string][]actions.Option, error) {
-	vaults, err := GetVaults()
+func GetSupplyTokenToVaultOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -114,13 +114,13 @@ func GetSupplyTokenToVaultOptions() ([]actions.Option, map[string][]actions.Opti
 	return tokenOptions, tokenToVaultOptions, nil
 }
 
-func GetMarketAndVaultOptions() ([]actions.Option, []actions.Option, error) {
-	vaults, err := GetVaults()
+func GetMarketAndVaultOptions(chainId int) ([]actions.Option, []actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	markets, err := GetMarkets()
+	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -149,12 +149,8 @@ func GetMarketAndVaultOptions() ([]actions.Option, []actions.Option, error) {
 	return marketOptions, marketAndVaultOptions, nil
 }
 
-func GetCollateralTokenToMarketOptions() (
-	[]actions.Option,
-	map[string][]actions.Option,
-	error,
-) {
-	markets, err := GetMarkets()
+func GetCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -189,8 +185,8 @@ func GetCollateralTokenToMarketOptions() (
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetBorrowTokenToMarketOptions() ([]actions.Option, map[string][]actions.Option, error) {
-	markets, err := GetMarkets()
+func GetBorrowTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -222,13 +218,13 @@ func GetBorrowTokenToMarketOptions() ([]actions.Option, map[string][]actions.Opt
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetSupplyAndCollateralTokenToMarketOptions() ([]actions.Option, map[string][]actions.Option, error) {
-	vaults, err := GetVaults()
+func GetSupplyAndCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	markets, err := GetMarkets()
+	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -248,13 +244,16 @@ func GetSupplyAndCollateralTokenToMarketOptions() ([]actions.Option, map[string]
 			seenToken[market.CollateralAsset.Address] = true
 		}
 
-		tokenToMarketAndVaultOptions[market.CollateralAsset.Address] = append(tokenToMarketAndVaultOptions[market.LoanAsset.Address], actions.Option{
-			Label: market.Metadata.Name,
-			Name:  market.Metadata.Name,
-			Value: market.UniqueKey,
-			Icon:  market.Metadata.Icon,
-			Info:  fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
-		})
+		tokenToMarketAndVaultOptions[market.CollateralAsset.Address] = append(
+			tokenToMarketAndVaultOptions[market.CollateralAsset.Address],
+			actions.Option{
+				Label: market.Metadata.Name,
+				Name:  market.Metadata.Name,
+				Value: market.UniqueKey,
+				Icon:  market.Metadata.Icon,
+				Info:  fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
+			},
+		)
 	}
 
 	for _, vault := range vaults {
