@@ -43,12 +43,6 @@ func (h *Handler) ApiKey(next http.Handler) http.Handler {
 
 func (h *Handler) KillSwitch(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Allow kill switch endpoints to pass through
-		if r.URL.Path == "/solver/kill" {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		if h.solver.IsKilled {
 			http.Error(
 				w,
