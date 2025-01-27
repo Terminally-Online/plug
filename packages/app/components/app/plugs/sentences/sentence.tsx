@@ -63,22 +63,22 @@ export const Sentence: FC<SentenceProps> = ({
 	)
 
 	const {
-		state: { parsed, validationErrors },
+		state: { parsed },
 		actions: { setValue },
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
 
 	const parts = parsed
 		? parsed.template
-				// First split by input placeholders
-				.split(/(\{[^}]+\})/g)
-				// Then split each text part by spaces while preserving spaces
-				.map(part => {
-					if (part.match(/\{[^}]+\}/)) return [part]
-					return part.split(/(\s+)/g)
-				})
-				// Flatten the array
-				.flat()
+			// First split by input placeholders
+			.split(/(\{[^}]+\})/g)
+			// Then split each text part by spaces while preserving spaces
+			.map(part => {
+				if (part.match(/\{[^}]+\}/)) return [part]
+				return part.split(/(\s+)/g)
+			})
+			// Flatten the array
+			.flat()
 		: []
 
 	const handleValue = (index: number, value: string, isNumber?: boolean) => {
@@ -96,9 +96,9 @@ export const Sentence: FC<SentenceProps> = ({
 					values:
 						nestedActionIndex === actionIndex
 							? {
-									...action.values,
-									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
-								}
+								...action.values,
+								[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
+							}
 							: action.values
 				}))
 			)
@@ -174,11 +174,11 @@ export const Sentence: FC<SentenceProps> = ({
 										(Array.isArray(sentenceOptions[optionsIndex])
 											? (sentenceOptions[optionsIndex] as Options)
 											: sentenceOptions &&
-												  typeof sentenceOptions?.[optionsIndex] === "object" &&
-												  dependentOnValue
+												typeof sentenceOptions?.[optionsIndex] === "object" &&
+												dependentOnValue
 												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
-														dependentOnValue
-													]
+												dependentOnValue
+												]
 												: undefined)
 									const isOptionBased = options !== undefined
 
