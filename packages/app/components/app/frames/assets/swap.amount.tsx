@@ -60,7 +60,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
-	const transaction = api.solver.actions.getTransaction.useQuery(
+	const transaction = api.solver.actions.intent.useQuery(
 		{
 			chainId: getChainId(tokenOutImplementation?.chain ?? "ethereum"),
 			from: getAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),

@@ -21,15 +21,15 @@ import {
 
 import plugCore from "@terminallyonline/plug-core/package.json"
 
-import { env } from "@/env"
-import { ChainId, formatAddress, getChainName, useClipboard, useConnect } from "@/lib"
+import { ChainId, formatAddress, getChainName, useConnect } from "@/lib"
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
+import { useSession } from "next-auth/react"
 
 export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
-	const { address, chain } = useAccount()
+	const { data: session } = useSession()
 	const { socket } = useSocket()
 
 	const chainId = useChainId()
@@ -45,7 +45,7 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-4">{formatAddress(address ?? "")}</span>
+				<span className="group ml-auto flex flex-row items-center gap-4">{formatAddress(session?.address ?? "")}</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Waypoints size={14} className="opacity-20" />

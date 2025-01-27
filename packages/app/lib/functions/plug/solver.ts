@@ -7,7 +7,7 @@ import { ActionSchemas } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
-export const getSchemas = async (protocol?: string, action?: string, chainId: number = 1): Promise<ActionSchemas> => {
+export const schemas = async (protocol?: string, action?: string, chainId: number = 1): Promise<ActionSchemas> => {
 	const cacheKey = `${protocol}-${action}`
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
@@ -18,7 +18,7 @@ export const getSchemas = async (protocol?: string, action?: string, chainId: nu
 			action,
 			chainId
 		},
-		headers: { 
+		headers: {
 			'X-Api-Key': env.SOLVER_API_KEY
 		}
 	})
@@ -30,7 +30,7 @@ export const getSchemas = async (protocol?: string, action?: string, chainId: nu
 	return response.data
 }
 
-export const getTransaction = async (input: {
+export const intent = async (input: {
 	chainId: number
 	from: string
 	inputs: Array<{
@@ -44,4 +44,28 @@ export const getTransaction = async (input: {
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 	return response.data
+}
+
+export const killed = async () => {
+	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data as { killed: boolean }
+}
+
+export const kill = async () => {
+	const response = await axios.post(`${env.SOLVER_URL}/solver/kill`, {}, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data as { killed: boolean }
 }

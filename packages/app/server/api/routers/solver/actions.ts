@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { getSchemas, getTransaction } from "@/lib"
+import { schemas, intent } from "@/lib"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 export const events = {
@@ -9,7 +9,7 @@ export const events = {
 } as const
 
 export const actions = createTRPCRouter({
-	getSchemas: anonymousProtectedProcedure
+	schemas: anonymousProtectedProcedure
 		.input(
 			z.object({
 				protocol: z.string().optional(),
@@ -17,8 +17,8 @@ export const actions = createTRPCRouter({
 				chainId: z.number()
 			})
 		)
-		.query(async ({ input }) => await getSchemas(input?.protocol, input?.action, input.chainId)),
-	getTransaction: anonymousProtectedProcedure
+		.query(async ({ input }) => await schemas(input?.protocol, input?.action, input.chainId)),
+	intent: anonymousProtectedProcedure
 		.input(
 			z.object({
 				chainId: z.number(),
@@ -34,5 +34,5 @@ export const actions = createTRPCRouter({
 				)
 			})
 		)
-		.query(async ({ input }) => await getTransaction(input))
+		.query(async ({ input }) => await intent(input))
 })
