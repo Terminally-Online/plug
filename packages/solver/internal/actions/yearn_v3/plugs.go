@@ -37,7 +37,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -102,7 +102,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -154,7 +154,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to convert stake amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -209,7 +209,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -289,7 +289,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to convert redeem amount to uint: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -354,7 +354,7 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
@@ -421,7 +421,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to parse threshold float: %w", err)
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
