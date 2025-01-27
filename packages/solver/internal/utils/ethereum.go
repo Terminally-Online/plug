@@ -45,32 +45,30 @@ var (
 )
 
 func GetProviderUrl(chainId uint64) (string, error) {
-	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
-	if alchemyAPIKey == "" {
-		return "", ErrEnvironmentVarNotSet("ALCHEMY_API_KEY")
+	if chainId == 31337 {
+		return "http://127.0.0.1:8545", nil
 	}
 
-	var rpcUrl string
+	quicknodeApiName := os.Getenv("QUICKNODE_API_NAME")
+	quicknodeApiKey := os.Getenv("QUICKNODE_API_KEY")
+
+	var chain string
 	switch chainId {
 	case 1:
-		rpcUrl = fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 31337:
-		rpcUrl = "http://127.0.0.1:8545"
-	case 11155111:
-		rpcUrl = fmt.Sprintf("wss://eth-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 10:
-		rpcUrl = fmt.Sprintf("wss://opt-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 11155420:
-		rpcUrl = fmt.Sprintf("wss://opt-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = ""
 	case 8453:
-		rpcUrl = fmt.Sprintf("wss://base-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = "base-mainnet."
 	case 84532:
-		rpcUrl = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = "base-sepolia."
+	case 10:
+		chain = "optimism."
+	case 11155420:
+		chain = "optimism-sepolia."
 	default:
 		return "", ErrChainId("chainId", chainId)
 	}
 
-	return rpcUrl, nil
+	return fmt.Sprintf("https://%v.%vquiknode.pro/%v", quicknodeApiName, chain, quicknodeApiKey), nil
 }
 
 func GetProvider(chainId uint64) (*ethclient.Client, error) {
