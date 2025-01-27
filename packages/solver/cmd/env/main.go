@@ -11,16 +11,15 @@ func main() {
 		fmt.Println("Usage: go run main.go [encrypt|decrypt]")
 		return
 	}
+	command := os.Args[1]
 
-	key := os.Getenv("ENCRYPTION_KEY")
-	if key == "" || key == "github-action" {
+	abort := env.Init()
+	if abort {
 		fmt.Println("Skipping encryption and decryption.")
 		return
 	}
 
-	command := os.Args[1]
 	var err error
-
 	switch command {
 	case "encrypt":
 		err = env.EncryptEnvFile()
