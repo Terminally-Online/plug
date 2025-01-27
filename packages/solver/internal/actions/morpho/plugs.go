@@ -92,7 +92,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -103,7 +103,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 	}
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		amount,
 	)
 	if err != nil {
@@ -129,7 +129,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: supplyCollateralCalldata,
 	}}, nil
 }
@@ -155,7 +155,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target)
+		_, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
@@ -180,7 +180,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		}}, nil
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -202,7 +202,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
@@ -217,7 +217,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	if len(inputs.Target) == 42 {
-		_, err := GetVault(inputs.Target)
+		_, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get vault: %w", err)
 		}
@@ -251,12 +251,12 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		}}, nil
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {
@@ -288,7 +288,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
@@ -313,7 +313,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -335,7 +335,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 	}
 
 	return []signature.Plug{{
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: borrowCalldata,
 	}}, nil
 }
@@ -365,14 +365,14 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		references.Mainnet.References["morpho"]["router"]),
+		references.Networks[params.ChainId].References["morpho"]["router"]),
 		amount,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
@@ -396,7 +396,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: repayCalldata,
 	}}, nil
 }
@@ -415,12 +415,12 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {
@@ -446,7 +446,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrABI("ERC20")
 	}
 	approveCalldata, err := erc20Abi.Pack("approve", common.HexToAddress(
-		references.Mainnet.References["morpho"]["router"]),
+		references.Networks[params.ChainId].References["morpho"]["router"]),
 		borrowAssets,
 	)
 	if err != nil {
@@ -475,7 +475,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		To:   *token,
 		Data: approveCalldata,
 	}, {
-		To:   common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: repayCalldata,
 	}}, nil
 }
@@ -539,13 +539,13 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to convert health factor threshold to uint: %w", err)
 	}
 
-	market, err := GetMarket(inputs.Target)
+	market, err := GetMarket(inputs.Target, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get market: %w", err)
 	}
 
 	morpho, err := morpho_router.NewMorphoRouter(
-		common.HexToAddress(references.Mainnet.References["morpho"]["router"]),
+		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		nil,
 	)
 	if err != nil {
@@ -605,7 +605,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 	var currentRate float64
 	if len(inputs.Target) == 42 {
-		vault, err := GetVault(inputs.Target)
+		vault, err := GetVault(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch vault: %w", err)
 		}
@@ -616,7 +616,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 		currentRate = vault.DailyApys.NetApy * 100
 	} else {
-		market, err := GetMarket(inputs.Target)
+		market, err := GetMarket(inputs.Target, params.ChainId)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch market: %w", err)
 		}

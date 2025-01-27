@@ -117,7 +117,8 @@ func GetUnderlyingAssetToVaultOptions() (map[string][]actions.Option, error) {
 
 	tokenMap := make(map[string][]actions.Option)
 	for _, vault := range vaults {
-		tokenMap[vault.Token.Address] = append(tokenMap[vault.Token.Address], actions.Option{
+		tokenAddress := fmt.Sprintf("%s:%d", vault.Token.Address, vault.Token.Decimals)
+		tokenMap[tokenAddress] = append(tokenMap[tokenAddress], actions.Option{
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,

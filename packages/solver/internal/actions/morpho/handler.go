@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/morpho.png"
 	tags = []string{"lending", "defi"}
 
-	chains = references.Mainnet.ChainIds
+	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 
 	ActionEarn             = "earn"
 	ActionSupplyCollateral = "supply_collateral"

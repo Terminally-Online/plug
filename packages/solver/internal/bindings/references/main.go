@@ -33,7 +33,7 @@ var (
 				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
 			},
 			"yearn_v3": {
-				"registry": "0xff31A1B020c868F6eA3f61Eb953344920EeCA3af",
+				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
 				"gauge":    "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
@@ -53,7 +53,7 @@ var (
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
 				"distributor": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb",
-				"bundler":     "0x4095F064B8d3c3548A3bebfd0Bbfd04750E30077",
+				"bundler":     "0x6566194141eefa99Af43Bb5Aa71460Ca2Dc90245",
 				"vault":       "0xfbDEE8670b273E12b019210426E70091464b02Ab",
 			},
 		},
@@ -67,6 +67,24 @@ var (
 				"pool":                     "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
 				"ui_pool_data_provider":    "0x68100bD5345eA474D93577127C11F39FF8463e93",
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
+			},
+			"morpho": {
+				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+				"distributor": "0x5400dbb270c956e8985184335a1c62aca6ce1333",
+				"bundler":     "0x6BFd8137e702540E7A42B74178A4a49Ba43920C4",
+				"vault":       "0xF540D790413FCFAedAC93518Ae99EdDacE82cb78",
+			},
+			"multicall": {
+				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
+			},
+			"weth": {
+				"address": "0x4200000000000000000000000000000000000006",
+			},
+			"yearn_v3": {
+				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
+				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
+				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
+				"gauge":    "", // Not available on Base?
 			},
 		},
 	}
