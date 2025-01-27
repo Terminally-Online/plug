@@ -109,13 +109,13 @@ type TokenList struct {
 	Tokens []Token `json:"tokens"`
 }
 
-func GetVaults(force ...bool) ([]YearnVault, error) {
+func GetVaults(chainId uint64, force ...bool) ([]YearnVault, error) {
 	currentTime := time.Now().Unix()
 	if !((len(force) > 0 && force[0]) || vaultsCache == nil || (currentTime-vaultsUpdatedAt) >= cacheDuration) {
 		return vaultsCache, nil
 	}
 
-	url := "https://ydaemon.yearn.finance/1/vaults/all"
+    url := fmt.Sprintf("https://ydaemon.yearn.finance/%d/vaults/all?limit=99999", chainId)
 	response, err := utils.MakeHTTPRequest(
 		url,
 		"GET",
@@ -143,8 +143,8 @@ func GetVaults(force ...bool) ([]YearnVault, error) {
 	return endorsedVaults, nil
 }
 
-func FetchTokenList(chainID int) ([]Token, error) {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/SmolDapp/tokenLists/main/lists/%d.json", chainID)
+func FetchTokenList(chainId uint64) ([]Token, error) {
+	url := fmt.Sprintf("https://raw.githubusercontent.com/SmolDapp/tokenLists/main/lists/%d.json", chainId)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -174,7 +174,7 @@ func GenerateTokenList(force ...bool) ([]Token, error) {
 		return tokensCache, nil
 	}
 
-	chainIDs := []int{1, 10, 8453}
+	chainIDs := []uint64{1, 10, 8453}
 	var allTokens []Token
 
 	for _, chainID := range chainIDs {

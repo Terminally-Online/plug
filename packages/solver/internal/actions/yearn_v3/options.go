@@ -9,19 +9,19 @@ import (
 type YearnV3OptionsProvider struct{}
 
 func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
-	underlyingAssetOptions, err := GetUnderlyingAssetOptions()
+	underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions()
+	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions()
+	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
-	vaultOptions, err := GetVaultOptions()
+	vaultOptions, err := GetVaultOptions(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, action string) (map[
 	}
 }
 
-func GetUnderlyingAssetOptions() ([]actions.Option, error) {
+func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {
 	tokens, err := GenerateTokenList()
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func GetUnderlyingAssetOptions() ([]actions.Option, error) {
 		tokenDetails[strings.ToLower(token.Address)] = token
 	}
 
-	vaults, err := GetVaults()
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +109,8 @@ func GetUnderlyingAssetOptions() ([]actions.Option, error) {
 	return options, nil
 }
 
-func GetUnderlyingAssetToVaultOptions() (map[string][]actions.Option, error) {
-	vaults, err := GetVaults()
+func GetUnderlyingAssetToVaultOptions(chainId uint64) (map[string][]actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -129,8 +129,8 @@ func GetUnderlyingAssetToVaultOptions() (map[string][]actions.Option, error) {
 	return tokenMap, nil
 }
 
-func GetAvailableStakingGaugeOptions() ([]actions.Option, error) {
-	vaults, err := GetVaults()
+func GetAvailableStakingGaugeOptions(chainId uint64) ([]actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +152,8 @@ func GetAvailableStakingGaugeOptions() ([]actions.Option, error) {
 	return options, nil
 }
 
-func GetVaultOptions() ([]actions.Option, error) {
-	vaults, err := GetVaults()
+func GetVaultOptions(chainId uint64) ([]actions.Option, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
