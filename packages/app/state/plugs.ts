@@ -37,24 +37,20 @@ const usePlugActions = () => {
 	const [plugs, setPlugs] = useAtom(plugsAtom)
 
 	const addMutation = api.plugs.add.useMutation({
-		onSuccess: result => {
-			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spreadPlugs(prev, result.plug))
-
-			console.log(result)
-
-			if (result.index !== undefined)
+		onSuccess: data => {
+			if (data.index !== undefined)
 				handle.navigate({
 					key: COLUMNS.KEYS.PLUG,
-					index: result.index,
-					from: result.from,
-					item: result.plug.id
+					index: data.index,
+					from: data.from,
+					item: data.plug.id
 				})
 			else
 				handle.add({
 					index: columns[columns.length - 1].index + 1,
 					key: COLUMNS.KEYS.PLUG,
-					from: result.from,
-					item: result.plug.id
+					from: data.from,
+					item: data.plug.id
 				})
 		}
 	})
@@ -112,7 +108,8 @@ export const usePlugSubscriptions = () => {
 
 	api.plugs.onAdd.useSubscription(undefined, {
 		enabled: Boolean(session.data),
-		onData: data => setPlugs(prev => spreadPlugs(prev, data))
+		onData: data =>
+			setPlugs(prev => prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)))
 	})
 
 	api.plugs.onEdit.useSubscription(undefined, {
