@@ -44,33 +44,40 @@ var (
 	}
 )
 
-func GetProvider(chainId int) (*ethclient.Client, error) {
-	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
-	if alchemyAPIKey == "" {
-		return nil, ErrEnvironmentVarNotSet("ALCHEMY_API_KEY")
+func GetProviderUrl(chainId uint64) (string, error) {
+	if chainId == 31337 {
+		return "http://127.0.0.1:8545", nil
 	}
 
-	var rpcURL string
+	quicknodeApiName := os.Getenv("QUICKNODE_API_NAME")
+	quicknodeApiKey := os.Getenv("QUICKNODE_API_KEY")
+
+	var chain string
 	switch chainId {
 	case 1:
-		rpcURL = fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 31337:
-		rpcURL = "http://127.0.0.1:8545"
-	case 11155111:
-		rpcURL = fmt.Sprintf("wss://eth-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 10:
-		rpcURL = fmt.Sprintf("wss://opt-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
-	case 11155420:
-		rpcURL = fmt.Sprintf("wss://opt-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = ""
 	case 8453:
-		rpcURL = fmt.Sprintf("wss://base-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = "base-mainnet."
 	case 84532:
-		rpcURL = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		chain = "base-sepolia."
+	case 10:
+		chain = "optimism."
+	case 11155420:
+		chain = "optimism-sepolia."
 	default:
-		return nil, ErrChainId("chainId", chainId)
+		return "", ErrChainId("chainId", chainId)
 	}
 
-	ethClient, err := ethclient.Dial(rpcURL)
+	return fmt.Sprintf("https://%v.%vquiknode.pro/%v", quicknodeApiName, chain, quicknodeApiKey), nil
+}
+
+func GetProvider(chainId uint64) (*ethclient.Client, error) {
+	rpcUrl, err := GetProviderUrl(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	ethClient, err := ethclient.Dial(rpcUrl)
 	if err != nil {
 		return nil, ErrEthClient(err.Error())
 	}
@@ -98,20 +105,16 @@ func BuildTransactionOpts(address string, value *big.Int) *bind.TransactOpts {
 }
 
 func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
-	// Create a copy of the input value to avoid modifying it
 	result := new(big.Float).SetFloat64(value)
 
-	// Calculate 10^decimals
 	multiplier := new(big.Int).Exp(
 		big.NewInt(10),
 		big.NewInt(int64(decimals)),
 		nil,
 	)
 
-	// Multiply result by 10^decimals
 	result.Mul(result, new(big.Float).SetInt(multiplier))
 
-	// Convert to int and check for accuracy
 	intValue, accuracy := result.Int(nil)
 	if accuracy != big.Exact {
 		return nil, fmt.Errorf("loss of precision when converting %v to uint with %d decimals", value, decimals)
@@ -121,35 +124,29 @@ func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
 }
 
 func StringToUint(value string, decimals uint8) (*big.Int, error) {
-	// Split on decimal point
 	parts := strings.Split(value, ".")
 	if len(parts) > 2 {
 		return nil, fmt.Errorf("invalid decimal number format: %s", value)
 	}
 
-	// Handle the integer part
 	intPart, ok := new(big.Int).SetString(parts[0], 10)
 	if !ok {
 		return nil, fmt.Errorf("failed to parse %s as a decimal number", value)
 	}
 
-	// Calculate 10^decimals
 	multiplier := new(big.Int).Exp(
 		big.NewInt(10),
 		big.NewInt(int64(decimals)),
 		nil,
 	)
 
-	// Multiply integer part by multiplier
 	result := new(big.Int).Mul(intPart, multiplier)
 
-	// Handle decimal part if it exists
 	if len(parts) == 2 {
 		decimalPart := parts[1]
 		if len(decimalPart) > int(decimals) {
-			decimalPart = decimalPart[:decimals] // truncate extra precision
+			decimalPart = decimalPart[:decimals]
 		} else {
-			// Pad with zeros if needed
 			decimalPart = decimalPart + strings.Repeat("0", int(decimals)-len(decimalPart))
 		}
 

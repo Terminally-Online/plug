@@ -6,6 +6,6 @@ import (
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
+func (p *PlugOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
 	return nil, nil
 }

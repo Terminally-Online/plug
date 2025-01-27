@@ -8,7 +8,7 @@ import (
 
 type AaveOptionsProvider struct{}
 
-func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
+func (p *AaveOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
 	collateralOptions, borrowOptions, err := GetOptions(chainId)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId int, action string) (map[int]ac
 	}
 }
 
-func GetCollateralAssetOptions(chainId int) ([]actions.Option, error) {
+func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func GetCollateralAssetOptions(chainId int) ([]actions.Option, error) {
 	return options, nil
 }
 
-func GetBorrowAssetOptions(chainId int) ([]actions.Option, error) {
+func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
 	reserves, err := getReserves(chainId)
 	if err != nil {
 		return nil, err
@@ -145,7 +145,7 @@ func GetBorrowAssetOptions(chainId int) ([]actions.Option, error) {
 	return options, nil
 }
 
-func GetOptions(chainId int) ([]actions.Option, []actions.Option, error) {
+func GetOptions(chainId uint64) ([]actions.Option, []actions.Option, error) {
 	collateralOptions, err := GetCollateralAssetOptions(chainId)
 	if err != nil {
 		return nil, nil, err

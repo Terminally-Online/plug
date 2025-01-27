@@ -16,19 +16,25 @@ import (
 
 var encryptionKey []byte
 
-func Init() {
-    err := godotenv.Load()
-    if err != nil {
-        panic(err)
-    }
-	
+func Init() bool {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
 	if key := os.Getenv("ENCRYPTION_KEY"); key != "" {
 		var err error
 		encryptionKey, err = scrypt.Key([]byte(key), []byte("salt"), 32768, 8, 1, 32)
 		if err != nil {
 			panic(err)
 		}
+	} else if key == "github-action" {
+		return true
+	} else {
+		panic("encryption key not found")
 	}
+
+	return false
 }
 
 func Encrypt(text string) (string, error) {

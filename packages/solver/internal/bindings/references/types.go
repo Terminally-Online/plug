@@ -1,7 +1,7 @@
 package references
 
 type Network struct {
-	ChainIds   []int
+	ChainIds   []uint64
 	Explorer   string
 	References map[string]map[string]string
 }

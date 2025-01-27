@@ -44,7 +44,7 @@ Which will translate to the bytecode of:
 	8063XXXXXXXX14
 	8063selector14
 */
-func getTokenType(chainId int, address string) (*int, error) {
+func getTokenType(chainId uint64, address string) (*int, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func getTokenType(chainId int, address string) (*int, error) {
 	return nil, fmt.Errorf("unsupported token type")
 }
 
-func getERC20Decimals(chainId int, address string) (*uint8, error) {
+func getERC20Decimals(chainId uint64, address string) (*uint8, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err

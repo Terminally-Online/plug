@@ -8,10 +8,10 @@ import (
 
 type Handler struct {
 	apiKey string
-	solver *solver.Solver
+	solver solver.Solver
 }
 
-func New(s *solver.Solver) *Handler {
+func New(s solver.Solver) *Handler {
 	apiKey := os.Getenv("PLUG_APP_API_KEY")
 	if apiKey == "" {
 		panic("PLUG_APP_API_KEY environment variable is not set")

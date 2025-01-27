@@ -1,5 +1,3 @@
-![Plug core banner](./plug-core.png)
-
 > [!NOTE]
 > This repository is a submodule of the larger [Plug monorepo](https://github.com/terminally-online/plug) that contains all the required pieces to run the entire Plug stack yourself.
 

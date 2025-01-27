@@ -20,7 +20,7 @@ type Options struct {
 }
 
 type OptionCacheKey struct {
-	chainId int
+	chainId uint64
 	action  string
 }
 
@@ -30,7 +30,7 @@ type CachedOptions struct {
 }
 
 type OptionsProvider interface {
-	GetOptions(chainId int, action string) (map[int]Options, error)
+	GetOptions(chainId uint64, action string) (map[int]Options, error)
 }
 
 type CachedOptionsProvider struct {
@@ -46,7 +46,7 @@ func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]Options, error) {
+func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
 	key := OptionCacheKey{chainId: chainId, action: action}
 
 	c.mu.RLock()
@@ -75,7 +75,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId int, action string) (map[int]
 	return options, nil
 }
 
-func (c *CachedOptionsProvider) PreWarmCache(chainId int, actions []string) {
+func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
 	const maxWorkers = 4
 	sem := make(chan struct{}, maxWorkers)
 

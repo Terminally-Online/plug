@@ -12,13 +12,14 @@ export const getSchemas = async (protocol?: string, action?: string, chainId: nu
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
 
-	const url = `${env.SOLVER_URL}/solver`
-
-	const response = await axios.get(url, {
+	const response = await axios.get(`${env.SOLVER_URL}/solver`, {
 		params: {
 			protocol,
 			action,
 			chainId
+		},
+		headers: { 
+			'X-Api-Key': env.SOLVER_API_KEY
 		}
 	})
 
@@ -39,6 +40,8 @@ export const getTransaction = async (input: {
 	}>
 }) => {
 	const response = await axios.post(`${env.SOLVER_URL}/solver`, input)
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 	return response.data
 }

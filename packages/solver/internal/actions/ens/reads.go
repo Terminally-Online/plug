@@ -22,12 +22,14 @@ func GetName(name string) (*string, error) {
 	return &name, nil
 }
 
-func GetRentPrice(chainId int, name string, duration *big.Int) (*ens_registrar_controller.IPriceOraclePrice, error) {
+func GetRentPrice(chainId uint64, name string, duration *big.Int) (*ens_registrar_controller.IPriceOraclePrice, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
 	}
 
+	// TODO: What is this address doing hardcoded here? ENS integration has so many issues
+	//       in it right now that need to be handled before pushing it into production.
 	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress("0x253553366Da8546fC250F225fe3d25d0C782303b"), provider)
 	if err != nil {
 		return nil, err
@@ -42,7 +44,7 @@ func GetRentPrice(chainId int, name string, duration *big.Int) (*ens_registrar_c
 }
 
 // GetNameExpiry returns the unix timestamp at which an ENS name registration expires
-func GetNameExpiry(chainId int, name string) (*big.Int, error) {
+func GetNameExpiry(chainId uint64, name string) (*big.Int, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err

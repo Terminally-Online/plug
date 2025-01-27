@@ -5,7 +5,7 @@ import (
 	"solver/internal/solver"
 )
 
-func Simulations(s *solver.Solver) {
+func Simulations(s solver.Solver) {
 	// NOTE: If the solver has had its kill switch toggled prevent the running any
 	//       new simulation processes that would retrieve, build and execute the
 	//       active executions that the application endpoint provides.
