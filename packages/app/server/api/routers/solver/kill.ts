@@ -8,12 +8,12 @@ export const killer = createTRPCRouter({
 
 	kill: protectedProcedure
 		.mutation(async ({ ctx }) => {
-			// const socket = await ctx.db.userSocket.findFirst({
-			// 	where: { id: ctx.session?.address }
-			// })
-			//
-			// if (!socket?.admin) throw new TRPCError({ code: 'UNAUTHORIZED' })
-			//
+			const socket = await ctx.db.userSocket.findFirst({
+				where: { id: ctx.session?.address }
+			})
+
+			if (!socket?.admin) throw new TRPCError({ code: 'UNAUTHORIZED' })
+
 			return await kill()
 		})
 })
