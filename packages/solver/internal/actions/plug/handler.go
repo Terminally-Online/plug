@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/plug.png"
 	tags = []string{"defi"}
 
-	chains = references.Mainnet.ChainIds
+	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionTransfer: {

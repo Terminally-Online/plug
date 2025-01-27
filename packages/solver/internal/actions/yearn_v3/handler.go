@@ -10,7 +10,8 @@ var (
 	icon = "https://cdn.onplug.io/protocols/yearn.png"
 	tags = []string{"yield", "defi"}
 
-	chains  = references.Mainnet.ChainIds
+	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
+	
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
 			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}.",

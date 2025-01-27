@@ -10,7 +10,7 @@ import (
 const (
 	morphoApiUrl = "https://blue-api.morpho.org/graphql"
 	marketsQuery = `query {
-		markets(where: { whitelisted: true, chainId_in: [1] }, skip: %d) {
+		markets(where: { whitelisted: true, chainId_in: [%d] }, skip: %d) {
 			items {
 				whitelisted
 				uniqueKey
@@ -57,7 +57,7 @@ const (
 		}
 	}`
 	vaultsQuery = `query {
-	 	vaults(where: { whitelisted: true, chainId_in: [1] }, skip: %d) {
+	 	vaults(where: { whitelisted: true, chainId_in: [%d] }, skip: %d) {
 			items {
 				address
 				name
@@ -129,13 +129,13 @@ const (
 	rewardsApiUrl = "https://rewards.morpho.org/v1/users/%s/distributions?chain_id=%d"
 )
 
-func GetVaults() ([]Vault, error) {
+func GetVaults(chainId uint64) ([]Vault, error) {
 	var vaults []Vault
 	skip := 0
 	limit := 100
 
 	for {
-		paginatedQuery := fmt.Sprintf(vaultsQuery, skip)
+		paginatedQuery := fmt.Sprintf(vaultsQuery, chainId, skip)
 		requestBody := struct {
 			Query string `json:"query"`
 		}{
@@ -184,8 +184,8 @@ func GetVaults() ([]Vault, error) {
 	return vaults, nil
 }
 
-func GetVault(address string) (Vault, error) {
-	vaults, err := GetVaults()
+func GetVault(address string, chainId uint64) (Vault, error) {
+	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return Vault{}, err
 	}
@@ -197,13 +197,13 @@ func GetVault(address string) (Vault, error) {
 	return Vault{}, fmt.Errorf("vault not found for address: %s", address)
 }
 
-func GetMarkets() ([]Market, error) {
+func GetMarkets(chainId uint64) ([]Market, error) {
 	var markets []Market
 	skip := 0
 	limit := 100
 
 	for {
-		paginatedQuery := fmt.Sprintf(marketsQuery, skip)
+		paginatedQuery := fmt.Sprintf(marketsQuery, chainId, skip)
 		requestBody := struct {
 			Query string `json:"query"`
 		}{
@@ -246,8 +246,8 @@ func GetMarkets() ([]Market, error) {
 	return markets, nil
 }
 
-func GetMarket(uniqueKey string) (Market, error) {
-	markets, err := GetMarkets()
+func GetMarket(uniqueKey string, chainId uint64) (Market, error) {
+	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return Market{}, err
 	}
