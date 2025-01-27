@@ -10,6 +10,11 @@ import (
 	"os"
 	"solver/internal/utils"
 
+	"strings"
+
+	"bytes"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -61,7 +66,9 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	ctx := context.Background()
 
 	rpcUrl, err := utils.GetProviderUrl(req.ChainId)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	rpcClient, err := rpc.DialContext(ctx, rpcUrl)
 	if err != nil {
@@ -69,98 +76,90 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	}
 	defer rpcClient.Close()
 
-	var (
-		blockNumber string
-		gasEstimate string
-		callResult  string
-	)
-
-	valueHex := "0x0"
-	if req.Value != nil && req.Value.Sign() > 0 {
-		valueHex = hexutil.EncodeBig(req.Value)
+	tx := map[string]interface{}{
+		"from": req.From.Hex(),
+		"to":   req.To.Hex(),
 	}
 
-	tx := map[string]interface{}{
-		"from":  req.From.Hex(),
-		"to":    req.To.Hex(),
-		"value": valueHex,
+	if req.Value != nil && req.Value.Sign() > 0 {
+		tx["value"] = hexutil.EncodeBig(req.Value)
 	}
 	if len(req.Data) > 0 {
 		tx["data"] = req.Data.String()
 	}
-
-	batch := []rpc.BatchElem{
-		{
-			Method: "eth_blockNumber",
-			Result: &blockNumber,
-		},
-		{
-			Method: "eth_estimateGas",
-			Args:   []interface{}{tx},
-			Result: &gasEstimate,
-		},
+	if req.GasLimit != nil {
+		tx["gas"] = hexutil.EncodeUint64(*req.GasLimit)
+	}
+	if len(req.AccessList) > 0 {
+		tx["accessList"] = req.AccessList
 	}
 
-	if len(req.Data) > 0 {
-		batch = append(batch, rpc.BatchElem{
-			Method: "eth_call",
-			Args:   []interface{}{tx, "latest"},
-			Result: &callResult,
-		})
+	callTraceConfig := map[string]interface{}{
+		"tracer": "callTracer",
 	}
 
-	err = rpcClient.BatchCall(batch)
-	if err != nil {
-		return nil, fmt.Errorf("batch call failed: %v", err)
+	var trace struct {
+		Type    string         `json:"type"`
+		From    common.Address `json:"from"`
+		To      common.Address `json:"to"`
+		Value   string         `json:"value"`
+		Gas     string         `json:"gas"`
+		GasUsed string         `json:"gasUsed"`
+		Input   hexutil.Bytes  `json:"input"`
+		Output  hexutil.Bytes  `json:"output"`
+		Error   string         `json:"error"`
 	}
 
-	if batch[0].Error != nil {
-		return nil, fmt.Errorf("failed to get block number: %v", batch[0].Error)
-	}
-	if batch[1].Error != nil {
-		return &SimulationResponse{
-			Success:      false,
-			ErrorMessage: batch[1].Error.Error(),
-		}, nil
-	}
-
-	blockNum := new(big.Int)
-	blockNum.SetString(blockNumber[2:], 16)
-
-	gasUsed := new(big.Int)
-	gasUsed.SetString(gasEstimate[2:], 16)
-
-	if req.GasLimit != nil && *req.GasLimit < gasUsed.Uint64() {
-		gasUsed.SetUint64(*req.GasLimit)
-	}
-
-	if len(req.Data) > 0 && len(batch) > 2 && batch[2].Error != nil {
-		return &SimulationResponse{
-			GasUsed:      gasUsed.Uint64(),
-			BlockNumber:  blockNum.Uint64(),
-			Success:      false,
-			ErrorMessage: batch[2].Error.Error(),
-		}, nil
-	}
-
-	var returnData []byte
-	if len(callResult) > 0 {
-		returnData, err = hexutil.Decode(callResult)
-		if err != nil {
-			return &SimulationResponse{
-				GasUsed:      gasUsed.Uint64(),
-				BlockNumber:  blockNum.Uint64(),
-				Success:      false,
-				ErrorMessage: fmt.Sprintf("failed to decode return data: %v", err),
-			}, nil
-		}
+	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
+		return nil, fmt.Errorf("trace call failed: %v", err)
 	}
 
 	resp := &SimulationResponse{
-		GasUsed:      gasUsed.Uint64(),
-		BlockNumber:  blockNum.Uint64(),
-		Success:      true,
-		ReturnData:   returnData,
+		Success: trace.Error == "",
+		Data: OutputData{
+			Raw: trace.Output,
+		},
+	}
+
+	if trace.GasUsed != "" {
+		gasUsed := new(big.Int)
+		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
+			resp.GasUsed = gasUsed.Uint64()
+		}
+	}
+
+	if trace.Error != "" {
+		resp.ErrorMessage = trace.Error
+	}
+
+	if req.ABI != "" && len(trace.Output) > 0 && len(req.Data) >= 4 {
+		parsedABI, err := abi.JSON(strings.NewReader(req.ABI))
+		if err != nil {
+			resp.ErrorMessage = fmt.Sprintf("failed to parse ABI: %v", err)
+			return resp, nil
+		}
+
+		methodID := req.Data[:4]
+		var method *abi.Method
+		for _, m := range parsedABI.Methods {
+			if bytes.Equal(m.ID, methodID) {
+				method = &m
+				break
+			}
+		}
+
+		if method == nil {
+			resp.ErrorMessage = "method not found in ABI"
+			return resp, nil
+		}
+
+		decoded, err := method.Outputs.Unpack(trace.Output)
+		if err != nil {
+			resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
+			return resp, nil
+		}
+
+		resp.Data.Decoded = decoded
 	}
 
 	return resp, nil
