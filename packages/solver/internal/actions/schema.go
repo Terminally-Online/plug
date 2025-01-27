@@ -8,7 +8,7 @@ import (
 type ProtocolMetadata struct {
 	Icon   string   `json:"icon"`
 	Tags   []string `json:"tags"`
-	Chains []int    `json:"chains"`
+	Chains []uint64 `json:"chains"`
 }
 
 type ProtocolSchema struct {
@@ -22,8 +22,8 @@ type ChainSchema struct {
 }
 
 type Schema struct {
-	Type     string                `default:"action" json:"type"`
-	Sentence string                `json:"sentence"`
+	Type     string          `default:"action" json:"type"`
+	Sentence string          `json:"sentence"`
 	Options  map[int]Options `json:"options,omitempty"`
 }
 

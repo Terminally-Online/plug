@@ -7,7 +7,7 @@ import (
 
 type MorphoOptionsProvider struct{}
 
-func (p *MorphoOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
+func (p *MorphoOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
 	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions()
 	if err != nil {
 		return nil, err

@@ -26,8 +26,8 @@ type Solver struct {
 	protocols map[string]actions.BaseProtocolHandler
 }
 
-func New() *Solver {
-	return &Solver{
+func New() Solver {
+	return Solver{
 		IsKilled: false,
 		protocols: map[string]actions.BaseProtocolHandler{
 			actions.ProtocolPlug:    plug.New(),
@@ -81,7 +81,7 @@ func (s *Solver) GetExecutions() (ExecutionsRequest, error) {
 	return response, nil
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId int, from string) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -171,7 +171,7 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, 
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetPlugs(chainId int, from string, transactions []signature.Plug) (*signature.LivePlugs, error) {
+func (s *Solver) GetPlugs(chainId uint64, from string, transactions []signature.Plug) (*signature.LivePlugs, error) {
 	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
 	//       end up having the case where things are Plugs are not properly executed because they are being

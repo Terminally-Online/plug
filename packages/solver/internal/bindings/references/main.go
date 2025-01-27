@@ -21,7 +21,7 @@ var (
 	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 	Mainnet = &Network{
-		ChainIds: []int{1, 31337},
+		ChainIds: []uint64{1, 31337},
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
 			"weth": {
@@ -60,7 +60,7 @@ var (
 	}
 
 	Base = &Network{
-		ChainIds: []int{8453},
+		ChainIds: []uint64{8453},
 		Explorer: "https://api.basescan.org/api",
 		References: map[string]map[string]string{
 			"aave_v3": {
@@ -71,7 +71,7 @@ var (
 		},
 	}
 
-	Networks = map[int]*Network{1: Mainnet, 31337: Mainnet, 8453: Base}
+	Networks = map[uint64]*Network{1: Mainnet, 31337: Mainnet, 8453: Base}
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {

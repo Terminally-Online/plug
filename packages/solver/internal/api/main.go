@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter(s *solver.Handler) *mux.Router {
+func SetupRouter(s solver.Handler) *mux.Router {
 	m := middleware.New(s.Solver)
 
 	r := mux.NewRouter()
@@ -15,15 +15,14 @@ func SetupRouter(s *solver.Handler) *mux.Router {
 
 	protected := r.PathPrefix("").Subrouter()
 	protected.Use(m.ApiKey)
-
-	protectedKillable := r.PathPrefix("").Subrouter()
-	protectedKillable.Use(m.ApiKey)
-	protectedKillable.Use(m.KillSwitch)
-
-	protectedKillable.HandleFunc("/solver", s.GetIntent).Methods("GET")
-	protectedKillable.HandleFunc("/solver", s.PostIntent).Methods("POST")
+	protected.HandleFunc("/solver/simulate", s.PostSimulation).Methods("POST")
 	protected.HandleFunc("/solver/kill", s.GetKill).Methods("GET")
 	protected.HandleFunc("/solver/kill", s.PostKill).Methods("POST")
+
+	killable := protected.PathPrefix("").Subrouter()
+	killable.Use(m.KillSwitch)
+	killable.HandleFunc("/solver", s.GetIntent).Methods("GET")
+	killable.HandleFunc("/solver", s.PostIntent).Methods("POST")
 
 	return r
 }

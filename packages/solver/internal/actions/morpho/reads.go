@@ -259,7 +259,7 @@ func GetMarket(uniqueKey string) (Market, error) {
 	return Market{}, fmt.Errorf("market not found for unique key: %s", uniqueKey)
 }
 
-func GetDistributions(address string, chainId int) ([]Distribution, error) {
+func GetDistributions(address string, chainId uint64) ([]Distribution, error) {
 	url := fmt.Sprintf(rewardsApiUrl, address, chainId)
 
 	response, err := utils.MakeHTTPRequest(

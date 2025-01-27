@@ -2,133 +2,166 @@ package simulation
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"math/big"
-	"solver/internal/solver"
-	"solver/internal/solver/signature"
+	"net/http"
+	"os"
 	"solver/internal/utils"
 
-	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type Simulator struct {
-	provider *ethclient.Client
+	signer common.Address
 }
 
-func NewSimulator(chainId int) (*Simulator, error) {
-	provider, err := utils.GetProvider(chainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to RPC: %w", err)
+func New() Simulator {
+	return Simulator{
+		signer: common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
 	}
-
-	return &Simulator{
-		provider: provider,
-	}, nil
 }
 
-func (s *Simulator) SimulateTransaction(ctx context.Context, plugs *signature.LivePlugs) (*SimulationResult, error) {
-	// Get latest block for simulation context
-	block, err := s.provider.BlockByNumber(ctx, nil)
+func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get latest block: %w", err)
+		http.Error(w, fmt.Sprintf("Error reading request body: %v", err), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var req SimulationRequest
+	if err := json.Unmarshal(body, &req); err != nil {
+		http.Error(w, fmt.Sprintf("Error parsing request: %v", err), http.StatusBadRequest)
+		return
 	}
 
-	solverAddr := common.HexToAddress(hexutil.Encode(plugs.Plugs.Solver))
-
-	// Create call message
-	msg := ethereum.CallMsg{
-		From:      plugs.Plugs.Socket,
-		To:        &solverAddr,
-		Gas:       block.GasLimit(),
-		GasPrice:  block.BaseFee(),
-		GasFeeCap: block.BaseFee(),
-		GasTipCap: big.NewInt(0),
-		Value:     big.NewInt(0),
-		Data:      plugs.Signature,
+	if req.ChainId == 0 {
+		http.Error(w, "Chain ID is required", http.StatusBadRequest)
+		return
 	}
 
-	// Simulate transaction
-	result, err := s.provider.CallContract(ctx, msg, block.Number())
+	resp, err := s.Simulate(req)
 	if err != nil {
-		// Parse revert reason if available
-		revertErr, ok := err.(*revertError)
-		if !ok {
-			return &SimulationResult{
-				Success: false,
-				Error: &SimulationError{
-					Message: err.Error(),
-				},
+		http.Error(w, fmt.Sprintf("Simulation failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error) {
+	ctx := context.Background()
+
+	rpcUrl, err := utils.GetProviderUrl(req.ChainId)
+	if err != nil { return nil, err }
+
+	rpcClient, err := rpc.DialContext(ctx, rpcUrl)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create RPC client: %v", err)
+	}
+	defer rpcClient.Close()
+
+	var (
+		blockNumber string
+		gasEstimate string
+		callResult  string
+	)
+
+	valueHex := "0x0"
+	if req.Value != nil && req.Value.Sign() > 0 {
+		valueHex = hexutil.EncodeBig(req.Value)
+	}
+
+	tx := map[string]interface{}{
+		"from":  req.From.Hex(),
+		"to":    req.To.Hex(),
+		"value": valueHex,
+	}
+	if len(req.Data) > 0 {
+		tx["data"] = req.Data.String()
+	}
+
+	batch := []rpc.BatchElem{
+		{
+			Method: "eth_blockNumber",
+			Result: &blockNumber,
+		},
+		{
+			Method: "eth_estimateGas",
+			Args:   []interface{}{tx},
+			Result: &gasEstimate,
+		},
+	}
+
+	if len(req.Data) > 0 {
+		batch = append(batch, rpc.BatchElem{
+			Method: "eth_call",
+			Args:   []interface{}{tx, "latest"},
+			Result: &callResult,
+		})
+	}
+
+	err = rpcClient.BatchCall(batch)
+	if err != nil {
+		return nil, fmt.Errorf("batch call failed: %v", err)
+	}
+
+	if batch[0].Error != nil {
+		return nil, fmt.Errorf("failed to get block number: %v", batch[0].Error)
+	}
+	if batch[1].Error != nil {
+		return &SimulationResponse{
+			Success:      false,
+			ErrorMessage: batch[1].Error.Error(),
+		}, nil
+	}
+
+	blockNum := new(big.Int)
+	blockNum.SetString(blockNumber[2:], 16)
+
+	gasUsed := new(big.Int)
+	gasUsed.SetString(gasEstimate[2:], 16)
+
+	if req.GasLimit != nil && *req.GasLimit < gasUsed.Uint64() {
+		gasUsed.SetUint64(*req.GasLimit)
+	}
+
+	if len(req.Data) > 0 && len(batch) > 2 && batch[2].Error != nil {
+		return &SimulationResponse{
+			GasUsed:      gasUsed.Uint64(),
+			BlockNumber:  blockNum.Uint64(),
+			Success:      false,
+			ErrorMessage: batch[2].Error.Error(),
+		}, nil
+	}
+
+	var returnData []byte
+	if len(callResult) > 0 {
+		returnData, err = hexutil.Decode(callResult)
+		if err != nil {
+			return &SimulationResponse{
+				GasUsed:      gasUsed.Uint64(),
+				BlockNumber:  blockNum.Uint64(),
+				Success:      false,
+				ErrorMessage: fmt.Sprintf("failed to decode return data: %v", err),
 			}, nil
 		}
-
-		return &SimulationResult{
-			Success: false,
-			Error: &SimulationError{
-				Message:      "Transaction reverted",
-				RevertData:   revertErr.Data(),
-				RevertReason: hexutil.Encode(revertErr.Data()),
-			},
-		}, nil
 	}
 
-	// Estimate gas (we do this after successful simulation)
-	gasEstimate, err := s.provider.EstimateGas(ctx, msg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to estimate gas: %w", err)
+	resp := &SimulationResponse{
+		GasUsed:      gasUsed.Uint64(),
+		BlockNumber:  blockNum.Uint64(),
+		Success:      true,
+		ReturnData:   returnData,
 	}
 
-	return &SimulationResult{
-		Success:    true,
-		GasUsed:    gasEstimate,
-		ReturnData: result,
-		// Note: State changes tracking would require additional RPC calls to track storage changes
-		StateChanges: []StateChange{},
-	}, nil
-}
-
-// Helper type for parsing revert errors
-type revertError struct {
-	error
-	data []byte
-}
-
-func (e *revertError) Data() []byte {
-	return e.data
-}
-
-func GetSimulation(chainId int, executionId string, plugs *signature.LivePlugs) (solver.SimulationRequest, error) {
-	simulator, err := NewSimulator(chainId)
-	if err != nil {
-		return solver.SimulationRequest{
-			Id:     executionId,
-			Status: "error",
-			Error:  fmt.Sprintf("Failed to create simulator: %v", err),
-		}, nil
-	}
-
-	result, err := simulator.SimulateTransaction(context.Background(), plugs)
-	if err != nil {
-		return solver.SimulationRequest{
-			Id:     executionId,
-			Status: "error",
-			Error:  fmt.Sprintf("Simulation failed: %v", err),
-		}, nil
-	}
-
-	if !result.Success {
-		return solver.SimulationRequest{
-			Id:     executionId,
-			Status: "error",
-			Error:  result.Error.Message,
-		}, nil
-	}
-
-	return solver.SimulationRequest{
-		Id:          executionId,
-		Status:      "success",
-		GasEstimate: int(result.GasUsed),
-	}, nil
+	return resp, nil
 }

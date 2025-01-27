@@ -22,7 +22,7 @@ type SimulationsResponse struct {
 
 type ExecutionRequest struct {
 	Id      string           `json:"id"`
-	ChainId int              `json:"chainId"`
+	ChainId uint64           `json:"chainId"`
 	From    string           `json:"from"`
 	Inputs  []map[string]any `json:"inputs"`
 }

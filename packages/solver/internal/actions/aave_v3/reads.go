@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func getReserves(chainId int) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
+func getReserves(chainId uint64) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func getReserves(chainId int) ([]aave_v3_ui_pool_data_provider.IUiPoolDataProvid
 	return reserves, nil
 }
 
-func getHealthFactor(chainId int, userAddress string) (*big.Int, error) {
+func getHealthFactor(chainId uint64, userAddress string) (*big.Int, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
 		return nil, err

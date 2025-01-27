@@ -44,33 +44,42 @@ var (
 	}
 )
 
-func GetProvider(chainId int) (*ethclient.Client, error) {
+func GetProviderUrl(chainId uint64) (string, error) {
 	alchemyAPIKey := os.Getenv("ALCHEMY_API_KEY")
 	if alchemyAPIKey == "" {
-		return nil, ErrEnvironmentVarNotSet("ALCHEMY_API_KEY")
+		return "", ErrEnvironmentVarNotSet("ALCHEMY_API_KEY")
 	}
 
-	var rpcURL string
+	var rpcUrl string
 	switch chainId {
 	case 1:
-		rpcURL = fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://eth-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
 	case 31337:
-		rpcURL = "http://127.0.0.1:8545"
+		rpcUrl = "http://127.0.0.1:8545"
 	case 11155111:
-		rpcURL = fmt.Sprintf("wss://eth-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://eth-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
 	case 10:
-		rpcURL = fmt.Sprintf("wss://opt-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://opt-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
 	case 11155420:
-		rpcURL = fmt.Sprintf("wss://opt-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://opt-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
 	case 8453:
-		rpcURL = fmt.Sprintf("wss://base-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://base-mainnet.g.alchemy.com/v2/%v", alchemyAPIKey)
 	case 84532:
-		rpcURL = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
+		rpcUrl = fmt.Sprintf("wss://base-sepolia.g.alchemy.com/v2/%v", alchemyAPIKey)
 	default:
-		return nil, ErrChainId("chainId", chainId)
+		return "", ErrChainId("chainId", chainId)
 	}
 
-	ethClient, err := ethclient.Dial(rpcURL)
+	return rpcUrl, nil
+}
+
+func GetProvider(chainId uint64) (*ethclient.Client, error) {
+	rpcUrl, err := GetProviderUrl(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	ethClient, err := ethclient.Dial(rpcUrl)
 	if err != nil {
 		return nil, ErrEthClient(err.Error())
 	}

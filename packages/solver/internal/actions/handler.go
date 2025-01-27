@@ -11,7 +11,7 @@ import (
 
 type HandlerParams struct {
 	Provider *ethclient.Client
-	ChainId  int
+	ChainId  uint64
 	From     string
 }
 
@@ -19,20 +19,20 @@ type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains() []int
+	GetChains() []uint64
 	GetSchema(chainId string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
 
 type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
-type OptionsHandler func(chainId int) (map[int]Options, error)
+type OptionsHandler func(chainId uint64) (map[int]Options, error)
 
 type Protocol struct {
 	Name            string
 	Icon            string
 	Tags            []string
-	Chains          []int
+	Chains          []uint64
 	OptionsProvider OptionsProvider
 	Schemas         map[string]ChainSchema
 	txHandlers      map[string]TransactionHandler
@@ -60,7 +60,7 @@ func NewBaseHandler(
 	name string,
 	icon string,
 	tags []string,
-	chains []int,
+	chains []uint64,
 	actionDefinitions map[string]ActionDefinition,
 	optionsProvider OptionsProvider,
 ) *BaseHandler {
@@ -74,7 +74,7 @@ func NewBaseHandler(
 
 	// Create options handlers for each action
 	getOptionsFor := func(action string) OptionsHandler {
-		return func(chainId int) (map[int]Options, error) {
+		return func(chainId uint64) (map[int]Options, error) {
 			return optionsProvider.GetOptions(chainId, action)
 		}
 	}
@@ -143,7 +143,7 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains() []int {
+func (h *BaseHandler) GetChains() []uint64 {
 	return h.protocol.Chains
 }
 
@@ -167,7 +167,7 @@ func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, er
 	}
 
 	if h.protocol.OptionsProvider != nil {
-		chainIdInt, err := strconv.Atoi(chainId)
+		chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
 		}

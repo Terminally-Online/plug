@@ -12,7 +12,7 @@ const (
 
 type EnsOptionsProvider struct{}
 
-func (p *EnsOptionsProvider) GetOptions(chainId int, action string) (map[int]actions.Options, error) {
+func (p *EnsOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
 	durationOptions, err := GetDurationOptions()
 	if err != nil {
 		return nil, err
