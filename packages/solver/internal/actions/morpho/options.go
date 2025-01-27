@@ -92,20 +92,21 @@ func GetSupplyTokenToVaultOptions(chainId int) ([]actions.Option, map[string][]a
 	tokenToVaultOptions := make(map[string][]actions.Option)
 
 	for _, vault := range vaults {
-		if !seenToken[vault.Asset.Address] {
+		assetAddress := fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals)
+		if !seenToken[assetAddress] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
-				Value: fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals),
+				Value: assetAddress,
 				Icon:  vault.Asset.LogoURI,
 			})
-			seenToken[vault.Asset.Address] = true
+			seenToken[assetAddress] = true
 		}
 
-		tokenToVaultOptions[vault.Asset.Address] = append(tokenToVaultOptions[vault.Asset.Address], actions.Option{
+		tokenToVaultOptions[assetAddress] = append(tokenToVaultOptions[assetAddress], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
-			Value: fmt.Sprintf("%s:%d", vault.Address, vault.Asset.Decimals),
+			Value: assetAddress,
 			Icon:  vault.Metadata.Image,
 			Info:  fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
 		})
@@ -160,18 +161,19 @@ func GetCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[strin
 	tokenToMarketOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
-		if !seenCollateral[market.CollateralAsset.Address] {
+		collateralAddress := fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals)
+		if !seenCollateral[collateralAddress] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
-				Value: fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals),
+				Value: collateralAddress,
 				Icon:  market.CollateralAsset.LogoURI,
 			})
-			seenCollateral[market.CollateralAsset.Address] = true
+			seenCollateral[collateralAddress] = true
 		}
 
-		tokenToMarketOptions[market.CollateralAsset.Address] = append(
-			tokenToMarketOptions[market.CollateralAsset.Address],
+		tokenToMarketOptions[collateralAddress] = append(
+			tokenToMarketOptions[collateralAddress],
 			actions.Option{
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
@@ -196,17 +198,18 @@ func GetBorrowTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]
 	tokenToMarketOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
-		if !seenLoanAssets[market.LoanAsset.Address] {
+		loanAssetAddress := fmt.Sprintf("%s:%d", market.LoanAsset.Address, market.LoanAsset.Decimals)
+		if !seenLoanAssets[loanAssetAddress] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.LoanAsset.Symbol,
 				Name:  market.LoanAsset.Name,
-				Value: fmt.Sprintf("%s:%d", market.LoanAsset.Address, market.LoanAsset.Decimals),
+				Value: loanAssetAddress,
 				Icon:  market.LoanAsset.LogoURI,
 			})
-			seenLoanAssets[market.LoanAsset.Address] = true
+			seenLoanAssets[loanAssetAddress] = true
 		}
 
-		tokenToMarketOptions[market.LoanAsset.Address] = append(tokenToMarketOptions[market.LoanAsset.Address], actions.Option{
+		tokenToMarketOptions[loanAssetAddress] = append(tokenToMarketOptions[loanAssetAddress], actions.Option{
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
@@ -234,18 +237,19 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId int) ([]actions.Option, 
 	tokenToMarketAndVaultOptions := make(map[string][]actions.Option)
 
 	for _, market := range markets {
-		if !seenToken[market.CollateralAsset.Address] {
+		collateralAssetAddress := fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals)
+		if !seenToken[collateralAssetAddress] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
-				Value: fmt.Sprintf("%s:%d", market.CollateralAsset.Address, market.CollateralAsset.Decimals),
+				Value: collateralAssetAddress,
 				Icon:  market.CollateralAsset.LogoURI,
 			})
-			seenToken[market.CollateralAsset.Address] = true
+			seenToken[collateralAssetAddress] = true
 		}
 
-		tokenToMarketAndVaultOptions[market.CollateralAsset.Address] = append(
-			tokenToMarketAndVaultOptions[market.CollateralAsset.Address],
+		tokenToMarketAndVaultOptions[collateralAssetAddress] = append(
+			tokenToMarketAndVaultOptions[collateralAssetAddress],
 			actions.Option{
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
@@ -257,17 +261,18 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId int) ([]actions.Option, 
 	}
 
 	for _, vault := range vaults {
+		vaultAssetAddress := fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals)
 		if !seenToken[vault.Asset.Address] {
 			tokenOptions = append(tokenOptions, actions.Option{
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
-				Value: fmt.Sprintf("%s:%d", vault.Asset.Address, vault.Asset.Decimals),
+				Value: vaultAssetAddress,
 				Icon:  vault.Asset.LogoURI,
 			})
-			seenToken[vault.Asset.Address] = true
+			seenToken[vaultAssetAddress] = true
 		}
 
-		tokenToMarketAndVaultOptions[vault.Asset.Address] = append(tokenToMarketAndVaultOptions[vault.Asset.Address], actions.Option{
+		tokenToMarketAndVaultOptions[vaultAssetAddress] = append(tokenToMarketAndVaultOptions[vaultAssetAddress], actions.Option{
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
