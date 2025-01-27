@@ -115,7 +115,7 @@ func GetVaults(chainId uint64, force ...bool) ([]YearnVault, error) {
 		return vaultsCache, nil
 	}
 
-    url := fmt.Sprintf("https://ydaemon.yearn.finance/%d/vaults/all", chainId)
+    url := fmt.Sprintf("https://ydaemon.yearn.finance/%d/vaults/all?limit=99999", chainId)
 	response, err := utils.MakeHTTPRequest(
 		url,
 		"GET",
