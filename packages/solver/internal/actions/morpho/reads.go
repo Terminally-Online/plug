@@ -129,7 +129,7 @@ const (
 	rewardsApiUrl = "https://rewards.morpho.org/v1/users/%s/distributions?chain_id=%d"
 )
 
-func GetVaults(chainId int) ([]Vault, error) {
+func GetVaults(chainId uint64) ([]Vault, error) {
 	var vaults []Vault
 	skip := 0
 	limit := 100
@@ -184,7 +184,7 @@ func GetVaults(chainId int) ([]Vault, error) {
 	return vaults, nil
 }
 
-func GetVault(address string, chainId int) (Vault, error) {
+func GetVault(address string, chainId uint64) (Vault, error) {
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return Vault{}, err
@@ -197,7 +197,7 @@ func GetVault(address string, chainId int) (Vault, error) {
 	return Vault{}, fmt.Errorf("vault not found for address: %s", address)
 }
 
-func GetMarkets(chainId int) ([]Market, error) {
+func GetMarkets(chainId uint64) ([]Market, error) {
 	var markets []Market
 	skip := 0
 	limit := 100
@@ -246,7 +246,7 @@ func GetMarkets(chainId int) ([]Market, error) {
 	return markets, nil
 }
 
-func GetMarket(uniqueKey string, chainId int) (Market, error) {
+func GetMarket(uniqueKey string, chainId uint64) (Market, error) {
 	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return Market{}, err

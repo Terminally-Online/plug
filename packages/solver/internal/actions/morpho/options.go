@@ -81,7 +81,7 @@ func (p *MorphoOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	}
 }
 
-func GetSupplyTokenToVaultOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
@@ -115,7 +115,7 @@ func GetSupplyTokenToVaultOptions(chainId int) ([]actions.Option, map[string][]a
 	return tokenOptions, tokenToVaultOptions, nil
 }
 
-func GetMarketAndVaultOptions(chainId int) ([]actions.Option, []actions.Option, error) {
+func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Option, error) {
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
@@ -150,7 +150,7 @@ func GetMarketAndVaultOptions(chainId int) ([]actions.Option, []actions.Option, 
 	return marketOptions, marketAndVaultOptions, nil
 }
 
-func GetCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
 	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
@@ -187,7 +187,7 @@ func GetCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[strin
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetBorrowTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
 	markets, err := GetMarkets(chainId)
 	if err != nil {
 		return nil, nil, err
@@ -221,7 +221,7 @@ func GetBorrowTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]
 	return tokenOptions, tokenToMarketOptions, nil
 }
 
-func GetSupplyAndCollateralTokenToMarketOptions(chainId int) ([]actions.Option, map[string][]actions.Option, error) {
+func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string][]actions.Option, error) {
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, nil, err
