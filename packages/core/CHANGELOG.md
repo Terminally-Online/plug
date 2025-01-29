@@ -1,5 +1,12 @@
 # @nftchance/plug-core
 
+## 0.3.0
+
+### Minor Changes
+
+- 07b348d: feat: gas limit on plug actions
+- 92187c6: feat: try plugs with result response instead of revert
+
 ## 0.2.0
 
 ### Minor Changes
