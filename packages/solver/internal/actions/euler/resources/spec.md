@@ -19,24 +19,40 @@ To get the address of the vaults you will utilize ``
 ## Initial Notes & Questions to answer
 
 - How does a [strategy](https://app.euler.finance/strategies?network=base) work on the protocol level?
-- Do we want to surface the collateral exposure of a vault to our users? e.g. Their main USDC vault can be borrowed against with AERO as collateral.
-- How to get all vaults? Find all create proxy events on the factory?
-- I'm not clear how to get the health factor or the APY of a vault
+-- Looping collateral and borrow, no protocol nuance
+-- Have to enable a vault as collateral
+
+- How can we get the health factor of a user's account?
+-- Account Lens
+-- Health Score, Time to Liquidation [AccountLens](https://basescan.org/address/0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb#readContract)
+
+- How can we get the APY of a vault, both intrinsic and with rewards?
+-- Util Lens
+
+- Does the virtual account aspect need any management?
+-- Getting grouping of sub accounts for the user
+-- The EVC has a method to get sub accounts from a top level account
+
+- Potentially use [Euler Swap API](https://github.com/euler-xyz/euler-swap-api)?
+
+- Getting Euler base markets // Recommended vaults
+-- Governed perspective to get the vaults we show [GovernedPerspective](https://basescan.org/address/0xafc8545c49df2c8216305922d9753bf60bf8c14a#readContract)
 - 
 
 ## Scope
 
-| Name              | Type       | Implemented | Notes |
-| :---------------- | :--------- | :---------: | :---- |
-| Boost             | Action     |             |       |
-| Supply            | Action     |             |       |
-| Repay             | Action     |             |       |
-| Repay With Shares | Action     |             |       |
-| Withdraw          | Action     |             |       |
-| Borrow USDC       | Action     |             |       |
-| Return USDC       | Action     |             |       |
-| APY               | Constraint |             |       |
-| Health Factor     | Constraint |             |       |
+| Name                | Type       | Implemented | Notes |
+| :----------------   | :--------- | :---------: | :---- |
+| Boost               | Action     |             |       |
+| Supply              | Action     |             |       |
+| Repay               | Action     |             |       |
+| Repay With Shares   | Action     |             |       |
+| Withdraw            | Action     |             |       |
+| Borrow USDC         | Action     |             |       |
+| Return USDC         | Action     |             |       |
+| APY                 | Constraint |             |       |
+| Health Factor       | Constraint |             |       |
+| Time to Liquidation | Constraint |             |       |
 
 
 ### Boost (?)
