@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.23;
 
+import { PlugLib } from "../libraries/Plug.Lib.sol";
+
 /**
  * @title Plug Mock Echo
  * @notice A mock contract for testing the Plug framework.
@@ -21,6 +23,10 @@ contract PlugMockEcho {
 
     function emptyEcho() external {
         emit EchoInvoked(msg.sender, "Hello World");
+    }
+
+    function revertEcho() external pure {
+        revert PlugLib.PlugFailed(type(uint8).max, "PlugMockEcho:revertEcho");
     }
 
     /**
