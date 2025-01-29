@@ -431,6 +431,7 @@ abstract contract TestPlug is TestPlus {
         oneClicker = vm.addr(oneClickerPrivateKey);
 
         mock = new PlugMockEcho();
+        mock = new PlugMockEcho();
         mockERC20 = new PlugMockERC20();
         mockERC721 = new PlugMockERC721();
         mockERC1155 = new PlugMockERC1155();
