@@ -275,6 +275,11 @@ export const contracts = [
                                                 "name": "value",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "gas",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
                                             }
                                         ]
                                     },
@@ -345,6 +350,11 @@ export const contracts = [
                                                 "name": "value",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "gas",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
                                             }
                                         ]
                                     },
@@ -400,6 +410,11 @@ export const contracts = [
                                 "name": "value",
                                 "type": "uint256",
                                 "internalType": "uint256"
+                            },
+                            {
+                                "name": "gas",
+                                "type": "uint256",
+                                "internalType": "uint256"
                             }
                         ]
                     }
@@ -434,6 +449,11 @@ export const contracts = [
                             },
                             {
                                 "name": "value",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "gas",
                                 "type": "uint256",
                                 "internalType": "uint256"
                             }
@@ -480,6 +500,11 @@ export const contracts = [
                                     },
                                     {
                                         "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "gas",
                                         "type": "uint256",
                                         "internalType": "uint256"
                                     }
@@ -538,6 +563,11 @@ export const contracts = [
                                     },
                                     {
                                         "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "gas",
                                         "type": "uint256",
                                         "internalType": "uint256"
                                     }
@@ -670,76 +700,6 @@ export const contracts = [
                 "name": "plug",
                 "inputs": [
                     {
-                        "name": "$plugs",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Plugs",
-                        "components": [
-                            {
-                                "name": "socket",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
-                                "name": "plugs",
-                                "type": "tuple[]",
-                                "internalType": "struct PlugTypesLib.Plug[]",
-                                "components": [
-                                    {
-                                        "name": "to",
-                                        "type": "address",
-                                        "internalType": "address"
-                                    },
-                                    {
-                                        "name": "data",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "solver",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            },
-                            {
-                                "name": "salt",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            }
-                        ]
-                    }
-                ],
-                "outputs": [
-                    {
-                        "name": "$results",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Result",
-                        "components": [
-                            {
-                                "name": "index",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "error",
-                                "type": "string",
-                                "internalType": "string"
-                            }
-                        ]
-                    }
-                ],
-                "stateMutability": "payable"
-            },
-            {
-                "type": "function",
-                "name": "plug",
-                "inputs": [
-                    {
                         "name": "$livePlugs",
                         "type": "tuple",
                         "internalType": "struct PlugTypesLib.LivePlugs",
@@ -773,6 +733,11 @@ export const contracts = [
                                                 "name": "value",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "gas",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
                                             }
                                         ]
                                     },
@@ -799,6 +764,81 @@ export const contracts = [
                         "name": "$solver",
                         "type": "address",
                         "internalType": "address"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$results",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Result",
+                        "components": [
+                            {
+                                "name": "index",
+                                "type": "uint8",
+                                "internalType": "uint8"
+                            },
+                            {
+                                "name": "error",
+                                "type": "string",
+                                "internalType": "string"
+                            }
+                        ]
+                    }
+                ],
+                "stateMutability": "payable"
+            },
+            {
+                "type": "function",
+                "name": "plug",
+                "inputs": [
+                    {
+                        "name": "$plugs",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Plugs",
+                        "components": [
+                            {
+                                "name": "socket",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "plugs",
+                                "type": "tuple[]",
+                                "internalType": "struct PlugTypesLib.Plug[]",
+                                "components": [
+                                    {
+                                        "name": "to",
+                                        "type": "address",
+                                        "internalType": "address"
+                                    },
+                                    {
+                                        "name": "data",
+                                        "type": "bytes",
+                                        "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "gas",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "solver",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            }
+                        ]
                     }
                 ],
                 "outputs": [
@@ -1071,6 +1111,11 @@ export const contracts = [
                                                 "name": "value",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "gas",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
                                             }
                                         ]
                                     },
@@ -1151,6 +1196,11 @@ export const contracts = [
                                             },
                                             {
                                                 "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "gas",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
                                             }

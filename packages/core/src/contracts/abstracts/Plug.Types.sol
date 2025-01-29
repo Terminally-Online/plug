@@ -54,12 +54,14 @@ library PlugTypesLib {
      * 		{ name: 'to', type: 'address' }
      * 		{ name: 'data', type: 'bytes' }
      * 		{ name: 'value', type: 'uint256' }
+     * 		{ name: 'gas', type: 'uint256' }
      * }>
      */
     struct Plug {
         address to;
         bytes data;
         uint256 value;
+        uint256 gas;
     }
 
     /**
@@ -134,10 +136,11 @@ abstract contract PlugTypes {
      *      { name: 'to', type: 'address' }
      *      { name: 'data', type: 'bytes' }
      *      { name: 'value', type: 'uint256' }
+     *      { name: 'gas', type: 'uint256' }
      * }>>
      */
     bytes32 constant PLUG_TYPEHASH =
-        0x25770127c481dfef68b980626cb3fc78209bd21a1ced73c324bcd4f9d493adf2;
+        0x25109ad0f45743ccd84fecae365548da8877dc27d72aaa76645bd2497049e9d1;
 
     /**
      * @notice Type hash representing the Plugs data type providing EIP-712
@@ -150,7 +153,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant PLUGS_TYPEHASH =
-        0x21d9aad82642dd8dfaeb7db6b2859f4f99cb1dbffb9a79e03acb22559f4163ef;
+        0xdd85d5bb8ec436cbe0a28e6d29ed5d14871c97d6992cd42355b6a46e9d8b8ff4;
 
     /**
      * @notice Type hash representing the LivePlugs data type providing EIP-712
@@ -161,7 +164,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant LIVE_PLUGS_TYPEHASH =
-        0x069bef582a320c52b1a840b77f073b4862cef3e4776ec09502d6d2738fb45cdd;
+        0xee2b31404cce97789713d74fbb2373be5f5ffd7b490e82b1f9598c3945391e3a;
 
     /**
      * @notice Initialize the contract with the name and version of the protocol.
@@ -295,8 +298,9 @@ abstract contract PlugTypes {
         virtual
         returns (bytes32 $typeHash)
     {
-        $typeHash =
-            keccak256(abi.encode(PLUG_TYPEHASH, $input.to, keccak256($input.data), $input.value));
+        $typeHash = keccak256(
+            abi.encode(PLUG_TYPEHASH, $input.to, keccak256($input.data), $input.value, $input.gas)
+        );
     }
 
     /**

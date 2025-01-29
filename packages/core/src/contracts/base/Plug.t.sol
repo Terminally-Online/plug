@@ -32,7 +32,7 @@ contract PlugTest is Test {
 
     function test_PlugEmptyEcho_TypeRecovery() public {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugs);
@@ -41,7 +41,7 @@ contract PlugTest is Test {
 
     function test_PlugEmptyEcho_Solver() public {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray);
         vm.expectEmit(address(mock));
@@ -56,10 +56,10 @@ contract PlugTest is Test {
         vm.deal(address(socket), 100 ether);
         uint256 preBalance = address(treasury).balance;
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
+        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
-        livePlugsArray[0] = createLivePlugs(plugsArray, solver);
+        livePlugsArray[0] = createLivePlugs(plugsArray);
         vm.prank(solver);
         vm.expectEmit(address(mock));
         emit EchoInvoked(address(socket), "Hello World");
@@ -72,8 +72,8 @@ contract PlugTest is Test {
         vm.deal(solver, 100 ether);
         vm.deal(address(socket), 0);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
+        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray, solver);
         vm.prank(solver);
@@ -94,8 +94,8 @@ contract PlugTest is Test {
         vm.deal(solver, 100 ether);
         vm.deal(address(socket), 100 ether);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
+        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray, solver);
         vm.prank(solver);
@@ -110,7 +110,7 @@ contract PlugTest is Test {
 
     function testRevert_PlugEmptyEcho_Solver_InvalidSignature() public {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugs);
@@ -128,8 +128,8 @@ contract PlugTest is Test {
         vm.deal(solver, 100 ether);
         vm.deal(address(socket), 100 ether);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
+        plugsArray[1] = createPlug(PLUG_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.Plugs memory plugs =
             createPlugs(plugsArray, uint48(block.timestamp + 3 minutes), solver);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
@@ -144,7 +144,7 @@ contract PlugTest is Test {
         vm.deal(solver, 100 ether);
         vm.deal(address(socket), 100 ether);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.Plugs memory plugs =
             createPlugs(plugsArray, uint48(block.timestamp - 1 minutes), solver);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
@@ -158,7 +158,7 @@ contract PlugTest is Test {
     function test_Plugs_PlugEmptyEcho_TypeRecovery() public {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
         plug.plug(livePlugsArray);
@@ -168,7 +168,7 @@ contract PlugTest is Test {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
 
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_REVERT);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_REVERT, type(uint256).max);
         console2.log("Created plug to:", address(plugsArray[0].to));
         console2.logBytes(plugsArray[0].data);
 
@@ -183,12 +183,8 @@ contract PlugTest is Test {
     function test_CatchReverting_Plugs_SecondFails() public {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2); // Array of 2 plugs
-
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-
-        // Second plug reverts
-        plugsArray[1] = createPlug(PLUG_NO_VALUE, PLUG_REVERT);
-
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
+        plugsArray[1] = createPlug(PLUG_NO_VALUE, PLUG_REVERT, type(uint256).max);
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
 
@@ -201,14 +197,10 @@ contract PlugTest is Test {
         for (uint8 testIndex = 0; testIndex < 5; testIndex++) {
             PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
             PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](testIndex + 2);
-
             for (uint8 i = 0; i < testIndex + 1; i++) {
-                plugsArray[i] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
+                plugsArray[i] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, type(uint256).max);
             }
-
-            // Last plug reverts
-            plugsArray[testIndex + 1] = createPlug(PLUG_NO_VALUE, PLUG_REVERT);
-
+            plugsArray[testIndex + 1] = createPlug(PLUG_NO_VALUE, PLUG_REVERT, type(uint256).max);
             PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
             livePlugsArray[0] = createLivePlugs(plugs);
 
@@ -217,11 +209,43 @@ contract PlugTest is Test {
             assertEq(results[0].index, testIndex + 1);
         }
     }
-}
 
-// Test helper contract
-contract MockReverter {
-    function call(bytes calldata) external pure {
-        revert PlugLib.PlugFailed(0, "PlugCore:plug-failed");
+    function test_PlugGasLimit_Success() public {
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, 100_000);
+
+        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
+        livePlugsArray[0] = createLivePlugs(plugsArray);
+
+        vm.expectEmit(address(mock));
+        emit EchoInvoked(address(socket), "Hello World");
+        plug.plug(livePlugsArray);
+    }
+
+    function test_PlugGasLimit_TooLow() public {
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, 1000);
+
+        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
+        livePlugsArray[0] = createLivePlugs(plugsArray);
+
+        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
+        assertEq(results[0].error, "PlugCore:plug-failed");
+        assertEq(results[0].index, 0);
+    }
+
+    function test_PlugGasLimit_MultiplePlugs() public {
+        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](2);
+        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, 100_000);
+        plugsArray[1] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION, 50_000);
+
+        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
+        livePlugsArray[0] = createLivePlugs(plugsArray);
+
+        vm.expectEmit(address(mock));
+        emit EchoInvoked(address(socket), "Hello World");
+        vm.expectEmit(address(mock));
+        emit EchoInvoked(address(socket), "Hello World");
+        plug.plug(livePlugsArray);
     }
 }

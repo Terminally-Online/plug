@@ -11,7 +11,8 @@ export const LIVE_PLUGS_TYPES = {
 	Plug: [
 		{ name: 'to', type: 'address' },
 		{ name: 'data', type: 'bytes' },
-		{ name: 'value', type: 'uint256' }
+		{ name: 'value', type: 'uint256' },
+		{ name: 'gas', type: 'uint256' }
 	],
 	Plugs: [
 		{ name: 'socket', type: 'address' },
