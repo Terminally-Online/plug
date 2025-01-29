@@ -53,11 +53,11 @@ export const plugAbi = [
     outputs: [
       {
         name: '$results',
-        internalType: 'struct PlugTypesLib.Result[]',
-        type: 'tuple[]',
+        internalType: 'struct PlugTypesLib.Result',
+        type: 'tuple',
         components: [
-          { name: 'success', internalType: 'bool', type: 'bool' },
-          { name: 'result', internalType: 'bytes', type: 'bytes' },
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
         ],
       },
     ],
@@ -99,11 +99,11 @@ export const plugAbi = [
     outputs: [
       {
         name: '$results',
-        internalType: 'struct PlugTypesLib.Result[][]',
-        type: 'tuple[][]',
+        internalType: 'struct PlugTypesLib.Result[]',
+        type: 'tuple[]',
         components: [
-          { name: 'success', internalType: 'bool', type: 'bool' },
-          { name: 'result', internalType: 'bytes', type: 'bytes' },
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
         ],
       },
     ],
@@ -516,11 +516,11 @@ export const plugSocketAbi = [
     outputs: [
       {
         name: '$results',
-        internalType: 'struct PlugTypesLib.Result[]',
-        type: 'tuple[]',
+        internalType: 'struct PlugTypesLib.Result',
+        type: 'tuple',
         components: [
-          { name: 'success', internalType: 'bool', type: 'bool' },
-          { name: 'result', internalType: 'bytes', type: 'bytes' },
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
         ],
       },
     ],
@@ -563,11 +563,11 @@ export const plugSocketAbi = [
     outputs: [
       {
         name: '$results',
-        internalType: 'struct PlugTypesLib.Result[]',
-        type: 'tuple[]',
+        internalType: 'struct PlugTypesLib.Result',
+        type: 'tuple',
         components: [
-          { name: 'success', internalType: 'bool', type: 'bool' },
-          { name: 'result', internalType: 'bytes', type: 'bytes' },
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
         ],
       },
     ],
@@ -675,29 +675,6 @@ export const plugSocketAbi = [
     anonymous: false,
     inputs: [
       {
-        name: '$plugsHash',
-        internalType: 'bytes32',
-        type: 'bytes32',
-        indexed: true,
-      },
-      {
-        name: '$results',
-        internalType: 'struct PlugTypesLib.Result[]',
-        type: 'tuple[]',
-        components: [
-          { name: 'success', internalType: 'bool', type: 'bool' },
-          { name: 'result', internalType: 'bytes', type: 'bytes' },
-        ],
-        indexed: false,
-      },
-    ],
-    name: 'PlugsExecuted',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
         name: 'implementation',
         internalType: 'address',
         type: 'address',
@@ -709,253 +686,18 @@ export const plugSocketAbi = [
   { type: 'error', inputs: [], name: 'AlreadyInitialized' },
   { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
   { type: 'error', inputs: [], name: 'NoHandoverRequest' },
-  { type: 'error', inputs: [], name: 'NonceInvalid' },
-  { type: 'error', inputs: [], name: 'PlugFailed' },
-  { type: 'error', inputs: [], name: 'Reentrancy' },
-  {
-    type: 'error',
-    inputs: [{ name: '$reality', internalType: 'address', type: 'address' }],
-    name: 'SenderInvalid',
-  },
-  { type: 'error', inputs: [], name: 'SignatureInvalid' },
-  { type: 'error', inputs: [], name: 'SolverExpired' },
   {
     type: 'error',
     inputs: [
-      { name: '$expected', internalType: 'address', type: 'address' },
-      { name: '$reality', internalType: 'address', type: 'address' },
+      { name: '$index', internalType: 'uint8', type: 'uint8' },
+      { name: '$reason', internalType: 'string', type: 'string' },
     ],
-    name: 'SolverInvalid',
+    name: 'PlugFailed',
   },
+  { type: 'error', inputs: [], name: 'Reentrancy' },
   { type: 'error', inputs: [], name: 'Unauthorized' },
   { type: 'error', inputs: [], name: 'UnauthorizedCallContext' },
   { type: 'error', inputs: [], name: 'UpgradeFailed' },
-  {
-    type: 'error',
-    inputs: [
-      { name: '$recipient', internalType: 'address', type: 'address' },
-      { name: '$expected', internalType: 'uint256', type: 'uint256' },
-      { name: '$reality', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'ValueInvalid',
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PlugTreasury
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const plugTreasuryAbi = [
-  { type: 'fallback', stateMutability: 'payable' },
-  { type: 'receive', stateMutability: 'payable' },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'cancelOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'pendingOwner', internalType: 'address', type: 'address' },
-    ],
-    name: 'completeOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$targets', internalType: 'address[]', type: 'address[]' },
-      { name: '$values', internalType: 'uint256[]', type: 'uint256[]' },
-      { name: '$datas', internalType: 'bytes[]', type: 'bytes[]' },
-    ],
-    name: 'execute',
-    outputs: [
-      { name: '$successes', internalType: 'bool[]', type: 'bool[]' },
-      { name: '$results', internalType: 'bytes[]', type: 'bytes[]' },
-    ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '$owner', internalType: 'address', type: 'address' }],
-    name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: 'result', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'pendingOwner', internalType: 'address', type: 'address' },
-    ],
-    name: 'ownershipHandoverExpiresAt',
-    outputs: [{ name: 'result', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$target', internalType: 'address payable', type: 'address' },
-      { name: '$data', internalType: 'bytes', type: 'bytes' },
-      { name: '$fee', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'plugNative',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$tokenIn', internalType: 'address', type: 'address' },
-      { name: '$target', internalType: 'address payable', type: 'address' },
-      { name: '$data', internalType: 'bytes', type: 'bytes' },
-      { name: '$fee', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'plugNativeToToken',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$tokenOut', internalType: 'address', type: 'address' },
-      { name: '$target', internalType: 'address payable', type: 'address' },
-      { name: '$data', internalType: 'bytes', type: 'bytes' },
-      { name: '$sell', internalType: 'uint256', type: 'uint256' },
-      { name: '$fee', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'plugToken',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$tokenOut', internalType: 'address', type: 'address' },
-      { name: '$target', internalType: 'address payable', type: 'address' },
-      { name: '$data', internalType: 'bytes', type: 'bytes' },
-      { name: '$sell', internalType: 'uint256', type: 'uint256' },
-      { name: '$fee', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'plugTokenToNative',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$tokenOut', internalType: 'address', type: 'address' },
-      { name: '$tokenIn', internalType: 'address', type: 'address' },
-      { name: '$target', internalType: 'address payable', type: 'address' },
-      { name: '$data', internalType: 'bytes', type: 'bytes' },
-      { name: '$sell', internalType: 'uint256', type: 'uint256' },
-      { name: '$fee', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'plugTokenToToken',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'requestOwnershipHandover',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '$targets', internalType: 'address[]', type: 'address[]' },
-      { name: '$allowed', internalType: 'bool', type: 'bool' },
-    ],
-    name: 'setTargetsAllowed',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'targetToAllowed',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'pendingOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipHandoverCanceled',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'pendingOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipHandoverRequested',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'oldOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferred',
-  },
-  { type: 'error', inputs: [], name: 'AlreadyInitialized' },
-  { type: 'error', inputs: [], name: 'NewOwnerIsZeroAddress' },
-  { type: 'error', inputs: [], name: 'NoHandoverRequest' },
-  { type: 'error', inputs: [], name: 'PlugFailed' },
-  { type: 'error', inputs: [], name: 'Reentrancy' },
-  { type: 'error', inputs: [], name: 'TargetInvalid' },
-  { type: 'error', inputs: [], name: 'TokenAllowanceInvalid' },
-  { type: 'error', inputs: [], name: 'TokenBalanceInvalid' },
-  { type: 'error', inputs: [], name: 'Unauthorized' },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1433,331 +1175,10 @@ export const useWatchPlugSocketOwnershipTransferredEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugSocketAbi}__ and `eventName` set to `"PlugsExecuted"`
- */
-export const useWatchPlugSocketPlugsExecutedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugSocketAbi,
-    eventName: 'PlugsExecuted',
-  })
-
-/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugSocketAbi}__ and `eventName` set to `"Upgraded"`
  */
 export const useWatchPlugSocketUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: plugSocketAbi,
     eventName: 'Upgraded',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugTreasuryAbi}__
- */
-export const useReadPlugTreasury = /*#__PURE__*/ createUseReadContract({
-  abi: plugTreasuryAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"owner"`
- */
-export const useReadPlugTreasuryOwner = /*#__PURE__*/ createUseReadContract({
-  abi: plugTreasuryAbi,
-  functionName: 'owner',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"ownershipHandoverExpiresAt"`
- */
-export const useReadPlugTreasuryOwnershipHandoverExpiresAt =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugTreasuryAbi,
-    functionName: 'ownershipHandoverExpiresAt',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"targetToAllowed"`
- */
-export const useReadPlugTreasuryTargetToAllowed =
-  /*#__PURE__*/ createUseReadContract({
-    abi: plugTreasuryAbi,
-    functionName: 'targetToAllowed',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__
- */
-export const useWritePlugTreasury = /*#__PURE__*/ createUseWriteContract({
-  abi: plugTreasuryAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
- */
-export const useWritePlugTreasuryCancelOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'cancelOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"completeOwnershipHandover"`
- */
-export const useWritePlugTreasuryCompleteOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'completeOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"execute"`
- */
-export const useWritePlugTreasuryExecute = /*#__PURE__*/ createUseWriteContract(
-  { abi: plugTreasuryAbi, functionName: 'execute' },
-)
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"initialize"`
- */
-export const useWritePlugTreasuryInitialize =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'initialize',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugNative"`
- */
-export const useWritePlugTreasuryPlugNative =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugNative',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugNativeToToken"`
- */
-export const useWritePlugTreasuryPlugNativeToToken =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugNativeToToken',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugToken"`
- */
-export const useWritePlugTreasuryPlugToken =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugToken',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugTokenToNative"`
- */
-export const useWritePlugTreasuryPlugTokenToNative =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugTokenToNative',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugTokenToToken"`
- */
-export const useWritePlugTreasuryPlugTokenToToken =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugTokenToToken',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useWritePlugTreasuryRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"requestOwnershipHandover"`
- */
-export const useWritePlugTreasuryRequestOwnershipHandover =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'requestOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"setTargetsAllowed"`
- */
-export const useWritePlugTreasurySetTargetsAllowed =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'setTargetsAllowed',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useWritePlugTreasuryTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: plugTreasuryAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__
- */
-export const useSimulatePlugTreasury = /*#__PURE__*/ createUseSimulateContract({
-  abi: plugTreasuryAbi,
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"cancelOwnershipHandover"`
- */
-export const useSimulatePlugTreasuryCancelOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'cancelOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"completeOwnershipHandover"`
- */
-export const useSimulatePlugTreasuryCompleteOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'completeOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"execute"`
- */
-export const useSimulatePlugTreasuryExecute =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'execute',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"initialize"`
- */
-export const useSimulatePlugTreasuryInitialize =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'initialize',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugNative"`
- */
-export const useSimulatePlugTreasuryPlugNative =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugNative',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugNativeToToken"`
- */
-export const useSimulatePlugTreasuryPlugNativeToToken =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugNativeToToken',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugToken"`
- */
-export const useSimulatePlugTreasuryPlugToken =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugToken',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugTokenToNative"`
- */
-export const useSimulatePlugTreasuryPlugTokenToNative =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugTokenToNative',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"plugTokenToToken"`
- */
-export const useSimulatePlugTreasuryPlugTokenToToken =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'plugTokenToToken',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useSimulatePlugTreasuryRenounceOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"requestOwnershipHandover"`
- */
-export const useSimulatePlugTreasuryRequestOwnershipHandover =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'requestOwnershipHandover',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"setTargetsAllowed"`
- */
-export const useSimulatePlugTreasurySetTargetsAllowed =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'setTargetsAllowed',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link plugTreasuryAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useSimulatePlugTreasuryTransferOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: plugTreasuryAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugTreasuryAbi}__
- */
-export const useWatchPlugTreasuryEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: plugTreasuryAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugTreasuryAbi}__ and `eventName` set to `"OwnershipHandoverCanceled"`
- */
-export const useWatchPlugTreasuryOwnershipHandoverCanceledEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugTreasuryAbi,
-    eventName: 'OwnershipHandoverCanceled',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugTreasuryAbi}__ and `eventName` set to `"OwnershipHandoverRequested"`
- */
-export const useWatchPlugTreasuryOwnershipHandoverRequestedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugTreasuryAbi,
-    eventName: 'OwnershipHandoverRequested',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugTreasuryAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchPlugTreasuryOwnershipTransferredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: plugTreasuryAbi,
-    eventName: 'OwnershipTransferred',
   })

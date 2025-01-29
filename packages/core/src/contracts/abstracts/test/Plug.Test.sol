@@ -5,7 +5,6 @@ pragma solidity 0.8.23;
 import { Vm } from "forge-std/Vm.sol";
 import { PRBTest } from "@prb/test/PRBTest.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
-import { console2 } from "forge-std/console2.sol";
 
 import { PlugEtcherLib } from "../../libraries/Plug.Etcher.Lib.sol";
 import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../../libraries/Plug.Lib.sol";
@@ -15,7 +14,6 @@ import { ECDSA } from "solady/utils/ECDSA.sol";
 
 import { Plug } from "../../base/Plug.sol";
 import { PlugFactory } from "../../base/Plug.Factory.sol";
-import { PlugTreasury } from "../../base/Plug.Treasury.sol";
 import { PlugSocket } from "../../base/Plug.Socket.sol";
 
 import { PlugMockERC20 } from "../../mocks/Plug.Mock.ERC20.sol";
@@ -399,18 +397,16 @@ abstract contract TestPlus {
 abstract contract TestPlug is TestPlus {
     Vm private constant vm = Vm(_VM_ADDRESS);
 
+    PlugMockEcho internal mock;
     PlugMockERC20 internal mockERC20;
     PlugMockERC721 internal mockERC721;
     PlugMockERC1155 internal mockERC1155;
 
     Plug internal plug;
     PlugFactory internal factory;
-    PlugTreasury internal treasury;
 
     PlugSocket internal socketImplementation;
     PlugSocket internal socket;
-
-    PlugMockEcho internal mock;
 
     address internal factoryOwner;
 
@@ -421,6 +417,7 @@ abstract contract TestPlug is TestPlus {
 
     uint8 internal PLUG_CONDITION = 1;
     uint8 internal PLUG_EXECUTION = 2;
+    uint8 internal PLUG_REVERT = 3;
 
     uint8 internal PLUG_SIGNATURE = 1;
     uint8 internal PLUG_MERKLE = 2;
@@ -433,18 +430,16 @@ abstract contract TestPlug is TestPlus {
         signer = vm.addr(signerPrivateKey);
         oneClicker = vm.addr(oneClickerPrivateKey);
 
+        mock = new PlugMockEcho();
         mockERC20 = new PlugMockERC20();
         mockERC721 = new PlugMockERC721();
         mockERC1155 = new PlugMockERC1155();
 
         plug = deployPlug();
         factory = deployFactory();
-        treasury = deployTreasury();
 
         socketImplementation = new PlugSocket();
         socket = deployVault();
-
-        mock = new PlugMockEcho();
     }
 
     function deployPlug() internal virtual returns (Plug $plug) {
@@ -455,12 +450,6 @@ abstract contract TestPlug is TestPlus {
     function deployFactory() internal virtual returns (PlugFactory $factory) {
         vm.etch(PlugEtcherLib.PLUG_FACTORY_ADDRESS, address(new PlugFactory()).code);
         $factory = PlugFactory(payable(PlugEtcherLib.PLUG_FACTORY_ADDRESS));
-    }
-
-    function deployTreasury() internal virtual returns (PlugTreasury $treasury) {
-        vm.etch(PlugEtcherLib.PLUG_TREASURY_ADDRESS, address(new PlugTreasury()).code);
-        $treasury = PlugTreasury(payable(PlugEtcherLib.PLUG_TREASURY_ADDRESS));
-        $treasury.initialize(factoryOwner);
     }
 
     function deployVault() internal virtual returns (PlugSocket $vault) {
@@ -491,10 +480,14 @@ abstract contract TestPlug is TestPlus {
         view
         returns (PlugTypesLib.Plug memory $plug)
     {
-        if ($plugType == PLUG_EXECUTION) {
-            /// @dev In testing we are operating with the assumption that an undeclared
-            ///      Plug setup is due to intention of interacting with the mock echo
-            ///      when there is no value.
+        if ($plugType == PLUG_REVERT) {
+            $plug = createPlug(
+                address(mock),
+                $value,
+                abi.encodeWithSelector(PlugMockEcho.revertEcho.selector),
+                $plugType
+            );
+        } else if ($plugType == PLUG_EXECUTION) {
             if ($value == PLUG_NO_VALUE) {
                 $plug = createPlug(
                     address(mock),
@@ -503,7 +496,8 @@ abstract contract TestPlug is TestPlus {
                     $plugType
                 );
             } else {
-                $plug = createPlug(PlugEtcherLib.PLUG_TREASURY_ADDRESS, $value, "", $plugType);
+                $plug =
+                    createPlug(0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType);
             }
         }
     }
