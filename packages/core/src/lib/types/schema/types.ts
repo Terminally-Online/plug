@@ -14,7 +14,8 @@ import { AddressSchema,BytesSchema } from '@/src/lib'
             export const PlugSchema= z.object({
 	to: AddressSchema,
 	data: BytesSchema,
-	value: z.bigint()
+	value: z.bigint(),
+	gas: z.bigint()
 })
             export type Plug = z.infer<typeof PlugSchema>
         

@@ -462,19 +462,25 @@ abstract contract TestPlug is TestPlus {
         address $to,
         uint256 $value,
         bytes memory $data,
-        uint8 $plugType
+        uint8 $plugType,
+        uint256 $gas
     )
         internal
         pure
         returns (PlugTypesLib.Plug memory $plug)
     {
-        $plug =
-            PlugTypesLib.Plug({ to: $to, data: abi.encodePacked($plugType, $data), value: $value });
+        $plug = PlugTypesLib.Plug({
+            to: $to,
+            data: abi.encodePacked($plugType, $data),
+            value: $value,
+            gas: $gas
+        });
     }
 
     function createPlug(
         uint256 $value,
-        uint8 $plugType
+        uint8 $plugType,
+        uint256 $gas
     )
         internal
         view
@@ -485,7 +491,8 @@ abstract contract TestPlug is TestPlus {
                 address(mock),
                 $value,
                 abi.encodeWithSelector(PlugMockEcho.revertEcho.selector),
-                $plugType
+                $plugType,
+                $gas
             );
         } else if ($plugType == PLUG_EXECUTION) {
             if ($value == PLUG_NO_VALUE) {
@@ -493,11 +500,13 @@ abstract contract TestPlug is TestPlus {
                     address(mock),
                     $value,
                     abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector),
-                    $plugType
+                    $plugType,
+                    $gas
                 );
             } else {
-                $plug =
-                    createPlug(0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType);
+                $plug = createPlug(
+                    0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType, $gas
+                );
             }
         }
     }

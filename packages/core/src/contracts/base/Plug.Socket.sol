@@ -73,6 +73,8 @@ contract PlugSocket is
         }
     }
 
+    uint256 a = 1;
+
     /**
      * See {PlugSocketInterface-plug}.
      */
@@ -163,7 +165,8 @@ contract PlugSocket is
         for (uint8 i; i < length; i++) {
             action = $plugs.plugs[i];
 
-            (bool success,) = action.to.call{ value: action.value }(action.data[1:]);
+            (bool success,) =
+                action.to.call{ value: action.value, gas: action.gas }(action.data[1:]);
             if (!success) {
                 revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
             }
