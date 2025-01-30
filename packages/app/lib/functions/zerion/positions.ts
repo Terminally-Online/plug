@@ -424,13 +424,13 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	// p
 	// to retrieve collectibles for their own address as well as the address of their socket.
 	const id = `${socket.id}-${socketAddress}`
-	const cachedPositions = await db.positionCache.findUnique({
-		where: { id },
-		select: { updatedAt: true }
-	})
-
-	if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
-		await getZerionPositions(chains, socket.id, socketAddress)
+	// const cachedPositions = await db.positionCache.findUnique({
+	// 	where: { id },
+	// 	select: { updatedAt: true }
+	// })
+	//
+	// if (!cachedPositions || cachedPositions.updatedAt > new Date(Date.now() - POSITIONS_CACHE_TIME))
+	await getZerionPositions(chains, socket.id, socketAddress)
 
 	return await findPositions(id, search)
 }
