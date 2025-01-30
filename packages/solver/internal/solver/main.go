@@ -106,7 +106,19 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		From:     from,
 	}
 
-	return handler.GetTransaction(inputs.Action, rawInputs, params)
+	transactions, err := handler.GetTransaction(inputs.Action, rawInputs, params)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, _ := range transactions {
+		if transactions[i].Value == nil {
+			transactions[i].Value = big.NewInt(0)
+		}
+		transactions[i].Gas = big.NewInt(200000)
+	}
+
+	return transactions, nil
 }
 
 func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, error) {
