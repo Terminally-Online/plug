@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.3.1
+
+### Patch Changes
+
+- be19fbd: fix: cjs imports
+
 ## 0.3.0
 
 ### Minor Changes
