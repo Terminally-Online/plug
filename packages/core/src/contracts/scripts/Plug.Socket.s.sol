@@ -7,19 +7,20 @@ import { Plug } from "../base/Plug.sol";
 import { PlugEtcherLib } from "../libraries/Plug.Etcher.Lib.sol";
 
 /**
- * @title Plug.Socket Deployment
- * @dev Deploy a Plug.Socket to a new chain using the immutable
- *      Create2 factory for constant addresses across all major EVM chains.
- * @notice To deploy the most up to date version of Plug.Socket, you can always just run
- *         this script and everything will be deployed as configured.
+ * This is the script used to deploy the entire Plug protocol stack at once. Each time upon
+ * build the active contracts are automatically populated so that you never have to deal
+ * with manual coordination of your contracts or updating the deployment scripts.
  */
 contract PlugSocketDeployment is Script {
     function run() external {
-        vm.startBroadcast();
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(privateKey);
 
-        PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
-        );
+        if (PlugEtcherLib.PLUG_SOCKET_ADDRESS.code.length == 0) {
+            PlugEtcherLib.FACTORY.safeCreate2(
+                PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
+            );
+        }
 
         vm.stopBroadcast();
     }

@@ -1,3 +1,4 @@
+import packageJson from '@/package.json'
 import { exec, execSync } from 'child_process'
 import dedent from 'dedent'
 import { default as fs } from 'fs-extra'
@@ -72,9 +73,23 @@ const create2 = () => {
 const prepare = (): Record<
 	string,
 	{
-		initCode: string
-		initCodeHash: string
-		deployment: Record<'salt' | 'address' | 'rarity', string>
+		config: {
+			seconds: number
+			leading: number
+			total: number
+			addresses: number
+			factory: string
+			caller: string
+			quick: boolean
+		}
+		contracts: Record<
+			string,
+			{
+				initCode: string
+				initCodeHash: string
+				deployment: Record<'salt' | 'address' | 'rarity', string>
+			}
+		>
 	}
 > => {
 	create2()
@@ -112,9 +127,15 @@ const mine = async (contract: Contract): Promise<void> => {
 
 		// ? Check if the initCodeHash is already in the addresses.json file and has a matching address.
 		if (force == false) {
-			const hasOwnProperty = addresses.hasOwnProperty(contract.name)
-			const property = addresses[contract.name]
-			if (hasOwnProperty && property.initCodeHash == initCodeHash) {
+			const version = packageJson.version
+			const hasVersion = addresses.hasOwnProperty(version)
+			const hasContract =
+				hasVersion &&
+				addresses[version].contracts.hasOwnProperty(contract.name)
+			const property = hasContract
+				? addresses[version].contracts[contract.name]
+				: null
+			if (property && property.initCodeHash == initCodeHash) {
 				console.log(
 					`✨︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.`
 				)
@@ -156,7 +177,22 @@ const mine = async (contract: Contract): Promise<void> => {
 
 			const [salt, address, rarity] = results[0]
 
-			addresses[contract.name] = {
+			const version = packageJson.version
+			if (!addresses[version]) {
+				addresses[version] = {
+					config: {
+						seconds: crunchSeconds,
+						leading: crunchLeading,
+						total: crunchTotal,
+						addresses: crunchAddresses,
+						factory: factoryAddress,
+						caller: callerAddress,
+						quick: quick
+					},
+					contracts: {}
+				}
+			}
+			addresses[version].contracts[contract.name] = {
 				initCode,
 				initCodeHash: initCodeHash,
 				deployment: { salt, address, rarity }

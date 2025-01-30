@@ -73,8 +73,6 @@ contract PlugSocket is
         }
     }
 
-    uint256 a = 1;
-
     /**
      * See {PlugSocketInterface-plug}.
      */
