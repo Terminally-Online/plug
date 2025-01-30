@@ -428,8 +428,12 @@ export const Sentence: FC<SentenceProps> = ({
 				</div>
 			</Accordion>
 
-			{preview === false && actionIndex < plugActions.length - 1 && (
-				<div className="mx-auto h-2 w-[2px] bg-plug-green/5" />
+			{actionIndex < plugActions.length - 1 && (
+				<div className={cn("mx-auto h-2 w-[2px] ",
+					isValid && isComplete && !error
+						? "bg-plug-yellow hover:border-plug-yellow"
+						: "bg-plug-red hover:border-plug-red",
+				)} />
 			)}
 		</>
 	)

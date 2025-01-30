@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"solver/internal/actions"
 	"solver/internal/api"
 	"solver/internal/api/solver"
 	"solver/internal/cron"
@@ -20,13 +21,39 @@ func main() {
 
 	s := solver.New()
 
+	provider := actions.NewCachedOptionsProvider(&actions.DefaultOptionsProvider{})
+	actions.SetCachedOptionsProvider(provider)
+
+	actionsList := []string{
+		actions.ActionDeposit,
+		actions.ActionBorrow,
+		actions.ActionRedeem,
+		actions.ActionRedeemMax,
+		actions.ActionWithdraw,
+		actions.ActionWithdrawMax,
+		actions.ActionRepay,
+		actions.ActionHarvest,
+		actions.ActionTransfer,
+		actions.ActionTransferFrom,
+		actions.ActionApprove,
+		actions.ActionSwap,
+		actions.ActionRoute,
+		actions.ActionStake,
+		actions.ActionStakeMax,
+		actions.ActionBuy,
+		actions.ActionBid,
+		actions.ActionRenew,
+	}
+	provider.PreWarmCache(8453, actionsList)
+
 	var CronJobs = []struct {
 		Schedule string
 		Job      func()
 	}{
-		{"0 0 0 * * *", cron.AnonymousUsers},                     // At the start of every day
-		{"0 */5 * * * *", cron.CollectibleMetadata},              // Every 5 minutes
-		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }}, // Every 1 minute
+		{"0 0 0 * * *", cron.AnonymousUsers},                                   // At the start of every day
+		{"0 */5 * * * *", cron.CollectibleMetadata},                            // Every 5 minutes
+		{"0 */5 * * * *", func() { provider.PreWarmCache(8453, actionsList) }}, // Every 5 minutes
+		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},               // Every 1 minute
 	}
 
 	schedule := scheduler.New()

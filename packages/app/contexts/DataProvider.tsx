@@ -29,9 +29,11 @@ export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = 
 	})
 
 	api.solver.actions.schemas.useQuery(
+		// TODO: Needs to support the definition of multiple chain ids when we expand out.
 		{ chainId: 8453 },
 		{
-			onSuccess: data => setActions(data)
+			onSuccess: data => setActions(data),
+			refetchInterval: 5 * 60 * 1000
 		}
 	)
 

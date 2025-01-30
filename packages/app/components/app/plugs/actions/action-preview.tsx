@@ -15,7 +15,7 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 	actions = actions ?? plugActions
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col">
 			{actions.map((action, actionIndex) => (
 				<>
 					<Sentence
