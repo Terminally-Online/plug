@@ -240,7 +240,7 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := signature.LivePlugs{
+	message := signature.LivePlugs{
 		Plugs: signature.Plugs{
 			Socket: common.HexToAddress(req.From),
 			Plugs:  transactionsBatch,
@@ -248,6 +248,21 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 			Salt:   salt,
 		},
 		Signature: signedPlugsHash,
+	}
+
+	type IntentResponse struct {
+		Message     signature.LivePlugs   `json:"message"`
+		Transaction signature.Transaction `json:"transaction"`
+	}
+	response := IntentResponse{
+		Transaction: signature.Transaction{
+			From:  common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
+			To:    common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
+			Data:  []byte{},
+			Value: big.NewInt(0),
+			Gas:   big.NewInt(0),
+		},
+		Message: message,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
