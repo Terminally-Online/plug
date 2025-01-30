@@ -33,8 +33,9 @@ const prohibitedNameInclusions = [
 
 const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
 
-const MINUTE = 60 * 1000
-const POSITIONS_CACHE_TIME = 60 * MINUTE
+const SECOND = 1000
+// const MINUTE = 60 * second
+const POSITIONS_CACHE_TIME = 30 * SECOND
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
 	const response = await axios.get(
@@ -420,6 +421,7 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	// Socket: `0x612...49d-0x524...c3b`.
 	// ...
 	// This method while a bit less readable, it confirms that we only ever enable users
+	// p
 	// to retrieve collectibles for their own address as well as the address of their socket.
 	const id = `${socket.id}-${socketAddress}`
 	const cachedPositions = await db.positionCache.findUnique({
