@@ -23,11 +23,6 @@ const seedSockets = async () => {
 			avatar: "https://ipfs.io/ipfs/QmPSkQbBdbwHQXfXmCCvJ3kERftXuDpsj1GqZvFfQo9EYu"
 		},
 		{
-			address: "0xda70761A63d5D0DdE3bdE3b179126127Cccb44b3",
-			name: "reka.eth",
-			avatar: "https://cryptocoven.s3.amazonaws.com/7bd11d2655904bd6ae89e3fd6f16ab46.png"
-		},
-		{
 			address: "0x1ccb2945F1325e061b40Fe5b0B452f0E76fB7278",
 			name: "stacker.eth",
 			avatar: "https://ipfs.io/ipfs/bafkreicmlgnaxmknw7aumxfxxzysdhwqskjpemeejbijm75nnkk3nrn4xq"
