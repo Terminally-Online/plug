@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react"
 
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 
 import { api, RouterOutputs } from "@/server/client"
 
@@ -9,7 +9,7 @@ import { atomFamily, atomWithStorage } from "jotai/utils"
 
 type Balances = RouterOutputs["socket"]["balances"]
 
-const CACHE_DURATION = 5 * 60 * 1000
+const CACHE_DURATION = 30 * 1000
 
 const collectiblesFamily = atomFamily((address: string) =>
 	atomWithStorage<Balances["collectibles"]>(`plug.collectibles.${address}`, [])
@@ -27,7 +27,7 @@ const lastUpdateCacheFamily = atomFamily((address: string) =>
 const useFetchHoldings = (address: string) => {
 	const setCollectibles = useSetAtom(collectiblesFamily(address))
 	const setPositions = useSetAtom(positionsFamily(address))
-	const [lastUpdateCache, setLastUpdateCache] = useAtom(lastUpdateCacheFamily(address))
+	const setLastUpdateCache = useSetAtom(lastUpdateCacheFamily(address))
 
 	const updateCollectibles = useCallback(
 		(newCollectibles: Balances["collectibles"]) => {
@@ -95,7 +95,7 @@ export const useHoldings = (providedAddress?: string) => {
 
 	const collectibles = useAtomValue(collectiblesFamily(address))
 	const positions = useAtomValue(positionsFamily(address))
-
+	const lastUpdate = useAtomValue(lastUpdateCacheFamily(address))
 	return {
 		address,
 		collectibles,
@@ -103,6 +103,7 @@ export const useHoldings = (providedAddress?: string) => {
 		protocols: positions.protocols,
 		isLoading,
 		isSuccess,
-		refetchHoldings
+		refetchHoldings,
+		lastUpdate
 	}
 }
