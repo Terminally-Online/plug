@@ -1,6 +1,6 @@
 {
   "name": "@terminallyonline/plug-core",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "🔌 Plug <hello@onplug.io> (https://onplug.io)",
   "maintainers": [
     "🟠 CHANCE <chance@onplug.io> (https://onplug.io)"
@@ -25,7 +25,7 @@
     "build:ts": "pnpm tsup && pnpm build:format",
     "build:lint": "tsc",
     "build:readme": "pnpm tsx ./src/lib/scripts/readme.ts",
-    "build": "pnpm build:ts && pnpm build:contracts",
+    "build": "pnpm build:ts && pnpm build:contracts && pnpm build:readme",
     "hold-prebuild:mine:quick": "pnpm prebuild:etcher",
     "postbuild:mine": "pnpm prebuild:etcher && forge test && pnpm build:readme",
     "postbuild:mine:quick": "pnpm prebuild:etcher && forge test && pnpm build:readme",

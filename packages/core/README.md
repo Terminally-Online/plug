@@ -44,3 +44,9 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
    ├─ Plug.Socket.sol [256] — "0x0000000011A65597897563205669f9c46dEEE244"
    └─ Plug.sol [256] — "0x0000000021EAfaa2A0ADeec53B7E25F662920212"
 ```
+
+To mine new addresses run:
+
+```bash
+pnpm build:mine:quick --version v0.3.3
+```

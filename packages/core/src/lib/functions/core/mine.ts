@@ -8,6 +8,7 @@ import { Contract } from '@/src/lib/types'
 
 const efficientAddressesPath = 'create2crunch/efficient_addresses.txt'
 
+let version = "0.0.0"
 let crunchSeconds = 15
 let crunchLeading = 5
 let crunchTotal = 7
@@ -24,6 +25,9 @@ const args = process.argv.slice(2)
 args.forEach(arg => {
 	const [key, value] = arg.split('=')
 	switch (key) {
+		case '--version':
+			version = value
+			break
 		case '--seconds':
 			crunchSeconds = parseInt(value, 10)
 			break
@@ -127,7 +131,6 @@ const mine = async (contract: Contract): Promise<void> => {
 
 		// ? Check if the initCodeHash is already in the addresses.json file and has a matching address.
 		if (force == false) {
-			const version = packageJson.version
 			const hasVersion = addresses.hasOwnProperty(version)
 			const hasContract =
 				hasVersion &&
