@@ -58,8 +58,6 @@ export const SocketTokenList: FC<
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			<pre>{JSON.stringify(lastUpdate, null, 2)}</pre>
-
 			{isAnonymous === false && isColumn && tokens.length > 0 && (
 				<Search
 					className="mb-2"
