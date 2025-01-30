@@ -7,7 +7,8 @@
   ],
   "license": "BUSL-1.1",
   "scripts": {
-    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && cd $(git rev-parse --show-toplevel) && git submodule update --init --recursive || echo 'Skipping Git submodule update (not a Git repository)'",
+    "----prepare": "git rev-parse --git-dir > /dev/null 2>&1 && cd $(git rev-parse --show-toplevel) && git submodule update --init --recursive || echo 'Skipping Git submodule update (not a Git repository)'",
+    "prebuild:package": "pnpm build:lint && rm -rf ./dist",
     "prebuild:schema": "pnpm plug:schema",
     "prebuild:zod": "pnpm plug:zod",
     "prebuild:artifacts": "rm -rf artifacts/ && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23 && pnpm tsx src/lib/functions/core/artifacts.ts",
@@ -15,7 +16,6 @@
     "prebuild:mine": "pnpm prebuild:etcher",
     "prebuild:lint": "tsc --noEmit",
     "prebuild:format": "prettier --write .",
-    "prebuild:package": "pnpm build:lint && rm -rf ./dist",
     "prebuild": "run-s prebuild:*",
     "build:contracts": "forge fmt && pnpm prebuild:artifacts && pnpm wagmi generate",
     "build:forge": "forge fmt && forge build --out='artifacts' --contracts='./src/contracts' --optimize --optimizer-runs=10000 --use=0.8.23",
