@@ -13,7 +13,6 @@ import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
-import { api } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
@@ -70,14 +69,11 @@ export const Sentence: FC<SentenceProps> = ({
 
 	const parts = parsed
 		? parsed.template
-			// First split by input placeholders
 			.split(/(\{[^}]+\})/g)
-			// Then split each text part by spaces while preserving spaces
 			.map(part => {
 				if (part.match(/\{[^}]+\}/)) return [part]
 				return part.split(/(\s+)/g)
 			})
-			// Flatten the array
 			.flat()
 		: []
 
@@ -194,7 +190,7 @@ export const Sentence: FC<SentenceProps> = ({
 									const isValid = !isEmpty && !inputError && !error
 
 									return (
-										<span key={partIndex}>
+										<span key={`${actionIndex}-${inputIndex}-${partIndex}`}>
 											<button
 												className={cn(
 													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
@@ -260,7 +256,7 @@ export const Sentence: FC<SentenceProps> = ({
 												hasChildrenPadding={false}
 												scrollBehavior="partial"
 											>
-												<div className="flex flex-col gap-2 overflow-y-auto px-6">
+												{column.frame === `${actionIndex}-${inputIndex}` ? <><div className="flex flex-col gap-2 overflow-y-auto px-6">
 													{!isReady && (
 														<div className="mb-2 flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
 															<p className="mx-auto max-w-[380px]">
@@ -374,37 +370,39 @@ export const Sentence: FC<SentenceProps> = ({
 														</>
 													)}
 												</div>
-												<div className="mt-auto bg-white">
-													<div className="relative">
-														{options && options.length > 0 && (
-															<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
-														)}
-														<div className="mb-4 px-6">
-															<Button
-																variant={
-																	!isEmpty && !error ? "primary" : "primaryDisabled"
-																}
-																className="w-full py-4"
-																onClick={() =>
-																	frame(
-																		inputIndex + 1 < parsed.inputs.length
-																			? `${actionIndex}-${inputIndex + 1}`
-																			: undefined
-																	)
-																}
-																disabled={isEmpty || error}
-															>
-																{isOptionBased && isEmpty
-																	? "Choose option"
-																	: isEmpty || error
-																		? inputError?.message || "Enter value"
-																		: parsed.inputs.length - 1 > inputIndex
-																			? "Next"
-																			: "Done"}
-															</Button>
+													<div className="mt-auto bg-white">
+														<div className="relative">
+															{options && options.length > 0 && (
+																<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
+															)}
+															<div className="mb-4 px-6">
+																<Button
+																	variant={
+																		!isEmpty && !error ? "primary" : "primaryDisabled"
+																	}
+																	className="w-full py-4"
+																	onClick={() =>
+																		frame(
+																			inputIndex + 1 < parsed.inputs.length
+																				? `${actionIndex}-${inputIndex + 1}`
+																				: undefined
+																		)
+																	}
+																	disabled={isEmpty || error}
+																>
+																	{isOptionBased && isEmpty
+																		? "Choose option"
+																		: isEmpty || error
+																			? inputError?.message || "Enter value"
+																			: parsed.inputs.length - 1 > inputIndex
+																				? "Next"
+																				: "Done"}
+																</Button>
+															</div>
 														</div>
 													</div>
-												</div>
+												</>
+													: <></>}
 											</Frame>
 										</span>
 									)
