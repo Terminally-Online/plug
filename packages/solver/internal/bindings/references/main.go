@@ -33,6 +33,16 @@ var (
 				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
 				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
 			},
+			"euler": {
+				"eVaultImplementation": "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
+  				"eulerEarnFactory": "0x9a20d3C0c283646e9701a049a2f8C152Bc1e3427",
+  				"eulerEarnImplementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
+  				"evc": "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
+				"governedPerspective": "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
+				"accountLens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
+  				"utilsLens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
+  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
+			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
 				"distributor": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb",
@@ -69,12 +79,15 @@ var (
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
 			},
 			"euler": {
-				"balanceTracker": "0x029fDEe85BEdB0553D6fdc538546586641DD7438",
-				"eVaultFactory": "0x7F321498A801A191a93C840750ed637149dDf8D0",
 				"eVaultImplementation": "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
 				"eulerEarnFactory": "0x72bbDB652F2AEC9056115644EfCcDd1986F51f15",
 				"eulerEarnImplementation": "0x6104c0F2a7750F1b143DAB49752e19DA43dec34A",
 				"evc": "0x5301c7dD20bD945D2013b48ed0DEE3A284ca8989",
+				"governedPerspective": "0xafC8545c49DF2c8216305922D9753Bf60bf8c14A",
+				"accountLens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
+				"eulerEarnVaultLens": "0xCaCc7faBE1510C6e4465BA078eAd407052dD0eBC",
+				"utilsLens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
+  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090"
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",

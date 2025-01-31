@@ -113,6 +113,13 @@ Utilizes collateral token shares to repay the debt.
 
 Utilizes the Util lens to get the APY of a vault.
 
+```computeAPYs(uint256 borrowSPY, uint256 cash, uint256 borrows, uint256 interestFee) returns (uint256 borrowAPY, uint256 supplyAPY) {}```
+
+- borrowSPY -> ?
+- cash -> LiabilityVault.cash()
+- borrows -> LiabilityVault.totalBorrows()
+- interestFee -> LiabilityVault.interestFee()
+
 ```javascript [sentence]
     Get the APY of {0<vault:address>}
 ```
