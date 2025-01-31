@@ -60,8 +60,6 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error)
 		time.Sleep(5 * time.Second)
 	}
 
-	fmt.Println("Got all the vault infos")
-
 	return vaultInfos, nil
 }
 
