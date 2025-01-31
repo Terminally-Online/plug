@@ -44,20 +44,15 @@ To get the address of the vaults you will utilize ``
 
 | Name                | Type       | Implemented | Notes |
 | :----------------   | :--------- | :---------: | :---- |
-| Boost               | Action     |             |       |
 | Supply              | Action     |             |       |
-| Repay               | Action     |             |       |
-| Repay With Shares   | Action     |             |       |
 | Withdraw            | Action     |             |       |
-| Borrow USDC         | Action     |             |       |
-| Return USDC         | Action     |             |       |
+| Withdraw All        | Action     |             |       |
+| Borrow              | Action     |             |       |
+| Repay               | Action     |             |       |
+| Repay Max           | Action     |             |       |
 | APY                 | Constraint |             |       |
 | Health Factor       | Constraint |             |       |
 | Time to Liquidation | Constraint |             |       |
-
-### Boost (?)
-
-wtf is boost
 
 ### Supply
 
@@ -100,7 +95,7 @@ Owner is the address of the user who has the tokens, receiver is the address of 
     Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}
 ```
 
-### Repay With Shares
+### Repay Max (With Shares)
 
 Utilizes collateral token shares to repay the debt.
 ```function repayWithShares(uint256 amount, address receiver) returns (uint256 shares, uint256 debt) {}```
@@ -121,21 +116,49 @@ Utilizes the Util lens to get the APY of a vault.
 - interestFee -> LiabilityVault.interestFee()
 
 ```javascript [sentence]
-    Get the APY of {0<vault:address>}
+    "{0<action:int8>} APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:float>}%."
 ```
 
 ### Health Factor
 
+I believe this can be calculated by getting the base value of the asset being borrowed vs the CollateralValueLiquidation
+
+```javascript [sentence]
+    "Health factor in {0<vault:string>} is {1<operator:int8>} than {2<threshold:float>}."
+```
 
 
 ### Time to Liquidation
 
 Util lens contract read
 
+To get the liabilityValue I believe we have to make a call to the oracle lens or oracle perspective contracts.
+It's also currently unclear to me how we know what collaterals are being used in this specific instance with the way that euler uses virtual accounts instead of the base address in some cases.
+
 ```function calculateTimeToLiquidation(address liabilityVault,uint256 liabilityValue,address[] memory collaterals,uint256[] memory collateralValues) external view returns (int256)```
 
-Notes: How do we get what collaterals they're using and their values?
-
 ```javascript [sentence]
-    Get the time to liquidation of {0<vault:address>}
+    Time to liquidation of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>}
 ```
+
+
+TODO:
+
+- reads
+  - figure out multicall - @chance help ? - pricy api
+  - Implement reads and test against my position 
+  - health factor calculation 
+  - APY read needs BorrowSPY 
+  - time to liquidation  
+    - needs LiabilityValue
+    - collateral question
+
+
+- options
+  - dependent on reads
+
+- handler
+  - unmarshall the inputs
+
+- plugs
+  - put it all together
