@@ -1,6 +1,6 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useState } from "react"
 
-import { Hash, X } from "lucide-react"
+import { Hash, SearchIcon, X } from "lucide-react"
 
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
@@ -66,6 +66,8 @@ export const Sentence: FC<SentenceProps> = ({
 		actions: { setValue },
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
+
+	const [search, setSearch] = useState("")
 
 	const parts = parsed
 		? parsed.template
@@ -183,6 +185,12 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
+									const filteredOptions = options?.filter(option =>
+										option.label.toLowerCase().includes(search.toLowerCase()) ||
+										option.name?.toLowerCase().includes(search.toLowerCase()) ||
+										option.value.toLowerCase().includes(search.toLowerCase())
+									) ?? []
+
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 										input.dependentOn === undefined
@@ -292,10 +300,22 @@ export const Sentence: FC<SentenceProps> = ({
 														/>
 													)}
 
+
+
 													{isReady && isOptionBased && (
 														<>
+															<Search
+																className="mb-2"
+																icon={<SearchIcon size={14} />}
+																placeholder="Search options"
+																search={search}
+																handleSearch={setSearch}
+																focus
+																clear
+															/>
+
 															<div className="mb-4 flex w-full flex-col gap-2">
-																{options.map((option, optionIndex) => (
+																{filteredOptions.map((option, optionIndex) => (
 																	<div
 																		key={`${index}-${actionIndex}-${optionIndex}`}
 																		className="flex flex-row items-center gap-4"
