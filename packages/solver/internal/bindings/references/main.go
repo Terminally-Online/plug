@@ -38,9 +38,9 @@ var (
   				"euler_earn_implementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
   				"evc": "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
 				"governed_perspective": "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
-				"account_lens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
-  				"utils_lens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
-  				"vault_lens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
+				"account_lens": "0x88062031730136292902Cd4f6f07fDB224E60E9F",
+  				"utils_lens": "0x1Ad6eDF948B037a9364607f9e3c1e640166Ee539",
+  				"vault_lens": "0x75AAf54F12784935128306BEe2520de55890a29A",
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
