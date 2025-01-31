@@ -34,13 +34,13 @@ var (
 				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
 			},
 			"euler": {
-				"eVaultImplementation": "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
-  				"eulerEarnImplementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
+				"evault_implementation": "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
+  				"euler_earn_implementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
   				"evc": "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
-				"governedPerspective": "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
-				"accountLens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
-  				"utilsLens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
-  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
+				"governed_perspective": "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
+				"account_lens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
+  				"utils_lens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
+  				"vault_lens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -78,13 +78,13 @@ var (
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
 			},
 			"euler": {
-				"eVaultImplementation": "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
-				"eulerEarnImplementation": "0x6104c0F2a7750F1b143DAB49752e19DA43dec34A",
+				"evault_implementation": "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
+				"euler_earn_implementation": "0x6104c0F2a7750F1b143DAB49752e19DA43dec34A",
 				"evc": "0x5301c7dD20bD945D2013b48ed0DEE3A284ca8989",
-				"governedPerspective": "0xafC8545c49DF2c8216305922D9753Bf60bf8c14A",
-				"accountLens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
-				"utilsLens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
-  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
+				"governed_perspective": "0xafC8545c49DF2c8216305922D9753Bf60bf8c14A",
+				"account_lens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
+				"utils_lens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
+  				"vault_lens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -117,6 +117,8 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 		return err
 	}
 	defer resp.Body.Close()
+
+	fmt.Printf("Getting source for %s/%s\n", folderName, contractName)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

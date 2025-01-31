@@ -17,23 +17,33 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vaultLens.VaultInfoFull, error) 
 		return nil, err
 	}
 
+	fmt.Printf("Got the provider")
+
 	governedPerspective, err := euler_governedPerspective.NewEulerGovernedPerspective(
 		common.HexToAddress(references.Networks[chainId].References["euler"]["governed_perspective"]),
 		provider,
 	)
+
+	fmt.Printf("Got the governed perspective")
 	if err != nil {
 		return nil, err
 	}
 
 	vaultAddresses, err := governedPerspective.EulerGovernedPerspectiveCaller.VerifiedArray(nil)
 	if err != nil {
+		fmt.Printf("Error getting vault addresses")
 		return nil, err
 	}
+
+	fmt.Printf("Got the vault addresses")
 
 	vaultLens, err := euler_vaultLens.NewEulerVaultLens(
 		common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"]),
 		provider,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	vaultInfos := make([]euler_vaultLens.VaultInfoFull, len(vaultAddresses))
 	for i, vaultAddr := range vaultAddresses {
@@ -51,6 +61,7 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vaultLens.VaultInfoFull, error) 
 }
 
 func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vaultLens.VaultInfoFull, error) {
+	return nil, nil
 	// provider, err := utils.GetProvider(chainId)
 	// if err != nil {
 	// 	return nil, err
