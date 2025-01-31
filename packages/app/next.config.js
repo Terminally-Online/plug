@@ -2,6 +2,10 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 
 const remotePatterns = [
 	{
+		protocol: "http",
+		hostname: "localhost"
+	},
+	{
 		protocol: "https",
 		hostname: "assets.smold.app"
 	},
