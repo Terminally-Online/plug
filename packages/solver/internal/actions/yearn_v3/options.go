@@ -164,8 +164,11 @@ func GetVaultOptions(chainId uint64) ([]actions.Option, error) {
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
-			Info:  fmt.Sprintf("%.2f%%", vault.APR.ForwardAPR.NetAPR*100+vault.Extra.StakingRewardsAPR*100),
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Address),
+			Info: actions.OptionInfo{
+				Label: "APR",
+				Value: fmt.Sprintf("%.2f%%", vault.APR.ForwardAPR.NetAPR*100+vault.Extra.StakingRewardsAPR*100),
+			},
+			Icon: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Address),
 		})
 	}
 

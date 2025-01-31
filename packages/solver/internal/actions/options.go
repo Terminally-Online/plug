@@ -11,12 +11,17 @@ const (
 	ActionBridge  = "bridge"
 )
 
-type Option struct {
+type OptionInfo struct {
 	Label string `json:"label"`
-	Name  string `json:"name"`
 	Value string `json:"value"`
-	Icon  string `json:"icon,omitempty"`
-	Info  string `json:"info,omitempty"`
+}
+
+type Option struct {
+	Label string     `json:"label"`
+	Name  string     `json:"name"`
+	Value string     `json:"value"`
+	Icon  string     `json:"icon,omitempty"`
+	Info  OptionInfo `json:"info,omitempty"`
 }
 
 type Options struct {

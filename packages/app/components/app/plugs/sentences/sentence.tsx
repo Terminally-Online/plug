@@ -5,7 +5,6 @@ import { Hash, SearchIcon, X } from "lucide-react"
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
 import { Frame } from "@/components/app/frames/base"
-import { Checkbox } from "@/components/app/inputs/checkbox"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Image } from "@/components/app/utils/image"
@@ -305,7 +304,6 @@ export const Sentence: FC<SentenceProps> = ({
 													{isReady && isOptionBased && (
 														<>
 															<Search
-																className="mb-2"
 																icon={<SearchIcon size={14} />}
 																placeholder="Search options"
 																search={search}
@@ -316,75 +314,52 @@ export const Sentence: FC<SentenceProps> = ({
 
 															<div className="mb-4 flex w-full flex-col gap-2">
 																{filteredOptions.map((option, optionIndex) => (
-																	<div
+																	<Accordion
 																		key={`${index}-${actionIndex}-${optionIndex}`}
-																		className="flex flex-row items-center gap-4"
-																	>
-																		<Checkbox
-																			checked={option.value === value?.value}
-																			handleChange={() =>
-																				handleValue(
-																					input.index,
-																					option.value === value?.value
-																						? ""
-																						: option.value
-																				)
-																			}
-																		/>
-
-																		<button
-																			key={`${index}-${actionIndex}-${optionIndex}`}
-																			className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
-																			onClick={() =>
-																				handleValue(
-																					input.index,
-																					option.value === value?.value
-																						? ""
-																						: option.value
-																				)
-																			}
-																		>
+																		onExpand={() =>
+																			handleValue(
+																				input.index,
+																				option.value === value?.value
+																					? ""
+																					: option.value
+																			)
+																		}>
+																		<div className="flex flex-row items-center gap-4">
 																			{option.icon && (
-																				<div className="min-w-6">
-																					<div className="flex items-center space-x-2">
-																						{option.icon
-																							.split("%7C")
-																							.map(icon =>
-																								decodeURIComponent(icon)
-																							)
-																							.map((icon, index) => (
-																								<div
-																									key={index}
-																									className="flex items-center"
-																								>
-																									<TokenImage
-																										logo={icon}
-																										symbol={
-																											option.label
-																										}
-																										size="xs"
-																										blur={false}
-																										className={cn(
-																											index > 0
-																												? "-ml-4"
-																												: ""
-																										)}
-																									/>
-																								</div>
-																							))}
-																					</div>
+																				<div className="flex items-center space-x-2">
+																					{option.icon
+																						.split("%7C")
+																						.map(icon =>
+																							decodeURIComponent(icon)
+																						)
+																						.map((icon, tokenIndex) => (
+																							<TokenImage
+																								key={tokenIndex}
+																								logo={icon}
+																								symbol={
+																									option.label
+																								}
+																								className={cn(
+																									tokenIndex > 0
+																										? "-ml-24"
+																										: ""
+																								)}
+																							/>
+																						))}
 																				</div>
 																			)}
-																			<span className="truncate">
-																				{option.name}
-																			</span>
-																			{option.info && (
-																				<span className="ml-auto tabular-nums opacity-40">
-																					<Counter count={option.info} />
-																				</span>
-																			)}
-																		</button>
-																	</div>
+																			<div className="flex flex-col w-full">
+																				<p className="flex flex-row justify-between gap-2 w-full truncate">
+																					{option.name}
+																					{option.info && <span className="ml-auto tabular-nums"><Counter count={option.info.value} /></span>}
+																				</p>
+																				<p className="tabular-nums opacity-40 text-sm flex flex-row gap-2 justify-between">
+																					{option.label}
+																					{option.info && <span className="ml-auto tabular-nums">{option.info.label}</span>}
+																				</p>
+																			</div>
+																		</div>
+																	</Accordion>
 																))}
 															</div>
 														</>

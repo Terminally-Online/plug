@@ -108,7 +108,10 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 			Name:  vault.Name,
 			Value: assetAddress,
 			Icon:  vault.Metadata.Image,
-			Info:  fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
+			Info: actions.OptionInfo{
+				Label: "Net APY",
+				Value: fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
+			},
 		})
 	}
 
@@ -179,7 +182,10 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
 				Icon:  market.Metadata.Icon,
-				Info:  fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
+				Info:  actions.OptionInfo{
+					Label: "Supply APY",
+					Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
+				},
 			},
 		)
 	}
@@ -214,7 +220,7 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
 			Icon:  market.Metadata.Icon,
-			Info:  fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100),
+			Info:  actions.OptionInfo{ Label: "Borrow APY", Value: fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100) },
 		})
 	}
 
@@ -255,7 +261,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
 				Icon:  market.Metadata.Icon,
-				Info:  fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
+				Info:  actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
 		)
 	}
