@@ -35,7 +35,6 @@ var (
 			},
 			"euler": {
 				"eVaultImplementation": "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
-  				"eulerEarnFactory": "0x9a20d3C0c283646e9701a049a2f8C152Bc1e3427",
   				"eulerEarnImplementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
   				"evc": "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
 				"governedPerspective": "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
@@ -80,14 +79,12 @@ var (
 			},
 			"euler": {
 				"eVaultImplementation": "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
-				"eulerEarnFactory": "0x72bbDB652F2AEC9056115644EfCcDd1986F51f15",
 				"eulerEarnImplementation": "0x6104c0F2a7750F1b143DAB49752e19DA43dec34A",
 				"evc": "0x5301c7dD20bD945D2013b48ed0DEE3A284ca8989",
 				"governedPerspective": "0xafC8545c49DF2c8216305922D9753Bf60bf8c14A",
 				"accountLens": "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
-				"eulerEarnVaultLens": "0xCaCc7faBE1510C6e4465BA078eAd407052dD0eBC",
 				"utilsLens": "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
-  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090"
+  				"vaultLens": "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -136,6 +133,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	}
 
 	if response.Message == "NOTOK" {
+		fmt.Printf("Failed to get source for %s/%s: %s.\n", folderName, contractName, response.Result[0])
 		result := string(response.Result[0])
 		shouldRetry := true
 		for _, termination := range terminateResults {
@@ -224,6 +222,8 @@ func GenerateReferences() error {
 		for folderName, contracts := range network.References {
 			for contractName, address := range contracts {
 				key := fmt.Sprintf("%s:%s", folderName, contractName)
+
+				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, network.Explorer)
 
 				if processed[key] {
 					fmt.Printf("Skipping %s/%s on %s - already processed\n",
