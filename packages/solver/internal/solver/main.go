@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -13,7 +14,9 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
+	"solver/internal/solver/simulation"
 	"solver/internal/utils"
 	"time"
 
@@ -24,6 +27,7 @@ import (
 type Solver struct {
 	IsKilled  bool
 	protocols map[string]actions.BaseProtocolHandler
+	simulator simulation.Simulator
 }
 
 func New() Solver {
@@ -37,6 +41,7 @@ func New() Solver {
 			actions.ProtocolNouns:   nouns.New(),
 			actions.ProtocolMorpho:  morpho.New(),
 		},
+		simulator: simulation.New(),
 	}
 }
 
@@ -111,7 +116,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		return nil, err
 	}
 
-	for i, _ := range transactions {
+	for i := range transactions {
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
 		}
@@ -232,13 +237,44 @@ func (s *Solver) GetPlugs(chainId uint64, from string, transactions []signature.
 	}, nil
 }
 
-func (s *Solver) GetSimulation(id string, plugs *signature.LivePlugs) (SimulationRequest, error) {
-	// NOTE: This is where we will pick back up for simulation integration.
-	return SimulationRequest{
-		Id:          id,
-		Status:      "success",
-		GasEstimate: 100000,
+func (s *Solver) GetSimulationRequest(
+	executionId string, chainId uint64, plugs *signature.LivePlugs,
+) (simulation.SimulationRequest, error) {
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
+	if err != nil {
+		return simulation.SimulationRequest{}, utils.ErrABI("PlugRouter")
+	}
+	plugCalldata, err := routerAbi.Pack("plug", plugs)
+	if err != nil {
+		return simulation.SimulationRequest{}, utils.ErrTransaction(err.Error())
+	}
+	return simulation.SimulationRequest{
+		ExecutionId: executionId,
+		ChainId:     chainId,
+		From:        common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		To:          common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
+		Data:        plugCalldata,
+		Value:       big.NewInt(0),
+		ABI:         plug_router.PlugRouterMetaData.ABI,
 	}, nil
+}
+
+func (s *Solver) GetSimulation(
+	executionId string, chainId uint64, plugs *signature.LivePlugs,
+) (
+	simulation.SimulationRequest, simulation.SimulationResponse, error,
+) {
+	simulationRequest, err := s.GetSimulationRequest(executionId, chainId, plugs)
+	if err != nil {
+		return simulation.SimulationRequest{}, simulation.SimulationResponse{}, err
+	}
+
+	simulationResponse, err := s.simulator.Simulate(simulationRequest)
+	if err != nil {
+		return simulation.SimulationRequest{}, simulation.SimulationResponse{}, err
+	}
+
+	return simulationRequest, *simulationResponse, nil
 }
 
 func (s *Solver) GetRun(transactions []signature.Plug) error {
@@ -246,7 +282,7 @@ func (s *Solver) GetRun(transactions []signature.Plug) error {
 	return nil
 }
 
-func (s *Solver) PostSimulations(simulations []SimulationRequest) error {
+func (s *Solver) PostSimulations(simulations []simulation.SimulationResponse) error {
 	response := SimulationsRequest{
 		Json: simulations,
 	}
@@ -263,7 +299,7 @@ func (s *Solver) PostSimulations(simulations []SimulationRequest) error {
 		},
 		nil,
 		bytes.NewReader(body),
-		SimulationsResponse{},
+		SimulationRequest{},
 	)
 	if err != nil {
 		return err

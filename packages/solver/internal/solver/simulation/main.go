@@ -115,6 +115,7 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	}
 
 	resp := &SimulationResponse{
+		ExecutionId: req.ExecutionId,
 		Success: trace.Error == "",
 		Data: OutputData{
 			Raw: trace.Output,
@@ -153,13 +154,13 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 			return resp, nil
 		}
 
-		decoded, err := method.Outputs.Unpack(trace.Output)
-		if err != nil {
-			resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
-			return resp, nil
-		}
-
-		resp.Data.Decoded = decoded
+		// decoded, err := method.Outputs.Unpack(trace.Output)
+		// if err != nil {
+		// 	resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
+		// 	return resp, nil
+		// }
+		//
+		// resp.Data.Decoded = decoded
 	}
 
 	return resp, nil

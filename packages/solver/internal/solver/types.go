@@ -1,5 +1,7 @@
 package solver
 
+import "solver/internal/solver/simulation"
+
 type SimulationRequest struct {
 	Id          string   `json:"id"`
 	Status      string   `json:"status"`
@@ -9,7 +11,7 @@ type SimulationRequest struct {
 }
 
 type SimulationsRequest struct {
-	Json []SimulationRequest `json:"json"`
+	Json []simulation.SimulationResponse `json:"json"`
 }
 
 type SimulationsResponse struct {

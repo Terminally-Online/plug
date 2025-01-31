@@ -3,20 +3,15 @@ package solver
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
-	"os"
 	"solver/internal/actions"
 	"solver/internal/solver/signature"
+	"solver/internal/solver/simulation"
 	"solver/internal/utils"
-	"time"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type IntentRequest struct {
+	Id      string            `json:"id"`
 	ChainId uint64            `json:"chainId"`
 	From    string            `json:"from"`
 	Inputs  []json.RawMessage `json:"inputs"`
@@ -193,76 +188,27 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate the encoded solver value so that the smart contract can decode it.
-	// Note: Used in Solidity with:
-	// 		body: `(uint48 expiration, address solver))`
-	// 		encode: `abi.encode(uint48(0), msg.sender)`
-	// 		decode: `abi.decode(data, (uint48, address))`
-	solverArguments := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 48}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}
-	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
-
-	solver, err := solverArguments.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
-	if err != nil {
-		utils.MakeHttpError(w, "failed to pack solver: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	saltArguments := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 96}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}
-	salt, err := saltArguments.Pack(
-		big.NewInt(time.Now().Unix()),
-		common.HexToAddress(req.From),
-		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
-		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
-	)
-	if err != nil {
-		utils.MakeHttpError(w, "failed to pack salt: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	privateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	message, err := h.Solver.GetPlugs(req.ChainId, req.From, transactionsBatch)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	plugsHash := crypto.Keccak256Hash([]byte(req.From), []byte(salt), []byte(solver))
-	signedPlugsHash, err := crypto.Sign(plugsHash.Bytes(), privateKey)
+	simulationRequest, simulationResponse, err := h.Solver.GetSimulation("1", req.ChainId, message)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	message := signature.LivePlugs{
-		Plugs: signature.Plugs{
-			Socket: common.HexToAddress(req.From),
-			Plugs:  transactionsBatch,
-			Solver: solver,
-			Salt:   salt,
-		},
-		Signature: signedPlugsHash,
 	}
 
 	type IntentResponse struct {
-		Message     signature.LivePlugs   `json:"message"`
-		Transaction signature.Transaction `json:"transaction"`
+		Message     signature.LivePlugs           `json:"message"`
+		Transaction simulation.SimulationRequest  `json:"transaction"`
+		Simulation  simulation.SimulationResponse `json:"simulation"`
 	}
 	response := IntentResponse{
-		Transaction: signature.Transaction{
-			From:  common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
-			To:    common.HexToAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
-			Data:  []byte{},
-			Value: big.NewInt(0),
-			Gas:   big.NewInt(0),
-		},
-		Message: message,
+		Message:     *message,
+		Transaction: simulationRequest,
+		Simulation:  simulationResponse,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
