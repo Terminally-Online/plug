@@ -2,7 +2,9 @@ package euler
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/euler_governed_perspective"
+	"solver/bindings/euler_utils_lens"
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
@@ -142,3 +144,35 @@ func GetVault(address string, chainId uint64) (euler_vault_lens.VaultInfoFull, e
 	return euler_vault_lens.VaultInfoFull{}, fmt.Errorf("vault not found for address: %s", address)
 }
 
+func GetVaultApy(address string, chainId uint64) (borrowApy *big.Int, supplyApy *big.Int, err error) {
+	provider, err := utils.GetProvider(chainId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	vault, err := GetVault(address, chainId)
+	if err != nil {
+		return nil, nil, err
+	}
+	
+	utilsLens, err := euler_utils_lens.NewEulerUtilsLens(
+		common.HexToAddress(references.Networks[chainId].References["euler"]["util_lens"]),
+		provider,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	apy, err := utilsLens.ComputeAPYs(
+		&bind.CallOpts{},
+		new(big.Int).Sub(vault.BorrowCap, vault.TotalBorrowed),
+		vault.TotalCash,
+		vault.TotalBorrowed,
+		vault.InterestFee,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return apy.BorrowAPY, apy.SupplyAPY, nil
+}
