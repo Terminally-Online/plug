@@ -140,7 +140,7 @@ export const Sentence: FC<SentenceProps> = ({
 								/>
 							</div>
 
-							<div className="flex flex-wrap items-center">
+							<div className="flex flex-wrap items-center gap-y-1">
 								{parts.map((part, partIndex) => {
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
@@ -323,7 +323,13 @@ export const Sentence: FC<SentenceProps> = ({
 																					? ""
 																					: option.value
 																			)
-																		}>
+																		}
+																		className="relative"
+																	>
+																		{option.value === value?.value &&
+																			<div className="bg-plug-yellow h-24 w-24 absolute right-0 bottom-0 filter blur-[80px]" />
+																		}
+
 																		<div className="flex flex-row items-center gap-4">
 																			{option.icon && (
 																				<div className="flex items-center space-x-2">
