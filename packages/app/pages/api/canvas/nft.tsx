@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { NextRequest } from "next/server"
 import type { CSSProperties } from "react"
 
@@ -74,7 +75,7 @@ export default async function handler(req: NextRequest) {
 				>
 					{isRare && <div style={foilOverlay} />}
 					<div
-						tw="flex w-full h-[68vh] rounded-[40px] relative p-90"
+						tw="flex w-full h-[70vh] rounded-[40px] relative p-90"
 						style={{
 							background: isRare
 								? `linear-gradient(45deg, #38584319, ${color}19, #79BE9119)`
@@ -84,13 +85,7 @@ export default async function handler(req: NextRequest) {
 						<img tw="mx-auto h-full opacity-60" src={`http://localhost:3000/dna.png`} alt="Dna image" />
 					</div>
 
-					<div tw="mt-auto flex relative h-max w-full">
-						<img
-							tw="w-20 h-20 rounded-[18px] mr-8 mt-14"
-							src={`http://localhost:3000/protocols/plug.png`}
-							alt="Plug logo"
-						/>
-
+					<div tw="mt-auto flex relative h-max w-full mb-4">
 						<h1
 							tw="text-[120px] font-black whitespace-wrap w-[60%]"
 							style={
@@ -115,7 +110,7 @@ export default async function handler(req: NextRequest) {
 			),
 			{
 				width: 1000,
-				height: 1400,
+				height: 1600,
 				fonts: [
 					{
 						name: "Satoshi",
