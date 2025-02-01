@@ -33,33 +33,33 @@ export default async function handler(req: NextRequest) {
 	try {
 		const { searchParams } = req.nextUrl
 
-		const number = searchParams.get("number") ? parseInt(searchParams.get("number") ?? "0") : Math.floor(Math.random() * 100000)
+		const number = searchParams.get("number")
+			? parseInt(searchParams.get("number") ?? "0")
+			: Math.floor(Math.random() * 100000)
 		const isRare = number % 100 === 0
 		const colorKeys = Object.keys(colors)
 		const colorIndex = Math.abs(Math.floor(Math.sin(number) * colorKeys.length))
 		const colorKey = colorKeys[colorIndex]
 		const color = colors[colorKey as keyof typeof colors]
-		const background = isRare
-			? `linear-gradient(to top, #FDFFF7, #FDFFF7, #FDFFF7, ${color}, ${color})`
-			: "#FDFFF7"
+		const background = isRare ? `linear-gradient(to top, #FDFFF7, #FDFFF7, #FDFFF7, ${color}, ${color})` : "#FDFFF7"
 
 		const foilOverlay: CSSProperties = isRare
 			? {
-				background: `linear-gradient(135deg, 
+					background: `linear-gradient(135deg, 
 				transparent 0%,
 				rgba(254,255,247,0.4) 35%,
 				rgba(254,255,247,0.7) 45%,
 				${color}33 50%,
 				transparent 65%
 			)`,
-				position: "absolute",
-				top: 0,
-				left: 0,
-				right: 0,
-				bottom: 0,
-				mixBlendMode: "soft-light" as const,
-				filter: "blur(1px)"
-			}
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					mixBlendMode: "soft-light" as const,
+					filter: "blur(1px)"
+				}
 			: {}
 
 		return new ImageResponse(
@@ -78,10 +78,10 @@ export default async function handler(req: NextRequest) {
 						style={{
 							background: isRare
 								? `linear-gradient(45deg, #38584319, ${color}19, #79BE9119)`
-								: "linear-gradient(to bottom, #38584319, #79BE9119)",
+								: "linear-gradient(to bottom, #38584319, #79BE9119)"
 						}}
 					>
-						<img tw="w-full h-full opacity-60" src={`http://localhost:3000/dna.png`} alt="Dna image" />
+						<img tw="mx-auto h-full opacity-60" src={`http://localhost:3000/dna.png`} alt="Dna image" />
 					</div>
 
 					<div tw="mt-auto flex relative h-max w-full">
@@ -96,12 +96,12 @@ export default async function handler(req: NextRequest) {
 							style={
 								isRare
 									? {
-										background: `linear-gradient(45deg, #385842, ${color}, #385842)`,
-										backgroundClip: "text",
-										WebkitBackgroundClip: "text",
-										WebkitTextFillColor: "transparent",
-										textShadow: `0 0 20px ${color}33`
-									}
+											background: `linear-gradient(45deg, #385842, ${color}, #385842)`,
+											backgroundClip: "text",
+											WebkitBackgroundClip: "text",
+											WebkitTextFillColor: "transparent",
+											textShadow: `0 0 20px ${color}33`
+										}
 									: {}
 							}
 						>
