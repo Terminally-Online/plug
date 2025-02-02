@@ -25,6 +25,8 @@ import { MobileConsole } from "./mobile";
 
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
+	const { md } = useMediaQuery()
+	const { handle } = useColumnStore()
 
 	useSubscriptions()
 	useSession({
@@ -39,10 +41,19 @@ export const ConsolePage = () => {
 	})
 
 	const router = useRouter()
-	const { md } = useMediaQuery()
 	const { socket } = useSocket()
-	const { columns, handle } = useColumnStore()
+	const { columns } = useColumnStore()
 	const { plugs } = usePlugStore()
+
+	// Handle layout changes between mobile and desktop
+	useEffect(() => {
+		if (!md) {
+			handle.navigate({
+				index: COLUMNS.MOBILE_INDEX,
+				key: COLUMNS.KEYS.HOME
+			})
+		}
+	}, [md, handle])
 
 	useEffect(() => {
 		if (!socket || !socket.identity) return
