@@ -28,3 +28,5 @@ export const sunGradientStyle = {
 	WebkitBackgroundClip: "text",
 	WebkitTextFillColor: "transparent"
 }
+
+export const NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
