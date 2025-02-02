@@ -48,5 +48,5 @@ All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Fac
 To mine new addresses run:
 
 ```bash
-pnpm build:mine:quick --version v0.3.3
+pnpm build:mine:quick --version 0.3.3
 ```
