@@ -165,18 +165,20 @@ const EmptyPlugs: FC<
 > = ({ index, isEmpty, className, ...props }) => {
 	const { column } = useColumnData(index)
 	const { handle } = usePlugStore()
+
 	if (!column || isEmpty === false) return null
+
 	return (
 		<>
 			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				className="z-[9999] pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
 				style={{
 					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
 			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				className={cn("z-[99999] absolute bottom-0 left-0 right-0 top-0", className)}
 				title="Nothing to see here, yet."
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
