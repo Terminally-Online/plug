@@ -15,7 +15,8 @@ import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
 /**
  * @title Plug
  * @notice The core contract for the Plug framework extremely execution paths.
- * @author @nftchance (chance@onplug.io)
+ * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
+ * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract PlugSocket is
     PlugSocketInterface,

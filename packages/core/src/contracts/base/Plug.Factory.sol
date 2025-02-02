@@ -14,7 +14,8 @@ import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
  * @notice This contract is responsible for deploying new Plug Sockets that can be used
  *         as personal accounts for an individual. The Sockets are deployed using the
  *         Beacon Proxy pattern, and the owner can upgrade the implementation at any time.
- * @author @nftchance (chance@onplug.io)
+ * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
+ * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract PlugFactory is PlugFactoryInterface {
     /**

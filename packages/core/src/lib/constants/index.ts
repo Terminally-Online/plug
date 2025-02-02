@@ -13,8 +13,9 @@ const base = (name: string): Contract => ({
 export const router = base('Plug.sol')
 export const factory = base('Plug.Factory.sol')
 export const socket = base('Plug.Socket.sol')
+export const ticket = base('Plug.Ticket.sol')
 
-export const constantContracts: Readonly<Array<Contract>> = [factory] as const
+export const constantContracts: Readonly<Array<Contract>> = [factory, ticket] as const
 export const etchContracts: Readonly<Array<Contract>> = [
 	// ! Bases
 	router,

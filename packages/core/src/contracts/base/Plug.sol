@@ -17,7 +17,8 @@ import { console2 } from "forge-std/console2.sol";
  * @dev There is no need to approve assets to this contract as all transactions
  *      are executed through the Socket which will manage its own permissions
  *      that can be safely approved to interact with the assets of another account.
- * @author @nftchance (chance@onplug.io)
+ * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
+ * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract Plug is PlugInterface {
     /// @dev Define the reference to the factory that enables counterfactual
