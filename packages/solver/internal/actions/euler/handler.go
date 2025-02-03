@@ -52,15 +52,10 @@ var (
 			Sentence: "Health factor in {0<market:string>} is {1<operator:int8>} than {2<threshold:float>}.",
 			Handler:  HandleConstraintHealthFactor,
 		},
-		ConstraintBorrowAPY: {
+		ConstraintAPY: {
 			Type:     actions.TypeConstraint,
 			Sentence: "{0<action:int8>} borrow APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
-			Handler:  HandleConstraintBorrowAPY,
-		},
-		ConstraintSupplyAPY: {
-			Type:     actions.TypeConstraint,
-			Sentence: "{0<action:int8>} borrow APY in {1<target:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
-			Handler:  HandleConstraintSupplyApy,
+			Handler:  HandleConstraintAPY,
 		},
 		ConstraintTimeToLiq: {
 			Type:     actions.TypeConstraint,

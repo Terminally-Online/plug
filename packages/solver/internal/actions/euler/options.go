@@ -3,6 +3,7 @@ package euler
 import (
 	"fmt"
 	"solver/internal/actions"
+	"strings"
 )
 
 type EulerOptionsProvider struct{}
@@ -41,7 +42,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 				Label: vault.AssetSymbol,
 				Name:  vault.AssetName,
 				Value: tokenAddress,
-				Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, vault.Asset.String()),
+				Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
 			})
 			seenToken[tokenAddress] = true
 		}
@@ -50,7 +51,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 			Label: vault.VaultSymbol,
 			Name:  vault.VaultName,
 			Value: vault.Vault.String(),
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", 1, vault.Asset.String()),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
 			Info:  fmt.Sprintf("%.2f%%", 0.0022), // TODO MASON -- This should be the APY I guess? Will need to calc in the GetVaults() function
 		})
 	}
