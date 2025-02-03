@@ -68,9 +68,9 @@ export const MobileConsole = memo(() => {
 				description="We tried to crunch, but we did not make it in time. Mobile is limited for now and remains one of the focuses to take us into beta."
 			>
 				<Button
-					onClick={() => {}}
-					sizing="md"
-					className="flex flex-row items-center gap-2 bg-plug-red text-black/80"
+					onClick={() => window.open('https://t.me/drakedanner')} 
+					sizing="md" 
+					className="flex flex-row items-center gap-2 bg-plug-red border-plug-red text-black/80"
 				>
 					<MessageCircleIcon className="mr-2 h-4 w-4 opacity-60" />
 					Complain to Drake
