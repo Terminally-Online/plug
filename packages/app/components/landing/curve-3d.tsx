@@ -44,7 +44,7 @@ export const Curve3D = () => {
 						d="M-18 251C307.5 398 263.104 121.272 556 159.5C816.5 193.5 715.132 473.288 913 486L952.5 489"
 						stroke="#FEFFF7"
 						strokeWidth="60"
-						stroke-dasharray="4 4"
+						strokeDasharray="4 4"
 						animate={{ strokeDashoffset: [60, 0] }}
 						transition={{
 							duration: 0.5,
