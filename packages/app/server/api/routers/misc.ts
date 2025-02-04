@@ -144,5 +144,12 @@ export const misc = createTRPCRouter({
 	}),
 	extractDominantColor: anonymousProtectedProcedure
 		.input(z.string())
-		.query(async ({ input }) => await getDominantColor(input))
+		.query(async ({ input }) => await getDominantColor(input)),
+
+	onboard: anonymousProtectedProcedure.mutation(async ({ input, ctx }) => {
+		return await ctx.db.socketIdentity.update({
+			where: { socketId: ctx.session.address },
+			data: { onboardedAt: new Date() }
+		})
+	})
 })

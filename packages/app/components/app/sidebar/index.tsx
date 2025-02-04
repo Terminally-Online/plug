@@ -253,7 +253,7 @@ export const ConsoleSidebar = () => {
 				</div>
 			</div>
 
-			{session?.user.id.startsWith("0x") === false && <ConsoleSidebarPane />}
+			<ConsoleSidebarPane />
 		</div>
 	)
 }
