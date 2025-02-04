@@ -115,6 +115,8 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, utils.ErrABI("EulerEvc")
 	}
 
+	// TODO: All of these calls need to go through the evc call method and not to the vaults directly.
+	// The subaccounts need to be passed along as the receiver parameter and in the onBehalfOfAccount parameter on the call() function.
 	// Oh my fuck we have to manage their stupid ass virtual accounts here...
 	// I believe we have to make all calls through the evc call method in order for it manage sub accounts for us.
 	// enableCollateralCalldata, err := evc.Pack(
@@ -387,7 +389,8 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	// I'm borrowing 0.4 usdc
 	// my health factor is currently 6.97
 
-	// This is guesswork rn, need to log this stuff out first
+	// This is guesswork rn, need to log this stuff out first to make sure the values I'm using here match up with what they're using on their UI
+	return nil, nil
 }
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {

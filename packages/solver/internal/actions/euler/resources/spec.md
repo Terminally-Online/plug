@@ -171,7 +171,6 @@ Last time we talked, I thought we would be able to avoid having to do any manage
     - Is there a registry of sub accounts that we can query to get the sub accounts of a user? [Nope]
     - Assumption: the only way to interact with the protocol is through feeding in the onBehalfOf address that will be the sub account via the call, batch and permit functions. [Yes]
     - What is the way that you guys sequentially assign sub accounts? I'm assuming you guys cast the address to a uint160 and then XOR with the index? Would love to stay consistent here to allow for easy back and forth between your app.
-    - 
 
 Questions For us
 
