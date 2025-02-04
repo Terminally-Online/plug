@@ -107,6 +107,7 @@ model SocketIdentity {
   referralCode String    @default(uuid())
   requestedAt  DateTime?
   approvedAt   DateTime?
+  onboardedAt  DateTime?
 
   // ---------------------------------------------------------------------------
   // One-to-one
@@ -190,7 +191,7 @@ model Workflow {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  name             String   @default("Untitled Plug")
+  name             String   @default("Untitled")
   isCurated        Boolean  @default(false)
   isPrivate        Boolean  @default(false)
   actions          String   @default("[]")

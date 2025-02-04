@@ -24,8 +24,6 @@ export const ConsoleColumnRow = () => {
 
 	return (
 		<div className="flex h-full flex-row overflow-x-auto overflow-y-hidden">
-			<ConsoleSidebarPane />
-
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Droppable droppableId="droppable" direction="horizontal">
 					{provided => (

@@ -11,7 +11,7 @@ export function useDisconnect(out: boolean = false): UseDisconnectReturnType {
 			disconnect({ connector })
 		})
 
-		if (out) signOut({ callbackUrl: "/app/" })
+		if (out) signOut()
 	}, [connectors, out, disconnect])
 
 	return useMemo(() => ({ ...rest, disconnect: disconnectAll, connectors }), [disconnectAll, connectors, rest])
