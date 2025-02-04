@@ -39,7 +39,7 @@ export const SocketTokenPercentages: FC<{
 							strokeDasharray={dashArray}
 							transform={`rotate(${-90 + rotation})`}
 							style={{
-								transition: "stroke-dasharray 3s ease 0s"
+								transition: "troke-dasharray 3s ease 0s"
 							}}
 						/>
 					)
