@@ -12,27 +12,26 @@ var (
 
 	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 
-	ActionSupply           = "supply"
-	ActionWithdraw         = "withdraw"
-	ActionWithdrawAll      = "withdraw_all"
-	ActionBorrow           = "borrow"
-	ActionRepay            = "repay"
-	ActionRepayWithShares  = "repay_with_shares"
-	ConstraintAPY          = "apy"
-	ConstraintHealthFactor = "health_factor"
-	ConstraintTimeToLiq    = "time_to_liquidation"
+	ActionEarn 		   		= "earn"
+	ActionDepositCollateral	= "deposit"
+	ActionWithdraw         	= "withdraw"
+	ActionBorrow           	= "borrow"
+	ActionRepay            	= "repay"
+	ConstraintAPY          	= "apy"
+	ConstraintHealthFactor 	= "health_factor"
+	ConstraintTimeToLiq    	= "time_to_liquidation"
 
 	schemas = map[string]actions.ActionDefinition{
-		ActionSupply: {
-			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
-			Handler:  HandleSupply,
+		ActionEarn: {
+			Sentence: "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using sub-account {3<subaccount-index:uint8>}.",
+			Handler:  HandleEarn,
+		},
+		ActionDepositCollateral: {
+			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using sub-account {3<subaccount-index:uint8>}.",
+			Handler:  HandleDepositCollateral,
 		},
 		ActionWithdraw: {
 			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}.",
-			Handler:  HandleWithdraw,
-		},
-		ActionWithdrawAll: {
-			Sentence: "Withdraw {0<token:address:uint8>} from {0=>1<vault:address>}.",
 			Handler:  HandleWithdraw,
 		},
 		ActionBorrow: {
@@ -40,12 +39,8 @@ var (
 			Handler:  HandleBorrow,
 		},
 		ActionRepay: {
-			Sentence: "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
+			Sentence: "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.", // apy is the only sentence to not have a subaccount.
 			Handler:  HandleRepay,
-		},
-		ActionRepayWithShares: {
-			Sentence: "Repay {0<amount:float>} {1<token:address:uint8>} with shares to {1=>2<vault:address>}.",
-			Handler:  HandleRepayWithShares,
 		},
 		ConstraintHealthFactor: {
 			Type:     actions.TypeConstraint,

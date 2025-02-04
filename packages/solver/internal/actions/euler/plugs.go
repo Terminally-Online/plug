@@ -4,21 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"solver/bindings/euler_account_lens"
 	"solver/bindings/euler_evault_implementation"
+	"solver/bindings/euler_evc"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleSupply(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token string `json:"token"`
 		Target string `json:"target"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal supply inputs: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal earn inputs: %v", err)
 	}
 
 	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
@@ -28,7 +33,7 @@ func HandleSupply(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 
 	amount, err := utils.StringToUint(inputs.Amount, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert supply collateral amount to uint: %w", err)
+		return nil, fmt.Errorf("failed to convert earn amount to uint: %w", err)
 	}
 
 	vault, err := GetVault(inputs.Target, params.ChainId)
@@ -52,7 +57,7 @@ func HandleSupply(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		vault.Vault,
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -67,6 +72,121 @@ func HandleSupply(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 	}}, nil
 }
 
+func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Amount string `json:"amount"`
+		Token string `json:"token"`
+		Target string `json:"target"`
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal deposit collateral inputs: %v", err)
+	}
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert deposit collateral amount to uint: %w", err)
+	}
+
+	vault, err := GetVault(inputs.Target, params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+
+	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("EulerEvaultImplementation")
+	}
+	approveCalldata, err := vaultAbi.Pack(
+		"approve",
+		vault.Vault,
+		amount,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	evc, err := euler_evc.EulerEvcMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("EulerEvc")
+	}
+
+	// Oh my fuck we have to manage their stupid ass virtual accounts here...
+	// I believe we have to make all calls through the evc call method in order for it manage sub accounts for us.
+	// enableCollateralCalldata, err := evc.Pack(
+	// 	""
+
+
+	depositCalldata, err := vaultAbi.Pack(
+		"deposit",
+		amount,
+		params.From,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	return []signature.Plug{{
+		To: *token,
+		Data: approveCalldata,
+	}, {
+		To: vault.Vault,
+		Data: depositCalldata,
+	}}, nil
+}
+
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Amount string `json:"amount"`
+		Token  string  `json:"token"`
+		Target string `json:"target"`
+	}
+
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
+	}
+
+	_, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %w", err)
+	}
+
+	vault, err := GetVault(inputs.Target, params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+
+	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("EulerEvaultImplementation")
+	}
+
+	calldata, err := vaultAbi.Pack(
+		"withdraw",
+		amount,
+		params.From,
+		params.From,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	return []signature.Plug{{
+		To: vault.Vault,
+		Data: calldata,
+	}}, nil
+}
+
+
 func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
@@ -78,7 +198,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to unmarshal borrow inputs: %w", err)
 	}
 
-	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	_, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
 	}
@@ -101,7 +221,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 	calldata, err := vaultAbi.Pack(
 		"borrow",
 		amount,
-		token,
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -114,19 +234,49 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 }
 
 func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	return nil, nil
-}
+	var inputs struct {
+		Amount string `json:"amount"`
+		Token string  `json:"token"`
+		Target string `json:"target"`
+	}
 
-func HandleRepayWithShares(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	return nil, nil
-}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
+	}
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	return nil, nil
-}
+	_, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
 
-func HandleReturn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	return nil, nil
+	amount, err := utils.StringToUint(inputs.Amount, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert repay amount to uint: %w", err)
+	}
+
+	vault, err := GetVault(inputs.Target, params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+
+	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("EulerEvaultImplementation")
+	}
+
+	calldata, err := vaultAbi.Pack(
+		"repay",
+		amount,
+		params.From,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	return []signature.Plug{{
+		To: vault.Vault,
+		Data: calldata,
+	}}, nil
 }
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -182,7 +332,62 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 }
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	return nil, nil
+	var inputs struct {
+		Target   	string `json:"target"`
+		Operator 	int    `json:"operator"`
+		Threshold 	string `json:"threshold"`
+	}
+
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal constraint health factor inputs: %w", err)
+	}
+
+	thresholdFloat, err := strconv.ParseFloat(inputs.Threshold, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse threshold: %w", err)
+	}
+
+	vault, err := GetVault(inputs.Target, params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+
+	provider, err := utils.GetProvider(params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get provider: %w", err)
+	}
+
+	accountLens, err := euler_account_lens.NewEulerAccountLens(
+		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
+		provider,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get account lens: %w", err)
+	}
+
+	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+		nil,
+		common.HexToAddress(params.From),
+		vault.Vault,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+	}
+
+	fmt.Printf("vaultAccountInfo: %v\n", vaultAccountInfo)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo %v\n", vaultAccountInfo.LiquidityInfo)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueBorrowing %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueBorrowing)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueRaw %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueRaw)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.LiabilityValue %v\n", vaultAccountInfo.LiquidityInfo.LiabilityValue)
+
+	// eurc has a lltv of .9
+	// weth has a lltv of .85
+	// I have .5 eurc and .001 weth deposited
+	// I'm borrowing 0.4 usdc
+	// my health factor is currently 6.97
+
+	// This is guesswork rn, need to log this stuff out first
 }
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
