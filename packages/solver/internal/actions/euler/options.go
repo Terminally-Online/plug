@@ -2,14 +2,18 @@ package euler
 
 import (
 	"fmt"
+	"solver/bindings/euler_account_lens"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
 	"solver/internal/utils"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type EulerOptionsProvider struct{}
 
-func (p *EulerOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
+func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, action string) (map[int]actions.Options, error) {
 	supplyTokenOptions, supplyVaultOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
 	if err != nil {
 		return nil, err
@@ -19,6 +23,13 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, action string) (map[in
 	if err != nil {
 		return nil, err
 	}
+
+	addressPositions, err := GetAddressPositions(chainId, address)
+	if err != nil {
+		fmt.Printf("error getting address positions: %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("address positions: %v\n", addressPositions)
 
 	switch action {
 		case ActionEarn:
@@ -162,4 +173,40 @@ func GetBorrowTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.O
 	}
 
 	return tokenOptions, vaultOptions, tokenToVaultOptions, nil
+}
+
+func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Option, error) {
+	fmt.Printf("address: %s\n", address.String())
+	if (address == utils.ZeroAddress) {
+		return nil, nil
+	}
+
+	provider, err := utils.GetProvider(chainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get provider: %w", err)
+	}
+
+	accountLens, err := euler_account_lens.NewEulerAccountLens(
+		common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"]),
+		provider,
+	)
+	if err != nil {
+		return nil, utils.ErrABI("EulerAccountLens")
+	}
+
+	accountEnabledVaults, err := accountLens.GetAccountEnabledVaultsInfo(
+		nil,
+		common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"]),
+		address,
+	)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("account enabled vaults: %v\n", accountEnabledVaults)
+
+	for idx, vault := range accountEnabledVaults.VaultAccountInfo {
+		fmt.Printf("account %d (%s): %v\n", idx, vault.Account, vault.LiquidityInfo)
+	}
+
+	return nil, nil
 }
