@@ -90,14 +90,17 @@ func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 }
 
 func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
-	key := OptionCacheKey{chainId: chainId, action: action}
+	// NOTE: The cache is commented out for now so that we always get a raw rip of the options. This way,
+	//	     user specific options are a lot simpler to confirm functional. Then we can worry about using
+	//		 the proper key.
+	// key := OptionCacheKey{chainId: chainId, action: action}
 
-	c.mu.RLock()
-	if cached, ok := c.cache[key]; ok {
-		c.mu.RUnlock()
-		return cached.options, nil
-	}
-	c.mu.RUnlock()
+	// c.mu.RLock()
+	// if cached, ok := c.cache[key]; ok {
+	// 	c.mu.RUnlock()
+	// 	return cached.options, nil
+	// }
+	// c.mu.RUnlock()
 
 	options, err := c.provider.GetOptions(chainId, from, action)
 	if err != nil {
@@ -108,11 +111,11 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		options = make(map[int]Options)
 	}
 
-	c.mu.Lock()
-	c.cache[key] = CachedOptions{
-		options: options,
-	}
-	c.mu.Unlock()
+	// c.mu.Lock()
+	// c.cache[key] = CachedOptions{
+	// 	options: options,
+	// }
+	// c.mu.Unlock()
 
 	return options, nil
 }

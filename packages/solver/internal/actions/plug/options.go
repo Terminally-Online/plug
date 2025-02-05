@@ -8,6 +8,15 @@ import (
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
-	return nil, nil
+func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]actions.Options, error) {
+	switch action {
+	case actions.ActionTransfer:
+		return map[int]actions.Options{
+			1: {Simple: []actions.Option{{
+				Label: from.Hex(),
+			}}},
+		}, nil
+	default:
+		return nil, nil
+	}
 }

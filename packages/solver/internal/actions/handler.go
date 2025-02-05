@@ -75,7 +75,7 @@ func NewBaseHandler(
 
 	getOptionsFor := func(action string) OptionsHandler {
 		return func(chainId uint64) (map[int]Options, error) {
-			return optionsProvider.GetOptions(chainId, common.Address(utils.NativeTokenAddress), action)
+			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), action)
 		}
 	}
 
@@ -114,15 +114,15 @@ func NewBaseHandler(
 		},
 	}
 
-	actions := make([]string, 0, len(actionDefinitions))
-	for action := range actionDefinitions {
-		actions = append(actions, action)
-	}
-	go func() {
-		for _, chainId := range chains {
-			cachedProvider.PreWarmCache(chainId, common.Address(utils.NativeTokenAddress), actions)
-		}
-	}()
+	// actions := make([]string, 3, len(actionDefinitions))
+	// for action := range actionDefinitions {
+	// 	actions = append(actions, action)
+	// }
+	// go func() {
+	// 	for _, chainId := range chains {
+	// 		cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
+	// 	}
+	// }()
 
 	return handler
 }

@@ -51,9 +51,6 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	action := r.URL.Query().Get("action")
 	chainId := r.URL.Query().Get("chainId")
 	from := r.URL.Query().Get("from")
-	if from == "" {
-		from = utils.NativeTokenAddress.Hex()
-	}
 
 	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
