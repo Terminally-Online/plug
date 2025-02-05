@@ -175,9 +175,20 @@ export const ConsoleOnboardingStepOne: FC<
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
-	const setSocket = useSetAtom(socketModelAtom)
+	const router = useRouter()
+	const color = (router.query.color as string) || ""
 
-	const [color, setColor] = useState("")
+	const setColor = (newColor: string) => {
+		router.replace(
+			{
+				query: { ...router.query, color: newColor }
+			},
+			undefined,
+			{ shallow: true }
+		)
+	}
+
+	const setSocket = useSetAtom(socketModelAtom)
 
 	const onboard = api.socket.onboard.onboard.useMutation({
 		onSuccess: socket => setSocket(socket)
