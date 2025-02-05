@@ -8,18 +8,6 @@ export const config = {
 	runtime: "edge"
 }
 
-export const colors = {
-	red: "#F3908A",
-	orange: "#F3B08A",
-	yellow: "#F3EF8A",
-	lightgreen: "#D2F38A",
-	green: "#92F38A",
-	cyan: "#8AF3E6",
-	blue: "#8AAEF3",
-	magenta: "#EB8AF3",
-	purple: "#9F8AF3"
-} as const
-
 export default async function handler(req: NextRequest) {
 	const regular = await fetch(new URL("../../../assets/Satoshi-Regular.ttf", import.meta.url)).then(res =>
 		res.arrayBuffer()
@@ -49,7 +37,7 @@ export default async function handler(req: NextRequest) {
 				transparent 0%,
 				rgba(254,255,247,0.4) 35%,
 				rgba(254,255,247,0.7) 45%,
-				#${color} 50%,
+				#${color}33 50%,
 				transparent 65%
 			)`,
 					position: "absolute",
@@ -77,7 +65,7 @@ export default async function handler(req: NextRequest) {
 						tw="flex w-full h-[70vh] rounded-[40px] relative p-90"
 						style={{
 							background: isRare
-								? `linear-gradient(45deg, #38584319, #${color}, #79BE9119)`
+								? `linear-gradient(45deg, #38584319, #${color}19, #79BE9119)`
 								: "linear-gradient(to bottom, #38584319, #79BE9119)"
 						}}
 					>
@@ -99,8 +87,8 @@ export default async function handler(req: NextRequest) {
 											background: `linear-gradient(45deg, #385842, #${color}, #385842)`,
 											backgroundClip: "text",
 											WebkitBackgroundClip: "text",
-											WebkitTextFillColor: "transparent"
-											// textShadow: `0 0 20px ${color}33`
+											WebkitTextFillColor: "transparent",
+											textShadow: `0 0 20px #${color}33`
 										}
 									: {}
 							}
