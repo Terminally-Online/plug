@@ -22,6 +22,10 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const { plugs } = usePlugStore()
 
 	const visiblePlugs = useMemo(() => {
+		if (plugs === undefined || plugs.length === 0) {
+			return Array(12).fill(undefined)
+		}
+
 		return plugs
 			.filter(plug => plug.socketId === session?.user?.id)
 			.filter(plug => search === "" || plug.name.toLowerCase().includes(search.toLowerCase()))
@@ -29,7 +33,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{(search !== "" || (visiblePlugs && visiblePlugs.length > 0)) && (
+			{((plugs && plugs.length > 0)) && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}
@@ -53,10 +57,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 				<PlugGrid index={index} className="mb-4" from={COLUMNS.KEYS.MY_PLUGS} plugs={visiblePlugs} />
 			</Container>
 
-			<Callout.EmptyPlugs
-				index={index}
-				isEmpty={search === "" && tag === "" && visiblePlugs && visiblePlugs.length === 0}
-			/>
+			<Callout.EmptyPlugs index={index} isEmpty={(search === "" && plugs && plugs.length === 0) || false} />
 		</div>
 	)
 }

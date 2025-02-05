@@ -168,7 +168,7 @@ export const ConsoleSidebar = () => {
 	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
 	const { is, handleSidebar } = useSidebar()
 
-	const showRestrictedOptions = account.isAuthenticated && socket?.identity?.referrerId !== null
+	const showRestrictedOptions = session?.user.id.startsWith("0x") && !!socket?.identity?.onboardingAt
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
