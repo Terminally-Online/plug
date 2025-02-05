@@ -54,5 +54,5 @@ export const maintenance = createTRPCRouter({
 			)
 
 			return results
-		}),
+		})
 })

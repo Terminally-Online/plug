@@ -46,6 +46,10 @@ Table SocketIdentity {
   referralCode String [not null]
   requestedAt DateTime
   approvedAt DateTime
+  onboardingAt DateTime
+  onboardedAt DateTime
+  onboardingColor String
+  onboardingCount Int [not null, default: 0]
   socket UserSocket [not null]
   socketId String [pk]
   farcaster FarcasterUser
@@ -88,7 +92,7 @@ Table Workflow {
   updatedAt DateTime [default: `now()`, not null]
   namedAt DateTime
   renamedAt DateTime
-  name String [not null, default: 'Untitled Plug']
+  name String [not null, default: 'Untitled']
   isCurated Boolean [not null, default: false]
   isPrivate Boolean [not null, default: false]
   actions String [not null, default: '[]']

@@ -16,7 +16,9 @@ import {
 	MessageCircleIcon,
 	Puzzle,
 	User,
-	Waypoints
+	Waypoints,
+	Copy,
+	ExternalLink
 } from "lucide-react"
 
 import plugCore from "@terminallyonline/plug-core/package.json"
@@ -46,9 +48,12 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<Link href={`${getBlockExplorerAddress(chainId as ChainId, session?.address)}`} className="group ml-auto flex flex-row items-center gap-1">
-					{formatAddress(session?.address ?? "")}
-				</Link>
+				<span className="group ml-auto flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(session?.address ?? "")}>
+						{formatAddress(session?.address ?? "")}
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")} />
+				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Waypoints size={14} className="opacity-20" />
@@ -65,9 +70,12 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<Link href={`${getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress)}`} className="group ml-auto flex flex-row items-center gap-1">
-					{formatAddress(socket?.socketAddress)}
-				</Link>
+				<span className="group ml-auto flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}>
+						{formatAddress(socket?.socketAddress)}
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")} />
+				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Hash size={14} className="opacity-20" />
