@@ -192,6 +192,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		Amount string `json:"amount"`
 		Token  string  `json:"token"`
 		Target string `json:"target"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -218,20 +219,30 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
 	calldata, err := vaultAbi.Pack(
 		"withdraw",
 		amount,
 		params.From,
-		params.From,
+		subAccountAddress,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
-		To: vault.Vault,
-		Data: calldata,
-	}}, nil
+	call, err := WrapEVCCall(
+		params.ChainId,
+		vault.Vault,
+		subAccountAddress,
+		*big.NewInt(0),
+		calldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap withdraw call: %w", err)
+	}
+
+	return []signature.Plug{call}, nil
 }
 
 
@@ -240,6 +251,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		Amount string `json:"amount"`
 		Token string  `json:"token"`
 		Target string `json:"target"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -266,19 +278,29 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
 	calldata, err := vaultAbi.Pack(
 		"borrow",
 		amount,
-		params.From,
+		subAccountAddress,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
-		To: vault.Vault,
-		Data: calldata,
-	}}, nil
+	call, err := WrapEVCCall(
+		params.ChainId,
+		vault.Vault,
+		subAccountAddress,
+		*big.NewInt(0),
+		calldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap borrow call: %w", err)
+	}
+
+	return []signature.Plug{call}, nil
 }
 
 func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -286,6 +308,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		Amount string `json:"amount"`
 		Token string  `json:"token"`
 		Target string `json:"target"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -312,19 +335,46 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
-	calldata, err := vaultAbi.Pack(
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("Erc20")
+	}
+
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
+	approveCalldata, err := erc20Abi.Pack(
+		"approve",
+		vault.Vault,
+		amount,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+	
+	repayCalldata, err := vaultAbi.Pack(
 		"repay",
 		amount,
-		params.From,
+		subAccountAddress,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	repayCall, err := WrapEVCCall(
+		params.ChainId,
+		vault.Vault,
+		subAccountAddress,
+		*big.NewInt(0),
+		repayCalldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap repay call: %w", err)
+	}
+
 	return []signature.Plug{{
 		To: vault.Vault,
-		Data: calldata,
-	}}, nil
+		Data: approveCalldata,
+	}, repayCall}, nil
 }
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -384,15 +434,16 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		Target   	string `json:"target"`
 		Operator 	int    `json:"operator"`
 		Threshold 	string `json:"threshold"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal constraint health factor inputs: %w", err)
 	}
 
-	_, err := strconv.ParseFloat(inputs.Threshold, 64)
+	threshold, err := utils.StringToUint(inputs.Threshold, 18)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse threshold: %w", err)
+		return nil, fmt.Errorf("failed to convert health factor threshold to uint: %w", err)
 	}
 
 	vault, err := GetVault(inputs.Target, params.ChainId)
@@ -413,21 +464,16 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get account lens: %w", err)
 	}
 
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
 	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
 		nil,
-		common.HexToAddress(params.From),
+		subAccountAddress,
 		vault.Vault,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault account info: %w", err)
 	}
-
-	fmt.Printf("vaultAccountInfo: %v\n", vaultAccountInfo)
-	fmt.Printf("vaultAccountInfo.LiquidityInfo %v\n", vaultAccountInfo.LiquidityInfo)
-	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueBorrowing %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueBorrowing)
-	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation)
-	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueRaw %v\n", vaultAccountInfo.LiquidityInfo.CollateralValueRaw)
-	fmt.Printf("vaultAccountInfo.LiquidityInfo.LiabilityValue %v\n", vaultAccountInfo.LiquidityInfo.LiabilityValue)
 
 	// eurc has a lltv of .9
 	// weth has a lltv of .85
@@ -435,11 +481,98 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	// I'm borrowing 0.4 usdc
 	// my health factor is currently 6.97
 
+	totalValueBorrowed := vaultAccountInfo.LiquidityInfo.LiabilityValue
+	totalValueCollateral := vaultAccountInfo.LiquidityInfo.CollateralValueRaw
+	// I'm assuming collateral value liquidation is the value of collateral times the LLTV
+	lltvValueCollateral := vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.LiabilityValue: %v\n", totalValueBorrowed)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueRaw: %v\n", totalValueCollateral)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation: %v\n", lltvValueCollateral)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralLiquidityBorrowingInfo: %v\n", vaultAccountInfo.LiquidityInfo.CollateralLiquidityBorrowingInfo)
+	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralLiquidityLiquidationInfo: %v\n", vaultAccountInfo.LiquidityInfo.CollateralLiquidityLiquidationInfo)
+	
 	// This is guesswork rn, need to log this stuff out first to make sure the values I'm using here match up with what they're using on their UI
+	// how many decimals is this bitch
+	healthFactor := new(big.Int).Div(lltvValueCollateral, totalValueBorrowed)
+	fmt.Printf("Euler calculated health factor: %f\n", healthFactor)
+
+	switch inputs.Operator {
+	case -1:
+		if healthFactor.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("health factor %.2f is not less than threshold %.2f", healthFactor, threshold)
+		}
+	case 1:
+		if healthFactor.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("health factor %.2f is not greater than threshold %.2f", healthFactor, threshold)
+		}
+	default: 
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
+	}
+
 	return nil, nil
 }
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+var inputs struct {
+		Target   	string `json:"target"`
+		Operator 	int    `json:"operator"`
+		Threshold 	string `json:"threshold"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
+	}
+
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal constraint time to liquidation inputs: %w", err)
+	}
+
+	threshold, err := utils.StringToUint(inputs.Threshold, 18)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert time to liquidation threshold to uint: %w", err)
+	}
+
+	vault, err := GetVault(inputs.Target, params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault: %w", err)
+	}
+
+	provider, err := utils.GetProvider(params.ChainId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get provider: %w", err)
+	}
+
+	accountLens, err := euler_account_lens.NewEulerAccountLens(
+		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
+		provider,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get account lens: %w", err)
+	}
+
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
+	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+		nil,
+		subAccountAddress,
+		vault.Vault,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+	}
+
+	timeToLiquidation := vaultAccountInfo.LiquidityInfo.TimeToLiquidation
+
+	switch inputs.Operator {
+	case -1:
+		if timeToLiquidation.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("time to liquidation %.2f is not less than threshold %.2f", timeToLiquidation, threshold)
+		}
+	case 1:
+		if timeToLiquidation.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("time to liquidation %.2f is not greater than threshold %.2f", timeToLiquidation, threshold)
+		}
+	default: 
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
+	}
+
 	return nil, nil
 }
 
