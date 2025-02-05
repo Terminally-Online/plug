@@ -53,9 +53,10 @@ var (
 )
 
 type ActionDefinition struct {
-	Type     string `default:"action"`
-	Sentence string
-	Handler  TransactionHandler
+	Type           string `default:"action,omitempty"`
+	Sentence       string
+	Handler        TransactionHandler
+	IsUserSpecific bool
 }
 
 func NewBaseHandler(
@@ -91,7 +92,8 @@ func NewBaseHandler(
 					}
 					return def.Type
 				}(),
-				Sentence: def.Sentence,
+				Sentence:       def.Sentence,
+				IsUserSpecific: def.IsUserSpecific,
 			},
 		}
 	}
@@ -174,12 +176,18 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, action stri
 			return nil, fmt.Errorf(errUnsupportedChain, chainIdInt)
 		}
 
+		if !h.protocol.Schemas[action].Schema.IsUserSpecific {
+			from = utils.ZeroAddress
+		}
+
 		options, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)
 		}
 		chainSchema.Schema.Options = options
 	}
+
+	chainSchema.Schema.IsUserSpecific = h.protocol.Schemas[action].Schema.IsUserSpecific
 
 	return &chainSchema, nil
 }
