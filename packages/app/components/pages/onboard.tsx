@@ -5,10 +5,14 @@ import { FC, HTMLAttributes, PropsWithChildren, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
-import { LogIn, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
+import { FileWarning, LogIn, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
 
+import { useSetAtom } from "jotai"
+
+import { useData } from "@/contexts"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
+import { socketAtom, socketModelAtom, useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { Frame } from "../app/frames/base"
@@ -39,6 +43,7 @@ const renderActionText = (text: string, frame: (frame: string) => void, selected
 			if (colorOptions) {
 				return (
 					<span
+						key={index}
 						className={cn(
 							"mx-1 inline-block cursor-pointer rounded px-2 py-0.5 font-bold",
 							selectedColor ? "bg-plug-yellow/60" : "bg-plug-red/60"
@@ -170,9 +175,13 @@ export const ConsoleOnboardingStepOne: FC<
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
+	const setSocket = useSetAtom(socketModelAtom)
+
 	const [color, setColor] = useState("")
 
-	const onboard = api.socket.onboard.onboard.useMutation()
+	const onboard = api.socket.onboard.onboard.useMutation({
+		onSuccess: socket => setSocket(socket)
+	})
 
 	return (
 		<div className="flex h-full w-full flex-col">
@@ -196,6 +205,20 @@ export const ConsoleOnboardingStepOne: FC<
 
 					{step !== 0 && (
 						<div className="mb-auto flex h-full flex-col gap-2">
+							{color && (
+								<div className="-z-1 absolute inset-0 select-none overflow-hidden rounded-b-lg">
+									<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
+										<Image
+											className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
+											src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=${Math.floor(Math.random() * 100000)}`}
+											alt="Plug Founding Ticket"
+											width={1000}
+											height={1600}
+										/>
+									</div>
+								</div>
+							)}
+
 							{Array.from({ length: Math.min(step, actions.length) }).map((_, actionIndex) => {
 								const action = actions[actions.length - 1 - actionIndex]
 								return (
@@ -241,16 +264,6 @@ export const ConsoleOnboardingStepOne: FC<
 									</ConsoleOnboardingStepActive>
 								)
 							})}
-
-							<div className="group absolute -bottom-1/3 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
-								<Image
-									className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-									src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=1`}
-									alt="Plug Founding Ticket"
-									width={1000}
-									height={1600}
-								/>
-							</div>
 						</div>
 					)}
 
@@ -284,14 +297,24 @@ export const ConsoleOnboardingStepOne: FC<
 						<Button
 							className="flex w-full flex-row items-center justify-center gap-2 py-4"
 							variant={!session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
-							onClick={!session?.user.id.startsWith("0x") || step < 2 ? () => {} : () => onboard.mutate()}
+							onClick={
+								!session?.user.id.startsWith("0x") || step < 2
+									? () => {}
+									: () => onboard.mutate({ onboardingColor: color })
+							}
 						>
-							{step < 2 || session?.user.id.startsWith("0x") ? (
+							{step === 2 && !color ? (
+								<FileWarning size={16} className="opacity-60" />
+							) : step < 2 || session?.user.id.startsWith("0x") ? (
 								<Rocket size={16} className="opacity-60" />
 							) : (
 								<LogIn size={16} className="opacity-60" />
 							)}
-							{step < 2 || session?.user.id.startsWith("0x") ? "Run Plug" : "Log in"}
+							{step === 2 && !color
+								? "Missing required inputs"
+								: step < 2 || session?.user.id.startsWith("0x")
+									? "Run Plug"
+									: "Log in"}
 						</Button>
 					</ConsoleOnboardingStepActive>
 				</div>
