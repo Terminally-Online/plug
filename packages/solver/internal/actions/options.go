@@ -148,6 +148,6 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address
 type DefaultOptionsProvider struct{}
 
 // GetOptions implements OptionsProvider
-func (p *DefaultOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
+func (p *DefaultOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
 	return make(map[int]Options), nil
 }
