@@ -46,6 +46,7 @@ Table SocketIdentity {
   referralCode String [not null]
   requestedAt DateTime
   approvedAt DateTime
+  onboardingAt DateTime
   onboardedAt DateTime
   socket UserSocket [not null]
   socketId String [pk]

@@ -5,7 +5,7 @@ import { FC, HTMLAttributes, PropsWithChildren, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
-import { PlugIcon, SearchIcon } from "lucide-react"
+import { LogIn, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib"
 import { api } from "@/server/client"
@@ -15,34 +15,9 @@ import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
 
-export const ConsoleOnboarding = () => {
-	const router = useRouter()
-	// Initialize step directly from query param, defaulting to 0
-	const step = parseInt(router.query.step as string) || 0
-
-	const handleStepChange = () => {
-		const nextStep = step + 1
-		router.replace(
-			{
-				query: { ...router.query, step: nextStep }
-			},
-			undefined,
-			{ shallow: true }
-		)
-	}
-
-	return (
-		<div className="flex h-full w-full flex-col items-center justify-center gap-8 p-12">
-			<div className="flex h-full max-h-[960px] w-[460px] items-center justify-center rounded-lg border-[1px] border-plug-green/10">
-				{step < 5 && <ConsoleOnboardingStepOne step={step} handleStep={handleStepChange} />}
-			</div>
-		</div>
-	)
-}
-
 const actions = [
 	{ name: "Mint Plug Founders Ticket.", sentence: "Mint [Plug Founders Ticket]." },
-	{ name: "Began using by phase.", sentence: "Began using Plug in [Private Alpha]." }
+	{ name: "Early user flag.", sentence: "Began using [Plug] in [Private Alpha]." }
 ]
 
 const renderActionText = (text: string) => {
@@ -59,9 +34,42 @@ const renderActionText = (text: string) => {
 	})
 }
 
+export const ConsoleOnboarding = () => {
+	const router = useRouter()
+	const step = parseInt(router.query.step as string) || 0
+
+	const handleStepChange = () => {
+		const nextStep = step + 1
+		router.replace(
+			{
+				query: { ...router.query, step: nextStep }
+			},
+			undefined,
+			{ shallow: true }
+		)
+	}
+
+	return (
+		<div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-12">
+			<div className="flex h-full max-h-[960px] w-[460px] items-center justify-center rounded-lg border-[1px] border-plug-green/10">
+				{step < 5 && <ConsoleOnboardingStepOne step={step} handleStep={handleStepChange} />}
+			</div>
+
+			<div className="absolute bottom-0 z-[9999] h-12 w-full bg-plug-white" />
+		</div>
+	)
+}
+
 export const ConsoleOnboardingStepActive: FC<
-	PropsWithChildren & { frame?: string; active?: boolean; shimmer?: boolean; tooltip?: string; left?: boolean }
-> = ({ children, frame = "", active = true, shimmer = true, tooltip, left = false }) => {
+	PropsWithChildren & {
+		frame?: string
+		active?: boolean
+		shimmer?: boolean
+		tooltip?: string
+		left?: boolean
+		delay?: number
+	}
+> = ({ children, frame = "", active = true, shimmer = true, tooltip, left = false, delay = 0 }) => {
 	return (
 		<AnimatePresence>
 			<motion.div className="relative">
@@ -85,28 +93,37 @@ export const ConsoleOnboardingStepActive: FC<
 				)}
 
 				{!frame && active && tooltip && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.5, delay: 0.5 }}
-					>
+					<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 						<motion.div
 							className={cn(
-								"absolute top-1/2 z-50 w-[220px] border-t-[2px] border-dashed border-plug-yellow",
+								"absolute top-1/2 z-50 border-t-[2px] border-dashed border-plug-yellow",
 								left ? "right-full" : "left-full"
 							)}
+							initial={{ width: 0 }}
+							animate={{ width: "220px" }}
+							transition={{ duration: 0.25, delay: delay + 0.5 }}
 						/>
 
 						<div className={cn("absolute bottom-1/2 mb-4 w-[140px]", left ? "-left-1/2" : "-right-1/2")}>
-							<p className={cn("mt-2 text-right font-bold opacity-40", left && "text-left")}>{tooltip}</p>
+							<motion.p
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: 10 }}
+								className={cn("mt-2 text-right font-bold text-black/40", left && "text-left")}
+								transition={{ duration: 0.25, delay: delay + 0.75 }}
+							>
+								{tooltip}
+							</motion.p>
 						</div>
 
-						<div
+						<motion.div
 							className={cn(
 								"absolute top-1/2 z-[999] h-4 w-4 -translate-y-1/2 rounded-full bg-plug-yellow",
 								left ? "-left-2" : "-right-2"
 							)}
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.25, delay: delay + 0.25 }}
 						/>
 					</motion.div>
 				)}
@@ -121,13 +138,14 @@ export const ConsoleOnboardingStepOne: FC<
 	MotionProps & HTMLAttributes<HTMLDivElement> & { step: number; handleStep: () => void }
 > = ({ step, handleStep }) => {
 	const { data: session } = useSession()
+	const router = useRouter()
 	const {
 		column,
 		isFrame,
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
-	const onboard = api.misc.onboard.useMutation()
+	const onboard = api.socket.onboard.onboard.useMutation()
 
 	return (
 		<div className="flex h-full w-full flex-col">
@@ -162,10 +180,16 @@ export const ConsoleOnboardingStepOne: FC<
 													: ""
 										}
 										frame={column?.frame ?? ""}
+										delay={1}
 										shimmer={false}
 										left
 									>
-										<div className="relative flex flex-row items-center gap-4 overflow-hidden rounded-lg border-[1px] border-plug-green/10 p-4">
+										<motion.div
+											className="relative flex flex-row items-center gap-4 overflow-hidden rounded-lg border-[1px] border-plug-green/10 p-4"
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.2 }}
+										>
 											<Image
 												className="absolute bottom-0 left-0 h-12 w-12 rounded-sm blur-2xl"
 												src="/protocols/plug.png"
@@ -181,7 +205,7 @@ export const ConsoleOnboardingStepOne: FC<
 												height={24}
 											/>
 											<p className="font-bold">{renderActionText(action.sentence)}</p>
-										</div>
+										</motion.div>
 									</ConsoleOnboardingStepActive>
 								)
 							})}
@@ -192,14 +216,33 @@ export const ConsoleOnboardingStepOne: FC<
 						<ConsoleOnboardingStepActive
 							tooltip={!isFrame ? `Click and add '${actions[actions.length - 1 - step].name}' ` : ""}
 						>
-							<button
+							<motion.button
 								className="mt-auto flex w-full flex-row items-center gap-2 rounded-lg border-[1px] border-plug-green/10 p-4 font-bold text-black/40"
 								onClick={() => frame("onboarding-actions")}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.2, delay: 0.2 }}
 							>
 								<SearchIcon size={16} className="opacity-60" />
 								Search for an action...
-							</button>
+							</motion.button>
 						</ConsoleOnboardingStepActive>
+					)}
+
+					{step == 2 && (
+						<motion.button
+							className="flex flex-row items-center justify-center gap-2 rounded-lg border-[1px] border-plug-green/10 p-4 font-bold text-black/40"
+							onClick={() => {
+								onboard.mutate()
+								router.replace({ query: { ...router.query, step: 0 } }, undefined, { shallow: true })
+							}}
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.2, delay: 1 }}
+						>
+							<XIcon size={16} className="opacity-60" />
+							Reset
+						</motion.button>
 					)}
 
 					<ConsoleOnboardingStepActive
@@ -211,11 +254,16 @@ export const ConsoleOnboardingStepOne: FC<
 						}
 					>
 						<Button
-							className="w-full py-4"
+							className="flex w-full flex-row items-center justify-center gap-2 py-4"
 							variant={!session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
 							onClick={!session?.user.id.startsWith("0x") || step < 2 ? () => {} : () => onboard.mutate()}
 						>
-							{session?.user.id.startsWith("0x") ? "Run Plug" : "Log in"}
+							{step < 2 || session?.user.id.startsWith("0x") ? (
+								<Rocket size={16} className="opacity-60" />
+							) : (
+								<LogIn size={16} className="opacity-60" />
+							)}
+							{step < 2 || session?.user.id.startsWith("0x") ? "Run Plug" : "Log in"}
 						</Button>
 					</ConsoleOnboardingStepActive>
 				</div>

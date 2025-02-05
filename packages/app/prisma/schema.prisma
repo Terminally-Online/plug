@@ -107,6 +107,7 @@ model SocketIdentity {
   referralCode String    @default(uuid())
   requestedAt  DateTime?
   approvedAt   DateTime?
+  onboardingAt DateTime?
   onboardedAt  DateTime?
 
   // ---------------------------------------------------------------------------
