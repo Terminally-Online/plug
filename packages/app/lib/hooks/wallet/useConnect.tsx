@@ -106,7 +106,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 								signature,
 								chainId,
 								redirect: true,
-								callbackUrl: `${window.location.origin}/app`
+								callbackUrl: `${window.location.origin}/app${window.location.search}`
 							})
 							console.log("Authenticated", authenticationResponse)
 
