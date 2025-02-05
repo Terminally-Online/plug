@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"math/big"
 	"solver/internal/actions"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type AaveOptionsProvider struct{}
 
-func (p *AaveOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
+func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
 	collateralOptions, borrowOptions, err := GetOptions(chainId)
 	if err != nil {
 		return nil, err

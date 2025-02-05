@@ -3,6 +3,8 @@ package actions
 import (
 	"solver/internal/utils"
 	"sync"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -39,7 +41,7 @@ type CachedOptions struct {
 }
 
 type OptionsProvider interface {
-	GetOptions(chainId uint64, action string) (map[int]Options, error)
+	GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error)
 }
 
 type CachedOptionsProvider struct {
@@ -53,21 +55,18 @@ var (
 	providerMu      sync.RWMutex
 )
 
-// GetCachedOptionsProvider returns the singleton instance of CachedOptionsProvider
 func GetCachedOptionsProvider() *CachedOptionsProvider {
 	providerMu.RLock()
 	defer providerMu.RUnlock()
 	return defaultProvider
 }
 
-// SetCachedOptionsProvider sets the singleton instance of CachedOptionsProvider
 func SetCachedOptionsProvider(provider *CachedOptionsProvider) {
 	providerMu.Lock()
 	defaultProvider = provider
 	providerMu.Unlock()
 }
 
-// GetSupportedActions returns a list of all supported actions
 func GetSupportedActions() []string {
 	return []string{
 		ActionDeposit,
@@ -90,7 +89,7 @@ func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
+func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
 	key := OptionCacheKey{chainId: chainId, action: action}
 
 	c.mu.RLock()
@@ -100,7 +99,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	}
 	c.mu.RUnlock()
 
-	options, err := c.provider.GetOptions(chainId, action)
+	options, err := c.provider.GetOptions(chainId, from, action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
 	}
@@ -118,7 +117,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	return options, nil
 }
 
-func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
+func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address, actions []string) {
 	const maxWorkers = 4
 	sem := make(chan struct{}, maxWorkers)
 
@@ -134,7 +133,7 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
 				completed++
 				mu.Unlock()
 			}()
-			if _, err := c.GetOptions(chainId, action); err != nil {
+			if _, err := c.GetOptions(chainId, from, action); err != nil {
 				// Silently continue on error
 			}
 		}(action)

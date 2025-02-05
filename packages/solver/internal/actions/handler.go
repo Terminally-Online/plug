@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -20,7 +22,7 @@ type BaseProtocolHandler interface {
 	GetTags() []string
 	GetActions() []string
 	GetChains() []uint64
-	GetSchema(chainId string, action string) (*ChainSchema, error)
+	GetSchema(chainId string, from common.Address, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
@@ -64,7 +66,6 @@ func NewBaseHandler(
 	actionDefinitions map[string]ActionDefinition,
 	optionsProvider OptionsProvider,
 ) *BaseHandler {
-	// Extract sentences and handlers from definitions
 	sentences := make(map[string]string, len(actionDefinitions))
 	transactions := make(map[string]TransactionHandler, len(actionDefinitions))
 	for action, def := range actionDefinitions {
@@ -72,10 +73,9 @@ func NewBaseHandler(
 		transactions[action] = def.Handler
 	}
 
-	// Create options handlers for each action
 	getOptionsFor := func(action string) OptionsHandler {
 		return func(chainId uint64) (map[int]Options, error) {
-			return optionsProvider.GetOptions(chainId, action)
+			return optionsProvider.GetOptions(chainId, common.Address(utils.NativeTokenAddress), action)
 		}
 	}
 
@@ -84,10 +84,8 @@ func NewBaseHandler(
 		optHandlers[action] = getOptionsFor(action)
 	}
 
-	// Create cached provider
 	cachedProvider := NewCachedOptionsProvider(optionsProvider)
 
-	// Initialize schemas
 	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
 		schemas[action] = ChainSchema{
@@ -103,7 +101,6 @@ func NewBaseHandler(
 		}
 	}
 
-	// Create the handler
 	handler := &BaseHandler{
 		protocol: Protocol{
 			Name:            name,
@@ -117,14 +114,13 @@ func NewBaseHandler(
 		},
 	}
 
-	// Start pre-warming cache in background
 	actions := make([]string, 0, len(actionDefinitions))
 	for action := range actionDefinitions {
 		actions = append(actions, action)
 	}
 	go func() {
 		for _, chainId := range chains {
-			cachedProvider.PreWarmCache(chainId, actions)
+			cachedProvider.PreWarmCache(chainId, common.Address(utils.NativeTokenAddress), actions)
 		}
 	}()
 
@@ -160,7 +156,7 @@ func (h *BaseHandler) GetSchemas() map[string]ChainSchema {
 	return h.protocol.Schemas
 }
 
-func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, error) {
+func (h *BaseHandler) GetSchema(chainId string, from common.Address, action string) (*ChainSchema, error) {
 	chainSchema, exists := h.protocol.Schemas[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)
@@ -183,7 +179,7 @@ func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, er
 			return nil, fmt.Errorf(errUnsupportedChain, chainIdInt)
 		}
 
-		options, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, action)
+		options, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)
 		}

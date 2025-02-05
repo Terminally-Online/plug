@@ -8,6 +8,8 @@ import (
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type IntentRequest struct {
@@ -48,6 +50,10 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
 	chainId := r.URL.Query().Get("chainId")
+	from := r.URL.Query().Get("from")
+	if from == "" {
+		from = utils.NativeTokenAddress.Hex()
+	}
 
 	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
@@ -63,7 +69,6 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 				Schema: make(map[string]actions.Schema),
 			}
 
-			// Get all schemas without options
 			schemas := handler.GetSchemas()
 			for _, supportedAction := range handler.GetActions() {
 				if chainSchema, ok := schemas[supportedAction]; ok {
@@ -73,6 +78,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
+
 			allSchemas[protocol] = protocolSchema
 		}
 
@@ -120,7 +126,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Case 3: Protocol and action - return specific schema
-	chainSchema, err := handler.GetSchema(chainId, action)
+	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
