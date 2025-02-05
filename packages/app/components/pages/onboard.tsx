@@ -5,7 +5,7 @@ import { FC, HTMLAttributes, PropsWithChildren, useState } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
-import { FileWarning, LogIn, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
+import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
 
 import { useSetAtom } from "jotai"
 
@@ -45,7 +45,7 @@ const renderActionText = (text: string, frame: (frame: string) => void, selected
 					<span
 						key={index}
 						className={cn(
-							"mx-1 inline-block cursor-pointer rounded px-2 py-0.5 font-bold",
+							"mx-1 inline-block cursor-pointer rounded-sm px-2 py-0.5 font-bold",
 							selectedColor ? "bg-plug-yellow/60" : "bg-plug-red/60"
 						)}
 						onClick={() => frame("onboarding-colors")}
@@ -56,7 +56,7 @@ const renderActionText = (text: string, frame: (frame: string) => void, selected
 			}
 
 			return (
-				<span key={index} className="mx-1 inline-block rounded bg-plug-yellow/60 px-2 py-0.5 font-bold">
+				<span key={index} className="mx-1 inline-block rounded-sm bg-plug-yellow/60 px-2 py-0.5 font-bold">
 					{innerText}
 				</span>
 			)
@@ -291,7 +291,7 @@ export const ConsoleOnboardingStepOne: FC<
 								? ""
 								: session?.user.id.startsWith("0x")
 									? "Click here to run your Plug and mint your Ticket!"
-									: "Please log in to run your Plug."
+									: color ? "Please log in to run your Plug." : ""
 						}
 					>
 						<Button
@@ -322,9 +322,9 @@ export const ConsoleOnboardingStepOne: FC<
 				<Frame
 					index={COLUMNS.MOBILE_INDEX}
 					className="overflow-visible"
-					label="Colors"
+					label="Founding Ticket: Color"
 					visible={column?.frame === "onboarding-colors"}
-					icon={<PlugIcon size={16} className="opacity-40" />}
+					icon={<PaintBucket size={16} className="opacity-40" />}
 					hasOverlay
 				>
 					<ConsoleOnboardingStepActive shimmer={false} tooltip="Choose a color and click 'Done'.">
@@ -332,7 +332,7 @@ export const ConsoleOnboardingStepOne: FC<
 							{colors.map((color, index) => (
 								<button
 									key={index}
-									className="h-full rounded-lg border-[1px] border-plug-white/40 font-bold text-black/40 transition-all duration-200 hover:text-black/60"
+									className="h-full rounded-lg border-[1px] border-plug-white/40 font-bold text-black/60 transition-all duration-200 hover:text-black/80 text-sm"
 									style={{ backgroundColor: color }}
 									onClick={() => setColor(color)}
 								>
