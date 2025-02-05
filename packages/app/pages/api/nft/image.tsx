@@ -3,7 +3,7 @@ import { NextRequest } from "next/server"
 import type { CSSProperties } from "react"
 
 import { ImageResponse } from "@vercel/og"
-import { env } from "@/env"
+
 export const config = {
 	runtime: "edge"
 }
@@ -80,7 +80,7 @@ export default async function handler(req: NextRequest) {
 					>
 						<img
 							tw="mx-auto h-full opacity-60"
-							src={`${env.NEXT_PUBLIC_APP_URL}/dna.png`}
+							src={`${process.env.NEXT_PUBLIC_APP_URL}/dna.png`}
 							alt="Dna image"
 							width={200}
 							height={1000}
