@@ -15,17 +15,43 @@ import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
 
+const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
+
 const actions = [
-	{ name: "Mint Plug Founders Ticket.", sentence: "Mint [Plug Founders Ticket]." },
+	{ name: "Mint Plug Founders Ticket.", sentence: `Mint [Plug Founders Ticket] in [Color:${colors.join(",")}].` },
 	{ name: "Early user flag.", sentence: "Began using [Plug] in [Private Alpha]." }
 ]
 
-const renderActionText = (text: string) => {
+const parseColorOptions = (text: string): string[] | null => {
+	const colorMatch = text.match(/Color:([\w,#]+)/)
+	if (colorMatch) {
+		return colorMatch[1].split(",")
+	}
+	return null
+}
+
+const renderActionText = (text: string, frame: (frame: string) => void, selectedColor: string) => {
 	return text.split(/(\[[^\]]*\])/).map((part, index) => {
 		if (part.startsWith("[") && part.endsWith("]")) {
 			const innerText = part.slice(1, -1)
+			const colorOptions = parseColorOptions(innerText)
+
+			if (colorOptions) {
+				return (
+					<span
+						className={cn(
+							"mx-1 inline-block cursor-pointer rounded px-2 py-0.5 font-bold",
+							selectedColor ? "bg-plug-yellow/60" : "bg-plug-red/60"
+						)}
+						onClick={() => frame("onboarding-colors")}
+					>
+						{selectedColor ? selectedColor.replace("#", "") : "color"}
+					</span>
+				)
+			}
+
 			return (
-				<span key={index} className="inline-block rounded bg-plug-yellow/60 px-2 py-0.5 font-bold">
+				<span key={index} className="mx-1 inline-block rounded bg-plug-yellow/60 px-2 py-0.5 font-bold">
 					{innerText}
 				</span>
 			)
@@ -138,25 +164,29 @@ export const ConsoleOnboardingStepOne: FC<
 	MotionProps & HTMLAttributes<HTMLDivElement> & { step: number; handleStep: () => void }
 > = ({ step, handleStep }) => {
 	const { data: session } = useSession()
-	const router = useRouter()
 	const {
 		column,
 		isFrame,
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
+	const [color, setColor] = useState("")
+
 	const onboard = api.socket.onboard.onboard.useMutation()
 
 	return (
 		<div className="flex h-full w-full flex-col">
 			<div className="relative flex flex-row items-center gap-4 overflow-hidden border-b-[1px] border-plug-green/10 px-4 py-6">
-				<div className="absolute bottom-0 left-0 h-12 w-12 rounded-sm bg-plug-blue blur-2xl filter" />
-				<div className="relative h-6 w-6 rounded-sm bg-plug-blue" />
+				<div
+					className="absolute bottom-0 left-0 h-12 w-12 rounded-sm blur-2xl filter"
+					style={{ backgroundColor: color }}
+				/>
+				<div className="relative h-6 w-6 rounded-sm bg-plug-blue" style={{ backgroundColor: color }} />
 				<p className="relative text-xl font-bold">Mint Plug Founding Ticket</p>
 			</div>
 
 			<div className="relative flex h-full w-full flex-col gap-4">
-				<div className="flex h-full flex-col gap-2 p-4">
+				<div className="z-2 relative flex h-full flex-col gap-2 bg-plug-white p-4">
 					{step === 0 && (
 						<Callout
 							title="No actions added yet."
@@ -175,8 +205,8 @@ export const ConsoleOnboardingStepOne: FC<
 										tooltip={
 											step === 1
 												? "We automatically filled in the values for you."
-												: step === 2
-													? "We took care of filling in the values for this one too."
+												: step === 2 && !color
+													? "Choose a color by clicking the red input."
 													: ""
 										}
 										frame={column?.frame ?? ""}
@@ -204,11 +234,23 @@ export const ConsoleOnboardingStepOne: FC<
 												width={24}
 												height={24}
 											/>
-											<p className="font-bold">{renderActionText(action.sentence)}</p>
+											<p className="font-bold">
+												{renderActionText(action.sentence, frame, color)}
+											</p>
 										</motion.div>
 									</ConsoleOnboardingStepActive>
 								)
 							})}
+
+							<div className="group absolute -bottom-1/3 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
+								<Image
+									className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
+									src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=1`}
+									alt="Plug Founding Ticket"
+									width={1000}
+									height={1600}
+								/>
+							</div>
 						</div>
 					)}
 
@@ -229,28 +271,14 @@ export const ConsoleOnboardingStepOne: FC<
 						</ConsoleOnboardingStepActive>
 					)}
 
-					{step == 2 && (
-						<motion.button
-							className="flex flex-row items-center justify-center gap-2 rounded-lg border-[1px] border-plug-green/10 p-4 font-bold text-black/40"
-							onClick={() => {
-								onboard.mutate()
-								router.replace({ query: { ...router.query, step: 0 } }, undefined, { shallow: true })
-							}}
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ duration: 0.2, delay: 1 }}
-						>
-							<XIcon size={16} className="opacity-60" />
-							Reset
-						</motion.button>
-					)}
-
 					<ConsoleOnboardingStepActive
 						active={step === 2}
 						tooltip={
-							session?.user.id.startsWith("0x")
-								? "Click here to run your Plug and mint your Ticket!"
-								: "Please log in to run your Plug."
+							column?.frame
+								? ""
+								: session?.user.id.startsWith("0x")
+									? "Click here to run your Plug and mint your Ticket!"
+									: "Please log in to run your Plug."
 						}
 					>
 						<Button
@@ -267,6 +295,38 @@ export const ConsoleOnboardingStepOne: FC<
 						</Button>
 					</ConsoleOnboardingStepActive>
 				</div>
+
+				<Frame
+					index={COLUMNS.MOBILE_INDEX}
+					className="overflow-visible"
+					label="Colors"
+					visible={column?.frame === "onboarding-colors"}
+					icon={<PlugIcon size={16} className="opacity-40" />}
+					hasOverlay
+				>
+					<ConsoleOnboardingStepActive shimmer={false} tooltip="Choose a color and click 'Done'.">
+						<div className="grid h-32 grid-cols-4 gap-2">
+							{colors.map((color, index) => (
+								<button
+									key={index}
+									className="h-full rounded-lg border-[1px] border-plug-white/40 font-bold text-black/40 transition-all duration-200 hover:text-black/60"
+									style={{ backgroundColor: color }}
+									onClick={() => setColor(color)}
+								>
+									{color}
+								</button>
+							))}
+						</div>
+					</ConsoleOnboardingStepActive>
+
+					<Button
+						className="mt-2 w-full py-4"
+						variant={color ? "primary" : "primaryDisabled"}
+						onClick={color ? () => frame("onboarding-colors") : () => {}}
+					>
+						{color ? "Done" : "Select Color"}
+					</Button>
+				</Frame>
 
 				<Frame
 					index={COLUMNS.MOBILE_INDEX}
@@ -312,7 +372,11 @@ export const ConsoleOnboardingStepOne: FC<
 											/>
 										</div>
 										<p className="font-bold">
-											{actions[actions.length - 1 - step - actionIndex].name}
+											{renderActionText(
+												actions[actions.length - 1 - step - actionIndex].name,
+												setColor,
+												color
+											)}
 										</p>
 									</button>
 								</ConsoleOnboardingStepActive>

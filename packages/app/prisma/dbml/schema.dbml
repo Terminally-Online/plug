@@ -62,6 +62,8 @@ Table UserSocket {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  onboardingColor String
+  onboardingCount Int [not null, default: 0]
   admin Boolean [not null, default: false]
   socketAddress String [not null]
   salt String
