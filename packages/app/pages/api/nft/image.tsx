@@ -3,7 +3,7 @@ import { NextRequest } from "next/server"
 import type { CSSProperties } from "react"
 
 import { ImageResponse } from "@vercel/og"
-
+import { env } from "@/env"
 export const config = {
 	runtime: "edge"
 }
@@ -21,14 +21,23 @@ export default async function handler(req: NextRequest) {
 
 	try {
 		const { searchParams } = req.nextUrl
+		const color = searchParams.get("color")
+		const numberParam = searchParams.get("number")
 
-		const color = searchParams.get("color") ?? searchParams.get("number") ?? "FDFFF7"
-		const number = searchParams.get("number")
-			? parseInt(searchParams.get("number") ?? "0")
+		if (!color && !numberParam) {
+			return new Response("Missing required parameters: color or number", {
+				status: 400
+			})
+		}
+
+		const finalColor = color ?? numberParam ?? "FDFFF7"
+		const number = numberParam
+			? parseInt(numberParam)
 			: Math.floor(Math.random() * 100000)
-		const isRare = color !== "FDFFF7"
+
+		const isRare = finalColor !== "FDFFF7"
 		const background = isRare
-			? `linear-gradient(to top, #FDFFF7, #FDFFF7, #FDFFF7, #${color}, #${color})`
+			? `linear-gradient(to top, #FDFFF7, #FDFFF7, #FDFFF7, #${finalColor}, #${finalColor})`
 			: "#FDFFF7"
 
 		const foilOverlay: CSSProperties = isRare
@@ -37,7 +46,7 @@ export default async function handler(req: NextRequest) {
 				transparent 0%,
 				rgba(254,255,247,0.4) 35%,
 				rgba(254,255,247,0.7) 45%,
-				#${color}33 50%,
+				#${finalColor}33 50%,
 				transparent 65%
 			)`,
 					position: "absolute",
@@ -65,13 +74,13 @@ export default async function handler(req: NextRequest) {
 						tw="flex w-full h-[70vh] rounded-[40px] relative p-90"
 						style={{
 							background: isRare
-								? `linear-gradient(45deg, #38584319, #${color}19, #79BE9119)`
+								? `linear-gradient(45deg, #38584319, #${finalColor}19, #79BE9119)`
 								: "linear-gradient(to bottom, #38584319, #79BE9119)"
 						}}
 					>
 						<img
 							tw="mx-auto h-full opacity-60"
-							src={`http://localhost:3000/dna.png`}
+							src={`${env.NEXT_PUBLIC_APP_URL}/dna.png`}
 							alt="Dna image"
 							width={200}
 							height={1000}
@@ -84,11 +93,11 @@ export default async function handler(req: NextRequest) {
 							style={
 								isRare
 									? {
-											background: `linear-gradient(45deg, #385842, #${color}, #385842)`,
+											background: `linear-gradient(45deg, #385842, #${finalColor}, #385842)`,
 											backgroundClip: "text",
 											WebkitBackgroundClip: "text",
 											WebkitTextFillColor: "transparent",
-											textShadow: `0 0 20px #${color}33`
+											textShadow: `0 0 20px #${finalColor}33`
 										}
 									: {}
 							}
