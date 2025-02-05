@@ -3,6 +3,8 @@ package actions
 import (
 	"solver/internal/utils"
 	"sync"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -31,6 +33,7 @@ type Options struct {
 
 type OptionCacheKey struct {
 	chainId uint64
+	from    common.Address
 	action  string
 }
 
@@ -39,7 +42,7 @@ type CachedOptions struct {
 }
 
 type OptionsProvider interface {
-	GetOptions(chainId uint64, action string) (map[int]Options, error)
+	GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error)
 }
 
 type CachedOptionsProvider struct {
@@ -53,21 +56,18 @@ var (
 	providerMu      sync.RWMutex
 )
 
-// GetCachedOptionsProvider returns the singleton instance of CachedOptionsProvider
 func GetCachedOptionsProvider() *CachedOptionsProvider {
 	providerMu.RLock()
 	defer providerMu.RUnlock()
 	return defaultProvider
 }
 
-// SetCachedOptionsProvider sets the singleton instance of CachedOptionsProvider
 func SetCachedOptionsProvider(provider *CachedOptionsProvider) {
 	providerMu.Lock()
 	defaultProvider = provider
 	providerMu.Unlock()
 }
 
-// GetSupportedActions returns a list of all supported actions
 func GetSupportedActions() []string {
 	return []string{
 		ActionDeposit,
@@ -90,8 +90,16 @@ func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
-	key := OptionCacheKey{chainId: chainId, action: action}
+func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
+	if (from == common.Address{}) {
+		from = utils.ZeroAddress
+	}
+
+	key := OptionCacheKey{
+		chainId: chainId,
+		from:    from,
+		action:  action,
+	}
 
 	c.mu.RLock()
 	if cached, ok := c.cache[key]; ok {
@@ -100,7 +108,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	}
 	c.mu.RUnlock()
 
-	options, err := c.provider.GetOptions(chainId, action)
+	options, err := c.provider.GetOptions(chainId, from, action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
 	}
@@ -118,8 +126,12 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	return options, nil
 }
 
-func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
-	const maxWorkers = 4
+func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address, actions []string) {
+	if (from == common.Address{}) {
+		from = utils.ZeroAddress
+	}
+
+	const maxWorkers = 8
 	sem := make(chan struct{}, maxWorkers)
 
 	completed := 0
@@ -134,7 +146,7 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
 				completed++
 				mu.Unlock()
 			}()
-			if _, err := c.GetOptions(chainId, action); err != nil {
+			if _, err := c.GetOptions(chainId, from, action); err != nil {
 				// Silently continue on error
 			}
 		}(action)
@@ -149,6 +161,6 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
 type DefaultOptionsProvider struct{}
 
 // GetOptions implements OptionsProvider
-func (p *DefaultOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
+func (p *DefaultOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
 	return make(map[int]Options), nil
 }

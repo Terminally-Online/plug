@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"solver/internal/actions"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type YearnV3OptionsProvider struct{}
 
-func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
+func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
 	underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
 	if err != nil {
 		return nil, err

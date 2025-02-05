@@ -44,16 +44,16 @@ func main() {
 		actions.ActionBid,
 		actions.ActionRenew,
 	}
-	provider.PreWarmCache(8453, actionsList)
+	provider.PreWarmCache(8453, utils.ZeroAddress, actionsList)
 
 	var CronJobs = []struct {
 		Schedule string
 		Job      func()
 	}{
-		{"0 0 0 * * *", cron.AnonymousUsers},                                   // At the start of every day
-		{"0 */5 * * * *", cron.CollectibleMetadata},                            // Every 5 minutes
-		{"0 */5 * * * *", func() { provider.PreWarmCache(8453, actionsList) }}, // Every 5 minutes
-		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},               // Every 1 minute
+		{"0 0 0 * * *", cron.AnonymousUsers},                                                      // At the start of every day
+		{"0 */5 * * * *", cron.CollectibleMetadata},                                               // Every 5 minutes
+		{"0 */5 * * * *", func() { provider.PreWarmCache(8453, utils.ZeroAddress, actionsList) }}, // Every 5 minutes
+		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},                                  // Every 1 minute
 	}
 
 	schedule := scheduler.New()
