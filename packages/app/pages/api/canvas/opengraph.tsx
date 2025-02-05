@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import { NextRequest } from "next/server"
 import { ImageResponse } from "@vercel/og"
+import { env } from "@/env"
 
 export const config = {
   runtime: "edge",
@@ -132,7 +134,7 @@ export default async function handler(req: NextRequest) {
               >
                 <img
                   tw="w-8 h-8 rounded-[8px] mr-4"
-                  src={`${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : process.env.NEXT_PUBLIC_APP_URL}/protocols/${protocol.protocol}.png`}
+                  src={`${env.NEXT_PUBLIC_APP_URL ? `https://${env.NEXT_PUBLIC_APP_URL}` : env.NEXT_PUBLIC_APP_URL}/protocols/${protocol.protocol}.png`}
                   alt="fade"
                 />
                 <p tw="flex items-center">
@@ -181,7 +183,7 @@ export default async function handler(req: NextRequest) {
         >
           <img
             tw="w-16 h-16 mb-4 rounded-[8px] mr-4"
-            src={`${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : process.env.NEXT_PUBLIC_APP_URL}/protocols/plug.png`} 
+            src={`${env.NEXT_PUBLIC_APP_URL ? `https://${env.NEXT_PUBLIC_APP_URL}` : env.NEXT_PUBLIC_APP_URL}/protocols/plug.png`} 
             alt="fade"
           />
           {cleanedName}
