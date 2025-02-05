@@ -210,7 +210,7 @@ export const ConsoleOnboardingStepOne: FC<
 									<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
 										<Image
 											className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-											src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=${Math.floor(Math.random() * 100000)}`}
+											src={`http://localhost:3000/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}&number=${Math.floor(Math.random() * 100000)}`}
 											alt="Plug Founding Ticket"
 											width={1000}
 											height={1600}
