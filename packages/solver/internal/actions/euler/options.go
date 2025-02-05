@@ -104,7 +104,10 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.O
 			Name:  vault.VaultName,
 			Value: vault.Vault.String(),
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
-			Info: supplyApy,
+			Info: actions.OptionInfo{
+				Label: "Supply APY",
+				Value: supplyApy,
+			},
 		}
 		vaultOptions = append(vaultOptions, vaultOption)
 		tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
@@ -149,7 +152,10 @@ func GetBorrowTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.O
 			Name:  vault.VaultName,
 			Value: vault.Vault.String(),
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
-			Info: borrowApy,
+			Info: actions.OptionInfo{
+				Label: "Borrow APY",
+				Value: borrowApy,
+			},
 		}
 		vaultOptions = append(vaultOptions, vaultOption)
 		tokenToVaultOptions[tokenAddress] = append(tokenToVaultOptions[tokenAddress], vaultOption)
