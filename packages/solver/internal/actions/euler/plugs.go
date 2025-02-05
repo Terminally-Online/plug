@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"solver/bindings/erc_20"
 	"solver/bindings/euler_account_lens"
 	"solver/bindings/euler_evault_implementation"
 	"solver/bindings/euler_evc"
@@ -18,9 +19,10 @@ import (
 
 func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount string `json:"amount"`
-		Token string `json:"token"`
-		Target string `json:"target"`
+		Amount 			string `json:"amount"`
+		Token 			string `json:"token"`
+		Target 			string `json:"target"`
+		SubAccountIndex uint8  `json:"subAccountIndex"` 
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %v", err)
@@ -45,9 +47,17 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	if err != nil {
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
-	approveCalldata, err := vaultAbi.Pack(
+
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("Erc20")
+	}
+
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+
+	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault,
+		vault.Vault, // Who is the operator here, the evc or the vault?
 		amount,
 	)
 	if err != nil {
@@ -57,26 +67,34 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		params.From,
+		subAccountAddress,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
+	}
+	depositCall, err := WrapEVCCall(
+		params.ChainId,
+		vault.Vault,
+		subAccountAddress,
+		*big.NewInt(0),
+		depositCalldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
 	}
 
 	return []signature.Plug{{
 		To: *token,
 		Data: approveCalldata,
-	}, {
-		To: vault.Vault,
-		Data: depositCalldata,
-	}}, nil
+	}, depositCall}, nil
 }
 
 func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount string `json:"amount"`
-		Token string `json:"token"`
-		Target string `json:"target"`
+		Amount 			string `json:"amount"`
+		Token 			string `json:"token"`
+		Target 			string `json:"target"`
+		SubAccountIndex uint8 `json:"subAccountIndex"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit collateral inputs: %v", err)
@@ -97,13 +115,14 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
 
-	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, utils.ErrABI("EulerEvaultImplementation")
+		return nil, utils.ErrABI("Erc20")
 	}
-	approveCalldata, err := vaultAbi.Pack(
+
+	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault,
+		vault.Vault, // Who is the operator here, the evc or the vault?
 		amount,
 	)
 	if err != nil {
@@ -115,30 +134,57 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, utils.ErrABI("EulerEvc")
 	}
 
-	// TODO: All of these calls need to go through the evc call method and not to the vaults directly.
-	// The subaccounts need to be passed along as the receiver parameter and in the onBehalfOfAccount parameter on the call() function.
-	// Oh my fuck we have to manage their stupid ass virtual accounts here...
-	// I believe we have to make all calls through the evc call method in order for it manage sub accounts for us.
-	// enableCollateralCalldata, err := evc.Pack(
-	// 	""
+	vaultAbi, err := euler_evault_implementation.EulerEvaultImplementationMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("EulerEvaultImplementation")
+	}
 
+	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
 
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		params.From,
+		subAccountAddress,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	depositCall, err := WrapEVCCall(
+		params.ChainId,
+		vault.Vault,
+		subAccountAddress,
+		*big.NewInt(0),
+		depositCalldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
+	}
+
+	enableCollateralCalldata, err := evc.Pack(
+		"enableCollateral",
+		subAccountAddress,
+		vault.Vault,
+	)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
+
+	enableCollateralCall, err := WrapEVCCall(
+		params.ChainId,
+		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"]),
+		subAccountAddress,
+		*big.NewInt(0),
+		enableCollateralCalldata,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to wrap enable collateral call: %w", err)
+	}
+
 	return []signature.Plug{{
 		To: *token,
 		Data: approveCalldata,
-	}, {
-		To: vault.Vault,
-		Data: depositCalldata,
-	}}, nil
+	}, depositCall, enableCollateralCall}, nil
 }
 
 func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -344,7 +390,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to unmarshal constraint health factor inputs: %w", err)
 	}
 
-	thresholdFloat, err := strconv.ParseFloat(inputs.Threshold, 64)
+	_, err := strconv.ParseFloat(inputs.Threshold, 64)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse threshold: %w", err)
 	}
@@ -395,4 +441,47 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	return nil, nil
+}
+
+func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value big.Int, calldata []byte) (signature.Plug, error) {
+	evc, err := euler_evc.EulerEvcMetaData.GetAbi()
+	if err != nil {
+		return signature.Plug{}, utils.ErrABI("EulerEvc")
+	}
+
+	callCalldata, err := evc.Pack(
+		"call",
+		targetContract,
+		onBehalfOfAccount,
+		value,
+		calldata,
+	)
+	if err != nil {
+		return signature.Plug{}, utils.ErrTransaction(err.Error())
+	}
+
+	return signature.Plug{
+		To: common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
+		Data: callCalldata,
+	}, nil
+}
+
+func GetSubAccountAddress(account common.Address, index uint8) common.Address {
+	// Convert owner address to big.Int for bitwise operations
+    ownerInt := new(big.Int).SetBytes(account[:])
+    
+    // Create big.Int for accountId
+    accountIdInt := new(big.Int).SetUint64(uint64(index))
+    
+    // XOR operation
+    result := new(big.Int).Xor(ownerInt, accountIdInt)
+    
+    // Convert back to address
+    var subAccount common.Address
+    resultBytes := result.Bytes()
+    
+    // Ensure proper padding to 20 bytes (address length)
+    copy(subAccount[20-len(resultBytes):], resultBytes)
+    
+    return subAccount
 }
