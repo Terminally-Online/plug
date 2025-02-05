@@ -49,7 +49,7 @@ Table SocketIdentity {
   onboardingAt DateTime
   onboardedAt DateTime
   onboardingColor String
-  onboardingCount Int [not null, default: 0]
+  onboardingCount Int [increment, not null]
   socket UserSocket [not null]
   socketId String [pk]
   farcaster FarcasterUser

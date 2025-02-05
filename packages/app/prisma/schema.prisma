@@ -111,7 +111,7 @@ model SocketIdentity {
   onboardingAt    DateTime?
   onboardedAt     DateTime?
   onboardingColor String?
-  onboardingCount Int       @default(0)
+  onboardingCount Int       @default(autoincrement())
 
   // ---------------------------------------------------------------------------
   // One-to-one
