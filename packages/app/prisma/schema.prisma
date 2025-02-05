@@ -131,9 +131,11 @@ model UserSocket {
   // ---------------------------------------------------------------------------
   // Core
   // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+  onboardingColor   String?  // New field for storing the selected onboarding color
+  onboardingCount   Int      @default(0) // New field for autoincrementing count
 
   // ---------------------------------------------------------------------------
   // Fields

@@ -17,7 +17,8 @@ import {
 	Puzzle,
 	User,
 	Waypoints,
-	Copy
+	Copy,
+	ExternalLink
 } from "lucide-react"
 
 import plugCore from "@terminallyonline/plug-core/package.json"
@@ -48,10 +49,10 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-1">
-					<Link href={`${getBlockExplorerAddress(chainId as ChainId, session?.address)}`} className="flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(session?.address ?? "")}>
 						{formatAddress(session?.address ?? "")}
-						<Glasses size={14} className="opacity-20 cursor-pointer" onClick={() => navigator.clipboard.writeText(session?.address ?? "")} />
-					</Link>
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")} />
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -70,10 +71,10 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-1">
-					<Link href={`${getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress)}`} className="flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}>
 						{formatAddress(socket?.socketAddress)}
-						<Glasses size={14} className="opacity-20 cursor-pointer" onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")} />
-					</Link>
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")} />
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
