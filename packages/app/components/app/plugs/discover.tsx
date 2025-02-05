@@ -26,7 +26,6 @@ export const PlugsDiscover: FC<HTMLAttributes<HTMLDivElement> & { index?: number
 			return Array(12).fill(undefined)
 		}
 
-		// Filter plugs based on search text
 		return plugs.filter(plug => {
 			if (!search) return true
 			return plug.name.toLowerCase().includes(search.toLowerCase())

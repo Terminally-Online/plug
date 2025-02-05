@@ -1,11 +1,10 @@
-import { FC, HTMLAttributes } from "react"
+import { FC, HTMLAttributes, useState } from "react"
 
-import { Hash, X } from "lucide-react"
+import { Hash, SearchIcon, X } from "lucide-react"
 
 import { getInputPlaceholder } from "@terminallyonline/cord"
 
 import { Frame } from "@/components/app/frames/base"
-import { Checkbox } from "@/components/app/inputs/checkbox"
 import { Search } from "@/components/app/inputs/search"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Image } from "@/components/app/utils/image"
@@ -13,7 +12,6 @@ import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
-import { api } from "@/server/client"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
@@ -68,17 +66,16 @@ export const Sentence: FC<SentenceProps> = ({
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
 
+	const [search, setSearch] = useState("")
+
 	const parts = parsed
 		? parsed.template
-			// First split by input placeholders
-			.split(/(\{[^}]+\})/g)
-			// Then split each text part by spaces while preserving spaces
-			.map(part => {
-				if (part.match(/\{[^}]+\}/)) return [part]
-				return part.split(/(\s+)/g)
-			})
-			// Flatten the array
-			.flat()
+				.split(/(\{[^}]+\})/g)
+				.map(part => {
+					if (part.match(/\{[^}]+\}/)) return [part]
+					return part.split(/(\s+)/g)
+				})
+				.flat()
 		: []
 
 	const handleValue = (index: number, value: string, isNumber?: boolean) => {
@@ -96,9 +93,9 @@ export const Sentence: FC<SentenceProps> = ({
 					values:
 						nestedActionIndex === actionIndex
 							? {
-								...action.values,
-								[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
-							}
+									...action.values,
+									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
+								}
 							: action.values
 				}))
 			)
@@ -143,7 +140,7 @@ export const Sentence: FC<SentenceProps> = ({
 								/>
 							</div>
 
-							<div className="flex flex-wrap items-center">
+							<div className="flex flex-wrap items-center gap-y-1">
 								{parts.map((part, partIndex) => {
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
@@ -174,11 +171,11 @@ export const Sentence: FC<SentenceProps> = ({
 										(Array.isArray(sentenceOptions[optionsIndex])
 											? (sentenceOptions[optionsIndex] as Options)
 											: sentenceOptions &&
-												typeof sentenceOptions?.[optionsIndex] === "object" &&
-												dependentOnValue
+												  typeof sentenceOptions?.[optionsIndex] === "object" &&
+												  dependentOnValue
 												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
-												dependentOnValue
-												]
+														dependentOnValue
+													]
 												: undefined)
 									const isOptionBased = options !== undefined
 
@@ -187,6 +184,14 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
+									const filteredOptions =
+										options?.filter(
+											option =>
+												option.label.toLowerCase().includes(search.toLowerCase()) ||
+												option.name?.toLowerCase().includes(search.toLowerCase()) ||
+												option.value.toLowerCase().includes(search.toLowerCase())
+										) ?? []
+
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 										input.dependentOn === undefined
@@ -194,7 +199,7 @@ export const Sentence: FC<SentenceProps> = ({
 									const isValid = !isEmpty && !inputError && !error
 
 									return (
-										<span key={partIndex}>
+										<>
 											<button
 												className={cn(
 													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
@@ -260,153 +265,176 @@ export const Sentence: FC<SentenceProps> = ({
 												hasChildrenPadding={false}
 												scrollBehavior="partial"
 											>
-												<div className="flex flex-col gap-2 overflow-y-auto px-6">
-													{!isReady && (
-														<div className="mb-2 flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
-															<p className="mx-auto max-w-[380px]">
-																Please enter a value for{" "}
-																{
-																	parsed.inputs.find(
-																		i => i.index === input.dependentOn
-																	)?.name
-																}{" "}
-																before continuing.
-															</p>
-														</div>
-													)}
+												{column.frame === `${actionIndex}-${inputIndex}` ? (
+													<>
+														<div className="flex flex-col gap-2 overflow-y-auto px-6">
+															{!isReady && (
+																<div className="mb-2 flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
+																	<p className="mx-auto max-w-[380px]">
+																		Please enter a value for{" "}
+																		{
+																			parsed.inputs.find(
+																				i => i.index === input.dependentOn
+																			)?.name
+																		}{" "}
+																		before continuing.
+																	</p>
+																</div>
+															)}
 
-													{isReady && !isOptionBased && (
-														<Search
-															className="mb-4"
-															icon={<Hash size={14} />}
-															placeholder={getInputPlaceholder(input.type)}
-															search={value?.value}
-															handleSearch={data =>
-																handleValue(
-																	input.index,
-																	data,
-																	input.type?.toString().includes("int")
-																)
-															}
-															isNumber={
-																input.type?.toString().includes("int") ||
-																input.type?.toString().includes("float")
-															}
-															focus={true}
-														/>
-													)}
+															{isReady && !isOptionBased && (
+																<Search
+																	className="mb-4"
+																	icon={<Hash size={14} />}
+																	placeholder={getInputPlaceholder(input.type)}
+																	search={value?.value}
+																	handleSearch={data =>
+																		handleValue(
+																			input.index,
+																			data,
+																			input.type?.toString().includes("int")
+																		)
+																	}
+																	isNumber={
+																		input.type?.toString().includes("int") ||
+																		input.type?.toString().includes("float")
+																	}
+																	focus={true}
+																/>
+															)}
 
-													{isReady && isOptionBased && (
-														<>
-															<div className="mb-4 flex w-full flex-col gap-2">
-																{options.map((option, optionIndex) => (
-																	<div
-																		key={`${index}-${actionIndex}-${optionIndex}`}
-																		className="flex flex-row items-center gap-4"
-																	>
-																		<Checkbox
-																			checked={option.value === value?.value}
-																			handleChange={() =>
-																				handleValue(
-																					input.index,
-																					option.value === value?.value
-																						? ""
-																						: option.value
-																				)
-																			}
-																		/>
+															{isReady && isOptionBased && (
+																<>
+																	<Search
+																		icon={<SearchIcon size={14} />}
+																		placeholder="Search options"
+																		search={search}
+																		handleSearch={setSearch}
+																		focus
+																		clear
+																	/>
 
-																		<button
-																			key={`${index}-${actionIndex}-${optionIndex}`}
-																			className="group flex w-full flex-row items-center gap-4 truncate overflow-ellipsis whitespace-nowrap text-left font-bold"
-																			onClick={() =>
-																				handleValue(
-																					input.index,
-																					option.value === value?.value
-																						? ""
-																						: option.value
-																				)
-																			}
-																		>
-																			{option.icon && (
-																				<div className="min-w-6">
-																					<div className="flex items-center space-x-2">
-																						{option.icon
-																							.split("%7C")
-																							.map(icon =>
-																								decodeURIComponent(icon)
-																							)
-																							.map((icon, index) => (
-																								<div
-																									key={index}
-																									className="flex items-center"
-																								>
-																									<TokenImage
-																										logo={icon}
-																										symbol={
-																											option.label
+																	<div className="mb-4 flex w-full flex-col gap-2">
+																		{filteredOptions.map((option, optionIndex) => (
+																			<Accordion
+																				key={`${index}-${actionIndex}-${optionIndex}`}
+																				onExpand={() =>
+																					handleValue(
+																						input.index,
+																						option.value === value?.value
+																							? ""
+																							: option.value
+																					)
+																				}
+																				className="relative"
+																			>
+																				{option.value === value?.value && (
+																					<div className="absolute bottom-0 right-0 h-24 w-24 bg-plug-yellow blur-[80px] filter" />
+																				)}
+
+																				<div className="flex flex-row items-center gap-4">
+																					{option.icon && (
+																						<div className="flex items-center space-x-2">
+																							{option.icon
+																								.split("%7C")
+																								.map(icon =>
+																									decodeURIComponent(
+																										icon
+																									)
+																								)
+																								.map(
+																									(
+																										icon,
+																										tokenIndex
+																									) => (
+																										<TokenImage
+																											key={
+																												tokenIndex
+																											}
+																											logo={icon}
+																											symbol={
+																												option.label
+																											}
+																											className={cn(
+																												tokenIndex >
+																													0
+																													? "-ml-24"
+																													: ""
+																											)}
+																										/>
+																									)
+																								)}
+																						</div>
+																					)}
+																					<div className="flex w-full flex-col">
+																						<p className="flex w-full flex-row justify-between gap-2 truncate">
+																							{option.name}
+																							{option.info && (
+																								<span className="ml-auto tabular-nums">
+																									<Counter
+																										count={
+																											option.info
+																												.value
 																										}
-																										size="xs"
-																										blur={false}
-																										className={cn(
-																											index > 0
-																												? "-ml-4"
-																												: ""
-																										)}
 																									/>
-																								</div>
-																							))}
+																								</span>
+																							)}
+																						</p>
+																						<p className="flex flex-row justify-between gap-2 text-sm tabular-nums opacity-40">
+																							{option.label}
+																							{option.info && (
+																								<span className="ml-auto tabular-nums">
+																									{option.info.label}
+																								</span>
+																							)}
+																						</p>
 																					</div>
 																				</div>
-																			)}
-																			<span className="truncate">
-																				{option.name}
-																			</span>
-																			{option.info && (
-																				<span className="ml-auto tabular-nums opacity-40">
-																					<Counter count={option.info} />
-																				</span>
-																			)}
-																		</button>
+																			</Accordion>
+																		))}
 																	</div>
-																))}
-															</div>
-														</>
-													)}
-												</div>
-												<div className="mt-auto bg-white">
-													<div className="relative">
-														{options && options.length > 0 && (
-															<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
-														)}
-														<div className="mb-4 px-6">
-															<Button
-																variant={
-																	!isEmpty && !error ? "primary" : "primaryDisabled"
-																}
-																className="w-full py-4"
-																onClick={() =>
-																	frame(
-																		inputIndex + 1 < parsed.inputs.length
-																			? `${actionIndex}-${inputIndex + 1}`
-																			: undefined
-																	)
-																}
-																disabled={isEmpty || error}
-															>
-																{isOptionBased && isEmpty
-																	? "Choose option"
-																	: isEmpty || error
-																		? inputError?.message || "Enter value"
-																		: parsed.inputs.length - 1 > inputIndex
-																			? "Next"
-																			: "Done"}
-															</Button>
+																</>
+															)}
 														</div>
-													</div>
-												</div>
+														<div className="mt-auto bg-white">
+															<div className="relative">
+																{options && options.length > 0 && (
+																	<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
+																)}
+																<div className="mb-4 px-6">
+																	<Button
+																		variant={
+																			!isEmpty && !error
+																				? "primary"
+																				: "primaryDisabled"
+																		}
+																		className="w-full py-4"
+																		onClick={() =>
+																			frame(
+																				inputIndex + 1 < parsed.inputs.length
+																					? `${actionIndex}-${inputIndex + 1}`
+																					: undefined
+																			)
+																		}
+																		disabled={isEmpty || error}
+																	>
+																		{isOptionBased && isEmpty
+																			? "Choose option"
+																			: isEmpty || error
+																				? inputError?.message || "Enter value"
+																				: parsed.inputs.length - 1 > inputIndex
+																					? "Next"
+																					: "Done"}
+																	</Button>
+																</div>
+															</div>
+														</div>
+													</>
+												) : (
+													<></>
+												)}
 											</Frame>
-										</span>
+										</>
 									)
 								})}
 							</div>
@@ -430,8 +458,15 @@ export const Sentence: FC<SentenceProps> = ({
 				</div>
 			</Accordion>
 
-			{preview === false && actionIndex < plugActions.length - 1 && (
-				<div className="mx-auto h-2 w-[2px] bg-plug-green/5" />
+			{actionIndex < plugActions.length - 1 && (
+				<div
+					className={cn(
+						"mx-auto h-2 w-[2px]",
+						isValid && isComplete && !error
+							? "bg-plug-yellow hover:border-plug-yellow"
+							: "bg-plug-red hover:border-plug-red"
+					)}
+				/>
 			)}
 		</>
 	)

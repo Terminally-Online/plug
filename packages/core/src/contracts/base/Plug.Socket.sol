@@ -15,7 +15,8 @@ import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
 /**
  * @title Plug
  * @notice The core contract for the Plug framework extremely execution paths.
- * @author @nftchance (chance@onplug.io)
+ * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
+ * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
 contract PlugSocket is
     PlugSocketInterface,
@@ -25,23 +26,13 @@ contract PlugSocket is
     UUPSUpgradeable,
     ReentrancyGuard
 {
-    /// @dev Import the LibBitmap library from Solady
     using LibBitmap for LibBitmap.Bitmap;
-
-    /// @notice Use the ECDSA library for signature verification.
     using ECDSA for bytes32;
 
-    /// @dev Mapping of one-clickers to their allowed status.
     mapping(address oneClicker => bool allowed) public oneClickersToAllowed;
 
-    /// @dev Bitmap to track used nonces for each signer
     LibBitmap.Bitmap private nonces;
 
-    /*
-    * @notice The constructor for the Plug Socket will
-    *         initialize to address(1) when not deployed through
-    *         a Socket factory.
-    */
     constructor() {
         initialize(address(1), address(1));
     }
@@ -55,7 +46,7 @@ contract PlugSocket is
      */
     modifier enforceSignature(PlugTypesLib.LivePlugs calldata $input) {
         if (_enforceSignature($input) == false) {
-            revert PlugLib.SignatureInvalid();
+            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:signature-invalid");
         }
         _;
     }
@@ -67,7 +58,7 @@ contract PlugSocket is
      */
     modifier enforceSender() {
         if (_enforceSender(msg.sender) == false) {
-            revert PlugLib.SenderInvalid(msg.sender);
+            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:sender-invalid");
         }
         _;
     }
@@ -78,7 +69,6 @@ contract PlugSocket is
     function initialize(address $owner, address $oneClicker) public {
         _initializeOwner($owner);
 
-        /// @dev Automatically permission the primary platform one-clicker.
         if ($oneClicker != address(0)) {
             oneClickersToAllowed[$oneClicker] = true;
         }
@@ -94,9 +84,9 @@ contract PlugSocket is
         external
         payable
         virtual
-        enforceSignature($livePlugs)
         nonReentrant
-        returns (PlugTypesLib.Result[] memory $results)
+        enforceSignature($livePlugs)
+        returns (PlugTypesLib.Result memory $results)
     {
         $results = _plug($livePlugs.plugs, $solver);
     }
@@ -108,9 +98,9 @@ contract PlugSocket is
         external
         payable
         virtual
-        enforceSender
         nonReentrant
-        returns (PlugTypesLib.Result[] memory $results)
+        enforceSender
+        returns (PlugTypesLib.Result memory $results)
     {
         $results = _plug($plugs, address(0));
     }
@@ -151,66 +141,37 @@ contract PlugSocket is
      * @notice Execute a bundle of Plugs.
      * @param $plugs The Plugs to execute containing the bundle and side effects.
      * @param $solver Encoded data defining the Solver and compensation.
-     * @return $results The return data of the plugs.
      */
     function _plug(
         PlugTypesLib.Plugs calldata $plugs,
         address $solver
     )
         internal
-        returns (PlugTypesLib.Result[] memory $results)
+        returns (PlugTypesLib.Result memory $results)
     {
-        /// @dev Hash the body of the object to ensure the integrity of
-        ///      the (bundle of) Plugs that are being executed.
-        bytes32 plugsHash = getPlugsHash($plugs);
+        if ($plugs.solver.length != 0) {
+            (uint48 expiration, address solver) = abi.decode($plugs.solver, (uint48, address));
+            if (expiration < block.timestamp) {
+                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-expired");
+            }
+            if (solver != $solver) {
+                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-invalid");
+            }
+        }
 
-        /// @dev Load the Plug stack into memory for cheaper access.
-        uint256 length = $plugs.plugs.length;
-        $results = new PlugTypesLib.Result[](length);
-
-        /// @dev Save the object into memory to avoid multiple creations
-        ///      of the same object.
         PlugTypesLib.Plug calldata action;
-
-        /// @dev Iterate over the Plugs that are held within this bundle
-        ///      an execute each of them. Each respectively may be a
-        ///      condition being enforced or an outcome focused transaction.
-        for (uint256 i; i < length; i++) {
-            /// @dev Place the active Plug in the shorter reference stack.
+        uint256 length = $plugs.plugs.length;
+        for (uint8 i; i < length; i++) {
             action = $plugs.plugs[i];
 
-            /// @dev If the call has an associated value, ensure the contract
-            ///      has enough balance to cover the cost of the call.
-            if (address(this).balance < action.value) {
-                revert PlugLib.ValueInvalid(action.to, action.value, address(this).balance);
-            }
-
-            ($results[i].success, $results[i].result) =
-                action.to.call{ value: action.value }(action.data[1:]);
-
-            /// @dev If the call failed, bubble up the revert reason if needed.
-            PlugLib.bubbleRevert($results[i].success, $results[i].result);
-        }
-
-        /// @dev Pay the Solver for the gas used if it was not open-access.
-        if ($plugs.solver.length != 0) {
-            /// @dev Unpack the solver data from the encoded Solver data.
-            (uint48 expiration, address solver) = abi.decode($plugs.solver, (uint48, address));
-
-            /// @dev Confirm the Solver is allowed to execute the transaction.
-            ///      This is done here instead of a modifier so that the gas
-            ///      snapshot accounts for the additional gas cost of the require.
-            if (solver != $solver) {
-                revert PlugLib.SolverInvalid(solver, $solver);
-            }
-
-            /// @dev Confirm the order provided to the Solver has not expired.
-            if (expiration < block.timestamp) {
-                revert PlugLib.SolverExpired();
+            (bool success,) =
+                action.to.call{ value: action.value, gas: action.gas }(action.data[1:]);
+            if (!success) {
+                revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
             }
         }
 
-        emit PlugLib.PlugsExecuted(plugsHash, $results);
+        $results = PlugTypesLib.Result({ index: type(uint8).max, error: "" });
     }
 
     /**
@@ -226,21 +187,14 @@ contract PlugSocket is
         virtual
         returns (bool $allowed)
     {
-        /// @dev Recover the signer from the signature that was provided.
         address signer = getPlugsDigest($input.plugs).recover($input.signature);
-
-        /// @dev Extract nonce from the salt field (assuming it's the first 12 bytes -- 96 bits).
         uint256 nonce = uint256(uint96(bytes12($input.plugs.salt)));
-
-        /// @dev Confirm the nonce has not been used before.
         if (nonces.get(nonce) == true) {
-            revert PlugLib.NonceInvalid();
+            revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:nonce-invalid");
         }
 
-        /// @dev Use the nonce.
         nonces.set(nonce);
 
-        /// @dev Validate that the signer is allowed within context.
         $allowed = oneClickersToAllowed[signer] || owner() == signer;
     }
 

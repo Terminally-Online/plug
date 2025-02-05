@@ -9,17 +9,19 @@ import (
 )
 
 type SimulationRequest struct {
-	ChainId    uint64           `json:"chainId"`
-	From       common.Address   `json:"from"`
-	To         common.Address   `json:"to"`
-	Data       hexutil.Bytes    `json:"data,omitempty"`
-	GasLimit   *uint64          `json:"gasLimit,omitempty"`
-	Value      *big.Int         `json:"value,omitempty"`
-	AccessList types.AccessList `json:"accessList,omitempty"`
-	ABI        string           `json:"abi,omitempty"`
+	ExecutionId string           `json:"id"`
+	ChainId     uint64           `json:"chainId"`
+	From        common.Address   `json:"from"`
+	To          common.Address   `json:"to"`
+	Data        hexutil.Bytes    `json:"data,omitempty"`
+	GasLimit    *uint64          `json:"gasLimit,omitempty"`
+	Value       *big.Int         `json:"value,omitempty"`
+	AccessList  types.AccessList `json:"accessList,omitempty"`
+	ABI         string           `json:"abi,omitempty"`
 }
 
 type SimulationResponse struct {
+	ExecutionId  string     `json:"id"`
 	GasUsed      uint64     `json:"gasUsed"`
 	Success      bool       `json:"success"`
 	Data         OutputData `json:"data"`

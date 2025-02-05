@@ -3,15 +3,25 @@ package actions
 import (
 	"solver/internal/utils"
 	"sync"
-	"time"
 )
 
-type Option struct {
+const (
+	ActionUnstake = "unstake"
+	ActionClaim   = "claim"
+	ActionBridge  = "bridge"
+)
+
+type OptionInfo struct {
 	Label string `json:"label"`
-	Name  string `json:"name"`
 	Value string `json:"value"`
-	Icon  string `json:"icon,omitempty"`
-	Info  string `json:"info,omitempty"`
+}
+
+type Option struct {
+	Label string     `json:"label"`
+	Name  string     `json:"name"`
+	Value string     `json:"value"`
+	Icon  string     `json:"icon,omitempty"`
+	Info  OptionInfo `json:"info,omitempty"`
 }
 
 type Options struct {
@@ -26,7 +36,6 @@ type OptionCacheKey struct {
 
 type CachedOptions struct {
 	options map[int]Options
-	expiry  time.Time
 }
 
 type OptionsProvider interface {
@@ -37,6 +46,41 @@ type CachedOptionsProvider struct {
 	provider OptionsProvider
 	cache    map[OptionCacheKey]CachedOptions
 	mu       sync.RWMutex
+}
+
+var (
+	defaultProvider *CachedOptionsProvider
+	providerMu      sync.RWMutex
+)
+
+// GetCachedOptionsProvider returns the singleton instance of CachedOptionsProvider
+func GetCachedOptionsProvider() *CachedOptionsProvider {
+	providerMu.RLock()
+	defer providerMu.RUnlock()
+	return defaultProvider
+}
+
+// SetCachedOptionsProvider sets the singleton instance of CachedOptionsProvider
+func SetCachedOptionsProvider(provider *CachedOptionsProvider) {
+	providerMu.Lock()
+	defaultProvider = provider
+	providerMu.Unlock()
+}
+
+// GetSupportedActions returns a list of all supported actions
+func GetSupportedActions() []string {
+	return []string{
+		ActionDeposit,
+		ActionWithdraw,
+		ActionBorrow,
+		ActionRepay,
+		ActionSwap,
+		ActionStake,
+		ActionUnstake,
+		ActionClaim,
+		ActionRenew,
+		ActionBridge,
+	}
 }
 
 func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
@@ -50,7 +94,7 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	key := OptionCacheKey{chainId: chainId, action: action}
 
 	c.mu.RLock()
-	if cached, ok := c.cache[key]; ok && time.Now().Before(cached.expiry) {
+	if cached, ok := c.cache[key]; ok {
 		c.mu.RUnlock()
 		return cached.options, nil
 	}
@@ -68,7 +112,6 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, action string) (map[i
 	c.mu.Lock()
 	c.cache[key] = CachedOptions{
 		options: options,
-		expiry:  time.Now().Add(30 * time.Minute),
 	}
 	c.mu.Unlock()
 
@@ -100,4 +143,12 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, actions []string) {
 	for i := 0; i < maxWorkers; i++ {
 		sem <- struct{}{}
 	}
+}
+
+// DefaultOptionsProvider is a basic implementation of OptionsProvider
+type DefaultOptionsProvider struct{}
+
+// GetOptions implements OptionsProvider
+func (p *DefaultOptionsProvider) GetOptions(chainId uint64, action string) (map[int]Options, error) {
+	return make(map[int]Options), nil
 }

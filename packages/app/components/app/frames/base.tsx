@@ -55,7 +55,7 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 right-0 z-[10] cursor-pointer",
 							index === COLUMNS.MOBILE_INDEX ? "top-0" : "top-[60px]",
 							(handleBack === undefined || hasOverlay === true) &&
-								"bg-gradient-to-b from-plug-green/10 to-plug-green/20"
+								"rounded-b-lg bg-gradient-to-b from-plug-green/10 to-plug-green/20"
 						)}
 						onClick={() => handle.frame()}
 					/>
@@ -67,7 +67,7 @@ export const Frame: FC<Props> = ({
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						className={cn(
 							md ? "absolute" : "fixed",
-							"inset-0 top-auto max-h-[80vh] w-full rounded-t-lg bg-white",
+							"inset-0 top-auto max-h-[80vh] w-full rounded-lg bg-white",
 							scrollBehavior === "content" && "overflow-y-auto overflow-x-hidden",
 							className,
 							"z-[41]"
@@ -83,6 +83,7 @@ export const Frame: FC<Props> = ({
 								variant="frame"
 								size="md"
 								className="h-10"
+								icon={icon}
 								label={label}
 								nextOnClick={() => handle.frame()}
 								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}

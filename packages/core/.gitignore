@@ -1,3 +1,4 @@
+
 # Generated file. Do not edit directly.
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
@@ -184,6 +185,7 @@ typechain-types
 # Smart contract files
 cache
 artifacts
+broadcast
 create2crunch
 --branch-coverage
 report
@@ -191,3 +193,4 @@ lcov.info
 
 ./core
 ./contracts
+/lib/**

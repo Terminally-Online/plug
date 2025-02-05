@@ -123,12 +123,14 @@ export const ActivityItem: FC<{
 									<DateSince date={new Date(activity.createdAt)} />
 								</div>
 							</div>
-							<div className="flex w-full flex-row items-center justify-between text-sm font-bold text-black text-opacity-40">
+							<div className="flex w-full flex-row items-center justify-between gap-2 text-sm font-bold text-black text-opacity-40">
 								<p className="flex flex-row items-center gap-2">
 									<ChainImage chainId={activity.chainId as ChainId} size="xs" />
-									{formatTitle(activity.status)}
+									<span className="truncate overflow-ellipsis whitespace-nowrap">
+										{formatTitle(activity.status)}
+									</span>
 								</p>
-								<p className="flex flex-row gap-2">
+								<p className="flex flex-row gap-2 truncate overflow-ellipsis whitespace-nowrap">
 									<Counter count={activity.startAt.toLocaleDateString()} />
 									{activity.endAt ? (
 										<>

@@ -22,7 +22,7 @@ export const SocketTokenList: FC<
 	}
 > = memo(({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { tokens: apiTokens } = useHoldings(socket?.socketAddress)
+	const { tokens: apiTokens, lastUpdate } = useHoldings(socket?.socketAddress)
 
 	const tokens = columnTokens ?? apiTokens
 
@@ -35,7 +35,6 @@ export const SocketTokenList: FC<
 
 	const visibleTokens = useMemo(() => {
 		if (isAnonymous || tokens === undefined || (search === "" && tokens.length === 0)) {
-			console.log("returning empty array")
 			return Array(5).fill(undefined)
 		}
 

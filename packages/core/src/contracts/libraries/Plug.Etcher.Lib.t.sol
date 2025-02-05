@@ -14,10 +14,6 @@ contract DeploymentTest is Test {
         PlugEtcherLib.plugSocket();
     }
 
-    function test_PlugTreasuryDeployment() public {
-        PlugEtcherLib.plugTreasury();
-    }
-
     function test_PlugDeployment() public {
         PlugEtcherLib.plug();
     }

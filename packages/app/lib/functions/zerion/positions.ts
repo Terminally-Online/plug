@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 
 import axios from "axios"
 
-import { NATIVE_TOKEN_ADDRESS, TOKENS } from "@/lib/constants"
+import { NATIVE_TOKEN_ADDRESS } from "@/lib/constants"
 import { ZerionPositions } from "@/lib/types"
 import { db } from "@/server/db"
 
@@ -33,8 +33,9 @@ const prohibitedNameInclusions = [
 
 const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdrop", "visit"]
 
-const MINUTE = 60 * 1000
-const POSITIONS_CACHE_TIME = 60 * MINUTE
+const SECOND = 1000
+// const MINUTE = 60 * second
+const POSITIONS_CACHE_TIME = 60 * SECOND
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
 	const response = await axios.get(
@@ -82,10 +83,10 @@ const getZerionPositions = async (chains: string[], socketId: string, socketAddr
 
 			// If Zerion does not have an icon for the fungible, try to find a static token.
 			let icon = attributes.fungible_info.icon?.url ?? "" // Initialize with empty string
-			if (!icon) {
-				const staticToken = TOKENS.find(t => t.symbol === attributes.fungible_info.symbol)
-				if (staticToken?.logoURI) icon = staticToken.logoURI
-			}
+			// if (!icon) {
+			// 	const staticToken = TOKENS.find(t => t.symbol === attributes.fungible_info.symbol)
+			// 	if (staticToken?.logoURI) icon = staticToken.logoURI
+			// }
 			// If we still don't have an icon, try to find it from the llamas.
 			if (!icon) {
 				const implementation = implementations.sort((a, b) => getChainId(b.chain) - getChainId(a.chain))[0]
@@ -420,6 +421,7 @@ export const getPositions = async (address: string, socketAddress?: string, sear
 	// Socket: `0x612...49d-0x524...c3b`.
 	// ...
 	// This method while a bit less readable, it confirms that we only ever enable users
+	// p
 	// to retrieve collectibles for their own address as well as the address of their socket.
 	const id = `${socket.id}-${socketAddress}`
 	const cachedPositions = await db.positionCache.findUnique({

@@ -26,7 +26,7 @@ interface PlugSocketInterface {
     )
         external
         payable
-        returns (PlugTypesLib.Result[] memory $results);
+        returns (PlugTypesLib.Result memory $results);
 
     /**
      * @notice Allows anyone to submit a plugs of signed plugs for processing.
@@ -37,5 +37,5 @@ interface PlugSocketInterface {
     function plug(PlugTypesLib.Plugs calldata $plugs)
         external
         payable
-        returns (PlugTypesLib.Result[] memory $results);
+        returns (PlugTypesLib.Result memory $results);
 }

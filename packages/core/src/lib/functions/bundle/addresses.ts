@@ -1,4 +1,5 @@
 import addresses from '../../addresses.json'
+import { version } from 'package.json'
 import {
 	ByteArray,
 	bytesToHex,
@@ -16,10 +17,12 @@ export const getSocketSalt = (nonce: bigint, admin: `0x${string}`) => {
 }
 
 export const getSocketAddress = (salt: ByteArray) => {
-	const socketImplementation = addresses['Plug.Socket.sol']
+	const versioned = addresses[version as keyof typeof addresses]
+	const socketImplementation = versioned.contracts['Plug.Socket.sol']
 	const address = getContractAddress({
 		bytecodeHash: socketImplementation.initCodeHash as `0x${string}`,
-		from: addresses['Plug.Factory.sol'].deployment.address as `0x${string}`,
+		from: versioned.contracts['Plug.Factory.sol'].deployment
+			.address as `0x${string}`,
 		opcode: 'CREATE2',
 		salt
 	})

@@ -2,7 +2,6 @@ export * from "./analytics"
 export * from "./chains"
 export * from "./colors"
 export * from "./routes"
-export * from "./tokens"
 export * from "./wallet"
 
 export const tags = [
@@ -29,3 +28,5 @@ export const sunGradientStyle = {
 	WebkitBackgroundClip: "text",
 	WebkitTextFillColor: "transparent"
 }
+
+export const NATIVE_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"

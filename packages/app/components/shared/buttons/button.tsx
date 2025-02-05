@@ -15,7 +15,7 @@ const variants: Record<NonNullable<Props["variant"]>, string> = {
 	primary:
 		"relative bg-plug-yellow text-plug-green transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap border-plug-yellow hover:brightness-105 cursor-pointer",
 	primaryDisabled:
-		"relative bg-white text-plug-green border-[1px] border-plug-green transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
+		"relative bg-plug-green text-plug-yellow border-[1px] border-plug-green transition-all duration-200 ease-in-out before:transition-all before:duration-200 before:ease-in-out whitespace-nowrap",
 	secondary:
 		"bg-white border-[1px] border-plug-green/10 text-black hover:bg-plug-green/10 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-plug-green/5 [&.active]:text-opacity-100 [&.active]:hover:bg-plug-green/10 [&.active]:hover:border-plug-green/5",
 	white: "bg-white text-black hover:bg-opacity-80",

@@ -16,8 +16,9 @@ export const Checkbox: FC<Props> = ({ checked, handleChange, disabled = false })
 		className={cn(
 			"h-min w-min rounded-xs border-2",
 			disabled === false
-				? "cursor-pointer border-plug-yellow"
-				: "cursor-not-allowed border-plug-yellow/10"
+				? "cursor-pointer border-plug-green"
+				: "cursor-not-allowed border-plug-green/10",
+			checked && "bg-plug-yellow border-plug-yellow text-plug-green"
 		)}
 		onClick={() => disabled === false && handleChange(!checked)}
 	>

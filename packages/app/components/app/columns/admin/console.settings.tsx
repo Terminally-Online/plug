@@ -1,6 +1,6 @@
 import { FC, HTMLAttributes } from "react"
 
-import { useAccount, useChainId } from "wagmi"
+import { useChainId } from "wagmi"
 
 import {
 	BookUser,
@@ -16,16 +16,19 @@ import {
 	MessageCircleIcon,
 	Puzzle,
 	User,
-	Waypoints
+	Waypoints,
+	Copy,
+	ExternalLink
 } from "lucide-react"
 
 import plugCore from "@terminallyonline/plug-core/package.json"
 
-import { ChainId, formatAddress, getChainName, useConnect } from "@/lib"
+import { ChainId, formatAddress, getBlockExplorerAddress, getChainName } from "@/lib"
 import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 
 export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
@@ -45,7 +48,12 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-4">{formatAddress(session?.address ?? "")}</span>
+				<span className="group ml-auto flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(session?.address ?? "")}>
+						{formatAddress(session?.address ?? "")}
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, session?.address), "_blank")} />
+				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<Waypoints size={14} className="opacity-20" />
@@ -62,8 +70,11 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
 				<BookUser size={14} className="opacity-20" />
 				<span className="opacity-40">Address</span>{" "}
-				<span className="group ml-auto flex flex-row items-center gap-4">
-					{formatAddress(socket?.socketAddress)}
+				<span className="group ml-auto flex flex-row items-center gap-1">
+					<span className="cursor-pointer" onClick={() => navigator.clipboard.writeText(socket?.socketAddress ?? "")}>
+						{formatAddress(socket?.socketAddress)}
+					</span>
+					<ExternalLink size={14} className="opacity-20 cursor-pointer" onClick={() => window.open(getBlockExplorerAddress(chainId as ChainId, socket?.socketAddress), "_blank")} />
 				</span>
 			</p>
 			<p className="flex flex-row items-center justify-between gap-2 font-bold">
@@ -162,6 +173,6 @@ export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 				<span className="opacity-40">Core</span>{" "}
 				<span className="group ml-auto flex flex-row items-center gap-4">v{plugCore.version}</span>
 			</p>
-		</div>
+		</div >
 	)
 }

@@ -22,8 +22,10 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 	const { plugs } = usePlugStore()
 
 	const visiblePlugs = useMemo(() => {
-		return plugs.filter(plug => plug.socketId === session?.user?.id)
-	}, [plugs, session?.user?.id])
+		return plugs
+			.filter(plug => plug.socketId === session?.user?.id)
+			.filter(plug => search === "" || plug.name.toLowerCase().includes(search.toLowerCase()))
+	}, [plugs, session?.user?.id, search])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>

@@ -1,4 +1,6 @@
 import { FC, useMemo } from "react"
+import { connectedChains } from "@/contexts"
+import { Chain } from "@/lib/types"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Callout } from "@/components/app/utils/callout"
@@ -26,12 +28,15 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 	const baseSuggestions = useMemo(
 		() =>
-			Object.entries(solverActions).flatMap(([protocol, actions]) =>
-				Object.keys(actions.schema).map(action => ({
+			Object.entries(solverActions).flatMap(([protocol, actions]) => {
+				// Filter protocols that don't support any connected chains
+				const chains = actions.metadata.chains
+				if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain))) return []				
+				return Object.keys(actions.schema).map(action => ({
 					protocol,
 					action
 				}))
-			),
+			}),
 		[solverActions]
 	)
 

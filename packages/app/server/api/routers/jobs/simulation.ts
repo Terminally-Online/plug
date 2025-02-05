@@ -66,15 +66,16 @@ export const simulation = createTRPCRouter({
 			z.array(
 				z.object({
 					id: z.string(),
-					status: z.string(),
-					error: z.string().optional(),
-					errors: z.array(z.string()).optional(),
-					gasEstimate: z.number().optional()
+					success: z.boolean(),
+					gasUsed: z.number().optional(),
+					errorMessage: z.string().optional(),
 				})
 			)
 		)
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
+				console.log('input', input)
+
 				return await Promise.all(
 					input.map(async simulation => {
 						const execution = await tx.execution.findUnique({
@@ -85,7 +86,9 @@ export const simulation = createTRPCRouter({
 						if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
 						if (execution.status !== "processing") throw new TRPCError({ code: "BAD_REQUEST" })
 
-						const nextSimulation = getNextSimulationAt(execution, simulation)
+
+						const status = simulation.success ? "success" : "failure"
+						const nextSimulation = getNextSimulationAt(execution, { status })
 
 						await tx.execution.update({
 							where: { id: simulation.id },
@@ -98,11 +101,11 @@ export const simulation = createTRPCRouter({
 
 						const { id } = await tx.simulation.create({
 							data: {
-								status: simulation.status,
+								status,
 								executionId: simulation.id,
-								error: simulation.error,
-								errors: simulation.errors,
-								gasEstimate: simulation.gasEstimate
+								error: simulation.errorMessage,
+								// errors: simulation.errors,
+								gasEstimate: simulation.gasUsed
 							},
 							select: { id: true }
 						})

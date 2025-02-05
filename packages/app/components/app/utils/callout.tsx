@@ -1,5 +1,6 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
 
+import { HTMLMotionProps, motion } from "framer-motion"
 import { Loader } from "lucide-react"
 
 import { Button } from "@/components/shared/buttons/button"
@@ -10,19 +11,22 @@ import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
 const Base: FC<
-	PropsWithChildren<Omit<HTMLAttributes<HTMLDivElement>, "title" | "description">> & {
+	PropsWithChildren & {
 		title: ReactNode | JSX.Element | string
 		description?: JSX.Element | string
+		className?: string
 	}
-> = ({ title, description, children, className, ...props }) => (
-	<div
+> = ({ title, description, children, className }) => (
+	<motion.div
 		className={cn("flex h-full flex-col items-center justify-center gap-2 text-center font-bold", className)}
-		{...props}
+		initial={{ opacity: 0 }}
+		animate={{ opacity: 1 }}
+		transition={{ duration: 0.2 }}
 	>
 		<p className="max-w-[280px] text-xl">{title}</p>
 		{description && <p className="max-w-[300px] text-sm text-black text-opacity-40">{description}</p>}
 		{children && <div className="mt-4 flex flex-row gap-2">{children}</div>}
-	</div>
+	</motion.div>
 )
 const Anonymous: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "id" | "title" | "description"> & {
@@ -165,18 +169,20 @@ const EmptyPlugs: FC<
 > = ({ index, isEmpty, className, ...props }) => {
 	const { column } = useColumnData(index)
 	const { handle } = usePlugStore()
+
 	if (!column || isEmpty === false) return null
+
 	return (
 		<>
 			<div
-				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				className="pointer-events-none absolute left-0 right-0 top-0 z-[9999] h-full bg-gradient-to-b"
 				style={{
 					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
 				}}
 			/>
 
 			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0", className)}
+				className={cn("absolute bottom-0 left-0 right-0 top-0 z-[99999]", className)}
 				title="Nothing to see here, yet."
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}

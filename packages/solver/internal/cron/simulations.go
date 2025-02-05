@@ -3,6 +3,7 @@ package cron
 import (
 	"log"
 	"solver/internal/solver"
+	"solver/internal/solver/simulation"
 )
 
 func Simulations(s solver.Solver) {
@@ -18,7 +19,7 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	var simulations []solver.SimulationRequest
+	var simulationResponses []simulation.SimulationResponse
 	for _, execution := range executions.Result.Data.Json {
 		transactions, err := s.GetTransactions(execution)
 		if err != nil {
@@ -26,29 +27,26 @@ func Simulations(s solver.Solver) {
 		}
 		plugs, err := s.GetPlugs(execution.ChainId, execution.From, transactions)
 		if err != nil {
-			simulations = append(simulations, solver.SimulationRequest{
-				Id:     execution.Id,
-				Status: "failure",
-				Error:  err.Error(),
+			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
+				Success: false,
 			})
 			continue
 		}
-		simulation, err := s.GetSimulation(execution.Id, plugs)
+		_, simulationResponse, err := s.GetSimulation(execution.Id, execution.ChainId, plugs)
 		if err != nil {
-			simulations = append(simulations, solver.SimulationRequest{
-				Id:     execution.Id,
-				Status: "failure",
-				Error:  err.Error(),
+			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
+				Success: false,
 			})
 			continue
 		}
-		simulations = append(simulations, simulation)
+
+		simulationResponses = append(simulationResponses, simulationResponse)
 	}
-	if len(simulations) == 0 {
+	if len(simulationResponses) == 0 {
 		return
 	}
 
-	if err := s.PostSimulations(simulations); err != nil {
+	if err := s.PostSimulations(simulationResponses); err != nil {
 		log.Println(err.Error())
 	}
 }

@@ -12,6 +12,7 @@ import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc
 
 import { balances } from "./balances"
 import { companion } from "./companion"
+import { onboard } from "./onboard"
 import { referral } from "./referral"
 import { stats } from "./stats"
 
@@ -212,5 +213,6 @@ export const socket = createTRPCRouter({
 	balances,
 	companion,
 	referral,
-	stats
+	stats,
+	onboard
 })

@@ -13,6 +13,14 @@ const (
 	LIVE_PLUGS_TYPEHASH    = "0x049e34029d287aa78a0f5a45ebdf78081b3357f85f5ab4cfcffb786eff0b3375"
 )
 
+type Transaction struct {
+	From  common.Address `json:"from"`
+	To    common.Address `json:"to"`
+	Data  []byte         `json:"data"`
+	Value *big.Int       `json:"value"`
+	Gas   *big.Int       `json:"gas"`
+}
+
 type EIP712Domain struct {
 	Name              string         `json:"name"`
 	Version           string         `json:"version"`
@@ -24,6 +32,7 @@ type Plug struct {
 	To        common.Address `json:"to"`
 	Data      []byte         `json:"data"`
 	Value     *big.Int       `json:"value"`
+	Gas       *big.Int       `json:"gas"`
 	Exclusive bool           `json:"exclusive,omitempty"`
 	Meta      interface{}    `json:"meta,omitempty"`
 }

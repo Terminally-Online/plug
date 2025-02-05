@@ -43,7 +43,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, action string) (map[int
 			for _, opt := range append(collateralOptions, borrowOptions...) {
 				if !seen[opt.Value] {
 					seen[opt.Value] = true
-					opt.Info = ""
+					opt.Info = actions.OptionInfo{}
 					options = append(options, opt)
 				}
 			}
@@ -102,7 +102,10 @@ func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
-			Info:  rate,
+			Info: actions.OptionInfo{
+				Label: "Rate",
+				Value: rate,
+			},
 			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
 		})
 	}
@@ -138,7 +141,10 @@ func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
 			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
-			Info:  rate,
+			Info: actions.OptionInfo{
+				Label: "Rate",
+				Value: rate,
+			},
 			Value: fmt.Sprintf("%s:%d", reserve.UnderlyingAsset.String(), uint8(reserve.Decimals.Uint64())),
 		})
 	}

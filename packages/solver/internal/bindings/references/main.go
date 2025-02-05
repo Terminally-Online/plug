@@ -56,6 +56,11 @@ var (
 				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
 				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
 			},
+			"plug": {
+				"router":  "0x0000000021EAfaa2A0ADeec53B7E25F662920212",
+				"factory": "0x0000000030c2d2825F563E2F7b78943B0Ea9D145",
+				"socket":  "0x0000000011A65597897563205669f9c46dEEE244",
+			},
 			"weth": {
 				"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 			},
@@ -95,6 +100,11 @@ var (
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
 			},
+			"plug": {
+				"router":  "0x0000000021EAfaa2A0ADeec53B7E25F662920212",
+				"factory": "0x0000000030c2d2825F563E2F7b78943B0Ea9D145",
+				"socket":  "0x0000000011A65597897563205669f9c46dEEE244",
+			},
 			"weth": {
 				"address": "0x4200000000000000000000000000000000000006",
 			},
@@ -111,6 +121,18 @@ var (
 )
 
 func GenerateReference(explorer string, folderName string, contractName string, address string, retries int) error {
+	fileName := fmt.Sprintf("%s.json", contractName)
+	referencePath := filepath.Join(".", "abis", folderName, fileName)
+
+	if _, err := os.Stat(referencePath); err == nil {
+		fmt.Printf("ABI file already exists for %s/%s at %s, skipping generation\n", folderName, contractName, referencePath)
+		return nil
+	}
+
+	if err := os.MkdirAll(filepath.Dir(referencePath), 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
 	url := fmt.Sprintf("%s?module=contract&action=getsourcecode&address=%s&apiKey=%s", explorer, address, os.Getenv("ETHERSCAN_API_KEY"))
 	resp, err := http.Get(url)
 	if err != nil {
@@ -198,13 +220,6 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	formattedABI, err := json.MarshalIndent(abiJSON, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to format ABI JSON: %v", err)
-	}
-
-	fileName := fmt.Sprintf("%s.json", contractName)
-	referencePath := filepath.Join(".", "abis", folderName, fileName)
-
-	if err := os.MkdirAll(filepath.Dir(referencePath), 0755); err != nil {
-		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
 	err = os.WriteFile(referencePath, formattedABI, 0644)

@@ -1,5 +1,5 @@
+import packageJson from '@/package.json'
 import { exec, execSync } from 'child_process'
-import dedent from 'dedent'
 import { default as fs } from 'fs-extra'
 
 import { constantContracts, etchContracts } from '@/src/lib/constants'
@@ -7,6 +7,8 @@ import { Contract } from '@/src/lib/types'
 
 const efficientAddressesPath = 'create2crunch/efficient_addresses.txt'
 
+let version = packageJson.version
+let last = packageJson.version
 let crunchSeconds = 15
 let crunchLeading = 5
 let crunchTotal = 7
@@ -21,212 +23,302 @@ let match = ''
 // Remove the first two elements (tsx lib/functions/mine.ts)
 const args = process.argv.slice(2)
 args.forEach(arg => {
-	const [key, value] = arg.split('=')
-	switch (key) {
-		case '--seconds':
-			crunchSeconds = parseInt(value, 10)
-			break
-		case '--leading':
-			crunchLeading = parseInt(value, 10)
-			break
-		case '--total':
-			crunchTotal = parseInt(value, 10)
-			break
-		case '--addresses':
-			crunchAddresses = parseInt(value, 10)
-			break
-		case '--factory':
-			factoryAddress = value
-			break
-		case '--caller':
-			callerAddress = value
-			break
-		case '--quick':
-			quick = true
-			break
-		case '--match':
-			match = value
-			break
-		case '--force':
-			force = true
-			break
-		case '--install':
-			install = true
-			break
-	}
+    const [key, value] = arg.split('=')
+    switch (key) {
+        case '--version':
+            version = value
+            break
+        case '--last':
+            last = value
+            break
+        case '--seconds':
+            crunchSeconds = parseInt(value, 10)
+            break
+        case '--leading':
+            crunchLeading = parseInt(value, 10)
+            break
+        case '--total':
+            crunchTotal = parseInt(value, 10)
+            break
+        case '--addresses':
+            crunchAddresses = parseInt(value, 10)
+            break
+        case '--factory':
+            factoryAddress = value
+            break
+        case '--caller':
+            callerAddress = value
+            break
+        case '--quick':
+            quick = true
+            break
+        case '--match':
+            match = value
+            break
+        case '--force':
+            force = true
+            break
+        case '--install':
+            install = true
+            break
+    }
 })
 
 const create2 = () => {
-	execSync(`rm -rf create2crunch`)
+    execSync(`rm -rf create2crunch`)
 
-	if (install)
-		execSync(
-			`sudo apt install build-essential -y; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; source "$HOME/.cargo/env";`
-		)
+    if (install)
+        execSync(
+            `sudo apt install build-essential -y; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; source "$HOME/.cargo/env";`
+        )
 
-	execSync(
-		`git clone https://github.com/0age/create2crunch && cd create2crunch; sed -i -e 's/0x4/0x40/g' src/lib.rs`
-	)
+    execSync(
+        `git clone https://github.com/0age/create2crunch && cd create2crunch; sed -i -e 's/0x4/0x40/g' src/lib.rs`
+    )
 }
 
 const prepare = (): Record<
-	string,
-	{
-		initCode: string
-		initCodeHash: string
-		deployment: Record<'salt' | 'address' | 'rarity', string>
-	}
+    string,
+    {
+        config: {
+            seconds: number
+            leading: number
+            total: number
+            addresses: number
+            factory: string
+            caller: string
+            quick: boolean
+        }
+        contracts: Record<
+            string,
+            {
+                initCode: string
+                initCodeHash: string
+                deployment: Record<'salt' | 'address' | 'rarity', string>
+            }
+        >
+    }
 > => {
-	create2()
+    create2()
 
-	// ? Create and read addresses.json with the addresses that have already been mined.
-	if (!fs.existsSync('src/lib/addresses.json')) {
-		fs.writeFileSync('src/lib/addresses.json', '{}')
-	}
-	const addressesJson = fs.readFileSync('src/lib/addresses.json')
+    // ? Create and read addresses.json with the addresses that have already been mined.
+    if (!fs.existsSync('src/lib/addresses.json')) {
+        fs.writeFileSync('src/lib/addresses.json', '{}')
+    }
+    const addressesJson = fs.readFileSync('src/lib/addresses.json')
 
-	return JSON.parse(addressesJson.toString())
+    return JSON.parse(addressesJson.toString())
 }
 
 const mine = async (contract: Contract): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		console.log(dedent`
-            ⏹︎ Generating efficient address:
-                Contract Name: ${contract.name}
-                Seconds: ${crunchSeconds}
-                Leading: ${crunchLeading}
-                Total: ${crunchTotal}
-                Quick: ${quick}
-        `)
+    return new Promise((resolve, reject) => {
+        console.log(`⚡ Mining address for ${contract.name}`)
+        console.log(`	- Seconds: ${crunchSeconds}`)
+        console.log(`	- Leading: ${crunchLeading}`)
+        console.log(`	- Total: ${crunchTotal}`)
+        console.log(`	- Quick: ${quick}`)
 
-		const artifactPath = `artifacts/${contract.name}/`
-		const contractName = contract.name
-			.replaceAll('.sol', '')
-			.replaceAll('.', '')
-		const initCodePath = `${artifactPath}${contractName}.initcode.json`
-		const initCodeJson = JSON.parse(
-			fs.readFileSync(initCodePath).toString()
-		)
-		const initCode = initCodeJson['initcode']
-		const initCodeHash = initCodeJson['initcodeHash']
+        const artifactPath = `artifacts/${contract.name}/`
+        const contractName = contract.name
+            .replaceAll('.sol', '')
+            .replaceAll('.', '')
+        const initCodePath = `${artifactPath}${contractName}.initcode.json`
+        const initCodeJson = JSON.parse(
+            fs.readFileSync(initCodePath).toString()
+        )
+        const initCode = initCodeJson['initcode']
+        const initCodeHash = initCodeJson['initcodeHash']
 
-		// ? Check if the initCodeHash is already in the addresses.json file and has a matching address.
-		if (force == false) {
-			const hasOwnProperty = addresses.hasOwnProperty(contract.name)
-			const property = addresses[contract.name]
-			if (hasOwnProperty && property.initCodeHash == initCodeHash) {
-				console.log(
-					`✨︎ Skipping ${contract.name} as it already exists in the addresses.json file and has not changed.`
-				)
-				console.log(`	- Use --force to overwrite.`)
-				return resolve()
-			}
-		}
+        if (force == false) {
+            // Check current version first
+            const hasCurrentVersion = addresses.hasOwnProperty(version)
+            const hasCurrentContract =
+                hasCurrentVersion &&
+                addresses[version].contracts.hasOwnProperty(contract.name)
+            const currentProperty = hasCurrentContract
+                ? addresses[version].contracts[contract.name]
+                : null
 
-		// ? Start the heartbeat before beginning the mining so that we can check if the mining is still running.
-		const interval = setInterval(() => {
-			if (fs.existsSync(efficientAddressesPath) == false) {
-				return
-			}
+            // Check last version
+            const hasLastVersion = addresses.hasOwnProperty(last)
+            const hasLastContract =
+                hasLastVersion &&
+                addresses[last].contracts.hasOwnProperty(contract.name)
+            const lastProperty = hasLastContract
+                ? addresses[last].contracts[contract.name]
+                : null
 
-			const efficientAddresses = fs
-				.readFileSync(efficientAddressesPath)
-				.toString()
+            // Skip if contract exists in current version with same hash
+            if (currentProperty && currentProperty.initCodeHash == initCodeHash) {
+                console.log(`⏭️  Skipping ${contract.name}`)
+                console.log(`	- Already exists in version ${version}`)
+                console.log(`	- InitCodeHash unchanged`)
+                console.log(`	- Use --force to overwrite`)
+                return resolve()
+            }
 
-			let running = false
-			if (efficientAddresses == '') running = true
-			else if (
-				quick == false &&
-				efficientAddresses.split('\n').length < crunchAddresses
-			)
-				running = true
+            // Skip if contract exists in last version with same hash (hasn't changed)
+            if (lastProperty && lastProperty.initCodeHash == initCodeHash) {
+                console.log(`⏭️  Skipping ${contract.name}`)
+                console.log(`	- Exists in version ${last}`)
+                console.log(`	- InitCodeHash unchanged`)
+                console.log(`	- Use --force to overwrite`)
 
-			if (running) return
+                // Copy the contract data to the current version
+                if (!addresses[version]) {
+                    addresses[version] = {
+                        config: {
+                            seconds: crunchSeconds,
+                            leading: crunchLeading,
+                            total: crunchTotal,
+                            addresses: crunchAddresses,
+                            factory: factoryAddress,
+                            caller: callerAddress,
+                            quick: quick
+                        },
+                        contracts: {}
+                    }
+                }
+                addresses[version].contracts[contract.name] = {
+                    ...lastProperty
+                }
 
-			process.kill()
-			clearInterval(interval)
+                console.log(`📋 Copied contract data to version ${version}`)
+                return resolve()
+            }
 
-			let results = efficientAddresses
-				.split('\n')
-				.map((address: string) => address.split(' => '))
-				.sort(
-					(a: Array<string>, b: Array<string>) =>
-						parseInt(a[1]) - parseInt(b[1])
-				)
+            if (lastProperty) {
+                console.log(`🔄 Changes detected in ${contract.name}`)
+                console.log(`	- Previous version: ${last}`)
+                console.log(`	- Old hash: ${lastProperty.initCodeHash}`)
+                console.log(`	- New hash: ${initCodeHash}`)
+            }
+        }
 
-			const [salt, address, rarity] = results[0]
+        // ? Start the heartbeat before beginning the mining so that we can check if the mining is still running.
+        const interval = setInterval(() => {
+            if (fs.existsSync(efficientAddressesPath) == false) {
+                return
+            }
 
-			addresses[contract.name] = {
-				initCode,
-				initCodeHash: initCodeHash,
-				deployment: { salt, address, rarity }
-			}
+            const efficientAddresses = fs
+                .readFileSync(efficientAddressesPath)
+                .toString()
 
-			// ? Clear the efficient addresses file so that we have a clean slate for the next contract.
-			fs.writeFileSync(efficientAddressesPath, '')
+            let running = false
+            if (efficientAddresses == '') running = true
+            else if (
+                quick == false &&
+                efficientAddresses.split('\n').length < crunchAddresses
+            )
+                running = true
 
-			console.log(`🌱 Mined new contract address for ${contract.name}`)
+            if (running) return
 
-			resolve()
-		}, crunchSeconds * 1000)
+            process.kill()
+            clearInterval(interval)
 
-		const process = exec(
-			`cd create2crunch && export FACTORY="${factoryAddress}"; export CALLER="${callerAddress}"; export INIT_CODE_HASH="${initCodeHash}"; export LEADING=${crunchLeading}; export TOTAL=${crunchTotal}; cargo run --release $FACTORY $CALLER $INIT_CODE_HASH 0 $LEADING $TOTAL`,
-			function (error, stdout, stderr) {
-				if (error) {
-					console.error(`exec error: ${error}`)
-					return reject(error)
-				}
-				console.log(`stdout: ${stdout}`)
-				console.error(`stderr: ${stderr}`)
-			}
-		)
-	})
+            let results = efficientAddresses
+                .split('\n')
+                .map((address: string) => address.split(' => '))
+                .sort(
+                    (a: Array<string>, b: Array<string>) =>
+                        parseInt(a[1]) - parseInt(b[1])
+                )
+
+            const [salt, address, rarity] = results[0]
+
+            const version = packageJson.version
+            if (!addresses[version]) {
+                addresses[version] = {
+                    config: {
+                        seconds: crunchSeconds,
+                        leading: crunchLeading,
+                        total: crunchTotal,
+                        addresses: crunchAddresses,
+                        factory: factoryAddress,
+                        caller: callerAddress,
+                        quick: quick
+                    },
+                    contracts: {}
+                }
+            }
+            addresses[version].contracts[contract.name] = {
+                initCode,
+                initCodeHash: initCodeHash,
+                deployment: { salt, address, rarity }
+            }
+
+            // ? Clear the efficient addresses file so that we have a clean slate for the next contract.
+            fs.writeFileSync(efficientAddressesPath, '')
+
+            console.log(`✅ Successfully mined ${contract.name}`)
+            console.log(`	- Salt: ${salt}`)
+            console.log(`	- Address: ${address}`)
+            console.log(`	- Rarity: ${rarity}`)
+
+            resolve()
+        }, crunchSeconds * 1000)
+
+        const process = exec(
+            `cd create2crunch && export FACTORY="${factoryAddress}"; export CALLER="${callerAddress}"; export INIT_CODE_HASH="${initCodeHash}"; export LEADING=${crunchLeading}; export TOTAL=${crunchTotal}; cargo run --release $FACTORY $CALLER $INIT_CODE_HASH 0 $LEADING $TOTAL`,
+            function(error, stdout, stderr) {
+                if (error) {
+                    console.error(`exec error: ${error}`)
+                    return reject(error)
+                }
+                console.log(`stdout: ${stdout}`)
+                console.error(`stderr: ${stderr}`)
+            }
+        )
+    })
 }
 
 const processContracts = async () => {
-	let found = false
+    let found = false
 
-	const process = async (contracts: Readonly<Array<Contract>>) => {
-		for (const contract of contracts) {
-			if (match != '' && !contract.name.includes(match)) {
-				continue
-			}
+    const process = async (contracts: Readonly<Array<Contract>>) => {
+        for (const contract of contracts) {
+            if (match != '' && !contract.name.includes(match)) {
+                continue
+            }
 
-			found = true
+            found = true
 
-			await mine(contract)
-		}
-	}
+            await mine(contract)
+        }
+    }
 
-	await process(constantContracts)
-	await process(etchContracts)
+    await process(constantContracts)
+    await process(etchContracts)
 
-	if (!found) {
-		console.log(`⏹︎ No contracts found with match: ${match}`)
-	}
+    if (!found) {
+        console.log(`❌ No matching contracts found`)
+        console.log(`	- Search term: ${match}`)
+    }
 }
 
 const timeStarted = new Date().toISOString()
 const addresses = prepare()
 
 processContracts()
-	.then(() => {
-		fs.writeFileSync(
-			'src/lib/addresses.json',
-			JSON.stringify(addresses, null, 2)
-		)
+    .then(() => {
+        fs.writeFileSync(
+            'src/lib/addresses.json',
+            JSON.stringify(addresses, null, 2)
+        )
 
-		const timeEnded = new Date().toISOString()
-		const duration =
-			(new Date(timeEnded).getTime() - new Date(timeStarted).getTime()) /
-			1000
+        const timeEnded = new Date().toISOString()
+        const duration =
+            (new Date(timeEnded).getTime() - new Date(timeStarted).getTime()) /
+            1000
 
-		console.log(`✔︎ All contract addresses mined in ${duration} seconds.`)
+        console.log(`🏁 Mining completed`)
+        console.log(`	- Duration: ${duration} seconds`)
 
-		process.exit(0)
-	})
-	.catch(error => {
-		console.error('An error occurred:', error)
-		process.exit(1)
-	})
+        process.exit(0)
+    })
+    .catch(error => {
+        console.error('An error occurred:', error)
+        process.exit(1)
+    })

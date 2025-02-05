@@ -7,7 +7,7 @@ export type Options = {
 	value: string
 	name: string
 	label: string
-	info?: string
+	info?: { label: string, value: string }
 	icon: string
 }[]
 

@@ -17,14 +17,16 @@
 -   **Real-Time Monitoring**: Track transaction status and health metrics across the entire system.
 -   **User-First Design**: A strict focus on the end-user instead of a developer ecosystem.
 
-## Framework
+## Codebase Contents
 
 ```ml
 ├─ app - "Front-end application for end-users to interact with Plug."
+├─ cdn - "Housing unit for static assets in Cloudflare."
 ├─ core - "The onchain logic for Plug that powers imperative and declarative intents."
 ├─ docs - "End-user focused documentation for Plug."
 ├─ licenses - "Automatic license generation and distribution for each package of Plug."
 ├─ pitch - "Automatic generation of pitch deck and supporting materials."
+├─ posts - "Primitive CMS to manage post state on Plug website."
 ├─ science - "Singular housing location for all of the code-supported research of the ecosystem."
 ├─ solver — "Instant transaction and route building for intents within Plug."
 └─ status — "Monitor the health of all the systems that power the Plug ecosystem."

@@ -7,25 +7,30 @@ import { Plug } from "../base/Plug.sol";
 import { PlugEtcherLib } from "../libraries/Plug.Etcher.Lib.sol";
 
 /**
- * INSERT DOCUMENTATION
+ * This is the script used to deploy the entire Plug protocol stack at once. Each time upon
+ * build the active contracts are automatically populated so that you never have to deal
+ * with manual coordination of your contracts or updating the deployment scripts.
  */
 contract PlugDeployment is Script {
     function run() external {
-        vm.startBroadcast();
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(privateKey);
 
-        PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
-        );
+        if (PlugEtcherLib.PLUG_FACTORY_ADDRESS.code.length == 0) {
+            PlugEtcherLib.FACTORY.safeCreate2(
+                PlugEtcherLib.PLUG_FACTORY_SALT, PlugEtcherLib.PLUG_FACTORY_INITCODE
+            );
+        }
 
-        PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
-        );
+        if (PlugEtcherLib.PLUG_SOCKET_ADDRESS.code.length == 0) {
+            PlugEtcherLib.FACTORY.safeCreate2(
+                PlugEtcherLib.PLUG_SOCKET_SALT, PlugEtcherLib.PLUG_SOCKET_INITCODE
+            );
+        }
 
-        PlugEtcherLib.FACTORY.safeCreate2(
-            PlugEtcherLib.PLUG_TREASURY_SALT, PlugEtcherLib.PLUG_TREASURY_INITCODE
-        );
-
-        PlugEtcherLib.FACTORY.safeCreate2(PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE);
+        if (PlugEtcherLib.PLUG_ADDRESS.code.length == 0) {
+            PlugEtcherLib.FACTORY.safeCreate2(PlugEtcherLib.PLUG_SALT, PlugEtcherLib.PLUG_INITCODE);
+        }
 
         vm.stopBroadcast();
     }

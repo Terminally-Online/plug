@@ -10,44 +10,48 @@ import (
 )
 
 var (
-	domainName    = "Plug"
-	domainVersion = "1"
+	domainName    = "Plug Socket"
+	domainVersion = "0.0.1"
 )
 
-func getPlugHash(plug Plug) [32]byte {
-	encoded := crypto.Keccak256(
+func GetPlugHash(plug Plug) [32]byte {
+	return crypto.Keccak256Hash(
 		[]byte(PLUG_TYPEHASH),
 		plug.To.Bytes(),
-		common.LeftPadBytes(plug.Value.Bytes(), 32),
 		crypto.Keccak256(plug.Data),
+		common.LeftPadBytes(plug.Value.Bytes(), 32),
+		common.LeftPadBytes(plug.Gas.Bytes(), 32),
 	)
-	var hash [32]byte
-	copy(hash[:], encoded)
-	return hash
 }
 
-func getPlugArrayHash(plugs []Plug) [32]byte {
-	var encoded []byte
-	for _, plug := range plugs {
-		hash := getPlugHash(plug)
-		encoded = append(encoded, hash[:]...)
-	}
-
-	return crypto.Keccak256Hash(encoded)
-}
-
-func getPlugsHash(plugs Plugs) [32]byte {
-	plugArrayHash := getPlugArrayHash(plugs.Plugs)
-	encoded := crypto.Keccak256(
+func GetPlugsHash(plugs Plugs) [32]byte {
+	plugArrayHash := GetPlugArrayHash(plugs.Plugs)
+	return crypto.Keccak256Hash(
 		[]byte(PLUGS_TYPEHASH),
 		plugs.Socket.Bytes(),
 		plugArrayHash[:],
 		crypto.Keccak256(plugs.Solver),
 		crypto.Keccak256(plugs.Salt),
 	)
-	var hash [32]byte
-	copy(hash[:], encoded)
-	return hash
+}
+
+func GetPlugArrayHash(plugs []Plug) [32]byte {
+	var encoded []byte
+	for _, plug := range plugs {
+		hash := GetPlugHash(plug)
+		encoded = append(encoded, hash[:]...)
+	}
+
+	return crypto.Keccak256Hash(encoded)
+}
+
+func GetLivePlugArrayHash(livePlugs LivePlugs) [32]byte {
+	plugsHash := GetPlugsHash(livePlugs.Plugs)
+	return crypto.Keccak256Hash(
+		[]byte(LIVE_PLUGS_TYPEHASH),
+		plugsHash[:],
+		crypto.Keccak256(livePlugs.Signature),
+	)
 }
 
 func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) ([]byte, error) {
@@ -63,7 +67,7 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) ([]byte,
 		common.LeftPadBytes(chainId.Bytes(), 32),
 		socket.Bytes(),
 	)
-	plugsHash := getPlugsHash(plugs)
+	plugsHash := GetPlugsHash(plugs)
 	signatureHash := crypto.Keccak256(
 		[]byte("\x19\x01"),
 		domainHash,
