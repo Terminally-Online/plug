@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next"
 
-import { prisma } from "@/server/db"
+import { db } from "@/server/db"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { address } = req.query
@@ -10,17 +10,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	}
 
 	try {
-		const identity = await prisma.socketIdentity.findFirst({
+		const normalizedAddress = address.toLowerCase()
+		console.log("Querying with address:", normalizedAddress)
+
+		const identity = await db.socketIdentity.findFirst({
 			where: {
-				socket: {
-					socketAddress: address.toLowerCase()
+				socketId: {
+					equals: normalizedAddress,
+					mode: "insensitive"
 				}
-			},
-			select: {
-				onboardingColor: true,
-				onboardingCount: true
 			}
 		})
+
+		console.log("Query result:", identity)
 
 		if (!identity) {
 			return res.status(404).json({ error: "User not found" })
@@ -30,8 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const metadata = {
 			name: `Plug Founding Ticket #${identity.onboardingCount}`,
 			description: "A founding ticket for early Plug users",
-			// Use existing image generation endpoint
-			image: `${process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : process.env.NEXT_PUBLIC_APP_URL}/api/canvas/nft?color=${identity.onboardingColor?.replace("#", "")}&number=${identity.onboardingCount}`,
+			image: `${process.env.NEXT_PUBLIC_APP_URL}/api/canvas/nft?color=${identity.onboardingColor?.replace("#", "")}&number=${identity.onboardingCount}`,
 			attributes: [
 				{
 					trait_type: "Ticket Number",
@@ -46,7 +47,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		res.status(200).json(metadata)
 	} catch (error) {
-		console.error("Error fetching NFT metadata:", error)
-		res.status(500).json({ error: "Internal server error" })
+		console.error("Detailed error:", error)
+		return res.status(500).json({
+			error: "Internal server error",
+			details: error instanceof Error ? error.message : String(error)
+		})
 	}
 }
