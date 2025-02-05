@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"solver/internal/actions"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type NounsOptionsProvider struct{}
 
-func (p *NounsOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
+func (p *NounsOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
 	traitTypeOptions, traitOptions, err := GetTraitOptions()
 	if err != nil {
 		return nil, err

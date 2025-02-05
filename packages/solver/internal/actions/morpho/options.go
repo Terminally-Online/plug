@@ -3,11 +3,13 @@ package morpho
 import (
 	"fmt"
 	"solver/internal/actions"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type MorphoOptionsProvider struct{}
 
-func (p *MorphoOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
+func (p *MorphoOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
 	supplyTokenOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
 	if err != nil {
 		return nil, err
