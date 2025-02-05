@@ -4,9 +4,17 @@ import type { CSSProperties } from "react"
 
 import { ImageResponse } from "@vercel/og"
 
+const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
+
 export const config = {
 	runtime: "edge"
 }
+
+export const getStaticPaths = () => {
+	const paths = colors.map(color => ({ params: { color } }))
+	return { paths, fallback: "blocking" }
+}
+export const getStaticProps = ({ params }: { params: { color: string } }) => ({ props: { color: params?.color }, revalidate: 86400 })
 
 export default async function handler(req: NextRequest) {
 	const regular = await fetch(new URL("../../../assets/Satoshi-Regular.ttf", import.meta.url)).then(res =>
@@ -33,7 +41,7 @@ export default async function handler(req: NextRequest) {
 		const finalColor = color ?? numberParam ?? "FDFFF7"
 		const number = numberParam
 			? parseInt(numberParam)
-			: Math.floor(Math.random() * 100000)
+			: null
 
 		const isRare = finalColor !== "FDFFF7"
 		const background = isRare
@@ -104,9 +112,11 @@ export default async function handler(req: NextRequest) {
 						>
 							FOUNDING USER
 						</h1>
-						<div tw="flex flex-col bottom-6 right-0 absolute justify-end items-end font-bold">
-							<h3 tw="text-[80px] opacity-60">#{number.toLocaleString()}</h3>
-						</div>
+						{number && (
+							<div tw="flex flex-col bottom-6 right-0 absolute justify-end items-end font-bold">
+								<h3 tw="text-[80px] opacity-60">#{number.toLocaleString()}</h3>
+							</div>
+						)}
 					</div>
 				</div>
 			),
