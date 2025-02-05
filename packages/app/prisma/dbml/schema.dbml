@@ -48,6 +48,8 @@ Table SocketIdentity {
   approvedAt DateTime
   onboardingAt DateTime
   onboardedAt DateTime
+  onboardingColor String
+  onboardingCount Int [not null, default: 0]
   socket UserSocket [not null]
   socketId String [pk]
   farcaster FarcasterUser
@@ -62,8 +64,6 @@ Table UserSocket {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  onboardingColor String
-  onboardingCount Int [not null, default: 0]
   admin Boolean [not null, default: false]
   socketAddress String [not null]
   salt String
