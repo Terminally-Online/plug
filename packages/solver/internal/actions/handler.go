@@ -72,20 +72,15 @@ func NewBaseHandler(
 		sentences[action] = def.Sentence
 		transactions[action] = def.Handler
 	}
-
 	getOptionsFor := func(action string) OptionsHandler {
 		return func(chainId uint64) (map[int]Options, error) {
 			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), action)
 		}
 	}
-
 	optHandlers := make(map[string]OptionsHandler, len(actionDefinitions))
 	for action := range actionDefinitions {
 		optHandlers[action] = getOptionsFor(action)
 	}
-
-	cachedProvider := NewCachedOptionsProvider(optionsProvider)
-
 	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
 		schemas[action] = ChainSchema{
@@ -100,7 +95,7 @@ func NewBaseHandler(
 			},
 		}
 	}
-
+	cachedProvider := NewCachedOptionsProvider(optionsProvider)
 	handler := &BaseHandler{
 		protocol: Protocol{
 			Name:            name,
@@ -114,15 +109,15 @@ func NewBaseHandler(
 		},
 	}
 
-	// actions := make([]string, 3, len(actionDefinitions))
-	// for action := range actionDefinitions {
-	// 	actions = append(actions, action)
-	// }
-	// go func() {
-	// 	for _, chainId := range chains {
-	// 		cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
-	// 	}
-	// }()
+	actions := make([]string, 3, len(actionDefinitions))
+	for action := range actionDefinitions {
+		actions = append(actions, action)
+	}
+	go func() {
+		for _, chainId := range chains {
+			cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
+		}
+	}()
 
 	return handler
 }
