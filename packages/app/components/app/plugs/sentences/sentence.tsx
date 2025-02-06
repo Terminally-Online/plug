@@ -70,12 +70,12 @@ export const Sentence: FC<SentenceProps> = ({
 
 	const parts = parsed
 		? parsed.template
-				.split(/(\{[^}]+\})/g)
-				.map(part => {
-					if (part.match(/\{[^}]+\}/)) return [part]
-					return part.split(/(\s+)/g)
-				})
-				.flat()
+			.split(/(\{[^}]+\})/g)
+			.map(part => {
+				if (part.match(/\{[^}]+\}/)) return [part]
+				return part.split(/(\s+)/g)
+			})
+			.flat()
 		: []
 
 	const handleValue = (index: number, value: string, isNumber?: boolean) => {
@@ -93,16 +93,20 @@ export const Sentence: FC<SentenceProps> = ({
 					values:
 						nestedActionIndex === actionIndex
 							? {
-									...action.values,
-									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
-								}
+								...action.values,
+								[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
+							}
 							: action.values
 				}))
 			)
 		})
 	}
 
-	if (!column || !solverActions || !actionSchema || !parsed) return null
+	if (!parsed) return <div className="border-[1px] border-plug-red rounded-lg p-4">
+		<p className="font-bold text-plug-red">Failed to parse: <span className="opacity-60">{sentence}</span></p>
+
+	</div>
+	if (!column || !solverActions || !actionSchema || !parsed) return <pre>{JSON.stringify(parsed, null, 2)}</pre>
 
 	return (
 		<>
@@ -171,11 +175,11 @@ export const Sentence: FC<SentenceProps> = ({
 										(Array.isArray(sentenceOptions[optionsIndex])
 											? (sentenceOptions[optionsIndex] as Options)
 											: sentenceOptions &&
-												  typeof sentenceOptions?.[optionsIndex] === "object" &&
-												  dependentOnValue
+												typeof sentenceOptions?.[optionsIndex] === "object" &&
+												dependentOnValue
 												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
-														dependentOnValue
-													]
+												dependentOnValue
+												]
 												: undefined)
 									const isOptionBased = options !== undefined
 

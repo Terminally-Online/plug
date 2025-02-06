@@ -17,7 +17,7 @@ export const actions = createTRPCRouter({
 				chainId: z.number()
 			})
 		)
-		.query(async ({ input }) => await schemas(input?.protocol, input?.action, input.chainId)),
+		.query(async ({ input, ctx }) => await schemas(input?.protocol, input?.action, input.chainId, ctx.session.address)),
 	intent: anonymousProtectedProcedure
 		.input(
 			z.object({
