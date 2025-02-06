@@ -206,18 +206,30 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			return nil, err
 		}
 
+		if len(accountEnabledVaults.VaultAccountInfo) == 0 {
+			options = append(options, actions.Option{
+				Label: fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
+				Name:  fmt.Sprintf("Account %d", i),
+				Value: fmt.Sprintf("%d", i),
+				Info: actions.OptionInfo{
+					Label: "Net Asset Value",
+					Value: "$0.00",
+				},
+			})
+		}
+
 		for _, vault := range accountEnabledVaults.VaultAccountInfo {
 			// account liquidity info returns a query failure if it's a borrow not a supply vault.
 			if vault.LiquidityInfo.QueryFailure { continue };
 
 			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
 			accountOption := actions.Option{
-				Label: fmt.Sprintf("Account %d", i),
-				Name:  vault.Account.String(),
-				Value: fmt.Sprintf("$%.2f", utils.UintToFloat(netValue, 18)),
+				Label: fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
+				Name:  fmt.Sprintf("Account %d", i),
+				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
-					Label: "Borrowing Value",
-					Value: fmt.Sprintf("$%.2f", utils.UintToFloat(vault.LiquidityInfo.LiabilityValue, 18)),
+					Label: "Net Asset Value",
+					Value: fmt.Sprintf("$%.2f", utils.UintToFloat(netValue, 18)),
 				},
 			}
 			options = append(options, accountOption)
