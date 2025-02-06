@@ -14,7 +14,6 @@ import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
-import { ChainImage } from "../../sockets/chains/chain.image"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
@@ -67,7 +66,7 @@ export const Sentence: FC<SentenceProps> = ({
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
 
-	const [search, setSearch] = useState("")
+	const [search, setSearch] = useState<Record<number, string>>({})
 
 	const parts = parsed
 		? parsed.template
@@ -189,13 +188,12 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
-									const filteredOptions =
-										options?.filter(
+									const filteredOptions =search[partIndex] ?	options?.filter(
 											option =>
-												option.label.toLowerCase().includes(search.toLowerCase()) ||
-												option.name?.toLowerCase().includes(search.toLowerCase()) ||
-												option.value.toLowerCase().includes(search.toLowerCase())
-										) ?? []
+												option.label.toLowerCase().includes(search[partIndex]?.toLowerCase()) ||
+												option.name?.toLowerCase().includes(search[partIndex]?.toLowerCase()) ||
+												option.value.toLowerCase().includes(search[partIndex]?.toLowerCase())
+										) : options
 
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
@@ -315,7 +313,7 @@ export const Sentence: FC<SentenceProps> = ({
 																	<Search
 																		icon={<SearchIcon size={14} />}
 																		placeholder="Search options"
-																		search={search}
+																		search={search[partIndex] ?? ""}
 																		handleSearch={setSearch}
 																		focus
 																		clear
