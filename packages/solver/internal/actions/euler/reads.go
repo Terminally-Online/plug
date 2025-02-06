@@ -17,55 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type rawVaultInfoFull struct {
-	Timestamp              *big.Int         `json:"timestamp"`
-	Vault                  common.Address   `json:"vault"`
-	VaultName              string          `json:"vaultName"`
-	VaultSymbol            string          `json:"vaultSymbol"`
-	VaultDecimals          *big.Int         `json:"vaultDecimals"`
-	Asset                  common.Address   `json:"asset"`
-	AssetName              string          `json:"assetName"`
-	AssetSymbol            string          `json:"assetSymbol"`
-	AssetDecimals          *big.Int         `json:"assetDecimals"`
-	UnitOfAccount          common.Address   `json:"unitOfAccount"`
-	UnitOfAccountName      string          `json:"unitOfAccountName"`
-	UnitOfAccountSymbol    string          `json:"unitOfAccountSymbol"`
-	UnitOfAccountDecimals  *big.Int         `json:"unitOfAccountDecimals"`
-	TotalShares            *big.Int         `json:"totalShares"`
-	TotalCash              *big.Int         `json:"totalCash"`
-	TotalBorrowed          *big.Int         `json:"totalBorrowed"`
-	TotalAssets            *big.Int         `json:"totalAssets"`
-	AccumulatedFeesShares  *big.Int         `json:"accumulatedFeesShares"`
-	AccumulatedFeesAssets  *big.Int         `json:"accumulatedFeesAssets"`
-	GovernorFeeReceiver    common.Address   `json:"governorFeeReceiver"`
-	ProtocolFeeReceiver    common.Address   `json:"protocolFeeReceiver"`
-	ProtocolFeeShare       *big.Int         `json:"protocolFeeShare"`
-	InterestFee            *big.Int         `json:"interestFee"`
-	HookedOperations       *big.Int         `json:"hookedOperations"`
-	ConfigFlags            *big.Int         `json:"configFlags"`
-	SupplyCap              *big.Int         `json:"supplyCap"`
-	BorrowCap              *big.Int         `json:"borrowCap"`
-	MaxLiquidationDiscount *big.Int         `json:"maxLiquidationDiscount"`
-	LiquidationCoolOffTime *big.Int         `json:"liquidationCoolOffTime"`
-	DToken                 common.Address   `json:"dToken"`
-	Oracle                 common.Address   `json:"oracle"`
-	InterestRateModel      common.Address   `json:"interestRateModel"`
-	HookTarget             common.Address   `json:"hookTarget"`
-	Evc                    common.Address   `json:"evc"`
-	ProtocolConfig         common.Address   `json:"protocolConfig"`
-	BalanceTracker         common.Address   `json:"balanceTracker"`
-	Permit2                common.Address   `json:"permit2"`
-	Creator                common.Address   `json:"creator"`
-	GovernorAdmin          common.Address   `json:"governorAdmin"`
-	IrmInfo                euler_vault_lens.VaultInterestRateModelInfo `json:"irmInfo"`
-	CollateralLTVInfo      []euler_vault_lens.LTVInfo                 `json:"collateralLTVInfo"`
-	LiabilityPriceInfo     euler_vault_lens.AssetPriceInfo           `json:"liabilityPriceInfo"`
-	CollateralPriceInfo    []euler_vault_lens.AssetPriceInfo         `json:"collateralPriceInfo"`
-	OracleInfo             euler_vault_lens.OracleDetailedInfo        `json:"oracleInfo"`
-	BackupAssetPriceInfo   euler_vault_lens.AssetPriceInfo           `json:"backupAssetPriceInfo"`
-	BackupAssetOracleInfo  euler_vault_lens.OracleDetailedInfo       `json:"backupAssetOracleInfo"`
-}
-
 func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error) {
 	provider, err := utils.GetProvider(chainId)
 	if err != nil {
