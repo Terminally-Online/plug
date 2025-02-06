@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"solver/internal/actions"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -100,7 +101,7 @@ func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
 		options = append(options, actions.Option{
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, reserve.UnderlyingAsset.String()),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info: actions.OptionInfo{
@@ -139,7 +140,7 @@ func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
 		}
 
 		options = append(options, actions.Option{
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, reserve.UnderlyingAsset.String()),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info: actions.OptionInfo{

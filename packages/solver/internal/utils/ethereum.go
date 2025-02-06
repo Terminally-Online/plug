@@ -123,6 +123,27 @@ func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
 	return intValue, nil
 }
 
+func UintToFloat(value *big.Int, decimals uint8) float64 {
+	if value == nil {
+		return 0
+	}
+
+	floatValue := new(big.Float).SetInt(value)
+	
+	divisor := new(big.Float).SetInt(
+		new(big.Int).Exp(
+			big.NewInt(10),
+			big.NewInt(int64(decimals)),
+			nil,
+		),
+	)
+	
+	result := new(big.Float).Quo(floatValue, divisor)
+	
+	float64Value, _ := result.Float64()
+	return float64Value
+}
+
 func StringToUint(value string, decimals uint8) (*big.Int, error) {
 	parts := strings.Split(value, ".")
 	if len(parts) > 2 {
@@ -162,6 +183,32 @@ func StringToUint(value string, decimals uint8) (*big.Int, error) {
 	}
 
 	return result, nil
+}
+
+// UintToString converts a big.Int with given decimals into a string representation
+func UintToString(value *big.Int, decimals uint8) string {
+	if value == nil {
+		return "0"
+	}
+
+	val := new(big.Int).Set(value)
+	
+	div := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	
+	intPart := new(big.Int).Quo(val, div)
+	fracPart := new(big.Int).Mod(val, div)
+	
+	fracStr := fracPart.String()
+	// Pad with leading zeros if necessary
+	fracStr = strings.Repeat("0", int(decimals)-len(fracStr)) + fracStr
+	
+	fracStr = strings.TrimRight(fracStr, "0")
+	
+	if fracStr == "" {
+		return intPart.String()
+	}
+	
+	return fmt.Sprintf("%s.%s", intPart.String(), fracStr)
 }
 
 func ParseAddressAndDecimals(input string) (address *common.Address, decimals uint8, err error) {

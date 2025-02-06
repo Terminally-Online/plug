@@ -97,7 +97,7 @@ func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {
 					Value: fmt.Sprintf("%s:%d", token.Address, token.Decimals),
 					Name:  token.Name,
 					Label: token.Symbol,
-					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Token.Address),
+					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, lowerAddr),
 				}
 			}
 		}
@@ -124,7 +124,7 @@ func GetUnderlyingAssetToVaultOptions(chainId uint64) (map[string][]actions.Opti
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Token.Address)),
 		})
 	}
 
@@ -147,7 +147,7 @@ func GetAvailableStakingGaugeOptions(chainId uint64) ([]actions.Option, error) {
 			Value: fmt.Sprintf("%s:%d", vault.Address, vault.Decimals),
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Token.Address)),
 		})
 	}
 
@@ -170,7 +170,7 @@ func GetVaultOptions(chainId uint64) ([]actions.Option, error) {
 				Label: "APR",
 				Value: fmt.Sprintf("%.2f%%", vault.APR.ForwardAPR.NetAPR*100+vault.Extra.StakingRewardsAPR*100),
 			},
-			Icon: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, strings.ToLower(vault.Token.Address)),
 		})
 	}
 
