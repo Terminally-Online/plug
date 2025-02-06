@@ -387,9 +387,7 @@ export const Sentence: FC<SentenceProps> = ({
 																						<p className="flex flex-row justify-between gap-2 text-sm tabular-nums opacity-40">
 																							{option.label}
 																							{option.info && (
-																								<span className="ml-auto tabular-nums">
-																									{option.info.label}
-																								</span>
+																								<Counter className="ml-auto tabular-nums" count={option.info.label} />
 																							)}
 																						</p>
 																					</div>

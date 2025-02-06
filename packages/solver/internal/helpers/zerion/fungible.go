@@ -5,6 +5,8 @@ import (
 	"os"
 	"solver/internal/utils"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type ZerionTokenImplementation struct {
@@ -38,8 +40,17 @@ type ZerionPosition struct {
 	Attributes struct {
 		PositionType string `json:"position_type"`
 		Quantity     struct {
-			Float float64 `json:"float"`
+			Int      string  `json:"int"`
+			Decimals int     `json:"decimals"`
+			Float    float64 `json:"float"`
+			Numeric  string  `json:"numeric"`
 		} `json:"quantity"`
+		Value   float64 `json:"value"`
+		Price   float64 `json:"price"`
+		Changes *struct {
+			Absolute1D float64 `json:"absolute_1d"`
+			Percent1D  float64 `json:"percent_1d"`
+		} `json:"changes"`
 		FungibleInfo struct {
 			Name   string `json:"name"`
 			Symbol string `json:"symbol"`
@@ -68,16 +79,17 @@ type ZerionPosition struct {
 	} `json:"relationships"`
 }
 
-func GetFungiblePositions(chains []string, socketID, socketAddress string) ([]ZerionPosition, error) {
+func GetFungiblePositions(chains []string, socketID, socketAddress common.Address) ([]ZerionPosition, error) {
 	address := socketAddress
-	if address == "" {
+	if address == common.HexToAddress("") {
 		address = socketID
 	}
 
 	url := fmt.Sprintf(
-		"https://api.zerion.io/v1/wallets/%s/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=%s&filter[trash]=only_non_trash&sort=value",
+		"https://api.zerion.io/v1/wallets/%s/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=%s&filter[trash]=only_non_trash&sort=value&filter[position_types]=%s",
 		address,
 		strings.Join(chains, ","),
+		"wallet",
 	)
 
 	response, err := utils.MakeHTTPRequest(
