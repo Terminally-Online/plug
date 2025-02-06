@@ -371,18 +371,15 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 
 func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string `json:"token"`     // Address of token to check price
-		Operator  int8   `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold string `json:"threshold"` // Price threshold in USD
+		Token     string `json:"token"`
+		Operator  int8   `json:"operator"`
+		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal price constraint inputs: %w", err)
 	}
 
-	// Convert token address to Llama API format
 	tokenId := fmt.Sprintf("ethereum:%s", inputs.Token)
-
-	// Get current price from Llama
 	prices, err := llama.GetPrices([]string{tokenId})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch token price: %w", err)
@@ -416,10 +413,10 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 
 func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string `json:"token"`     // Address of token to check balance
-		Address   string `json:"address"`   // Address to check balance for
-		Operator  int    `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold string `json:"threshold"` // Balance threshold
+		Token     string `json:"token"`     
+		Address   string `json:"address"`   
+		Operator  int    `json:"operator"`  
+		Threshold string `json:"threshold"` 
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
@@ -435,7 +432,6 @@ func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
-	// Get token balance using contract call
 	provider, err := utils.GetProvider(params.ChainId)
 	if err != nil {
 		return nil, err

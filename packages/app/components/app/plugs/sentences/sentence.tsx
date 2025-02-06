@@ -207,19 +207,21 @@ export const Sentence: FC<SentenceProps> = ({
 										<>
 											<button
 												className={cn(
-													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
-													!isValid ? "text-plug-red" : "text-plug-green",
+													"rounded-sm mx-1 px-2 py-1 font-bold transition-all duration-200 ease-in-out flex flex-row items-center gap-2 text-black/60",
+													isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
 													own && !preview ? "cursor-pointer" : "cursor-default"
 												)}
 												style={{
 													background: !isValid
-														? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
-														: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
+														? "bg-plug-red"
+														: "bg-plug-yellow"
 												}}
 												onClick={() =>
 													own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
 												}
 											>
+												{option?.icon.default && <Image className="w-5 h-5 rounded-full" src={option?.icon.default ?? ""} alt="" width={32} height={32} />}
+
 												{(option && option.label) ||
 													value?.value ||
 													input.name
