@@ -135,9 +135,8 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 
 	const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
 
-	// TODO: MASON REMOVE THE SOCKETID, JUST FOR TESTING FOR NOW.
 	const { data: solverActions } = api.solver.actions.schemas.useQuery(
-		{ protocol: action?.protocol, action: action?.action, from: plugs[0]?.socketId ,chainId: 8453 },
+		{ protocol: action?.protocol, action: action?.action, chainId: 8453 },
 		{ enabled: Boolean(action) }
 	)
 
