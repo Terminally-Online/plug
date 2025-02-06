@@ -55,22 +55,29 @@ type ZerionNonFungible struct {
 	} `json:"relationships"`
 }
 
-func GetCollectibles(chains []string, socketID, socketAddress string, limit int) ([]ZerionNonFungible, error) {
+func GetCollectibles(chains []string, socketId, socketAddress string, limit int) ([]ZerionNonFungible, error) {
+	return getCollectibles(chains, socketId, socketAddress, limit, "")
+}
+
+func getCollectibles(chains []string, socketId, socketAddress string, limit int, next string) ([]ZerionNonFungible, error) {
 	if limit == 0 {
 		limit = 100
 	}
 
 	address := socketAddress
 	if address == "" {
-		address = socketID
+		address = socketId
 	}
 
-	url := fmt.Sprintf(
-		"https://api.zerion.io/v1/wallets/%s/nft-positions/?filter[chain_ids]=%s&currency=usd&page[size]=%d",
-		address,
-		strings.Join(chains, ","),
-		limit,
-	)
+	url := next
+	if url == "" {
+		url = fmt.Sprintf(
+			"https://api.zerion.io/v1/wallets/%s/nft-positions/?filter[chain_ids]=%s&currency=usd&page[size]=%d",
+			address,
+			strings.Join(chains, ","),
+			limit,
+		)
+	}
 
 	response, err := utils.MakeHTTPRequest(
 		url,
@@ -82,11 +89,20 @@ func GetCollectibles(chains []string, socketID, socketAddress string, limit int)
 		nil,
 		nil,
 		struct {
-			Data []ZerionNonFungible `json:"data"`
+			Data  []ZerionNonFungible `json:"data"`
+			Links struct {
+				Next string `json:"next"`
+			}
 		}{},
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if response.Links.Next != "" {
+		nextNonFungibles, err := getCollectibles(chains, socketId, socketAddress, limit, response.Links.Next)
+		if err != nil { return nil, err }
+		response.Data = append(response.Data, nextNonFungibles...)
 	}
 
 	return response.Data, nil
