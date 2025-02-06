@@ -23,6 +23,16 @@ func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, ac
 		return map[int]actions.Options{
 			1: {Simple: transferOptions},
 		}, nil
+	case actions.ConstraintPrice:
+		return map[int]actions.Options{
+			0: {Simple: transferOptions},             // Token selection
+			1: {Simple: actions.BaseThresholdFields}, // Comparison operators
+		}, nil
+	case actions.ConstraintBalance:
+		return map[int]actions.Options{
+			0: {Simple: transferOptions},             // Token selection
+			2: {Simple: actions.BaseThresholdFields}, // Comparison operators
+		}, nil
 	default:
 		return nil, nil
 	}

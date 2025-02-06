@@ -12,6 +12,7 @@ import (
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -366,4 +367,103 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}
 
 	return nil, fmt.Errorf("token must be either ETH or WETH for wrapping/unwrapping")
+}
+
+func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Token     string `json:"token"`     // Address of token to check price
+		Operator  int8   `json:"operator"`  // -1 for less than, 1 for greater than
+		Threshold string `json:"threshold"` // Price threshold in USD
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal price constraint inputs: %w", err)
+	}
+
+	// Convert token address to Llama API format
+	tokenId := fmt.Sprintf("ethereum:%s", inputs.Token)
+
+	// Get current price from Llama
+	prices, err := llama.GetPrices([]string{tokenId})
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch token price: %w", err)
+	}
+
+	price, exists := prices[tokenId]
+	if !exists {
+		return nil, fmt.Errorf("price not found for token: %s", inputs.Token)
+	}
+
+	thresholdFloat, err := strconv.ParseFloat(inputs.Threshold, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse threshold float: %w", err)
+	}
+
+	switch inputs.Operator {
+	case -1:
+		if price.Price >= thresholdFloat {
+			return nil, fmt.Errorf("current price $%.2f is not less than threshold $%.2f", price.Price, thresholdFloat)
+		}
+	case 1:
+		if price.Price <= thresholdFloat {
+			return nil, fmt.Errorf("current price $%.2f is not greater than threshold $%.2f", price.Price, thresholdFloat)
+		}
+	default:
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
+	}
+
+	return nil, nil
+}
+
+func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Token     string `json:"token"`     // Address of token to check balance
+		Address   string `json:"address"`   // Address to check balance for
+		Operator  int    `json:"operator"`  // -1 for less than, 1 for greater than
+		Threshold string `json:"threshold"` // Balance threshold
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
+	}
+
+	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
+	threshold, err := utils.StringToUint(inputs.Threshold, decimals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
+	}
+
+	// Get token balance using contract call
+	provider, err := utils.GetProvider(params.ChainId)
+	if err != nil {
+		return nil, err
+	}
+
+	erc20Contract, err := erc_20.NewErc20(*token, provider)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
+	}
+
+	callOpts := utils.BuildCallOpts(params.From, big.NewInt(0))
+	balance, err := erc20Contract.BalanceOf(callOpts, common.HexToAddress(inputs.Address))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get token balance: %w", err)
+	}
+
+	switch inputs.Operator {
+	case -1:
+		if balance.Cmp(threshold) >= 0 {
+			return nil, fmt.Errorf("current balance %.2f is not less than threshold %.2f", balance, threshold)
+		}
+	case 1:
+		if balance.Cmp(threshold) <= 0 {
+			return nil, fmt.Errorf("current balance %.2f is not greater than threshold %.2f", balance, threshold)
+		}
+	default:
+		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
+	}
+
+	return nil, nil
 }
