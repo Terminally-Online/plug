@@ -5,10 +5,9 @@ import (
 	"strings"
 )
 
-// FormatNumber formats a float64 with thousand separators and specified decimal places
 func FormatNumber(num float64, prefix string) string {
 	if num < 0.01 && num > 0 {
-		return prefix + "<0.01"
+		return "<" + prefix + "0.01"
 	}
 
 	baseStr := fmt.Sprintf("%.2f", num)
