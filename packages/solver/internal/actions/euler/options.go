@@ -224,7 +224,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
 			accountOption := actions.Option{
-				Label: fmt.Sprintf("Account %d", i),
+				Label: fmt.Sprintf("%d", i),
 				Name:  fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
 				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
