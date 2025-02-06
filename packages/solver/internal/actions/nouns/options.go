@@ -75,7 +75,7 @@ func GetTraitOptions() ([]actions.Option, map[string][]actions.Option, error) {
 				Name:  trait.Name,
 				Label: trait.Label,
 				Value: trait.Value,
-				Icon:  trait.Icon,
+				Icon:  actions.OptionIcon{Default:trait.Icon},
 			})
 		}
 	}

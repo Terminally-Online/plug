@@ -33,28 +33,35 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 	if err != nil {
 		return nil, err
 	}
+	chainName, err := utils.GetChainName(chainId)
+	if err != nil {
+		return nil, err
+	}
 	var options []actions.Option
 	for _, position := range positions {
-		var implementation string
-		var icon string
+		var option string
+		var defaultIcon string
+		var secondaryIcon string
 		for _, chainImplementation := range position.Attributes.FungibleInfo.Implementations {
-			implementation = fmt.Sprintf("%s:%d", chainImplementation.Address, chainImplementation.Decimals)
-			icon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, chainImplementation.Address)
+			address := chainImplementation.Address
+			if address == "" {
+				address = utils.NativeTokenAddress.Hex()
+			}
+			option = fmt.Sprintf("%s:%d:%d", address, chainImplementation.Decimals, 20)
+			defaultIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, address)
+			secondaryIcon = fmt.Sprintf("https://cdn.onplug.io/blockchain/%s.png", chainName)
 		}
 		if position.Attributes.FungibleInfo.Icon != nil {
-			icon = position.Attributes.FungibleInfo.Icon.URL
+			defaultIcon = position.Attributes.FungibleInfo.Icon.URL
 		}
 		quantity := utils.FormatNumber(position.Attributes.Quantity.Float, "")
 		value := utils.FormatNumber(position.Attributes.Value, "$")
 		options = append(options, actions.Option{
 			Label: strings.ToUpper(position.Attributes.FungibleInfo.Symbol),
 			Name:  position.Attributes.FungibleInfo.Name,
-			Value: implementation,
-			Icon:  icon,
-			Info: actions.OptionInfo{
-				Label: quantity,
-				Value: value,
-			},
+			Value: option,
+			Icon:  actions.OptionIcon{Default: defaultIcon, Secondary: secondaryIcon},
+			Info:  actions.OptionInfo{Label: quantity, Value: value},
 		})
 	}
 

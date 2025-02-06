@@ -100,7 +100,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: assetAddress,
-				Icon:  vault.Asset.LogoURI,
+				Icon: actions.OptionIcon{Default:vault.Asset.LogoURI},
 			})
 			seenToken[assetAddress] = true
 		}
@@ -109,7 +109,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, map[string]
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: assetAddress,
-			Icon:  vault.Metadata.Image,
+			Icon: actions.OptionIcon{Default:vault.Metadata.Image},
 			Info: actions.OptionInfo{
 				Label: "Net APY",
 				Value: fmt.Sprintf("%.2f%%", vault.DailyApys.NetApy*100),
@@ -137,7 +137,7 @@ func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Optio
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
-			Icon:  market.Metadata.Icon,
+			Icon: actions.OptionIcon{Default:market.Metadata.Icon},
 		})
 	}
 
@@ -148,7 +148,7 @@ func GetMarketAndVaultOptions(chainId uint64) ([]actions.Option, []actions.Optio
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
-			Icon:  vault.Metadata.Image,
+			Icon: actions.OptionIcon{Default:vault.Metadata.Image},
 		})
 	}
 
@@ -172,7 +172,7 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: collateralAddress,
-				Icon:  market.CollateralAsset.LogoURI,
+				Icon: actions.OptionIcon{Default:market.CollateralAsset.LogoURI},
 			})
 			seenCollateral[collateralAddress] = true
 		}
@@ -183,7 +183,7 @@ func GetCollateralTokenToMarketOptions(chainId uint64) ([]actions.Option, map[st
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
-				Icon:  market.Metadata.Icon,
+				Icon: actions.OptionIcon{Default:market.Metadata.Icon},
 				Info:  actions.OptionInfo{
 					Label: "Supply APY",
 					Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100),
@@ -212,7 +212,7 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 				Label: market.LoanAsset.Symbol,
 				Name:  market.LoanAsset.Name,
 				Value: loanAssetAddress,
-				Icon:  market.LoanAsset.LogoURI,
+				Icon: actions.OptionIcon{Default:market.LoanAsset.LogoURI},
 			})
 			seenLoanAssets[loanAssetAddress] = true
 		}
@@ -221,7 +221,7 @@ func GetBorrowTokenToMarketOptions(chainId uint64) ([]actions.Option, map[string
 			Label: market.Metadata.Name,
 			Name:  market.Metadata.Name,
 			Value: market.UniqueKey,
-			Icon:  market.Metadata.Icon,
+			Icon: actions.OptionIcon{Default:market.Metadata.Icon},
 			Info:  actions.OptionInfo{ Label: "Borrow APY", Value: fmt.Sprintf("%.2f%%", market.State.DailyBorrowApy*100) },
 		})
 	}
@@ -251,7 +251,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: market.CollateralAsset.Symbol,
 				Name:  market.CollateralAsset.Name,
 				Value: collateralAssetAddress,
-				Icon:  market.CollateralAsset.LogoURI,
+				Icon: actions.OptionIcon{Default:market.CollateralAsset.LogoURI},
 			})
 			seenToken[collateralAssetAddress] = true
 		}
@@ -262,7 +262,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: market.Metadata.Name,
 				Name:  market.Metadata.Name,
 				Value: market.UniqueKey,
-				Icon:  market.Metadata.Icon,
+				Icon: actions.OptionIcon{Default:market.Metadata.Icon},
 				Info:  actions.OptionInfo{Label: "Supply APY", Value: fmt.Sprintf("%.2f%%", market.State.DailySupplyApy*100)},
 			},
 		)
@@ -275,7 +275,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 				Label: vault.Asset.Symbol,
 				Name:  vault.Asset.Name,
 				Value: vaultAssetAddress,
-				Icon:  vault.Asset.LogoURI,
+				Icon: actions.OptionIcon{Default:vault.Asset.LogoURI},
 			})
 			seenToken[vaultAssetAddress] = true
 		}
@@ -284,7 +284,7 @@ func GetSupplyAndCollateralTokenToMarketOptions(chainId uint64) ([]actions.Optio
 			Label: vault.Symbol,
 			Name:  vault.Name,
 			Value: vault.Address,
-			Icon:  vault.Metadata.Image,
+			Icon: actions.OptionIcon{Default:vault.Metadata.Image},
 		})
 	}
 

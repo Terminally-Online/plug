@@ -7,8 +7,8 @@ export type Options = {
 	value: string
 	name: string
 	label: string
+	icon: { [key: string]: string }
 	info?: { label: string, value: string }
-	icon: string
 }[]
 
 export type ActionSchema = {

@@ -13,6 +13,11 @@ const (
 	ActionBridge  = "bridge"
 )
 
+type OptionIcon struct {
+	Default   string `json:"default,omitempty"`
+	Secondary string `json:"secondary,omitempty"`
+}
+
 type OptionInfo struct {
 	Label string `json:"label"`
 	Value string `json:"value"`
@@ -22,7 +27,7 @@ type Option struct {
 	Label string     `json:"label"`
 	Name  string     `json:"name"`
 	Value string     `json:"value"`
-	Icon  string     `json:"icon,omitempty"`
+	Icon  OptionIcon `json:"icon,omitempty"`
 	Info  OptionInfo `json:"info,omitempty"`
 }
 

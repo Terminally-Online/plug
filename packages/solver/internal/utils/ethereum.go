@@ -44,6 +44,21 @@ var (
 	}
 )
 
+func GetChainName(chainId uint64) (string, error) {
+	switch chainId {
+	case 1:
+		return "mainnet", nil
+	case 8453:
+		return "base", nil
+	case 10:
+		return "optimism-sepolia", nil
+	case 31337:
+		return "localhost", nil
+	default:
+		return "", ErrChainId("chainId", chainId)
+	}
+}
+
 func GetProviderUrl(chainId uint64) (string, error) {
 	if chainId == 31337 {
 		return "http://127.0.0.1:8545", nil

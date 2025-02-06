@@ -14,6 +14,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { ChainImage } from "../../sockets/chains/chain.image"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
@@ -337,9 +338,9 @@ export const Sentence: FC<SentenceProps> = ({
 																				)}
 
 																				<div className="flex flex-row items-center gap-4">
-																					{option.icon && (
+																					{option.icon.default && (
 																						<div className="flex items-center space-x-2">
-																							{option.icon
+																							{option.icon.default
 																								.split("%7C")
 																								.map(icon =>
 																									decodeURIComponent(
@@ -384,7 +385,10 @@ export const Sentence: FC<SentenceProps> = ({
 																								</span>
 																							)}
 																						</p>
-																						<p className="flex flex-row justify-between gap-2 text-sm tabular-nums opacity-40">
+																						<p className="flex flex-row items-center justify-between gap-2 text-sm tabular-nums text-black/40">
+																							{option.icon.secondary && (
+																								<Image className="rounded-[4px] w-4 h-4" src={option.icon.secondary} alt="secondary option icon" width={32} height={32} />
+																							)}
 																							{option.label}
 																							{option.info && (
 																								<Counter className="ml-auto tabular-nums" count={option.info.label} />

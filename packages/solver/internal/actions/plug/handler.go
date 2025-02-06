@@ -13,7 +13,7 @@ var (
 	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionTransfer: {
-			Sentence:       "Transfer {0<amount:[(1.1)==721?1:float]>} {1<token:address:uint64:uint64>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}.",
+			Sentence:       "Transfer {0<amount:[(1.1)==721?1:float]>} {1<token:address:uint256:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}.",
 			Handler:        HandleTransfer,
 			IsUserSpecific: true,
 		},
