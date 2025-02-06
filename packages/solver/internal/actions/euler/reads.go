@@ -36,10 +36,6 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 		return nil, err
 	}
 
-	for i, addr := range vaultAddresses {
-		fmt.Printf("Debug: Vault %d address: %s\n", i, addr.Hex())
-	}
-
 	vaultLensAbi, err := euler_vault_lens.EulerVaultLensMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault lens ABI: %w", err)
@@ -53,7 +49,6 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 		}
 
 		vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
-		fmt.Printf("Debug: Creating multicall for vault %d to lens contract %s\n", i, vaultLensAddr.Hex())
 		
 		calls[i] = multicall_primary.Multicall3Call{
 			Target:   vaultLensAddr,

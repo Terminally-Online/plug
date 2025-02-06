@@ -36,7 +36,6 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		fmt.Printf("error getting address positions: %v\n", err)
 		return nil, err
 	}
-	fmt.Printf("address positions: %v\n", addressPositions)
 
 	switch action {
 		case ActionEarn:
@@ -174,7 +173,6 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 }
 
 func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Option, error) {
-	fmt.Printf("address: %s\n", address.String())
 	if (address == utils.ZeroAddress) {
 		return nil, nil
 	}
@@ -233,8 +231,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				},
 			}
 			options = append(options, accountOption)
-
-			fmt.Printf("account %d (%s) Vault (%s): \n%v\n\n", i, vault.Account, vault.Vault, vault.LiquidityInfo)
 		}
 	}
 
