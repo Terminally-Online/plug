@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
+import { FC, HTMLAttributes, memo, useMemo } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -22,7 +22,7 @@ export const SocketTokenList: FC<
 	}
 > = memo(({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { tokens: apiTokens, lastUpdate } = useHoldings(socket?.socketAddress)
+	const { tokens: apiTokens } = useHoldings(socket?.socketAddress)
 
 	const tokens = columnTokens ?? apiTokens
 

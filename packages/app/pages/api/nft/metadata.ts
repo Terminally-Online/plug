@@ -1,7 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next"
 
 import { db } from "@/server/db"
-import { env } from "@/env"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { address } = req.query
@@ -33,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const metadata = {
 			name: `Plug Founding Ticket #${identity.onboardingCount}`,
 			description: "A founding ticket for early Plug users",
-			image: `${env.NEXT_PUBLIC_APP_URL}/api/nft/image?color=${identity.onboardingColor?.replace("#", "")}&number=${identity.onboardingCount}`,
+			image: `${process.env.NEXT_PUBLIC_APP_URL}/api/nft/image?color=${identity.onboardingColor?.replace("#", "")}&number=${identity.onboardingCount}`,
 			attributes: [
 				{
 					trait_type: "Ticket Number",

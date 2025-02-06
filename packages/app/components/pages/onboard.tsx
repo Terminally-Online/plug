@@ -19,7 +19,7 @@ import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
 
-const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
+export const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
 
 const actions = [
 	{ name: "Mint Plug Founders Ticket.", sentence: `Mint [Plug Founders Ticket] in [Color:${colors.join(",")}].` },
@@ -175,9 +175,20 @@ export const ConsoleOnboardingStepOne: FC<
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
-	const setSocket = useSetAtom(socketModelAtom)
+	const router = useRouter()
+	const color = (router.query.color as string) || ""
 
-	const [color, setColor] = useState("")
+	const setColor = (newColor: string) => {
+		router.replace(
+			{
+				query: { ...router.query, color: newColor }
+			},
+			undefined,
+			{ shallow: true }
+		)
+	}
+
+	const setSocket = useSetAtom(socketModelAtom)
 
 	const onboard = api.socket.onboard.onboard.useMutation({
 		onSuccess: socket => setSocket(socket)
@@ -210,7 +221,7 @@ export const ConsoleOnboardingStepOne: FC<
 									<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
 										<Image
 											className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-											src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=${Math.floor(Math.random() * 100000)}`}
+											src={`http://localhost:3000/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
 											alt="Plug Founding Ticket"
 											width={1000}
 											height={1600}

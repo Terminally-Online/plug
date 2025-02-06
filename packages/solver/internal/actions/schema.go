@@ -17,14 +17,16 @@ type ProtocolSchema struct {
 }
 
 type ChainSchema struct {
-	Type   string `default:"action" json:"type"`
-	Schema Schema `json:"schema"`
+	Type           string `default:"action" json:"type"`
+	IsUserSpecific bool   `json:"isUserSpecific,omitempty"`
+	Schema         Schema `json:"schema"`
 }
 
 type Schema struct {
-	Type     string          `default:"action" json:"type"`
-	Sentence string          `json:"sentence"`
-	Options  map[int]Options `json:"options,omitempty"`
+	Type           string          `default:"action" json:"type"`
+	Sentence       string          `json:"sentence"`
+	IsUserSpecific bool            `json:"isUserSpecific,omitempty"`
+	Options        map[int]Options `json:"options,omitempty"`
 }
 
 func (o Options) MarshalJSON() ([]byte, error) {

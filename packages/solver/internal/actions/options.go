@@ -157,10 +157,8 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address
 	}
 }
 
-// DefaultOptionsProvider is a basic implementation of OptionsProvider
 type DefaultOptionsProvider struct{}
 
-// GetOptions implements OptionsProvider
 func (p *DefaultOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
 	return make(map[int]Options), nil
 }
