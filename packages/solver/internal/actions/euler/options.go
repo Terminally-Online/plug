@@ -2,7 +2,9 @@ package euler
 
 import (
 	"fmt"
+	"math/big"
 	"solver/bindings/euler_account_lens"
+	"solver/bindings/euler_vault_lens"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
@@ -14,12 +16,17 @@ import (
 type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, action string) (map[int]actions.Options, error) {
-	supplyTokenOptions, supplyVaultOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId)
+	vaults, err := GetVerifiedVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	borrowTokenOptions, borrowVaultOptions, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId)
+	supplyTokenOptions, supplyVaultOptions, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
+	if err != nil {
+		return nil, err
+	}
+
+	borrowTokenOptions, borrowVaultOptions, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId, vaults)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +58,7 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			return map[int]actions.Options{
 				1: {Simple: borrowTokenOptions},
 				2: {Complex: borrowTokenToVaultOptions},
+				3: {Simple: addressPositions},
 			}, nil
 		case ActionRepay:
 			return map[int]actions.Options{
@@ -79,12 +87,7 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 	}
 }
 
-func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
-	vaults, err := GetVerifiedVaults(chainId)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
+func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
 	seenToken := make(map[string]bool)
 	tokenOptions := make([]actions.Option, 0)
 	vaultOptions := make([]actions.Option, 0)
@@ -127,12 +130,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.O
 	return tokenOptions, vaultOptions, tokenToVaultOptions, nil
 }
 
-func GetBorrowTokenToVaultOptions(chainId uint64) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
-	vaults, err := GetVerifiedVaults(chainId)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
+func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
 	seenToken := make(map[string]bool)
 	tokenOptions := make([]actions.Option, 0)
 	vaultOptions := make([]actions.Option, 0)
@@ -194,19 +192,39 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		return nil, utils.ErrABI("EulerAccountLens")
 	}
 
-	accountEnabledVaults, err := accountLens.GetAccountEnabledVaultsInfo(
-		nil,
-		common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"]),
-		address,
-	)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("account enabled vaults: %v\n", accountEnabledVaults)
+	// Do we really have to make this call for all 256 sub accounts? Or do we need to lean on an indexer like euler does.
+	options := make([]actions.Option, 0)
+	for i := 0; i < 5; i++ {	
+		subAccountAddress := GetSubAccountAddress(address, uint8(i))
+		accountEnabledVaults, err := accountLens.GetAccountEnabledVaultsInfo(
+			nil,
+			common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
+			subAccountAddress,
+		)
+		if err != nil {
+			fmt.Printf("error getting account enabled vaults contract instance: %v\n", err)
+			return nil, err
+		}
 
-	for idx, vault := range accountEnabledVaults.VaultAccountInfo {
-		fmt.Printf("account %d (%s): %v\n", idx, vault.Account, vault.LiquidityInfo)
+		for _, vault := range accountEnabledVaults.VaultAccountInfo {
+			// account liquidity info returns a query failure if it's a borrow not a supply vault.
+			if vault.LiquidityInfo.QueryFailure { continue };
+
+			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
+			accountOption := actions.Option{
+				Label: fmt.Sprintf("Account %d", i),
+				Name:  vault.Account.String(),
+				Value: fmt.Sprintf("$%.2f", utils.UintToFloat(netValue, 18)),
+				Info: actions.OptionInfo{
+					Label: "Borrowing Value",
+					Value: fmt.Sprintf("$%.2f", utils.UintToFloat(vault.LiquidityInfo.LiabilityValue, 18)),
+				},
+			}
+			options = append(options, accountOption)
+
+			fmt.Printf("account %d (%s) Vault (%s): \n%v\n\n", i, vault.Account, vault.Vault, vault.LiquidityInfo)
+		}
 	}
 
-	return nil, nil
+	return options, nil
 }
