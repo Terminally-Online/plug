@@ -37,4 +37,5 @@ const (
 	ConstraintAvailableLiquidity string = "available_liquidity"
 	ConstraintTimeLeft           string = "time_left"
 	ConstraintPrice              string = "price"
+	ConstraintBalance            string = "balance"
 )
