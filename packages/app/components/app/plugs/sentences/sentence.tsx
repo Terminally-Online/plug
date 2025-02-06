@@ -320,7 +320,7 @@ export const Sentence: FC<SentenceProps> = ({
 																	/>
 
 																	<div className="mb-4 flex w-full flex-col gap-2">
-																		{filteredOptions.map((option, optionIndex) => (
+																		{filteredOptions && filteredOptions.map((option, optionIndex) => (
 																			<Accordion
 																				key={`${index}-${actionIndex}-${optionIndex}`}
 																				onExpand={() =>
