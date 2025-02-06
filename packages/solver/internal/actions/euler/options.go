@@ -16,7 +16,7 @@ import (
 type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, action string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaults(chainId)
+	vaults, err := GetVerifiedVaultsMulticall(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -208,8 +208,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		if len(accountEnabledVaults.VaultAccountInfo) == 0 {
 			options = append(options, actions.Option{
-				Label: fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
-				Name:  fmt.Sprintf("Account %d", i),
+				Label: fmt.Sprintf("Account %d", i),
+				Name: fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
 				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
 					Label: "Net Asset Value",
@@ -224,8 +224,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
 			accountOption := actions.Option{
-				Label: fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
-				Name:  fmt.Sprintf("Account %d", i),
+				Label: fmt.Sprintf("Account %d", i),
+				Name:  fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
 				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
 					Label: "Net Asset Value",
