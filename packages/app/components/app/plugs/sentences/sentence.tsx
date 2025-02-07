@@ -104,9 +104,9 @@ export const Sentence: FC<SentenceProps> = ({
 
 	if (!parsed) return <div className="border-[1px] border-plug-red rounded-lg p-4">
 		<p className="font-bold text-plug-red">Failed to parse: <span className="opacity-60">{sentence}</span></p>
-
 	</div>
-	if (!column || !solverActions || !actionSchema || !parsed) return <pre>{JSON.stringify(parsed, null, 2)}</pre>
+
+	if (!column || !solverActions || !actionSchema || !parsed) return null
 
 	return (
 		<>
@@ -188,12 +188,12 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
-									const filteredOptions =search[partIndex] ?	options?.filter(
-											option =>
-												option.label.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
-												option.name?.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
-												option.value.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "")
-										) : options
+									const filteredOptions = search[partIndex] ? options?.filter(
+										option =>
+											option.label.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
+											option.name?.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
+											option.value.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "")
+									) : options
 
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
@@ -315,7 +315,7 @@ export const Sentence: FC<SentenceProps> = ({
 																		placeholder="Search options"
 																		// @ts-ignore
 																		search={search[input.index] ?? undefined}
-																		handleSearch={s => setSearch(prev => ({ ...prev, [input.index]: s || undefined}))}
+																		handleSearch={s => setSearch(prev => ({ ...prev, [input.index]: s || undefined }))}
 																		focus
 																		clear
 																	/>

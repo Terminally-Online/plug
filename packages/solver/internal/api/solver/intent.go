@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
@@ -52,16 +53,37 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	chainId := r.URL.Query().Get("chainId")
 	from := r.URL.Query().Get("from")
 
-	// Case 1: No protocol - return all schemas for all protocols without options.
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
 		for protocol, handler := range h.Solver.GetProtocols() {
+			if chainId != "" {
+				supportsChain := false
+				chainLoop:
+				for _, chain := range handler.GetChains() {
+					for _, _chainId := range chain.ChainIds {
+						if chainId == fmt.Sprint(_chainId) {
+							supportsChain = true
+							break chainLoop
+						}
+					}
+				}
+				if !supportsChain {
+					continue
+				}
+			}
+
+			var chains []*references.Network
+			for _, chain := range handler.GetChains() {
+				chain.References = nil
+				chains = append(chains, chain)
+			}
+
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
 					Tags:   handler.GetTags(),
-					Chains: handler.GetChains(),
+					Chains: chains,
 				},
 				Schema: make(map[string]actions.Schema),
 			}
@@ -91,7 +113,6 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Case 2: Protocol only - return all schemas for that protocol without options.
 	if action == "" {
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
@@ -122,7 +143,6 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Case 3: Protocol and action - return specific schema
 	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)

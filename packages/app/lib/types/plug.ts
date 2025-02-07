@@ -15,7 +15,12 @@ export type ActionSchema = {
 	metadata: {
 		icon: string
 		tags: Array<string>
-		chains: Array<typeof connectedChains[number]['id']>
+		chains: Array<{ 
+			name: string, 
+			chainIds: [typeof connectedChains[number]['id']], 
+			explorer: string, 
+			icon: { [key: string]: string } 
+		}>
 	}
 	schema: Record<
 		string,
