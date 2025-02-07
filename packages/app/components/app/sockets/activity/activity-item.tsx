@@ -93,27 +93,26 @@ export const ActivityItem: FC<{
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 	simulationId: string | undefined
 }> = ({ index, activity, simulationId }) => {
-	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
+	const { column } = useColumnStore(index, `${activity?.id}-activity`)
+	const width = column?.width ?? COLUMNS.DEFAULT_WIDTH
 
 	return (
 		<>
 			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
 				{activity === undefined ? (
-					<div className="invisible">
+					<div className="invisible">image.png
 						<p>.</p>
 						<p>.</p>
 					</div>
 				) : (
 					<div className="flex w-full flex-row items-center">
 						<ActivityIcon status={activity.status} />
-
 						<div
 							className="mr-4 h-10 w-10 min-w-10 rounded-sm bg-plug-green/10"
 							style={{
 								backgroundImage: cardColors[activity.workflow.color]
 							}}
 						/>
-
 						<div className="relative flex w-full flex-col overflow-hidden">
 							<div className="flex flex-row items-center justify-between gap-2 font-bold">
 								<p className="mr-2 truncate overflow-ellipsis whitespace-nowrap">
@@ -126,24 +125,29 @@ export const ActivityItem: FC<{
 							<div className="flex w-full flex-row items-center justify-between gap-2 text-sm font-bold text-black text-opacity-40">
 								<p className="flex flex-row items-center gap-2">
 									<ChainImage chainId={activity.chainId as ChainId} size="xs" />
-									<span className="truncate overflow-ellipsis whitespace-nowrap">
-										{formatTitle(activity.status)}
-									</span>
+									{width > 460 && (
+										<span className="truncate overflow-ellipsis whitespace-nowrap">
+											{formatTitle(activity.status)}
+										</span>
+									)}
 								</p>
-								<p className="flex flex-row gap-2 truncate overflow-ellipsis whitespace-nowrap">
-									<Counter count={activity.startAt.toLocaleDateString()} />
+								<p className="flex flex-row gap-2 whitespace-nowrap">
+									<span className="min-w-[80px] text-right">
+										<Counter count={activity.startAt.toLocaleDateString()} />
+									</span>
 									{activity.endAt ? (
 										<>
 											<span className="opacity-60">→</span>
-											<Counter count={activity.endAt.toLocaleDateString()} />
+											<span className="min-w-[80px] text-right">
+												<Counter count={activity.endAt.toLocaleDateString()} />
+											</span>
 										</>
 									) : activity.frequency !== 0 ? (
 										<>
-											<span className="opacity-60">→</span>∞
+											<span className="opacity-60">→</span>
+											<span>∞</span>
 										</>
-									) : (
-										""
-									)}
+									) : null}
 								</p>
 							</div>
 						</div>
