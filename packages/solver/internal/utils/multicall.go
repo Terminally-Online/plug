@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/big"
 
@@ -13,13 +14,14 @@ import (
 )
 
 type MulticallCalldata struct {
-	Target common.Address
-	Method string
-	Args   []interface{}
-	ABI    *abi.ABI
+	Target     common.Address
+	Method     string
+	Args       []interface{}
+	ABI        *abi.ABI
+	OutputType interface{}
 }
 
-func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []MulticallCalldata) ([][]byte, error) {
+func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []MulticallCalldata) ([]interface{}, error) {
 	provider, err := GetProvider(chainId)
 	if err != nil {
 		return nil, err
@@ -73,5 +75,29 @@ func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []M
 		return nil, fmt.Errorf("multicall result 1 was not a [][]byte")
 	}
 
-	return returnData, nil
+	results := make([]interface{}, len(returnData))
+	for i, data := range returnData {
+		unpacked, err := calls[i].ABI.Unpack(calls[i].Method, data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unpack data for call %d: %w", i, err)
+		}
+
+		if len(unpacked) == 0 {
+			return nil, fmt.Errorf("empty result for call %d", i)
+		}
+
+		jsonData, err := json.Marshal(unpacked[0])
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal data for call %d: %w", i, err)
+		}
+
+		result := calls[i].OutputType
+		if err := json.Unmarshal(jsonData, &result); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal data for call %d: %w", i, err)
+		}
+
+		results[i] = result
+	}
+
+	return results, nil
 }

@@ -1,7 +1,6 @@
 package euler
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"solver/bindings/euler_account_lens"
@@ -202,40 +201,24 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			Method: "getAccountEnabledVaultsInfo",
 			Args:   []interface{}{evcAddr, subAccountAddress},
 			ABI:    accountLensAbi,
+			OutputType: &struct {
+				VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
+			}{},
 		}
 	}
 
 	multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-	returnData, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+	results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
 	if err != nil {
 		return nil, fmt.Errorf("multicall failed: %w", err)
 	}
 
 	options := make([]actions.Option, 0)
-	for i, data := range returnData {
-		subAccountAddress := GetSubAccountAddress(address, uint8(i))
-
-		unpacked, err := accountLensAbi.Unpack("getAccountEnabledVaultsInfo", data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to unpack account info for sub-account %d: %w", i, err)
-		}
-
-		if len(unpacked) == 0 {
-			return nil, fmt.Errorf("empty result for sub-account %d", i)
-		}
-
-		// Convert to map first
-		jsonData, err := json.Marshal(unpacked[0])
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal account info for sub-account %d: %w", i, err)
-		}
-
-		var accountInfo struct {
+	for i, result := range results {
+		accountInfo := result.(*struct {
 			VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
-		}
-		if err := json.Unmarshal(jsonData, &accountInfo); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal account info for sub-account %d: %w", i, err)
-		}
+		})
+		subAccountAddress := GetSubAccountAddress(address, uint8(i))
 
 		if len(accountInfo.VaultAccountInfo) == 0 {
 			options = append(options, actions.Option{

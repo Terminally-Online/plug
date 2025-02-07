@@ -1,7 +1,6 @@
 package euler
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"solver/bindings/euler_governed_perspective"
@@ -44,44 +43,26 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error)
 	calls := make([]utils.MulticallCalldata, len(vaultAddresses))
 	for i, vaultAddr := range vaultAddresses {
 		calls[i] = utils.MulticallCalldata{
-			Target: vaultLensAddr,
-			Method: "getVaultInfoFull",
-			Args:   []interface{}{vaultAddr},
-			ABI:    vaultLensAbi,
+			Target:     vaultLensAddr,
+			Method:     "getVaultInfoFull",
+			Args:       []interface{}{vaultAddr},
+			ABI:        vaultLensAbi,
+			OutputType: &euler_vault_lens.VaultInfoFull{},
 		}
 	}
 
 	multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-	returnData, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+	results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
 	if err != nil {
 		return nil, fmt.Errorf("multicall failed: %w", err)
 	}
 
-	results := make([]euler_vault_lens.VaultInfoFull, len(returnData))
-	for i, data := range returnData {
-		vaultInfo, err := vaultLensAbi.Unpack("getVaultInfoFull", data)
-		if err != nil {
-			return nil, fmt.Errorf("failed to unpack vault info: %w", err)
-		}
-
-		if len(vaultInfo) == 0 {
-			return nil, fmt.Errorf("empty vault info returned for vault %d", i)
-		}
-
-		jsonData, err := json.Marshal(vaultInfo[0])
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal vault info: %w", err)
-		}
-
-		var result euler_vault_lens.VaultInfoFull
-		if err := json.Unmarshal(jsonData, &result); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal vault info: %w", err)
-		}
-
-		results[i] = result
+	vaultInfos := make([]euler_vault_lens.VaultInfoFull, len(results))
+	for i, result := range results {
+		vaultInfos[i] = *result.(*euler_vault_lens.VaultInfoFull)
 	}
 
-	return results, nil
+	return vaultInfos, nil
 }
 
 func GetVault(address string, chainId uint64) (euler_vault_lens.VaultInfoFull, error) {
