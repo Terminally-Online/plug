@@ -102,7 +102,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 		tokenToVaultOptions map[string][]actions.Option
 	}
 
-	cacheKey := fmt.Sprintf("supply:%d", chainId)
+	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
 	res, err := utils.WithCache[result](cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
@@ -164,7 +164,7 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 		tokenToVaultOptions map[string][]actions.Option
 	}
 
-	cacheKey := fmt.Sprintf("borrow:%d", chainId)
+	cacheKey := fmt.Sprintf("euler:borrowTokens:%d", chainId)
 	res, err := utils.WithCache[result](cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
@@ -224,7 +224,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		return nil, nil
 	}
 
-	cacheKey := fmt.Sprintf("positions:%d:%s", chainId, address.String())
+	cacheKey := fmt.Sprintf("euler:positions:%d:%s", chainId, address.String())
 	return utils.WithCache[[]actions.Option](cacheKey, []time.Duration{5 * time.Minute}, func() ([]actions.Option, error) {
 		accountLensAbi, err := euler_account_lens.EulerAccountLensMetaData.GetAbi()
 		if err != nil {
