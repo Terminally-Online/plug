@@ -93,7 +93,7 @@ export const ActivityItem: FC<{
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 	simulationId: string | undefined
 }> = ({ index, activity, simulationId }) => {
-	const { column } = useColumnStore(index, `${activity?.id}-activity`)
+	const { column, handle } = useColumnStore(index, `${activity?.id}-activity`)
 	const width = column?.width ?? COLUMNS.DEFAULT_WIDTH
 
 	return (
