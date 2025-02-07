@@ -38,55 +38,57 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 	}
 
 	switch action {
-		case ActionEarn:
-			return map[int]actions.Options{
-				1: {Simple: supplyTokenOptions},
-				2: {Complex: supplyTokenToVaultOptions},
-				3: {Simple: addressPositions},
-			}, nil
-		case ActionDepositCollateral:
-			return map[int]actions.Options{
-				1: {Simple: supplyTokenOptions},
-				2: {Complex: supplyTokenToVaultOptions},
-				3: {Simple: addressPositions},
-			}, nil
-		case ActionWithdraw:
-			return map[int]actions.Options{
-				1: {Simple: supplyTokenOptions},
-				2: {Complex: supplyTokenToVaultOptions},
-				3: {Simple: addressPositions},
-			}, nil
-		case ActionBorrow:
-			return map[int]actions.Options{
-				1: {Simple: borrowTokenOptions},
-				2: {Complex: borrowTokenToVaultOptions},
-				3: {Simple: addressPositions},
-			}, nil
-		case ActionRepay:
-			return map[int]actions.Options{
-				1: {Simple: borrowTokenOptions},
-				2: {Complex: borrowTokenToVaultOptions},
-				3: {Simple: addressPositions},
-			}, nil
-		case ConstraintHealthFactor:
-			return map[int]actions.Options{
-				0: {Simple: addressPositions},
-				1: {Simple: actions.BaseThresholdFields},
-			}, nil
-		case ConstraintAPY:
-			return map[int]actions.Options{
-				0: {Simple: actions.BaseLendActionTypeFields},
-				1: {Complex: map[string][]actions.Option{ 
-					"-1": borrowVaultOptions,
-					"1": supplyVaultOptions,
-				}},
-				2: {Simple: actions.BaseThresholdFields},
-			}, nil
-		case ConstraintTimeToLiq:
-			return map[int]actions.Options{
-				0: {Simple: addressPositions},
-				1: {Simple: actions.BaseThresholdFields},
-			}, nil
+	case ActionEarn:
+		return map[int]actions.Options{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+			3: {Simple: addressPositions},
+		}, nil
+	case ActionDepositCollateral:
+		return map[int]actions.Options{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+			3: {Simple: addressPositions},
+		}, nil
+	case ActionWithdraw:
+		return map[int]actions.Options{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+			3: {Simple: addressPositions},
+		}, nil
+	case ActionBorrow:
+		return map[int]actions.Options{
+			1: {Simple: borrowTokenOptions},
+			2: {Complex: borrowTokenToVaultOptions},
+			3: {Simple: addressPositions},
+		}, nil
+	case ActionRepay:
+		return map[int]actions.Options{
+			1: {Simple: borrowTokenOptions},
+			2: {Complex: borrowTokenToVaultOptions},
+			3: {Simple: addressPositions},
+		}, nil
+	case ConstraintHealthFactor:
+		return map[int]actions.Options{
+			0: {Simple: borrowVaultOptions},
+			1: {Simple: addressPositions},
+			2: {Simple: actions.BaseThresholdFields},
+		}, nil
+	case ConstraintAPY:
+		return map[int]actions.Options{
+			0: {Simple: actions.BaseLendActionTypeFields},
+			1: {Complex: map[string][]actions.Option{
+				"-1": borrowVaultOptions,
+				"1":  supplyVaultOptions,
+			}},
+			2: {Simple: actions.BaseThresholdFields},
+		}, nil
+	case ConstraintTimeToLiq:
+		return map[int]actions.Options{
+			0: {Simple: borrowVaultOptions},
+			1: {Simple: addressPositions},
+			2: {Simple: actions.BaseThresholdFields},
+		}, nil
 	default:
 		return nil, fmt.Errorf("unsupported action for options: %s", action)
 	}
@@ -179,7 +181,7 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 }
 
 func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Option, error) {
-	if (address == utils.ZeroAddress) {
+	if address == utils.ZeroAddress {
 		return nil, nil
 	}
 
@@ -198,7 +200,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 	// Do we really have to make this call for all 256 sub accounts? Or do we need to lean on an indexer like euler does.
 	options := make([]actions.Option, 0)
-	for i := 0; i < 5; i++ {	
+	for i := 0; i < 5; i++ {
 		subAccountAddress := GetSubAccountAddress(address, uint8(i))
 		accountEnabledVaults, err := accountLens.GetAccountEnabledVaultsInfo(
 			nil,
@@ -213,7 +215,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		if len(accountEnabledVaults.VaultAccountInfo) == 0 {
 			options = append(options, actions.Option{
 				Label: fmt.Sprintf("Account %d", i),
-				Name: fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
+				Name:  fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
 				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
 					Label: "Net Asset Value",
@@ -224,7 +226,9 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		for _, vault := range accountEnabledVaults.VaultAccountInfo {
 			// account liquidity info returns a query failure if it's a borrow not a supply vault.
-			if vault.LiquidityInfo.QueryFailure { continue };
+			if vault.LiquidityInfo.QueryFailure {
+				continue
+			}
 
 			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
 			accountOption := actions.Option{
