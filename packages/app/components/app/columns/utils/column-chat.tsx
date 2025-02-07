@@ -4,6 +4,7 @@ import { Search } from "../../inputs/search"
 import { SearchIcon } from "lucide-react"
 import { cn, formatTitle } from "@/lib";
 import { Counter } from "@/components/shared/utils/counter";
+import { api } from "@/server/client";
 
 interface Message {
 	text: string;
@@ -28,8 +29,6 @@ const DEFAULT_MESSAGES = [
 	"Where can I use my holdings?"
 ]
 
-const TOOLS = ["schemas", "schema", "holdings", "price", "plugs", "plug", "simulate"]
-
 export const ColumnChat = ({ }: { index: number }) => {
 	const [message, setMessage] = useState("")
 	const [messages, setMessages] = useState<Message[]>([{
@@ -39,27 +38,38 @@ export const ColumnChat = ({ }: { index: number }) => {
 	const [isTyping, setIsTyping] = useState(false)
 	const [activeTools, setActiveTools] = useState<string[]>([])
 
-	const addRandomTools = () => {
-		const availableTools = TOOLS.filter(tool => !activeTools.includes(tool))
-		const numToolsToAdd = Math.min(Math.floor(Math.random() * 2) + 1, availableTools.length)
-		const shuffled = [...availableTools].sort(() => 0.5 - Math.random())
-		const newTools = shuffled.slice(0, numToolsToAdd)
-		setActiveTools(prev => [...prev, ...newTools])
-	}
+	const chat = api.biblo.chat.message.useMutation()
 
-	const handleSubmit = (sent: string) => {
+	const handleSubmit = async (sent: string) => {
 		if (!sent.trim()) return;
 
-		setMessages([...messages, { text: sent, isSent: true }])
-		setIsTyping(true)
+		setMessages([...messages, { text: sent, isSent: true }]);
+		setIsTyping(true);
+		setMessage("");
 
-		setTimeout(() => {
-			setIsTyping(false)
-			setMessages(prev => [...prev, { text: "This is a reply", isSent: false }])
-			addRandomTools()
-		}, 1000)
+		try {
+			const response = await chat.mutateAsync({
+				message: sent,
+				// tools: activeTools,
+				history: messages.map(msg => ({
+					content: msg.text,
+					role: msg.isSent ? 'user' : 'assistant'
+				}))
+			});
 
-		setMessage("")
+			if (response.tools?.length) {
+				setActiveTools(prev => [...new Set([...prev, ...response.tools])]);
+			}
+			setMessages(prev => [...prev, { text: response.reply, isSent: false }, ...response.additionalMessages.map(text => ({ text, isSent: false }))]);
+		} catch (error) {
+			console.error('Error:', error);
+			setMessages(prev => [...prev, { 
+				text: "Sorry, I encountered an error. Please try again.", 
+				isSent: false 
+			}]);
+		} finally {
+			setIsTyping(false);
+		}
 	}
 
 	return <>
