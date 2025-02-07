@@ -10,7 +10,7 @@ var (
 	icon = "https://cdn.onplug.io/protocols/yearn.png"
 	tags = []string{"yield", "defi"}
 
-	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
+	chains = []*references.Network{references.Mainnet, references.Base}
 	
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {

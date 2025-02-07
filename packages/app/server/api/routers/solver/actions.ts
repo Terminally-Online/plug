@@ -14,10 +14,11 @@ export const actions = createTRPCRouter({
 			z.object({
 				protocol: z.string().optional(),
 				action: z.string().optional(),
-				chainId: z.number()
+				chainId: z.number(),
+				search: z.record(z.number(), z.string()).optional()
 			})
 		)
-		.query(async ({ input, ctx }) => await schemas(input?.protocol, input?.action, input.chainId, ctx.session.address)),
+		.query(async ({ input, ctx }) => await schemas(input?.protocol, input?.action, input.chainId, input.search, ctx.session.address)),
 	intent: anonymousProtectedProcedure
 		.input(
 			z.object({

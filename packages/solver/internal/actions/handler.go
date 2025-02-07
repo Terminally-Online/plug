@@ -3,6 +3,7 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -21,7 +22,7 @@ type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains() []uint64
+	GetChains() []*references.Network
 	GetSchema(chainId string, from common.Address, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
@@ -34,7 +35,7 @@ type Protocol struct {
 	Name            string
 	Icon            string
 	Tags            []string
-	Chains          []uint64
+	Chains          []*references.Network
 	OptionsProvider OptionsProvider
 	Schemas         map[string]ChainSchema
 	txHandlers      map[string]TransactionHandler
@@ -57,13 +58,14 @@ type ActionDefinition struct {
 	Sentence       string
 	Handler        TransactionHandler
 	IsUserSpecific bool
+	IsSearchable   bool
 }
 
 func NewBaseHandler(
 	name string,
 	icon string,
 	tags []string,
-	chains []uint64,
+	chains []*references.Network,
 	actionDefinitions map[string]ActionDefinition,
 	optionsProvider OptionsProvider,
 ) *BaseHandler {
@@ -116,8 +118,10 @@ func NewBaseHandler(
 		actions = append(actions, action)
 	}
 	go func() {
-		for _, chainId := range chains {
-			cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
+		for _, chain := range chains {
+			for _, chainId := range chain.ChainIds { 
+				cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
+			}
 		}
 	}()
 
@@ -136,7 +140,7 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains() []uint64 {
+func (h *BaseHandler) GetChains() []*references.Network {
 	return h.protocol.Chains
 }
 
@@ -166,14 +170,16 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, action stri
 		}
 
 		supported := false
-		for _, supportedChainId := range h.protocol.Chains {
-			if supportedChainId == chainIdInt {
-				supported = true
-				break
+		for _, supportedChain := range h.protocol.Chains {
+			for _, supportedChainId := range supportedChain.ChainIds {
+				if chainIdInt == supportedChainId {
+					supported = true
+					break
+				}
 			}
 		}
 		if !supported {
-			return nil, fmt.Errorf(errUnsupportedChain, chainIdInt)
+			return nil, fmt.Errorf("chain not supported: %d", chainIdInt)
 		}
 
 		if !h.protocol.Schemas[action].Schema.IsUserSpecific {
@@ -186,8 +192,6 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, action stri
 		}
 		chainSchema.Schema.Options = options
 	}
-
-	chainSchema.Schema.IsUserSpecific = h.protocol.Schemas[action].Schema.IsUserSpecific
 
 	return &chainSchema, nil
 }

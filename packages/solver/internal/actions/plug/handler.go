@@ -10,12 +10,13 @@ var (
 	icon = "https://cdn.onplug.io/protocols/plug.png"
 	tags = []string{"defi"}
 
-	chains  = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
+	chains = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionTransfer: {
 			Sentence:       "Transfer {0<amount:[(1.1)==721?1:float]>} {1<token:address:uint256:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}",
 			Handler:        HandleTransfer,
 			IsUserSpecific: true,
+			IsSearchable:   true,
 		},
 		actions.ActionSwap: {
 			Sentence:       "Swap {0<amount:float>} {1<tokenIn:address:uint256:uint256>} for {2<tokenOut:address:uint256:uint256>}",

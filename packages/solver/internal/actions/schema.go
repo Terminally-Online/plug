@@ -3,12 +3,19 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/internal/bindings/references"
 )
 
+type Chain struct {
+	Id   uint64 `json:"id"`
+	Name string `json:"name"`
+	Icon string `json:"icon"`
+}
+
 type ProtocolMetadata struct {
-	Icon   string   `json:"icon"`
-	Tags   []string `json:"tags"`
-	Chains []uint64 `json:"chains"`
+	Icon   string                `json:"icon"`
+	Tags   []string              `json:"tags"`
+	Chains []*references.Network `json:"chains"`
 }
 
 type ProtocolSchema struct {

@@ -6,17 +6,16 @@ import (
 )
 
 var (
-	name = "Nouns"
-	icon = "https://cdn.onplug.io/protocols/nouns.png"
-	tags = []string{"nft"}
-
-	chains = references.Mainnet.ChainIds
-
 	IncreaseBid           = "increase_bid"
 	HasTrait              = "has_trait"
 	IsTokenId             = "is_token_id"
 	CurrentBidWithinRange = "current_bid_within_range"
 
+	name = "Nouns"
+	icon = "https://cdn.onplug.io/protocols/nouns.png"
+	tags = []string{"nft"}
+
+	chains  = []*references.Network{references.Mainnet}
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionBid: {
 			Sentence: "Bid on noun with {0<amount:string>} ETH",

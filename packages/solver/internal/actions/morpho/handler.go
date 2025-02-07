@@ -10,8 +10,6 @@ var (
 	icon = "https://cdn.onplug.io/protocols/morpho.png"
 	tags = []string{"lending", "defi"}
 
-	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
-
 	ActionEarn             = "earn"
 	ActionSupplyCollateral = "supply_collateral"
 	ActionWithdraw         = "withdraw"
@@ -23,6 +21,7 @@ var (
 	ConstraintLLTV         = "lltv"
 	ConstraintAPY          = "apy"
 
+	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		ActionEarn: {
 			Sentence: "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:string>}",

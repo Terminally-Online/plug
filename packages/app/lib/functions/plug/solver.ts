@@ -7,8 +7,8 @@ import { ActionSchemas } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
-export const schemas = async (protocol?: string, action?: string, chainId: number = 8453, from?: string): Promise<ActionSchemas> => {
-	const cacheKey = `${protocol}-${action}`
+export const schemas = async (protocol?: string, action?: string, chainId: number = 8453, _: Record<number, string> = {}, from?: string): Promise<ActionSchemas> => {
+	const cacheKey = `${protocol}-${action}-search`
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
 

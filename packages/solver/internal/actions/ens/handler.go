@@ -10,11 +10,10 @@ var (
 	icon = "https://cdn.onplug.io/protocols/ens.png"
 	tags = []string{"naming", "web3"}
 
-	chains = references.Mainnet.ChainIds
-
 	GracePeriod = "grace_period"
 	TimeLeft    = "time_left"
 
+	chains  = []*references.Network{references.Mainnet}
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionBuy: {
 			Sentence: "Buy ENS {0<name:string>} with a max price of {1<maxPrice:float>} ETH",

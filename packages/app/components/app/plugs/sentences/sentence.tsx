@@ -34,6 +34,8 @@ export const Sentence: FC<SentenceProps> = ({
 	className,
 	...props
 }) => {
+	const [search, setSearch] = useState<Record<number, string | undefined>>({})
+
 	const {
 		column,
 		handle: { frame }
@@ -65,8 +67,6 @@ export const Sentence: FC<SentenceProps> = ({
 		actions: { setValue },
 		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
-
-	const [search, setSearch] = useState<Record<number, string>>({})
 
 	const parts = parsed
 		? parsed.template
@@ -190,9 +190,9 @@ export const Sentence: FC<SentenceProps> = ({
 
 									const filteredOptions =search[partIndex] ?	options?.filter(
 											option =>
-												option.label.toLowerCase().includes(search[partIndex]?.toLowerCase()) ||
-												option.name?.toLowerCase().includes(search[partIndex]?.toLowerCase()) ||
-												option.value.toLowerCase().includes(search[partIndex]?.toLowerCase())
+												option.label.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
+												option.name?.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
+												option.value.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "")
 										) : options
 
 									const isReady =
@@ -313,8 +313,9 @@ export const Sentence: FC<SentenceProps> = ({
 																	<Search
 																		icon={<SearchIcon size={14} />}
 																		placeholder="Search options"
-																		search={search[partIndex] ?? ""}
-																		handleSearch={setSearch}
+																		// @ts-ignore
+																		search={search[input.index] ?? undefined}
+																		handleSearch={s => setSearch(prev => ({ ...prev, [input.index]: s || undefined}))}
 																		focus
 																		clear
 																	/>
@@ -385,7 +386,7 @@ export const Sentence: FC<SentenceProps> = ({
 																								</span>
 																							)}
 																						</p>
-																						<p className="flex flex-row items-center justify-between gap-2 text-sm tabular-nums text-black/40">
+																						<p className="whitespace-nowrap flex flex-row items-center justify-between gap-2 text-sm tabular-nums text-black/40">
 																							{option.icon.secondary && (
 																								<Image className="rounded-[4px] w-4 h-4" src={option.icon.secondary} alt="secondary option icon" width={32} height={32} />
 																							)}
