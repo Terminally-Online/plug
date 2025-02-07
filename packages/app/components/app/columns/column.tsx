@@ -23,6 +23,7 @@ import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
 import { SparklingText } from "../utils/sparkling-text"
+import { ColumnChat } from "./utils/column-chat"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -247,6 +248,8 @@ export const ConsoleColumn: FC<{
 							<div className="flex-1 overflow-y-auto rounded-b-lg">
 								{column.key === COLUMNS.KEYS.ADD ? (
 									<ColumnAdd index={column.index} />
+								) : column.key === COLUMNS.KEYS.CHAT ? (
+									<ColumnChat index={column.index} />
 								) : column.key === COLUMNS.KEYS.DISCOVER ? (
 									<PlugsDiscover index={column.index} className="pt-4" />
 								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (
