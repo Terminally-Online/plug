@@ -9,7 +9,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { cardColors, ChainId, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { useColumnStore, COLUMNS } from "@/state/columns"
 
 import { ChainImage } from "../chains/chain.image"
 
