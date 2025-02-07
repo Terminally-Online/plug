@@ -1,6 +1,7 @@
 package euler
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"solver/bindings/euler_account_lens"
@@ -16,7 +17,7 @@ import (
 type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, action string) (map[int]actions.Options, error) {
-	vaults, err := GetVerifiedVaultsMulticall(chainId)
+	vaults, err := GetVerifiedVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -185,34 +186,58 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		return nil, nil
 	}
 
-	provider, err := utils.GetProvider(chainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %w", err)
-	}
-
-	accountLens, err := euler_account_lens.NewEulerAccountLens(
-		common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"]),
-		provider,
-	)
+	accountLensAbi, err := euler_account_lens.EulerAccountLensMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("EulerAccountLens")
 	}
 
-	// Do we really have to make this call for all 256 sub accounts? Or do we need to lean on an indexer like euler does.
-	options := make([]actions.Option, 0)
-	for i := 0; i < 5; i++ {
+	accountLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"])
+	evcAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["evc"])
+
+	calls := make([]utils.MulticallCalldata, 256)
+	for i := 0; i < 256; i++ {
 		subAccountAddress := GetSubAccountAddress(address, uint8(i))
-		accountEnabledVaults, err := accountLens.GetAccountEnabledVaultsInfo(
-			nil,
-			common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
-			subAccountAddress,
-		)
+		calls[i] = utils.MulticallCalldata{
+			Target: accountLensAddr,
+			Method: "getAccountEnabledVaultsInfo",
+			Args:   []interface{}{evcAddr, subAccountAddress},
+			ABI:    accountLensAbi,
+		}
+	}
+
+	multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
+	returnData, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+	if err != nil {
+		return nil, fmt.Errorf("multicall failed: %w", err)
+	}
+
+	options := make([]actions.Option, 0)
+	for i, data := range returnData {
+		subAccountAddress := GetSubAccountAddress(address, uint8(i))
+
+		unpacked, err := accountLensAbi.Unpack("getAccountEnabledVaultsInfo", data)
 		if err != nil {
-			fmt.Printf("error getting account enabled vaults contract instance: %v\n", err)
-			return nil, err
+			return nil, fmt.Errorf("failed to unpack account info for sub-account %d: %w", i, err)
 		}
 
-		if len(accountEnabledVaults.VaultAccountInfo) == 0 {
+		if len(unpacked) == 0 {
+			return nil, fmt.Errorf("empty result for sub-account %d", i)
+		}
+
+		// Convert to map first
+		jsonData, err := json.Marshal(unpacked[0])
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal account info for sub-account %d: %w", i, err)
+		}
+
+		var accountInfo struct {
+			VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
+		}
+		if err := json.Unmarshal(jsonData, &accountInfo); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal account info for sub-account %d: %w", i, err)
+		}
+
+		if len(accountInfo.VaultAccountInfo) == 0 {
 			options = append(options, actions.Option{
 				Label: fmt.Sprintf("Account %d", i),
 				Name:  fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
@@ -222,10 +247,10 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					Value: "$0.00",
 				},
 			})
+			continue
 		}
 
-		for _, vault := range accountEnabledVaults.VaultAccountInfo {
-			// account liquidity info returns a query failure if it's a borrow not a supply vault.
+		for _, vault := range accountInfo.VaultAccountInfo {
 			if vault.LiquidityInfo.QueryFailure {
 				continue
 			}
