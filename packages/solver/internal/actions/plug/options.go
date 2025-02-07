@@ -12,8 +12,13 @@ import (
 
 type PlugOptionsProvider struct{}
 
-func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]actions.Options, error) {
+func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]actions.Options, error) {
 	transferOptions, err := GetTransferOptions(chainId, from)
+	if err != nil {
+		return nil, err
+	}
+
+	addressOptions, err := GetAddressOptions(from, "")
 	if err != nil {
 		return nil, err
 	}
@@ -25,13 +30,14 @@ func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, ac
 		}, nil
 	case actions.ConstraintPrice:
 		return map[int]actions.Options{
-			0: {Simple: transferOptions},             // Token selection
-			1: {Simple: actions.BaseThresholdFields}, // Comparison operators
+			0: {Simple: transferOptions},             
+			1: {Simple: actions.BaseThresholdFields}, 
 		}, nil
 	case actions.ConstraintBalance:
 		return map[int]actions.Options{
-			0: {Simple: transferOptions},             // Token selection
-			2: {Simple: actions.BaseThresholdFields}, // Comparison operators
+			0: {Simple: transferOptions},             
+			1: {Simple: addressOptions},
+			2: {Simple: actions.BaseThresholdFields}, 
 		}, nil
 	default:
 		return nil, nil
@@ -76,4 +82,8 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 	}
 
 	return options, nil
+}
+
+func GetAddressOptions(from common.Address, search string) ([]actions.Option, error) {
+	return nil, nil
 }

@@ -11,7 +11,7 @@ import (
 
 type NounsOptionsProvider struct{}
 
-func (p *NounsOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
+func (p *NounsOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	traitTypeOptions, traitOptions, err := GetTraitOptions()
 	if err != nil {
 		return nil, err

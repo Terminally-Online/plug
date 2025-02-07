@@ -47,7 +47,7 @@ type CachedOptions struct {
 }
 
 type OptionsProvider interface {
-	GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error)
+	GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error)
 }
 
 type CachedOptionsProvider struct {
@@ -95,25 +95,25 @@ func NewCachedOptionsProvider(provider OptionsProvider) *CachedOptionsProvider {
 	}
 }
 
-func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
+func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error) {
 	if (from == common.Address{}) {
 		from = utils.ZeroAddress
 	}
 
-	key := OptionCacheKey{
-		chainId: chainId,
-		from:    from,
-		action:  action,
-	}
+	// key := OptionCacheKey{
+	// 	chainId: chainId,
+	// 	from:    from,
+	// 	action:  action,
+	// }
 
-	c.mu.RLock()
-	if cached, ok := c.cache[key]; ok {
-		c.mu.RUnlock()
-		return cached.options, nil
-	}
-	c.mu.RUnlock()
+	// c.mu.RLock()
+	// if cached, ok := c.cache[key]; ok {
+	// 	c.mu.RUnlock()
+	// 	return cached.options, nil
+	// }
+	// c.mu.RUnlock()
 
-	options, err := c.provider.GetOptions(chainId, from, action)
+	options, err := c.provider.GetOptions(chainId, from, search, action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
 	}
@@ -122,11 +122,11 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		options = make(map[int]Options)
 	}
 
-	c.mu.Lock()
-	c.cache[key] = CachedOptions{
-		options: options,
-	}
-	c.mu.Unlock()
+	// c.mu.Lock()
+	// c.cache[key] = CachedOptions{
+	// 	options: options,
+	// }
+	// c.mu.Unlock()
 
 	return options, nil
 }
@@ -151,7 +151,7 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address
 				completed++
 				mu.Unlock()
 			}()
-			if _, err := c.GetOptions(chainId, from, action); err != nil {
+			if _, err := c.GetOptions(chainId, from, map[int]string{}, action); err != nil {
 				// Silently continue on error
 			}
 		}(action)
@@ -164,6 +164,6 @@ func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address
 
 type DefaultOptionsProvider struct{}
 
-func (p *DefaultOptionsProvider) GetOptions(chainId uint64, from common.Address, action string) (map[int]Options, error) {
+func (p *DefaultOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error) {
 	return make(map[int]Options), nil
 }

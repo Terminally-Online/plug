@@ -10,7 +10,7 @@ import (
 
 type YearnV3OptionsProvider struct{}
 
-func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
+func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
 	if err != nil {
 		return nil, err

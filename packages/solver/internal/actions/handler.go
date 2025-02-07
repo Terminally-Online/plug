@@ -7,6 +7,7 @@ import (
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -23,7 +24,7 @@ type BaseProtocolHandler interface {
 	GetTags() []string
 	GetActions() []string
 	GetChains() []*references.Network
-	GetSchema(chainId string, from common.Address, action string) (*ChainSchema, error)
+	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
@@ -49,7 +50,6 @@ type BaseHandler struct {
 var (
 	errUnsupportedAction = "unsupported action: %s"
 	errInvalidChainID    = "invalid chain id: %s"
-	errUnsupportedChain  = "unsupported chain id: %d"
 	errFailedOptions     = "failed to get options: %w"
 )
 
@@ -77,7 +77,7 @@ func NewBaseHandler(
 	}
 	getOptionsFor := func(action string) OptionsHandler {
 		return func(chainId uint64) (map[int]Options, error) {
-			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), action)
+			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), map[int]string{}, action)
 		}
 	}
 	optHandlers := make(map[string]OptionsHandler, len(actionDefinitions))
@@ -119,7 +119,7 @@ func NewBaseHandler(
 	}
 	go func() {
 		for _, chain := range chains {
-			for _, chainId := range chain.ChainIds { 
+			for _, chainId := range chain.ChainIds {
 				cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
 			}
 		}
@@ -145,7 +145,6 @@ func (h *BaseHandler) GetChains() []*references.Network {
 }
 
 func (h *BaseHandler) GetActions() []string {
-	// Pre-allocate slice with exact capacity needed
 	actions := make([]string, 0, len(h.protocol.Schemas))
 	for action := range h.protocol.Schemas {
 		actions = append(actions, action)
@@ -157,7 +156,7 @@ func (h *BaseHandler) GetSchemas() map[string]ChainSchema {
 	return h.protocol.Schemas
 }
 
-func (h *BaseHandler) GetSchema(chainId string, from common.Address, action string) (*ChainSchema, error) {
+func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
 	chainSchema, exists := h.protocol.Schemas[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)
@@ -186,11 +185,30 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, action stri
 			from = utils.ZeroAddress
 		}
 
-		options, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, action)
+		inputs, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, search, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)
 		}
-		chainSchema.Schema.Options = options
+
+		// NOTE: Right now search only works for simple options. It can support complex, I just
+		//       don't have a usecase and I do not have it right now.
+		for index := range inputs {
+			temp := inputs[index]
+			temp.Simple = make([]Option, 0)
+			for _, input := range inputs {
+				for _, option := range input.Simple {
+					if strings.Contains(strings.ToLower(option.Label), strings.ToLower(search[index])) ||
+						strings.Contains(strings.ToLower(option.Name), strings.ToLower(search[index])) ||
+						strings.Contains(strings.ToLower(option.Value), strings.ToLower(search[index])) {
+						temp.Simple = append(temp.Simple, option)
+					}
+				}
+			}
+			inputs[index] = temp
+
+		}
+
+		chainSchema.Schema.Options = inputs
 	}
 
 	return &chainSchema, nil

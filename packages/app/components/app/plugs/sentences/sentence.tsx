@@ -47,7 +47,7 @@ export const Sentence: FC<SentenceProps> = ({
 			action: { edit }
 		},
 		solver: { actions: solverActions }
-	} = usePlugStore(item, action)
+	} = usePlugStore(item, { protocol: action.protocol, action: action.action, search })
 
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
@@ -188,13 +188,6 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
-									const filteredOptions = search[partIndex] ? options?.filter(
-										option =>
-											option.label.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
-											option.name?.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "") ||
-											option.value.toLowerCase().includes(search[input.index]?.toLowerCase() ?? "")
-									) : options
-
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 										input.dependentOn === undefined
@@ -313,15 +306,14 @@ export const Sentence: FC<SentenceProps> = ({
 																	<Search
 																		icon={<SearchIcon size={14} />}
 																		placeholder="Search options"
-																		// @ts-ignore
-																		search={search[input.index] ?? undefined}
-																		handleSearch={s => setSearch(prev => ({ ...prev, [input.index]: s || undefined }))}
+																		search={search[input.index] ?? ""}
+																		handleSearch={s => setSearch(prev => ({ ...prev, [parseInt(String(input.index))]: s ?? undefined }))}
 																		focus
 																		clear
 																	/>
 
 																	<div className="mb-4 flex w-full flex-col gap-2">
-																		{filteredOptions && filteredOptions.map((option, optionIndex) => (
+																		{options.map((option, optionIndex) => (
 																			<Accordion
 																				key={`${index}-${actionIndex}-${optionIndex}`}
 																				onExpand={() =>
