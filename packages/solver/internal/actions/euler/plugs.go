@@ -19,10 +19,10 @@ import (
 
 func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount 			string `json:"amount"`
-		Token 			string `json:"token"`
-		Target 			string `json:"target"`
-		SubAccountIndex uint8  `json:"subAccountIndex"` 
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %v", err)
@@ -38,7 +38,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to convert earn amount to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -84,17 +84,17 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}
 
 	return []signature.Plug{{
-		To: *token,
+		To:   *token,
 		Data: approveCalldata,
 	}, depositCall}, nil
 }
 
 func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount 			string `json:"amount"`
-		Token 			string `json:"token"`
-		Target 			string `json:"target"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit collateral inputs: %v", err)
@@ -110,7 +110,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to convert deposit collateral amount to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -182,17 +182,17 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 	}
 
 	return []signature.Plug{{
-		To: *token,
+		To:   *token,
 		Data: approveCalldata,
 	}, depositCall, enableCollateralCall}, nil
 }
 
 func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount string `json:"amount"`
-		Token  string  `json:"token"`
-		Target string `json:"target"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -209,7 +209,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to convert withdraw amount to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -245,13 +245,12 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	return []signature.Plug{call}, nil
 }
 
-
 func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount string `json:"amount"`
-		Token string  `json:"token"`
-		Target string `json:"target"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -268,7 +267,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to convert borrow amount to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -305,10 +304,10 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 
 func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount string `json:"amount"`
-		Token string  `json:"token"`
-		Target string `json:"target"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -325,7 +324,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("failed to convert repay amount to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -350,7 +349,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
-	
+
 	repayCalldata, err := vaultAbi.Pack(
 		"repay",
 		amount,
@@ -372,16 +371,16 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 	}
 
 	return []signature.Plug{{
-		To: vault.Vault,
+		To:   vault.Vault,
 		Data: approveCalldata,
 	}, repayCall}, nil
 }
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Direction int    `json:"direction"` // -1 for borrow, 1 for supply
-		Target    string `json:"target"`
-		Operator  int    `json:"apy"`
+		Direction int    `json:"action"` // -1 for borrow, 1 for supply
+		Vault     string `json:"vault"`
+		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -398,14 +397,14 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
-	borrowApy, supplyApy, err := GetVaultApy(inputs.Target, params.ChainId)
+	borrowApy, supplyApy, err := GetVaultApy(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault APY: %w", err)
 	}
 
 	var currentRate *big.Int
 	switch inputs.Direction {
-	case -1: 
+	case -1:
 		currentRate = borrowApy
 	case 1:
 		currentRate = supplyApy
@@ -431,10 +430,10 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Target   	string `json:"target"`
-		Operator 	int    `json:"operator"`
-		Threshold 	string `json:"threshold"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+		Vault           string `json:"Vault"`
+		Operator        int    `json:"operator"`
+		Threshold       string `json:"threshold"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -446,7 +445,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to convert health factor threshold to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -490,7 +489,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation: %v\n", lltvValueCollateral)
 	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralLiquidityBorrowingInfo: %v\n", vaultAccountInfo.LiquidityInfo.CollateralLiquidityBorrowingInfo)
 	fmt.Printf("vaultAccountInfo.LiquidityInfo.CollateralLiquidityLiquidationInfo: %v\n", vaultAccountInfo.LiquidityInfo.CollateralLiquidityLiquidationInfo)
-	
+
 	// This is guesswork rn, need to log this stuff out first to make sure the values I'm using here match up with what they're using on their UI
 	// how many decimals is this bitch
 	healthFactor := new(big.Int).Div(lltvValueCollateral, totalValueBorrowed)
@@ -505,7 +504,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		if healthFactor.Cmp(threshold) <= 0 {
 			return nil, fmt.Errorf("health factor %.2f is not greater than threshold %.2f", healthFactor, threshold)
 		}
-	default: 
+	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
@@ -513,11 +512,11 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 }
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-var inputs struct {
-		Target   	string `json:"target"`
-		Operator 	int    `json:"operator"`
-		Threshold 	string `json:"threshold"`
-		SubAccountIndex uint8 `json:"subAccountIndex"`
+	var inputs struct {
+		Vault           string `json:"vault"`
+		Operator        int    `json:"operator"`
+		Threshold       string `json:"threshold"`
+		SubAccountIndex uint8  `json:"sub-account"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -529,7 +528,7 @@ var inputs struct {
 		return nil, fmt.Errorf("failed to convert time to liquidation threshold to uint: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Target, params.ChainId)
+	vault, err := GetVault(inputs.Vault, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
@@ -569,7 +568,7 @@ var inputs struct {
 		if timeToLiquidation.Cmp(threshold) <= 0 {
 			return nil, fmt.Errorf("time to liquidation %.2f is not greater than threshold %.2f", timeToLiquidation, threshold)
 		}
-	default: 
+	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
 	}
 
@@ -594,7 +593,7 @@ func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccoun
 	}
 
 	return signature.Plug{
-		To: common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
+		To:   common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
 		Data: callCalldata,
 	}, nil
 }

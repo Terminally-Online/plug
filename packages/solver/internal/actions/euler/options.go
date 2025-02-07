@@ -42,16 +42,19 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			return map[int]actions.Options{
 				1: {Simple: supplyTokenOptions},
 				2: {Complex: supplyTokenToVaultOptions},
+				3: {Simple: addressPositions},
 			}, nil
 		case ActionDepositCollateral:
 			return map[int]actions.Options{
 				1: {Simple: supplyTokenOptions},
 				2: {Complex: supplyTokenToVaultOptions},
+				3: {Simple: addressPositions},
 			}, nil
 		case ActionWithdraw:
 			return map[int]actions.Options{
 				1: {Simple: supplyTokenOptions},
 				2: {Complex: supplyTokenToVaultOptions},
+				3: {Simple: addressPositions},
 			}, nil
 		case ActionBorrow:
 			return map[int]actions.Options{
@@ -63,9 +66,11 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			return map[int]actions.Options{
 				1: {Simple: borrowTokenOptions},
 				2: {Complex: borrowTokenToVaultOptions},
+				3: {Simple: addressPositions},
 			}, nil
 		case ConstraintHealthFactor:
 			return map[int]actions.Options{
+				0: {Simple: addressPositions},
 				1: {Simple: actions.BaseThresholdFields},
 			}, nil
 		case ConstraintAPY:
@@ -79,6 +84,7 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			}, nil
 		case ConstraintTimeToLiq:
 			return map[int]actions.Options{
+				0: {Simple: addressPositions},
 				1: {Simple: actions.BaseThresholdFields},
 			}, nil
 	default:
@@ -222,7 +228,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
 			accountOption := actions.Option{
-				Label: fmt.Sprintf("%d", i),
+				Label: fmt.Sprintf("Account %d", i),
 				Name:  fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
 				Value: fmt.Sprintf("%d", i),
 				Info: actions.OptionInfo{
