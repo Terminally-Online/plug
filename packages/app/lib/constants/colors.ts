@@ -10,6 +10,7 @@ export const colors = {
 	purple: "#9F8AF3",
 	aave: "#9896FF",
 	ens: "#0080BC",
+	euler: "#2AE5B9",
 	morpho: "#2470FF",
 	nouns: "#EFC950",
 	yearn: "#0657F9",
