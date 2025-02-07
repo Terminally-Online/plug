@@ -49,7 +49,7 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 		}
 
 		vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
-		
+
 		calls[i] = multicall_primary.Multicall3Call{
 			Target:   vaultLensAddr,
 			CallData: callData,
@@ -68,7 +68,7 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 
 	multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
 	msg := ethereum.CallMsg{
-		To:  &multicallAddress,
+		To:   &multicallAddress,
 		Data: input,
 	}
 
@@ -76,13 +76,13 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 	if err != nil {
 		return nil, fmt.Errorf("failed to make multicall: %w", err)
 	}
-	
+
 	unpacked, err := multicallAbi.Unpack("aggregate", output)
 	if err != nil {
 		fmt.Printf("Debug: Error unpacking aggregate: %v\n", err)
 		return nil, fmt.Errorf("failed to unpack multicall aggregate: %w", err)
 	}
-	
+
 	_, ok := unpacked[0].(*big.Int)
 	if !ok {
 		return nil, fmt.Errorf("multicall result 0 was not a big.Int")
@@ -92,9 +92,9 @@ func GetVerifiedVaultsMulticall(chainId uint64) ([]euler_vault_lens.VaultInfoFul
 	if !ok {
 		return nil, fmt.Errorf("multicall result 1 was not a [][]byte")
 	}
-	
+
 	results := make([]euler_vault_lens.VaultInfoFull, len(returnData))
-	
+
 	for i, data := range returnData {
 		vaultInfo, err := vaultLensAbi.Unpack("getVaultInfoFull", data)
 		if err != nil {
@@ -146,9 +146,9 @@ func GetVaultApy(address string, chainId uint64) (borrowApy *big.Int, supplyApy 
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	utilsLens, err := euler_utils_lens.NewEulerUtilsLens(
-		common.HexToAddress(references.Networks[chainId].References["euler"]["util_lens"]),
+		common.HexToAddress(references.Networks[chainId].References["euler"]["utils_lens"]),
 		provider,
 	)
 	if err != nil {
