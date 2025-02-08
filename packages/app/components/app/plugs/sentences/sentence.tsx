@@ -94,7 +94,10 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 								...action.values,
-								[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
+								[index]: {
+									value: isNumber ? parseFloat(value) : value,
+									name: inputName
+								}
 							}
 							: action.values
 				}))
@@ -102,11 +105,19 @@ export const Sentence: FC<SentenceProps> = ({
 		})
 	}
 
-	if (!parsed) return <div className="border-[1px] border-plug-red rounded-lg p-4">
+	if (!column) return null
+
+	if (!parsed) return <div className="mb-2 border-[1px] border-plug-red rounded-lg p-4">
 		<p className="font-bold text-plug-red">Failed to parse: <span className="opacity-60">{sentence}</span></p>
 	</div>
 
-	if (!column || !solverActions || !actionSchema || !parsed) return null
+	if (!solverActions || !actionSchema) return <div className="mb-2 border-[1px] border-plug-red rounded-lg p-4">
+		<p className="font-bold text-plug-red">
+			Failed to retrieve option details: {" "}
+			<span className="opacity-80">{action.protocol} </span>
+			<span className="opacity-80">{action.action}</span>
+		</p>
+	</div>
 
 	return (
 		<>
@@ -119,7 +130,7 @@ export const Sentence: FC<SentenceProps> = ({
 					className
 				)}
 				data-sentence
-				data-chains={actionSchema.metadata.chains.join(",")}
+				data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
 				data-valid={isValid && isComplete}
 				data-action-preview={item}
 				{...props}
@@ -145,16 +156,16 @@ export const Sentence: FC<SentenceProps> = ({
 							</div>
 
 							<div className="flex flex-wrap items-center gap-y-1">
-								{parts.map((part, partIndex) => {
+								{!solverActions && <>Failed to retrieve action schema: {action.protocol}</>}
+								{solverActions && parts.map((part, partIndex) => {
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
-									if (!match) {
+									if (!match)
 										return (
 											<span key={partIndex} className="whitespace-pre">
 												{part}
 											</span>
 										)
-									}
 
 									const inputIndex = parseInt(match[2] || match[1])
 									const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
