@@ -13,7 +13,7 @@ var (
 	chains = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionTransfer: {
-			Sentence:       "Transfer {0<amount:[(1.1)==721?1:float]>} {1<token:address:uint256:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:address>}",
+			Sentence:       "Transfer {0<amount:[(1.1)==721?1:float]>} {1<token:address:uint256:uint256>} {2<id:[(1.1)>20?uint256:null]>} to {3<recipient:string>}",
 			Handler:        HandleTransfer,
 			IsUserSpecific: true,
 			IsSearchable:   true,
@@ -32,6 +32,7 @@ var (
 			Sentence:       "Balance of {0<token:address:uint256:uint256>} at {1<address:address>} is {2<operator:int8>} than {3<threshold:float>}",
 			Handler:        HandleConstraintBalance,
 			IsUserSpecific: true,
+			IsSearchable:   true,
 		},
 	}
 )

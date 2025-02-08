@@ -44,18 +44,18 @@ var (
 	}
 )
 
-func GetChainName(chainId uint64) (string, error) {
+func GetChainName(chainId uint64) string {
 	switch chainId {
 	case 1:
-		return "mainnet", nil
+		return "mainnet"
 	case 8453:
-		return "base", nil
+		return "base"
 	case 10:
-		return "optimism-sepolia", nil
+		return "optimism-sepolia"
 	case 31337:
-		return "localhost", nil
+		return "localhost"
 	default:
-		return "", ErrChainId("chainId", chainId)
+		return "base"
 	}
 }
 

@@ -179,7 +179,7 @@ export const Sentence: FC<SentenceProps> = ({
 												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
 												dependentOnValue
 												]
-												: undefined)
+												: [])
 									const isOptionBased = options !== undefined
 
 									// NOTE: This is not the most performant way to do this, but for now it works.

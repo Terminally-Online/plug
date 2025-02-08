@@ -24,6 +24,11 @@ func main() {
 	provider := actions.NewCachedOptionsProvider(&actions.DefaultOptionsProvider{})
 	actions.SetCachedOptionsProvider(provider)
 
+	// TODO: Would be nice if we did not define the list here. Honestly, not even really
+	//       sure this is doing what I expected when I wrote it. Either way, we should 
+	//       just have a rolling job that updates the global cache of all protocols and
+	//       all actions that we currently support. The exception being those that are
+	//       user specific because the cache will never even be hit for those.
 	actionsList := []string{
 		actions.ActionDeposit,
 		actions.ActionBorrow,

@@ -47,12 +47,6 @@ type BaseHandler struct {
 	protocol Protocol
 }
 
-var (
-	errUnsupportedAction = "unsupported action: %s"
-	errInvalidChainID    = "invalid chain id: %s"
-	errFailedOptions     = "failed to get options: %w"
-)
-
 type ActionDefinition struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
@@ -60,6 +54,12 @@ type ActionDefinition struct {
 	IsUserSpecific bool
 	IsSearchable   bool
 }
+
+var (
+	errUnsupportedAction = "unsupported action: %s"
+	errInvalidChainID    = "invalid chain id: %s"
+	errFailedOptions     = "failed to get options: %w"
+)
 
 func NewBaseHandler(
 	name string,
@@ -168,7 +168,7 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
 		}
 
-		// TODO: (#439) Why is this needed here? Shouldn't this be handled elsewhere? Not sure if it
+		// TODO: (#475) Why is this needed here? Shouldn't this be handled elsewhere? Not sure if it
 		//       actually should be, but we are really far into the compute process to only
 		//       just now be checking this here. Something earlier should have fired this most
 		//       likely like a provider or something. Even if it is not caught earlier, does
@@ -208,23 +208,23 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 		//       on each index provided a search value. In the current implementation we
 		//       have the base fields searched however searching values beyond that is not
 		//       really scalable at this time.
-		// TODO: (#438) Notably due to the implementation here we end up having a very inefficient
+		// TODO: (#474) Notably due to the implementation here we end up having a very inefficient
 		//       caching and data retention strategy where we do not reuse the response from
 		//       option providers. Right now, we check cache →  get options →  filter options
 		//       →  cache the response.
 		//       .
 		//       This implementation means that if we have a compute heavy function inside
 		//       of an option we re-run it every time we update the search instead of using
-		//       the cache response and caching that. 
+		//       the cache response and caching that.
 		//       .
-		//		 To fix this, we would cache the options response and then do live filtering 
-		//       based on the cached options; maybe even caching the then-filtered. 
+		//		 To fix this, we would cache the options response and then do live filtering
+		//       based on the cached options; maybe even caching the then-filtered.
 		for index := range inputs {
 			if search[index] != "" {
 				temp := inputs[index]
 				var simple []Option
 				searchTerm := strings.ToLower(search[index])
-				
+
 				for _, option := range temp.Simple {
 					if strings.Contains(strings.ToLower(option.Label), searchTerm) ||
 						strings.Contains(strings.ToLower(option.Name), searchTerm) ||
@@ -232,7 +232,7 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 						simple = append(simple, option)
 					}
 				}
-				
+
 				temp.Simple = simple
 				inputs[index] = temp
 			}
