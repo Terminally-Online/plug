@@ -149,7 +149,6 @@ export const Sentence: FC<SentenceProps> = ({
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
 									if (!match) {
-										// Preserve whitespace for text parts
 										return (
 											<span key={partIndex} className="whitespace-pre">
 												{part}

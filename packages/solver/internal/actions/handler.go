@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 
+	// "strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -190,22 +192,23 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 			return nil, fmt.Errorf(errFailedOptions, err)
 		}
 
-		// NOTE: Right now search only works for simple options. It can support complex, I just
-		//       don't have a usecase and I do not have it right now.
 		for index := range inputs {
-			temp := inputs[index]
-			temp.Simple = make([]Option, 0)
-			for _, input := range inputs {
-				for _, option := range input.Simple {
-					if strings.Contains(strings.ToLower(option.Label), strings.ToLower(search[index])) ||
-						strings.Contains(strings.ToLower(option.Name), strings.ToLower(search[index])) ||
-						strings.Contains(strings.ToLower(option.Value), strings.ToLower(search[index])) {
-						temp.Simple = append(temp.Simple, option)
+			if search[index] != "" {
+				temp := inputs[index]
+				var simple []Option
+				searchTerm := strings.ToLower(search[index])
+				
+				for _, option := range temp.Simple {
+					if strings.Contains(strings.ToLower(option.Label), searchTerm) ||
+						strings.Contains(strings.ToLower(option.Name), searchTerm) ||
+						strings.Contains(strings.ToLower(option.Value), searchTerm) {
+						simple = append(simple, option)
 					}
 				}
+				
+				temp.Simple = simple
+				inputs[index] = temp
 			}
-			inputs[index] = temp
-
 		}
 
 		chainSchema.Schema.Options = inputs

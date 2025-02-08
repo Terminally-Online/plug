@@ -85,5 +85,5 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 }
 
 func GetAddressOptions(from common.Address, search string) ([]actions.Option, error) {
-	return nil, nil
+	return []actions.Option{}, nil
 }
