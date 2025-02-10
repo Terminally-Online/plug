@@ -10,6 +10,7 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
+	"solver/internal/actions/euler"
 	"solver/internal/actions/morpho"
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
@@ -40,6 +41,7 @@ func New() Solver {
 			actions.ProtocolENS:     ens.New(),
 			actions.ProtocolNouns:   nouns.New(),
 			actions.ProtocolMorpho:  morpho.New(),
+			actions.ProtocolEuler:   euler.New(),
 		},
 		simulator: simulation.New(),
 	}
