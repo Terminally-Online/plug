@@ -7,7 +7,6 @@ import (
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -197,40 +196,6 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 		inputs, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, search, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)
-		}
-
-		// NOTE: This performs really inefficient and really ineffective option searching
-		//       on each index provided a search value. In the current implementation we
-		//       have the base fields searched however searching values beyond that is not
-		//       really scalable at this time.
-		// TODO: (#474) Notably due to the implementation here we end up having a very inefficient
-		//       caching and data retention strategy where we do not reuse the response from
-		//       option providers. Right now, we check cache →  get options →  filter options
-		//       →  cache the response.
-		//       .
-		//       This implementation means that if we have a compute heavy function inside
-		//       of an option we re-run it every time we update the search instead of using
-		//       the cache response and caching that.
-		//       .
-		//		 To fix this, we would cache the options response and then do live filtering
-		//       based on the cached options; maybe even caching the then-filtered.
-		for index := range inputs {
-			if search[index] != "" {
-				temp := inputs[index]
-				var simple []Option
-				searchTerm := strings.ToLower(search[index])
-
-				for _, option := range temp.Simple {
-					if strings.Contains(strings.ToLower(option.Label), searchTerm) ||
-						strings.Contains(strings.ToLower(option.Name), searchTerm) ||
-						strings.Contains(strings.ToLower(option.Value), searchTerm) {
-						simple = append(simple, option)
-					}
-				}
-
-				temp.Simple = simple
-				inputs[index] = temp
-			}
 		}
 
 		chainSchema.Schema.Options = inputs

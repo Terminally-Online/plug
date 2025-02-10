@@ -3,6 +3,9 @@ package actions
 import (
 	"solver/internal/utils"
 	"sync"
+	"time"
+
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -43,8 +46,11 @@ type OptionCacheKey struct {
 }
 
 type CachedOptions struct {
-	options map[int]Options
+	options     map[int]Options
+	lastUpdated time.Time
 }
+
+const cacheDuration = 5 * time.Minute
 
 type OptionsProvider interface {
 	GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]Options, error)
@@ -100,20 +106,41 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		from = utils.ZeroAddress
 	}
 
-	// key := OptionCacheKey{
-	// 	chainId: chainId,
-	// 	from:    from,
-	// 	action:  action,
-	// }
+	key := OptionCacheKey{
+		chainId: chainId,
+		from:    from,
+		action:  action,
+	}
 
-	// c.mu.RLock()
-	// if cached, ok := c.cache[key]; ok {
-	// 	c.mu.RUnlock()
-	// 	return cached.options, nil
-	// }
-	// c.mu.RUnlock()
+	c.mu.RLock()
+	cached, exists := c.cache[key]
+	if exists && time.Since(cached.lastUpdated) < cacheDuration {
+		c.mu.RUnlock()
+		filteredOpts := make(map[int]Options, len(cached.options))
+		for k, v := range cached.options {
+			filteredOpts[k] = v
 
-	options, err := c.provider.GetOptions(chainId, from, search, action)
+			if search[k] != "" {
+				var filtered []Option
+				searchTerm := strings.ToLower(search[k])
+
+				for _, opt := range v.Simple {
+					if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
+						strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
+						strings.Contains(strings.ToLower(opt.Value), searchTerm) {
+						filtered = append(filtered, opt)
+					}
+				}
+
+				filteredOpts[k] = Options{Simple: filtered}
+			}
+		}
+		return filteredOpts, nil
+	}
+	c.mu.RUnlock()
+
+	// Cache miss or expired - get fresh options without search filter
+	options, err := c.provider.GetOptions(chainId, from, nil, action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
 	}
@@ -122,11 +149,36 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		options = make(map[int]Options)
 	}
 
-	// c.mu.Lock()
-	// c.cache[key] = CachedOptions{
-	// 	options: options,
-	// }
-	// c.mu.Unlock()
+	// Cache the unfiltered results
+	c.mu.Lock()
+	c.cache[key] = CachedOptions{
+		options:     options,
+		lastUpdated: time.Now(),
+	}
+	c.mu.Unlock()
+
+	// Apply search filtering to the fresh options
+	if len(search) > 0 {
+		filteredOpts := make(map[int]Options, len(options))
+		for k, v := range options {
+			filteredOpts[k] = v
+			if search[k] != "" {
+				var filtered []Option
+				searchTerm := strings.ToLower(search[k])
+
+				for _, opt := range v.Simple {
+					if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
+						strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
+						strings.Contains(strings.ToLower(opt.Value), searchTerm) {
+						filtered = append(filtered, opt)
+					}
+				}
+
+				filteredOpts[k] = Options{Simple: filtered}
+			}
+		}
+		return filteredOpts, nil
+	}
 
 	return options, nil
 }
