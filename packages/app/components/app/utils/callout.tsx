@@ -1,7 +1,7 @@
-import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
+import { FC, HTMLAttributes, PropsWithChildren, ReactNode, useState } from "react"
 
 import { HTMLMotionProps, motion } from "framer-motion"
-import { Loader } from "lucide-react"
+import { Loader, X } from "lucide-react"
 
 import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
@@ -254,6 +254,50 @@ const EmptyActivity: FC<
 		</>
 	)
 }
+
+const Warning: FC<{
+	title: string
+	description: string
+	isAbsolute?: boolean
+}> = ({ title, description, isAbsolute = false }) => {
+	const [isVisible, setIsVisible] = useState(true)
+
+	if (!isVisible) return null
+
+	return (
+		<>
+			<div
+				className="pointer-events-none absolute left-0 right-0 top-0 h-full bg-gradient-to-b"
+				style={{
+					backgroundImage: `linear-gradient(to top, rgb(253, 255, 247), rgb(253, 255, 247), rgba(253, 255, 247, 0.85), rgba(253, 255, 247, 0))`
+				}}
+			/>
+			<motion.div
+				className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center p-4"
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.2 }}
+			>
+				<div className="flex w-full flex-col gap-2 rounded-sm border-[1px] border-plug-red/60 bg-white p-4">
+					<div className="flex items-start justify-between gap-2">
+						<div className="flex flex-col gap-1">
+							<h4 className="text-base font-bold text-black/80">{title}</h4>
+							<p className="text-sm text-black/40">{description}</p>
+						</div>
+						<Button
+							variant="secondary"
+							className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
+							onClick={() => setIsVisible(false)}
+						>
+							<X size={14} className="opacity-60" />
+						</Button>
+					</div>
+				</div>
+			</motion.div>
+		</>
+	)
+}
+
 export const Callout = Object.assign(Base, {
 	Anonymous,
 	Loading,
@@ -262,5 +306,6 @@ export const Callout = Object.assign(Base, {
 	EmptyPlugs,
 	EmptyPlug,
 	EmptyPage,
-	EmptyActivity
+	EmptyActivity,
+	Warning
 })

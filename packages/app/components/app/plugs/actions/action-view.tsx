@@ -19,6 +19,8 @@ const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): R
 	return protocolFrequency
 }
 
+const MAX_SAFE_ACTIONS = 6
+
 export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const { column } = useColumnData(index)
 	const [solverActions] = useActions()
@@ -72,6 +74,13 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 					action={action}
 				/>
 			))}
+
+			{actions.length >= MAX_SAFE_ACTIONS && (
+				<Callout.Warning
+					title="Whoa there! That's a lot of actions"
+					description={`You're about to execute ${actions.length} actions in sequence. Make sure you understand what each action does before proceeding.`}
+				/>
+			)}
 
 			{own && actions.length > 0 && suggestions.length > 0 && (
 				<div className="mt-12">
