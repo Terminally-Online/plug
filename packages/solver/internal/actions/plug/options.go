@@ -18,15 +18,14 @@ var (
 type PlugOptionsProvider struct{}
 
 func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]actions.Options, error) {
-	transferOptions, err := GetTransferOptions(chainId, from)
-	if err != nil {
-		return nil, err
-	}
-
 	switch action {
 	case actions.ActionTransfer:
 		recipientIndex := 2
 		recipientOptions, err := GetAddressOptions(chainId, from, search[recipientIndex])
+		if err != nil {
+			return nil, err
+		}
+		transferOptions, err := GetTransferOptions(chainId, from)
 		if err != nil {
 			return nil, err
 		}
@@ -35,12 +34,20 @@ func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, se
 			recipientIndex: {Simple: recipientOptions},
 		}, nil
 	case actions.ConstraintPrice:
+		transferOptions, err := GetTransferOptions(chainId, from)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: transferOptions},
 			1: {Simple: actions.BaseThresholdFields},
 		}, nil
 	case actions.ConstraintBalance:
 		addressOptions, err := GetAddressOptions(chainId, from, search[1])
+		if err != nil {
+			return nil, err
+		}
+		transferOptions, err := GetTransferOptions(chainId, from)
 		if err != nil {
 			return nil, err
 		}

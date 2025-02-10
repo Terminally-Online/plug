@@ -194,11 +194,6 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 			from = utils.ZeroAddress
 		}
 
-		// TODO: (#473) Due to the current implementation we end up retrieving and calculating the
-		//       options for every action inside of a protocol when we want to retrieve the
-		//       options for a single action. Realistically this should not have a huge
-		//       performance impact however we are going to spend a growing amount of time
-		//       on this and we will pay for a lot of throughput/bandwidth that we do not need.
 		inputs, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, search, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)

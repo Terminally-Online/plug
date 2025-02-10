@@ -1,0 +1,1060 @@
+[
+  {
+    "inputs": [],
+    "name": "TTL_ERROR",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TTL_INFINITY",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TTL_LIQUIDATION",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TTL_MORE_THAN_ONE_YEAR",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "evc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getAccountEnabledVaultsInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "evc",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes19",
+                "name": "addressPrefix",
+                "type": "bytes19"
+              },
+              {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "isLockdownMode",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isPermitDisabledMode",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lastAccountStatusCheckTimestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "enabledControllers",
+                "type": "address[]"
+              },
+              {
+                "internalType": "address[]",
+                "name": "enabledCollaterals",
+                "type": "address[]"
+              }
+            ],
+            "internalType": "struct EVCAccountInfo",
+            "name": "evcAccountInfo",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "vault",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "asset",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetsAccount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "shares",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assets",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowed",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceVault",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceVaultPermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceExpirationVaultPermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowancePermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "balanceForwarderEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isController",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isCollateral",
+                "type": "bool"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bool",
+                    "name": "queryFailure",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "queryFailureReason",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int256",
+                    "name": "timeToLiquidation",
+                    "type": "int256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "liabilityValue",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueBorrowing",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueLiquidation",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueRaw",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityBorrowingInfo",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityLiquidationInfo",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityRawInfo",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct AccountLiquidityInfo",
+                "name": "liquidityInfo",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct VaultAccountInfo[]",
+            "name": "vaultAccountInfo",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "vault",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "balanceTracker",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "balanceForwarderEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "balance",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "reward",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "earnedReward",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "earnedRewardRecentIgnored",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct EnabledRewardInfo[]",
+                "name": "enabledRewardsInfo",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct AccountRewardInfo[]",
+            "name": "accountRewardInfo",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct AccountMultipleVaultsInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getAccountInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "evc",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes19",
+                "name": "addressPrefix",
+                "type": "bytes19"
+              },
+              {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "isLockdownMode",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isPermitDisabledMode",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lastAccountStatusCheckTimestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "enabledControllers",
+                "type": "address[]"
+              },
+              {
+                "internalType": "address[]",
+                "name": "enabledCollaterals",
+                "type": "address[]"
+              }
+            ],
+            "internalType": "struct EVCAccountInfo",
+            "name": "evcAccountInfo",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "vault",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "asset",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetsAccount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "shares",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assets",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowed",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceVault",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceVaultPermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowanceExpirationVaultPermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "assetAllowancePermit2",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "balanceForwarderEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isController",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "isCollateral",
+                "type": "bool"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bool",
+                    "name": "queryFailure",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "bytes",
+                    "name": "queryFailureReason",
+                    "type": "bytes"
+                  },
+                  {
+                    "internalType": "int256",
+                    "name": "timeToLiquidation",
+                    "type": "int256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "liabilityValue",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueBorrowing",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueLiquidation",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValueRaw",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityBorrowingInfo",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityLiquidationInfo",
+                    "type": "tuple[]"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "collateral",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "collateralValue",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct CollateralLiquidityInfo[]",
+                    "name": "collateralLiquidityRawInfo",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct AccountLiquidityInfo",
+                "name": "liquidityInfo",
+                "type": "tuple"
+              }
+            ],
+            "internalType": "struct VaultAccountInfo",
+            "name": "vaultAccountInfo",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "vault",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "balanceTracker",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "balanceForwarderEnabled",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "balance",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "reward",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "earnedReward",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "earnedRewardRecentIgnored",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct EnabledRewardInfo[]",
+                "name": "enabledRewardsInfo",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct AccountRewardInfo",
+            "name": "accountRewardInfo",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct AccountInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "evc",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getEVCAccountInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "evc",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes19",
+            "name": "addressPrefix",
+            "type": "bytes19"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isLockdownMode",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isPermitDisabledMode",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastAccountStatusCheckTimestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "enabledControllers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "enabledCollaterals",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct EVCAccountInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getRewardAccountInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vault",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "balanceTracker",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "balanceForwarderEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "reward",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earnedReward",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earnedRewardRecentIgnored",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct EnabledRewardInfo[]",
+            "name": "enabledRewardsInfo",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct AccountRewardInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getTimeToLiquidation",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "name": "getVaultAccountInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vault",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "asset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assetsAccount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "shares",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assets",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "borrowed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assetAllowanceVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assetAllowanceVaultPermit2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assetAllowanceExpirationVaultPermit2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "assetAllowancePermit2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "balanceForwarderEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isController",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCollateral",
+            "type": "bool"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "queryFailure",
+                "type": "bool"
+              },
+              {
+                "internalType": "bytes",
+                "name": "queryFailureReason",
+                "type": "bytes"
+              },
+              {
+                "internalType": "int256",
+                "name": "timeToLiquidation",
+                "type": "int256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "liabilityValue",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralValueBorrowing",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralValueLiquidation",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralValueRaw",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "collateral",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValue",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct CollateralLiquidityInfo[]",
+                "name": "collateralLiquidityBorrowingInfo",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "collateral",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValue",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct CollateralLiquidityInfo[]",
+                "name": "collateralLiquidityLiquidationInfo",
+                "type": "tuple[]"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "collateral",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "collateralValue",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct CollateralLiquidityInfo[]",
+                "name": "collateralLiquidityRawInfo",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct AccountLiquidityInfo",
+            "name": "liquidityInfo",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct VaultAccountInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

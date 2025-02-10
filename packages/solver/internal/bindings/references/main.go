@@ -30,6 +30,38 @@ var (
 		ChainIds: []uint64{1, 31337},
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
+			"aave_v3": {
+				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+				"ui_pool_data_provider":    "0x3F78BBD206e4D3c504Eb854232EdA7e47E9Fd8FC",
+				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
+			},
+			"ens": {
+				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
+				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+			},
+			"euler": {
+				"evault_implementation":     "0x8Ff1C814719096b61aBf00Bb46EAd0c9A529Dd7D",
+				"euler_earn_implementation": "0xBa42141648dFD74388f3541C1d80fa9387043Da9",
+				"evc":                       "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
+				"governed_perspective":      "0xC0121817FF224a018840e4D15a864747d36e6Eb2",
+				"account_lens":              "0x88062031730136292902Cd4f6f07fDB224E60E9F",
+				"utils_lens":                "0x1Ad6eDF948B037a9364607f9e3c1e640166Ee539",
+				"vault_lens":                "0x75AAf54F12784935128306BEe2520de55890a29A",
+			},
+			"morpho": {
+				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+				"distributor": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb",
+				"bundler":     "0x6566194141eefa99Af43Bb5Aa71460Ca2Dc90245",
+				"vault":       "0xfbDEE8670b273E12b019210426E70091464b02Ab",
+			},
+			"multicall": {
+				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
+			},
+			"nouns": {
+				"auction_house": "0x830BD73E4184ceF73443C15111a1DF14e495C706",
+				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
+			},
 			"plug": {
 				"router":  "0x0000000021EAfaa2A0ADeec53B7E25F662920212",
 				"factory": "0x0000000030c2d2825F563E2F7b78943B0Ea9D145",
@@ -38,34 +70,11 @@ var (
 			"weth": {
 				"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 			},
-			"aave_v3": {
-				"pool":                     "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
-				"ui_pool_data_provider":    "0x3F78BBD206e4D3c504Eb854232EdA7e47E9Fd8FC",
-				"ui_pool_address_provider": "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
-			},
 			"yearn_v3": {
 				"registry": "0xd40ecF29e001c76Dcc4cC0D9cd50520CE845B038",
 				"pool":     "0x1ab62413e0cf2eBEb73da7D40C70E7202ae14467",
 				"router":   "0x1112dbCF805682e828606f74AB717abf4b4FD8DE",
 				"gauge":    "0x7Fd8Af959B54A677a1D8F92265Bd0714274C56a3",
-			},
-			"multicall": {
-				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
-			},
-			"ens": {
-				"registrar_controller": "0x253553366Da8546fC250F225fe3d25d0C782303b",
-				"base_registrar":       "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
-			},
-			"nouns": {
-				"auction_house": "0x830BD73E4184ceF73443C15111a1DF14e495C706",
-				"token":         "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
-				"art":           "0x6544bC8A0dE6ECe429F14840BA74611cA5098A92",
-			},
-			"morpho": {
-				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-				"distributor": "0x330eefa8a787552DC5cAd3C3cA644844B1E61Ddb",
-				"bundler":     "0x6566194141eefa99Af43Bb5Aa71460Ca2Dc90245",
-				"vault":       "0xfbDEE8670b273E12b019210426E70091464b02Ab",
 			},
 		},
 	}
@@ -80,15 +89,19 @@ var (
 		ChainIds: []uint64{8453},
 		Explorer: "https://api.basescan.org/api",
 		References: map[string]map[string]string{
-			"plug": {
-				"router":  "0x0000000021EAfaa2A0ADeec53B7E25F662920212",
-				"factory": "0x0000000030c2d2825F563E2F7b78943B0Ea9D145",
-				"socket":  "0x0000000011A65597897563205669f9c46dEEE244",
-			},
 			"aave_v3": {
 				"pool":                     "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
 				"ui_pool_data_provider":    "0x68100bD5345eA474D93577127C11F39FF8463e93",
 				"ui_pool_address_provider": "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
+			},
+			"euler": {
+				"evault_implementation":     "0x30a9A9654804F1e5b3291a86E83EdeD7cF281618",
+				"euler_earn_implementation": "0x6104c0F2a7750F1b143DAB49752e19DA43dec34A",
+				"evc":                       "0x5301c7dD20bD945D2013b48ed0DEE3A284ca8989",
+				"governed_perspective":      "0xafC8545c49DF2c8216305922D9753Bf60bf8c14A",
+				"account_lens":              "0x40c1DbD5855bFbCDd3844C4327777FD1c5E039eb",
+				"utils_lens":                "0x6E1033296eDbD7Ef23544E2A4Fa6E78e77D294E1",
+				"vault_lens":                "0x26c577bF95d3c4AD8155834a0149D6BB76F2D090",
 			},
 			"morpho": {
 				"router":      "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -98,6 +111,11 @@ var (
 			},
 			"multicall": {
 				"primary": "0xcA11bde05977b3631167028862bE2a173976CA11",
+			},
+			"plug": {
+				"router":  "0x0000000021EAfaa2A0ADeec53B7E25F662920212",
+				"factory": "0x0000000030c2d2825F563E2F7b78943B0Ea9D145",
+				"socket":  "0x0000000011A65597897563205669f9c46dEEE244",
 			},
 			"weth": {
 				"address": "0x4200000000000000000000000000000000000006",
@@ -134,6 +152,8 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	}
 	defer resp.Body.Close()
 
+	fmt.Printf("Getting source for %s/%s\n", folderName, contractName)
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
@@ -149,6 +169,7 @@ func GenerateReference(explorer string, folderName string, contractName string, 
 	}
 
 	if response.Message == "NOTOK" {
+		fmt.Printf("Failed to get source for %s/%s: %s.\n", folderName, contractName, response.Result[0])
 		result := string(response.Result[0])
 		shouldRetry := true
 		for _, termination := range terminateResults {
@@ -230,6 +251,8 @@ func GenerateReferences() error {
 		for folderName, contracts := range network.References {
 			for contractName, address := range contracts {
 				key := fmt.Sprintf("%s:%s", folderName, contractName)
+
+				fmt.Printf("Generating reference for %s/%s on %s\n", folderName, contractName, network.Explorer)
 
 				if processed[key] {
 					fmt.Printf("Skipping %s/%s on %s - already processed\n",
