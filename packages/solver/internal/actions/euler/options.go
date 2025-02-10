@@ -16,7 +16,7 @@ import (
 
 type EulerOptionsProvider struct{}
 
-func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, action string) (map[int]actions.Options, error) {
+func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
 	case ActionEarn, ActionDepositCollateral, ActionWithdraw:
 		vaults, err := GetVerifiedVaults(chainId)
@@ -126,7 +126,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 					Label: vault.AssetSymbol,
 					Name:  vault.AssetName,
 					Value: tokenAddress,
-					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
+					Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
 				})
 				seenToken[tokenAddress] = true
 			}
@@ -143,7 +143,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 				Label: vault.VaultSymbol,
 				Name:  vault.VaultName,
 				Value: vault.Vault.String(),
-				Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
+				Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
 				Info: actions.OptionInfo{
 					Label: "Supply APY",
 					Value: supplyApy,
@@ -188,7 +188,7 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 					Label: vault.AssetSymbol,
 					Name:  vault.AssetName,
 					Value: tokenAddress,
-					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
+					Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
 				})
 				seenToken[tokenAddress] = true
 			}
@@ -205,7 +205,7 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 				Label: vault.VaultSymbol,
 				Name:  vault.VaultName,
 				Value: vault.Vault.String(),
-				Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String())),
+				Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.String()))},
 				Info: actions.OptionInfo{
 					Label: "Borrow APY",
 					Value: borrowApy,
