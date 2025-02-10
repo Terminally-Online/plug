@@ -33,6 +33,15 @@ func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, se
 			1:              {Simple: transferOptions},
 			recipientIndex: {Simple: recipientOptions},
 		}, nil
+	case actions.ActionSwap:
+		transferOptions, err := GetTransferOptions(chainId, from)
+		if err != nil {
+			return nil, err
+		}
+		return map[int]actions.Options{
+			1: {Simple: transferOptions},
+			2: {Simple: transferOptions},
+		}, nil
 	case actions.ConstraintPrice:
 		transferOptions, err := GetTransferOptions(chainId, from)
 		if err != nil {

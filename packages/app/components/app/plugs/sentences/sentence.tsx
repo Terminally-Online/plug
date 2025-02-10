@@ -201,7 +201,7 @@ export const Sentence: FC<SentenceProps> = ({
 												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
 												dependentOnValue
 												]
-												: [])
+												: undefined)
 									const isOptionBased = options !== undefined
 
 									// NOTE: This is not the most performant way to do this, but for now it works.
@@ -225,8 +225,9 @@ export const Sentence: FC<SentenceProps> = ({
 									// TODO: In some rare cases, we will have to pause plugs that are using a version of an 
 									//       action that is not supported.
 									const icon = (action.values?.[input.index]?.icon?.default) || (option && option.icon.default)
-									const label = (action.values?.[input.index]?.label) || (option && option.label) ||
+									const label = (option && option.label) ||
 										value?.value ||
+										(action.values?.[input.index]?.label) ||
 										input.name
 											?.replaceAll("_", " ")
 											.replace(/([A-Z])/g, " $1")
