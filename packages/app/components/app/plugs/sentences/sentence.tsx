@@ -215,7 +215,8 @@ export const Sentence: FC<SentenceProps> = ({
 									const isEmpty = !value?.value
 									const isValid = !isEmpty && !inputError && !error
 
-									const label = (option && option.label) ||
+									const icon = (action && action.icon && action.icon.default) || (option && option.icon.default)
+									const label = (action && action.label) || (option && option.label) ||
 										value?.value ||
 										input.name
 											?.replaceAll("_", " ")
@@ -240,8 +241,15 @@ export const Sentence: FC<SentenceProps> = ({
 													own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
 												}
 											>
-												{option?.icon.default && <Image className="w-5 h-5 rounded-full" src={option?.icon.default ?? ""} alt="" width={32} height={32} />}
-
+												{icon && (
+													<Image
+														className="w-5 h-5 rounded-full"
+														src={icon}
+														alt=""
+														width={32}
+														height={32}
+													/>
+												)}
 												{label}
 											</button>
 
