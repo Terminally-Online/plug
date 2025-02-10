@@ -112,35 +112,39 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		action:  action,
 	}
 
+	options, err := c.GetOrCreateCachedOptions(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(search) == 0 {
+		return options, nil
+	}
+
+	return c.FilterOptions(options, search), nil
+}
+
+func (c *CachedOptionsProvider) GetOrCreateCachedOptions(key OptionCacheKey) (map[int]Options, error) {
+	// Check cache first
 	c.mu.RLock()
 	cached, exists := c.cache[key]
 	if exists && time.Since(cached.lastUpdated) < cacheDuration {
 		c.mu.RUnlock()
-		filteredOpts := make(map[int]Options, len(cached.options))
-		for k, v := range cached.options {
-			filteredOpts[k] = v
-
-			if search[k] != "" {
-				var filtered []Option
-				searchTerm := strings.ToLower(search[k])
-
-				for _, opt := range v.Simple {
-					if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
-						strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
-						strings.Contains(strings.ToLower(opt.Value), searchTerm) {
-						filtered = append(filtered, opt)
-					}
-				}
-
-				filteredOpts[k] = Options{Simple: filtered}
-			}
-		}
-		return filteredOpts, nil
+		return cached.options, nil
 	}
 	c.mu.RUnlock()
 
-	// Cache miss or expired - get fresh options without search filter
-	options, err := c.provider.GetOptions(chainId, from, nil, action)
+	// Upgrade to write lock before fetching new data
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	// Double-check cache after acquiring lock
+	if cached, exists := c.cache[key]; exists && time.Since(cached.lastUpdated) < cacheDuration {
+		return cached.options, nil
+	}
+
+	// Cache miss or expired - get fresh options
+	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
 	}
@@ -149,38 +153,35 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 		options = make(map[int]Options)
 	}
 
-	// Cache the unfiltered results
-	c.mu.Lock()
+	// Update cache
 	c.cache[key] = CachedOptions{
 		options:     options,
 		lastUpdated: time.Now(),
 	}
-	c.mu.Unlock()
-
-	// Apply search filtering to the fresh options
-	if len(search) > 0 {
-		filteredOpts := make(map[int]Options, len(options))
-		for k, v := range options {
-			filteredOpts[k] = v
-			if search[k] != "" {
-				var filtered []Option
-				searchTerm := strings.ToLower(search[k])
-
-				for _, opt := range v.Simple {
-					if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
-						strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
-						strings.Contains(strings.ToLower(opt.Value), searchTerm) {
-						filtered = append(filtered, opt)
-					}
-				}
-
-				filteredOpts[k] = Options{Simple: filtered}
-			}
-		}
-		return filteredOpts, nil
-	}
 
 	return options, nil
+}
+
+func (c *CachedOptionsProvider) FilterOptions(options map[int]Options, search map[int]string) map[int]Options {
+	filtered := make(map[int]Options, len(options))
+	for k, v := range options {
+		filtered[k] = v
+		if search[k] != "" {
+			var matchedOpts []Option
+			searchTerm := strings.ToLower(search[k])
+
+			for _, opt := range v.Simple {
+				if strings.Contains(strings.ToLower(opt.Label), searchTerm) ||
+					strings.Contains(strings.ToLower(opt.Name), searchTerm) ||
+					strings.Contains(strings.ToLower(opt.Value), searchTerm) {
+					matchedOpts = append(matchedOpts, opt)
+				}
+			}
+
+			filtered[k] = Options{Simple: matchedOpts}
+		}
+	}
+	return filtered
 }
 
 func (c *CachedOptionsProvider) PreWarmCache(chainId uint64, from common.Address, actions []string) {
