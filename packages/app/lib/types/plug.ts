@@ -2,6 +2,7 @@ import { DateRange } from "react-day-picker"
 
 import { frequencies } from "@/lib"
 import { connectedChains } from "@/contexts"
+import { Option } from "@/state/plugs"
 
 export type Options = {
 	value: string
@@ -40,7 +41,7 @@ export type Action = {
 	protocol: string
 	action: string
 	values: Record<string, { value: string; name: string } | undefined>
-}
+} & Partial<Options[number]>
 
 export type Actions = Array<Action>
 
