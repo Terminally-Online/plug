@@ -215,8 +215,17 @@ export const Sentence: FC<SentenceProps> = ({
 									const isEmpty = !value?.value
 									const isValid = !isEmpty && !inputError && !error
 
-									const icon = (action && action.icon && action.icon.default) || (option && option.icon.default)
-									const label = (action && action.label) || (option && option.label) ||
+									// NOTE: These are using saved option data from the database when it exists. For example,
+									//       this means that if the user enters an ENS and they choose one, then when they refresh
+									//       we will still have the 'nftchance.eth' as the label even before the refresh and the
+									//       option values are retrieved from the Solver. This also means that if an option
+									//       is no longer supported or shown in the list existing Plugs will still function as 
+									//       expected and the user will have the ability to choose an up to date option in the
+									//       future if they see fit. 
+									// TODO: In some rare cases, we will have to pause plugs that are using a version of an 
+									//       action that is not supported.
+									const icon = (action.values?.[input.index]?.icon?.default) || (option && option.icon.default)
+									const label = (action.values?.[input.index]?.label) || (option && option.label) ||
 										value?.value ||
 										input.name
 											?.replaceAll("_", " ")

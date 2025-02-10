@@ -20,7 +20,7 @@ type PlugOptionsProvider struct{}
 func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, search map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
 	case actions.ActionTransfer:
-		recipientIndex := 3
+		recipientIndex := 2
 		recipientOptions, err := GetAddressOptions(chainId, from, search[recipientIndex])
 		if err != nil {
 			return nil, err

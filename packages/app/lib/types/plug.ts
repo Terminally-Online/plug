@@ -16,11 +16,11 @@ export type ActionSchema = {
 	metadata: {
 		icon: string
 		tags: Array<string>
-		chains: Array<{ 
-			name: string, 
-			chainIds: [typeof connectedChains[number]['id']], 
-			explorer: string, 
-			icon: { [key: string]: string } 
+		chains: Array<{
+			name: string,
+			chainIds: [typeof connectedChains[number]['id']],
+			explorer: string,
+			icon: { [key: string]: string }
 		}>
 	}
 	schema: Record<
@@ -40,8 +40,8 @@ export type ActionSchemas = {
 export type Action = {
 	protocol: string
 	action: string
-	values: Record<string, { value: string; name: string } | undefined>
-} & Partial<Options[number]>
+	values: Record<string, { value: string; name: string } & Partial<Options[number]> | undefined>
+}
 
 export type Actions = Array<Action>
 
