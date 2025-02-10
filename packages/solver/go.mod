@@ -6,6 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.14.13
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
+	github.com/wealdtech/go-ens/v3 v3.6.0
 )
 
 require (
@@ -20,9 +21,8 @@ require (
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/wealdtech/go-ens/v3 v3.6.0 // indirect
 	github.com/wealdtech/go-multicodec v1.4.0 // indirect
-	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
