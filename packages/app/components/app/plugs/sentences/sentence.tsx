@@ -65,7 +65,7 @@ export const Sentence: FC<SentenceProps> = ({
 	const {
 		state: { parsed },
 		actions: { setValue },
-		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
+		helpers: { getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
 
 	const parts = parsed
@@ -78,13 +78,22 @@ export const Sentence: FC<SentenceProps> = ({
 			.flat()
 		: []
 
-	const handleValue = (index: number, value: string, isNumber?: boolean) => {
-		const inputName = getInputName(index)
-
-		if (!parsed || !inputName) return
-
+	// TODO: (#478) Right now we are saving the wrong label value -- If you test it and go look at the
+	//       database you will see that the label of field is being saved instead of the label
+	//       of the option that a user has selected.
+	const handleValue = ({ index, value, isNumber, ...rest }: {
+		index: number,
+		value: string,
+		name: string,
+		isNumber?: boolean
+	} & Partial<Options[number]>) => {
 		setValue(index, value)
 
+		// TODO: The main issue is that we are saving the name and value, but we are not saving the 
+		//       metadata that is used to render the option. This means that if we have a value
+		//       selected, the option is removed from the API response, or the API response simply
+		//       hasn't loaded, then the option will show incorrectly.
+		// NOTE: We should include the label, icon. -- we should basically include all of the option.
 		edit({
 			id: item,
 			actions: JSON.stringify(
@@ -95,8 +104,8 @@ export const Sentence: FC<SentenceProps> = ({
 							? {
 								...action.values,
 								[index]: {
+									...rest,
 									value: isNumber ? parseFloat(value) : value,
-									name: inputName
 								}
 							}
 							: action.values
@@ -156,7 +165,8 @@ export const Sentence: FC<SentenceProps> = ({
 							</div>
 
 							<div className="flex flex-wrap items-center gap-y-1">
-								{!solverActions && <>Failed to retrieve action schema: {action.protocol}</>}
+								{!solverActions && <p>Failed to retrieve action schema: {action.protocol}</p>}
+
 								{solverActions && parts.map((part, partIndex) => {
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
@@ -180,6 +190,7 @@ export const Sentence: FC<SentenceProps> = ({
 										undefined
 
 									const sentenceOptions = solverActions[action.protocol].schema[action.action].options
+
 									const options =
 										sentenceOptions &&
 										(Array.isArray(sentenceOptions[optionsIndex])
@@ -204,6 +215,14 @@ export const Sentence: FC<SentenceProps> = ({
 									const isEmpty = !value?.value
 									const isValid = !isEmpty && !inputError && !error
 
+									const label = (option && option.label) ||
+										value?.value ||
+										input.name
+											?.replaceAll("_", " ")
+											.replace(/([A-Z])/g, " $1")
+											.toLowerCase() ||
+										`Input #${input.index}`
+
 									return (
 										<>
 											<button
@@ -223,13 +242,7 @@ export const Sentence: FC<SentenceProps> = ({
 											>
 												{option?.icon.default && <Image className="w-5 h-5 rounded-full" src={option?.icon.default ?? ""} alt="" width={32} height={32} />}
 
-												{(option && option.label) ||
-													value?.value ||
-													input.name
-														?.replaceAll("_", " ")
-														.replace(/([A-Z])/g, " $1")
-														.toLowerCase() ||
-													`Input #${input.index}`}
+												{label}
 											</button>
 
 											<Frame
@@ -297,11 +310,13 @@ export const Sentence: FC<SentenceProps> = ({
 																	placeholder={getInputPlaceholder(input.type)}
 																	search={value?.value}
 																	handleSearch={data =>
-																		handleValue(
-																			input.index,
-																			data,
-																			input.type?.toString().includes("int")
-																		)
+																		handleValue({
+																			index: input?.index ?? "",
+																			name: input?.name ?? "",
+																			label,
+																			value: data,
+																			isNumber: input.type?.toString().includes("int")
+																		})
 																	}
 																	isNumber={
 																		input.type?.toString().includes("int") ||
@@ -327,12 +342,14 @@ export const Sentence: FC<SentenceProps> = ({
 																			<Accordion
 																				key={`${index}-${actionIndex}-${optionIndex}`}
 																				onExpand={() =>
-																					handleValue(
-																						input.index,
-																						option.value === value?.value
+																					handleValue({
+																						...option,
+																						index: input.index,
+																						// NOTE: Support toggling of the option by clicking it again.
+																						value: option.value === value?.value
 																							? ""
 																							: option.value
-																					)
+																					})
 																				}
 																				className="relative"
 																			>
