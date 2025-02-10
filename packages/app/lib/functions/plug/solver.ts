@@ -7,18 +7,31 @@ import { ActionSchemas } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
-export const schemas = async (protocol?: string, action?: string, chainId: number = 8453, from?: string): Promise<ActionSchemas> => {
-	const cacheKey = from ? `${protocol}-${action}-${from}` : `${protocol}-${action}`
+export const schemas = async (
+	protocol?: string,
+	action?: string,
+	chainId = 8453,
+	search: Array<string> = [],
+	from?: string
+): Promise<ActionSchemas> => {
+	const params = {
+		protocol,
+		action,
+		from,
+		chainId,
+		...search.reduce((acc, value) => {
+			const [key, val] = value.split("=")
+			if (val === "") return acc
+			return { ...acc, [key]: val }
+		}, {})
+	}
+
+	const cacheKey = JSON.stringify(params)
 
 	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
 
 	const response = await axios.get(`${env.SOLVER_URL}/solver`, {
-		params: {
-			protocol,
-			action,
-			from,
-			chainId
-		},
+		params,
 		headers: {
 			'X-Api-Key': env.SOLVER_API_KEY
 		}

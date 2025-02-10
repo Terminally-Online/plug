@@ -11,26 +11,37 @@ import (
 
 type AaveOptionsProvider struct{}
 
-func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, action string) (map[int]actions.Options, error) {
-	collateralOptions, borrowOptions, err := GetOptions(chainId)
-	if err != nil {
-		return nil, err
-	}
-
+func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
 	case actions.ActionDeposit:
+		collateralOptions, err := GetCollateralAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: collateralOptions},
 		}, nil
 	case actions.ActionBorrow:
+		borrowOptions, err := GetBorrowAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionRepay:
+		borrowOptions, err := GetBorrowAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionWithdraw:
+		collateralOptions, err := GetCollateralAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: collateralOptions},
 		}, nil
@@ -39,6 +50,14 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, actio
 			0: {Simple: actions.BaseThresholdFields},
 		}, nil
 	case actions.ConstraintAPY:
+		collateralOptions, err := GetCollateralAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
+		borrowOptions, err := GetBorrowAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		aggregatedOptions := func() []actions.Option {
 			seen := make(map[string]bool)
 			options := make([]actions.Option, 0)
@@ -101,7 +120,7 @@ func GetCollateralAssetOptions(chainId uint64) ([]actions.Option, error) {
 			rate = rateFloat.Text('f', 2) + "%"
 		}
 		options = append(options, actions.Option{
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
+			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info: actions.OptionInfo{
@@ -140,7 +159,7 @@ func GetBorrowAssetOptions(chainId uint64) ([]actions.Option, error) {
 		}
 
 		options = append(options, actions.Option{
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String())),
+			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(reserve.UnderlyingAsset.String()))},
 			Label: reserve.Symbol,
 			Name:  reserve.Name,
 			Info: actions.OptionInfo{

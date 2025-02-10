@@ -8,7 +8,6 @@ import { ActionItem } from "@/components/app/plugs/actions/action-item"
 import { useDebounce } from "@/lib"
 import { useActions } from "@/state/actions"
 import { useColumnStore } from "@/state/columns"
-import { connectedChains } from "@/contexts"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
 	const { column, isFrame } = useColumnStore(index, `${item}-actions`)
@@ -20,10 +19,6 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 	const allFilteredActions = useMemo(
 		() =>
 			Object.keys(actions).flatMap(protocol => {
-				const chains = actions[protocol].metadata.chains
-
-				if (!chains.some(chain => connectedChains.map(chain => chain.id).includes(chain))) return []
-
 				if (protocol.toLowerCase().includes(debouncedSearch.toLowerCase())) {
 					return Object.keys(actions[protocol].schema).map(action => ({
 						protocol: protocol,
@@ -46,7 +41,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 	return (
 		<Frame
 			index={index}
-			icon={<Blocks size={18} className="opacity-60" />}
+			icon={<Blocks size={16} className="opacity-40" />}
 			label="Add Action"
 			visible={isFrame}
 			hasChildrenPadding={false}

@@ -2,20 +2,26 @@ import { DateRange } from "react-day-picker"
 
 import { frequencies } from "@/lib"
 import { connectedChains } from "@/contexts"
+import { Option } from "@/state/plugs"
 
 export type Options = {
 	value: string
 	name: string
 	label: string
+	icon: { [key: string]: string }
 	info?: { label: string, value: string }
-	icon: string
 }[]
 
 export type ActionSchema = {
 	metadata: {
 		icon: string
 		tags: Array<string>
-		chains: Array<typeof connectedChains[number]['id']>
+		chains: Array<{
+			name: string,
+			chainIds: [typeof connectedChains[number]['id']],
+			explorer: string,
+			icon: { [key: string]: string }
+		}>
 	}
 	schema: Record<
 		string,
@@ -34,7 +40,7 @@ export type ActionSchemas = {
 export type Action = {
 	protocol: string
 	action: string
-	values: Record<string, { value: string; name: string } | undefined>
+	values: Record<string, { value: string; name: string } & Partial<Options[number]> | undefined>
 }
 
 export type Actions = Array<Action>

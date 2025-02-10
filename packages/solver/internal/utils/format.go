@@ -3,14 +3,16 @@ package utils
 import (
 	"fmt"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
-func FormatNumber(num float64, prefix string) string {
-	if num < 0.01 && num > 0 {
+func FormatNumber(number float64, prefix string) string {
+	if number < 0.01 && number > 0 {
 		return "<" + prefix + "0.01"
 	}
 
-	baseStr := fmt.Sprintf("%.2f", num)
+	baseStr := fmt.Sprintf("%.2f", number)
 	parts := strings.Split(baseStr, ".")
 	
 	whole := parts[0]
@@ -29,4 +31,8 @@ func FormatNumber(num float64, prefix string) string {
 	}
 	
 	return formatted
+}
+
+func FormatAddress(address common.Address) string {
+    return address.Hex()[:6] + "..." + address.Hex()[len(address.Hex())-4:]
 }

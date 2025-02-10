@@ -80,10 +80,10 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 
 			{item && (
 				<>
+					<ActionsFrame index={index} item={item} />
 					<AuthRequiredFrame index={index} />
 					<ExecuteFrame index={index} item={item} />
 					<ManagePlugFrame index={index} item={item} from={from} />
-					<ActionsFrame index={index} item={item} />
 					<ShareFrame index={index} item={item} />
 				</>
 			)}

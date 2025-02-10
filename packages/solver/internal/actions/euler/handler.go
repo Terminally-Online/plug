@@ -10,10 +10,10 @@ var (
 	icon = "https://cdn.onplug.io/protocols/euler.png"
 	tags = []string{"lending", "defi"}
 
-	chains = references.Base.ChainIds
+	chains = []*references.Network{references.Mainnet, references.Base}
 
 	ActionEarn              = "earn"
-	ActionDepositCollateral = "deposit"
+	ActionDepositCollateral = "supply"
 	ActionWithdraw          = "withdraw"
 	ActionBorrow            = "borrow"
 	ActionRepay             = "repay"
@@ -28,7 +28,7 @@ var (
 			IsUserSpecific: true,
 		},
 		ActionDepositCollateral: {
-			Sentence:       "Deposit {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
+			Sentence:       "Supply {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
 			Handler:        HandleDepositCollateral,
 			IsUserSpecific: true,
 		},

@@ -21,6 +21,12 @@ var (
 	Referral = "0x62180042606624f02d8a130da8a3171e9b33894d"
 
 	Mainnet = &Network{
+		Name: "Ethereum Mainnet",
+		Icon: struct {
+			Default string `json:"default"`
+		}{
+			Default: "https://cdn.onplug.io/blockchain/ethereum.png",
+		},
 		ChainIds: []uint64{1, 31337},
 		Explorer: "https://api.etherscan.io/api",
 		References: map[string]map[string]string{
@@ -74,6 +80,12 @@ var (
 	}
 
 	Base = &Network{
+		Name:     "base",
+		Icon: struct {
+			Default string `json:"default"`
+		}{
+			Default: "https://cdn.onplug.io/blockchain/base.png",
+		},
 		ChainIds: []uint64{8453},
 		Explorer: "https://api.basescan.org/api",
 		References: map[string]map[string]string{

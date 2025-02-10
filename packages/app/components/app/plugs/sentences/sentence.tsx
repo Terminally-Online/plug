@@ -34,6 +34,8 @@ export const Sentence: FC<SentenceProps> = ({
 	className,
 	...props
 }) => {
+	const [search, setSearch] = useState<Record<number, string | undefined>>({})
+
 	const {
 		column,
 		handle: { frame }
@@ -45,7 +47,7 @@ export const Sentence: FC<SentenceProps> = ({
 			action: { edit }
 		},
 		solver: { actions: solverActions }
-	} = usePlugStore(item, action)
+	} = usePlugStore(item, { protocol: action.protocol, action: action.action, search })
 
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
@@ -63,10 +65,8 @@ export const Sentence: FC<SentenceProps> = ({
 	const {
 		state: { parsed },
 		actions: { setValue },
-		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
+		helpers: { getInputValue, getInputError, isValid, isComplete }
 	} = useCord(sentence, values)
-
-	const [search, setSearch] = useState("")
 
 	const parts = parsed
 		? parsed.template
@@ -78,13 +78,22 @@ export const Sentence: FC<SentenceProps> = ({
 			.flat()
 		: []
 
-	const handleValue = (index: number, value: string, isNumber?: boolean) => {
-		const inputName = getInputName(index)
-
-		if (!parsed || !inputName) return
-
+	// TODO: (#478) Right now we are saving the wrong label value -- If you test it and go look at the
+	//       database you will see that the label of field is being saved instead of the label
+	//       of the option that a user has selected.
+	const handleValue = ({ index, value, isNumber, ...rest }: {
+		index: number,
+		value: string,
+		name: string,
+		isNumber?: boolean
+	} & Partial<Options[number]>) => {
 		setValue(index, value)
 
+		// TODO: The main issue is that we are saving the name and value, but we are not saving the 
+		//       metadata that is used to render the option. This means that if we have a value
+		//       selected, the option is removed from the API response, or the API response simply
+		//       hasn't loaded, then the option will show incorrectly.
+		// NOTE: We should include the label, icon. -- we should basically include all of the option.
 		edit({
 			id: item,
 			actions: JSON.stringify(
@@ -94,7 +103,10 @@ export const Sentence: FC<SentenceProps> = ({
 						nestedActionIndex === actionIndex
 							? {
 								...action.values,
-								[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
+								[index]: {
+									...rest,
+									value: isNumber ? parseFloat(value) : value,
+								}
 							}
 							: action.values
 				}))
@@ -102,11 +114,19 @@ export const Sentence: FC<SentenceProps> = ({
 		})
 	}
 
-	if (!parsed) return <div className="border-[1px] border-plug-red rounded-lg p-4">
-		<p className="font-bold text-plug-red">Failed to parse: <span className="opacity-60">{sentence}</span></p>
+	if (!column) return null
 
+	if (!parsed) return <div className="mb-2 border-[1px] border-plug-red rounded-lg p-4">
+		<p className="font-bold text-plug-red">Failed to parse: <span className="opacity-60">{sentence}</span></p>
 	</div>
-	if (!column || !solverActions || !actionSchema || !parsed) return <pre>{JSON.stringify(parsed, null, 2)}</pre>
+
+	if (!solverActions || !actionSchema) return <div className="mb-2 border-[1px] border-plug-red rounded-lg p-4">
+		<p className="font-bold text-plug-red">
+			Failed to retrieve option details: {" "}
+			<span className="opacity-80">{action.protocol} </span>
+			<span className="opacity-80">{action.action}</span>
+		</p>
+	</div>
 
 	return (
 		<>
@@ -119,7 +139,7 @@ export const Sentence: FC<SentenceProps> = ({
 					className
 				)}
 				data-sentence
-				data-chains={actionSchema.metadata.chains.join(",")}
+				data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
 				data-valid={isValid && isComplete}
 				data-action-preview={item}
 				{...props}
@@ -145,17 +165,17 @@ export const Sentence: FC<SentenceProps> = ({
 							</div>
 
 							<div className="flex flex-wrap items-center gap-y-1">
-								{parts.map((part, partIndex) => {
+								{!solverActions && <p>Failed to retrieve action schema: {action.protocol}</p>}
+
+								{solverActions && parts.map((part, partIndex) => {
 									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
-									if (!match) {
-										// Preserve whitespace for text parts
+									if (!match)
 										return (
 											<span key={partIndex} className="whitespace-pre">
 												{part}
 											</span>
 										)
-									}
 
 									const inputIndex = parseInt(match[2] || match[1])
 									const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
@@ -170,6 +190,7 @@ export const Sentence: FC<SentenceProps> = ({
 										undefined
 
 									const sentenceOptions = solverActions[action.protocol].schema[action.action].options
+
 									const options =
 										sentenceOptions &&
 										(Array.isArray(sentenceOptions[optionsIndex])
@@ -188,44 +209,58 @@ export const Sentence: FC<SentenceProps> = ({
 										? options.find(option => option.value === value?.value)
 										: undefined
 
-									const filteredOptions =
-										options?.filter(
-											option =>
-												option.label.toLowerCase().includes(search.toLowerCase()) ||
-												option.name?.toLowerCase().includes(search.toLowerCase()) ||
-												option.value.toLowerCase().includes(search.toLowerCase())
-										) ?? []
-
 									const isReady =
 										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 										input.dependentOn === undefined
 									const isEmpty = !value?.value
 									const isValid = !isEmpty && !inputError && !error
 
+									// NOTE: These are using saved option data from the database when it exists. For example,
+									//       this means that if the user enters an ENS and they choose one, then when they refresh
+									//       we will still have the 'nftchance.eth' as the label even before the refresh and the
+									//       option values are retrieved from the Solver. This also means that if an option
+									//       is no longer supported or shown in the list existing Plugs will still function as 
+									//       expected and the user will have the ability to choose an up to date option in the
+									//       future if they see fit. 
+									// TODO: In some rare cases, we will have to pause plugs that are using a version of an 
+									//       action that is not supported.
+									const icon = (action.values?.[input.index]?.icon?.default) || (option && option.icon.default)
+									const label = (option && option.label) ||
+										value?.value ||
+										(action.values?.[input.index]?.label) ||
+										input.name
+											?.replaceAll("_", " ")
+											.replace(/([A-Z])/g, " $1")
+											.toLowerCase() ||
+										`Input #${input.index}`
+
 									return (
 										<>
 											<button
 												className={cn(
-													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
-													!isValid ? "text-plug-red" : "text-plug-green",
+													"rounded-sm mx-1 px-2 py-1 font-bold transition-all duration-200 ease-in-out flex flex-row items-center gap-2 text-black/60",
+													isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
 													own && !preview ? "cursor-pointer" : "cursor-default"
 												)}
 												style={{
 													background: !isValid
-														? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
-														: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
+														? "bg-plug-red"
+														: "bg-plug-yellow"
 												}}
 												onClick={() =>
 													own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
 												}
 											>
-												{(option && option.label) ||
-													value?.value ||
-													input.name
-														?.replaceAll("_", " ")
-														.replace(/([A-Z])/g, " $1")
-														.toLowerCase() ||
-													`Input #${input.index}`}
+												{icon && (
+													<Image
+														className="w-5 h-5 rounded-full"
+														src={icon}
+														alt=""
+														width={32}
+														height={32}
+													/>
+												)}
+												{label}
 											</button>
 
 											<Frame
@@ -293,11 +328,13 @@ export const Sentence: FC<SentenceProps> = ({
 																	placeholder={getInputPlaceholder(input.type)}
 																	search={value?.value}
 																	handleSearch={data =>
-																		handleValue(
-																			input.index,
-																			data,
-																			input.type?.toString().includes("int")
-																		)
+																		handleValue({
+																			index: input?.index ?? "",
+																			name: input?.name ?? "",
+																			label,
+																			value: data,
+																			isNumber: input.type?.toString().includes("int")
+																		})
 																	}
 																	isNumber={
 																		input.type?.toString().includes("int") ||
@@ -312,23 +349,25 @@ export const Sentence: FC<SentenceProps> = ({
 																	<Search
 																		icon={<SearchIcon size={14} />}
 																		placeholder="Search options"
-																		search={search}
-																		handleSearch={setSearch}
+																		search={search[input.index] ?? ""}
+																		handleSearch={s => setSearch(prev => ({ ...prev, [parseInt(String(input.index))]: s ?? undefined }))}
 																		focus
 																		clear
 																	/>
 
 																	<div className="mb-4 flex w-full flex-col gap-2">
-																		{filteredOptions.map((option, optionIndex) => (
+																		{options.map((option, optionIndex) => (
 																			<Accordion
 																				key={`${index}-${actionIndex}-${optionIndex}`}
 																				onExpand={() =>
-																					handleValue(
-																						input.index,
-																						option.value === value?.value
+																					handleValue({
+																						...option,
+																						index: input.index,
+																						// NOTE: Support toggling of the option by clicking it again.
+																						value: option.value === value?.value
 																							? ""
 																							: option.value
-																					)
+																					})
 																				}
 																				className="relative"
 																			>
@@ -337,9 +376,9 @@ export const Sentence: FC<SentenceProps> = ({
 																				)}
 
 																				<div className="flex flex-row items-center gap-4">
-																					{option.icon && (
+																					{option.icon.default && (
 																						<div className="flex items-center space-x-2">
-																							{option.icon
+																							{option.icon.default
 																								.split("%7C")
 																								.map(icon =>
 																									decodeURIComponent(
@@ -384,7 +423,10 @@ export const Sentence: FC<SentenceProps> = ({
 																								</span>
 																							)}
 																						</p>
-																						<p className="flex flex-row justify-between gap-2 text-sm tabular-nums opacity-40">
+																						<p className="whitespace-nowrap flex flex-row items-center justify-between gap-2 text-sm tabular-nums text-black/40">
+																							{option.icon.secondary && (
+																								<Image className="rounded-[4px] w-4 h-4" src={option.icon.secondary} alt="secondary option icon" width={32} height={32} />
+																							)}
 																							{option.label}
 																							{option.info && (
 																								<Counter className="ml-auto tabular-nums" count={option.info.label} />

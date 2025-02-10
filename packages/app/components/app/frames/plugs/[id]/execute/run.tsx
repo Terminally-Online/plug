@@ -46,8 +46,8 @@ export const RunFrame: FC<{
 	} = usePlugStore(item)
 	const [solverActions] = useActions()
 
-	// TODO: The functionality for this was not finished because right now our in our environment we only have
-	//       one chain that is valid at any given time.
+	// TODO: The functionality for this was not finished because right now our in our environment we 
+	//       only have one chain that is valid at any given time.
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
 
 	const supportedChains = useMemo(() => {
@@ -60,13 +60,14 @@ export const RunFrame: FC<{
 					const protocolSchema = solverActions[protocol]
 					const chains = new Set<number>()
 
-					if (protocolSchema?.metadata.chains) {
-						protocolSchema.metadata.chains.forEach(chainId => {
-							if (!connectedChains.some(chain => chain.id === chainId)) return
-
-							chains.add(chainId)
-						})
-					}
+					// TODO: Come back and fix this after I commented it out just to fix a build error.
+					// if (protocolSchema?.metadata.chains) {
+					// 	protocolSchema.metadata.chains.forEach(chainId => {
+					// 		if (!connectedChains.some(chain => chain.id === chainId)) return
+					//
+					// 		chains.add(chainId)
+					// 	})
+					// }
 
 					return chains
 				})

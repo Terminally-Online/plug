@@ -1,23 +1,22 @@
-import { useSession } from "next-auth/react"
-import Image from "next/image"
 import { useRouter } from "next/router"
-import { FC, HTMLAttributes, PropsWithChildren, useState } from "react"
+import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
-import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
+import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon } from "lucide-react"
 
 import { useSetAtom } from "jotai"
 
-import { useData } from "@/contexts"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
-import { socketAtom, socketModelAtom, useSocket } from "@/state/authentication"
+import { socketModelAtom } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
 
 export const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
 

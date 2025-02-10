@@ -6,15 +6,12 @@ import { atom, useAtom, useAtomValue } from "jotai"
 import { Workflow } from "@prisma/client"
 
 import { Actions } from "@/lib"
-import { tags } from "@/lib/constants"
 import { api } from "@/server/client"
 
 import { COLUMNS, useColumnStore } from "./columns"
 import { atomWithStorage } from "jotai/utils"
 
 export const plugsAtom = atom<Workflow[]>([])
-export const searchAtom = atom("")
-export const tagAtom = atom<(typeof tags)[number]>(tags[0])
 export const viewedPlugsAtom = atomWithStorage<Set<string>>("plug.viewed", new Set<string>())
 
 export const workflowByIdAtom = atom(get => (id: string) => get(plugsAtom).find(plug => plug.id === id))
@@ -124,20 +121,23 @@ export const usePlugSubscriptions = () => {
 	})
 }
 
-export const usePlugStore = (id?: string, action?: { protocol: string; action: string }) => {
+export const usePlugStore = (id?: string, action?: { protocol: string; action: string, search: Record<number, string | undefined> }) => {
 	const session = useSession()
 	const { columns } = useColumnStore()
 
 	const [plugs, setPlugs] = useAtom(plugsAtom)
-	const [search, setSearch] = useAtom(searchAtom)
-	const [tag, setTag] = useAtom(tagAtom)
 	const [viewedPlugs, setViewedPlugs] = useAtom(viewedPlugsAtom)
 
 	const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
 
 	const { data: solverActions } = api.solver.actions.schemas.useQuery(
-		{ protocol: action?.protocol, action: action?.action, chainId: 8453 },
-		{ enabled: Boolean(action) }
+		{
+			chainId: 8453, 
+			protocol: action?.protocol, 
+			action: action?.action, 
+			search: Object.entries(action?.search ?? {}).map(([key, value]) => `search[${key}]=${value}`)
+		},
+		{ enabled: Boolean(action), keepPreviousData: true }
 	)
 
 	api.plugs.all.useQuery(
@@ -195,11 +195,7 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 		plug,
 		own,
 		actions,
-		search,
-		tag,
 		handle: {
-			search: setSearch,
-			tag: setTag,
 			plug: usePlugActions(),
 			action: {
 				edit: actionMutation.mutate
