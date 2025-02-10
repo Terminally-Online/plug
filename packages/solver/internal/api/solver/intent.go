@@ -91,8 +91,9 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 
 			var chains []*references.Network
 			for _, chain := range handler.GetChains() {
-				chain.References = nil
-				chains = append(chains, chain)
+				chainCopy := *chain
+				chainCopy.References = nil
+				chains = append(chains, &chainCopy)
 			}
 
 			protocolSchema := actions.ProtocolSchema{
@@ -132,8 +133,9 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	if action == "" {
 		var chains []*references.Network
 		for _, chain := range handler.GetChains() {
-			chain.References = nil
-			chains = append(chains, chain)
+			chainCopy := *chain
+			chainCopy.References = nil
+			chains = append(chains, &chainCopy)
 		}
 
 		protocolSchema := actions.ProtocolSchema{
@@ -173,8 +175,9 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 
 	var chains []*references.Network
 	for _, chain := range handler.GetChains() {
-		chain.References = nil
-		chains = append(chains, chain)
+		chainCopy := *chain
+		chainCopy.References = nil
+		chains = append(chains, &chainCopy)
 	}
 
 	protocolSchema := actions.ProtocolSchema{
