@@ -41,7 +41,7 @@ export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item 
 	return (
 		<Frame
 			index={index}
-			icon={<Blocks size={18} className="opacity-60" />}
+			icon={<Blocks size={16} className="opacity-40" />}
 			label="Add Action"
 			visible={isFrame}
 			hasChildrenPadding={false}

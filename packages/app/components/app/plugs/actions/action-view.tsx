@@ -29,9 +29,9 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const baseSuggestions = useMemo(
 		() =>
 			Object.entries(solverActions).flatMap(([protocol, actions]) => {
-				// Filter protocols that don't support any connected chains
-				const chains = actions.metadata.chains
-				if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain))) return []				
+				// const chains = actions.metadata.chains
+				// if (!chains.some(chain => connectedChains.map(c => c.id as number).includes(chain.chainIds))) return []				
+				
 				return Object.keys(actions.schema).map(action => ({
 					protocol,
 					action
