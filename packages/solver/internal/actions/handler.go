@@ -167,25 +167,6 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
 		}
 
-		// TODO: (#475) Why is this needed here? Shouldn't this be handled elsewhere? Not sure if it
-		//       actually should be, but we are really far into the compute process to only
-		//       just now be checking this here. Something earlier should have fired this most
-		//       likely like a provider or something. Even if it is not caught earlier, does
-		//       dealing with this here improve things or does it just bloat this function with
-		//       things that we do not actually need?
-		supported := false
-		for _, supportedChain := range h.protocol.Chains {
-			for _, supportedChainId := range supportedChain.ChainIds {
-				if chainIdInt == supportedChainId {
-					supported = true
-					break
-				}
-			}
-		}
-		if !supported {
-			return nil, fmt.Errorf("chain not supported: %d", chainIdInt)
-		}
-
 		// NOTE: Override the address value so that we utilize the cache from the global state
 		//       instead of using the "from" parameter as a key lookup even when provided if
 		//       the action being queried against only supports global state.

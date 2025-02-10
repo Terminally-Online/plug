@@ -130,6 +130,28 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if chainId != "" {
+		chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
+		if err != nil {
+			utils.MakeHttpError(w, fmt.Sprintf("invalid chainId: %s", chainId), http.StatusBadRequest)
+			return
+		}
+
+		supported := false
+		for _, chain := range handler.GetChains() {
+			for _, supportedChainId := range chain.ChainIds {
+				if chainIdInt == supportedChainId {
+					supported = true
+					break
+				}
+			}
+		}
+		if !supported {
+			utils.MakeHttpError(w, fmt.Sprintf("protocol %s does not support chainId %s", protocol, chainId), http.StatusBadRequest)
+			return
+		}
+	}
+
 	if action == "" {
 		var chains []*references.Network
 		for _, chain := range handler.GetChains() {
