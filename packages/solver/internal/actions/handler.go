@@ -55,9 +55,10 @@ type ActionDefinition struct {
 }
 
 var (
-	errUnsupportedAction = "unsupported action: %s"
-	errInvalidChainID    = "invalid chain id: %s"
-	errFailedOptions     = "failed to get options: %w"
+	errUnsupportedAction  = "unsupported action: %s"
+	errInvalidChainID     = "invalid chain id: %s"
+	errUnsupportedChainID = "unsupported chain id: %s"
+	errFailedOptions      = "failed to get options: %w"
 )
 
 func NewBaseHandler(
@@ -139,8 +140,21 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains() []*references.Network {
-	return h.protocol.Chains
+func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
+	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf(errInvalidChainID, chainId)
+	}
+
+	for _, chain := range h.protocol.Chains {
+		for _, supportedChainId := range chain.ChainIds {
+			if chainIdInt == supportedChainId {
+				return []*references.Network{chain}, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
 }
 
 func (h *BaseHandler) GetActions() []string {
