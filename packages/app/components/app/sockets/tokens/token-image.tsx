@@ -19,9 +19,9 @@ export const TokenImage: FC<
 	const [imageError, setImageError] = useState(false)
 
 	const dimensions = {
-		blur: size === "xs" ? 1 : size === "sm" ? 3 : 4,
-		imageBlur: size === "xs" ? 2 : size === "sm" ? 6 : 12,
-		content: size === "xs" ? 1.5 : size === "sm" ? 2 : 2.5
+		blur: size === "xs" ? 1.25 : size === "sm" ? 3 : 4,
+		imageBlur: size === "xs" ? 1.75 : size === "sm" ? 6 : 12,
+		content: size === "xs" ? 1.25 : size === "sm" ? 2 : 2.5
 	}
 
 	useEffect(() => {

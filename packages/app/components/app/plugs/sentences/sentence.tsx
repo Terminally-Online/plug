@@ -252,13 +252,38 @@ export const Sentence: FC<SentenceProps> = ({
 												}
 											>
 												{icon && (
-													<Image
-														className="w-5 h-5 rounded-full"
-														src={icon}
-														alt=""
-														width={32}
-														height={32}
-													/>
+													<div className="flex items-center space-x-2">
+														{icon
+															.split("%7C")
+															.map(icon =>
+																decodeURIComponent(
+																	icon
+																)
+															)
+															.map(
+																(
+																	icon,
+																	tokenIndex
+																) => (
+																	<TokenImage
+																		key={
+																			tokenIndex
+																		}
+																		logo={icon}
+																		symbol={
+																			icon
+																		}
+																		className={cn(
+																			tokenIndex >
+																				0
+																				? "-ml-24"
+																				: ""
+																		)}
+																		size="xs"
+																	/>
+																)
+															)}
+													</div>
 												)}
 												{label}
 											</button>
