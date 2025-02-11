@@ -2,10 +2,10 @@ package actions
 
 import (
 	"solver/internal/utils"
-	"sync"
-	"time"
 
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -48,6 +48,7 @@ type OptionCacheKey struct {
 type CachedOptions struct {
 	options     map[int]Options
 	lastUpdated time.Time
+	refreshing  bool
 }
 
 const cacheDuration = 5 * time.Minute
@@ -125,25 +126,24 @@ func (c *CachedOptionsProvider) GetOptions(chainId uint64, from common.Address, 
 }
 
 func (c *CachedOptionsProvider) GetOrCreateCachedOptions(key OptionCacheKey) (map[int]Options, error) {
-	// Check cache first
+	// Check cache first with read lock
 	c.mu.RLock()
 	cached, exists := c.cache[key]
-	if exists && time.Since(cached.lastUpdated) < cacheDuration {
+	if exists {
+		isStale := time.Since(cached.lastUpdated) >= cacheDuration
 		c.mu.RUnlock()
+
+		if isStale {
+			go c.RefreshCache(key)
+		}
 		return cached.options, nil
 	}
 	c.mu.RUnlock()
 
-	// Upgrade to write lock before fetching new data
+	// No cached data exists, need to get fresh options
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	// Double-check cache after acquiring lock
-	if cached, exists := c.cache[key]; exists && time.Since(cached.lastUpdated) < cacheDuration {
-		return cached.options, nil
-	}
-
-	// Cache miss or expired - get fresh options
 	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
 	if err != nil {
 		return nil, utils.ErrOptions(err.Error())
@@ -153,13 +153,53 @@ func (c *CachedOptionsProvider) GetOrCreateCachedOptions(key OptionCacheKey) (ma
 		options = make(map[int]Options)
 	}
 
-	// Update cache
 	c.cache[key] = CachedOptions{
 		options:     options,
 		lastUpdated: time.Now(),
+		refreshing:  false,
 	}
 
 	return options, nil
+}
+
+func (c *CachedOptionsProvider) RefreshCache(key OptionCacheKey) {
+	c.mu.Lock()
+	cached, exists := c.cache[key]
+	if !exists || cached.refreshing || time.Since(cached.lastUpdated) < cacheDuration {
+		c.mu.Unlock()
+		return
+	}
+
+	c.cache[key] = CachedOptions{
+		options:     cached.options,
+		lastUpdated: cached.lastUpdated,
+		refreshing:  true,
+	}
+	c.mu.Unlock()
+
+	options, err := c.provider.GetOptions(key.chainId, key.from, nil, key.action)
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if err != nil {
+		c.cache[key] = CachedOptions{
+			options:     cached.options,
+			lastUpdated: cached.lastUpdated,
+			refreshing:  false,
+		}
+		return
+	}
+
+	if options == nil {
+		options = make(map[int]Options)
+	}
+
+	c.cache[key] = CachedOptions{
+		options:     options,
+		lastUpdated: time.Now(),
+		refreshing:  false,
+	}
 }
 
 func (c *CachedOptionsProvider) FilterOptions(options map[int]Options, search map[int]string) map[int]Options {
