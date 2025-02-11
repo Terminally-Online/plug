@@ -86,11 +86,6 @@ export const Sentence: FC<SentenceProps> = ({
 	} & Partial<Options[number]>) => {
 		setValue(index, value)
 
-		// TODO: The main issue is that we are saving the name and value, but we are not saving the 
-		//       metadata that is used to render the option. This means that if we have a value
-		//       selected, the option is removed from the API response, or the API response simply
-		//       hasn't loaded, then the option will show incorrectly.
-		// NOTE: We should include the label, icon. -- we should basically include all of the option.
 		edit({
 			id: item,
 			actions: JSON.stringify(
