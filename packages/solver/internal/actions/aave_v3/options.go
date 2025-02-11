@@ -27,7 +27,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: borrowOptions},
+			1: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionRepay:
 		borrowOptions, err := GetBorrowAssetOptions(chainId)
@@ -35,7 +35,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: borrowOptions},
+			1: {Simple: borrowOptions},
 		}, nil
 	case actions.ActionWithdraw:
 		collateralOptions, err := GetCollateralAssetOptions(chainId)
@@ -43,7 +43,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: collateralOptions},
+			1: {Simple: collateralOptions},
 		}, nil
 	case actions.ConstraintHealthFactor:
 		return map[int]actions.Options{
@@ -71,10 +71,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			return options
 		}()
 		return map[int]actions.Options{
-			0: {Simple: []actions.Option{
-				{Label: "Borrow", Name: "Borrow", Value: "-1"},
-				{Label: "Deposit", Name: "Deposit", Value: "1"},
-			}},
+			0: {Simple: actions.BaseLendActionTypeFields},
 			1: {Simple: aggregatedOptions},
 			2: {Simple: actions.BaseThresholdFields},
 		}, nil
