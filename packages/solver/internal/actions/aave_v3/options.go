@@ -46,8 +46,33 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			1: {Simple: collateralOptions},
 		}, nil
 	case actions.ConstraintHealthFactor:
+		riskOptions := []actions.Option{
+			{
+				Name:  "Liquidatable",
+				Label: "liquidatable",
+				Value: "1.0",
+				Info: actions.OptionInfo{ 
+					Value: "1.0",
+				},
+			}, {
+				Name: "Risky",
+				Label: "risky",
+				Value: "1.25",
+				Info: actions.OptionInfo{ 
+					Value: "1.0",
+				},
+			}, {
+				Name: "Safe",
+				Label: "safe",
+				Value: "2.0",
+				Info: actions.OptionInfo{ 
+					Value: "1.0",
+				},
+			},
+		}
 		return map[int]actions.Options{
 			0: {Simple: actions.BaseThresholdFields},
+			1: {Simple: riskOptions},
 		}, nil
 	case actions.ConstraintAPY:
 		collateralOptions, err := GetCollateralAssetOptions(chainId)
@@ -70,6 +95,7 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 			}
 			return options
 		}()
+
 		return map[int]actions.Options{
 			0: {Simple: actions.BaseLendActionTypeFields},
 			1: {Simple: aggregatedOptions},
