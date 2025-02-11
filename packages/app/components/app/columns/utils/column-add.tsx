@@ -1,7 +1,6 @@
-import Link from "next/link"
 import { useMemo } from "react"
 
-import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
+import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon, MessageCircle } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
@@ -26,6 +25,11 @@ export const ANONYMOUS_OPTIONS: Options = [
 		label: "MY_PLUGS",
 		description: "Create, edit, and run your Plugs.",
 		icon: <Cable size={14} className="opacity-40" />
+	},
+	{
+		label: "CHAT",
+		description: "Chat with Biblo to help build your Plugs.",
+		icon: <MessageCircle size={14} className="opacity-40" />
 	}
 ]
 
@@ -68,7 +72,8 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 				description: "Install Plug as an app on your device.",
 				icon: <Star size={14} className="opacity-40" />
 			})
-		
+
+
 		if (socket?.admin) {
 			options.push({
 				label: "ADMIN",
