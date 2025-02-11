@@ -235,7 +235,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 	}
 
 	cacheKey := fmt.Sprintf("euler:positions:%d:%s", chainId, address.String())
-	return utils.WithCache[[]actions.Option](cacheKey, []time.Duration{5 * time.Minute}, func() ([]actions.Option, error) {
+	return utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, func() ([]actions.Option, error) {
 		accountLensAbi, err := euler_account_lens.EulerAccountLensMetaData.GetAbi()
 		if err != nil {
 			return nil, utils.ErrABI("EulerAccountLens")
@@ -243,6 +243,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		accountLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"])
 		evcAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["evc"])
+
+		var nextVault *actions.Option
 
 		calls := make([]utils.MulticallCalldata, 256)
 		for i := 0; i < 256; i++ {
@@ -273,32 +275,51 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			if len(accountInfo.VaultAccountInfo) == 0 {
 				options = append(options, actions.Option{
-					Label: fmt.Sprintf("Account %d", i),
-					Name:  fmt.Sprintf("%s...%s", subAccountAddress.String()[:6], subAccountAddress.String()[len(subAccountAddress.String())-4:]),
+					Label: fmt.Sprintf("Account %d", i + 1),
+					Name:  utils.FormatAddress(subAccountAddress),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
-						Label: "Net Asset Value",
+						Label: "No Asset Defined",
 						Value: "$0.00",
 					},
+					Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
 				})
-				continue
+				break
 			}
 
+			// TODO: This seems wrong in general because we have a for loop for the 256 calls. Then, each account may contain a set of vaults.
+			//       Right now, an option is added for each vault. So if an account has multiple vaults, a user had multiple assets in some of
+			//       those vaults, we would have more than 256 options? I am not understanding something here.
+			//		 . 
+			//       Shouldn't we be returning one option for each account, not vault? Why are we adding options likes this?
+			//       - CHANCE
+
+			// NOTE: Only return accounts that have value plus one that does not have a value so that the user can
+			//       choose to create a new position in a specific subaccount.
 			for _, vault := range accountInfo.VaultAccountInfo {
 				if vault.LiquidityInfo.QueryFailure {
 					continue
 				}
 
-				netValue := new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue)
+				netValue := utils.UintToFloat(new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue), 18)
 				accountOption := actions.Option{
-					Label: fmt.Sprintf("Account %d", i),
-					Name:  fmt.Sprintf("%s...%s", vault.Account.String()[:6], vault.Account.String()[len(vault.Account.String())-4:]),
+					Label: fmt.Sprintf("Account #%d", i + 1),
+					Name:  utils.FormatAddress(vault.Account),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
-						Label: "Net Asset Value",
-						Value: fmt.Sprintf("$%.2f", utils.UintToFloat(netValue, 18)),
+						Label: vault.Asset.Hex(),
+						Value: fmt.Sprintf("$%.2f", netValue),
+					},
+					Icon: actions.OptionIcon{
+						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.Hex())),
 					},
 				}
+
+				if netValue == 0 && nextVault != nil {
+					nextVault = &accountOption
+					continue
+				}
+
 				options = append(options, accountOption)
 			}
 		}
