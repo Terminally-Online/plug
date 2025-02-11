@@ -59,14 +59,14 @@ func (p *AaveOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map
 				Label: "risky",
 				Value: "1.25",
 				Info: actions.OptionInfo{ 
-					Value: "1.0",
+					Value: "1.25",
 				},
 			}, {
 				Name: "Safe",
 				Label: "safe",
 				Value: "2.0",
 				Info: actions.OptionInfo{ 
-					Value: "1.0",
+					Value: "2.0",
 				},
 			},
 		}
