@@ -55,10 +55,9 @@ type ActionDefinition struct {
 }
 
 var (
-	errUnsupportedAction  = "unsupported action: %s"
-	errInvalidChainID     = "invalid chain id: %s"
-	errUnsupportedChainID = "unsupported chain id: %s"
-	errFailedOptions      = "failed to get options: %w"
+	errUnsupportedAction = "unsupported action: %s"
+	errInvalidChainID    = "invalid chain id: %s"
+	errFailedOptions     = "failed to get options: %w"
 )
 
 func NewBaseHandler(
