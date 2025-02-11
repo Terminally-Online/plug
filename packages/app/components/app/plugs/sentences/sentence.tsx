@@ -78,9 +78,6 @@ export const Sentence: FC<SentenceProps> = ({
 			.flat()
 		: []
 
-	// TODO: (#478) Right now we are saving the wrong label value -- If you test it and go look at the
-	//       database you will see that the label of field is being saved instead of the label
-	//       of the option that a user has selected.
 	const handleValue = ({ index, value, isNumber, ...rest }: {
 		index: number,
 		value: string,
