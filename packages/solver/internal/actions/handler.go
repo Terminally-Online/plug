@@ -22,7 +22,7 @@ type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains(chainId string) []*references.Network
+	GetChains(chainId string) ([]*references.Network, error)
 	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
@@ -55,9 +55,10 @@ type ActionDefinition struct {
 }
 
 var (
-	errUnsupportedAction = "unsupported action: %s"
-	errInvalidChainID    = "invalid chain id: %s"
-	errFailedOptions     = "failed to get options: %w"
+	errUnsupportedAction  = "unsupported action: %s"
+	errInvalidChainID     = "invalid chain id: %s"
+	errUnsupportedChainID = "unsupported chain id: %s"
+	errFailedOptions      = "failed to get options: %w"
 )
 
 func NewBaseHandler(
@@ -139,20 +140,25 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains(chainId string) []*references.Network {
+func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
 	if chainId == "" {
-		return h.protocol.Chains
+		return h.protocol.Chains, nil
+	}
+
+	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf(errInvalidChainID, chainId)
 	}
 
 	for _, chain := range h.protocol.Chains {
 		for _, supportedChainId := range chain.ChainIds {
-			if chainId == fmt.Sprint(supportedChainId) {
-				return []*references.Network{chain}
+			if chainIdInt == supportedChainId {
+				return []*references.Network{chain}, nil
 			}
 		}
 	}
 
-	return nil
+	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
 }
 
 func (h *BaseHandler) GetActions() []string {

@@ -73,11 +73,15 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
 		for protocol, handler := range h.Solver.GetProtocols() {
-			var chains []*references.Network
-			for _, chain := range handler.GetChains(chainId) {
+			protocolChains, err := handler.GetChains(chainId)
+			if err != nil {
+				continue
+			}
+			chains := make([]*references.Network, len(protocolChains))
+			for i, chain := range protocolChains {
 				chainCopy := *chain
 				chainCopy.References = nil
-				chains = append(chains, &chainCopy)
+				chains[i] = &chainCopy
 			}
 
 			protocolSchema := actions.ProtocolSchema{
@@ -102,6 +106,11 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 			allSchemas[protocol] = protocolSchema
 		}
 
+		if len(allSchemas) == 0 {
+			utils.MakeHttpError(w, fmt.Sprintf("no protocols found on chainId %s", chainId), http.StatusNotFound)
+			return
+		}
+
 		if err := json.NewEncoder(w).Encode(allSchemas); err != nil {
 			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		}
@@ -114,8 +123,14 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var chains []*references.Network
-	for _, chain := range handler.GetChains(chainId) {
+	protocolChains, err := handler.GetChains(chainId)
+	if err != nil {
+		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	chains := make([]*references.Network, len(protocolChains))
+	for _, chain := range protocolChains {
 		chainCopy := *chain
 		chainCopy.References = nil
 		chains = append(chains, &chainCopy)
