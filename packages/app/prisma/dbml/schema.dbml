@@ -73,6 +73,7 @@ Table UserSocket {
   positions PositionCache [not null]
   collectibles CollectibleCache [not null]
   referrals SocketIdentity [not null]
+  Message Message [not null]
 }
 
 Table View {
@@ -310,6 +311,16 @@ Table FeatureRequest {
   message String
 }
 
+Table Message {
+  id String [pk]
+  socketId String [not null]
+  content String [not null]
+  isUser Boolean [not null]
+  timeSent DateTime [default: `now()`, not null]
+  tools String
+  socket UserSocket [not null]
+}
+
 Table FarcasterAddresses {
   farcasterusersId String [ref: > FarcasterUser.id]
   addressesId String [ref: > FarcasterUserAddress.id]
@@ -359,3 +370,5 @@ Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, cha
 Ref: Collectible.cacheId > CollectibleCache.id [delete: Cascade]
 
 Ref: CollectibleCache.socketId > UserSocket.id [delete: Cascade]
+
+Ref: Message.socketId > UserSocket.id [delete: Cascade]

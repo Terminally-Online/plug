@@ -91,6 +91,12 @@ export const useHoldings = (providedAddress?: string) => {
 	const { socket } = useSocket()
 	const address = providedAddress || socket?.socketAddress || ""
 
+	console.log("useHoldings called:", {
+		providedAddress,
+		socketAddress: socket?.socketAddress,
+		resolvedAddress: address
+	})
+
 	const { isLoading, isSuccess, refetch: refetchHoldings } = useFetchHoldings(address ?? socket?.socketAddress)
 
 	const collectibles = useAtomValue(collectiblesFamily(address))

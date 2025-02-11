@@ -7,10 +7,20 @@ import { ActionSchemas } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
-export const schemas = async (protocol?: string, action?: string, chainId: number = 8453, from?: string): Promise<ActionSchemas> => {
+export const schemas = async (
+	protocol?: string,
+	action?: string,
+	chainId: number = 8453,
+	from?: string
+): Promise<ActionSchemas> => {
 	const cacheKey = from ? `${protocol}-${action}-${from}` : `${protocol}-${action}`
 
-	if (cachedSchemas[cacheKey]) return cachedSchemas[cacheKey]
+	console.log("[Schemas] Request:", { protocol, action, chainId, from })
+
+	if (cachedSchemas[cacheKey]) {
+		console.log("[Schemas] Cache hit:", cacheKey)
+		return cachedSchemas[cacheKey]
+	}
 
 	const response = await axios.get(`${env.SOLVER_URL}/solver`, {
 		params: {
@@ -20,9 +30,11 @@ export const schemas = async (protocol?: string, action?: string, chainId: numbe
 			chainId
 		},
 		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+			"X-Api-Key": env.SOLVER_API_KEY
 		}
 	})
+
+	console.log("[Schemas] Response:", response.data)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
@@ -40,7 +52,11 @@ export const intent = async (input: {
 		[key: string]: string | number
 	}>
 }) => {
+	console.log("[Intent] Request:", input)
+
 	const response = await axios.post(`${env.SOLVER_URL}/solver`, input)
+
+	console.log("[Intent] Response:", response.data)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
@@ -50,7 +66,7 @@ export const intent = async (input: {
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {
 		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+			"X-Api-Key": env.SOLVER_API_KEY
 		}
 	})
 
@@ -60,11 +76,15 @@ export const killed = async () => {
 }
 
 export const kill = async () => {
-	const response = await axios.post(`${env.SOLVER_URL}/solver/kill`, {}, {
-		headers: {
-			'X-Api-Key': env.SOLVER_API_KEY
+	const response = await axios.post(
+		`${env.SOLVER_URL}/solver/kill`,
+		{},
+		{
+			headers: {
+				"X-Api-Key": env.SOLVER_API_KEY
+			}
 		}
-	})
+	)
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 

@@ -35,7 +35,7 @@ const prohibitedSymbolInclusions = [...prohibitedNameInclusions, "claim", "airdr
 
 const SECOND = 1000
 // const MINUTE = 60 * second
-const POSITIONS_CACHE_TIME = 60 * SECOND
+const POSITIONS_CACHE_TIME = 60 * SECOND * 30
 
 const getZerionPositions = async (chains: string[], socketId: string, socketAddress?: string) => {
 	const response = await axios.get(
@@ -406,6 +406,12 @@ const findPositions = async (id: string, search: string = "") => {
  * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
  */
 export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["base"]) => {
+	console.log("Zerion getPositions:", {
+		address,
+		socketAddress,
+		chains,
+		timestamp: new Date().toISOString()
+	})
 	const socket = await db.userSocket.findFirst({
 		where: { id: address }
 	})

@@ -158,6 +158,7 @@ model UserSocket {
   positions    PositionCache[]
   collectibles CollectibleCache[]
   referrals    SocketIdentity[]   @relation("Referral")
+  Message      Message[]
 
   // ---------------------------------------------------------------------------
   // Indexes
@@ -581,4 +582,23 @@ model FeatureRequest {
   userAddress String
   context     String
   message     String?
+}
+
+model Message {
+  // ---------------------------------------------------------------------------
+  // Core
+  // ---------------------------------------------------------------------------
+  id       String   @id @default(uuid())
+  socketId String
+  content  String
+  isUser   Boolean
+  timeSent DateTime @default(now())
+
+  // New field to store tools used
+  tools String? // Store as a JSON string or comma-separated values
+
+  // ---------------------------------------------------------------------------
+  // Relations
+  // ---------------------------------------------------------------------------
+  socket UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
 }

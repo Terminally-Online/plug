@@ -1,5 +1,5 @@
 import { Button } from "@/components/shared/buttons/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search } from "../../inputs/search"
 import { SearchIcon } from "lucide-react"
 import { cn, formatTitle } from "@/lib";
@@ -24,15 +24,16 @@ const TypingIndicator = () => {
 };
 
 const DEFAULT_MESSAGES = [
-	"Let's create a Plug.",
-	"How are my Plugs doing?",
-	"Where can I use my holdings?"
+	"Help me open an Aave V3 position",
+	"What can I do with my tokens?",
+	"What can I do with Plug?",
 ]
 
-export const ColumnChat = ({ }: { index: number }) => {
+export const ColumnChat = ({ index }: { index: number }) => {
+	
 	const [message, setMessage] = useState("")
-	const [messages, setMessages] = useState<Message[]>([{
-		text: "👋 Hey, I'm Biblo. I can answer nearly any question about anything you see here in Plug.\n\nMy knowledge may be limited for context I can't go find in the folder I have for you.",
+	const [messages, setMessages] = useState<Message[]>(() => [{
+		text: "👋 Hey, I'm Piggy. I can answer nearly any question about anything you see here in Plug.\n\nMy knowledge may be limited.",
 		isSent: false
 	}])
 	const [isTyping, setIsTyping] = useState(false)
@@ -50,7 +51,6 @@ export const ColumnChat = ({ }: { index: number }) => {
 		try {
 			const response = await chat.mutateAsync({
 				message: sent,
-				// tools: activeTools,
 				history: messages.map(msg => ({
 					content: msg.text,
 					role: msg.isSent ? 'user' : 'assistant'
@@ -61,10 +61,19 @@ export const ColumnChat = ({ }: { index: number }) => {
 				setActiveTools(prev => [...new Set([...prev, ...response.tools])]);
 			}
 			setMessages(prev => [...prev, { text: response.reply, isSent: false }, ...response.additionalMessages.map(text => ({ text, isSent: false }))]);
-		} catch (error) {
-			console.error('Error:', error);
+		} catch (error: any) {
+			console.error('Detailed Error:', {
+				error,
+				cause: error.cause,
+				data: error.data,
+				shape: error.shape
+			});
+			
+			const errorMessage = error.shape?.message || error.message || 'Unknown error occurred';
+			const errorCode = error.shape?.code || error.code;
+			
 			setMessages(prev => [...prev, { 
-				text: "Sorry, I encountered an error. Please try again.", 
+				text: `Error Code ${errorCode}: ${errorMessage}`,
 				isSent: false 
 			}]);
 		} finally {
