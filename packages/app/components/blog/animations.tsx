@@ -1,3 +1,4 @@
+import { cn } from "@/lib"
 import { motion } from "framer-motion"
 
 export const postAnimations = {
@@ -34,6 +35,64 @@ export const postAnimations = {
 							repeat: Infinity,
 							repeatType: "reverse",
 							delay: col * speed
+						}}
+					/>
+				)
+			})}
+		</div>
+	),
+	"hello-world": (
+		<div
+			className="grid items-center justify-center gap-[2px]"
+			style={{
+				gridTemplateColumns: "repeat(19, 1fr)"
+			}}
+		>
+			{Array.from({ length: 160 }).map((_, index) => {
+				const row = Math.floor(index / 19)
+				const col = index % 19
+
+				const pattern = [
+					[0, 2, 2, 0, 0, 2, 2, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 2, 0],
+					[0, 0, 2, 2, 0, 0, 2, 2, 0, 2, 0, 2, 2, 0, 0, 2, 2, 0, 0],
+					[2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 2],
+					[2, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 2, 2],
+					[0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0],
+					[2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2],
+					[2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 2],
+					[0, 2, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 0],
+				]
+
+				const pixelType = pattern[row]?.[col] || 0
+				const isPartOfSun = pixelType === 1
+				const isRay = pixelType === 2
+
+				return (
+					<motion.div
+						key={index}
+						className={cn(
+							"mx-auto h-8 w-full rounded-[4px]",
+							isPartOfSun ? "bg-plug-yellow" : isRay ? "bg-plug-yellow" : "bg-transparent"
+						)}
+						initial={{
+							opacity: 0,
+							...(!isRay && { y: 40 })
+						}}
+						animate={{
+							opacity: 1,
+							y: 0,
+							...(isRay && { opacity: [0.4, 1, 0.4] })
+						}}
+						transition={{
+							duration: isRay ? 1.5 + Math.random() * 0.5 : 0.5,
+							repeat: isRay ? Infinity : 0,
+							repeatType: "reverse",
+							ease: "easeInOut",
+							delay: isPartOfSun
+								? 0
+								: isRay
+									? 0.5 + (row * 0.1) + (Math.random() * 0.3)
+									: 0
 						}}
 					/>
 				)
