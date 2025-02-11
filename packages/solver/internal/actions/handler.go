@@ -22,7 +22,7 @@ type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains() []*references.Network
+	GetChains(chainId string) []*references.Network
 	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
@@ -140,21 +140,20 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
-	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf(errInvalidChainID, chainId)
+func (h *BaseHandler) GetChains(chainId string) []*references.Network {
+	if chainId == "" {
+		return h.protocol.Chains
 	}
 
 	for _, chain := range h.protocol.Chains {
 		for _, supportedChainId := range chain.ChainIds {
-			if chainIdInt == supportedChainId {
-				return []*references.Network{chain}, nil
+			if chainId == fmt.Sprint(supportedChainId) {
+				return []*references.Network{chain}
 			}
 		}
 	}
 
-	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
+	return nil
 }
 
 func (h *BaseHandler) GetActions() []string {

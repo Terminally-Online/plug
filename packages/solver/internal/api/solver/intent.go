@@ -73,24 +73,8 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
 		for protocol, handler := range h.Solver.GetProtocols() {
-			if chainId != "" {
-				supportsChain := false
-			chainLoop:
-				for _, chain := range handler.GetChains() {
-					for _, _chainId := range chain.ChainIds {
-						if chainId == fmt.Sprint(_chainId) {
-							supportsChain = true
-							break chainLoop
-						}
-					}
-				}
-				if !supportsChain {
-					continue
-				}
-			}
-
 			var chains []*references.Network
-			for _, chain := range handler.GetChains() {
+			for _, chain := range handler.GetChains(chainId) {
 				chainCopy := *chain
 				chainCopy.References = nil
 				chains = append(chains, &chainCopy)
@@ -130,14 +114,14 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if action == "" {
-		var chains []*references.Network
-		for _, chain := range handler.GetChains() {
-			chainCopy := *chain
-			chainCopy.References = nil
-			chains = append(chains, &chainCopy)
-		}
+	var chains []*references.Network
+	for _, chain := range handler.GetChains(chainId) {
+		chainCopy := *chain
+		chainCopy.References = nil
+		chains = append(chains, &chainCopy)
+	}
 
+	if action == "" {
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.GetIcon(),
@@ -171,13 +155,6 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	var chains []*references.Network
-	for _, chain := range handler.GetChains() {
-		chainCopy := *chain
-		chainCopy.References = nil
-		chains = append(chains, &chainCopy)
 	}
 
 	protocolSchema := actions.ProtocolSchema{
