@@ -492,15 +492,11 @@ export const Sentence: FC<SentenceProps> = memo(({
 	if (!column) return null
 
 	if (!solverActions || !actionSchema) return <motion.div
-		className="mb-2 border-[1px] border-plug-red rounded-lg p-4"
+		className="h-16 mb-2 border-[1px] border-plug-green/10 rounded-lg p-4 animate-loading bg-gradient-animated bg-[length:200%_200%"
 		initial={{ y: 20 }}
 		animate={{ y: 0 }}
 	>
-		<p className="font-bold text-plug-red">
-			Failed to retrieve option details: {" "}
-			<span className="opacity-80">{action.protocol} </span>
-			<span className="opacity-80">{action.action}</span>
-		</p>
+		<p className="font-bold hidden py-4">.</p>
 	</motion.div>
 
 	if (!parsed) return <motion.div
