@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -8,7 +8,6 @@ import {
 	resolveSentence,
 	setValue,
 	shouldRenderInput,
-	UseCordReturn
 } from "@terminallyonline/cord"
 
 const createStateFromValues = (values: Record<string, string | undefined>) => {
@@ -34,6 +33,19 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		...initialState,
 		values: createStateFromValues(values)
 	}))
+
+	// NOTE: There is a bug right now where: You have two sentences, the first one has values, and you delete it.
+	//       Now, the values that were in the first action are going to be rendered as if they are being used
+	//       for this new sentence, but they are not actually. So, this is here to clear out the values in the
+	//       state when our front-end values change. This does result in a very small delay where the action
+	//       not deleted incorrectly shows the value as having carried over, but then this fires and cleans it up.
+	//		 .
+	//		 I am not sure what is actually causing this and I have spent enough time on it so it is fixed like
+	//		 this for now however it could really do for a proper solve. If you comment this line of code out
+	//		 and then delete an action that has a subsequent action while having values for the inputs you will
+	//		 be able to replicate it and attempt to solve it yourself.
+	//		 - CHANCE
+	useEffect(() => setState(pre => ({ ...pre, values: createStateFromValues(values) })), [values])
 
 	const parsed = useMemo(() => {
 		const result = parseCordSentence(sentence)
@@ -105,9 +117,9 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 					values: newValues,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
-								type: "validation",
-								message: result.error
-							})
+							type: "validation",
+							message: result.error
+						})
 						: new Map([...prev.validationErrors].filter(([k]) => k !== index))
 				}))
 			},

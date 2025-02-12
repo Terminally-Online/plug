@@ -76,10 +76,10 @@ const Part: FC<PartProps> = memo(({
 	handleValue
 }) => {
 	const [searching, , handleDebounce] = useDebounce(
-			search[optionsIndex] ?? "", 
-			250,
-			debounced => handleSearch(debounced, input.index)
-		)
+		search[optionsIndex] ?? "",
+		250,
+		debounced => handleSearch(debounced, input.index)
+	)
 
 	const value = getInputValue(inputIndex)
 	const inputError = getInputError(inputIndex)
@@ -418,7 +418,6 @@ export const Sentence: FC<SentenceProps> = memo(({
 		solver: { actions: solverActions }
 	} = usePlugStore(item, { protocol: action.protocol, action: action.action, search })
 
-
 	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 	const options = actionSchema ? actionSchema.schema[action.action].options : undefined
@@ -547,7 +546,7 @@ export const Sentence: FC<SentenceProps> = memo(({
 
 									return (
 										<Part
-											key={partIndex}
+											key={`${index}-${actionIndex}-${actionIndex}-${partIndex}`}
 											index={index}
 											column={column}
 											frame={frame}
