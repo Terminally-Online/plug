@@ -93,7 +93,7 @@ This performative demonstration highlights an industry-wide tendency to prioriti
 
 My user experience with and light research of these products has led me to wonder what users truly want out of chat interfaces and AI agent interactions? 
 
-Taking a step back and asking myself what benefits I get from using AI and LLMs on a day to day basis may help me understand what users want out of crypto agents.
+Taking a step back and asking myself what benefits I get from using AI and LLMs on a day-to-day basis may help me understand what users want out of crypto agents.
 
 Using LLMs to do work is nice because I can…
 
@@ -114,19 +114,18 @@ But as Chance mentions in [The Glass Box](https://chance.utc24.io/paper/glass-bo
 
 ## Real Utility in AI Agents
 
-To move beyond critiquing current approaches, we need to understand where AI truly adds value. My experience building with AI tools offers some insights into how I belive we might approach this challenge differently.
 
-My frustrations related to AI come from others opining on these tools without usage, so I will take a chance to share my experience using LLMs as a development tool while building Plug. I like to use a Claude project with a system prompt that defines him as Plaude, a software architect, and informs him that we have another teammate named Biblo that writes the actual code. Biblo is a system prompt inside Cursor that properly contextualizes his role as a software developer who works with me and Plaude.
+My frustrations related to AI come from others opining on these tools without usage, so I will take a chance to share my experience using LLMs as a development tool while building Plug. My experience building with AI tools offers insight into the value I derive from pseudo-agentic LLM interactions.
 
-At various points throughout the day (everyday), I interact with Plaude and Biblo and put them in conversation with each other by making them write prompts for each other. It’s messy and emergent but it’s exciting and the outputs have far exceeded my expectations. I use Biblo as a chat partner, a composer (yolo mode), and as a localized code generator.
+I use a Claude project with a system prompt that defines him as Plaude, a software architect, and informs him that we have another teammate named Biblo that writes the actual code. Biblo is a system prompt inside Cursor that properly contextualizes his role as a software developer who works with me and Plaude.
 
-In general, however, I’ve found LLMs most helpful as thought collaborators rather than executors. The value I get from discussing how to solve a problem is greater than asking for a problem to be solved on my behalf.
+At various points throughout the day (everyday), I interact with Plaude and Biblo and put them in conversation with each other by making them write prompts for each other. It’s messy and emergent but it’s exciting and the outputs have far exceeded my expectations. I use Biblo as a chat partner, a composer (yolo mode), and as a localized code generator depending on my needs.
 
 Earlier this month, [Andrej Karpathy](https://x.com/karpathy/status/1886192184808149383) beautifully articulated a feeling that a lot of people have been feeling recently – a type of working flow state wherein you code via prompts.
 
-> *There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding \- I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works.*
-
 ![Andrej Karpathy vibe coding tweet](https://cdn.onplug.io/posts/chat-interfaces/8-vibecoding.png)
+
+> *There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding \- I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works.*
 
 My use of Plaude and Biblo approaches this as certain points, at other times my stack of AI tooling leads to deadends that cause me to dump active changes and restart at the most recent working commit. When you vibe code in Cursor, you get quick feedback from the version of the application running on your local machine. Due to the nature of version control and proliferation of git and GitHub, your changes are often reversible before they make any true impact. Blockchains don’t work like that.
 
@@ -144,7 +143,7 @@ My experience with Plaude and Biblo shows how AI can be a powerful thought partn
 
 When we look at how developers actually use AI tools effectively, a different model emerges \- one of purposeful collaboration rather than autonomous execution. This suggests a more nuanced approach to AI agents in crypto.
 
-## The Multi-Agent Future
+## The Multi-Agent Experience
 
 The future of AI in crypto isn't about building a single omniscient agent \- it's about purposeful collaboration between specialized tools. My experience with AI development tools has shown me that the most powerful results come from putting different models in conversation with each other, each tuned with specific system prompts for their particular role.
 
@@ -170,18 +169,41 @@ The multi-agent approach solves a critical problem: no single AI can be an exper
 
 Yes, we can imagine how these multi-actor systems \*could\* work, how they \*could\* bring us gold on a platter. But the key is designing proper frameworks for agent permissions and collaboration. In my experience, LLMs work best as thought collaborators rather than executors \- and this principle should guide how we build AI systems for crypto.
 
-## The Path Forward
+## The Future of Onchain Agent Infrastructure 
 
-Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value today: purpose-built agents for specific tasks like portfolio rebalancing, memecoin execution, or advisory services. These focused use cases allow us to solve real problems while building toward that bigger vision.
+Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value: purpose-built agents for specific tasks like portfolio rebalancing, memecoin execution, or advisory services. These focused use cases allow us to solve real problems while building toward that bigger vision.
 
 But here's the thing about agents – they're only as capable as the tools they can access. Right now, most crypto AI interfaces can swap and bridge because that's all their underlying infrastructure allows. To do anything more sophisticated, agents need a comprehensive toolkit of transaction instructions and protocol integrations.
 
-This is precisely why we're building Plug the way we are. We're not starting with a chat interface or trying to bolt AI onto existing solutions. Instead, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing generalized intents.
+This is precisely why we're building Plug the way we are. We're not starting with a chat interface, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing and executing generalized intents.
 
-When we integrate a protocol into Plug, we're not just adding another swap option – we're expanding the universe of what's possible for every agent built on top of our infrastructure. Each new integration creates new possibilities for composition, new opportunities for automation, and new tools for agents to leverage.
+When we integrate a protocol into Plug, we're not just adding another swap route – we're expanding the universe of what's possible for every agent built on top of our infrastructure. Each new integration creates new possibilities for composition, new opportunities for automation, and new tools for agents to leverage.
 
 We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto. Because at the end of the day, that's what this space needs – not more demos, but real infrastructure that makes sophisticated onchain activity possible.
 
 
+---
 
+---
+---
 
+# Alternate Ending to replace the last 2 sections:
+
+## Building Agent Infrastructure That Matters 
+
+Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value: purpose-built agents working in concert, each handling specific tasks like portfolio rebalancing, memecoin execution, or advisory services.
+
+As [Geoffrey Litt](https://www.x.com/@geoffreylitt) frames it in [LLMs as Muse, Not Oracle](https://www.geoffreylitt.com/2023/02/26/llm-as-muse-not-oracle):
+
+> **What if we were to think of LLMs not as tools for answering questions, but as tools for *asking* us questions and inspiring our creativity?** Could they serve as on-demand conversation partners for helping us to develop our best thoughts? As a creative *muse*?
+
+This shift in perspective changes everything. An agent that can review my history and assets while considering my long-term goals isn't just executing transactions \- it's helping me make better decisions about my financial future.
+
+This shift in perspective changes everything – instead of autonomous executors, we need collaborative tools that enhance human decision-making.
+But here's the thing about agents – they're only as capable as the tools they can access. Right now, most crypto AI interfaces can swap and bridge because that's all their underlying infrastructure allows. The multi-agent future we envision requires something more robust.
+
+This is precisely why we're building Plug the way we are. We're not starting with a chat interface or a single omniscient agent – we're building the foundational infrastructure that enables meaningful agent collaboration. A robust solver that can compose complex transactions across protocols. A growing library of protocol integrations. A framework for writing and executing generalized intents.
+
+When we integrate a protocol into Plug, we're expanding the universe of what's possible for every agent in the ecosystem. Each integration creates new possibilities for composition and automation. We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto.
+
+Because at the end of the day, that's what this space needs – not more demos, but real infrastructure that makes sophisticated onchain activity possible through purposeful collaboration between specialized tools.
