@@ -1,7 +1,7 @@
 ---
 tags: perspective
 title: The Chat Interface Mirage
-slug: chat-interfces
+slug: chat-interfaces
 image: /cdn/papers/hello-world.png
 description: Command centers for the future built by the terminally online.
 created: 02/11/2025
