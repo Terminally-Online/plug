@@ -146,7 +146,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 										alt={alt ?? ""}
 										width={1920}
 										height={1080}
-										className="mx-auto max-h-[420px] w-full transition-all duration-200"
+										className="mx-auto max-h-[420px] w-full object-contain transition-all duration-200"
 									/>
 								</span>
 							)
