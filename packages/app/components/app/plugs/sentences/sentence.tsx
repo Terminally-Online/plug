@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 
 import { Hash, SearchIcon, X } from "lucide-react"
 
-import { getInputPlaceholder } from "@terminallyonline/cord"
+import { getInputPlaceholder, InputReference } from "@terminallyonline/cord"
 
 import { Frame } from "@/components/app/frames/base"
 import { Search } from "@/components/app/inputs/search"
@@ -12,7 +12,7 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { Action, cn, formatTitle, Options, useCord } from "@/lib"
+import { Action, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
@@ -27,8 +27,9 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	action: Action
 	actionIndex: number,
 	parsed: NonNullable<ReturnType<typeof useCord>['state']['parsed']>,
-	part: string,
-	partIndex: number,
+	input: NonNullable<InputReference>,
+	inputIndex: number,
+	optionsIndex: number,
 	options: Record<string, Options | Record<string, Options>> | undefined,
 	search: Record<number, string | undefined>,
 	getInputValue: ReturnType<typeof useCord>['helpers']['getInputValue'],
@@ -64,8 +65,9 @@ const Part: FC<PartProps> = memo(({
 	action,
 	actionIndex,
 	parsed,
-	part,
-	partIndex,
+	input,
+	inputIndex,
+	optionsIndex,
 	options,
 	search,
 	getInputValue,
@@ -73,20 +75,11 @@ const Part: FC<PartProps> = memo(({
 	handleSearch,
 	handleValue
 }) => {
-	const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
-
-	if (!match)
-		return (
-			<span key={partIndex} className="whitespace-pre">
-				{part}
-			</span>
+	const [searching, , handleDebounce] = useDebounce(
+			search[optionsIndex] ?? "", 
+			250,
+			debounced => handleSearch(debounced, input.index)
 		)
-
-	const inputIndex = parseInt(match[2] || match[1])
-	const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
-	const input = parsed.inputs.find(i => i.index === inputIndex)
-
-	if (!input) return null
 
 	const value = getInputValue(inputIndex)
 	const inputError = getInputError(inputIndex)
@@ -174,9 +167,7 @@ const Part: FC<PartProps> = memo(({
 											tokenIndex
 										}
 										logo={icon}
-										symbol={
-											icon
-										}
+										symbol={icon}
 										className={cn(
 											tokenIndex >
 												0
@@ -278,8 +269,8 @@ const Part: FC<PartProps> = memo(({
 									<Search
 										icon={<SearchIcon size={14} />}
 										placeholder="Search options"
-										search={search[input.index] ?? ""}
-										handleSearch={s => handleSearch(s, input.index)}
+										search={searching ?? ""}
+										handleSearch={handleDebounce}
 										focus
 										clear
 									/>
@@ -309,24 +300,16 @@ const Part: FC<PartProps> = memo(({
 														<div className="flex items-center space-x-2">
 															{option.icon.default
 																.split("%7C")
-																.map(icon =>
-																	decodeURIComponent(
-																		icon
-																	)
-																)
+																.map(icon => decodeURIComponent(icon))
 																.map(
 																	(
 																		icon,
 																		tokenIndex
 																	) => (
 																		<TokenImage
-																			key={
-																				tokenIndex
-																			}
+																			key={tokenIndex}
 																			logo={icon}
-																			symbol={
-																				option.label
-																			}
+																			symbol={option.label}
 																			className={cn(
 																				tokenIndex >
 																					0
@@ -492,15 +475,11 @@ export const Sentence: FC<SentenceProps> = memo(({
 	if (!column) return null
 
 	if (!solverActions || !actionSchema) return <motion.div
-		className="mb-2 border-[1px] border-plug-red rounded-lg p-4"
+		className="h-16 mb-2 border-[1px] border-plug-green/10 rounded-lg p-4 animate-loading bg-gradient-animated bg-[length:200%_200%"
 		initial={{ y: 20 }}
 		animate={{ y: 0 }}
 	>
-		<p className="font-bold text-plug-red">
-			Failed to retrieve option details: {" "}
-			<span className="opacity-80">{action.protocol} </span>
-			<span className="opacity-80">{action.action}</span>
-		</p>
+		<p className="font-bold hidden py-4">.</p>
 	</motion.div>
 
 	if (!parsed) return <motion.div
@@ -550,29 +529,48 @@ export const Sentence: FC<SentenceProps> = memo(({
 							<div className="flex flex-wrap items-center gap-y-1">
 								{!solverActions && <p>Failed to retrieve action schema: {action.protocol}</p>}
 
-								{solverActions && parts.map((part, partIndex) =>
-									<Part
-										key={partIndex}
-										index={index}
-										column={column}
-										frame={frame}
-										own={own}
-										preview={preview}
-										error={error}
-										actionIcon={actionSchema.metadata.icon}
-										action={action}
-										actionIndex={actionIndex}
-										parsed={parsed}
-										part={part}
-										partIndex={partIndex}
-										options={options}
-										getInputValue={getInputValue}
-										getInputError={getInputError}
-										search={search}
-										handleSearch={(s, index) => setSearch(prev => ({ ...prev, [parseInt(String(index))]: s ?? undefined }))}
-										handleValue={handleValue}
-									/>
-								)}
+								{solverActions && parts.map((part, partIndex) => {
+									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
+
+									if (!match)
+										return (
+											<span key={partIndex} className="whitespace-pre">
+												{part}
+											</span>
+										)
+
+									const inputIndex = parseInt(match[2] || match[1])
+									const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
+									const input = parsed.inputs.find(i => i.index === inputIndex)
+
+									if (!input) return null
+
+									return (
+										<Part
+											key={partIndex}
+											index={index}
+											column={column}
+											frame={frame}
+											own={own}
+											preview={preview}
+											error={error}
+											actionIcon={actionSchema.metadata.icon}
+											action={action}
+											actionIndex={actionIndex}
+											parsed={parsed}
+											input={input}
+											inputIndex={inputIndex}
+											optionsIndex={optionsIndex}
+											options={options}
+											getInputValue={getInputValue}
+											getInputError={getInputError}
+											search={search}
+											handleSearch={(s, index) => setSearch(prev => ({ ...prev, [parseInt(String(index))]: s ?? undefined }))}
+											handleValue={handleValue}
+										/>
+
+									)
+								})}
 							</div>
 						</div>
 					</div>
