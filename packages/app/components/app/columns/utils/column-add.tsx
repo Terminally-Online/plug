@@ -83,11 +83,11 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 			description: "View and manage your Plug settings.",
 			icon: <Cog size={14} className="opacity-40" />
 		},
-		socket?.admin && {
+		socket?.admin ? {
 			label: "ADMIN",
 			description: "Manage administrative settings.",
 			icon: <LockIcon size={14} className="opacity-40" />
-		}
+		} : {}
 	]
 
 	const isBody = index != columns.length - 2
@@ -140,7 +140,7 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 									</div>
 
 									<div className="flex flex-col items-start text-left font-bold">
-										<p>{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
+										<p>{formatTitle(option?.label?.replace("_", " ").toLowerCase() ?? "")}</p>
 										<p className="text-sm opacity-40">{option.description}</p>
 									</div>
 								</div>
