@@ -68,28 +68,25 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 				description: "Install Plug as an app on your device.",
 				icon: <Star size={14} className="opacity-40" />
 			})
-		
-		if (socket?.admin) {
-			options.push({
-				label: "ADMIN",
-				description: "Manage administrative settings.",
-				icon: <LockIcon size={14} className="opacity-40" />
-			})
-		}
 
 		return options
-	}, [getFlag, socket])
+	}, [getFlag])
 
 	const isApproved = Boolean(socket?.identity?.approvedAt)
 	if (!isApproved) return null
 
 	const options = [
-		...OPTIONS,
 		...flagOptions,
+		...OPTIONS,
 		{
 			label: "SETTINGS",
 			description: "View and manage your Plug settings.",
 			icon: <Cog size={14} className="opacity-40" />
+		},
+		socket?.admin && {
+			label: "ADMIN",
+			description: "Manage administrative settings.",
+			icon: <LockIcon size={14} className="opacity-40" />
 		}
 	]
 
