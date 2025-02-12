@@ -68,7 +68,9 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 						</p>
 					</div>
 
-					{post.slug in postAnimations && <>{postAnimations[post.slug as keyof typeof postAnimations]}</>}
+					{post.slug in postAnimations && <div className="min-h-[480px] overflow-hidden">
+						{postAnimations[post.slug as keyof typeof postAnimations]}
+					</div>}
 
 					<ReactMarkdown
 						components={{
