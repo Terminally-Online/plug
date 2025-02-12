@@ -9,7 +9,7 @@ import { Image } from "@/components/app/utils/image"
 import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 
@@ -30,10 +30,10 @@ export const TokenFrame: FC<{
 	})
 	const [tooltipData, setTooltipData] = useState<
 		| {
-				timestamp: string
-				price: number
-				start: Array<number>
-		  }
+			timestamp: string
+			price: number
+			start: Array<number>
+		}
 		| undefined
 	>()
 
@@ -121,7 +121,7 @@ export const TokenFrame: FC<{
 				<div
 					className={cn(
 						"ml-auto flex flex-col items-center",
-						change === undefined ? "opacity-60" : change > 0 ? "text-plug-green" : "text-red-500"
+						change === undefined ? "opacity-60" : change >= 0 ? "text-plug-green" : "text-red-500"
 					)}
 				>
 					<div className="ml-auto flex w-max flex-row text-lg font-bold">
@@ -147,19 +147,24 @@ export const TokenFrame: FC<{
 			<div className="flex flex-row gap-2 px-6 pt-4">
 				{token.implementations.some(implementation => implementation.balance) && (
 					<button
-						className="flex w-max items-center justify-center gap-2 rounded-lg border-[1px] px-12 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+						className={cn(
+							"flex items-center justify-center gap-2 rounded-lg border-[1px] px-12 py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90",
+							index === COLUMNS.SIDEBAR_INDEX ? "w-full" : "w-max "
+
+						)}
 						style={{
+							backgroundColor: index === COLUMNS.SIDEBAR_INDEX ? color : "",
 							borderColor: color ?? "",
-							color: color ?? ""
+							color: index === COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
 						}}
 						onClick={() => {
 							handle.transfer(undefined)
 							handle.frame(
-								index === -2 ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
+								index === COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
 							)
 						}}
 					>
-						{index === -2 ? (
+						{index === COLUMNS.SIDEBAR_INDEX ? (
 							<>
 								<ArrowDownFromLine size={14} className="opacity-60" />
 								Deposit
@@ -173,7 +178,7 @@ export const TokenFrame: FC<{
 					</button>
 				)}
 
-				<button
+				{index !== COLUMNS.SIDEBAR_INDEX && <button
 					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 					style={{
 						backgroundColor: color ?? "",
@@ -186,7 +191,7 @@ export const TokenFrame: FC<{
 				>
 					<ArrowRightLeft size={14} className="opacity-60" />
 					Swap
-				</button>
+				</button>}
 			</div>
 
 			<div className="flex flex-col px-6 pb-2 pt-4 font-bold">
