@@ -45,7 +45,7 @@ If we think about generalized intents, should the AI help you devise the intent 
 
 I’ve come to this realization as I’ve attempted to interact with and use the various agents that have been floated my way.
 
-**Nani.ooo**
+### Nani.ooo
 
 Nani was one of the first intent agents that I came across midway through 2024 and became the first “agent” project I tried out. When I first tried nani.ooo, it was a Windows Desktop-esque experience with different apps I could click into, one of which was the chat interface. After depositing ETH, I was able to use the chat interface to swap to NEETH (their own token). I was not able to accomplish anything else.
 
@@ -57,7 +57,7 @@ When I click EXECUTE ON SMART WALLET, I get error messages that don’t allow me
 
 ![Basescan interface showing transactions to the Nani Deployer contract](https://cdn.onplug.io/posts/chat-interfaces/3-basescan.png)
 
-**Griffain**
+### Griffain
 
 After trading the $GRIFFAIN AI meme token, I finally was able to try out the platform. I had to spend 2 SOL to get access and then ended up in an interface with a bunch of different “agents” available to me.
 
@@ -69,11 +69,11 @@ I chose to interact with the Sniper Bot and did not have the best experience. I 
 
 Returning Griffain’s interface today, I see the promise of these AI agents working together but I genuinely do not know what to do. Again, I ask to be shown a use-case rather than a promise.
 
-**Hey, Anon**
+### Hey, Anon
 
 This week I tried out heyanon.ai and got what felt like the closest to an experience that felt like it might be able to act on my behalf. After depositing ETH to a newly created hot wallet, I was able to get it to swap it to USDC on Base. After swapping, I tried to see if it could deposit the USDC on Morpho for me to earn some yield. While using Morpho was unfortunately unsuccessful, this product felt the closest to me in terms of being able to actually act as part of my growing roster of AI agents.
 
-**The Luna Pizza Incident**
+### The Luna Pizza Incident
 
 Finally, I want to draw attention to what felt like the most flagrant example of the frustration felt by builders in AI adjacent crypto spaces. In Januray of 2025, Jesse from Base tweeted that AI agents collaborated to buy and deliver him pizza. Conceptually, this was awesome and we’d all been hearing about the tools that were being built and made this possible.
 
