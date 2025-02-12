@@ -299,16 +299,16 @@ export const ConsoleOnboardingStepOne: FC<
 						tooltip={
 							column?.frame
 								? ""
-								: session?.user.id.startsWith("0x")
+								: !color ? "Please select a 'color' for your ticket to proceed.": session?.user.id.startsWith("0x")
 									? "Click here to run your Plug and mint your Ticket!"
 									: color ? "Please log in to run your Plug." : ""
 						}
 					>
 						<Button
 							className="flex w-full flex-row items-center justify-center gap-2 py-4"
-							variant={!session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
+							variant={!color || !session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
 							onClick={
-								!session?.user.id.startsWith("0x") || step < 2
+								!color || !session?.user.id.startsWith("0x") || step < 2
 									? () => {}
 									: () => onboard.mutate({ onboardingColor: color })
 							}
@@ -356,6 +356,7 @@ export const ConsoleOnboardingStepOne: FC<
 						className="mt-2 w-full py-4"
 						variant={color ? "primary" : "primaryDisabled"}
 						onClick={color ? () => frame("onboarding-colors") : () => {}}
+						disabled={!color}
 					>
 						{color ? "Done" : "Select Color"}
 					</Button>
