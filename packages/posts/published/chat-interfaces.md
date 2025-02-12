@@ -106,7 +106,7 @@ While software products with buttons communicate where the boundaries are, chat 
 
 But as Chance mentions in [The Glass Box](https://chance.utc24.io/paper/glass-box/) piece…
 
-> *These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience.*
+>*These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience.*
 
 ## Real Utility in AI Agents
 
