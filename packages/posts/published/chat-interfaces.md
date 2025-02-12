@@ -181,12 +181,6 @@ When we integrate a protocol into Plug, we're not just adding another swap route
 
 We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto. Because at the end of the day, that's what this space needs – not more demos, but real infrastructure that makes sophisticated onchain activity possible.
 
-
----
-
----
----
-
 # Alternate Ending to replace the last 2 sections:
 
 ## Building Agent Infrastructure That Matters 
