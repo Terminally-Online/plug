@@ -144,9 +144,8 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 										alt={alt ?? ""}
 										width={1920}
 										height={1080}
-										className="mx-auto max-h-[420px] w-full grayscale transition-all duration-200 group-hover:grayscale-0"
+										className="mx-auto max-h-[420px] w-full transition-all duration-200"
 									/>
-									<span className="absolute inset-0 bg-plug-yellow mix-blend-multiply transition-opacity duration-200 group-hover:opacity-0" />
 								</span>
 							)
 						}}
