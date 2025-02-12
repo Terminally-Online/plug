@@ -1,12 +1,15 @@
 ---
 tags: perspective
-title: The Chat Interface Mirage
+title: Why We Aren't Building Chat Interfaces
 slug: chat-interfces
-image: /cdn/papers/hello-world.png
-description: Command centers for the future built by the terminally online.
+image: /cdn/papers/chat-interfaces.png
+description: Hello can you please send 5 USDC to danner.eth?
 created: 02/11/2025
 author: drake
 ---
+
+## The Chat Interface Mirage
+
 
 I can't go a week without someone sending me a new crypto agent chat interface.
 
