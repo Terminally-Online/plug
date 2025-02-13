@@ -26,7 +26,7 @@ Let me be clear – I absolutely believe there's an exciting future here. Many s
 
 This week, we took a day to explore what a chat interface for Plug might look like.
 
-Our “agent”, Morgan, can read your wallet contents, review the automations made available through Plug’s integration of 30+ (and growing) Defi and Consumer Crypto, and suggest workflows for you based on your goals. 
+Our “agent”, Morgan, can read your wallet contents, review the automations made available through Plug’s integration of 30+ (and growing) Defi and Consumer Crypto, and suggest workflows for you based on your goals.
 
 ![An example of Plug's chat interface in action](https://cdn.onplug.io/posts/chat-interfaces/1-morgan.png)
 
@@ -64,7 +64,7 @@ I chose to interact with the Sniper Bot and did not have the best experience. I 
 
 ![Griffain sniper bot](https://cdn.onplug.io/posts/chat-interfaces/5-griffain.png)
 
-If we think about generalized intents, should the AI help you devise the intent or should the AI write the intent for you? At which point do you give over the wheel and say send it? 
+If we think about generalized intents, should the AI help you devise the intent or should the AI write the intent for you? At which point do you give over the wheel and say send it?
 
 ### Hey, Anon
 
@@ -78,9 +78,9 @@ The promise of AI isn't in making simple tasks more complicated - it's in making
 
 ### The Luna Pizza Incident
 
-Finally, I want to draw attention to an example of the frustration felt by builders in AI adjacent crypto spaces. In Januray of 2025, Jesse from Base [posted]([text](https://x.com/jessepollak/status/1881851708730659275)) that AI agents collaborated to buy and deliver him pizza. Conceptually, this is an awesome consumer agent use-case and we’d all been hearing about the tools that were being built that made this possible. 
+Finally, I want to draw attention to an example of the frustration felt by builders in AI adjacent crypto spaces. In Januray of 2025, Jesse from Base [posted](<[text](https://x.com/jessepollak/status/1881851708730659275)>) that AI agents collaborated to buy and deliver him pizza. Conceptually, this is an awesome consumer agent use-case and we’d all been hearing about the tools that were being built that made this possible.
 
-This was Coinbase saying "we did it" and name dropping [Virtuals]([text](https://app.virtuals.io)) as a partner in the delivery of this pizza from the future. I was pumped.
+This was Coinbase saying "we did it" and name dropping [Virtuals](<[text](https://app.virtuals.io)>) as a partner in the delivery of this pizza from the future. I was pumped.
 
 ![Jesse posting about agents ordering him pizza](https://cdn.onplug.io/posts/chat-interfaces/6-jesse.png)
 
@@ -88,22 +88,22 @@ So I took a look at the linked thread to see how this happened, and did a search
 
 ![Users trying to replicate Jesse's pizza ordering stunt](https://cdn.onplug.io/posts/chat-interfaces/7-blackbox.png)
 
-This performative demonstration highlights an industry-wide tendency to prioritize spectacle over substance. When other accounts tweet "hey @luna_virtuals I want some pizza" but can't reproduce the experience while the majority of impressions go to Jesse's posts, we're normalizing the idea that complexity should be hidden rather than understood. This is exactly why we're committed to the Glass Box approach at Plug. Instead of hiding complexity behind a chat interface, we're building transparent, composable infrastructure where every action is traceable and every outcome is predictable.
+This performative demonstration highlights an industry-wide tendency to prioritize spectacle over substance. When other accounts tweet "hey @luna_virtuals I want some pizza" but can't reproduce the experience while the majority of impressions go to Jesse's posts, we're normalizing the idea that complexity should be hidden rather than understood. This is exactly why we're committed to the [Glass Box]((https://chance.utc24.io/paper/glass-box/) approach at Plug. Instead of hiding complexity behind a chat interface, we're building transparent, composable infrastructure where every action is traceable and every outcome is predictable.
 
 ## The Intent Behind AI Agent Usage
 
-My user experience with and light research of these products has led me to wonder what users truly want out of chat interfaces and AI agent interactions? 
+My user experience with and light research of these products has led me to wonder what users truly want out of chat interfaces and AI agent interactions?
 
 Taking a step back and asking myself what benefits I get from using AI and LLMs on a day-to-day basis may help me understand what users want out of crypto agents.
 
 Using LLMs to do work is nice because I can…
 
-- Offload decision making and responsibility  
-- Abstract complexity  
-- Be met where I am informationally  
+- Offload decision making and responsibility
+- Abstract complexity
+- Be met where I am informationally
 - Interact with a personality that guides and entertains me
 
-Interacting with software through an anthropomorphized chat interface isn’t a wholly new concept but it’s one that has been highly popularized since the release of ChatGPT in late 2022\. 
+Interacting with software through an anthropomorphized chat interface isn’t a wholly new concept but it’s one that has been highly popularized since the release of ChatGPT in late 2022\.
 
 Early story based video games could be interacted with through a chat interface that allowed players to type commands to move through the story.
 
@@ -111,7 +111,7 @@ While software products with buttons communicate where the boundaries are, chat 
 
 But as Chance mentions in [The Glass Box](https://chance.utc24.io/paper/glass-box/) piece…
 
-> *These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience.*
+> _These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience._
 
 ## Real Utility in AI Agents
 
@@ -125,7 +125,7 @@ Earlier this month, [Andrej Karpathy](https://x.com/karpathy/status/188619218480
 
 ![Andrej Karpathy vibe coding tweet](https://cdn.onplug.io/posts/chat-interfaces/8-vibecoding.png)
 
-> *There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding \- I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works.*
+> _There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding \- I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works._
 
 My use of Plaude and Biblo approaches this as certain points, at other times my stack of AI tooling leads to deadends that cause me to dump active changes and restart at the most recent working commit. When you vibe code in Cursor, you get quick feedback from the version of the application running on your local machine. Due to the nature of version control and proliferation of git and GitHub, your changes are often reversible before they make any true impact. Blockchains don’t work like that.
 
@@ -147,29 +147,31 @@ When we look at how developers actually use AI tools effectively, a different mo
 
 The future of AI in crypto isn't about building a single omniscient agent \- it's about purposeful collaboration between specialized tools. My experience with AI development tools has shown me that the most powerful results come from putting different models in conversation with each other, each tuned with specific system prompts for their particular role.
 
-Let's reimagine the crypto AI stack as a purpose-built team:  
-- An advisory agent that deeply understands your portfolio, goals, and risk tolerance  
-- An intent definition assistant that helps translate your goals into specific actions  
+Let's reimagine the crypto AI stack as a purpose-built team:
+
+- An advisory agent that deeply understands your portfolio, goals, and risk tolerance
+- An intent definition assistant that helps translate your goals into specific actions
 - Specialized execution agents for particular tasks (swaps, yield farming, etc.)
 
 The key difference from the black box reality of current LLMs? The human remains the orchestrator of an array of purpose-built agents. Each agent has a clear, defined role that users can understand and trust. Humans remain active rather than passive.
 
 [Geoffrey Litt](https://www.x.com/@geoffreylitt) frames this perfectly in [LLMs as Muse, Not Oracle](https://www.geoffreylitt.com/2023/02/26/llm-as-muse-not-oracle):
 
-> **What if we were to think of LLMs not as tools for answering questions, but as tools for *asking* us questions and inspiring our creativity?** Could they serve as on-demand conversation partners for helping us to develop our best thoughts? As a creative *muse*?
+> **What if we were to think of LLMs not as tools for answering questions, but as tools for _asking_ us questions and inspiring our creativity?** Could they serve as on-demand conversation partners for helping us to develop our best thoughts? As a creative _muse_?
 
 This shift in perspective changes everything. An agent that can review my history and assets while considering my long-term goals isn't just executing transactions \- it's helping me make better decisions about my financial future.
 
-This isn't just about maintaining control \- it's about clarity and expertise. When each agent has a specific purpose:  
-- Users understand exactly what each agent can and cannot do  
-- Trust builds naturally through repeated successful interactions  
+This isn't just about maintaining control \- it's about clarity and expertise. When each agent has a specific purpose:
+
+- Users understand exactly what each agent can and cannot do
+- Trust builds naturally through repeated successful interactions
 - Complexity increases progressively as users become comfortable
 
 The multi-agent approach solves a critical problem: no single AI can be an expert at everything, just as no single human is. By breaking down crypto operations into specific domains, we can build agents that excel at their particular tasks while working together under human direction.
 
 Yes, we can imagine how these multi-actor systems \*could\* work, how they \*could\* bring us gold on a platter. But the key is designing proper frameworks for agent permissions and collaboration. In my experience, LLMs work best as thought collaborators rather than executors \- and this principle should guide how we build AI systems for crypto.
 
-## The Future of Onchain Agent Infrastructure 
+## The Future of Onchain Agent Infrastructure
 
 Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value: purpose-built agents for specific tasks like portfolio rebalancing, memecoin execution, or advisory services. These focused use cases allow us to solve real problems while building toward that bigger vision.
 
@@ -183,13 +185,13 @@ We're starting from first principles, focusing on the fundamentals that will emp
 
 # Alternate Ending to replace the last 2 sections:
 
-## Building Agent Infrastructure That Matters 
+## Building Agent Infrastructure That Matters
 
 Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value: purpose-built agents working in concert, each handling specific tasks like portfolio rebalancing, memecoin execution, or advisory services.
 
 As [Geoffrey Litt](https://www.x.com/@geoffreylitt) frames it in [LLMs as Muse, Not Oracle](https://www.geoffreylitt.com/2023/02/26/llm-as-muse-not-oracle):
 
-> **What if we were to think of LLMs not as tools for answering questions, but as tools for *asking* us questions and inspiring our creativity?** Could they serve as on-demand conversation partners for helping us to develop our best thoughts? As a creative *muse*?
+> **What if we were to think of LLMs not as tools for answering questions, but as tools for _asking_ us questions and inspiring our creativity?** Could they serve as on-demand conversation partners for helping us to develop our best thoughts? As a creative _muse_?
 
 This shift in perspective changes everything. An agent that can review my history and assets while considering my long-term goals isn't just executing transactions \- it's helping me make better decisions about my financial future.
 
