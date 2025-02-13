@@ -179,14 +179,11 @@ Despite my criticisms, I remain deeply optimistic about the future of AI agents 
 
 But here's the thing about agents – they're only as capable as the tools they can access. Right now, most crypto AI interfaces can swap and bridge because that's all their underlying infrastructure allows. To do anything more sophisticated, agents need a comprehensive toolkit of transaction instructions and protocol integrations.
 
-// why do peopple like AI?
-// it helps them do things
-// but they lack tools right now
-// so we are building tools for ai
-
 This is one of the many groundbreaking things Plug enables. We're not starting with a chat interface, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing and executing generalized intents.
 
 When we integrate a protocol into Plug, we're not just adding another swap route – we're expanding the universe of what's possible for every agent built on top of our infrastructure. Each new integration creates new possibilities for composition, new opportunities for automation, and new tools for agents to leverage.
+
+After asking myself why people like AI, I realized that they like it because it helps them do things. But AI lacks tools right now. So we are building tools for AI. It's that simple.
 
 We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto. Because at the end of the day, that's what this space needs – not more demos, but real infrastructure that makes sophisticated onchain activity possible.
 
@@ -208,5 +205,7 @@ But here's the thing about agents – they're only as capable as the tools they 
 This is precisely why we're building Plug the way we are. We're not starting with a chat interface or a single omniscient agent – we're building the foundational infrastructure that enables meaningful agent collaboration. A robust solver that can compose complex transactions across protocols. A growing library of protocol integrations. A framework for writing and executing generalized intents.
 
 When we integrate a protocol into Plug, we're expanding the universe of what's possible for every agent in the ecosystem. Each integration creates new possibilities for composition and automation. We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto.
+
+After asking myself why people like AI, I realized that they like it because it helps them do things. But AI lacks tools right now. So we are building tools for AI. It's that simple.
 
 Because at the end of the day, that's what this space needs – not more demos, but real infrastructure that makes sophisticated onchain activity possible through purposeful collaboration between specialized tools.
