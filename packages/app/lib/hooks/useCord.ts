@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -34,18 +34,13 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		values: createStateFromValues(values)
 	}))
 
-	// NOTE: There is a bug right now where: You have two sentences, the first one has values, and you delete it.
-	//       Now, the values that were in the first action are going to be rendered as if they are being used
-	//       for this new sentence, but they are not actually. So, this is here to clear out the values in the
-	//       state when our front-end values change. This does result in a very small delay where the action
-	//       not deleted incorrectly shows the value as having carried over, but then this fires and cleans it up.
-	//		 .
-	//		 I am not sure what is actually causing this and I have spent enough time on it so it is fixed like
-	//		 this for now however it could really do for a proper solve. If you comment this line of code out
-	//		 and then delete an action that has a subsequent action while having values for the inputs you will
-	//		 be able to replicate it and attempt to solve it yourself.
-	//		 - CHANCE
-	useEffect(() => setState(pre => ({ ...pre, values: createStateFromValues(values) })), [values])
+	// TODO: We need to figure out a way to reset the state when the sentence/action is changed
+	//       as right now there is a bug that results in actions taking on the values of others
+	//       when a preceeding action with input values is deleted.
+	// NOTE: I think the most proper solution to this would be to add a "id" field to each action
+	//       so that we can have a proper key system because then we could just reset the state
+	//       any time the key changes. A simple useEffect clear will result in the frames
+	//       breaking because you are now stuck inside an infinite rendering loop.
 
 	const parsed = useMemo(() => {
 		const result = parseCordSentence(sentence)
