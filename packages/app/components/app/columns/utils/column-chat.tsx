@@ -11,7 +11,7 @@ import { api } from "@/server/client"
 import { Search } from "../../inputs/search"
 
 interface Message {
-	text: string
+	message: string
 	isSent: boolean
 }
 
@@ -27,37 +27,38 @@ const TypingIndicator = () => {
 	)
 }
 
-const DEFAULT_MESSAGES = [
-	"Help me open an Aave V3 position",
-	"What can I do with my tokens?",
+const DEFAULT_TEXT = "👋 Hey, I'm Morgan. I can answer nearly any question about anything you see here in Plug.\n\nMy knowledge may be limited."
+const DEFAULT_MESSAGE = { message: DEFAULT_TEXT, isSent: false }
+
+const QUICK_MESSAGES = [
+	"What can I do with the tokens I hold?",
+	"What is the best place to earn yield?",
 	"What can I do with Plug?"
 ]
 
 export const ColumnChat = ({ index }: { index: number }) => {
+	const [messages, setMessages] = useState<Message[]>([DEFAULT_MESSAGE])
 	const [message, setMessage] = useState("")
-	const [messages, setMessages] = useState<Message[]>(() => [
-		{
-			text: "👋 Hey, I'm Morgan. I can answer nearly any question about anything you see here in Plug.\n\nMy knowledge may be limited.",
-			isSent: false
-		}
-	])
+
 	const [isTyping, setIsTyping] = useState(false)
 	const [activeTools, setActiveTools] = useState<string[]>([])
 
 	const chat = api.biblo.chat.message.useMutation()
 
-	const handleSubmit = async (sent: string) => {
-		if (!sent.trim()) return
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault()
 
-		setMessages(prev => [...prev, { text: sent, isSent: true }])
+		if (!message.trim()) return
+
+		setMessages(prev => [...prev, { message: message, isSent: true }])
 		setIsTyping(true)
 		setMessage("")
 
 		try {
 			const response = await chat.mutateAsync({
-				message: sent,
+				message: message,
 				history: messages.slice(-20).map(msg => ({
-					content: msg.text,
+					content: msg.message,
 					role: msg.isSent ? "user" : "assistant"
 				}))
 			})
@@ -68,22 +69,15 @@ export const ColumnChat = ({ index }: { index: number }) => {
 
 			const fullResponse = [response.reply, ...response.additionalMessages].join("\n\n")
 
-			setMessages(prev => [...prev, { text: fullResponse, isSent: false }])
+			setMessages(prev => [...prev, { message: fullResponse, isSent: false }])
 		} catch (error: any) {
-			console.error("Detailed Error:", {
-				error,
-				cause: error.cause,
-				data: error.data,
-				shape: error.shape
-			})
-
 			const errorMessage = error.shape?.message || error.message || "Unknown error occurred"
 			const errorCode = error.shape?.code || error.code
 
 			setMessages(prev => [
 				...prev,
 				{
-					text: `Error Code ${errorCode}: ${errorMessage}`,
+					message: `Error Code ${errorCode}: ${errorMessage}`,
 					isSent: false
 				}
 			])
@@ -119,7 +113,7 @@ export const ColumnChat = ({ index }: { index: number }) => {
 										p: ({ children }) => <p className="">{children}</p>
 									}}
 								>
-									{msg.text}
+									{msg.message}
 								</Markdown>
 							</div>
 						</div>
@@ -132,7 +126,7 @@ export const ColumnChat = ({ index }: { index: number }) => {
 							<Button
 								className="ml-auto flex flex-row gap-2 group-hover:hidden"
 								variant="secondary"
-								onClick={() => {}}
+								onClick={() => { }}
 								sizing="sm"
 							>
 								<Counter count={activeTools.length} /> Tools Used
@@ -144,7 +138,7 @@ export const ColumnChat = ({ index }: { index: number }) => {
 										className="w-max"
 										variant="secondary"
 										sizing="sm"
-										onClick={() => {}}
+										onClick={() => { }}
 									>
 										{formatTitle(tool)}
 									</Button>
@@ -154,12 +148,12 @@ export const ColumnChat = ({ index }: { index: number }) => {
 					)}
 
 					<div className="flex flex-row gap-2 overflow-x-scroll">
-						{DEFAULT_MESSAGES.map((msg, index) => (
+						{QUICK_MESSAGES.map((msg, index) => (
 							<Button
 								key={index}
 								className="w-max"
 								variant="secondary"
-								onClick={() => handleSubmit(msg)}
+								onClick={handleSubmit}
 								sizing="sm"
 							>
 								<span className="opacity-60">&quot;</span>
@@ -169,22 +163,15 @@ export const ColumnChat = ({ index }: { index: number }) => {
 						))}
 					</div>
 
-					<Search
-						icon={<SearchIcon size={16} />}
-						search={message}
-						handleSearch={message => setMessage(message)}
-						placeholder="Type a message..."
-						className="message-input"
-						onKeyDown={(e: React.KeyboardEvent) => {
-							if (e.key === "Enter" && !e.shiftKey) {
-								e.preventDefault()
-								handleSubmit(message)
-							}
-						}}
-					/>
-					<Button className="w-full py-4" type="submit" onClick={() => handleSubmit(message)}>
-						Send
-					</Button>
+					<form onSubmit={handleSubmit}>
+						<Search
+							icon={<SearchIcon size={16} />}
+							search={message}
+							handleSearch={message => setMessage(message)}
+							placeholder="Type a message..."
+						/>
+						<Button className="w-full py-4" onClick={handleSubmit}>Send</Button>
+					</form>
 				</div>
 			</div>
 		</>
