@@ -36,7 +36,7 @@ const QUICK_MESSAGES = [
 	"What can I do with Plug?"
 ]
 
-export const ColumnChat = ({ index }: { index: number }) => {
+export const ColumnChat = ({ }: { index: number }) => {
 	const [messages, setMessages] = useState<Message[]>([DEFAULT_MESSAGE])
 	const [message, setMessage] = useState("")
 
@@ -163,7 +163,7 @@ export const ColumnChat = ({ index }: { index: number }) => {
 						))}
 					</div>
 
-					<form onSubmit={handleSubmit}>
+					<form onSubmit={handleSubmit} className="flex flex-col gap-2">
 						<Search
 							icon={<SearchIcon size={16} />}
 							search={message}
