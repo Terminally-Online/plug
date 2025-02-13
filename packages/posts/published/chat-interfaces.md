@@ -18,21 +18,19 @@ Just tell an AI what you want, and it handles all the complexity of crypto for y
 
 But here's my challenge: Show me an agent that does something other than swap or bridge. Show me a chat interface for transaction definition that actually works. Because right now, we're swimming in demos and pitch decks while the hard problems remain unsolved.
 
-Today's products present to me as proof of concept ideas that will likely lead to real outcomes but no one has shown me anything to convince me these are real other than high valuations and ample podcast appearances
+Today's products present to me as proof of concept ideas that will likely lead to real outcomes but no one has shown me anything to convince me these are real other than high valuations and ample podcast appearances.
 
-Let me be clear – I absolutely believe there's an exciting future here. Many societal markers point towards a future with AI agents that transact on behalf of humans using crypto: users believe in this future, investors believe in this future enough to fund it, builders are attempting to create this future, etc.
+Let me be clear – I absolutely believe there's an exciting future here. Many societal markers point towards a future with systems that transact on behalf of humans using crypto: users believe in this future, investors believe in this future enough to fund it, builders are attempting to create this future, etc.
 
 ![Crypto investments by venture capitalists in 2024 grew primarily in Generative AI compared to 2023](https://cdn.onplug.io/posts/chat-interfaces/0-investments.png)
 
 This week, we took a day to explore what a chat interface for Plug might look like.
 
-Our “agent” can read your wallet contents, review the automations made available through Plug’s integration of 30+ (and growing) Defi and Consumer Crypto, and suggest workflows for you based on your goals. 
+Our “agent”, Morgan, can read your wallet contents, review the automations made available through Plug’s integration of 30+ (and growing) Defi and Consumer Crypto, and suggest workflows for you based on your goals. 
 
 ![An example of Plug's chat interface in action](https://cdn.onplug.io/posts/chat-interfaces/1-morgan.png)
 
-We won’t be shipping this product any time soon.
-
-The truth is that neither technology nor the world appear ready for this reality.
+We won’t be shipping this product any time soon, though. The truth is that neither technology nor the world appear ready for this reality.
 
 After spending hours testing every crypto AI agent I can get my hands on, I've come to a realization: we're asking the wrong questions about what AI should do in crypto.
 
@@ -54,9 +52,11 @@ When I click EXECUTE ON SMART WALLET, I get error messages that don’t allow me
 
 ![Basescan interface showing transactions to the Nani Deployer contract](https://cdn.onplug.io/posts/chat-interfaces/3-basescan.png)
 
+My experience ended here.
+
 ### Griffain
 
-After trading the $GRIFFAIN AI meme token, I finally was able to try out the platform. I had to spend 2 SOL to get access and then ended up in an interface with a bunch of different “agents” available to me.
+After trading the $GRIFFAIN AI memecoin, I finally was able to try out the platform. I had to spend 2 SOL to get access and then ended up in an interface with a bunch of different “agents” available to me.
 
 ![Griffain agent marketplace](https://cdn.onplug.io/posts/chat-interfaces/4-griffain.png)
 
@@ -72,13 +72,15 @@ This week I tried out heyanon.ai and got what felt like the closest to an experi
 
 ## The Chat Interface Paradox
 
-Here's what really sends me though: Using a chat interface to write financial transaction instructions isn't just inefficient - it's technological regression. We've moved from command line interfaces to graphical UIs because they're more efficient, only to circle back to essentially typing commands in natural language? It's like replacing your banking app with a local bank branch.
+Here's what really sends me though: Using a chat interface to write financial transaction instructions isn't just inefficient - it's technological regression. We've moved from command line interfaces to graphical UIs because they're more efficient, only to circle back to essentially typing commands in natural language? It's like replacing your banking app with a local bank branch in GitHub.
 
 The promise of AI isn't in making simple tasks more complicated - it's in making complex tasks more approachable. Yet current crypto chat interfaces often add unnecessary steps to straightforward operations while failing to meaningfully handle complex ones.
 
 ### The Luna Pizza Incident
 
-Finally, I want to draw attention to an example of the frustration felt by builders in AI adjacent crypto spaces. In Januray of 2025, Jesse from Base [posted]([text](https://x.com/jessepollak/status/1881851708730659275)) that AI agents collaborated to buy and deliver him pizza. Conceptually, this is an awesome consumer agent use-case and we’d all been hearing about the tools that were being built and made this possible. This was Coinbase saying "we did it" and name dropping [Virtuals]([text](https://app.virtuals.io)) as a partner in the delivery of this pizza from the future. I was pumped.
+Finally, I want to draw attention to an example of the frustration felt by builders in AI adjacent crypto spaces. In Januray of 2025, Jesse from Base [posted]([text](https://x.com/jessepollak/status/1881851708730659275)) that AI agents collaborated to buy and deliver him pizza. Conceptually, this is an awesome consumer agent use-case and we’d all been hearing about the tools that were being built that made this possible. 
+
+This was Coinbase saying "we did it" and name dropping [Virtuals]([text](https://app.virtuals.io)) as a partner in the delivery of this pizza from the future. I was pumped.
 
 ![Jesse posting about agents ordering him pizza](https://cdn.onplug.io/posts/chat-interfaces/6-jesse.png)
 
@@ -87,7 +89,6 @@ So I took a look at the linked thread to see how this happened, and did a search
 ![Users trying to replicate Jesse's pizza ordering stunt](https://cdn.onplug.io/posts/chat-interfaces/7-blackbox.png)
 
 This performative demonstration highlights an industry-wide tendency to prioritize spectacle over substance. When other accounts tweet "hey @luna_virtuals I want some pizza" but can't reproduce the experience while the majority of impressions go to Jesse's posts, we're normalizing the idea that complexity should be hidden rather than understood. This is exactly why we're committed to the Glass Box approach at Plug. Instead of hiding complexity behind a chat interface, we're building transparent, composable infrastructure where every action is traceable and every outcome is predictable.
-
 
 ## The Intent Behind AI Agent Usage
 
@@ -113,7 +114,6 @@ But as Chance mentions in [The Glass Box](https://chance.utc24.io/paper/glass-bo
 > *These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience.*
 
 ## Real Utility in AI Agents
-
 
 My frustrations related to AI come from others opining on these tools without usage, so I will take a chance to share my experience using LLMs as a development tool while building Plug. My experience building with AI tools offers insight into the value I derive from pseudo-agentic LLM interactions.
 
@@ -175,7 +175,7 @@ Despite my criticisms, I remain deeply optimistic about the future of AI agents 
 
 But here's the thing about agents – they're only as capable as the tools they can access. Right now, most crypto AI interfaces can swap and bridge because that's all their underlying infrastructure allows. To do anything more sophisticated, agents need a comprehensive toolkit of transaction instructions and protocol integrations.
 
-This is precisely why we're building Plug the way we are. We're not starting with a chat interface, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing and executing generalized intents.
+This is one of the many groundbreaking things Plug enables. We're not starting with a chat interface, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing and executing generalized intents.
 
 When we integrate a protocol into Plug, we're not just adding another swap route – we're expanding the universe of what's possible for every agent built on top of our infrastructure. Each new integration creates new possibilities for composition, new opportunities for automation, and new tools for agents to leverage.
 
