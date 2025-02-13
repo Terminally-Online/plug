@@ -10,6 +10,7 @@ import {
 	useChainId,
 	UseConnectReturnType,
 	useConnect as useConnectWagmi,
+	useSendTransaction,
 	useSignMessage,
 	UseSignMessageReturnType
 } from "wagmi"
@@ -55,6 +56,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const chainId = useChainId()
 	const account = useAccount()
 	const sign = useSignMessage()
+
 	const { disconnect } = useDisconnect()
 
 	const { handle } = useColumnStore()

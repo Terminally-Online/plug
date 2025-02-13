@@ -18,7 +18,7 @@ type Transaction struct {
 	To    common.Address `json:"to"`
 	Data  []byte         `json:"data"`
 	Value *big.Int       `json:"value"`
-	Gas   *big.Int       `json:"gas"`
+	Gas   *big.Int       `json:"gas,omitempty"`
 }
 
 type EIP712Domain struct {

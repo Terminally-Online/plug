@@ -93,7 +93,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const meta = useMemo(() => {
 		if (!transaction.data) return null
 
-		return transaction.data.plug.plugs[transaction.data.plug.plugs.length - 1].meta
+		return transaction.data.transactions[transaction.data.plug.plugs.length - 1].meta
 	}, [transaction.data])
 
 	const isReady =
