@@ -223,7 +223,7 @@ export const RunFrame: FC<{
 							</span>
 						</p>
 
-						{supportedChains.length !== 1 && (
+						{/* supportedChains.length !== 1 && (
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Globe size={18} className="opacity-20" />
@@ -237,7 +237,7 @@ export const RunFrame: FC<{
 									))}
 								</span>
 							</p>
-						)}
+						) */}
 
 						{chain && (
 							<p className="flex flex-row justify-between font-bold">
