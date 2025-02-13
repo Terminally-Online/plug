@@ -92,6 +92,8 @@ This performative demonstration highlights an industry-wide tendency to prioriti
 
 ## The Intent Behind AI Agent Usage
 
+// Question: Why Do People Like AI?
+
 My user experience with and light research of these products has led me to wonder what users truly want out of chat interfaces and AI agent interactions?
 
 Taking a step back and asking myself what benefits I get from using AI and LLMs on a day-to-day basis may help me understand what users want out of crypto agents.
@@ -176,6 +178,11 @@ Yes, we can imagine how these multi-actor systems \*could\* work, how they \*cou
 Despite my criticisms, I remain deeply optimistic about the future of AI agents in crypto. The key is understanding where they can actually provide value: purpose-built agents for specific tasks like portfolio rebalancing, memecoin execution, or advisory services. These focused use cases allow us to solve real problems while building toward that bigger vision.
 
 But here's the thing about agents – they're only as capable as the tools they can access. Right now, most crypto AI interfaces can swap and bridge because that's all their underlying infrastructure allows. To do anything more sophisticated, agents need a comprehensive toolkit of transaction instructions and protocol integrations.
+
+// why do peopple like AI?
+// it helps them do things
+// but they lack tools right now
+// so we are building tools for ai
 
 This is one of the many groundbreaking things Plug enables. We're not starting with a chat interface, we're building the foundational infrastructure that future agents will need: a robust solver that can compose complex transactions across protocols, a growing library of protocol integrations, and a framework for writing and executing generalized intents.
 
