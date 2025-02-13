@@ -121,6 +121,8 @@ My frustrations related to AI come from others opining on these tools without us
 
 I use a Claude project with a system prompt that defines him as Plaude, a software architect, and informs him that we have another teammate named Biblo that writes the actual code. Biblo is a system prompt inside Cursor that properly contextualizes his role as a software developer who works with me and Plaude.
 
+// use names that are more relatable like sonnet and cursor
+
 At various points throughout the day (everyday), I interact with Plaude and Biblo and put them in conversation with each other by making them write prompts for each other. It’s messy and emergent but it’s exciting and the outputs have far exceeded my expectations. I use Biblo as a chat partner, a composer (yolo mode), and as a localized code generator depending on my needs.
 
 Earlier this month, [Andrej Karpathy](https://x.com/karpathy/status/1886192184808149383) beautifully articulated a feeling that a lot of people have been feeling recently – a type of working flow state wherein you code via prompts.
