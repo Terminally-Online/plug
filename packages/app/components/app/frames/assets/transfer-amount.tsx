@@ -1,17 +1,19 @@
-import Image from "next/image"
-import { FC, useCallback, useMemo, useRef, useState } from "react"
+import { FC, useCallback, useRef, useState } from "react"
 
-import { CircleDollarSign, Waypoints } from "lucide-react"
+import { CircleDollarSign } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains, cn, formatTitle, getChainId, getChainName } from "@/lib"
-import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS } from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
+import { useSocket } from "@/state/authentication"
+import { getAddress } from "viem"
+import { useSendTransaction } from "wagmi"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -129,13 +131,7 @@ const ImplementationComponent: FC<{
 					<div className="flex flex-col items-center">
 						<p className="mr-auto font-bold">{formatTitle(token.symbol)}</p>
 						<div className="relative flex flex-row items-center gap-2">
-							<Image
-								className="h-4 w-4 rounded-full"
-								src={chains[getChainId(implementation.chain)].logo}
-								alt=""
-								width={24}
-								height={24}
-							/>
+							<ChainImage chainId={getChainId(implementation.chain)} size="xs" />
 							<p className="flex flex-row text-sm font-bold text-black/40">
 								<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 							</p>
@@ -161,8 +157,8 @@ const ImplementationComponent: FC<{
 						>
 							<Counter
 								count={
-									Number(column?.transfer?.precise).toLocaleString("en-US", {
-										maximumFractionDigits: 40
+									Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
+										maximumFractionDigits: 18
 									}) ?? "0"
 								}
 							/>
@@ -211,10 +207,58 @@ export const TransferAmountFrame: FC<{
 }> = ({ index, token, color, textColor }) => {
 	const { isFrame, column, handle } = useColumnStore(
 		index,
-		index === -2 ? `${token?.symbol}-transfer-deposit` : `${token?.symbol}-transfer-amount`
+		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}` 
+	)
+	const { socket } = useSocket()
+	const { sendTransaction } = useSendTransaction()
+
+	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0
+	const from = socket
+		? index === COLUMNS.SIDEBAR_INDEX
+			? getAddress(socket.id)
+			: getAddress(socket.socketAddress)
+		: ""
+	const recipient = column && socket
+		? index === COLUMNS.SIDEBAR_INDEX
+			? getAddress(socket.socketAddress)
+			: column.transfer?.recipient
+				? getAddress(column.transfer?.recipient)
+				: ""
+		: ""
+	// TODO: This is just hard-coded to base for now. It should support having multiple
+	//       chains in the same execution at once.
+	const implementation = token?.implementations.find(implementation => implementation.chain === "base")
+	const { data: intent } = api.solver.actions.intent.useQuery(
+		{
+			chainId: getChainId("base"),
+			from,
+			inputs: [
+				{
+					protocol: "plug",
+					action: "transfer",
+					amount: `${column?.transfer?.precise ?? 0}`,
+					token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
+					recipient
+				}
+			]
+		},
+		{
+			enabled: isFrame && isReady && !!column && !!socket && !!implementation
+		}
 	)
 
-	const isReady = useMemo(() => token && column && parseFloat(column?.transfer?.precise ?? "0") > 0, [token, column])
+	const handleTransfer = useCallback(async () => {
+		if (!intent || intent.transactions.length === 0) return
+
+		const transfer = intent.transactions[0]
+		const transaction = {
+			to: transfer.to,
+			data: transfer.data,
+			value: transfer.value
+		}
+
+		sendTransaction(transaction)
+	}, [intent, sendTransaction])
 
 	if (!token || !column) return null
 
@@ -286,19 +330,6 @@ export const TransferAmountFrame: FC<{
 								<div className="h-[2px] w-full bg-plug-green/10" />
 							</div>
 
-							{token.implementations[0].chain && (
-								<p className="flex flex-row justify-between font-bold">
-									<span className="flex w-max flex-row items-center gap-4">
-										<Waypoints size={18} className="opacity-20" />
-										<span className="opacity-40">Chain</span>
-									</span>{" "}
-									<span className="flex flex-row items-center gap-2 font-bold">
-										<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
-										{getChainName(getChainId(token.implementations[0].chain))}
-									</span>
-								</p>
-							)}
-
 							<p className="flex flex-row justify-between font-bold">
 								<span className="flex w-full flex-row items-center gap-4">
 									<CircleDollarSign size={18} className="opacity-20" />
@@ -309,7 +340,7 @@ export const TransferAmountFrame: FC<{
 										<Counter count={0.00011} /> ETH
 									</span>
 									<span className="ml-2 flex flex-row items-center">
-										$<Counter count={0.049} />
+										$<Counter count={4.99} />
 									</span>
 								</span>
 							</p>
@@ -328,8 +359,9 @@ export const TransferAmountFrame: FC<{
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
 							disabled={isReady === false}
+							onClick={isReady ? handleTransfer : () => { }}
 						>
-							{isReady ? (index === -2 ? "Deposit" : "Send") : "Enter Amount"}
+							{isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>

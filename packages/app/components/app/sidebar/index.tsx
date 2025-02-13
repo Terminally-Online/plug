@@ -252,8 +252,6 @@ export const ConsoleSidebar = () => {
 					)}
 				</div>
 			</div>
-
-			<ConsoleSidebarPane />
 		</div>
 	)
 }

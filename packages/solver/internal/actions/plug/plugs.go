@@ -27,20 +27,35 @@ type SwapInputs struct {
 
 func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string `json:"token"`     // Address of the token to transfer.
-		Recipient string `json:"recipient"` // Address of the recipient.
-		Amount    string `json:"amount"`    // Raw amount of tokens to transfer.
+		Token     string `json:"token"`
+		Recipient string `json:"recipient"`
+		Amount    string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
 	}
 
-	if common.HexToAddress(inputs.Token) == utils.NativeTokenAddress {
-		amount, err := utils.StringToUint(inputs.Amount, 18)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert native transfer amount to uint: %w", err)
-		}
+	parts := strings.Split(inputs.Token, ":")
+	token := common.HexToAddress(parts[0])
+	decimals, err := strconv.ParseUint(parts[1], 10, 8)
+	if err != nil {
+		return nil, err
+	}
+	standard, err := strconv.ParseUint(parts[2], 10, 64)
+	if err != nil {
+		return nil, err
+	}
 
+	amount, err := utils.StringToUint(inputs.Amount, uint8(decimals))
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
+	}
+
+	if standard != 20 {
+		return nil, utils.ErrNotImplemented("transfer support for 721 and 1155 are not yet implemented")
+	}
+
+	if token == utils.NativeTokenAddress {
 		transaction := ethtypes.NewTransaction(
 			0,
 			common.HexToAddress(inputs.Recipient),
@@ -59,16 +74,6 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("ERC20")
-	}
-
-	decimals, err := getERC20Decimals(params.ChainId, inputs.Token)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	amount, err := utils.StringToUint(inputs.Amount, *decimals)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert transfer amount to uint: %w", err)
 	}
 
 	calldata, err := erc20Abi.Pack("transfer",
@@ -413,10 +418,10 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 
 func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string `json:"token"`     
-		Address   string `json:"address"`   
-		Operator  int    `json:"operator"`  
-		Threshold string `json:"threshold"` 
+		Token     string `json:"token"`
+		Address   string `json:"address"`
+		Operator  int    `json:"operator"`
+		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)

@@ -9,7 +9,7 @@ import (
 )
 
 type SimulationRequest struct {
-	ExecutionId string           `json:"id"`
+	ExecutionId string           `json:"id,omitempty"`
 	ChainId     uint64           `json:"chainId"`
 	From        common.Address   `json:"from"`
 	To          common.Address   `json:"to"`

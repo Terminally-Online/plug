@@ -13,6 +13,7 @@ export const DesktopConsole = memo(() => {
 	return (
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
+
 			{session?.user.id.startsWith("0x") && socket?.identity?.onboardingAt ? (
 				<ConsoleColumnRow />
 			) : (

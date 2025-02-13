@@ -60,4 +60,8 @@ var (
 	ErrChainId = func(field string, value uint64) ServerError {
 		return ServerError{Field: field, Message: fmt.Sprintf("%d is not a valid chainId", value)}
 	}
+
+	ErrNotImplemented = func(message string) ServerError { 
+		return ServerError{Message: message }
+	}
 )

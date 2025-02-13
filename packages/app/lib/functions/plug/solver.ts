@@ -53,7 +53,11 @@ export const intent = async (input: {
 		[key: string]: string | number
 	}>
 }) => {
-	const response = await axios.post(`${env.SOLVER_URL}/solver`, input)
+	const response = await axios.post(`${env.SOLVER_URL}/solver`, input, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 

@@ -49,7 +49,7 @@ func (req *IntentRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	chainId := r.URL.Query().Get("chainId")
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
@@ -192,7 +192,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 	var req IntentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -234,6 +234,12 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type IntentResponse struct {
+		Transactions []signature.Plug              `json:"transactions"`
+		Plug         simulation.SimulationRequest  `json:"plug,omitempty"`
+		Simulation   simulation.SimulationResponse `json:"simulation,omitempty"`
+	}
+
 	message, err := h.Solver.GetPlugs(req.ChainId, req.From, transactionsBatch)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
@@ -246,15 +252,10 @@ func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type IntentResponse struct {
-		Message     signature.LivePlugs           `json:"message"`
-		Transaction simulation.SimulationRequest  `json:"transaction"`
-		Simulation  simulation.SimulationResponse `json:"simulation"`
-	}
 	response := IntentResponse{
-		Message:     *message,
-		Transaction: simulationRequest,
-		Simulation:  simulationResponse,
+		Transactions: transactionsBatch,
+		Plug:         simulationRequest,
+		Simulation:   simulationResponse,
 	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
