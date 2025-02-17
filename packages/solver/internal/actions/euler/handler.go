@@ -12,19 +12,25 @@ var (
 
 	chains = []*references.Network{references.Mainnet, references.Base}
 
-	ActionEarn              = "earn"
-	ActionDepositCollateral = "supply"
-	ActionWithdraw          = "withdraw"
-	ActionBorrow            = "borrow"
-	ActionRepay             = "repay"
-	ConstraintAPY           = "apy"
-	ConstraintHealthFactor  = "health_factor"
-	ConstraintTimeToLiq     = "time_to_liquidation"
+	ActionEarn               = "earn"
+	ActionWithdraw           = "withdraw"
+	ActionDepositCollateral  = "supply"
+	ActionWithdrawCollateral = "withdraw_collateral"
+	ActionBorrow             = "borrow"
+	ActionRepay              = "repay"
+	ConstraintAPY            = "apy"
+	ConstraintHealthFactor   = "health_factor"
+	ConstraintTimeToLiq      = "time_to_liquidation"
 
 	schemas = map[string]actions.ActionDefinition{
 		ActionEarn: {
-			Sentence:       "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
+			Sentence:       "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
 			Handler:        HandleEarn,
+			IsUserSpecific: true,
+		},
+		ActionWithdraw: {
+			Sentence:       "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}.",
+			Handler:        HandleWithdraw,
 			IsUserSpecific: true,
 		},
 		ActionDepositCollateral: {
@@ -32,9 +38,9 @@ var (
 			Handler:        HandleDepositCollateral,
 			IsUserSpecific: true,
 		},
-		ActionWithdraw: {
+		ActionWithdrawCollateral: {
 			Sentence:       "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}.",
-			Handler:        HandleWithdraw,
+			Handler:        HandleWithdrawCollateral,
 			IsUserSpecific: true,
 		},
 		ActionBorrow: {

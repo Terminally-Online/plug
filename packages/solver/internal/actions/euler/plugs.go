@@ -19,10 +19,9 @@ import (
 
 func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount          string `json:"amount"`
-		Token           string `json:"token"`
-		Vault           string `json:"vault"`
-		SubAccountIndex uint8  `json:"sub-account"`
+		Amount string `json:"amount"`
+		Token  string `json:"token"`
+		Vault  string `json:"vault"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %v", err)
@@ -53,11 +52,9 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, utils.ErrABI("Erc20")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
-
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault, // Who is the operator here, the evc or the vault?
+		vault.Vault,
 		amount,
 	)
 	if err != nil {
@@ -67,7 +64,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		subAccountAddress,
+		common.HexToAddress(params.From),
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -75,7 +72,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCall, err := WrapEVCCall(
 		params.ChainId,
 		vault.Vault,
-		subAccountAddress,
+		common.HexToAddress(params.From),
 		big.NewInt(0),
 		depositCalldata,
 	)
@@ -87,6 +84,38 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		To:   *token,
 		Data: approveCalldata,
 	}, depositCall}, nil
+}
+
+// I believe this is exactly the same as WithdrawCollateral, but I don't want to rope it in with the other handler with a default sub account index of 0 in case there is some difference I'm not aware of yet. On the options side, this one does not have a sub account index option to remove complexity around earn deposits not being indexed in a contract like borrow and lending positions.
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Amount string `json:"amount"`
+		Token  string `json:"token"`
+		Vault  string `json:"vault"`
+	}
+
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
+	}
+
+	collateralInputs := struct {
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
+	}{
+		Amount:          inputs.Amount,
+		Token:           inputs.Token,
+		Vault:           inputs.Vault,
+		SubAccountIndex: 0,
+	}
+
+	collateralRawInputs, err := json.Marshal(collateralInputs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal collateral inputs: %w", err)
+	}
+
+	return HandleWithdrawCollateral(collateralRawInputs, params)
 }
 
 func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -122,7 +151,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault, // Who is the operator here, the evc or the vault?
+		vault.Vault,
 		amount,
 	)
 	if err != nil {
@@ -187,7 +216,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 	}, depositCall, enableCollateralCall}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -239,7 +268,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		calldata,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to wrap withdraw call: %w", err)
+		return nil, fmt.Errorf("failed to wrap withdraw collateral call: %w", err)
 	}
 
 	return []signature.Plug{call}, nil
