@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"math/big"
 	"net/http"
 	"os"
@@ -56,18 +55,15 @@ func (s *Simulator) GetNext() (SimulationDefinitions, error) {
 func (s *Simulator) GetSimulationRequest(
 	executionId string, chainId uint64, plugs signature.LivePlugs,
 ) (*SimulationRequest, error) {
-	log.Println("getting the abi")
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
 	}
-	log.Printf("packing the object with plugs: %+v", plugs)
 
 	plugCalldata, err := routerAbi.Pack("plug", plugs)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
-	log.Println("building the object")
 	return &SimulationRequest{
 		ExecutionId: executionId,
 		ChainId:     chainId,
@@ -84,19 +80,16 @@ func (s *Simulator) GetSimulationResponse(
 ) (
 	*SimulationRequest, *SimulationResponse, error,
 ) {
-	log.Println("in simulation response")
 	simulationRequest, err := s.GetSimulationRequest(executionId, chainId, plugs)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	log.Println("simulating")
 	simulationResponse, err := s.Simulate(simulationRequest)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	log.Println("returning")
 	return simulationRequest, simulationResponse, nil
 }
 
