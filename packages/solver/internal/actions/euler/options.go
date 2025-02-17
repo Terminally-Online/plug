@@ -2,6 +2,7 @@ package euler
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"solver/bindings/euler_account_lens"
 	"solver/bindings/euler_vault_lens"
@@ -365,7 +366,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, decimals)
 					borrowedValue := utils.UintToFloat(failedVault.vaultAccountInfo.Borrowed, decimals)
-					netValue := (assetValue - borrowedValue) * price.price
+					netValue := (assetValue - borrowedValue) * price.price * math.Pow10(int(decimals))
 					fmt.Printf("Failed vault - Converted values: AssetValue: %v, BorrowedValue: %v, NetValue: %v\n",
 						assetValue,
 						borrowedValue,
