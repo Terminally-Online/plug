@@ -32,7 +32,7 @@ type Plug struct {
 	To        common.Address `json:"to"`
 	Data      []byte         `json:"data"`
 	Value     *big.Int       `json:"value"`
-	Gas       *big.Int       `json:"gas"`
+	Gas       *big.Int       `json:"gas,omitempty"`
 	Exclusive bool           `json:"exclusive,omitempty"`
 	Meta      interface{}    `json:"meta,omitempty"`
 }

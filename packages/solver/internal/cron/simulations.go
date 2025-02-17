@@ -3,6 +3,7 @@ package cron
 import (
 	"log"
 	"solver/internal/solver"
+	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 )
 
@@ -21,18 +22,18 @@ func Simulations(s solver.Solver) {
 
 	var simulationResponses []simulation.SimulationResponse
 	for _, definition := range next.Result.Data.Json {
-		transactions, err := s.GetTransactions(definition)
+		plugs, err := s.GetPlugs(definition)
 		if err != nil {
 			log.Println(err.Error())
 		}
-		plugs, err := s.GetPlugs(definition.ChainId, definition.From, transactions)
+		livePlugs, err := signature.GetLivePlugs(definition.ChainId, definition.From, plugs)
 		if err != nil {
 			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
 				Success: false,
 			})
 			continue
 		}
-		_, simulationResponse, err := s.Simulator.GetSimulationResponse(definition.Id, definition.ChainId, plugs)
+		_, simulationResponse, err := s.Simulator.GetSimulationResponse(definition.Id, definition.ChainId, livePlugs)
 		if err != nil {
 			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
 				Success: false,
