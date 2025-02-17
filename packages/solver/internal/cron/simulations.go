@@ -14,25 +14,25 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	executions, err := s.GetExecutions()
+	next, err := s.Simulator.GetNext()
 	if err != nil {
 		return
 	}
 
 	var simulationResponses []simulation.SimulationResponse
-	for _, execution := range executions.Result.Data.Json {
-		transactions, err := s.GetTransactions(execution)
+	for _, definition := range next.Result.Data.Json {
+		transactions, err := s.GetTransactions(definition)
 		if err != nil {
 			log.Println(err.Error())
 		}
-		plugs, err := s.GetPlugs(execution.ChainId, execution.From, transactions)
+		plugs, err := s.GetPlugs(definition.ChainId, definition.From, transactions)
 		if err != nil {
 			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
 				Success: false,
 			})
 			continue
 		}
-		_, simulationResponse, err := s.GetSimulation(execution.Id, execution.ChainId, plugs)
+		_, simulationResponse, err := s.Simulator.GetSimulationResponse(definition.Id, definition.ChainId, plugs)
 		if err != nil {
 			simulationResponses = append(simulationResponses, simulation.SimulationResponse{
 				Success: false,
@@ -46,7 +46,7 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	if err := s.PostSimulations(simulationResponses); err != nil {
+	if err := s.Simulator.PostSimulations(simulationResponses); err != nil {
 		log.Println(err.Error())
 	}
 }
