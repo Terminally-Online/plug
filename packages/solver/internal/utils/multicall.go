@@ -101,12 +101,3 @@ func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []M
 
 	return results, nil
 }
-
-// Pow10 returns 10^n
-func Pow10(n int) int64 {
-	result := int64(1)
-	for i := 0; i < n; i++ {
-		result *= 10
-	}
-	return result
-}

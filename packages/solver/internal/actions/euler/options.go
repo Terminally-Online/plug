@@ -266,43 +266,33 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		}
 
 		options := make([]actions.Option, 0)
-		// Create a map to store options by index to maintain order
 		optionsByIndex := make(map[int]actions.Option)
 
 		consecutiveEmptyAccounts := 0
-		var firstEmptyAccount *actions.Option
+		maxIndex := -1
+		var activeIndices []int
 
-		// We want to search through the results and only stop when we find 3 consecutive empty accounts to account for times when the user had a position in an earlier account but withdrew it while the later ones still have it
+		// First pass - collect all active accounts
 		for i, result := range results {
 			accountInfo := result.(*struct {
 				VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
 			})
-			subAccountAddress := GetSubAccountAddress(address, uint8(i))
 
 			if len(accountInfo.VaultAccountInfo) == 0 {
 				consecutiveEmptyAccounts++
 				if consecutiveEmptyAccounts >= 3 {
 					break
 				}
-
-				if firstEmptyAccount == nil {
-					firstEmptyAccount = &actions.Option{
-						Label: fmt.Sprintf("Account #%d", i+1),
-						Name:  utils.FormatAddress(subAccountAddress),
-						Value: fmt.Sprintf("%d", i),
-						Info: actions.OptionInfo{
-							Label: "No Asset Defined",
-							Value: "$0.00",
-						},
-						Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
-					}
-				}
 				continue
 			}
 
 			consecutiveEmptyAccounts = 0
+			activeIndices = append(activeIndices, i)
+			maxIndex = i
 
-			// Collect vaults that need price info
+			// Process active account
+			subAccountAddress := GetSubAccountAddress(address, uint8(i))
+
 			type VaultWithAccount struct {
 				vaultAccountInfo  euler_account_lens.VaultAccountInfo
 				accountIndex      int
@@ -338,11 +328,9 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				}
 			}
 
-			// If we have failed vaults, handle them in batch
+			// Process failed vaults
 			if len(failedVaults) > 0 {
-				// Process results and create options
 				for _, failedVault := range failedVaults {
-					// Skip if we already have a successful vault for this index
 					if _, exists := optionsByIndex[failedVault.accountIndex]; exists {
 						continue
 					}
@@ -353,24 +341,9 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 						continue
 					}
 
-					// For failed vaults, we need to:
-					// 1. Convert assets to float using vault's asset decimals
-					// 2. Convert borrowed to float using vault's asset decimals
-					// 3. Calculate net value using the price
 					decimals := uint8(price.vault.AssetDecimals.Uint64())
-					fmt.Printf("Failed vault - Raw values: Assets: %v, Borrowed: %v, Decimals: %v, Price: %v\n",
-						failedVault.vaultAccountInfo.Assets,
-						failedVault.vaultAccountInfo.Borrowed,
-						decimals,
-						price.price)
-
 					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, decimals)
-					borrowedValue := utils.UintToFloat(failedVault.vaultAccountInfo.Borrowed, decimals)
-					netValue := (assetValue - borrowedValue) * price.price * math.Pow10(int(decimals))
-					fmt.Printf("Failed vault - Converted values: AssetValue: %v, BorrowedValue: %v, NetValue: %v\n",
-						assetValue,
-						borrowedValue,
-						netValue)
+					netValue := assetValue * price.price * math.Pow10(int(decimals))
 
 					optionsByIndex[failedVault.accountIndex] = actions.Option{
 						Label: fmt.Sprintf("Account #%d", failedVault.accountIndex+1),
@@ -388,25 +361,45 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			}
 		}
 
-		fmt.Printf("optionsByIndex: %v\n", optionsByIndex)
+		// Second pass - add empty accounts between active accounts
+		for i := 0; i < len(activeIndices)-1; i++ {
+			current := activeIndices[i]
+			next := activeIndices[i+1]
 
-		// Convert map to slice in order
-		maxIndex := -1
-		for index := range optionsByIndex {
-			if index > maxIndex {
-				maxIndex = index
+			// Add empty accounts between active accounts
+			for j := current + 1; j < next; j++ {
+				optionsByIndex[j] = actions.Option{
+					Label: fmt.Sprintf("Account #%d", j+1),
+					Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(j))),
+					Value: fmt.Sprintf("%d", j),
+					Info: actions.OptionInfo{
+						Label: "No Asset Defined",
+						Value: "$0.00",
+					},
+					Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
+				}
 			}
 		}
 
+		// Convert map to slice in order
 		for i := 0; i <= maxIndex; i++ {
 			if option, exists := optionsByIndex[i]; exists {
 				options = append(options, option)
 			}
 		}
 
-		if firstEmptyAccount != nil {
-			options = append(options, *firstEmptyAccount)
-		}
+		// Add a new empty account at the end
+		nextIndex := maxIndex + 1
+		options = append(options, actions.Option{
+			Label: fmt.Sprintf("Account #%d", nextIndex+1),
+			Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(nextIndex))),
+			Value: fmt.Sprintf("%d", nextIndex),
+			Info: actions.OptionInfo{
+				Label: "No Asset Defined",
+				Value: "$0.00",
+			},
+			Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
+		})
 
 		return options, nil
 	})
