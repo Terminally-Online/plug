@@ -10,6 +10,7 @@ import (
 	"os"
 	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -154,7 +155,7 @@ func (s *Simulator) PostSimulations(simulations []SimulationResponse) error {
 func (s *Simulator) Simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := utils.GetProviderUrl(req.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
 	if err != nil {
 		return nil, err
 	}

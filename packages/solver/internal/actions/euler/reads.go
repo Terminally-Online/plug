@@ -7,14 +7,14 @@ import (
 	"solver/bindings/euler_utils_lens"
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/bindings/references"
-	"solver/internal/utils"
+	"solver/internal/client"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error) {
-	provider, err := utils.GetProvider(chainId)
+	provider, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -38,11 +38,9 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error)
 	}
 
 	vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
-
-	// Prepare multicall inputs
-	calls := make([]utils.MulticallCalldata, len(vaultAddresses))
+	calls := make([]client.MulticallCalldata, len(vaultAddresses))
 	for i, vaultAddr := range vaultAddresses {
-		calls[i] = utils.MulticallCalldata{
+		calls[i] = client.MulticallCalldata{
 			Target:     vaultLensAddr,
 			Method:     "getVaultInfoFull",
 			Args:       []interface{}{vaultAddr},
@@ -50,9 +48,7 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error)
 			OutputType: &euler_vault_lens.VaultInfoFull{},
 		}
 	}
-
-	multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-	results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+	results, err := provider.Multicall(calls)
 	if err != nil {
 		return nil, fmt.Errorf("multicall failed: %w", err)
 	}
@@ -79,7 +75,7 @@ func GetVault(address string, chainId uint64) (euler_vault_lens.VaultInfoFull, e
 }
 
 func GetVaultApy(address string, chainId uint64) (borrowApy *big.Int, supplyApy *big.Int, err error) {
-	provider, err := utils.GetProvider(chainId)
+	client, err := client.New(chainId)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -91,7 +87,7 @@ func GetVaultApy(address string, chainId uint64) (borrowApy *big.Int, supplyApy 
 
 	utilsLens, err := euler_utils_lens.NewEulerUtilsLens(
 		common.HexToAddress(references.Networks[chainId].References["euler"]["utils_lens"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, nil, err

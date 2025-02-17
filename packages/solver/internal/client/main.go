@@ -1,30 +1,42 @@
-package utils
+package client
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"math/big"
-
 	"solver/bindings/multicall_primary"
+	"solver/internal/bindings/references"
+	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-type MulticallCalldata struct {
-	Target     common.Address
-	Method     string
-	Args       []interface{}
-	ABI        *abi.ABI
-	OutputType interface{}
+type Client struct {
+	chainId uint64
+	*ethclient.Client
 }
 
-func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []MulticallCalldata) ([]interface{}, error) {
-	provider, err := GetProvider(chainId)
+func New(chainId uint64) (*Client, error) {
+	rpcUrl, err := GetQuicknodeUrl(chainId)
 	if err != nil {
 		return nil, err
+	}
+
+	ethClient, err := ethclient.Dial(rpcUrl)
+	if err != nil {
+		return nil, utils.ErrEthClient(err.Error())
+	}
+
+	return &Client{chainId: chainId, Client: ethClient}, nil
+}
+
+func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
+	multicallAddress := common.HexToAddress(references.Networks[c.chainId].References["multicall"]["primary"])
+	if multicallAddress == (common.Address{}) {
+		return nil, fmt.Errorf("multicall not found for chain id: %d", c.chainId)
 	}
 
 	multicallCalls := make([]multicall_primary.Multicall3Call, len(calls))
@@ -42,7 +54,7 @@ func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []M
 
 	multicallAbi, err := multicall_primary.MulticallPrimaryMetaData.GetAbi()
 	if err != nil {
-		return nil, ErrABI("Multicall")
+		return nil, utils.ErrABI("Multicall")
 	}
 
 	input, err := multicallAbi.Pack("aggregate", multicallCalls)
@@ -55,7 +67,7 @@ func ExecuteMulticall(chainId uint64, multicallAddress common.Address, calls []M
 		Data: input,
 	}
 
-	output, err := provider.CallContract(context.Background(), msg, nil)
+	output, err := c.CallContract(context.Background(), msg, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make multicall: %w", err)
 	}

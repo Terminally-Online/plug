@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
@@ -44,61 +42,8 @@ var (
 	}
 )
 
-func GetChainName(chainId uint64) string {
-	switch chainId {
-	case 1:
-		return "mainnet"
-	case 8453:
-		return "base"
-	case 10:
-		return "optimism-sepolia"
-	case 31337:
-		return "localhost"
-	default:
-		return "base"
-	}
-}
 
-func GetProviderUrl(chainId uint64) (string, error) {
-	if chainId == 31337 {
-		return "http://127.0.0.1:8545", nil
-	}
 
-	quicknodeApiName := os.Getenv("QUICKNODE_API_NAME")
-	quicknodeApiKey := os.Getenv("QUICKNODE_API_KEY")
-
-	var chain string
-	switch chainId {
-	case 1:
-		chain = ""
-	case 8453:
-		chain = "base-mainnet."
-	case 84532:
-		chain = "base-sepolia."
-	case 10:
-		chain = "optimism."
-	case 11155420:
-		chain = "optimism-sepolia."
-	default:
-		return "", ErrChainId("chainId", chainId)
-	}
-
-	return fmt.Sprintf("https://%v.%vquiknode.pro/%v", quicknodeApiName, chain, quicknodeApiKey), nil
-}
-
-func GetProvider(chainId uint64) (*ethclient.Client, error) {
-	rpcUrl, err := GetProviderUrl(chainId)
-	if err != nil {
-		return nil, err
-	}
-
-	ethClient, err := ethclient.Dial(rpcUrl)
-	if err != nil {
-		return nil, ErrEthClient(err.Error())
-	}
-
-	return ethClient, nil
-}
 
 func BuildCallOpts(address string, value *big.Int) *bind.CallOpts {
 	return &bind.CallOpts{

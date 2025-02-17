@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type HandlerParams struct {
-	Provider *ethclient.Client
+	Client *client.Client
 	ChainId  uint64
 	From     string
 }

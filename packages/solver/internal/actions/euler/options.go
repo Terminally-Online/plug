@@ -7,6 +7,7 @@ import (
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/utils"
 	"strings"
 	"time"
@@ -246,10 +247,10 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		var nextVault *actions.Option
 
-		calls := make([]utils.MulticallCalldata, 256)
+		calls := make([]client.MulticallCalldata, 256)
 		for i := 0; i < 256; i++ {
 			subAccountAddress := GetSubAccountAddress(address, uint8(i))
-			calls[i] = utils.MulticallCalldata{
+			calls[i] = client.MulticallCalldata{
 				Target: accountLensAddr,
 				Method: "getAccountEnabledVaultsInfo",
 				Args:   []interface{}{evcAddr, subAccountAddress},
@@ -260,8 +261,11 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			}
 		}
 
-		multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-		results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+		client, err := client.New(chainId)
+		if err != nil {
+			return nil, fmt.Errorf("multicall failed: %w", err)
+		}
+		results, err := client.Multicall(calls)
 		if err != nil {
 			return nil, fmt.Errorf("multicall failed: %w", err)
 		}
@@ -275,7 +279,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			if len(accountInfo.VaultAccountInfo) == 0 {
 				options = append(options, actions.Option{
-					Label: fmt.Sprintf("Account %d", i + 1),
+					Label: fmt.Sprintf("Account %d", i+1),
 					Name:  utils.FormatAddress(subAccountAddress),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
@@ -290,7 +294,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			// TODO: This seems wrong in general because we have a for loop for the 256 calls. Then, each account may contain a set of vaults.
 			//       Right now, an option is added for each vault. So if an account has multiple vaults, a user had multiple assets in some of
 			//       those vaults, we would have more than 256 options? I am not understanding something here.
-			//		 . 
+			//		 .
 			//       Shouldn't we be returning one option for each account, not vault? Why are we adding options likes this?
 			//       - CHANCE
 
@@ -303,7 +307,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 				netValue := utils.UintToFloat(new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue), 18)
 				accountOption := actions.Option{
-					Label: fmt.Sprintf("Account #%d", i + 1),
+					Label: fmt.Sprintf("Account #%d", i+1),
 					Name:  utils.FormatAddress(vault.Account),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{

@@ -10,6 +10,7 @@ import (
 	"solver/bindings/euler_evc"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -445,14 +446,14 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %w", err)
+		return nil, fmt.Errorf("failed to get client: %w", err)
 	}
 
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account lens: %w", err)
@@ -520,14 +521,14 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %w", err)
+		return nil, fmt.Errorf("failed to get client: %w", err)
 	}
 
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account lens: %w", err)

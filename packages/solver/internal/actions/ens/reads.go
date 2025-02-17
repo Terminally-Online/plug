@@ -8,7 +8,7 @@ import (
 	"solver/bindings/ens_base_registrar"
 	"solver/bindings/ens_registrar_controller"
 	"solver/internal/bindings/references"
-	"solver/internal/utils"
+	"solver/internal/client"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -23,14 +23,14 @@ func GetName(name string) (*string, error) {
 }
 
 func GetRentPrice(chainId uint64, name string, duration *big.Int) (*ens_registrar_controller.IPriceOraclePrice, error) {
-	provider, err := utils.GetProvider(chainId)
+	client, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
 
 	// TODO: What is this address doing hardcoded here? ENS integration has so many issues
 	//       in it right now that need to be handled before pushing it into production.
-	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress("0x253553366Da8546fC250F225fe3d25d0C782303b"), provider)
+	registrar, err := ens_registrar_controller.NewEnsRegistrarController(common.HexToAddress("0x253553366Da8546fC250F225fe3d25d0C782303b"), client)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func GetRentPrice(chainId uint64, name string, duration *big.Int) (*ens_registra
 
 // GetNameExpiry returns the unix timestamp at which an ENS name registration expires
 func GetNameExpiry(chainId uint64, name string) (*big.Int, error) {
-	provider, err := utils.GetProvider(chainId)
+	client, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func GetNameExpiry(chainId uint64, name string) (*big.Int, error) {
 	// Create contract instance for BaseRegistrar
 	baseRegistrar, err := ens_base_registrar.NewEnsBaseRegistrar( // Update constructor name
 		common.HexToAddress(references.Mainnet.References["ens"]["base_registrar"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err

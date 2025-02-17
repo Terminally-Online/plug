@@ -9,6 +9,7 @@ import (
 	"solver/bindings/nouns_token"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -28,13 +29,13 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to convert big amount to uint: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -75,13 +76,13 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to convert percent to uint: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -130,13 +131,13 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, fmt.Errorf("trait type and trait must be provided")
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -148,7 +149,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	}
 	nounsToken, err := nouns_token.NewNounsToken(
 		common.HexToAddress(references.Mainnet.References["nouns"]["token"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -161,7 +162,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 
 	art, err := nouns_art.NewNounsArt(
 		common.HexToAddress(references.Mainnet.References["nouns"]["art"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -217,13 +218,13 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 		return nil, err
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
@@ -263,13 +264,13 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, fmt.Errorf("min must be less than max")
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, err
