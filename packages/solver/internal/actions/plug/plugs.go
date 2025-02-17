@@ -10,6 +10,7 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/llama"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -337,7 +338,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
 
 	if strings.EqualFold(inputs.Token, wethAddress) {
-		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)
+		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Client)
 		if err != nil {
 			return nil, utils.ErrContract(wethAddress)
 		}
@@ -354,7 +355,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}
 
 	if common.HexToAddress(inputs.Token) == utils.NativeTokenAddress {
-		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Provider)
+		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Client)
 		if err != nil {
 			return nil, utils.ErrContract(wethAddress)
 		}
@@ -437,12 +438,12 @@ func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	erc20Contract, err := erc_20.NewErc20(*token, provider)
+	erc20Contract, err := erc_20.NewErc20(*token, client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
 	}

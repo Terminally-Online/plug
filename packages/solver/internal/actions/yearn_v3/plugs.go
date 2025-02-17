@@ -11,6 +11,7 @@ import (
 	"solver/bindings/yearn_v3_gauge"
 	"solver/bindings/yearn_v3_pool"
 	"solver/internal/actions"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -227,12 +228,12 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("staking not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	erc20Contract, err := erc_20.NewErc20(*token, provider)
+	erc20Contract, err := erc_20.NewErc20(*token, client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
 	}
@@ -306,12 +307,12 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("redeem not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), provider)
+	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
@@ -371,12 +372,12 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, fmt.Errorf("redeem not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
 		return nil, err
 	}
 
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), provider)
+	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}

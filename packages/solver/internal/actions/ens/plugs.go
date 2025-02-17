@@ -9,6 +9,7 @@ import (
 	"solver/bindings/ens_registrar_controller"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
@@ -21,8 +22,8 @@ var (
 
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Name     string   `json:"name"`
-		MaxPrice string   `json:"maxPrice"`
+		Name     string `json:"name"`
+		MaxPrice string `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
@@ -38,13 +39,13 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
+	client, err := client.New(params.ChainId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %v", err)
+		return nil, fmt.Errorf("failed to get client: %v", err)
 	}
 	registrar, err := ens_registrar_controller.NewEnsRegistrarController(
 		common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
-		provider,
+		client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get registrar: %v", err)

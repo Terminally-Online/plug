@@ -13,6 +13,7 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
+	"solver/internal/client"
 	"solver/internal/solver/call"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
@@ -57,13 +58,13 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
 
-	provider, err := utils.GetProvider(chainId)
+	client, err := client.New(chainId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %v", err)
+		return nil, fmt.Errorf("failed to get client: %v", err)
 	}
 
 	params := actions.HandlerParams{
-		Provider: provider,
+		Client: client,
 		ChainId:  chainId,
 		From:     from,
 	}
