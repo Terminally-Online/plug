@@ -240,7 +240,7 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 		Simulation   simulation.SimulationResponse `json:"simulation,omitempty"`
 	}
 
-	message, err := h.Solver.GetPlugs(req.ChainId, req.From, transactionsBatch)
+	message, err := signature.GetLivePlugs(req.ChainId, req.From, transactionsBatch)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return

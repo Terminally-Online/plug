@@ -53,7 +53,7 @@ func (s *Simulator) GetNext() (SimulationDefinitions, error) {
 }
 
 func (s *Simulator) GetSimulationRequest(
-	executionId string, chainId uint64, plugs *signature.LivePlugs,
+	executionId string, chainId uint64, plugs signature.LivePlugs,
 ) (SimulationRequest, error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Simulator) GetSimulationRequest(
 }
 
 func (s *Simulator) GetSimulationResponse(
-	executionId string, chainId uint64, plugs *signature.LivePlugs,
+	executionId string, chainId uint64, plugs signature.LivePlugs,
 ) (
 	SimulationRequest, SimulationResponse, error,
 ) {

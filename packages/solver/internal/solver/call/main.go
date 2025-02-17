@@ -1,11 +1,11 @@
 package call
 
-type Caller struct {}
+type Caller struct{}
 
-func New() (Caller) { 
+func New() Caller {
 	return Caller{}
 }
 
-func (c *Caller) Call() error { 
+func (c *Caller) Call() error {
 	return nil
 }

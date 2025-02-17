@@ -16,7 +16,6 @@ import (
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type Solver struct {
@@ -77,13 +76,15 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		if transactions[i].Value == nil {
 			transactions[i].Value = big.NewInt(0)
 		}
-		transactions[i].Gas = big.NewInt(200000)
+		// TODO: Only include the gas amount when we can properly estimate it with the traces
+		//       that are generated from the simulation.
+		// transactions[i].Gas = big.NewInt(200000)
 	}
 
 	return transactions, nil
 }
 
-func (s *Solver) GetTransactions(definition simulation.SimulationDefinition) ([]signature.Plug, error) {
+func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signature.Plug, error) {
 	var breakOuter bool
 	transactionsBatch := make([]signature.Plug, 0)
 	errors := make([]error, len(definition.Inputs))
@@ -129,7 +130,6 @@ func (s *Solver) GetTransactions(definition simulation.SimulationDefinition) ([]
 		transactionsBatch = append(transactionsBatch, transactions...)
 	}
 
-	// If there were any errors we will return a failure.
 	for _, err := range errors {
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
@@ -145,36 +145,11 @@ func (s *Solver) GetTransactions(definition simulation.SimulationDefinition) ([]
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetPlugs(chainId uint64, from string, transactions []signature.Plug) (*signature.LivePlugs, error) {
-	solver, err := signature.GetSolverHash()
-	if err != nil {
-		return nil, err
-	}
-	salt, err := signature.GetSaltHash(common.HexToAddress(from))
-	if err != nil {
-		return nil, err
-	}
-	plugs, plugsSignature, err := signature.GetSignature(
-		big.NewInt(int64(chainId)),
-		common.HexToAddress(from),
-		signature.Plugs{
-			Socket: common.HexToAddress(from),
-			Plugs:  transactions,
-			Solver: solver,
-			Salt:   salt,
-		},
-	)
-	if err != nil {
-		return nil, utils.ErrBuild("failed to sign: " + err.Error())
-	}
-
-	return &signature.LivePlugs{
-		Plugs:     plugs,
-		Signature: plugsSignature,
-	}, nil
+func (s *Solver) GetPlugsTransaction() (error) { 
+	return nil
 }
 
-func (s *Solver) GetRun(transactions []signature.Plug) error {
+func (s *Solver) GetCall(transactions []signature.Plug) error {
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }
