@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/big"
 	"net/http"
 	"os"
@@ -54,16 +55,20 @@ func (s *Simulator) GetNext() (SimulationDefinitions, error) {
 
 func (s *Simulator) GetSimulationRequest(
 	executionId string, chainId uint64, plugs signature.LivePlugs,
-) (SimulationRequest, error) {
+) (*SimulationRequest, error) {
+	log.Println("getting the abi")
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
-		return SimulationRequest{}, utils.ErrABI("PlugRouter")
+		return nil, utils.ErrABI("PlugRouter")
 	}
+	log.Printf("packing the object with plugs: %+v", plugs)
+
 	plugCalldata, err := routerAbi.Pack("plug", plugs)
 	if err != nil {
-		return SimulationRequest{}, utils.ErrTransaction(err.Error())
+		return nil, utils.ErrTransaction(err.Error())
 	}
-	return SimulationRequest{
+	log.Println("building the object")
+	return &SimulationRequest{
 		ExecutionId: executionId,
 		ChainId:     chainId,
 		From:        common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
@@ -77,19 +82,22 @@ func (s *Simulator) GetSimulationRequest(
 func (s *Simulator) GetSimulationResponse(
 	executionId string, chainId uint64, plugs signature.LivePlugs,
 ) (
-	SimulationRequest, SimulationResponse, error,
+	*SimulationRequest, *SimulationResponse, error,
 ) {
+	log.Println("in simulation response")
 	simulationRequest, err := s.GetSimulationRequest(executionId, chainId, plugs)
 	if err != nil {
-		return SimulationRequest{}, SimulationResponse{}, err
+		return nil, nil, err
 	}
 
+	log.Println("simulating")
 	simulationResponse, err := s.Simulate(simulationRequest)
 	if err != nil {
-		return SimulationRequest{}, SimulationResponse{}, err
+		return nil, nil, err
 	}
 
-	return simulationRequest, *simulationResponse, nil
+	log.Println("returning")
+	return simulationRequest, simulationResponse, nil
 }
 
 func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +119,7 @@ func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := s.Simulate(req)
+	resp, err := s.Simulate(&req)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Simulation failed: %v", err), http.StatusInternalServerError)
 		return
@@ -150,7 +158,7 @@ func (s *Simulator) PostSimulations(simulations []SimulationResponse) error {
 	return nil
 }
 
-func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error) {
+func (s *Simulator) Simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
 	rpcUrl, err := utils.GetProviderUrl(req.ChainId)

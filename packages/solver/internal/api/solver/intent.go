@@ -234,10 +234,11 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	type IntentResponse struct {
 		Transactions []signature.Plug              `json:"transactions"`
-		Plug         simulation.SimulationRequest  `json:"plug,omitempty"`
-		Simulation   simulation.SimulationResponse `json:"simulation,omitempty"`
+		Plug         *simulation.SimulationRequest  `json:"plug,omitempty"`
+		Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
 	}
 
 	message, err := signature.GetLivePlugs(req.ChainId, req.From, transactionsBatch)

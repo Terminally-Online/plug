@@ -110,11 +110,6 @@ type TokenList struct {
 }
 
 func GetVaults(chainId uint64, force ...bool) ([]YearnVault, error) {
-	currentTime := time.Now().Unix()
-	if !((len(force) > 0 && force[0]) || vaultsCache == nil || (currentTime-vaultsUpdatedAt) >= cacheDuration) {
-		return vaultsCache, nil
-	}
-
 	url := fmt.Sprintf("https://ydaemon.yearn.finance/%d/vaults/all?limit=99999", chainId)
 	response, err := utils.MakeHTTPRequest(
 		url,
@@ -136,9 +131,6 @@ func GetVaults(chainId uint64, force ...bool) ([]YearnVault, error) {
 			endorsedVaults = append(endorsedVaults, vault)
 		}
 	}
-
-	vaultsCache = endorsedVaults
-	vaultsUpdatedAt = currentTime
 
 	return endorsedVaults, nil
 }
