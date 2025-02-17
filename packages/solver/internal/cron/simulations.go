@@ -41,7 +41,7 @@ func Simulations(s solver.Solver) {
 			continue
 		}
 
-		simulationResponses = append(simulationResponses, simulationResponse)
+		simulationResponses = append(simulationResponses, *simulationResponse)
 	}
 	if len(simulationResponses) == 0 {
 		return

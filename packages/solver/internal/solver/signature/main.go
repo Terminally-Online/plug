@@ -117,7 +117,7 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 
 	signature[64] += 27
 
-	return Plugs{}, signature, nil
+	return plugs, signature, nil
 }
 
 func GetLivePlugs(chainId uint64, from string, transactions []Plug) (LivePlugs, error) {

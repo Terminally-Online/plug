@@ -41,9 +41,10 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
+
 	var targetVault *YearnVault
 	for _, vault := range vaults {
-		if strings.EqualFold(vault.Address, inputs.Vault) {
+		if strings.EqualFold(strings.ToLower(vault.Address), strings.ToLower(inputs.Vault)) {
 			targetVault = &vault
 			break
 		}

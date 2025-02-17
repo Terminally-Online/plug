@@ -18,7 +18,7 @@ type Transaction struct {
 	To    common.Address `json:"to"`
 	Data  []byte         `json:"data"`
 	Value *big.Int       `json:"value"`
-	Gas   *big.Int       `json:"gas,omitempty"`
+	Gas   *big.Int       `json:"gas"`
 }
 
 type EIP712Domain struct {
@@ -32,7 +32,7 @@ type Plug struct {
 	To        common.Address `json:"to"`
 	Data      []byte         `json:"data"`
 	Value     *big.Int       `json:"value"`
-	Gas       *big.Int       `json:"gas,omitempty"`
+	Gas       *big.Int       `json:"gas"`
 	Exclusive bool           `json:"exclusive,omitempty"`
 	Meta      interface{}    `json:"meta,omitempty"`
 }

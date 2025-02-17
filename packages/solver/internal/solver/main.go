@@ -3,6 +3,7 @@ package solver
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/big"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
@@ -78,7 +79,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		}
 		// TODO: Only include the gas amount when we can properly estimate it with the traces
 		//       that are generated from the simulation.
-		// transactions[i].Gas = big.NewInt(200000)
+		transactions[i].Gas = big.NewInt(600000)
 	}
 
 	return transactions, nil
@@ -108,6 +109,8 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 			errors[i] = err
 			continue
 		}
+
+		log.Println("here in solver main")
 
 		// NOTE: Some plug actions have exclusive transactions that need to be run alone
 		//       before the rest of the Plug can run. For this, we will just break out
@@ -145,7 +148,7 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 	return transactionsBatch, nil
 }
 
-func (s *Solver) GetPlugsTransaction() (error) { 
+func (s *Solver) GetPlugsTransaction() error {
 	return nil
 }
 
@@ -153,4 +156,3 @@ func (s *Solver) GetCall(transactions []signature.Plug) error {
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }
-
