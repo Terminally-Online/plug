@@ -321,6 +321,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				}
 
 				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
+
+				// Store successful vault in the map
 				optionsByIndex[i] = actions.Option{
 					Label: fmt.Sprintf("Account #%d", i+1),
 					Name:  utils.FormatAddress(vaultAccountInfo.Account),
@@ -339,14 +341,35 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			if len(failedVaults) > 0 {
 				// Process results and create options
 				for _, failedVault := range failedVaults {
+					// Skip if we already have a successful vault for this index
+					if _, exists := optionsByIndex[failedVault.accountIndex]; exists {
+						continue
+					}
+
 					price, err := GetVaultPrice(failedVault.vaultAccountInfo.Vault.String(), chainId)
 					if err != nil {
 						fmt.Printf("error getting vault price: %v\n", err)
 						continue
 					}
 
-					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, 18)
-					netValue := assetValue * price.price
+					// For failed vaults, we need to:
+					// 1. Convert assets to float using vault's asset decimals
+					// 2. Convert borrowed to float using vault's asset decimals
+					// 3. Calculate net value using the price
+					decimals := uint8(price.vault.AssetDecimals.Uint64())
+					fmt.Printf("Failed vault - Raw values: Assets: %v, Borrowed: %v, Decimals: %v, Price: %v\n",
+						failedVault.vaultAccountInfo.Assets,
+						failedVault.vaultAccountInfo.Borrowed,
+						decimals,
+						price.price)
+
+					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, decimals)
+					borrowedValue := utils.UintToFloat(failedVault.vaultAccountInfo.Borrowed, decimals)
+					netValue := (assetValue - borrowedValue) * price.price
+					fmt.Printf("Failed vault - Converted values: AssetValue: %v, BorrowedValue: %v, NetValue: %v\n",
+						assetValue,
+						borrowedValue,
+						netValue)
 
 					optionsByIndex[failedVault.accountIndex] = actions.Option{
 						Label: fmt.Sprintf("Account #%d", failedVault.accountIndex+1),
