@@ -265,6 +265,8 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		}
 
 		options := make([]actions.Option, 0)
+		// Create a map to store options by index to maintain order
+		optionsByIndex := make(map[int]actions.Option)
 
 		consecutiveEmptyAccounts := 0
 		var firstEmptyAccount *actions.Option
@@ -299,27 +301,82 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 			consecutiveEmptyAccounts = 0
 
-			for _, vault := range accountInfo.VaultAccountInfo {
-				if vault.LiquidityInfo.QueryFailure {
+			// Collect vaults that need price info
+			type VaultWithAccount struct {
+				vaultAccountInfo  euler_account_lens.VaultAccountInfo
+				accountIndex      int
+				subAccountAddress common.Address
+			}
+			var failedVaults []VaultWithAccount
+
+			// First pass - collect failed vaults and handle successful ones
+			for _, vaultAccountInfo := range accountInfo.VaultAccountInfo {
+				if vaultAccountInfo.LiquidityInfo.QueryFailure {
+					failedVaults = append(failedVaults, VaultWithAccount{
+						vaultAccountInfo:  vaultAccountInfo,
+						accountIndex:      i,
+						subAccountAddress: subAccountAddress,
+					})
 					continue
 				}
 
-				netValue := utils.UintToFloat(new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue), 18)
-
-				accountOption := actions.Option{
+				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
+				optionsByIndex[i] = actions.Option{
 					Label: fmt.Sprintf("Account #%d", i+1),
-					Name:  utils.FormatAddress(vault.Account),
+					Name:  utils.FormatAddress(vaultAccountInfo.Account),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
-						Label: vault.Asset.Hex(),
+						Label: vaultAccountInfo.Asset.Hex(),
 						Value: fmt.Sprintf("$%.2f", netValue),
 					},
 					Icon: actions.OptionIcon{
-						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.Hex())),
+						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vaultAccountInfo.Asset.Hex())),
 					},
 				}
+			}
 
-				options = append(options, accountOption)
+			// If we have failed vaults, handle them in batch
+			if len(failedVaults) > 0 {
+				// Process results and create options
+				for _, failedVault := range failedVaults {
+					price, err := GetVaultPrice(failedVault.vaultAccountInfo.Vault.String(), chainId)
+					if err != nil {
+						fmt.Printf("error getting vault price: %v\n", err)
+						continue
+					}
+
+					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, 18)
+					netValue := assetValue * price.price
+
+					optionsByIndex[failedVault.accountIndex] = actions.Option{
+						Label: fmt.Sprintf("Account #%d", failedVault.accountIndex+1),
+						Name:  utils.FormatAddress(failedVault.vaultAccountInfo.Account),
+						Value: fmt.Sprintf("%d", failedVault.accountIndex),
+						Info: actions.OptionInfo{
+							Label: failedVault.vaultAccountInfo.Asset.Hex(),
+							Value: fmt.Sprintf("$%.2f", netValue),
+						},
+						Icon: actions.OptionIcon{
+							Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(failedVault.vaultAccountInfo.Asset.Hex())),
+						},
+					}
+				}
+			}
+		}
+
+		fmt.Printf("optionsByIndex: %v\n", optionsByIndex)
+
+		// Convert map to slice in order
+		maxIndex := -1
+		for index := range optionsByIndex {
+			if index > maxIndex {
+				maxIndex = index
+			}
+		}
+
+		for i := 0; i <= maxIndex; i++ {
+			if option, exists := optionsByIndex[i]; exists {
+				options = append(options, option)
 			}
 		}
 

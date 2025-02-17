@@ -14,6 +14,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+type VaultPriceInfo struct {
+	vault euler_vault_lens.VaultInfoFull
+	price float64
+}
+
 func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error) {
 	cacheKey := fmt.Sprintf("euler:verifiedVaults:%d", chainId)
 	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() ([]euler_vault_lens.VaultInfoFull, error) {
@@ -119,4 +124,81 @@ func GetVaultApy(address string, chainId uint64) (borrowApy *big.Int, supplyApy 
 	}
 
 	return apy.BorrowAPY, apy.SupplyAPY, nil
+}
+
+func GetVaultPrices(chainId uint64) (map[string]VaultPriceInfo, error) {
+	vaults, err := GetVerifiedVaults(chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	cacheKey := fmt.Sprintf("euler:verifiedVaultPrices:%d", chainId)
+	prices, err := utils.WithCache(cacheKey, []time.Duration{10 * time.Minute}, true, func() (map[string]VaultPriceInfo, error) {
+
+		utilLensAbi, err := euler_utils_lens.EulerUtilsLensMetaData.GetAbi()
+		if err != nil {
+			return nil, utils.ErrABI("EulerUtilsLens")
+		}
+
+		utilLensAddress := common.HexToAddress(references.Networks[chainId].References["euler"]["utils_lens"])
+		calls := make([]utils.MulticallCalldata, len(vaults))
+		for i, vault := range vaults {
+			calls[i] = utils.MulticallCalldata{
+				Target: utilLensAddress,
+				Method: "getAssetPriceInfo",
+				Args:   []interface{}{vault.Asset, vault.UnitOfAccount},
+				ABI:    utilLensAbi,
+				OutputType: &euler_utils_lens.AssetPriceInfo{
+					Asset:        common.Address{},
+					AmountIn:     big.NewInt(0),
+					AmountOutBid: big.NewInt(0),
+				},
+			}
+		}
+
+		multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
+		results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+		if err != nil {
+			return nil, fmt.Errorf("multicall failed: %w", err)
+		}
+
+		prices := make(map[string]VaultPriceInfo)
+		for i, result := range results {
+			priceInfo := result.(*euler_utils_lens.AssetPriceInfo)
+			if priceInfo.QueryFailure || priceInfo.AmountIn.Cmp(big.NewInt(0)) == 0 {
+				continue
+			}
+
+			vault := vaults[i]
+			vaultAddr := vault.Vault.String()
+			ratio := utils.UintToFloat(new(big.Int).Div(priceInfo.AmountOutBid, priceInfo.AmountIn), uint8(vault.UnitOfAccountDecimals.Uint64()))
+			prices[vaultAddr] = VaultPriceInfo{
+				vault: vault,
+				price: ratio,
+			}
+		}
+
+		return prices, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return prices, nil
+}
+
+func GetVaultPrice(vault string, chainId uint64) (VaultPriceInfo, error) {
+	prices, err := GetVaultPrices(chainId)
+	if err != nil {
+		return VaultPriceInfo{}, err
+	}
+
+	priceInfo, ok := prices[vault]
+
+	if !ok {
+		return VaultPriceInfo{}, fmt.Errorf("vault price not found for address: %s", vault)
+	}
+
+	return priceInfo, nil
 }
