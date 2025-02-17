@@ -72,7 +72,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
-		for protocol, handler := range h.Solver.GetProtocols() {
+		for protocol, handler := range h.Solver.Protocols {
 			protocolChains, err := handler.GetChains(chainId)
 			if err != nil {
 				continue
@@ -117,7 +117,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler, exists := h.Solver.GetProtocolHandler(protocol)
+	handler, exists := h.Solver.Protocols[protocol]
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
@@ -246,7 +246,7 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	simulationRequest, simulationResponse, err := h.Solver.GetSimulation("1", req.ChainId, message)
+	simulationRequest, simulationResponse, err := h.Solver.Simulator.GetSimulationResponse("1", req.ChainId, message)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 		return

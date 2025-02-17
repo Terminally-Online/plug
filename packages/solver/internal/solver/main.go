@@ -1,12 +1,9 @@
 package solver
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"os"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -15,26 +12,25 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
-	"solver/internal/bindings/references"
+	"solver/internal/solver/call"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
-	"time"
-
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 type Solver struct {
+	Simulator simulation.Simulator
+	Caller    call.Caller
+	Protocols map[string]actions.BaseProtocolHandler
 	IsKilled  bool
-	protocols map[string]actions.BaseProtocolHandler
-	simulator simulation.Simulator
 }
 
 func New() Solver {
 	return Solver{
-		IsKilled: false,
-		protocols: map[string]actions.BaseProtocolHandler{
+		Simulator: simulation.New(),
+		Caller:    call.New(),
+		Protocols: map[string]actions.BaseProtocolHandler{
 			actions.ProtocolPlug:    plug.New(),
 			actions.ProtocolAaveV3:  aave_v3.New(),
 			actions.ProtocolYearnV3: yearn_v3.New(),
@@ -43,49 +39,8 @@ func New() Solver {
 			actions.ProtocolMorpho:  morpho.New(),
 			actions.ProtocolEuler:   euler.New(),
 		},
-		simulator: simulation.New(),
+		IsKilled: false,
 	}
-}
-
-func (s *Solver) GetProtocols() map[string]actions.BaseProtocolHandler {
-	return s.protocols
-}
-
-func (s *Solver) GetProtocolHandler(protocol string) (actions.BaseProtocolHandler, bool) {
-	handler, exists := s.protocols[protocol]
-	return handler, exists
-}
-
-func (s *Solver) GetSupportedProtocols(action string) []string {
-	supported := make([]string, 0)
-	for protocol, handler := range s.protocols {
-		for _, supportedAction := range handler.GetActions() {
-			if supportedAction == action {
-				supported = append(supported, protocol)
-				break
-			}
-		}
-	}
-	return supported
-}
-
-func (s *Solver) GetExecutions() (ExecutionsRequest, error) {
-	url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.simulation.simulateNext")
-	response, err := utils.MakeHTTPRequest(
-		url,
-		"POST",
-		map[string]string{
-			"Content-Type": "application/json",
-			"X-API-Key":    os.Getenv("PLUG_APP_API_KEY"),
-		},
-		nil,
-		nil,
-		ExecutionsRequest{},
-	)
-	if err != nil {
-		return response, err
-	}
-	return response, nil
 }
 
 func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]signature.Plug, error) {
@@ -97,7 +52,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		return nil, fmt.Errorf("failed to unmarshal base inputs: %v", err)
 	}
 
-	handler, exists := s.protocols[inputs.Protocol]
+	handler, exists := s.Protocols[inputs.Protocol]
 	if !exists {
 		return nil, fmt.Errorf("unsupported protocol: %s", inputs.Protocol)
 	}
@@ -128,11 +83,11 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	return transactions, nil
 }
 
-func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, error) {
+func (s *Solver) GetTransactions(definition simulation.SimulationDefinition) ([]signature.Plug, error) {
 	var breakOuter bool
 	transactionsBatch := make([]signature.Plug, 0)
-	errors := make([]error, len(execution.Inputs))
-	for i, input := range execution.Inputs {
+	errors := make([]error, len(definition.Inputs))
+	for i, input := range definition.Inputs {
 		inputMap := map[string]interface{}{
 			"protocol": input["protocol"],
 			"action":   input["action"],
@@ -147,7 +102,7 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, 
 			continue
 		}
 
-		transactions, err := s.GetTransaction(inputsJson, execution.ChainId, execution.From)
+		transactions, err := s.GetTransaction(inputsJson, definition.ChainId, definition.From)
 		if err != nil {
 			errors[i] = err
 			continue
@@ -191,43 +146,23 @@ func (s *Solver) GetTransactions(execution ExecutionRequest) ([]signature.Plug, 
 }
 
 func (s *Solver) GetPlugs(chainId uint64, from string, transactions []signature.Plug) (*signature.LivePlugs, error) {
-	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
-	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
-	//       end up having the case where things are Plugs are not properly executed because they are being
-	//       executed 10k blocks late after it was held from execution.
-	expiration := big.NewInt(0).Add(big.NewInt(time.Now().Unix()), big.NewInt(300))
-	solver, err := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 48}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}.Pack(expiration, common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
+	solver, err := signature.GetSolverHash()
 	if err != nil {
-		return nil, utils.ErrBuild("failed to pack solver: " + err.Error())
+		return nil, err
 	}
-
-	salt, err := abi.Arguments{
-		{Type: abi.Type{T: abi.UintTy, Size: 96}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-		{Type: abi.Type{T: abi.AddressTy}},
-	}.Pack(
-		big.NewInt(time.Now().Unix()),
-		common.HexToAddress(from),
-		common.HexToAddress(os.Getenv("ONE_CLICKER_ADDRESS")),
-		common.HexToAddress(os.Getenv("IMPLEMENTATION_ADDRESS")),
-	)
+	salt, err := signature.GetSaltHash(common.HexToAddress(from))
 	if err != nil {
-		return nil, utils.ErrBuild("failed to pack salt: " + err.Error())
+		return nil, err
 	}
-	plugs := signature.Plugs{
-		Socket: common.HexToAddress(from),
-		Plugs:  transactions,
-		Solver: solver,
-		Salt:   salt,
-	}
-	plugsSignature, err := signature.GetSignature(
+	plugs, plugsSignature, err := signature.GetSignature(
 		big.NewInt(int64(chainId)),
 		common.HexToAddress(from),
-		plugs,
+		signature.Plugs{
+			Socket: common.HexToAddress(from),
+			Plugs:  transactions,
+			Solver: solver,
+			Salt:   salt,
+		},
 	)
 	if err != nil {
 		return nil, utils.ErrBuild("failed to sign: " + err.Error())
@@ -239,73 +174,8 @@ func (s *Solver) GetPlugs(chainId uint64, from string, transactions []signature.
 	}, nil
 }
 
-func (s *Solver) GetSimulationRequest(
-	executionId string, chainId uint64, plugs *signature.LivePlugs,
-) (simulation.SimulationRequest, error) {
-	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-	if err != nil {
-		return simulation.SimulationRequest{}, utils.ErrABI("PlugRouter")
-	}
-	plugCalldata, err := routerAbi.Pack("plug", plugs)
-	if err != nil {
-		return simulation.SimulationRequest{}, utils.ErrTransaction(err.Error())
-	}
-	return simulation.SimulationRequest{
-		ExecutionId: executionId,
-		ChainId:     chainId,
-		From:        common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-		To:          common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
-		Data:        plugCalldata,
-		Value:       big.NewInt(0),
-		ABI:         plug_router.PlugRouterMetaData.ABI,
-	}, nil
-}
-
-func (s *Solver) GetSimulation(
-	executionId string, chainId uint64, plugs *signature.LivePlugs,
-) (
-	simulation.SimulationRequest, simulation.SimulationResponse, error,
-) {
-	simulationRequest, err := s.GetSimulationRequest(executionId, chainId, plugs)
-	if err != nil {
-		return simulation.SimulationRequest{}, simulation.SimulationResponse{}, err
-	}
-
-	simulationResponse, err := s.simulator.Simulate(simulationRequest)
-	if err != nil {
-		return simulation.SimulationRequest{}, simulation.SimulationResponse{}, err
-	}
-
-	return simulationRequest, *simulationResponse, nil
-}
-
 func (s *Solver) GetRun(transactions []signature.Plug) error {
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }
 
-func (s *Solver) PostSimulations(simulations []simulation.SimulationResponse) error {
-	response := SimulationsRequest{
-		Json: simulations,
-	}
-	body, err := json.Marshal(response)
-	if err != nil {
-		return err
-	}
-	_, err = utils.MakeHTTPRequest(
-		fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.simulation.simulated"),
-		"POST",
-		map[string]string{
-			"Content-Type": "application/json",
-			"X-API-Key":    os.Getenv("PLUG_APP_API_KEY"),
-		},
-		nil,
-		bytes.NewReader(body),
-		SimulationRequest{},
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
