@@ -1,15 +1,12 @@
 package utils
 
 import (
-	"context"
 	"fmt"
 	"math/big"
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 var (
@@ -43,27 +40,6 @@ var (
 )
 
 
-
-
-func BuildCallOpts(address string, value *big.Int) *bind.CallOpts {
-	return &bind.CallOpts{
-		From:    common.HexToAddress(address),
-		Pending: true,
-		Context: context.Background(),
-	}
-}
-
-func BuildTransactionOpts(address string, value *big.Int) *bind.TransactOpts {
-	return &bind.TransactOpts{
-		From: common.HexToAddress(address),
-		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
-			return tx, nil
-		},
-		NoSend: true,
-		Value:  value,
-	}
-}
-
 func FloatToUint(value float64, decimals uint8) (*big.Int, error) {
 	result := new(big.Float).SetFloat64(value)
 
@@ -89,7 +65,7 @@ func UintToFloat(value *big.Int, decimals uint8) float64 {
 	}
 
 	floatValue := new(big.Float).SetInt(value)
-	
+
 	divisor := new(big.Float).SetInt(
 		new(big.Int).Exp(
 			big.NewInt(10),
@@ -97,9 +73,9 @@ func UintToFloat(value *big.Int, decimals uint8) float64 {
 			nil,
 		),
 	)
-	
+
 	result := new(big.Float).Quo(floatValue, divisor)
-	
+
 	float64Value, _ := result.Float64()
 	return float64Value
 }
@@ -152,22 +128,22 @@ func UintToString(value *big.Int, decimals uint8) string {
 	}
 
 	val := new(big.Int).Set(value)
-	
+
 	div := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
-	
+
 	intPart := new(big.Int).Quo(val, div)
 	fracPart := new(big.Int).Mod(val, div)
-	
+
 	fracStr := fracPart.String()
 	// Pad with leading zeros if necessary
 	fracStr = strings.Repeat("0", int(decimals)-len(fracStr)) + fracStr
-	
+
 	fracStr = strings.TrimRight(fracStr, "0")
-	
+
 	if fracStr == "" {
 		return intPart.String()
 	}
-	
+
 	return fmt.Sprintf("%s.%s", intPart.String(), fracStr)
 }
 

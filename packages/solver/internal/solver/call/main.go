@@ -14,7 +14,6 @@ func (c *Caller) Call() error {
 	return nil
 }
 
-
 func Write(chainId uint64) (error, error) {
 	_, err := client.New(chainId)
 	if err != nil {

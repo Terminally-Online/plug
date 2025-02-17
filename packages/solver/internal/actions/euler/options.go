@@ -114,7 +114,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	}
 
 	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
-	res, err := utils.WithCache[result](cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
+	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
 		vaultOptions := make([]actions.Option, 0)

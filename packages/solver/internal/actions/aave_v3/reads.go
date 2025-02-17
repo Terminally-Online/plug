@@ -7,7 +7,6 @@ import (
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
-	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -25,7 +24,7 @@ func getReserves(chainId uint64) ([]aave_v3_ui_pool_data_provider.IUiPoolDataPro
 		return nil, err
 	}
 	reserves, _, err := dataProvider.GetReservesData(
-		utils.BuildCallOpts(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)),
+		client.ReadOptions(os.Getenv("SOLVER_ADDRESS")),
 		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_address_client"]),
 	)
 	if err != nil {
@@ -49,7 +48,7 @@ func getHealthFactor(chainId uint64, userAddress string) (*big.Int, error) {
 	}
 
 	userAccountData, err := pool.GetUserAccountData(
-		utils.BuildCallOpts(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)),
+		client.SolverReadOptions(),
 		common.HexToAddress(userAddress),
 	)
 	if err != nil {

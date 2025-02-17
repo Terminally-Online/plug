@@ -41,7 +41,7 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(utils.BuildCallOpts(params.From, big.NewInt(0)))
+	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(utils.BuildCallOpts(params.From, big.NewInt(0)))
+	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(utils.BuildCallOpts(params.From, big.NewInt(0)))
+	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, err
 	}
 
-	seeds, err := nounsToken.Seeds(utils.BuildCallOpts(params.From, big.NewInt(0)), auction.NounId)
+	seeds, err := nounsToken.Seeds(client.ReadOptions(params.From), auction.NounId)
 	if err != nil {
 		return nil, err
 	}
@@ -171,30 +171,30 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	var value string
 	switch inputs.TraitType {
 	case "background":
-		value, err = art.Backgrounds(utils.BuildCallOpts(params.From, big.NewInt(0)), seeds.Background)
+		value, err = art.Backgrounds(client.ReadOptions(params.From), seeds.Background)
 		if err != nil {
 			return nil, err
 		}
 	case "body":
-		bodyValue, err := art.Bodies(utils.BuildCallOpts(params.From, big.NewInt(0)), seeds.Body)
+		bodyValue, err := art.Bodies(client.ReadOptions(params.From), seeds.Body)
 		if err != nil {
 			return nil, err
 		}
 		value = string(bodyValue)
 	case "accessory":
-		accessoryValue, err := art.Accessories(utils.BuildCallOpts(params.From, big.NewInt(0)), seeds.Accessory)
+		accessoryValue, err := art.Accessories(client.ReadOptions(params.From), seeds.Accessory)
 		if err != nil {
 			return nil, err
 		}
 		value = string(accessoryValue)
 	case "head":
-		headValue, err := art.Heads(utils.BuildCallOpts(params.From, big.NewInt(0)), seeds.Head)
+		headValue, err := art.Heads(client.ReadOptions(params.From), seeds.Head)
 		if err != nil {
 			return nil, err
 		}
 		value = string(headValue)
 	case "glasses":
-		glassesValue, err := art.Glasses(utils.BuildCallOpts(params.From, big.NewInt(0)), seeds.Glasses)
+		glassesValue, err := art.Glasses(client.ReadOptions(params.From), seeds.Glasses)
 		if err != nil {
 			return nil, err
 		}
@@ -218,19 +218,15 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 		return nil, err
 	}
 
-	client, err := client.New(params.ChainId)
-	if err != nil {
-		return nil, err
-	}
 	auctionHouse, err := nouns_auction_house.NewNounsAuctionHouse(
 		common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
-		client,
+		params.Client,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(utils.BuildCallOpts(params.From, big.NewInt(0)))
+	auction, err := auctionHouse.Auction(params.Client.ReadOptions(params.From))
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +272,7 @@ func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params act
 		return nil, err
 	}
 
-	auction, err := auctionHouse.Auction(utils.BuildCallOpts(params.From, big.NewInt(0)))
+	auction, err := auctionHouse.Auction(client.ReadOptions(params.From))
 	if err != nil {
 		return nil, err
 	}

@@ -13,9 +13,9 @@ import (
 )
 
 type HandlerParams struct {
-	Client *client.Client
-	ChainId  uint64
-	From     string
+	Client  *client.Client
+	ChainId uint64
+	From    string
 }
 
 type BaseProtocolHandler interface {

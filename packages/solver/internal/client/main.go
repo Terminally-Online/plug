@@ -2,36 +2,76 @@ package client
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"os"
 	"solver/bindings/multicall_primary"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type Client struct {
-	chainId uint64
+	chainId          uint64
+	solverAddress    common.Address
+	solverPrivateKey *ecdsa.PrivateKey
 	*ethclient.Client
 }
 
 func New(chainId uint64) (*Client, error) {
+	solverAddress := common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))
+	solverPrivateKey, err := crypto.HexToECDSA(os.Getenv("SOLVER_PRIVATE_KEY"))
+	if err != nil {
+		return nil, utils.ErrBuild(err.Error())
+	}
+
 	rpcUrl, err := GetQuicknodeUrl(chainId)
 	if err != nil {
 		return nil, err
 	}
-
 	ethClient, err := ethclient.Dial(rpcUrl)
 	if err != nil {
 		return nil, utils.ErrEthClient(err.Error())
 	}
 
-	return &Client{chainId: chainId, Client: ethClient}, nil
+	return &Client{
+		chainId:          chainId,
+		solverAddress:    solverAddress,
+		solverPrivateKey: solverPrivateKey,
+		Client:           ethClient,
+	}, nil
 }
+
+func (c *Client) ReadOptions(address string) *bind.CallOpts {
+	return &bind.CallOpts{
+		From:    common.HexToAddress(address),
+		Pending: true,
+		Context: context.Background(),
+	}
+}
+func (c *Client) SolverReadOptions() *bind.CallOpts { return c.ReadOptions(os.Getenv("SOLVER_ADDRESS")) }
+
+func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts {
+	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
+		return transaction, nil
+	}
+
+	return &bind.TransactOpts{
+		From:   common.HexToAddress(address),
+		Signer: transactionForwarder,
+		NoSend: true,
+		Value:  value,
+	}
+}
+func (c *Client) SolverWriteOptions() *bind.TransactOpts { return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)) }
 
 func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
 	multicallAddress := common.HexToAddress(references.Networks[c.chainId].References["multicall"]["primary"])
