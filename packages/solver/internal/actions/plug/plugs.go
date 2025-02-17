@@ -10,7 +10,6 @@ import (
 	"solver/internal/actions"
 	"solver/internal/actions/llama"
 	"solver/internal/bindings/references"
-	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -343,7 +342,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrContract(wethAddress)
 		}
 
-		calldata, err := wethContract.WethAddressTransactor.Withdraw(utils.BuildTransactionOpts(params.From, nil), amount)
+		calldata, err := wethContract.WethAddressTransactor.Withdraw(params.Client.WriteOptions(params.From, big.NewInt(0)), amount)
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
@@ -360,7 +359,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrContract(wethAddress)
 		}
 
-		calldata, err := wethContract.WethAddressTransactor.Deposit(utils.BuildTransactionOpts(params.From, amount))
+		calldata, err := wethContract.WethAddressTransactor.Deposit(params.Client.WriteOptions(params.From, amount))
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
@@ -430,26 +429,20 @@ func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerPa
 
 	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+		return nil, err
 	}
 
 	threshold, err := utils.StringToUint(inputs.Threshold, decimals)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert threshold to uint: %w", err)
+		return nil, err
 	}
 
-	client, err := client.New(params.ChainId)
+	erc20Contract, err := erc_20.NewErc20(*token, params.Client)
 	if err != nil {
 		return nil, err
 	}
 
-	erc20Contract, err := erc_20.NewErc20(*token, client)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
-	}
-
-	callOpts := utils.BuildCallOpts(params.From, big.NewInt(0))
-	balance, err := erc20Contract.BalanceOf(callOpts, common.HexToAddress(inputs.Address))
+	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), common.HexToAddress(inputs.Address))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get token balance: %w", err)
 	}

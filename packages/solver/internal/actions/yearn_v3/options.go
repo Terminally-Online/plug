@@ -83,14 +83,12 @@ func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {
 	for _, token := range tokens {
 		tokenDetails[strings.ToLower(token.Address)] = token
 	}
-
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
 
 	tokenMap := make(map[string]actions.Option)
-
 	for _, vault := range vaults {
 		lowerAddr := strings.ToLower(vault.Token.Address)
 

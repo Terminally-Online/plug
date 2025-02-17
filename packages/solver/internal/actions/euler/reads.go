@@ -7,10 +7,10 @@ import (
 	"solver/bindings/euler_utils_lens"
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/bindings/references"
-	"solver/internal/client"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"solver/internal/client"
 )
 
 func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error) {
