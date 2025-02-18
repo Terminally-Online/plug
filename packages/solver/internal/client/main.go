@@ -8,13 +8,16 @@ import (
 	"math/big"
 	"os"
 	"solver/bindings/multicall_primary"
+	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -57,7 +60,9 @@ func (c *Client) ReadOptions(address string) *bind.CallOpts {
 		Context: context.Background(),
 	}
 }
-func (c *Client) SolverReadOptions() *bind.CallOpts { return c.ReadOptions(os.Getenv("SOLVER_ADDRESS")) }
+func (c *Client) SolverReadOptions() *bind.CallOpts {
+	return c.ReadOptions(os.Getenv("SOLVER_ADDRESS"))
+}
 
 func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts {
 	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
@@ -71,7 +76,35 @@ func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts
 		Value:  value,
 	}
 }
-func (c *Client) SolverWriteOptions() *bind.TransactOpts { return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)) }
+func (c *Client) SolverWriteOptions() *bind.TransactOpts {
+	return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0))
+}
+
+func (c *Client) Plug(livePlugs []signature.LivePlugs) (*ethtypes.Transaction, error) {
+	router, err := plug_router.NewPlugRouter(
+		common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"]),
+		c,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// NOTE: We are doing manual transformation here instead of doing something that is type
+	//       based we want the ability to include extra things like `meta` in the response
+	//       body shape which would not be straightforward to do if we use the protocol
+	//       exposed types that are generated with the abi.
+	// TODO: If there is a better way to do this please implement it. - CHANCE
+	lps := make([]plug_router.PlugTypesLibLivePlugs, len(livePlugs))
+	for _, livePlug := range livePlugs {
+		lps = append(lps, livePlug.Wrap())
+	}
+	plugged, err := router.Plug0(c.SolverWriteOptions(), lps)
+	if err != nil {
+		return nil, err
+	}
+
+	return plugged, nil
+}
 
 func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
 	multicallAddress := common.HexToAddress(references.Networks[c.chainId].References["multicall"]["primary"])
