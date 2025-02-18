@@ -10,9 +10,10 @@ import (
 	"solver/internal/utils"
 	"time"
 
+	"solver/internal/client"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"solver/internal/client"
 )
 
 type VaultPriceInfo struct {
@@ -46,21 +47,21 @@ func GetVerifiedVaults(chainId uint64) ([]euler_vault_lens.VaultInfoFull, error)
 			return nil, fmt.Errorf("failed to get vault lens ABI: %w", err)
 		}
 
-	vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
-	calls := make([]client.MulticallCalldata, len(vaultAddresses))
-	for i, vaultAddr := range vaultAddresses {
-		calls[i] = client.MulticallCalldata{
-			Target:     vaultLensAddr,
-			Method:     "getVaultInfoFull",
-			Args:       []interface{}{vaultAddr},
-			ABI:        vaultLensAbi,
-			OutputType: &euler_vault_lens.VaultInfoFull{},
+		vaultLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["vault_lens"])
+		calls := make([]client.MulticallCalldata, len(vaultAddresses))
+		for i, vaultAddr := range vaultAddresses {
+			calls[i] = client.MulticallCalldata{
+				Target:     vaultLensAddr,
+				Method:     "getVaultInfoFull",
+				Args:       []interface{}{vaultAddr},
+				ABI:        vaultLensAbi,
+				OutputType: &euler_vault_lens.VaultInfoFull{},
+			}
 		}
-	}
-	results, err := provider.Multicall(calls)
-	if err != nil {
-		return nil, fmt.Errorf("multicall failed: %w", err)
-	}
+		results, err := provider.Multicall(calls)
+		if err != nil {
+			return nil, fmt.Errorf("multicall failed: %w", err)
+		}
 
 		vaultInfos := make([]euler_vault_lens.VaultInfoFull, len(results))
 		for i, result := range results {
@@ -138,9 +139,9 @@ func GetVaultPrices(chainId uint64) (map[string]VaultPriceInfo, error) {
 		}
 
 		utilLensAddress := common.HexToAddress(references.Networks[chainId].References["euler"]["utils_lens"])
-		calls := make([]utils.MulticallCalldata, len(vaults))
+		calls := make([]client.MulticallCalldata, len(vaults))
 		for i, vault := range vaults {
-			calls[i] = utils.MulticallCalldata{
+			calls[i] = client.MulticallCalldata{
 				Target: utilLensAddress,
 				Method: "getAssetPriceInfo",
 				Args:   []interface{}{vault.Asset, vault.UnitOfAccount},
@@ -153,8 +154,11 @@ func GetVaultPrices(chainId uint64) (map[string]VaultPriceInfo, error) {
 			}
 		}
 
-		multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-		results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+		client, err := client.New(chainId)
+		if err != nil {
+			return nil, fmt.Errorf("multicall failed: %w", err)
+		}
+		results, err := client.Multicall(calls)
 		if err != nil {
 			return nil, fmt.Errorf("multicall failed: %w", err)
 		}
