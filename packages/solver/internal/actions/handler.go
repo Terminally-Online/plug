@@ -3,9 +3,9 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
@@ -25,10 +25,10 @@ type BaseProtocolHandler interface {
 	GetChains(chainId string) ([]*references.Network, error)
 	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
-	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
+	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]plug_router.PlugTypesLibPlug, error)
 }
 
-type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
+type TransactionHandler func(rawInputs json.RawMessage, params HandlerParams) ([]plug_router.PlugTypesLibPlug, error)
 type OptionsHandler func(chainId uint64) (map[int]Options, error)
 
 type Protocol struct {
@@ -207,7 +207,7 @@ func (h *BaseHandler) GetTransaction(
 	action string,
 	rawInputs json.RawMessage,
 	params HandlerParams,
-) ([]signature.Plug, error) {
+) ([]plug_router.PlugTypesLibPlug, error) {
 	handler, exists := h.protocol.txHandlers[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)

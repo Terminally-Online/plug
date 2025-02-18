@@ -8,16 +8,16 @@ import (
 	"solver/bindings/morpho_distributor"
 	"solver/bindings/morpho_router"
 	"solver/bindings/morpho_vault"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -63,7 +63,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to pack deposit calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -72,7 +72,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}}, nil
 }
 
-func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -125,7 +125,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		return nil, fmt.Errorf("failed to pack supply calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -134,7 +134,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 	}}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -174,7 +174,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 		}
 
-		return []signature.Plug{{
+		return []plug_router.PlugTypesLibPlug{{
 			To:   common.HexToAddress(inputs.Target),
 			Data: withdrawCalldata,
 		}}, nil
@@ -201,13 +201,13 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
 
-func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Target string `json:"target"`
@@ -245,7 +245,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 		}
 
-		return []signature.Plug{{
+		return []plug_router.PlugTypesLibPlug{{
 			To:   common.HexToAddress(inputs.Target),
 			Data: withdrawCalldata,
 		}}, nil
@@ -287,13 +287,13 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: withdrawCalldata,
 	}}, nil
 }
 
-func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -334,13 +334,13 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, fmt.Errorf("failed to pack borrow calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
 		Data: borrowCalldata,
 	}}, nil
 }
 
-func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -392,7 +392,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -401,7 +401,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 	}}, nil
 }
 
-func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Target string `json:"target"`
@@ -471,7 +471,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to pack repay calldata: %w", err)
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -480,7 +480,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}}, nil
 }
 
-func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	distributions, err := GetDistributions(params.From, params.ChainId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get distributions: %w", err)
@@ -494,7 +494,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to get morpho distributor abi: %w", err)
 	}
 
-	claims := []signature.Plug{}
+	claims := []plug_router.PlugTypesLibPlug{}
 	for _, distribution := range distributions {
 		claimable, ok := new(big.Int).SetString(distribution.Claimable, 10)
 		if !ok {
@@ -514,7 +514,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack claim calldata: %w", err)
 		}
-		claims = append(claims, signature.Plug{
+		claims = append(claims, plug_router.PlugTypesLibPlug{
 			To:   common.HexToAddress(distribution.Distributor.Address),
 			Data: claimCalldata,
 		})
@@ -523,7 +523,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 	return claims, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Target    string `json:"target"`
 		Operator  int8   `json:"operator"`
@@ -587,7 +587,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Direction int    `json:"direction"` // -1 for borrow, 1 for deposit
 		Target    string `json:"target"`    // Underlying market or vault
