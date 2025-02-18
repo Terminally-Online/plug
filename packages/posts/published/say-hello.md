@@ -8,21 +8,18 @@ created: 01/28/2025
 author: danner
 ---
 
-We are Terminally Online.
+We are Terminally Online and Plug is the first of several products we have to launch so that we can build with you.
 
-You may know us individually as danner, drake, or chance. You may even consider yourself Terminally Online yourself. We've spent the past 5 years plugged into the EVM landscape and we're here to plug you in too.
-
-## Using Crypto Today
-
-If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got your yield farms here, your LP positions there, and god forbid you try to time a swap across multiple protocols without missing the perfect entry.
-
-We've been there. We are there. And we're building the solution we've always wanted.
+You may know us individually as [danner](https://twitter.com/drakedanner), or [chance](https://twitter.com/nftchance). We've been terminally online for years and I am sure you have too. We've spent the past 5 years plugged into the EVM landscape and we're here to plug you in too.
 
 ## The Reality Check
 
-Initially, when we set out to build Plug, we considered building a product that allowed users to log off and spend more time touching grass. As we continued to build, we realized - that's not who we are. We live in the ether, we spend our days streaming our homes to those we build with. We named our company Terminally Online for a reason...
+If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got your yield farms here, your LP positions there, and god forbid you try to time a swap across multiple protocols without missing the perfect entry.
 
-Let's be real - I've got 47 browser tabs open right now, three different DEX aggregators running, and I'm probably farming yield in my sleep. This isn't a problem to solve - it's who we are. The question isn't how to log off, it's how to become terminal.
+We've been there. We are there. And we're building the solution we've always wanted. Initially, when we set out to build Plug, we considered building a product that allowed users to log off and spend more time touching grass. As we continued to build, we realized - that's not who we are; that's not who you are. 
+
+Let's be real - I've got 47 browser tabs open right now, three different DEX aggregators running, and I'm probably farming yield in my sleep. This isn't just a problem to solve - it's who we are. The question isn't how to log off, it's how to become terminal. We live in the ether, we spend our days streaming our homes to those we build with. We named our company Terminally Online for a reason. We don't log off and we are here to build for others like us.
+
 
 ## Our Journey Here
 

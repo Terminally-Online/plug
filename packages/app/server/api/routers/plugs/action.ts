@@ -39,11 +39,11 @@ export const action = createTRPCRouter({
 			const actions = JSON.parse(input.actions)
 			const dominantProtocol = getDominantProtocol(actions)
 
-			void (async (namedAt: Date | null, renamedAt: Date | null) => {
+			void (async (name: string, namedAt: Date | null, updatedAt: Date | null) => {
+				// NOTE: If the plug has been updated in the last 30 minutes.
+				if (updatedAt && Date.now() - updatedAt.getTime() < 30 * 60 * 1000 && name != "Untitled Plug") return
 				// NOTE: If the user has ever named this plug disable auto-naming completely.
 				if (namedAt) return
-				// NOTE: If it was renamed in the last 10 minutes, we don't want to rename it again.
-				// if (renamedAt && Date.now() - renamedAt.getTime() < 30 * 1000) return
 				// NOTE: If it does not yet have action context we want to set the name to "Untitled Plug".
 				if (actions.length <= 1) return
 
@@ -92,14 +92,14 @@ export const action = createTRPCRouter({
 						}
 					]
 				})
-				const name = message.content[0].type === "text" ? message.content[0].text : undefined
+				const generated = message.content[0].type === "text" ? message.content[0].text : undefined
 				const namedPlug = await ctx.db.workflow.update({
 					where: { id: input.id },
-					data: { name, renamedAt: new Date() }
+					data: { name: generated, renamedAt: new Date(), updatedAt: new Date() }
 				})
 
 				ctx.emitter.emit(events.edit, namedPlug)
-			})(plug.namedAt, plug.renamedAt)
+			})(plug.name, plug.namedAt, plug.updatedAt)
 
 			const updated = await ctx.db.workflow.update({
 				where: { id: input.id, socketId: ctx.session.address },

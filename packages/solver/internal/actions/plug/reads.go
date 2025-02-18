@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"solver/bindings/erc_20"
+	"solver/internal/client"
 	"solver/internal/utils"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 /*
@@ -45,19 +45,19 @@ Which will translate to the bytecode of:
 	8063selector14
 */
 func getTokenType(chainId uint64, address string) (*int, error) {
-	provider, err := utils.GetProvider(chainId)
+	client, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
 
-	code, err := provider.CodeAt(context.Background(), common.HexToAddress(address), nil)
+	code, err := client.CodeAt(context.Background(), common.HexToAddress(address), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get code at address %s: %v", address, err)
 	}
 	hexCode := hex.EncodeToString(code)
 
 	if strings.Contains(hexCode, fmt.Sprintf(utils.SelectorLookup, utils.UpgradableImplementationSelector)) {
-		return getProxyTokenType(provider, address)
+		return getProxyTokenType(client, address)
 	}
 
 	for _, selector := range utils.TokenSelectors {
@@ -71,7 +71,7 @@ func getTokenType(chainId uint64, address string) (*int, error) {
 }
 
 func getERC20Decimals(chainId uint64, address string) (*uint8, error) {
-	provider, err := utils.GetProvider(chainId)
+	provider, err := client.New(chainId)
 	if err != nil {
 		return nil, err
 	}
@@ -89,6 +89,6 @@ func getERC20Decimals(chainId uint64, address string) (*uint8, error) {
 	return &decimals, nil
 }
 
-func getProxyTokenType(_ *ethclient.Client, _ string) (*int, error) {
+func getProxyTokenType(_ *client.Client, _ string) (*int, error) {
 	return nil, fmt.Errorf("proxies not supported at this time")
 }

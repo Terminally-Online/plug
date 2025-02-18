@@ -474,14 +474,9 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
-		provider,
+		params.Client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account lens: %w", err)
@@ -549,14 +544,9 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 		return nil, fmt.Errorf("failed to get vault: %w", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
-		provider,
+		params.Client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account lens: %w", err)

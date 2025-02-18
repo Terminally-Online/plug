@@ -87,7 +87,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 										"ml-auto flex flex-row items-center text-sm",
 										token.change === undefined
 											? "opacity-60"
-											: token.change > 0
+											: token.change >= 0
 												? "text-plug-green"
 												: "text-red-500"
 									)}

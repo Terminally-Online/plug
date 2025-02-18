@@ -4,25 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type HandlerParams struct {
-	Provider *ethclient.Client
-	ChainId  uint64
-	From     string
+	Client  *client.Client
+	ChainId uint64
+	From    string
 }
 
 type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains() []*references.Network
+	GetChains(chainId string) ([]*references.Network, error)
 	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
@@ -55,9 +55,10 @@ type ActionDefinition struct {
 }
 
 var (
-	errUnsupportedAction = "unsupported action: %s"
-	errInvalidChainID    = "invalid chain id: %s"
-	errFailedOptions     = "failed to get options: %w"
+	errUnsupportedAction  = "unsupported action: %s"
+	errInvalidChainID     = "invalid chain id: %s"
+	errUnsupportedChainID = "unsupported chain id: %s"
+	errFailedOptions      = "failed to get options: %w"
 )
 
 func NewBaseHandler(
@@ -139,8 +140,25 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains() []*references.Network {
-	return h.protocol.Chains
+func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
+	if chainId == "" {
+		return h.protocol.Chains, nil
+	}
+
+	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf(errInvalidChainID, chainId)
+	}
+
+	for _, chain := range h.protocol.Chains {
+		for _, supportedChainId := range chain.ChainIds {
+			if chainIdInt == supportedChainId {
+				return []*references.Network{chain}, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
 }
 
 func (h *BaseHandler) GetActions() []string {
@@ -165,25 +183,6 @@ func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[
 		chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
-		}
-
-		// TODO: (#475) Why is this needed here? Shouldn't this be handled elsewhere? Not sure if it
-		//       actually should be, but we are really far into the compute process to only
-		//       just now be checking this here. Something earlier should have fired this most
-		//       likely like a provider or something. Even if it is not caught earlier, does
-		//       dealing with this here improve things or does it just bloat this function with
-		//       things that we do not actually need?
-		supported := false
-		for _, supportedChain := range h.protocol.Chains {
-			for _, supportedChainId := range supportedChain.ChainIds {
-				if chainIdInt == supportedChainId {
-					supported = true
-					break
-				}
-			}
-		}
-		if !supported {
-			return nil, fmt.Errorf("chain not supported: %d", chainIdInt)
 		}
 
 		// NOTE: Override the address value so that we utilize the cache from the global state

@@ -9,7 +9,6 @@ import (
 
 func SetupRouter(s solver.Handler) *mux.Router {
 	m := middleware.New(s.Solver)
-
 	r := mux.NewRouter()
 	r.Use(m.Json)
 
@@ -20,9 +19,8 @@ func SetupRouter(s solver.Handler) *mux.Router {
 
 	killable := protected.PathPrefix("").Subrouter()
 	killable.Use(m.KillSwitch)
-	killable.HandleFunc("/solver/simulate", s.PostSimulation).Methods("POST")
-	killable.HandleFunc("/solver", s.GetIntent).Methods("GET")
-	killable.HandleFunc("/solver", s.PostIntent).Methods("POST")
+	killable.HandleFunc("/solver", s.GetSchema).Methods("GET")
+	killable.HandleFunc("/solver", s.GetPlug).Methods("POST")
 
 	return r
 }

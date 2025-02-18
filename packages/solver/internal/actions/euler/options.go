@@ -8,6 +8,7 @@ import (
 	"solver/bindings/euler_vault_lens"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/utils"
 	"strings"
 	"time"
@@ -251,10 +252,10 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		accountLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"])
 		evcAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["evc"])
 
-		calls := make([]utils.MulticallCalldata, 256)
+		calls := make([]client.MulticallCalldata, 256)
 		for i := 0; i < 256; i++ {
 			subAccountAddress := GetSubAccountAddress(address, uint8(i))
-			calls[i] = utils.MulticallCalldata{
+			calls[i] = client.MulticallCalldata{
 				Target: accountLensAddr,
 				Method: "getAccountEnabledVaultsInfo",
 				Args:   []interface{}{evcAddr, subAccountAddress},
@@ -265,8 +266,11 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			}
 		}
 
-		multicallAddress := common.HexToAddress(references.Networks[chainId].References["multicall"]["primary"])
-		results, err := utils.ExecuteMulticall(chainId, multicallAddress, calls)
+		client, err := client.New(chainId)
+		if err != nil {
+			return nil, fmt.Errorf("multicall failed: %w", err)
+		}
+		results, err := client.Multicall(calls)
 		if err != nil {
 			return nil, fmt.Errorf("multicall failed: %w", err)
 		}

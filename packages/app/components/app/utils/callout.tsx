@@ -153,7 +153,7 @@ const EmptyAssets: FC<
 				{...props}
 			>
 				{isReceivable && (
-					<Button sizing="sm" onClick={() => handleSidebar("authenticating")}>
+					<Button variant={authenticating ? "primaryDisabled" : "primary"} sizing="sm" onClick={() => handleSidebar("authenticating")}>
 						{authenticating ? "Depositing..." : "Deposit"}
 					</Button>
 				)}
