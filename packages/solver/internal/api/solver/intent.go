@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
@@ -200,7 +199,7 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transactionsBatch := make([]plug_router.PlugTypesLibPlug, 0)
+	transactionsBatch := make([]signature.Plug, 0)
 	var breakOuter bool
 	for _, inputs := range req.Inputs {
 		transactions, err := h.Solver.GetTransaction(inputs, req.ChainId, req.From)
@@ -217,7 +216,7 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 			if transaction.Exclusive {
 				// NOTE: Set the field to false to avoid tarnishing the response shape.
 				transaction.Exclusive = false
-				transactionsBatch = []plug_router.PlugTypesLibPlug{transaction}
+				transactionsBatch = []signature.Plug{transaction}
 				breakOuter = true
 				break
 			}
@@ -235,8 +234,9 @@ func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	type IntentResponse struct {
-		Transactions []plug_router.PlugTypesLibPlug `json:"transactions"`
+		Transactions []signature.Plug              `json:"transactions"`
 		Plug         *simulation.SimulationRequest  `json:"plug,omitempty"`
 		Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
 	}

@@ -8,16 +8,16 @@ import (
 	"solver/bindings/euler_account_lens"
 	"solver/bindings/euler_evault_implementation"
 	"solver/bindings/euler_evc"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -83,13 +83,13 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug
 		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
 	}
 
-	return []plug_router.PlugTypesLibPlug{{
+	return []signature.Plug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, depositCall}, nil
 }
 
-func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -181,13 +181,13 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, fmt.Errorf("failed to wrap enable collateral call: %w", err)
 	}
 
-	return []plug_router.PlugTypesLibPlug{{
+	return []signature.Plug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, depositCall, enableCollateralCall}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -242,10 +242,10 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, fmt.Errorf("failed to wrap withdraw call: %w", err)
 	}
 
-	return []plug_router.PlugTypesLibPlug{call}, nil
+	return []signature.Plug{call}, nil
 }
 
-func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -299,10 +299,10 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]pl
 		return nil, fmt.Errorf("failed to wrap borrow call: %w", err)
 	}
 
-	return []plug_router.PlugTypesLibPlug{call}, nil
+	return []signature.Plug{call}, nil
 }
 
-func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -370,13 +370,13 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]plu
 		return nil, fmt.Errorf("failed to wrap repay call: %w", err)
 	}
 
-	return []plug_router.PlugTypesLibPlug{{
+	return []signature.Plug{{
 		To:   vault.Vault,
 		Data: approveCalldata,
 	}, repayCall}, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Direction int    `json:"direction"` // -1 for borrow, 1 for supply
 		Vault     string `json:"vault"`
@@ -423,7 +423,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	return nil, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
@@ -493,7 +493,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
@@ -554,10 +554,10 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 	return nil, nil
 }
 
-func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte) (plug_router.PlugTypesLibPlug, error) {
+func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte) (signature.Plug, error) {
 	evc, err := euler_evc.EulerEvcMetaData.GetAbi()
 	if err != nil {
-		return plug_router.PlugTypesLibPlug{}, utils.ErrABI("EulerEvc")
+		return signature.Plug{}, utils.ErrABI("EulerEvc")
 	}
 
 	callCalldata, err := evc.Pack(
@@ -569,11 +569,11 @@ func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccoun
 	)
 	if err != nil {
 		fmt.Printf("WrapEVCCall pack error: %v\n", err)
-		return plug_router.PlugTypesLibPlug{}, utils.ErrTransaction(err.Error())
+		return signature.Plug{}, utils.ErrTransaction(err.Error())
 	}
 	fmt.Printf("WrapEVCCall callCalldata: %v\n", callCalldata)
 
-	return plug_router.PlugTypesLibPlug{
+	return signature.Plug{
 		To:   common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
 		Data: callCalldata,
 	}, nil

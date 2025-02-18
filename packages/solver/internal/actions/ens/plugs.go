@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"solver/bindings/ens_registrar_controller"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -19,7 +19,7 @@ var (
 	resolver = "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
 )
 
-func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string `json:"name"`
 		MaxPrice string `json:"maxPrice"`
@@ -85,7 +85,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
-		return []plug_router.PlugTypesLibPlug{{
+		return []signature.Plug{{
 			To:        common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 			Data:      commitCalldata,
 			Exclusive: true,
@@ -116,14 +116,14 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("rent price (%v wei) is higher than maximum allowed (%v wei)", price.Base, maxPrice)
 	}
 
-	return []plug_router.PlugTypesLibPlug{{
+	return []signature.Plug{{
 		To:    common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 		Data:  registerCalldata,
 		Value: price.Base,
 	}}, nil
 }
 
-func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
@@ -152,14 +152,14 @@ func HandleActionRenew(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []plug_router.PlugTypesLibPlug{{
+	return []signature.Plug{{
 		To:    common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
 		Data:  renewCalldata,
 		Value: price.Base,
 	}}, nil
 }
 
-func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name string `json:"name"`
 	}
@@ -186,7 +186,7 @@ func HandleConstraintGracePeriod(rawInputs json.RawMessage, params actions.Handl
 	return nil, fmt.Errorf("ENS %s is not in renewal grace period", inputs.Name)
 }
 
-func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`
@@ -215,7 +215,7 @@ func HandleConstraintTimeLeft(rawInputs json.RawMessage, params actions.HandlerP
 	return nil, nil
 }
 
-func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
+func HandleConstraintRenewalPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Name     string   `json:"name"`
 		Duration *big.Int `json:"duration"`

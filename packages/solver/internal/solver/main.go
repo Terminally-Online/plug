@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/big"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -16,6 +15,7 @@ import (
 	"solver/internal/actions/yearn_v3"
 	"solver/internal/client"
 	"solver/internal/solver/call"
+	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
 )
@@ -44,7 +44,7 @@ func New() Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]plug_router.PlugTypesLibPlug, error) {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -64,9 +64,9 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	}
 
 	params := actions.HandlerParams{
-		Client:  client,
-		ChainId: chainId,
-		From:    from,
+		Client: client,
+		ChainId:  chainId,
+		From:     from,
 	}
 
 	transactions, err := handler.GetTransaction(inputs.Action, rawInputs, params)
@@ -86,9 +86,9 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	return transactions, nil
 }
 
-func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]plug_router.PlugTypesLibPlug, error) {
+func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signature.Plug, error) {
 	var breakOuter bool
-	transactionsBatch := make([]plug_router.PlugTypesLibPlug, 0)
+	transactionsBatch := make([]signature.Plug, 0)
 	errors := make([]error, len(definition.Inputs))
 	for i, input := range definition.Inputs {
 		inputMap := map[string]interface{}{
@@ -121,7 +121,7 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]plug_ro
 			if transaction.Exclusive {
 				// NOTE: Set the field to false to avoid tarnishing the response shape.
 				transaction.Exclusive = false
-				transactionsBatch = []plug_router.PlugTypesLibPlug{transaction}
+				transactionsBatch = []signature.Plug{transaction}
 				breakOuter = true
 				break
 			}
@@ -153,7 +153,7 @@ func (s *Solver) GetPlugsTransaction() error {
 	return nil
 }
 
-func (s *Solver) GetCall(transactions []plug_router.PlugTypesLibPlug) error {
+func (s *Solver) GetCall(transactions []signature.Plug) error {
 	// TODO: Run the transactions through the entrypoint with our executor account.
 	return nil
 }

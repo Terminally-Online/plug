@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"os"
 	"solver/bindings/multicall_primary"
-	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
 	"solver/internal/utils"
 
@@ -16,7 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -59,6 +57,8 @@ func (c *Client) ReadOptions(address string) *bind.CallOpts {
 		Context: context.Background(),
 	}
 }
+func (c *Client) SolverReadOptions() *bind.CallOpts { return c.ReadOptions(os.Getenv("SOLVER_ADDRESS")) }
+
 func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts {
 	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
 		return transaction, nil
@@ -71,29 +71,7 @@ func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts
 		Value:  value,
 	}
 }
-func (c *Client) SolverReadOptions() *bind.CallOpts {
-	return c.ReadOptions(c.solverAddress.Hex())
-}
-func (c *Client) SolverWriteOptions() *bind.TransactOpts {
-	return c.WriteOptions(c.solverAddress.Hex(), big.NewInt(0))
-}
-
-func (c *Client) Plug(livePlugs []plug_router.PlugTypesLibLivePlugs) (*ethtypes.Transaction, error) {
-	router, err := plug_router.NewPlugRouter(
-		common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"]),
-		c,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	plugged, err := router.Plug0(c.SolverWriteOptions(), livePlugs)
-	if err != nil {
-		return nil, err
-	}
-
-	return plugged, nil
-}
+func (c *Client) SolverWriteOptions() *bind.TransactOpts { return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0)) }
 
 func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
 	multicallAddress := common.HexToAddress(references.Networks[c.chainId].References["multicall"]["primary"])
