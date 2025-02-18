@@ -19,7 +19,13 @@ type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
-	case ActionEarn, ActionDepositCollateral, ActionWithdraw:
+	case ActionEarn:
+		// TODO: Fetch holdings for the sub account 0 and match them against vaults that could be deposited into.
+		return nil, nil
+	case ActionWithdraw:
+		// TODO: Fetch holdings for the sub account 0 and match them against vaults that could be withdrawn from.
+		return nil, nil
+	case ActionDepositCollateral, ActionWithdrawCollateral:
 		vaults, err := GetVerifiedVaults(chainId)
 		if err != nil {
 			return nil, err
@@ -34,11 +40,11 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			return nil, err
 		}
 		return map[int]actions.Options{
-			1: {Simple: supplyTokenOptions},
-			2: {Complex: supplyTokenToVaultOptions},
-			3: {Simple: addressPositions},
+			0: {Simple: addressPositions},
+			2: {Simple: supplyTokenOptions},
+			3: {Complex: supplyTokenToVaultOptions},
 		}, nil
-
+		
 	case ActionBorrow, ActionRepay:
 		vaults, err := GetVerifiedVaults(chainId)
 		if err != nil {
@@ -106,7 +112,7 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 	}
 }
 
-func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
+func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
 	type result struct {
 		tokenOptions        []actions.Option
 		vaultOptions        []actions.Option
@@ -168,7 +174,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
 }
 
-func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
+func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
 	type result struct {
 		tokenOptions        []actions.Option
 		vaultOptions        []actions.Option
@@ -298,12 +304,12 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				accountIndex      int
 				subAccountAddress common.Address
 			}
-			var failedVaults []VaultWithAccount
+			var collateralVaults []VaultWithAccount
 
-			// First pass - collect failed vaults and handle successful ones
+			// First pass - collect collateral vaults and handle borrow ones
 			for _, vaultAccountInfo := range accountInfo.VaultAccountInfo {
 				if vaultAccountInfo.LiquidityInfo.QueryFailure {
-					failedVaults = append(failedVaults, VaultWithAccount{
+					collateralVaults = append(collateralVaults, VaultWithAccount{
 						vaultAccountInfo:  vaultAccountInfo,
 						accountIndex:      i,
 						subAccountAddress: subAccountAddress,
@@ -311,9 +317,11 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					continue
 				}
 
+				fmt.Printf("debt vault: %v, accountIndex %d,  shares %v, borrowed %v\n", vaultAccountInfo.Asset.Hex(), i, vaultAccountInfo.Shares, vaultAccountInfo.Borrowed)
+
 				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
 
-				// Store successful vault in the map
+				// Store debt vault in the map
 				optionsByIndex[i] = actions.Option{
 					Label: fmt.Sprintf("Account #%d", i+1),
 					Name:  utils.FormatAddress(vaultAccountInfo.Account),
@@ -328,33 +336,35 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 				}
 			}
 
-			// Process failed vaults
-			if len(failedVaults) > 0 {
-				for _, failedVault := range failedVaults {
-					if _, exists := optionsByIndex[failedVault.accountIndex]; exists {
+			// Process collateral vaults
+			if len(collateralVaults) > 0 {
+				for _, collateralVault := range collateralVaults {
+					fmt.Printf("collateral vault: %v, accountIndex: %d, shares %v, borrowed %v\n", collateralVault.vaultAccountInfo.Asset.Hex(), i, collateralVault.vaultAccountInfo.Shares, collateralVault.vaultAccountInfo.Borrowed)
+
+					if _, exists := optionsByIndex[collateralVault.accountIndex]; exists {
 						continue
 					}
 
-					price, err := GetVaultPrice(failedVault.vaultAccountInfo.Vault.String(), chainId)
+					price, err := GetVaultPrice(collateralVault.vaultAccountInfo.Vault.String(), chainId)
 					if err != nil {
 						fmt.Printf("error getting vault price: %v\n", err)
 						continue
 					}
 
 					decimals := uint8(price.vault.AssetDecimals.Uint64())
-					assetValue := utils.UintToFloat(failedVault.vaultAccountInfo.Assets, decimals)
+					assetValue := utils.UintToFloat(collateralVault.vaultAccountInfo.Assets, decimals)
 					netValue := assetValue * price.price * math.Pow10(int(decimals))
 
-					optionsByIndex[failedVault.accountIndex] = actions.Option{
-						Label: fmt.Sprintf("Account #%d", failedVault.accountIndex+1),
-						Name:  utils.FormatAddress(failedVault.vaultAccountInfo.Account),
-						Value: fmt.Sprintf("%d", failedVault.accountIndex),
+					optionsByIndex[collateralVault.accountIndex] = actions.Option{
+						Label: fmt.Sprintf("Account #%d", collateralVault.accountIndex+1),
+						Name:  utils.FormatAddress(collateralVault.vaultAccountInfo.Account),
+						Value: fmt.Sprintf("%d", collateralVault.accountIndex),
 						Info: actions.OptionInfo{
-							Label: failedVault.vaultAccountInfo.Asset.Hex(),
+							Label: collateralVault.vaultAccountInfo.Asset.Hex(),
 							Value: fmt.Sprintf("$%.2f", netValue),
 						},
 						Icon: actions.OptionIcon{
-							Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(failedVault.vaultAccountInfo.Asset.Hex())),
+							Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(collateralVault.vaultAccountInfo.Asset.Hex())),
 						},
 					}
 				}
