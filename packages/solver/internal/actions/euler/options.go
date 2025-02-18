@@ -19,18 +19,22 @@ import (
 type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(chainId)
+	if err != nil {
+		return nil, err
+	}
+
 	switch action {
-	case ActionEarn:
-		// TODO: Fetch holdings for the sub account 0 and match them against vaults that could be deposited into.
-		return nil, nil
-	case ActionWithdraw:
-		// TODO: Fetch holdings for the sub account 0 and match them against vaults that could be withdrawn from.
-		return nil, nil
-	case ActionDepositCollateral, ActionWithdrawCollateral:
-		vaults, err := GetVerifiedVaults(chainId)
+	case ActionEarn, ActionWithdraw:
+		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
 		}
+		return map[int]actions.Options{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+		}, nil
+	case ActionDepositCollateral, ActionWithdrawCollateral:
 		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -45,12 +49,8 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			2: {Simple: supplyTokenOptions},
 			3: {Complex: supplyTokenToVaultOptions},
 		}, nil
-		
+
 	case ActionBorrow, ActionRepay:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
 		borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -67,10 +67,6 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		}, nil
 
 	case ConstraintHealthFactor, ConstraintTimeToLiq:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
 		_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -87,10 +83,6 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		}, nil
 
 	case ConstraintAPY:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
 		_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -321,8 +313,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					continue
 				}
 
-				fmt.Printf("debt vault: %v, accountIndex %d,  shares %v, borrowed %v\n", vaultAccountInfo.Asset.Hex(), i, vaultAccountInfo.Shares, vaultAccountInfo.Borrowed)
-
 				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
 
 				// Store debt vault in the map
@@ -343,8 +333,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			// Process collateral vaults
 			if len(collateralVaults) > 0 {
 				for _, collateralVault := range collateralVaults {
-					fmt.Printf("collateral vault: %v, accountIndex: %d, shares %v, borrowed %v\n", collateralVault.vaultAccountInfo.Asset.Hex(), i, collateralVault.vaultAccountInfo.Shares, collateralVault.vaultAccountInfo.Borrowed)
-
 					if _, exists := optionsByIndex[collateralVault.accountIndex]; exists {
 						continue
 					}
