@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
 	"strconv"
@@ -15,11 +14,15 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+type IntentDomain struct {
+	ChainId uint64 `json:"chainId"`
+	From    string `json:"from"`
+}
+
 type IntentRequest struct {
-	Id      string            `json:"id"`
-	ChainId uint64            `json:"chainId"`
-	From    string            `json:"from"`
-	Inputs  []json.RawMessage `json:"inputs"`
+	Id     string            `json:"id"`
+	Inputs []json.RawMessage `json:"inputs"`
+	IntentDomain
 }
 
 func (r *IntentRequest) Validate() error {
@@ -192,74 +195,18 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetPlug(w http.ResponseWriter, r *http.Request) {
-	var req IntentRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
+	var definition simulation.SimulationDefinition
+	if err := json.NewDecoder(r.Body).Decode(&definition); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	transactionsBatch := make([]signature.Plug, 0)
-	var breakOuter bool
-	for _, inputs := range req.Inputs {
-		transactions, err := h.Solver.GetTransaction(inputs, req.ChainId, req.From)
-		if err != nil {
-			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		// NOTE: Some plug actions have exclusive transactions that need to be run alone
-		//       before the rest of the Plug can run. For this, we will just break out
-		//       of the loop and execute any solo transactions that are needed for
-		//       the rest of the batch to run in sequence.
-		for _, transaction := range transactions {
-			if transaction.Exclusive {
-				// NOTE: Set the field to false to avoid tarnishing the response shape.
-				transaction.Exclusive = false
-				transactionsBatch = []signature.Plug{transaction}
-				breakOuter = true
-				break
-			}
-		}
-
-		if breakOuter {
-			break
-		}
-
-		transactionsBatch = append(transactionsBatch, transactions...)
-	}
-
-	if len(transactionsBatch) == 0 {
-		utils.MakeHttpError(w, "has no transactions to execute", http.StatusBadRequest)
-		return
-	}
-
-
-	type IntentResponse struct {
-		Transactions []signature.Plug              `json:"transactions"`
-		Plug         *simulation.SimulationRequest  `json:"plug,omitempty"`
-		Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
-	}
-
-	message, err := signature.GetLivePlugs(req.ChainId, req.From, transactionsBatch)
-	if err != nil {
+	if solution, err := h.Solver.Solve(definition); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	simulationRequest, simulationResponse, err := h.Solver.Simulator.GetSimulationResponse("1", req.ChainId, message)
-	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	response := IntentResponse{
-		Transactions: transactionsBatch,
-		Plug:         simulationRequest,
-		Simulation:   simulationResponse,
-	}
-
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+	} else {
+		if err := json.NewEncoder(w).Encode(solution); err != nil {
+			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		}
 	}
 }

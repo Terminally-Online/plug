@@ -1,22 +1,17 @@
 package simulation
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"math/big"
-	"net/http"
 	"os"
 	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
-
 	"strings"
-
-	"bytes"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -24,38 +19,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-type Simulator struct {
-	signer common.Address
-}
-
-func New() Simulator {
-	return Simulator{
-		signer: common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-	}
-}
-
-func (s *Simulator) GetNext() (SimulationDefinitions, error) {
-	url := fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.simulation.simulateNext")
-	response, err := utils.MakeHTTPRequest(
-		url,
-		"POST",
-		map[string]string{
-			"Content-Type": "application/json",
-			"X-API-Key":    os.Getenv("PLUG_APP_API_KEY"),
-		},
-		nil,
-		nil,
-		SimulationDefinitions{},
-	)
-	if err != nil {
-		return response, err
-	}
-	return response, nil
-}
-
-func (s *Simulator) GetSimulationRequest(
-	executionId string, chainId uint64, plugs signature.LivePlugs,
-) (*SimulationRequest, error) {
+func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -66,93 +30,17 @@ func (s *Simulator) GetSimulationRequest(
 		return nil, utils.ErrTransaction(err.Error())
 	}
 	return &SimulationRequest{
-		ExecutionId: executionId,
-		ChainId:     chainId,
-		From:        common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-		To:          common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
-		Data:        plugCalldata,
-		Value:       big.NewInt(0),
-		ABI:         plug_router.PlugRouterMetaData.ABI,
+		Id:      id,
+		ChainId: chainId,
+		From:    common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		To:      common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
+		Data:    plugCalldata,
+		Value:   big.NewInt(0),
+		ABI:     plug_router.PlugRouterMetaData.ABI,
 	}, nil
 }
 
-func (s *Simulator) GetSimulationResponse(
-	executionId string, chainId uint64, plugs signature.LivePlugs,
-) (
-	*SimulationRequest, *SimulationResponse, error,
-) {
-	simulationRequest, err := s.GetSimulationRequest(executionId, chainId, plugs)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	simulationResponse, err := s.Simulate(simulationRequest)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return simulationRequest, simulationResponse, nil
-}
-
-func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading request body: %v", err), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var req SimulationRequest
-	if err := json.Unmarshal(body, &req); err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing request: %v", err), http.StatusBadRequest)
-		return
-	}
-
-	if req.ChainId == 0 {
-		http.Error(w, "Chain ID is required", http.StatusBadRequest)
-		return
-	}
-
-	resp, err := s.Simulate(&req)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Simulation failed: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusInternalServerError)
-		return
-	}
-}
-
-func (s *Simulator) PostSimulations(simulations []SimulationResponse) error {
-	response := SimulationResponses{
-		Json: simulations,
-	}
-	body, err := json.Marshal(response)
-	if err != nil {
-		return err
-	}
-	_, err = utils.MakeHTTPRequest(
-		fmt.Sprintf("%s%s", os.Getenv("PLUG_APP_API_URL"), "jobs.simulation.simulated"),
-		"POST",
-		map[string]string{
-			"Content-Type": "application/json",
-			"X-API-Key":    os.Getenv("PLUG_APP_API_KEY"),
-		},
-		nil,
-		bytes.NewReader(body),
-		SimulationResponses{},
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Simulator) Simulate(req *SimulationRequest) (*SimulationResponse, error) {
+func simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
 	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
@@ -205,8 +93,8 @@ func (s *Simulator) Simulate(req *SimulationRequest) (*SimulationResponse, error
 	}
 
 	resp := &SimulationResponse{
-		ExecutionId: req.ExecutionId,
-		Success:     trace.Error == "",
+		Id:      req.Id,
+		Success: trace.Error == "",
 		Data: OutputData{
 			Raw: trace.Output,
 		},
@@ -244,14 +132,30 @@ func (s *Simulator) Simulate(req *SimulationRequest) (*SimulationResponse, error
 			return resp, nil
 		}
 
+		// TODO: Do this when there is nothing left more pressing to work on. This
+		//       really should not be prioritized unless there are zero tickets and
+		//       we have an actual use for it somewhere in the app or idea.
 		// decoded, err := method.Outputs.Unpack(trace.Output)
 		// if err != nil {
 		// 	resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
 		// 	return resp, nil
 		// }
-		//
 		// resp.Data.Decoded = decoded
 	}
 
 	return resp, nil
+}
+
+func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
+	simulationRequest, err := getSimulationRequest(id, chainId, plugs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	simulationResponse, err := simulate(simulationRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return simulationRequest, simulationResponse, nil
 }

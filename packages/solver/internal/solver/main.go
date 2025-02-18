@@ -13,23 +13,20 @@ import (
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
 	"solver/internal/client"
-	"solver/internal/solver/call"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type Solver struct {
-	Simulator simulation.Simulator
-	Caller    call.Caller
 	Protocols map[string]actions.BaseProtocolHandler
 	IsKilled  bool
 }
 
 func New() Solver {
 	return Solver{
-		Simulator: simulation.New(),
-		Caller:    call.New(),
 		Protocols: map[string]actions.BaseProtocolHandler{
 			actions.ProtocolPlug:    plug.New(),
 			actions.ProtocolAaveV3:  aave_v3.New(),
@@ -85,23 +82,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 	return transactions, nil
 }
 
-// GetPlugs processes transaction inputs and returns a slice of Plug signatures.
-// It handles both regular and exclusive transactions, where exclusive transactions
-// must be executed independently before other transactions in the batch.
-//
-// Parameters:
-//
-//	head: Existing slice of Plug signatures to append to
-//	chainId: The blockchain network identifier
-//	from: The sender's address
-//	inputs: Raw JSON byte array containing transaction details
-//
-// Returns:
-//
-//	plugs: Slice of Plug signatures (either appended to head or a single exclusive transaction)
-//	exclusive: Boolean indicating if an exclusive transaction was found
-//	error: Any error encountered during processing
-func (s *Solver) GetExclusivePlugs(
+func (s *Solver) GetPlugsArray(
 	head []signature.Plug,
 	inputs []byte,
 	chainId uint64,
@@ -127,19 +108,6 @@ func (s *Solver) GetExclusivePlugs(
 	return append(head, plugs...), false, nil
 }
 
-// GetPlug processes a simulation definition to generate a sequence of transaction signatures.
-// It iterates through the input definitions, converting them to Plug signatures while handling
-// both regular and exclusive transactions.
-//
-// Parameters:
-//   - definition: A SimulationDefinition containing chain ID, sender address, and transaction inputs
-//
-// Returns:
-//   - []signature.Plug: A slice of transaction signatures ready for execution
-//   - error: Any error encountered during processing, including validation errors
-//
-// The function will return early if it encounters an exclusive transaction, as these must be
-// executed independently. It also validates that at least one transaction is generated.
 func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signature.Plug, error) {
 	var plugs []signature.Plug
 	for _, input := range definition.Inputs {
@@ -156,7 +124,7 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 		}
 
 		var exclusive bool
-		plugs, exclusive, err = s.GetExclusivePlugs(plugs, inputs, definition.ChainId, definition.From)
+		plugs, exclusive, err = s.GetPlugsArray(plugs, inputs, definition.ChainId, definition.From)
 		if err != nil {
 			return nil, utils.ErrBuild(err.Error())
 		}
@@ -174,33 +142,73 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 	return plugs, nil
 }
 
-// GetLivePlugs converts a simulation definition into executable transaction signatures.
-// It first generates Plug signatures using GetPlugs, then converts them into LivePlugs
-// which contain additional metadata needed for transaction execution.
-//
-// Parameters:
-//   - definition: A SimulationDefinition containing chain ID, sender address, and transaction inputs
-//
-// Returns:
-//   - signature.LivePlugs: A struct containing the executable transaction data
-//   - error: Any error encountered during the conversion process
 func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signature.LivePlugs, error) {
 	plugs, err := s.GetPlugs(definition)
 	if err != nil {
 		return signature.LivePlugs{}, err
 	}
-	livePlugs, err := signature.GetLivePlugs(definition.ChainId, definition.From, plugs)
+	solver, err := signature.GetSolverHash()
+	if err != nil {
+		return signature.LivePlugs{}, err
+	}
+	salt, err := signature.GetSaltHash(common.HexToAddress(definition.From))
 	if err != nil {
 		return signature.LivePlugs{}, err
 	}
 
-	return livePlugs, nil
+	plugsSigned, plugsSignature, err := signature.GetSignature(
+		big.NewInt(int64(definition.ChainId)),
+		common.HexToAddress(definition.From),
+		signature.Plugs{
+			Socket: common.HexToAddress(definition.From),
+			Plugs:  plugs,
+			Solver: solver,
+			Salt:   salt,
+		},
+	)
+	if err != nil {
+		return signature.LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
+	}
+
+	return signature.LivePlugs{
+		Plugs:     plugsSigned,
+		Signature: plugsSignature,
+	}, nil
 }
 
-// _, simulationResponse, err := s.Simulator.GetSimulationResponse(definition.Id, definition.ChainId, livePlugs)
-// if err != nil {
-// 	simulationResponses = append(simulationResponses, simulation.SimulationResponse{
-// 		Success: false,
-// 	})
-// 	continue
-// }
+//	 NOTE: When we do implement the ability to define a Solver it will mean that we do not
+//		have the ability to generate a signature so we cannot generate and simulate the
+//		final state. Realistically that is fine because we are not really designing for
+//		external consumption today, but it is something to keep in mind as it gets closer.
+func (s *Solver) Solve(definition simulation.SimulationDefinition) (*Solution, error) {
+	livePlugs, err := s.GetLivePlugs(definition)
+	if err != nil {
+		return nil, err
+	}
+
+	// NOTE: For this to be accurate we need the plugs already signed since that is all
+	//       we can simulate meaning only livePlugs should be returned when we cannot
+	//       realize the state of a simulated plug simulation defintion.
+	var simulationRequest *simulation.SimulationRequest
+	var simulationResponse *simulation.SimulationResponse
+	if definition.Options.Simulate {
+		simulationRequest, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, livePlugs)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if definition.Options.Submit && simulationResponse.Success {
+		// TODO: I need to handle transaction submission here -- Need to first figure out if
+		//       we saving simulations and/or executions in the database so that we can recall
+		//       them through restarts? Probably the smartest thing to do, no?
+	}
+
+	// TODO: Save to the database.
+
+	return &Solution{
+		Transactions: livePlugs.Plugs.Plugs,
+		Plug:         simulationRequest,
+		Simulation:   simulationResponse,
+	}, nil
+}

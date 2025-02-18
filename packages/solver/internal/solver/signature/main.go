@@ -120,31 +120,32 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 	return plugs, signature, nil
 }
 
-func GetLivePlugs(chainId uint64, from string, transactions []Plug) (LivePlugs, error) {
-	solver, err := GetSolverHash()
-	if err != nil {
-		return LivePlugs{}, err
-	}
-	salt, err := GetSaltHash(common.HexToAddress(from))
-	if err != nil {
-		return LivePlugs{}, err
-	}
-	plugs, plugsSignature, err := GetSignature(
-		big.NewInt(int64(chainId)),
-		common.HexToAddress(from),
-		Plugs{
-			Socket: common.HexToAddress(from),
-			Plugs:  transactions,
-			Solver: solver,
-			Salt:   salt,
-		},
-	)
-	if err != nil {
-		return LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
-	}
-
-	return LivePlugs{
-		Plugs:     plugs,
-		Signature: plugsSignature,
-	}, nil
-}
+// TODO: This can be removed if you stumble upon it and you don't know why this is here.
+//       I should have deleted this in my cleanup of a PR but I missed it - CHANCE.
+// func GetLivePlugs(chainId uint64, from string, transactions []Plug) (LivePlugs, error) {
+// 	solver, err := GetSolverHash()
+// 	if err != nil {
+// 		return LivePlugs{}, err
+// 	}
+// 	salt, err := GetSaltHash(common.HexToAddress(from))
+// 	if err != nil {
+// 		return LivePlugs{}, err
+// 	}
+// 	plugs, plugsSignature, err := GetSignature(
+// 		big.NewInt(int64(chainId)),
+// 		common.HexToAddress(from),
+// 		Plugs{
+// 			Socket: common.HexToAddress(from),
+// 			Plugs:  transactions,
+// 			Solver: solver,
+// 			Salt:   salt,
+// 		},
+// 	)
+// 	if err != nil {
+// 		return LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
+// 	}
+// 	return LivePlugs{
+// 		Plugs:     plugs,
+// 		Signature: plugsSignature,
+// 	}, nil
+// }
