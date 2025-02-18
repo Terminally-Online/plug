@@ -6,11 +6,11 @@ import (
 	"log"
 	"math/big"
 	"solver/bindings/erc_20"
+	"solver/bindings/plug_router"
 	"solver/bindings/weth_address"
 	"solver/internal/actions"
 	"solver/internal/actions/llama"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 	"strings"
@@ -25,7 +25,7 @@ type SwapInputs struct {
 	AmountOut string `json:"amountOut"`
 }
 
-func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token     string `json:"token"`
 		Recipient string `json:"recipient"`
@@ -65,7 +65,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 			nil,
 		)
 
-		return []signature.Plug{{
+		return []plug_router.PlugTypesLibPlug{{
 			To:    common.HexToAddress(inputs.Recipient),
 			Value: transaction.Value(),
 		}}, nil
@@ -84,13 +84,13 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(inputs.Token),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token     string  `json:"token"`     // Address of the token to transfer.
 		Recipient string  `json:"recipient"` // Address of the recipient.
@@ -107,11 +107,11 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 
 	log.Printf("%d", *tokenType)
 
-	return []signature.Plug{}, nil
+	return []plug_router.PlugTypesLibPlug{}, nil
 }
 
 // handleEthWethSwap handles direct conversions between ETH and WETH
-func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
+func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]plug_router.PlugTypesLibPlug, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(inputs.TokenOut, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
@@ -131,13 +131,13 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		return nil, utils.ErrABI("WETH")
 	}
 
-	var tx signature.Plug
+	var tx plug_router.PlugTypesLibPlug
 	if isEthToWeth {
 		calldata, err := wethAbi.Pack("deposit")
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
-		tx = signature.Plug{
+		tx = plug_router.PlugTypesLibPlug{
 			To:    common.HexToAddress(wethAddress),
 			Data:  calldata,
 			Value: amountOut,
@@ -147,7 +147,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		if err != nil {
 			return nil, utils.ErrTransaction(err.Error())
 		}
-		tx = signature.Plug{
+		tx = plug_router.PlugTypesLibPlug{
 			To:   common.HexToAddress(wethAddress),
 			Data: calldata,
 		}
@@ -172,7 +172,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		sellSymbol = "ETH"
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:    tx.To,
 		Data:  tx.Data,
 		Value: tx.Value,
@@ -213,7 +213,7 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 }
 
 // handleBebopSwap handles swaps through the Bebop API
-func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
+func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	bebopApiUrl := fmt.Sprintf("https://api.bebop.xyz/pmm/ethereum/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
 		inputs.TokenIn,
 		inputs.TokenOut,
@@ -244,7 +244,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 		return nil, fmt.Errorf("failed to parse value: %s", quoteResponse.Tx.Value)
 	}
 
-	transactions := []signature.Plug{{
+	transactions := []plug_router.PlugTypesLibPlug{{
 		To:    common.HexToAddress(quoteResponse.Tx.To),
 		Data:  common.FromHex(quoteResponse.Tx.Data),
 		Value: value,
@@ -280,7 +280,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 			return nil, utils.ErrTransaction(err.Error())
 		}
 
-		transactions = append([]signature.Plug{{
+		transactions = append([]plug_router.PlugTypesLibPlug{{
 			To:   common.HexToAddress(inputs.TokenOut),
 			Data: approveCalldata,
 		}}, transactions...)
@@ -289,7 +289,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 	return transactions, nil
 }
 
-func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs SwapInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
@@ -320,7 +320,7 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	return handleBebopSwap(inputs, params)
 }
 
-func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
@@ -347,7 +347,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrTransaction(err.Error())
 		}
 
-		return []signature.Plug{{
+		return []plug_router.PlugTypesLibPlug{{
 			To:   common.HexToAddress(inputs.Token),
 			Data: calldata.Data(),
 		}}, nil
@@ -364,7 +364,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 			return nil, utils.ErrTransaction(err.Error())
 		}
 
-		return []signature.Plug{{
+		return []plug_router.PlugTypesLibPlug{{
 			To:    common.HexToAddress(wethAddress),
 			Value: amount,
 			Data:  calldata.Data(),
@@ -374,7 +374,7 @@ func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	return nil, fmt.Errorf("token must be either ETH or WETH for wrapping/unwrapping")
 }
 
-func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token     string `json:"token"`
 		Operator  int8   `json:"operator"`
@@ -416,7 +416,7 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 	return nil, nil
 }
 
-func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token     string `json:"token"`
 		Address   string `json:"address"`

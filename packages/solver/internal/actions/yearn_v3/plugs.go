@@ -8,16 +8,16 @@ import (
 	"strings"
 
 	"solver/bindings/erc_20"
+	"solver/bindings/plug_router"
 	"solver/bindings/yearn_v3_gauge"
 	"solver/bindings/yearn_v3_pool"
 	"solver/internal/actions"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -74,7 +74,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -83,7 +83,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -130,13 +130,13 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(inputs.Vault),
 		Data: depositCalldata,
 	}}, nil
 }
 
-func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -188,7 +188,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -197,7 +197,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}}, nil
 }
 
-func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		TokenIn string `json:"token"`
 	}
@@ -255,7 +255,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -264,7 +264,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 	}}, nil
 }
 
-func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 		Token  string `json:"token"`
@@ -323,13 +323,13 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(targetVault.Staking.Address),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token string `json:"token"`
 	}
@@ -382,13 +382,13 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(targetVault.Staking.Address),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Vault     string `json:"token"`
 		Operator  int    `json:"operator"`

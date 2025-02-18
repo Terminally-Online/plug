@@ -7,15 +7,15 @@ import (
 	"solver/bindings/aave_v3_pool"
 	"solver/bindings/aave_v3_ui_pool_data_provider"
 	"solver/bindings/erc_20"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
@@ -60,7 +60,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *token,
 		Data: approveCalldata,
 	}, {
@@ -69,7 +69,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	}}, nil
 }
 
-func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Token  string `json:"token"`
 		Amount string `json:"amount"`
@@ -102,16 +102,16 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave_v3"]["pool"]),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
@@ -153,7 +153,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   *tokenIn,
 		Data: approveCalldata,
 	}, {
@@ -162,10 +162,10 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}}, nil
 }
 
-func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  
-		Amount string `json:"amount"` 
+		Token  string `json:"token"`
+		Amount string `json:"amount"`
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -194,13 +194,13 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:   common.HexToAddress(references.Networks[params.ChainId].References["aave"]["pool"]),
 		Data: calldata,
 	}}, nil
 }
 
-func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Operator  int    `json:"operator"`
 		Threshold string `json:"threshold"`
@@ -237,7 +237,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	return nil, nil
 }
 
-func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Action    int    `json:"action"`
 		Token     string `json:"token"`

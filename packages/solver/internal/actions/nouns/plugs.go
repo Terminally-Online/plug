@@ -7,16 +7,16 @@ import (
 	"solver/bindings/nouns_art"
 	"solver/bindings/nouns_auction_house"
 	"solver/bindings/nouns_token"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
-	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Amount string `json:"amount"`
 	}
@@ -56,14 +56,14 @@ func HandleActionBid(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, err
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:    common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:  bidCalldata,
 		Value: new(big.Int).Mul(amount, big.NewInt(1e18)),
 	}}, nil
 }
 
-func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Percent string `json:"percent"`
 	}
@@ -111,14 +111,14 @@ func HandleActionIncreaseBid(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, err
 	}
 
-	return []signature.Plug{{
+	return []plug_router.PlugTypesLibPlug{{
 		To:    common.HexToAddress(references.Mainnet.References["nouns"]["auction_house"]),
 		Data:  bidCalldata,
 		Value: bid,
 	}}, nil
 }
 
-func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		TraitType string `json:"traitType"`
 		Trait     string `json:"trait"`
@@ -210,7 +210,7 @@ func HandleConstraintHasTrait(rawInputs json.RawMessage, params actions.HandlerP
 	return nil, nil
 }
 
-func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Id *big.Int `json:"id"`
 	}
@@ -238,7 +238,7 @@ func HandleConstraintIsTokenId(rawInputs json.RawMessage, params actions.Handler
 	return nil, nil
 }
 
-func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleConstraintCurrentBidWithinRange(rawInputs json.RawMessage, params actions.HandlerParams) ([]plug_router.PlugTypesLibPlug, error) {
 	var inputs struct {
 		Min string `json:"min"`
 		Max string `json:"max"`
