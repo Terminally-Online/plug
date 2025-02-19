@@ -23,6 +23,7 @@ library PlugLib {
     error TypeInvalid(uint8 $reality);
 
     error PlugFailed(uint8 $index, string $reason);
+    error PlugResult(uint8 $index, PlugTypesLib.Result $reason);
 
     error CompensationFailed(address $recipient, uint256 $value);
 
