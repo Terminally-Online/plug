@@ -61,8 +61,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@terminallyonline/plug-core':
-        specifier: ^0.3.3
-        version: 0.3.3(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)
+        specifier: ^0.3.4
+        version: 0.3.4(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -3122,8 +3122,8 @@ packages:
   '@terminallyonline/cord@0.3.2':
     resolution: {integrity: sha512-pKKBtInlhIhVjvYrL+VlAdI58L3lHU290XYT6+p4rOO+8bK1UYGuQyY+YkQ9tF+8CBX1WVT/1WZSU1Ht1yQI7w==}
 
-  '@terminallyonline/plug-core@0.3.3':
-    resolution: {integrity: sha512-shYN1tJowfy+pUkTxGAviNmD5iaNMbHT5/EvbSAAnmlTTKvpgUNDSFx1fuiqHFtKGq/5Svko2wTlC9i2c73aew==}
+  '@terminallyonline/plug-core@0.3.4':
+    resolution: {integrity: sha512-3lp4xzyLpTgai5Me5iBbPwFl9W54bt4vp6a5aRqXYZ+qKDXpz7VsWZpdsKLbV3NC5mY4LtiFP+eC8mgiAVUvGA==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -12182,7 +12182,7 @@ snapshots:
 
   '@terminallyonline/cord@0.3.2': {}
 
-  '@terminallyonline/plug-core@0.3.3(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)':
+  '@terminallyonline/plug-core@0.3.4(@tanstack/react-query@4.36.1(react-dom@18.3.1(react@18.2.0))(react@18.2.0))(@types/react@18.3.18)(bufferutil@4.0.9)(react@18.2.0)(typescript@5.7.3)(utf-8-validate@5.0.10)':
     dependencies:
       abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
       commander: 12.1.0
