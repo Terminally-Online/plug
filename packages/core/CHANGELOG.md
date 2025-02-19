@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.3.7
+
+### Patch Changes
+
+- fix: package artifacts
+
 ## 0.3.6
 
 ### Patch Changes
