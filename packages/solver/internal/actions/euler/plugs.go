@@ -454,7 +454,6 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
 		Threshold       string `json:"threshold"`
 		SubAccountIndex uint8  `json:"sub-account"`
@@ -469,11 +468,6 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to parse threshold: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Vault, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
 		params.Client,
@@ -483,14 +477,27 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	}
 
 	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
-	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(
 		nil,
+		evcAddress,
 		subAccountAddress,
-		vault.Vault,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+		return nil, fmt.Errorf("failed to get account vaults info: %w", err)
+	}
+
+	var borrowVault *euler_account_lens.VaultAccountInfo
+	for _, vaultAccountInfo := range vaultAccountInfos.VaultAccountInfo {
+		if !vaultAccountInfo.LiquidityInfo.QueryFailure {
+			borrowVault = &vaultAccountInfo
+			break
+		}
+	}
+
+	if borrowVault == nil {
+		return nil, fmt.Errorf("no vault found with valid liquidity info")
 	}
 
 	// eurc has a lltv of .9
@@ -499,8 +506,8 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	// I'm borrowing 0.4 usdc
 	// my health factor is currently 6.97
 
-	totalValueBorrowed := vaultAccountInfo.LiquidityInfo.LiabilityValue
-	lltvValueCollateral := vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation
+	totalValueBorrowed := borrowVault.LiquidityInfo.LiabilityValue
+	lltvValueCollateral := borrowVault.LiquidityInfo.CollateralValueLiquidation
 
 	healthFactorFloat := new(big.Float).SetInt(lltvValueCollateral)
 	healthFactorFloat.Quo(healthFactorFloat, new(big.Float).SetInt(totalValueBorrowed))
@@ -524,7 +531,6 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
 		Threshold       string `json:"threshold"`
 		SubAccountIndex uint8  `json:"sub-account"`
@@ -539,11 +545,6 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 		return nil, fmt.Errorf("failed to parse threshold: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Vault, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
 		params.Client,
@@ -553,17 +554,30 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 	}
 
 	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
-	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(
 		nil,
+		evcAddress,
 		subAccountAddress,
-		vault.Vault,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+		return nil, fmt.Errorf("failed to get account vaults info: %w", err)
 	}
 
-	ttlFloat := new(big.Float).SetInt(vaultAccountInfo.LiquidityInfo.TimeToLiquidation)
+	var borrowVault *euler_account_lens.VaultAccountInfo
+	for _, vaultAccountInfo := range vaultAccountInfos.VaultAccountInfo {
+		if !vaultAccountInfo.LiquidityInfo.QueryFailure {
+			borrowVault = &vaultAccountInfo
+			break
+		}
+	}
+
+	if borrowVault == nil {
+		return nil, fmt.Errorf("no vault found with valid liquidity info")
+	}
+
+	ttlFloat := new(big.Float).SetInt(borrowVault.LiquidityInfo.TimeToLiquidation)
 	ttlFloat.Quo(ttlFloat, new(big.Float).SetInt64(60))
 	ttlMinutes, _ := ttlFloat.Float64()
 

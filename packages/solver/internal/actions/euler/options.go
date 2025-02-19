@@ -45,9 +45,9 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: addressPositions},
-			2: {Simple: supplyTokenOptions},
-			3: {Complex: supplyTokenToVaultOptions},
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+			3: {Simple: addressPositions},
 		}, nil
 
 	case ActionBorrow, ActionRepay:
@@ -67,19 +67,13 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		}, nil
 
 	case ConstraintHealthFactor, ConstraintTimeToLiq:
-		_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
 		addressPositions, err := GetAddressPositions(chainId, address)
 		if err != nil {
 			fmt.Printf("error getting address positions: %v\n", err)
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: borrowVaultOptions},
-			1: {Simple: addressPositions},
-			2: {Simple: actions.BaseThresholdFields},
+			0: {Simple: addressPositions},
 		}, nil
 
 	case ConstraintAPY:

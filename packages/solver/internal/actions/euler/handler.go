@@ -22,7 +22,6 @@ var (
 	ConstraintHealthFactor   = "health_factor"
 	ConstraintTimeToLiq      = "time_to_liquidation"
 
-	// TODO: Clean up how these new sentences sound.
 	schemas = map[string]actions.ActionDefinition{
 		ActionEarn: {
 			Sentence:       "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
@@ -35,12 +34,12 @@ var (
 			IsUserSpecific: true,
 		},
 		ActionDepositCollateral: {
-			Sentence:       "Using {0<sub-account:uint8>}, deposit {1<amount:float>} {0=>2<token:address:uint8>} to {2=>3<vault:address>} as collateral.",
+			Sentence:       "Deposit collateral {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
 			Handler:        HandleDepositCollateral,
 			IsUserSpecific: true,
 		},
 		ActionWithdrawCollateral: {
-			Sentence:       "Using {0<sub-account:uint8>}, withdraw {1<amount:float>} {0=>2<token:address:uint8>} from {2=>3<vault:address>}.",
+			Sentence:       "Withdraw collateral {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}.",
 			Handler:        HandleWithdrawCollateral,
 			IsUserSpecific: true,
 		},
@@ -50,26 +49,26 @@ var (
 			IsUserSpecific: true,
 		},
 		ActionRepay: {
-			Sentence:       "With {0<sub-account:uint8>}, repay {1<amount:float>} {2<token:address:uint8>} to {2=>3<vault:address>}.",
+			Sentence:       "Repay {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
 			Handler:        HandleRepay,
 			IsUserSpecific: true,
 		},
 		ConstraintHealthFactor: {
 			Type:           actions.TypeConstraint,
-			Sentence:       "Health factor in {0<vault:string>} for  {1<sub-account:uint8>} is {2<operator:int8>} than {3<threshold:float>}.",
+			Sentence:       "Health factor for {0<sub-account:uint8>} is {1<operator:int8>} than {2<threshold:float>}.",
 			Handler:        HandleConstraintHealthFactor,
+			IsUserSpecific: true,
+		},
+		ConstraintTimeToLiq: {
+			Type:           actions.TypeConstraint,
+			Sentence:       "Time to liquidation in for {0<sub-account:uint8>} is {1<operator:int8>} than {2<threshold:float>} minutes.",
+			Handler:        HandleConstraintTimeToLiquidation,
 			IsUserSpecific: true,
 		},
 		ConstraintAPY: {
 			Type:     actions.TypeConstraint,
 			Sentence: "{0<direction:int8>} APY in {1<vault:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
 			Handler:  HandleConstraintAPY,
-		},
-		ConstraintTimeToLiq: {
-			Type:           actions.TypeConstraint,
-			Sentence:       "Time to liquidation in {0<vault:string>} for {1<sub-account:uint8>} is {2<operator:int8>} than {3<threshold:float>} minutes.",
-			Handler:        HandleConstraintTimeToLiquidation,
-			IsUserSpecific: true,
 		},
 	}
 )
