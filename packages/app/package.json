@@ -42,7 +42,7 @@
 		"@t3-oss/env-nextjs": "^0.11.1",
 		"@tanstack/react-query": "^4.18.0",
 		"@terminallyonline/cord": "^0.3.2",
-		"@terminallyonline/plug-core": "^0.3.4",
+		"@terminallyonline/plug-core": "^0.3.7",
 		"@trpc/client": "^10.45.2",
 		"@trpc/next": "^10.45.2",
 		"@trpc/react-query": "^10.45.2",
