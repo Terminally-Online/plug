@@ -12,6 +12,7 @@ type SolutionStatus struct {
 
 type Solution struct {
 	Transactions []signature.Plug               `json:"transactions"`
-	Plug         *simulation.SimulationRequest  `json:"plug,omitempty"`
+	LivePlugs    signature.LivePlugs            `json:"livePlugs,omitempty"`
+	Transaction  *simulation.SimulationRequest  `json:"transaction,omitempty"`
 	Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
 }

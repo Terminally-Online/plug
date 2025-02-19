@@ -12,8 +12,10 @@ import (
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
+	"strings"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -80,30 +82,63 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs []signature.LivePlugs) (*ethtypes.Transaction, error) {
-	router, err := plug_router.NewPlugRouter(
-		common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"]),
-		c,
-	)
+func (c *Client) Plug(livePlugs []signature.LivePlugs) ([]signature.Result, error) {
+	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
-		return nil, err
+		return nil, utils.ErrABI("PlugRouter")
 	}
 
-	// NOTE: We are doing manual transformation here instead of doing something that is type
-	//       based we want the ability to include extra things like `meta` in the response
-	//       body shape which would not be straightforward to do if we use the protocol
-	//       exposed types that are generated with the abi.
-	// TODO: If there is a better way to do this please implement it. - CHANCE
 	lps := make([]plug_router.PlugTypesLibLivePlugs, len(livePlugs))
-	for _, livePlug := range livePlugs {
-		lps = append(lps, livePlug.Wrap())
+	for i, livePlug := range livePlugs {
+		lps[i] = livePlug.Wrap()
 	}
-	plugged, err := router.Plug0(c.SolverWriteOptions(), lps)
+
+	input, err := routerAbi.Pack("plug0", lps)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack plug0 call: %w", err)
+	}
+
+	msg := ethereum.CallMsg{
+		From: c.solverAddress,
+		To:   &routerAddress,
+		Data: input,
+	}
+
+	output, err := c.CallContract(context.Background(), msg, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to simulate plug transaction: %w", err)
+	}
+
+	results := new([]signature.Result)
+	err = routerAbi.UnpackIntoInterface(results, "plug0", output)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unpack plug simulation results: %w", err)
+	}
+
+	auth := c.SolverWriteOptions()
+	auth.NoSend = false 	
+
+	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
 		return nil, err
 	}
 
-	return plugged, nil
+	tx, err := router.Plug0(auth, lps)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send plug transaction: %w", err)
+	}
+
+	receipt, err := bind.WaitMined(context.Background(), c, tx)
+	if err != nil {
+		return nil, fmt.Errorf("failed waiting for plug transaction: %w", err)
+	}
+
+	if receipt.Status != ethtypes.ReceiptStatusSuccessful {
+		return nil, utils.ErrTransaction(fmt.Sprintf("plug transaction failed with status: %d", receipt.Status))
+	}
+
+	return *results, nil
 }
 
 func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
@@ -135,12 +170,10 @@ func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {
 		return nil, fmt.Errorf("failed to pack multicall aggregate: %w", err)
 	}
 
-	msg := ethereum.CallMsg{
+	output, err := c.CallContract(context.Background(), ethereum.CallMsg{
 		To:   &multicallAddress,
 		Data: input,
-	}
-
-	output, err := c.CallContract(context.Background(), msg, nil)
+	}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make multicall: %w", err)
 	}

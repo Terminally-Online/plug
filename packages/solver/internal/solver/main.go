@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -176,11 +177,7 @@ func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signa
 	}, nil
 }
 
-//	 NOTE: When we do implement the ability to define a Solver it will mean that we do not
-//		have the ability to generate a signature so we cannot generate and simulate the
-//		final state. Realistically that is fine because we are not really designing for
-//		external consumption today, but it is something to keep in mind as it gets closer.
-func (s *Solver) Solve(definition simulation.SimulationDefinition) (*Solution, error) {
+func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *Solution, err error) {
 	livePlugs, err := s.GetLivePlugs(definition)
 	if err != nil {
 		return nil, err
@@ -198,17 +195,53 @@ func (s *Solver) Solve(definition simulation.SimulationDefinition) (*Solution, e
 		}
 	}
 
-	if definition.Options.Submit && simulationResponse.Success {
-		// TODO: I need to handle transaction submission here -- Need to first figure out if
-		//       we saving simulations and/or executions in the database so that we can recall
-		//       them through restarts? Probably the smartest thing to do, no?
+	return &Solution{
+		Transactions: livePlugs.Plugs.Plugs, // Transactions in the `livePlug`.
+		LivePlugs:    livePlugs,             // The `livePlug` included in the bundle.
+		Transaction:  simulationRequest,     // Transaction the solver runs.
+		Simulation:   simulationResponse,    // Simulation results of solver run.
+	}, nil
+}
+
+func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, error) {
+	if len(definitions) == 0 {
+		return nil, utils.ErrBuild("no plugs generated to execute")
 	}
 
-	// TODO: Save to the database.
+	chainId := definitions[0].ChainId
+	errors := make([]error, len(definitions))
 
-	return &Solution{
-		Transactions: livePlugs.Plugs.Plugs,
-		Plug:         simulationRequest,
-		Simulation:   simulationResponse,
-	}, nil
+	var livePlugs []signature.LivePlugs
+	for i, definition := range definitions {
+		if definition.ChainId != chainId {
+			errors[i] = utils.ErrChainId("chainId", definition.ChainId)
+			continue
+
+		}
+
+		solution, err := s.Solve(definition)
+		if err != nil {
+			errors[i] = err
+			continue
+		}
+
+		if definition.Options.Submit && solution.Simulation.Success {
+			livePlugs = append(livePlugs, solution.LivePlugs)
+		}
+	}
+
+	provider, err := client.New(chainId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = provider.Plug(livePlugs)
+	if err != nil {
+		return nil, err
+	}
+
+	// router, err := plug_router.NewPlugRouter()
+	// TODO: We need to take transactions `_` and decode their return data so that
+	//       we can get back the results and return them.
+
+	return nil, nil
 }
