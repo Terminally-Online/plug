@@ -19,34 +19,20 @@ The deployment pipeline of Plug is setup to be as simple as possible and multich
 ```bash
 forge script \
     --chain <chain_name> \
-    --rpc-url <rpc_url_matching_chain_name> \
+    --rpc-url <rpc_url> \
     --broadcast \
     -vvvv \
     src/contracts/script/Plug.s.sol
 ```
 
-When you want to verify the contract so you will need to add an `ETHERSCAN_API_KEY` to your `.env` and include the `--verify` tag when running the deployment script.
+If you don't care about verifying the contract right now you can skip this step. Please don't skip it unless you're doing something for development. When you want to verify the contract so you will need to add an `ETHERSCAN_API_KEY` to your `.env` and include the `--verify` tag when running the deployment script.
+
+When you are setting everything up you will want to remove the `--broadcast` so that it just simulates everything and you can confirm you have everything setup right before running a transaction.
+
+Built into the scripts are redeploy protection so if you are running a batch deploy and one succeeds, but one fails, you can just rerun the same script.
 
 ## Addresses
 
 All contracts that should be deterministic are. That means `Plug.sol`, `Plug.Factory.sol` and the base `Plug.Socket.sol` are all found at constant addresses across chains. The only time the address will change when a new version is deployed. This will happen most common for the Socket, but we will always keep the list updated.
 
-```ml
-[v0.3.2]:
-├─ Mining Configuration:
-│  ├─ Leading Zeros: 2
-│  ├─ Total Zeros: 4
-│  ├─ Factory: 0x0000000000ffe8b47b3e2130213b802212439497
-│  └─ Quick Mode: Yes
-│
-└─ Contracts:
-   ├─ Plug.Factory.sol [256] — "0x0000000030c2d2825F563E2F7b78943B0Ea9D145"
-   ├─ Plug.Socket.sol [256] — "0x0000000011A65597897563205669f9c46dEEE244"
-   └─ Plug.sol [256] — "0x0000000021EAfaa2A0ADeec53B7E25F662920212"
-```
-
-To mine new addresses run:
-
-```bash
-pnpm build:mine:quick --version 0.3.3
-```
+<**DEPLOYMENT_ADDRESSES**>

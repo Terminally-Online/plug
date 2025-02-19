@@ -11,6 +11,7 @@ library PlugLib {
     event SocketOwnershipTransferred(
         address indexed previousOwner, address indexed newOwner, bytes32 imageHash
     );
+    event PlugResult(uint8 index, PlugTypesLib.Result reason);
 
     error NotImplemented();
 
@@ -23,7 +24,6 @@ library PlugLib {
     error TypeInvalid(uint8 $reality);
 
     error PlugFailed(uint8 $index, string $reason);
-    error PlugResult(uint8 $index, PlugTypesLib.Result $reason);
 
     error CompensationFailed(address $recipient, uint256 $value);
 

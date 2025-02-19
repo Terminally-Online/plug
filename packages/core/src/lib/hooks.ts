@@ -51,17 +51,7 @@ export const plugAbi = [
       },
     ],
     name: 'plug',
-    outputs: [
-      {
-        name: '$results',
-        internalType: 'struct PlugTypesLib.Result',
-        type: 'tuple',
-        components: [
-          { name: 'index', internalType: 'uint8', type: 'uint8' },
-          { name: 'error', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
+    outputs: [],
     stateMutability: 'payable',
   },
   {
@@ -98,17 +88,7 @@ export const plugAbi = [
       },
     ],
     name: 'plug',
-    outputs: [
-      {
-        name: '$results',
-        internalType: 'struct PlugTypesLib.Result[]',
-        type: 'tuple[]',
-        components: [
-          { name: 'index', internalType: 'uint8', type: 'uint8' },
-          { name: 'error', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
+    outputs: [],
     stateMutability: 'payable',
   },
   {
@@ -117,6 +97,24 @@ export const plugAbi = [
     name: 'symbol',
     outputs: [{ name: '$version', internalType: 'string', type: 'string' }],
     stateMutability: 'pure',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'index', internalType: 'uint8', type: 'uint8', indexed: false },
+      {
+        name: 'reason',
+        internalType: 'struct PlugTypesLib.Result',
+        type: 'tuple',
+        components: [
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
+        ],
+        indexed: false,
+      },
+    ],
+    name: 'PlugResult',
   },
   {
     type: 'error',
@@ -764,6 +762,22 @@ export const useSimulatePlugPlug = /*#__PURE__*/ createUseSimulateContract({
   abi: plugAbi,
   functionName: 'plug',
 })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugAbi}__
+ */
+export const useWatchPlugEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: plugAbi,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link plugAbi}__ and `eventName` set to `"PlugResult"`
+ */
+export const useWatchPlugPlugResultEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: plugAbi,
+    eventName: 'PlugResult',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link plugFactoryAbi}__
