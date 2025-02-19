@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.3.4
+
+### Patch Changes
+
+- 3778643: feat: use emits for result sharing instead of returns
+
 ## 0.3.1
 
 ### Patch Changes
