@@ -12,10 +12,8 @@ import (
 	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
-	"strings"
 
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -117,7 +115,7 @@ func (c *Client) Plug(livePlugs []signature.LivePlugs) ([]signature.Result, erro
 	}
 
 	auth := c.SolverWriteOptions()
-	auth.NoSend = false 	
+	auth.NoSend = false
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {

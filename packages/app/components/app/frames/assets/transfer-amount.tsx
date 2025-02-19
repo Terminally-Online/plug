@@ -240,7 +240,11 @@ export const TransferAmountFrame: FC<{
 					token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
 					recipient
 				}
-			]
+			],
+			options: {
+				isEOA: true,
+				simulate: true,
+			}
 		},
 		{
 			enabled: isFrame && isReady && !!column && !!socket && !!implementation

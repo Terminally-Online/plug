@@ -21,6 +21,7 @@ type SimulationInputs struct {
 type SimulationOptions struct {
 	Simulate bool `json:"simulate"` // Should the Plug be simulated.
 	Submit   bool `json:"submit"`   // Should the Plug be run onchain.
+	IsEOA    bool `json:"isEOA"`    // Is the Plug being run by an EOA.
 }
 
 type SimulationDefinition struct {

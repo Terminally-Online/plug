@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -177,7 +176,45 @@ func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signa
 	}, nil
 }
 
+func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution *Solution, err error) {
+	plugs, err := s.GetPlugs(definition)
+	if err != nil {
+		return nil, err
+	}
+
+	simulationRequest := &simulation.SimulationRequest{
+		Id:      definition.Id,
+		ChainId: definition.ChainId,
+		From:    common.HexToAddress(definition.From),
+		To:      plugs[0].To,
+		Data:    plugs[0].Data,
+		Value:   plugs[0].Value,
+	}
+
+	var simulationResponse *simulation.SimulationResponse
+	if definition.Options.Simulate {
+		var simReq *simulation.SimulationRequest
+		simReq, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, simulationRequest)
+		if err != nil {
+			return nil, err
+		}
+		simulationRequest = simReq
+	}
+
+	return &Solution{
+		Transactions: plugs,
+		Transaction:  simulationRequest,
+		Simulation:   simulationResponse,
+	}, nil
+}
+
 func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *Solution, err error) {
+	// For EOA transactions, we skip plug bundle creation and directly simulate the transaction.
+	if definition.Options.IsEOA {
+		return s.SolveEOA(definition)
+	}
+
+	// Regular plug bundle flow for non-EOA transactions
 	livePlugs, err := s.GetLivePlugs(definition)
 	if err != nil {
 		return nil, err
