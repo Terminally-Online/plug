@@ -12,29 +12,35 @@ var (
 
 	chains = []*references.Network{references.Mainnet, references.Base}
 
-	ActionEarn              = "earn"
-	ActionDepositCollateral = "supply"
-	ActionWithdraw          = "withdraw"
-	ActionBorrow            = "borrow"
-	ActionRepay             = "repay"
-	ConstraintAPY           = "apy"
-	ConstraintHealthFactor  = "health_factor"
-	ConstraintTimeToLiq     = "time_to_liquidation"
+	ActionEarn               = "earn"
+	ActionWithdraw           = "withdraw"
+	ActionDepositCollateral  = "supply_collateral"
+	ActionWithdrawCollateral = "withdraw_collateral"
+	ActionBorrow             = "borrow"
+	ActionRepay              = "repay"
+	ConstraintAPY            = "apy"
+	ConstraintHealthFactor   = "health_factor"
+	ConstraintTimeToLiq      = "time_to_liquidation"
 
 	schemas = map[string]actions.ActionDefinition{
 		ActionEarn: {
-			Sentence:       "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
+			Sentence:       "Earn by depositing {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>}.",
 			Handler:        HandleEarn,
 			IsUserSpecific: true,
 		},
+		ActionWithdraw: {
+			Sentence:       "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}.",
+			Handler:        HandleWithdraw,
+			IsUserSpecific: true,
+		},
 		ActionDepositCollateral: {
-			Sentence:       "Supply {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
+			Sentence:       "Deposit collateral {0<amount:float>} {1<token:address:uint8>} to {1=>2<vault:address>} using {3<sub-account:uint8>}.",
 			Handler:        HandleDepositCollateral,
 			IsUserSpecific: true,
 		},
-		ActionWithdraw: {
-			Sentence:       "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}.",
-			Handler:        HandleWithdraw,
+		ActionWithdrawCollateral: {
+			Sentence:       "Withdraw collateral {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>} using {3<sub-account:uint8>}.",
+			Handler:        HandleWithdrawCollateral,
 			IsUserSpecific: true,
 		},
 		ActionBorrow: {
@@ -49,20 +55,20 @@ var (
 		},
 		ConstraintHealthFactor: {
 			Type:           actions.TypeConstraint,
-			Sentence:       "Health factor in {0<vault:string>} for  {1<sub-account:uint8>} is {2<operator:int8>} than {3<threshold:float>}.",
+			Sentence:       "Health factor for {0<sub-account:uint8>} is {1<operator:int8>} than {2<threshold:float>}.",
 			Handler:        HandleConstraintHealthFactor,
+			IsUserSpecific: true,
+		},
+		ConstraintTimeToLiq: {
+			Type:           actions.TypeConstraint,
+			Sentence:       "Time to liquidation in for {0<sub-account:uint8>} is {1<operator:int8>} than {2<threshold:float>} minutes.",
+			Handler:        HandleConstraintTimeToLiquidation,
 			IsUserSpecific: true,
 		},
 		ConstraintAPY: {
 			Type:     actions.TypeConstraint,
 			Sentence: "{0<direction:int8>} APY in {1<vault:string>} is {2<operator:int8>} than {3<threshold:float>}%.",
 			Handler:  HandleConstraintAPY,
-		},
-		ConstraintTimeToLiq: {
-			Type:           actions.TypeConstraint,
-			Sentence:       "Time to liquidation in {0<vault:string>} for {1<sub-account:uint8>} is {2<operator:int8>} than {3<threshold:float>} minutes.",
-			Handler:        HandleConstraintTimeToLiquidation,
-			IsUserSpecific: true,
 		},
 	}
 )

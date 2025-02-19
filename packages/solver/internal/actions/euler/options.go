@@ -2,6 +2,7 @@ package euler
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"solver/bindings/euler_account_lens"
 	"solver/bindings/euler_vault_lens"
@@ -18,12 +19,22 @@ import (
 type EulerOptionsProvider struct{}
 
 func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
+	vaults, err := GetVerifiedVaults(chainId)
+	if err != nil {
+		return nil, err
+	}
+
 	switch action {
-	case ActionEarn, ActionDepositCollateral, ActionWithdraw:
-		vaults, err := GetVerifiedVaults(chainId)
+	case ActionEarn, ActionWithdraw:
+		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
 		}
+		return map[int]actions.Options{
+			1: {Simple: supplyTokenOptions},
+			2: {Complex: supplyTokenToVaultOptions},
+		}, nil
+	case ActionDepositCollateral, ActionWithdrawCollateral:
 		supplyTokenOptions, _, supplyTokenToVaultOptions, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -40,10 +51,6 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		}, nil
 
 	case ActionBorrow, ActionRepay:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
 		borrowTokenOptions, _, borrowTokenToVaultOptions, err := GetBorrowTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -60,30 +67,16 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 		}, nil
 
 	case ConstraintHealthFactor, ConstraintTimeToLiq:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
-		_, borrowVaultOptions, _, err := GetBorrowTokenToVaultOptions(chainId, vaults)
-		if err != nil {
-			return nil, err
-		}
 		addressPositions, err := GetAddressPositions(chainId, address)
 		if err != nil {
 			fmt.Printf("error getting address positions: %v\n", err)
 			return nil, err
 		}
 		return map[int]actions.Options{
-			0: {Simple: borrowVaultOptions},
-			1: {Simple: addressPositions},
-			2: {Simple: actions.BaseThresholdFields},
+			0: {Simple: addressPositions},
 		}, nil
 
 	case ConstraintAPY:
-		vaults, err := GetVerifiedVaults(chainId)
-		if err != nil {
-			return nil, err
-		}
 		_, supplyVaultOptions, _, err := GetSupplyTokenToVaultOptions(chainId, vaults)
 		if err != nil {
 			return nil, err
@@ -106,7 +99,7 @@ func (p *EulerOptionsProvider) GetOptions(chainId uint64, address common.Address
 	}
 }
 
-func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
+func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
 	type result struct {
 		tokenOptions        []actions.Option
 		vaultOptions        []actions.Option
@@ -114,7 +107,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	}
 
 	cacheKey := fmt.Sprintf("euler:supplyTokens:%d", chainId)
-	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
+	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
 		vaultOptions := make([]actions.Option, 0)
@@ -168,7 +161,7 @@ func GetSupplyTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	return res.tokenOptions, res.vaultOptions, res.tokenToVaultOptions, nil
 }
 
-func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) ([]actions.Option, []actions.Option, map[string][]actions.Option, error) {
+func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.VaultInfoFull) (tokenOptions []actions.Option, vaultOptions []actions.Option, tokenToVaultOptions map[string][]actions.Option, err error) {
 	type result struct {
 		tokenOptions        []actions.Option
 		vaultOptions        []actions.Option
@@ -176,7 +169,7 @@ func GetBorrowTokenToVaultOptions(chainId uint64, vaults []euler_vault_lens.Vaul
 	}
 
 	cacheKey := fmt.Sprintf("euler:borrowTokens:%d", chainId)
-	res, err := utils.WithCache[result](cacheKey, []time.Duration{5 * time.Minute}, func() (result, error) {
+	res, err := utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() (result, error) {
 		seenToken := make(map[string]bool)
 		tokenOptions := make([]actions.Option, 0)
 		vaultOptions := make([]actions.Option, 0)
@@ -236,7 +229,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 	}
 
 	cacheKey := fmt.Sprintf("euler:positions:%d:%s", chainId, address.String())
-	return utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, func() ([]actions.Option, error) {
+	return utils.WithCache(cacheKey, []time.Duration{5 * time.Minute}, true, func() ([]actions.Option, error) {
 		accountLensAbi, err := euler_account_lens.EulerAccountLensMetaData.GetAbi()
 		if err != nil {
 			return nil, utils.ErrABI("EulerAccountLens")
@@ -244,8 +237,6 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		accountLensAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["account_lens"])
 		evcAddr := common.HexToAddress(references.Networks[chainId].References["euler"]["evc"])
-
-		var nextVault *actions.Option
 
 		calls := make([]client.MulticallCalldata, 256)
 		for i := 0; i < 256; i++ {
@@ -271,62 +262,140 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 		}
 
 		options := make([]actions.Option, 0)
+		optionsByIndex := make(map[int]actions.Option)
+
+		consecutiveEmptyAccounts := 0
+		maxIndex := -1
+		var activeIndices []int
+
+		// First pass - collect all active accounts
 		for i, result := range results {
 			accountInfo := result.(*struct {
 				VaultAccountInfo []euler_account_lens.VaultAccountInfo `json:"vaultAccountInfo"`
 			})
-			subAccountAddress := GetSubAccountAddress(address, uint8(i))
 
 			if len(accountInfo.VaultAccountInfo) == 0 {
-				options = append(options, actions.Option{
-					Label: fmt.Sprintf("Account %d", i+1),
-					Name:  utils.FormatAddress(subAccountAddress),
+				consecutiveEmptyAccounts++
+				if consecutiveEmptyAccounts >= 3 {
+					break
+				}
+				continue
+			}
+
+			consecutiveEmptyAccounts = 0
+			activeIndices = append(activeIndices, i)
+			maxIndex = i
+
+			// Process active account
+			subAccountAddress := GetSubAccountAddress(address, uint8(i))
+
+			type VaultWithAccount struct {
+				vaultAccountInfo  euler_account_lens.VaultAccountInfo
+				accountIndex      int
+				subAccountAddress common.Address
+			}
+			var collateralVaults []VaultWithAccount
+
+			// First pass - collect collateral vaults and handle borrow ones
+			for _, vaultAccountInfo := range accountInfo.VaultAccountInfo {
+				if vaultAccountInfo.LiquidityInfo.QueryFailure {
+					collateralVaults = append(collateralVaults, VaultWithAccount{
+						vaultAccountInfo:  vaultAccountInfo,
+						accountIndex:      i,
+						subAccountAddress: subAccountAddress,
+					})
+					continue
+				}
+
+				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
+
+				// Store debt vault in the map
+				optionsByIndex[i] = actions.Option{
+					Label: fmt.Sprintf("Account #%d", i+1),
+					Name:  utils.FormatAddress(vaultAccountInfo.Account),
 					Value: fmt.Sprintf("%d", i),
+					Info: actions.OptionInfo{
+						Label: vaultAccountInfo.Asset.Hex(),
+						Value: fmt.Sprintf("$%.2f", netValue),
+					},
+					Icon: actions.OptionIcon{
+						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vaultAccountInfo.Asset.Hex())),
+					},
+				}
+			}
+
+			// Process collateral vaults
+			if len(collateralVaults) > 0 {
+				for _, collateralVault := range collateralVaults {
+					if _, exists := optionsByIndex[collateralVault.accountIndex]; exists {
+						continue
+					}
+
+					price, err := GetVaultPrice(collateralVault.vaultAccountInfo.Vault.String(), chainId)
+					if err != nil {
+						fmt.Printf("error getting vault price: %v\n", err)
+						continue
+					}
+
+					decimals := uint8(price.vault.AssetDecimals.Uint64())
+					assetValue := utils.UintToFloat(collateralVault.vaultAccountInfo.Assets, decimals)
+					netValue := assetValue * price.price * math.Pow10(int(decimals))
+
+					optionsByIndex[collateralVault.accountIndex] = actions.Option{
+						Label: fmt.Sprintf("Account #%d", collateralVault.accountIndex+1),
+						Name:  utils.FormatAddress(collateralVault.vaultAccountInfo.Account),
+						Value: fmt.Sprintf("%d", collateralVault.accountIndex),
+						Info: actions.OptionInfo{
+							Label: collateralVault.vaultAccountInfo.Asset.Hex(),
+							Value: fmt.Sprintf("$%.2f", netValue),
+						},
+						Icon: actions.OptionIcon{
+							Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(collateralVault.vaultAccountInfo.Asset.Hex())),
+						},
+					}
+				}
+			}
+		}
+
+		// Second pass - add empty accounts between active accounts
+		for i := 0; i < len(activeIndices)-1; i++ {
+			current := activeIndices[i]
+			next := activeIndices[i+1]
+
+			// Add empty accounts between active accounts
+			for j := current + 1; j < next; j++ {
+				optionsByIndex[j] = actions.Option{
+					Label: fmt.Sprintf("Account #%d", j+1),
+					Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(j))),
+					Value: fmt.Sprintf("%d", j),
 					Info: actions.OptionInfo{
 						Label: "No Asset Defined",
 						Value: "$0.00",
 					},
 					Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
-				})
-				break
-			}
-
-			// TODO: This seems wrong in general because we have a for loop for the 256 calls. Then, each account may contain a set of vaults.
-			//       Right now, an option is added for each vault. So if an account has multiple vaults, a user had multiple assets in some of
-			//       those vaults, we would have more than 256 options? I am not understanding something here.
-			//		 .
-			//       Shouldn't we be returning one option for each account, not vault? Why are we adding options likes this?
-			//       - CHANCE
-
-			// NOTE: Only return accounts that have value plus one that does not have a value so that the user can
-			//       choose to create a new position in a specific subaccount.
-			for _, vault := range accountInfo.VaultAccountInfo {
-				if vault.LiquidityInfo.QueryFailure {
-					continue
 				}
-
-				netValue := utils.UintToFloat(new(big.Int).Sub(vault.LiquidityInfo.CollateralValueRaw, vault.LiquidityInfo.LiabilityValue), 18)
-				accountOption := actions.Option{
-					Label: fmt.Sprintf("Account #%d", i+1),
-					Name:  utils.FormatAddress(vault.Account),
-					Value: fmt.Sprintf("%d", i),
-					Info: actions.OptionInfo{
-						Label: vault.Asset.Hex(),
-						Value: fmt.Sprintf("$%.2f", netValue),
-					},
-					Icon: actions.OptionIcon{
-						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vault.Asset.Hex())),
-					},
-				}
-
-				if netValue == 0 && nextVault != nil {
-					nextVault = &accountOption
-					continue
-				}
-
-				options = append(options, accountOption)
 			}
 		}
+
+		// Convert map to slice in order
+		for i := 0; i <= maxIndex; i++ {
+			if option, exists := optionsByIndex[i]; exists {
+				options = append(options, option)
+			}
+		}
+
+		// Add a new empty account at the end
+		nextIndex := maxIndex + 1
+		options = append(options, actions.Option{
+			Label: fmt.Sprintf("Account #%d", nextIndex+1),
+			Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(nextIndex))),
+			Value: fmt.Sprintf("%d", nextIndex),
+			Info: actions.OptionInfo{
+				Label: "No Asset Defined",
+				Value: "$0.00",
+			},
+			Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
+		})
 
 		return options, nil
 	})

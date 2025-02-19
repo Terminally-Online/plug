@@ -19,10 +19,9 @@ import (
 
 func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Amount          string `json:"amount"`
-		Token           string `json:"token"`
-		Vault           string `json:"vault"`
-		SubAccountIndex uint8  `json:"sub-account"`
+		Amount string `json:"amount"`
+		Token  string `json:"token"`
+		Vault  string `json:"vault"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal earn inputs: %v", err)
@@ -53,11 +52,9 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, utils.ErrABI("Erc20")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
-
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault, // Who is the operator here, the evc or the vault?
+		vault.Vault,
 		amount,
 	)
 	if err != nil {
@@ -67,7 +64,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		subAccountAddress,
+		common.HexToAddress(params.From),
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -75,7 +72,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCall, err := WrapEVCCall(
 		params.ChainId,
 		vault.Vault,
-		subAccountAddress,
+		common.HexToAddress(params.From),
 		big.NewInt(0),
 		depositCalldata,
 	)
@@ -87,6 +84,38 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		To:   *token,
 		Data: approveCalldata,
 	}, depositCall}, nil
+}
+
+// I believe this is exactly the same as WithdrawCollateral, but I don't want to rope it in with the other handler with a default sub account index of 0 in case there is some difference I'm not aware of yet. On the options side, this one does not have a sub account index option to remove complexity around earn deposits not being indexed in a contract like borrow and lending positions.
+func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Amount string `json:"amount"`
+		Token  string `json:"token"`
+		Vault  string `json:"vault"`
+	}
+
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal withdraw inputs: %w", err)
+	}
+
+	collateralInputs := struct {
+		Amount          string `json:"amount"`
+		Token           string `json:"token"`
+		Vault           string `json:"vault"`
+		SubAccountIndex uint8  `json:"sub-account"`
+	}{
+		Amount:          inputs.Amount,
+		Token:           inputs.Token,
+		Vault:           inputs.Vault,
+		SubAccountIndex: 0,
+	}
+
+	collateralRawInputs, err := json.Marshal(collateralInputs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal collateral inputs: %w", err)
+	}
+
+	return HandleWithdrawCollateral(collateralRawInputs, params)
 }
 
 func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -122,7 +151,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
-		vault.Vault, // Who is the operator here, the evc or the vault?
+		vault.Vault,
 		amount,
 	)
 	if err != nil {
@@ -187,7 +216,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 	}, depositCall, enableCollateralCall}, nil
 }
 
-func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
 		Amount          string `json:"amount"`
 		Token           string `json:"token"`
@@ -239,7 +268,7 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		calldata,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to wrap withdraw call: %w", err)
+		return nil, fmt.Errorf("failed to wrap withdraw collateral call: %w", err)
 	}
 
 	return []signature.Plug{call}, nil
@@ -425,7 +454,6 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
 		Threshold       string `json:"threshold"`
 		SubAccountIndex uint8  `json:"sub-account"`
@@ -440,11 +468,6 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to parse threshold: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Vault, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
 		params.Client,
@@ -454,14 +477,27 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	}
 
 	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
-	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(
 		nil,
+		evcAddress,
 		subAccountAddress,
-		vault.Vault,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+		return nil, fmt.Errorf("failed to get account vaults info: %w", err)
+	}
+
+	var borrowVault *euler_account_lens.VaultAccountInfo
+	for _, vaultAccountInfo := range vaultAccountInfos.VaultAccountInfo {
+		if !vaultAccountInfo.LiquidityInfo.QueryFailure {
+			borrowVault = &vaultAccountInfo
+			break
+		}
+	}
+
+	if borrowVault == nil {
+		return nil, fmt.Errorf("no vault found with valid liquidity info")
 	}
 
 	// eurc has a lltv of .9
@@ -470,8 +506,8 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	// I'm borrowing 0.4 usdc
 	// my health factor is currently 6.97
 
-	totalValueBorrowed := vaultAccountInfo.LiquidityInfo.LiabilityValue
-	lltvValueCollateral := vaultAccountInfo.LiquidityInfo.CollateralValueLiquidation
+	totalValueBorrowed := borrowVault.LiquidityInfo.LiabilityValue
+	lltvValueCollateral := borrowVault.LiquidityInfo.CollateralValueLiquidation
 
 	healthFactorFloat := new(big.Float).SetInt(lltvValueCollateral)
 	healthFactorFloat.Quo(healthFactorFloat, new(big.Float).SetInt(totalValueBorrowed))
@@ -495,7 +531,6 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Vault           string `json:"vault"`
 		Operator        int    `json:"operator"`
 		Threshold       string `json:"threshold"`
 		SubAccountIndex uint8  `json:"sub-account"`
@@ -510,11 +545,6 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 		return nil, fmt.Errorf("failed to parse threshold: %w", err)
 	}
 
-	vault, err := GetVault(inputs.Vault, params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get vault: %w", err)
-	}
-
 	accountLens, err := euler_account_lens.NewEulerAccountLens(
 		common.HexToAddress(references.Networks[params.ChainId].References["euler"]["account_lens"]),
 		params.Client,
@@ -524,17 +554,30 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 	}
 
 	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
-	vaultAccountInfo, err := accountLens.GetVaultAccountInfo(
+	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(
 		nil,
+		evcAddress,
 		subAccountAddress,
-		vault.Vault,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get vault account info: %w", err)
+		return nil, fmt.Errorf("failed to get account vaults info: %w", err)
 	}
 
-	ttlFloat := new(big.Float).SetInt(vaultAccountInfo.LiquidityInfo.TimeToLiquidation)
+	var borrowVault *euler_account_lens.VaultAccountInfo
+	for _, vaultAccountInfo := range vaultAccountInfos.VaultAccountInfo {
+		if !vaultAccountInfo.LiquidityInfo.QueryFailure {
+			borrowVault = &vaultAccountInfo
+			break
+		}
+	}
+
+	if borrowVault == nil {
+		return nil, fmt.Errorf("no vault found with valid liquidity info")
+	}
+
+	ttlFloat := new(big.Float).SetInt(borrowVault.LiquidityInfo.TimeToLiquidation)
 	ttlFloat.Quo(ttlFloat, new(big.Float).SetInt64(60))
 	ttlMinutes, _ := ttlFloat.Float64()
 
