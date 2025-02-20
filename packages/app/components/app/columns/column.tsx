@@ -23,6 +23,7 @@ import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
 import { SparklingText } from "../utils/sparkling-text"
+import { ColumnUser } from "./utils/column-user"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -270,6 +271,8 @@ export const ConsoleColumn: FC<{
 									<ConsoleAdmin index={column.index} className="p-4" />
 								) : column.key === COLUMNS.KEYS.SETTINGS ? (
 									<ConsoleSettings index={column.index} className="p-4" />
+								) : column.key === COLUMNS.KEYS.USER ? (
+									<ColumnUser index={column.index} />
 								) : column.key === COLUMNS.KEYS.APPLICATION ? (
 									<ColumnApplication index={column.index} />
 								) : (

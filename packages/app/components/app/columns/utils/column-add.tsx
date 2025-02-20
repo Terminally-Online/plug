@@ -1,7 +1,6 @@
-import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
+import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"

@@ -205,7 +205,7 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, column, handle } = useColumnStore(
+	const { isFrame, column, handle: { navigate, ...handle } } = useColumnStore(
 		index,
 		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
@@ -295,7 +295,12 @@ export const TransferAmountFrame: FC<{
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
-								handleSelect={() => handle.frame(`${token.symbol}-transfer-recipient`)}
+								handleSelect={() => navigate({
+									index,
+									key: COLUMNS.KEYS.USER,
+									item: column?.transfer?.recipient,
+									from: column.key
+								})}
 							/>
 						</div>
 					)}

@@ -12,19 +12,6 @@ import { useSocket } from "@/state/authentication"
 
 const GRADIENTS = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
 
-type StatsResponse = {
-	counts: {
-		referrals: number[]
-		views: number[]
-		runs: number[]
-		users: number[]
-	}
-	periods: {
-		weekStart: string
-		weekEnd: string
-	}[]
-}
-
 const ProfileStat: FC<{
 	index: number
 	isActive: boolean
