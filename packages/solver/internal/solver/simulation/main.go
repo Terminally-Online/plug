@@ -146,8 +146,19 @@ func simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	return resp, nil
 }
 
-func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
-	simulationRequest, err := getSimulationRequest(id, chainId, plugs)
+func Simulate(id string, chainId uint64, input interface{}) (*SimulationRequest, *SimulationResponse, error) {
+	var simulationRequest *SimulationRequest
+	var err error
+
+	switch v := input.(type) {
+	case signature.LivePlugs:
+		simulationRequest, err = getSimulationRequest(id, chainId, v)
+	case *SimulationRequest:
+		simulationRequest = v
+	default:
+		return nil, nil, fmt.Errorf("unsupported input type for simulation")
+	}
+
 	if err != nil {
 		return nil, nil, err
 	}
