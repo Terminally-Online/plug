@@ -17,7 +17,6 @@ import {
 	Puzzle,
 	User,
 	Waypoints,
-	Copy,
 	ExternalLink
 } from "lucide-react"
 
@@ -28,7 +27,6 @@ import app from "@/package.json"
 import { useSocket } from "@/state/authentication"
 import { Flag, useFlags } from "@/state/flags"
 import { useSession } from "next-auth/react"
-import Link from "next/link"
 
 export const ConsoleSettings: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const { getFlag } = useFlags()
