@@ -18,6 +18,7 @@ import { Button } from "../shared/buttons/button"
 import { useSession } from "next-auth/react"
 import Image from "next/image"
 import { ConsoleSidebarPane } from "../app/sidebar"
+import { Ticket } from "./ticket"
 
 export const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
 
@@ -220,19 +221,7 @@ export const ConsoleOnboardingStepOne: FC<
 
 					{step !== 0 && (
 						<div className="mb-auto flex h-full flex-col gap-2">
-							{color && (
-								<div className="-z-1 absolute inset-0 select-none overflow-hidden rounded-b-lg">
-									<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
-										<Image
-											className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-											src={`http://localhost:3000/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
-											alt="Plug Founding Ticket"
-											width={1000}
-											height={1600}
-										/>
-									</div>
-								</div>
-							)}
+							{color && <Ticket color={color} />}
 
 							{Array.from({ length: Math.min(step, actions.length) }).map((_, actionIndex) => {
 								const action = actions[actions.length - 1 - actionIndex]
