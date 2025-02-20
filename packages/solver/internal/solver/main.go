@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -203,7 +202,7 @@ func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *So
 	}, nil
 }
 
-func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, error) {
+func (s *Solver) Submit(definitions []simulation.SimulationDefinition) ([]signature.Result, error) {
 	if len(definitions) == 0 {
 		return nil, utils.ErrBuild("no plugs generated to execute")
 	}
@@ -234,14 +233,10 @@ func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, e
 	if err != nil {
 		return nil, err
 	}
-	_, err = provider.Plug(livePlugs)
+	results, err := provider.Plug(livePlugs)
 	if err != nil {
 		return nil, err
 	}
 
-	// router, err := plug_router.NewPlugRouter()
-	// TODO: We need to take transactions `_` and decode their return data so that
-	//       we can get back the results and return them.
-
-	return nil, nil
+	return results, nil
 }
