@@ -290,7 +290,6 @@ export const TransferAmountFrame: FC<{
 				hasChildrenPadding={false}
 				hasOverlay
 			>
-				<pre className="text-left text-xs">{JSON.stringify(intent, null, 2)}</pre>
 				<div className="mb-4 flex flex-col gap-2">
 					{index !== COLUMNS.SIDEBAR_INDEX && (
 						<div className="px-6">
