@@ -40,7 +40,7 @@ func New() Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -86,7 +86,7 @@ func (s *Solver) GetPlugsArray(
 	head []signature.Plug,
 	inputs []byte,
 	chainId uint64,
-	from string,
+	from common.Address,
 ) (plugs []signature.Plug, exclusive bool, error error) {
 	plugs, err := s.GetTransaction(inputs, chainId, from)
 	if err != nil {
@@ -151,16 +151,16 @@ func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (*sign
 	if err != nil {
 		return nil, err
 	}
-	salt, err := signature.GetSaltHash(common.HexToAddress(definition.From))
+	salt, err := signature.GetSaltHash(definition.From)
 	if err != nil {
 		return nil, err
 	}
 
 	plugsSigned, plugsSignature, err := signature.GetSignature(
 		big.NewInt(int64(definition.ChainId)),
-		common.HexToAddress(definition.From),
+		definition.From,
 		signature.Plugs{
-			Socket: common.HexToAddress(definition.From),
+			Socket: definition.From,
 			Plugs:  plugs,
 			Solver: solver,
 			Salt:   salt,
@@ -182,14 +182,14 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 		return nil, err
 	}
 
-	if len(plugs) > 1 { 
+	if len(plugs) > 1 {
 		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
 	}
 
 	simulationRequest := &simulation.SimulationRequest{
 		Id:      definition.Id,
 		ChainId: definition.ChainId,
-		From:    common.HexToAddress(definition.From),
+		From:    definition.From,
 		To:      plugs[0].To,
 		Data:    plugs[0].Data,
 		Value:   plugs[0].Value,

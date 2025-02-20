@@ -9,8 +9,8 @@ import (
 )
 
 type SimulationDomain struct {
-	ChainId uint64 `json:"chainId"`
-	From    string `json:"from"`
+	ChainId uint64         `json:"chainId"`
+	From    common.Address `json:"from"`
 }
 
 type SimulationInputs struct {

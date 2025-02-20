@@ -72,6 +72,20 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		tx["accessList"] = req.AccessList
 	}
 
+	var blockNumber string
+	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
+		return nil, fmt.Errorf("failed to get block number: %v", err)
+	}
+
+	var baseFee struct {
+		BaseFeePerGas string `json:"baseFeePerGas"`
+	}
+	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
+		return nil, fmt.Errorf("failed to get base fee: %v", err)
+	}
+
+	tx["gasPrice"] = baseFee.BaseFeePerGas
+
 	callTraceConfig := map[string]interface{}{
 		"tracer": "callTracer",
 	}
@@ -90,7 +104,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("trace call failed: %v", err)
 	}
 
 	resp := &SimulationResponse{

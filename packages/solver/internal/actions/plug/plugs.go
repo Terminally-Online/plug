@@ -27,9 +27,9 @@ type SwapInputs struct {
 
 func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token     string `json:"token"`
-		Recipient string `json:"recipient"`
-		Amount    string `json:"amount"`
+		Token     string         `json:"token"`
+		Recipient common.Address `json:"recipient"`
+		Amount    string         `json:"amount"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal deposit inputs: %v", err)
@@ -58,7 +58,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	if token == utils.NativeTokenAddress {
 		transaction := ethtypes.NewTransaction(
 			0,
-			common.HexToAddress(inputs.Recipient),
+			inputs.Recipient,
 			amount,
 			utils.NativeTransferGas,
 			big.NewInt(0),
@@ -66,7 +66,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		)
 
 		return []signature.Plug{{
-			To:    common.HexToAddress(inputs.Recipient),
+			To:    inputs.Recipient,
 			Value: transaction.Value(),
 		}}, nil
 	}
@@ -77,7 +77,7 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 
 	calldata, err := erc20Abi.Pack("transfer",
-		common.HexToAddress(inputs.Recipient),
+		inputs.Recipient,
 		amount,
 	)
 	if err != nil {

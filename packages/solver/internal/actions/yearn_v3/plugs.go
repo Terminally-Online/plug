@@ -69,7 +69,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -125,7 +125,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -183,7 +183,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -232,7 +232,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
 	}
 
-	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), common.HexToAddress(params.From))
+	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault token balance: %v", err)
 	}
@@ -250,7 +250,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, common.HexToAddress(params.From))
+	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -304,7 +304,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
 
-	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), common.HexToAddress(params.From))
+	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
 	}
@@ -318,7 +318,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
-	calldata, err := gaugeAbi.Pack("redeem", amount, common.HexToAddress(params.From), common.HexToAddress(params.From))
+	calldata, err := gaugeAbi.Pack("redeem", amount, params.From, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -363,7 +363,7 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
 
-	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), common.HexToAddress(params.From))
+	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
 	}
@@ -377,7 +377,7 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
-	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, common.HexToAddress(params.From), common.HexToAddress(params.From))
+	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, params.From, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}

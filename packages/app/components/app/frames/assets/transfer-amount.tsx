@@ -252,16 +252,13 @@ export const TransferAmountFrame: FC<{
 	)
 
 	const handleTransfer = useCallback(async () => {
-		if (!intent || intent.transactions.length === 0) return
+		if (!intent || !intent.transaction) return
 
-		const transfer = intent.transactions[0]
-		const transaction = {
-			to: transfer.to,
-			data: transfer.data,
-			value: transfer.value
-		}
-
-		sendTransaction(transaction)
+		sendTransaction({
+			to: intent.transaction.to,
+			data:  intent.transaction.data,
+			value: intent.transaction.value
+		})
 	}, [intent, sendTransaction])
 
 	if (!token || !column) return null
