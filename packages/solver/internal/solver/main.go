@@ -142,18 +142,18 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 	return plugs, nil
 }
 
-func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signature.LivePlugs, error) {
+func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (*signature.LivePlugs, error) {
 	plugs, err := s.GetPlugs(definition)
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
 	solver, err := signature.GetSolverHash()
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
 	salt, err := signature.GetSaltHash(common.HexToAddress(definition.From))
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
 
 	plugsSigned, plugsSignature, err := signature.GetSignature(
@@ -167,10 +167,10 @@ func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signa
 		},
 	)
 	if err != nil {
-		return signature.LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
+		return nil, utils.ErrBuild("failed to sign: " + err.Error())
 	}
 
-	return signature.LivePlugs{
+	return &signature.LivePlugs{
 		Plugs:     plugsSigned,
 		Signature: plugsSignature,
 	}, nil
@@ -180,6 +180,10 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 	plugs, err := s.GetPlugs(definition)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(plugs) > 1 { 
+		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
 	}
 
 	simulationRequest := &simulation.SimulationRequest{
@@ -193,12 +197,10 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 
 	var simulationResponse *simulation.SimulationResponse
 	if definition.Options.Simulate {
-		var simReq *simulation.SimulationRequest
-		simReq, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, simulationRequest)
+		simulationResponse, err = simulation.SimulateRaw(simulationRequest)
 		if err != nil {
 			return nil, err
 		}
-		simulationRequest = simReq
 	}
 
 	return &Solution{
@@ -209,24 +211,19 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 }
 
 func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *Solution, err error) {
-	// For EOA transactions, we skip plug bundle creation and directly simulate the transaction.
 	if definition.Options.IsEOA {
 		return s.SolveEOA(definition)
 	}
 
-	// Regular plug bundle flow for non-EOA transactions
 	livePlugs, err := s.GetLivePlugs(definition)
 	if err != nil {
 		return nil, err
 	}
 
-	// NOTE: For this to be accurate we need the plugs already signed since that is all
-	//       we can simulate meaning only livePlugs should be returned when we cannot
-	//       realize the state of a simulated plug simulation defintion.
 	var simulationRequest *simulation.SimulationRequest
 	var simulationResponse *simulation.SimulationResponse
 	if definition.Options.Simulate {
-		simulationRequest, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, livePlugs)
+		simulationRequest, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, *livePlugs)
 		if err != nil {
 			return nil, err
 		}
@@ -248,7 +245,7 @@ func (s *Solver) Submit(definitions []simulation.SimulationDefinition) ([]signat
 	chainId := definitions[0].ChainId
 	errors := make([]error, len(definitions))
 
-	var livePlugs []signature.LivePlugs
+	var livePlugs []*signature.LivePlugs
 	for i, definition := range definitions {
 		if definition.ChainId != chainId {
 			errors[i] = utils.ErrChainId("chainId", definition.ChainId)

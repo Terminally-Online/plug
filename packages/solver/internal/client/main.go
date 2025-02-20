@@ -80,7 +80,7 @@ func (c *Client) SolverWriteOptions() *bind.TransactOpts {
 	return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs []signature.LivePlugs) ([]signature.Result, error) {
+func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, error) {
 	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
 	lps := make([]plug_router.PlugTypesLibLivePlugs, len(livePlugs))
 	for i, livePlug := range livePlugs {

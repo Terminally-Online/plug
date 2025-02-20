@@ -6,7 +6,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"gorm.io/gorm"
 )
 
 type SimulationDomain struct {
@@ -40,7 +39,6 @@ type SimulationDefinitions struct {
 }
 
 type SimulationRequest struct {
-	gorm.Model
 	Id         string           `json:"id,omitempty"`
 	ChainId    uint64           `json:"chainId"`
 	From       common.Address   `json:"from"`
@@ -52,13 +50,16 @@ type SimulationRequest struct {
 	ABI        string           `json:"abi,omitempty"`
 }
 
+type SimulationGas struct {
+	Used uint64 `json:"used"`
+}
+
 type SimulationResponse struct {
-	gorm.Model
-	Id           string     `json:"id"`
-	GasUsed      uint64     `json:"gasUsed"`
-	Success      bool       `json:"success"`
-	Data         OutputData `json:"data"`
-	ErrorMessage string     `json:"errorMessage,omitempty"`
+	Id           string        `json:"id,omitempty"`
+	Gas          SimulationGas `json:"gas,omitempty"`
+	Success      bool          `json:"success,omitempty"`
+	Data         OutputData    `json:"data,omitempty"`
+	ErrorMessage string        `json:"errorMessage,omitempty"`
 }
 
 type SimulationResponses struct {
