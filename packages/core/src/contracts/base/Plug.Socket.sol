@@ -26,12 +26,12 @@ contract PlugSocket is
     UUPSUpgradeable,
     ReentrancyGuard
 {
-    using LibBitmap for LibBitmap.Bitmap;
     using ECDSA for bytes32;
-
-    mapping(address oneClicker => bool allowed) public oneClickersToAllowed;
+    using LibBitmap for LibBitmap.Bitmap;
 
     LibBitmap.Bitmap private nonces;
+
+    mapping(address oneClicker => bool allowed) public oneClickersToAllowed;
 
     constructor() {
         initialize(address(1), address(1));

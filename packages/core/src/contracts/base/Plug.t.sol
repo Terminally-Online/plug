@@ -13,7 +13,6 @@ import {
     PlugMockEcho
 } from "../abstracts/test/Plug.Test.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { console2 } from "forge-std/console2.sol";
 
 contract PlugTest is Test {
     event EchoInvoked(address $sender, string $message);
@@ -77,16 +76,10 @@ contract PlugTest is Test {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray, solver);
         vm.prank(solver);
-        // vm.expectRevert(
-        // 	abi.encodeWithSelector(
-        // 		PlugLib.PlugFailed.selector,
-        // 		uint8(1),
-        // 		'PlugCore:plug-failed'
-        // 	)
-        // );
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:plug-failed");
-        assertEq(results[0].index, 1);
+
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" }));
+        plug.plug(livePlugsArray);
     }
 
     function test_PlugEmptyEcho_Solver_InvalidNonce() public {
@@ -102,10 +95,12 @@ contract PlugTest is Test {
         vm.expectEmit(address(mock));
         emit EchoInvoked(address(socket), "Hello World");
         plug.plug(livePlugsArray);
-        // vm.expectRevert(PlugLib.NonceInvalid.selector);
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:nonce-invalid");
-        assertEq(results[0].index, type(uint8).max);
+
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(
+            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:nonce-invalid" })
+        );
+        plug.plug(livePlugsArray);
     }
 
     function testRevert_PlugEmptyEcho_Solver_InvalidSignature() public {
@@ -118,9 +113,12 @@ contract PlugTest is Test {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(0x123456, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
         livePlugsArray[0] = PlugTypesLib.LivePlugs({ plugs: plugs, signature: signature });
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:signature-invalid");
-        assertEq(results[0].index, type(uint8).max);
+
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(
+            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:signature-invalid" })
+        );
+        plug.plug(livePlugsArray);
     }
 
     function testRevert_PlugEmptyEcho_Solver_Invalid() public {
@@ -134,9 +132,11 @@ contract PlugTest is Test {
             createPlugs(plugsArray, uint48(block.timestamp + 3 minutes), solver);
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugs);
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:solver-invalid");
-        assertEq(results[0].index, type(uint8).max);
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(
+            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-invalid" })
+        );
+        plug.plug(livePlugsArray);
     }
 
     function testRevert_PlugEmptyEcho_Solver_Expired() public {
@@ -150,9 +150,12 @@ contract PlugTest is Test {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugs);
         vm.prank(solver);
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:solver-expired");
-        assertEq(results[0].index, type(uint8).max);
+
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(
+            0, PlugTypesLib.Result({ index: type(uint8).max, error: "PlugCore:solver-expired" })
+        );
+        plug.plug(livePlugsArray);
     }
 
     function test_Plugs_PlugEmptyEcho_TypeRecovery() public {
@@ -169,15 +172,13 @@ contract PlugTest is Test {
         PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
 
         plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_REVERT, type(uint256).max);
-        console2.log("Created plug to:", address(plugsArray[0].to));
-        console2.logBytes(plugsArray[0].data);
 
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
 
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:plug-failed");
-        assertEq(results[0].index, 0);
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 0, error: "PlugCore:plug-failed" }));
+        plug.plug(livePlugsArray);
     }
 
     function test_CatchReverting_Plugs_SecondFails() public {
@@ -188,9 +189,9 @@ contract PlugTest is Test {
         PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
         livePlugsArray[0] = createLivePlugs(plugs);
 
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:plug-failed");
-        assertEq(results[0].index, 1); // Should fail at index 1
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 1, error: "PlugCore:plug-failed" }));
+        plug.plug(livePlugsArray);
     }
 
     function test_CatchReverting_Plugs_MultipleIndexes() public {
@@ -204,9 +205,11 @@ contract PlugTest is Test {
             PlugTypesLib.Plugs memory plugs = createPlugs(plugsArray);
             livePlugsArray[0] = createLivePlugs(plugs);
 
-            PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-            assertEq(results[0].error, "PlugCore:plug-failed");
-            assertEq(results[0].index, testIndex + 1);
+            vm.expectEmit(address(plug));
+            emit PlugLib.PlugResult(
+                0, PlugTypesLib.Result({ index: testIndex + 1, error: "PlugCore:plug-failed" })
+            );
+            plug.plug(livePlugsArray);
         }
     }
 
@@ -229,9 +232,9 @@ contract PlugTest is Test {
         PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
         livePlugsArray[0] = createLivePlugs(plugsArray);
 
-        PlugTypesLib.Result[] memory results = plug.plug(livePlugsArray);
-        assertEq(results[0].error, "PlugCore:plug-failed");
-        assertEq(results[0].index, 0);
+        vm.expectEmit(address(plug));
+        emit PlugLib.PlugResult(0, PlugTypesLib.Result({ index: 0, error: "PlugCore:plug-failed" }));
+        plug.plug(livePlugsArray);
     }
 
     function test_PlugGasLimit_MultiplePlugs() public {

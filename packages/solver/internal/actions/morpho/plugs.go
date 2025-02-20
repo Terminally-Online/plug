@@ -257,13 +257,13 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
 		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		nil,
+		params.Client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get morpho router: %w", err)
 	}
 	position, err := morpho.Position(
-		utils.BuildCallOpts(params.From, big.NewInt(0)),
+		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
 		common.HexToAddress(params.From),
 	)
@@ -421,13 +421,13 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	}
 	morpho, err := morpho_router.NewMorphoRouter(
 		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		nil,
+		params.Client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get morpho router: %w", err)
 	}
 	position, err := morpho.Position(
-		utils.BuildCallOpts(params.From, big.NewInt(0)),
+		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
 		common.HexToAddress(params.From),
 	)
@@ -546,18 +546,18 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 	morpho, err := morpho_router.NewMorphoRouter(
 		common.HexToAddress(references.Networks[params.ChainId].References["morpho"]["router"]),
-		nil,
+		params.Client,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get morpho router: %w", err)
+		return nil, err
 	}
 	position, err := morpho.Position(
-		utils.BuildCallOpts(params.From, big.NewInt(0)),
+		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
 		common.HexToAddress(params.From),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get position: %w", err)
+		return nil, err
 	}
 
 	borrowAssets := mulDivUp(

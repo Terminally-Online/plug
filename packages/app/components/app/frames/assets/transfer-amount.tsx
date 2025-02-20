@@ -45,7 +45,7 @@ const ImplementationComponent: FC<{
 				if (containerRef.current) {
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
-					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
+					const percentage = Math.floor(Math.min(Math.max((x / rect.width) * 100, 0), 100))
 
 					handle.transfer(prev => ({
 						...prev,
@@ -68,7 +68,7 @@ const ImplementationComponent: FC<{
 
 					handle.transfer(prev => ({
 						...prev,
-						precise: finalAmount
+						precise: percentage >= 99.5 ? implementation.balance.toString() : finalAmount
 					}))
 
 					setIsPrecise(true)
@@ -207,7 +207,7 @@ export const TransferAmountFrame: FC<{
 }> = ({ index, token, color, textColor }) => {
 	const { isFrame, column, handle } = useColumnStore(
 		index,
-		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}` 
+		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
 	const { socket } = useSocket()
 	const { sendTransaction } = useSendTransaction()
@@ -240,7 +240,11 @@ export const TransferAmountFrame: FC<{
 					token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
 					recipient
 				}
-			]
+			],
+			options: {
+				isEOA: true,
+				simulate: true,
+			}
 		},
 		{
 			enabled: isFrame && isReady && !!column && !!socket && !!implementation
@@ -278,16 +282,16 @@ export const TransferAmountFrame: FC<{
 						/>
 					</div>
 				}
-				label={`${index === -2 ? "Deposit" : "Transfer"}`}
+				label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
 				handleBack={() =>
-					handle.frame(index !== -2 ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+					handle.frame(index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
 				}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
 				<div className="mb-4 flex flex-col gap-2">
-					{index !== -2 && (
+					{index !== COLUMNS.SIDEBAR_INDEX && (
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
@@ -295,56 +299,17 @@ export const TransferAmountFrame: FC<{
 							/>
 						</div>
 					)}
+
 					<div className="flex flex-col gap-2">
-						<div className="flex flex-col gap-2">
-							{token.implementations.map((implementation, implementationIndex) => (
-								<ImplementationComponent
-									key={implementationIndex}
-									index={index}
-									implementation={implementation}
-									token={token}
-									color={color}
-								/>
-							))}
-						</div>
-
-						<div className="flex flex-row items-center justify-between gap-4 px-6">
-							<p
-								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
-								onClick={() =>
-									handle.transfer(prev => ({
-										...prev,
-										percentage: 100,
-										precise: token?.implementations[0].balance.toString()
-									}))
-								}
-								style={{ color: (column?.transfer?.percentage ?? 0) < 100 ? color : undefined }}
-							>
-								Max
-							</p>
-						</div>
-
-						<div className="px-6">
-							<div className="mb-2 flex flex-row items-center gap-4">
-								<p className="font-bold opacity-40">Details</p>
-								<div className="h-[2px] w-full bg-plug-green/10" />
-							</div>
-
-							<p className="flex flex-row justify-between font-bold">
-								<span className="flex w-full flex-row items-center gap-4">
-									<CircleDollarSign size={18} className="opacity-20" />
-									<span className="opacity-40">Fee</span>
-								</span>{" "}
-								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-										<Counter count={0.00011} /> ETH
-									</span>
-									<span className="ml-2 flex flex-row items-center">
-										$<Counter count={4.99} />
-									</span>
-								</span>
-							</p>
-						</div>
+						{token.implementations.map((implementation, implementationIndex) => (
+							<ImplementationComponent
+								key={implementationIndex}
+								index={index}
+								implementation={implementation}
+								token={token}
+								color={color}
+							/>
+						))}
 					</div>
 
 					<div className="mx-6 mt-2 flex flex-col gap-4">

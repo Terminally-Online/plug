@@ -34,7 +34,12 @@ export const actions = createTRPCRouter({
 							action: z.string()
 						})
 						.and(z.record(z.string(), z.union([z.string(), z.number()])))
-				)
+				),
+				options: z.object({
+					simulate: z.boolean().optional(),
+					submit: z.boolean().optional(),
+					isEOA: z.boolean().optional()
+				}).optional()
 			})
 		)
 		.query(async ({ input }) => await intent(input))

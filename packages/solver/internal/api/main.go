@@ -20,7 +20,7 @@ func SetupRouter(s solver.Handler) *mux.Router {
 	killable := protected.PathPrefix("").Subrouter()
 	killable.Use(m.KillSwitch)
 	killable.HandleFunc("/solver", s.GetSchema).Methods("GET")
-	killable.HandleFunc("/solver", s.GetPlug).Methods("POST")
+	killable.HandleFunc("/solver", s.GetSolution).Methods("POST")
 
 	return r
 }

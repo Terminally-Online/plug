@@ -1,18 +1,17 @@
 package simulation
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"math/big"
-	"net/http"
-	"os"
-	"solver/internal/utils"
-
-	"strings"
-
 	"bytes"
+	"context"
+	"fmt"
+	"math/big"
+	"os"
+	"solver/bindings/plug_router"
+	"solver/internal/bindings/references"
+	"solver/internal/client"
+	"solver/internal/solver/signature"
+	"solver/internal/utils"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -20,52 +19,31 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-type Simulator struct {
-	signer common.Address
-}
-
-func New() Simulator {
-	return Simulator{
-		signer: common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-	}
-}
-
-func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading request body: %v", err), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var req SimulationRequest
-	if err := json.Unmarshal(body, &req); err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing request: %v", err), http.StatusBadRequest)
-		return
+		return nil, utils.ErrABI("PlugRouter")
 	}
 
-	if req.ChainId == 0 {
-		http.Error(w, "Chain ID is required", http.StatusBadRequest)
-		return
-	}
-
-	resp, err := s.Simulate(req)
+	plugCalldata, err := routerAbi.Pack("plug", plugs)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Simulation failed: %v", err), http.StatusInternalServerError)
-		return
+		return nil, utils.ErrTransaction(err.Error())
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusInternalServerError)
-		return
-	}
+	return &SimulationRequest{
+		Id:      id,
+		ChainId: chainId,
+		From:    common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
+		To:      common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
+		Data:    plugCalldata,
+		Value:   big.NewInt(0),
+		ABI:     plug_router.PlugRouterMetaData.ABI,
+	}, nil
 }
 
-func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error) {
+func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := utils.GetProviderUrl(req.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -99,23 +77,24 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	}
 
 	var trace struct {
-		Type    string         `json:"type"`
-		From    common.Address `json:"from"`
-		To      common.Address `json:"to"`
-		Value   string         `json:"value"`
-		Gas     string         `json:"gas"`
-		GasUsed string         `json:"gasUsed"`
-		Input   hexutil.Bytes  `json:"input"`
-		Output  hexutil.Bytes  `json:"output"`
-		Error   string         `json:"error"`
+		Type     string         `json:"type"`
+		From     common.Address `json:"from"`
+		To       common.Address `json:"to"`
+		Value    string         `json:"value"`
+		Gas      string         `json:"gas"`
+		GasUsed  string         `json:"gasUsed"`
+		GasPrice string         `json:"gasPrice"`
+		Input    hexutil.Bytes  `json:"input"`
+		Output   hexutil.Bytes  `json:"output"`
+		Error    string         `json:"error"`
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
-		return nil, fmt.Errorf("trace call failed: %v", err)
+		return nil, err
 	}
 
 	resp := &SimulationResponse{
-		ExecutionId: req.ExecutionId,
+		Id:      req.Id,
 		Success: trace.Error == "",
 		Data: OutputData{
 			Raw: trace.Output,
@@ -125,7 +104,7 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.GasUsed = gasUsed.Uint64()
+			resp.Gas.Used = gasUsed.Uint64()
 		}
 	}
 
@@ -154,14 +133,30 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 			return resp, nil
 		}
 
+		// TODO: Do this when there is nothing left more pressing to work on. This
+		//       really should not be prioritized unless there are zero tickets and
+		//       we have an actual use for it somewhere in the app or idea.
 		// decoded, err := method.Outputs.Unpack(trace.Output)
 		// if err != nil {
 		// 	resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
 		// 	return resp, nil
 		// }
-		//
 		// resp.Data.Decoded = decoded
 	}
 
 	return resp, nil
+}
+
+func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
+	simulationRequest, err := getSimulationRequest(id, chainId, plugs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	simulationResponse, err := SimulateRaw(simulationRequest)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return simulationRequest, simulationResponse, nil
 }

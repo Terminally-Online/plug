@@ -1,5 +1,29 @@
 # @nftchance/plug-core
 
+## 0.3.7
+
+### Patch Changes
+
+- fix: package artifacts
+
+## 0.3.6
+
+### Patch Changes
+
+- fix: socket initcode
+
+## 0.3.5
+
+### Patch Changes
+
+- fix: build artifacts
+
+## 0.3.4
+
+### Patch Changes
+
+- 3778643: feat: use emits for result sharing instead of returns
+
 ## 0.3.1
 
 ### Patch Changes

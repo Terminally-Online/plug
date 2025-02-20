@@ -1139,25 +1139,7 @@ export const contracts = [
                         ]
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$results",
-                        "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Result",
-                        "components": [
-                            {
-                                "name": "index",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "error",
-                                "type": "string",
-                                "internalType": "string"
-                            }
-                        ]
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "payable"
             },
             {
@@ -1226,25 +1208,7 @@ export const contracts = [
                         ]
                     }
                 ],
-                "outputs": [
-                    {
-                        "name": "$results",
-                        "type": "tuple[]",
-                        "internalType": "struct PlugTypesLib.Result[]",
-                        "components": [
-                            {
-                                "name": "index",
-                                "type": "uint8",
-                                "internalType": "uint8"
-                            },
-                            {
-                                "name": "error",
-                                "type": "string",
-                                "internalType": "string"
-                            }
-                        ]
-                    }
-                ],
+                "outputs": [],
                 "stateMutability": "payable"
             },
             {
@@ -1259,6 +1223,37 @@ export const contracts = [
                     }
                 ],
                 "stateMutability": "pure"
+            },
+            {
+                "type": "event",
+                "name": "PlugResult",
+                "inputs": [
+                    {
+                        "name": "index",
+                        "type": "uint8",
+                        "indexed": false,
+                        "internalType": "uint8"
+                    },
+                    {
+                        "name": "reason",
+                        "type": "tuple",
+                        "indexed": false,
+                        "internalType": "struct PlugTypesLib.Result",
+                        "components": [
+                            {
+                                "name": "index",
+                                "type": "uint8",
+                                "internalType": "uint8"
+                            },
+                            {
+                                "name": "error",
+                                "type": "string",
+                                "internalType": "string"
+                            }
+                        ]
+                    }
+                ],
+                "anonymous": false
             },
             {
                 "type": "error",

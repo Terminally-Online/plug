@@ -21,8 +21,8 @@ var (
 
 func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Name     string   `json:"name"`
-		MaxPrice string   `json:"maxPrice"`
+		Name     string `json:"name"`
+		MaxPrice string `json:"maxPrice"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal ens buy inputs: %v", err)
@@ -38,13 +38,9 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get name: %v", err)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get provider: %v", err)
-	}
 	registrar, err := ens_registrar_controller.NewEnsRegistrarController(
 		common.HexToAddress(references.Mainnet.References["ens"]["registrar_controller"]),
-		provider,
+		params.Client,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get registrar: %v", err)
@@ -52,9 +48,8 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	var secret [32]byte
 	nameAndAddr := append([]byte(*name), common.HexToAddress(params.From).Bytes()...)
 	copy(secret[:], nameAndAddr)
-	// TODO: exclusive transaction shiiii
 	commitment, err := registrar.MakeCommitment(
-		utils.BuildCallOpts(params.From, big.NewInt(1)),
+		params.Client.ReadOptions(params.From),
 		*name,
 		common.HexToAddress(params.From),
 		big.NewInt(secondsPerYear),
@@ -69,7 +64,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	}
 
 	commitmentTimestamp, err := registrar.Commitments(
-		utils.BuildCallOpts(params.From, big.NewInt(1)),
+		params.Client.ReadOptions(params.From),
 		commitment,
 	)
 	if err != nil {

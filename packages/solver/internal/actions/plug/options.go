@@ -3,6 +3,7 @@ package plug
 import (
 	"fmt"
 	"solver/internal/actions"
+	"solver/internal/client"
 	"solver/internal/helpers/zerion"
 	"solver/internal/utils"
 	"strings"
@@ -75,7 +76,7 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 	if err != nil {
 		return nil, err
 	}
-	chainName := utils.GetChainName(chainId)
+	chainName := client.GetChainName(chainId)
 	var options []actions.Option
 	for _, position := range positions {
 		var option string
@@ -108,12 +109,12 @@ func GetTransferOptions(chainId uint64, from common.Address) ([]actions.Option, 
 }
 
 func getENSAddress(name string) (common.Address, error) {
-	provider, err := utils.GetProvider(1)
+	client, err := client.New(1)
 	if err != nil {
 		return common.Address{}, err
 	}
 
-	address, err := ens.Resolve(provider, name)
+	address, err := ens.Resolve(client, name)
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -122,12 +123,12 @@ func getENSAddress(name string) (common.Address, error) {
 }
 
 func getENSName(address common.Address) (*string, error) {
-	provider, err := utils.GetProvider(1)
+	client, err := client.New(1)
 	if err != nil {
 		return nil, err
 	}
 
-	name, err := ens.ReverseResolve(provider, address)
+	name, err := ens.ReverseResolve(client, address)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package signature
 
 import (
 	"math/big"
+	"solver/bindings/plug_router"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -18,7 +19,7 @@ type Transaction struct {
 	To    common.Address `json:"to"`
 	Data  []byte         `json:"data"`
 	Value *big.Int       `json:"value"`
-	Gas   *big.Int       `json:"gas,omitempty"`
+	Gas   *big.Int       `json:"gas"`
 }
 
 type EIP712Domain struct {
@@ -37,6 +38,15 @@ type Plug struct {
 	Meta      interface{}    `json:"meta,omitempty"`
 }
 
+func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
+	return plug_router.PlugTypesLibPlug{
+		To:    p.To,
+		Data:  p.Data,
+		Value: p.Value,
+		Gas:   p.Gas,
+	}
+}
+
 type Plugs struct {
 	Socket common.Address `json:"socket"`
 	Plugs  []Plug         `json:"plugs"`
@@ -44,9 +54,30 @@ type Plugs struct {
 	Salt   []byte         `json:"salt"`
 }
 
+func (p Plugs) Wrap() plug_router.PlugTypesLibPlugs {
+	var plugs []plug_router.PlugTypesLibPlug
+	for _, plug := range p.Plugs {
+		plugs = append(plugs, plug.Wrap())
+	}
+
+	return plug_router.PlugTypesLibPlugs{
+		Socket: p.Socket,
+		Plugs:  plugs,
+		Solver: p.Solver,
+		Salt:   p.Salt,
+	}
+}
+
 type LivePlugs struct {
 	Plugs     Plugs  `json:"plugs"`
 	Signature []byte `json:"signature"`
+}
+
+func (l LivePlugs) Wrap() plug_router.PlugTypesLibLivePlugs {
+	return plug_router.PlugTypesLibLivePlugs{
+		Plugs:     l.Plugs.Wrap(),
+		Signature: l.Signature,
+	}
 }
 
 type Result struct {

@@ -1,38 +1,18 @@
 package solver
 
-import "solver/internal/solver/simulation"
+import (
+	"solver/internal/solver/signature"
+	"solver/internal/solver/simulation"
+)
 
-type SimulationRequest struct {
-	Id          string   `json:"id"`
-	Status      string   `json:"status"`
-	Error       string   `json:"error,omitempty"`
-	Errors      []string `json:"errors,omitempty"`
-	GasEstimate int      `json:"gasEstimate,omitempty"`
+type SolutionStatus struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error,omitempty"`
 }
 
-type SimulationsRequest struct {
-	Json []simulation.SimulationResponse `json:"json"`
-}
-
-type SimulationsResponse struct {
-	Result struct {
-		Data struct {
-			Json []string `json:"json"`
-		} `json:"data"`
-	} `json:"result"`
-}
-
-type ExecutionRequest struct {
-	Id      string           `json:"id"`
-	ChainId uint64           `json:"chainId"`
-	From    string           `json:"from"`
-	Inputs  []map[string]any `json:"inputs"`
-}
-
-type ExecutionsRequest struct {
-	Result struct {
-		Data struct {
-			Json []ExecutionRequest `json:"json"`
-		} `json:"data"`
-	} `json:"result"`
+type Solution struct {
+	Transactions []signature.Plug               `json:"transactions"`
+	LivePlugs    *signature.LivePlugs            `json:"livePlugs,omitempty"`
+	Transaction  *simulation.SimulationRequest  `json:"transaction,omitempty"`
+	Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
 }
