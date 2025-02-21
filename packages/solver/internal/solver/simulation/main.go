@@ -9,6 +9,7 @@ import (
 	"solver/bindings/plug_router"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
+	"solver/internal/database"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"
@@ -42,6 +43,10 @@ func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) 
 
 func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
+
+	if err := database.DB.Create(req).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation request: %v", err)
+	}
 
 	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
 	if err != nil {
@@ -156,6 +161,11 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		// 	return resp, nil
 		// }
 		// resp.Data.Decoded = decoded
+	}
+
+	resp.RequestId = req.Id
+	if err := database.DB.Create(resp).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation response: %v", err)
 	}
 
 	return resp, nil

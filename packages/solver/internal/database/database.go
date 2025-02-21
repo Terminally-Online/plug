@@ -82,6 +82,14 @@ func GetEnvOrDefault(key, defaultValue string) string {
 	return defaultValue
 }
 
+func init() {
+	var err error
+	DB, err = Initialize()
+	if err != nil {
+		panic(fmt.Sprintf("failed to initialize database: %v", err))
+	}
+}
+
 func Initialize() (*gorm.DB, error) {
 	config := NewConfig()
 	db, err := Connect(config)
@@ -93,7 +101,6 @@ func Initialize() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
-	DB = db
 	return db, nil
 }
 
