@@ -3,7 +3,7 @@ import { useMemo } from "react"
 
 import { atom, useAtom, useAtomValue } from "jotai"
 
-import { Workflow } from "@prisma/client"
+import { Plug } from "@prisma/client"
 
 import { Actions } from "@/lib"
 import { api } from "@/server/client"
@@ -11,14 +11,14 @@ import { api } from "@/server/client"
 import { COLUMNS, useColumnStore } from "./columns"
 import { atomWithStorage } from "jotai/utils"
 
-export const plugsAtom = atom<Workflow[]>([])
+export const plugsAtom = atom<Plug[]>([])
 export const viewedPlugsAtom = atomWithStorage<Set<string>>("plug.viewed", new Set<string>())
 
 export const workflowByIdAtom = atom(get => (id: string) => get(plugsAtom).find(plug => plug.id === id))
 
 export const ACTION_REGEX = /({\d+(?:=>\d+)?})/g
 
-export type WorkflowData = Pick<Workflow, "name" | "color" | "isPrivate">
+export type PlugData = Pick<Plug, "name" | "color" | "isPrivate">
 export type Option = {
 	label: string
 	value: string | number
@@ -26,7 +26,7 @@ export type Option = {
 }
 export type Value = string | Option | undefined | null
 
-export const spreadPlugs = (plugs: Array<Workflow> | undefined, plug: Workflow) => (!plugs ? [plug] : [plug, ...plugs])
+export const spreadPlugs = (plugs: Array<Plug> | undefined, plug: Plug) => (!plugs ? [plug] : [plug, ...plugs])
 
 const usePlugActions = () => {
 	const { columns, handle } = useColumnStore()
@@ -121,7 +121,10 @@ export const usePlugSubscriptions = () => {
 	})
 }
 
-export const usePlugStore = (id?: string, action?: { protocol: string; action: string, search: Record<number, string | undefined> }) => {
+export const usePlugStore = (
+	id?: string,
+	action?: { protocol: string; action: string; search: Record<number, string | undefined> }
+) => {
 	const session = useSession()
 	const { columns } = useColumnStore()
 
@@ -132,9 +135,9 @@ export const usePlugStore = (id?: string, action?: { protocol: string; action: s
 
 	const { data: solverActions } = api.solver.actions.schemas.useQuery(
 		{
-			chainId: 8453, 
-			protocol: action?.protocol, 
-			action: action?.action, 
+			chainId: 8453,
+			protocol: action?.protocol,
+			action: action?.action,
 			search: Object.entries(action?.search ?? {}).map(([key, value]) => `search[${key}]=${value}`)
 		},
 		{ enabled: Boolean(action), keepPreviousData: true }

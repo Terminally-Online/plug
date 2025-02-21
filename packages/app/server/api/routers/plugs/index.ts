@@ -165,24 +165,25 @@ export const plugs = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			try {
-				const addForkCounts = async (ctx: any, workflows: any[]) => {
-					const forkCounts = await Promise.all(
-						workflows.map(async workflow => ({
-							id: workflow.id,
-							forks: await ctx.db.plug.count({
-								where: { workflowForkedId: workflow.id }
-							})
-						}))
-					)
-					return workflows.map(workflow => ({
-						...plug,
-						forkCount: forkCounts.find(f => f.id === workflow.id)?.forks ?? 0
+			const addForkCounts = async <T extends { id: string }>(plugs: T[]) => {
+				const forkCounts = await Promise.all(
+					plugs.map(async plug => ({
+						id: plug.id,
+						forks: await ctx.db.plug.count({
+							where: { plugForkedId: plug.id }
+						})
 					}))
-				}
+				)
 
-				if (input.target === "mine") {
-					const workflows = await ctx.db.plug.findMany({
+				return plugs.map(plug => ({
+					...plug,
+					forkCount: forkCounts.find(f => f.id === plug.id)?.forks ?? 0
+				}))
+			}
+
+			if (input.target === "mine") {
+				addForkCounts(
+					await ctx.db.plug.findMany({
 						where: {
 							socketId: ctx.session.address
 						},
@@ -204,46 +205,15 @@ export const plugs = createTRPCRouter({
 							}
 						}
 					})
-					return addForkCounts(ctx, workflows)
-				}
+				)
+			}
 
-				if (input.target === "curated")
-					return addForkCounts(
-						ctx,
-						await ctx.db.plug.findMany({
-							where: {
-								isPrivate: false,
-								isCurated: true,
-								actions: { not: "[]" }
-							},
-							take: input.limit ? input.limit : undefined,
-							orderBy: {
-								updatedAt: "desc"
-							},
-							include: {
-								socket: { include: { identity: { include: { ens: true } } } },
-								_count: {
-									select: {
-										executions: true
-									}
-								},
-								views: {
-									select: {
-										views: true
-									}
-								}
-							}
-						})
-					)
-
+			if (input.target === "curated")
 				return addForkCounts(
-					ctx,
 					await ctx.db.plug.findMany({
 						where: {
 							isPrivate: false,
-							socketId: {
-								not: ctx.session.address
-							},
+							isCurated: true,
 							actions: { not: "[]" }
 						},
 						take: input.limit ? input.limit : undefined,
@@ -258,14 +228,40 @@ export const plugs = createTRPCRouter({
 								}
 							},
 							views: {
-								select: { views: true }
+								select: {
+									views: true
+								}
 							}
 						}
 					})
 				)
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+
+			return addForkCounts(
+				await ctx.db.plug.findMany({
+					where: {
+						isPrivate: false,
+						socketId: {
+							not: ctx.session.address
+						},
+						actions: { not: "[]" }
+					},
+					take: input.limit ? input.limit : undefined,
+					orderBy: {
+						updatedAt: "desc"
+					},
+					include: {
+						socket: { include: { identity: { include: { ens: true } } } },
+						_count: {
+							select: {
+								executions: true
+							}
+						},
+						views: {
+							select: { views: true }
+						}
+					}
+				})
+			)
 		}),
 
 	add: anonymousProtectedProcedure
