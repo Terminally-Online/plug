@@ -21,10 +21,6 @@ import (
 )
 
 func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
-	if id == "" {
-		return nil, fmt.Errorf("id parameter cannot be empty")
-	}
-
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -49,6 +45,10 @@ func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.Live
 }
 
 func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
+	if req.Id == "" {
+		return nil, fmt.Errorf("simulationRequest id parameter cannot be empty")
+	}
+
 	// Set ReferenceId to Id as we're now working with the database where Id is the primary key
 	req.ReferenceId = req.Id
 
