@@ -53,90 +53,75 @@ func New(chainId uint64) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) ReadOptions(address string) *bind.CallOpts {
+func (c *Client) ReadOptions(address common.Address) *bind.CallOpts {
 	return &bind.CallOpts{
-		From:    common.HexToAddress(address),
+		From:    address,
 		Pending: true,
 		Context: context.Background(),
 	}
 }
 func (c *Client) SolverReadOptions() *bind.CallOpts {
-	return c.ReadOptions(os.Getenv("SOLVER_ADDRESS"))
+	return c.ReadOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
 }
 
-func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts {
+func (c *Client) WriteOptions(address common.Address, value *big.Int) *bind.TransactOpts {
 	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
 		return transaction, nil
 	}
 
 	return &bind.TransactOpts{
-		From:   common.HexToAddress(address),
+		From:   address,
 		Signer: transactionForwarder,
 		NoSend: true,
 		Value:  value,
 	}
 }
 func (c *Client) SolverWriteOptions() *bind.TransactOpts {
-	return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0))
+	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
-func (c *Client) Plug(livePlugs []signature.LivePlugs) ([]signature.Result, error) {
+func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, error) {
 	routerAddress := common.HexToAddress(references.Networks[c.chainId].References["plug"]["router"])
-	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("PlugRouter")
-	}
-
 	lps := make([]plug_router.PlugTypesLibLivePlugs, len(livePlugs))
 	for i, livePlug := range livePlugs {
 		lps[i] = livePlug.Wrap()
 	}
 
-	input, err := routerAbi.Pack("plug0", lps)
-	if err != nil {
-		return nil, fmt.Errorf("failed to pack plug0 call: %w", err)
-	}
-
-	msg := ethereum.CallMsg{
-		From: c.solverAddress,
-		To:   &routerAddress,
-		Data: input,
-	}
-
-	output, err := c.CallContract(context.Background(), msg, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to simulate plug transaction: %w", err)
-	}
-
-	results := new([]signature.Result)
-	err = routerAbi.UnpackIntoInterface(results, "plug0", output)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unpack plug simulation results: %w", err)
-	}
-
-	auth := c.SolverWriteOptions()
-	auth.NoSend = false
+	// TODO: We should simulate and confirm the function of each bundle for actually ripping the
+	//       transaction so that we can cull-out things that are failing.
 
 	router, err := plug_router.NewPlugRouter(routerAddress, c)
 	if err != nil {
 		return nil, err
 	}
-
-	tx, err := router.Plug0(auth, lps)
+	transaction, err := router.Plug0(c.SolverWriteOptions(), lps)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send plug transaction: %w", err)
 	}
-
-	receipt, err := bind.WaitMined(context.Background(), c, tx)
+	receipt, err := c.TransactionReceipt(context.Background(), transaction.Hash())
 	if err != nil {
-		return nil, fmt.Errorf("failed waiting for plug transaction: %w", err)
+		return nil, fmt.Errorf("failed to get receipt for plug transaction: %w", err)
 	}
-
 	if receipt.Status != ethtypes.ReceiptStatusSuccessful {
 		return nil, utils.ErrTransaction(fmt.Sprintf("plug transaction failed with status: %d", receipt.Status))
 	}
 
-	return *results, nil
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
+	if err != nil {
+		return nil, err
+	}
+	var results []signature.Result
+	for _, event := range receipt.Logs {
+		if event.Address == routerAddress && event.Topics[0].Hex() == routerAbi.Events["PlugResult"].ID.Hex() {
+			result := plug_router.PlugRouterPlugResult{}
+			err := routerAbi.UnpackIntoInterface(&result, "PlugResult", event.Data)
+			if err != nil {
+				continue
+			}
+		}
+	}
+
+	return results, nil
 }
 
 func (c *Client) Multicall(calls []MulticallCalldata) ([]interface{}, error) {

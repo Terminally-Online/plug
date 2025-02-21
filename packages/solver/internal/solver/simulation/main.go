@@ -40,7 +40,7 @@ func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) 
 	}, nil
 }
 
-func simulate(req *SimulationRequest) (*SimulationResponse, error) {
+func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
 	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
@@ -72,20 +72,35 @@ func simulate(req *SimulationRequest) (*SimulationResponse, error) {
 		tx["accessList"] = req.AccessList
 	}
 
+	var blockNumber string
+	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
+		return nil, fmt.Errorf("failed to get block number: %v", err)
+	}
+
+	var baseFee struct {
+		BaseFeePerGas string `json:"baseFeePerGas"`
+	}
+	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
+		return nil, fmt.Errorf("failed to get base fee: %v", err)
+	}
+
+	tx["gasPrice"] = baseFee.BaseFeePerGas
+
 	callTraceConfig := map[string]interface{}{
 		"tracer": "callTracer",
 	}
 
 	var trace struct {
-		Type    string         `json:"type"`
-		From    common.Address `json:"from"`
-		To      common.Address `json:"to"`
-		Value   string         `json:"value"`
-		Gas     string         `json:"gas"`
-		GasUsed string         `json:"gasUsed"`
-		Input   hexutil.Bytes  `json:"input"`
-		Output  hexutil.Bytes  `json:"output"`
-		Error   string         `json:"error"`
+		Type     string         `json:"type"`
+		From     common.Address `json:"from"`
+		To       common.Address `json:"to"`
+		Value    string         `json:"value"`
+		Gas      string         `json:"gas"`
+		GasUsed  string         `json:"gasUsed"`
+		GasPrice string         `json:"gasPrice"`
+		Input    hexutil.Bytes  `json:"input"`
+		Output   hexutil.Bytes  `json:"output"`
+		Error    string         `json:"error"`
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
@@ -103,7 +118,7 @@ func simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.GasUsed = gasUsed.Uint64()
+			resp.Gas.Used = gasUsed.Uint64()
 		}
 	}
 
@@ -146,24 +161,13 @@ func simulate(req *SimulationRequest) (*SimulationResponse, error) {
 	return resp, nil
 }
 
-func Simulate(id string, chainId uint64, input interface{}) (*SimulationRequest, *SimulationResponse, error) {
-	var simulationRequest *SimulationRequest
-	var err error
-
-	switch v := input.(type) {
-	case signature.LivePlugs:
-		simulationRequest, err = getSimulationRequest(id, chainId, v)
-	case *SimulationRequest:
-		simulationRequest = v
-	default:
-		return nil, nil, fmt.Errorf("unsupported input type for simulation")
-	}
-
+func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
+	simulationRequest, err := getSimulationRequest(id, chainId, plugs)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	simulationResponse, err := simulate(simulationRequest)
+	simulationResponse, err := SimulateRaw(simulationRequest)
 	if err != nil {
 		return nil, nil, err
 	}

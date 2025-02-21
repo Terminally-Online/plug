@@ -57,7 +57,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack deposit calldata: %w", err)
@@ -118,7 +118,7 @@ func HandleSupplyCollateral(rawInputs json.RawMessage, params actions.HandlerPar
 		"supplyCollateral",
 		market.Params,
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 		[]byte{},
 	)
 	if err != nil {
@@ -167,8 +167,8 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		withdrawCalldata, err := vaultAbi.Pack(
 			"withdraw",
 			amount,
-			common.HexToAddress(params.From),
-			common.HexToAddress(params.From),
+			params.From,
+			params.From,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
@@ -194,8 +194,8 @@ func HandleWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		market.Params,
 		amount,
 		big.NewInt(0),
-		common.HexToAddress(params.From),
-		common.HexToAddress(params.From),
+		params.From,
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
@@ -226,7 +226,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		if err != nil {
 			return nil, fmt.Errorf("failed to get erc20 abi: %w", err)
 		}
-		balance, err := erc20Abi.Pack("balanceOf", common.HexToAddress(params.From))
+		balance, err := erc20Abi.Pack("balanceOf", params.From)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack balance of calldata: %w", err)
 		}
@@ -238,8 +238,8 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		withdrawCalldata, err := vaultAbi.Pack(
 			"redeem",
 			balance,
-			common.HexToAddress(params.From),
-			common.HexToAddress(params.From),
+			params.From,
+			params.From,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
@@ -265,7 +265,7 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 	position, err := morpho.Position(
 		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get position: %w", err)
@@ -280,8 +280,8 @@ func HandleWithdrawAll(rawInputs json.RawMessage, params actions.HandlerParams) 
 		market.Params,
 		big.NewInt(0),
 		position.SupplyShares,
-		common.HexToAddress(params.From),
-		common.HexToAddress(params.From),
+		params.From,
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack withdraw calldata: %w", err)
@@ -327,8 +327,8 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		market.Params,
 		amount,
 		big.NewInt(0),
-		common.HexToAddress(params.From),
-		common.HexToAddress(params.From),
+		params.From,
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack borrow calldata: %w", err)
@@ -385,7 +385,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		market.Params,
 		amount,
 		big.NewInt(0),
-		common.HexToAddress(params.From),
+		params.From,
 		[]byte{},
 	)
 	if err != nil {
@@ -429,7 +429,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 	position, err := morpho.Position(
 		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get position: %w", err)
@@ -464,7 +464,7 @@ func HandleRepayAll(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 		market.Params,
 		borrowAssets,
 		big.NewInt(0),
-		common.HexToAddress(params.From),
+		params.From,
 		[]byte{},
 	)
 	if err != nil {
@@ -506,7 +506,7 @@ func HandleClaimRewards(rawInputs json.RawMessage, params actions.HandlerParams)
 		}
 		claimCalldata, err := distributorAbi.Pack(
 			"claim",
-			common.HexToAddress(params.From),
+			params.From,
 			common.HexToAddress(distribution.Asset.Address),
 			claimable,
 			proof,
@@ -554,7 +554,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 	position, err := morpho.Position(
 		params.Client.ReadOptions(params.From),
 		[32]byte(common.Hex2BytesFixed(market.UniqueKey, 32)),
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, err

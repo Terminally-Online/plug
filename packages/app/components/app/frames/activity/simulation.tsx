@@ -10,8 +10,8 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
 import { useActions } from "@/state/actions"
+import { useColumnStore } from "@/state/columns"
 
 export const SimulationFrame: FC<{
 	index: number
@@ -21,33 +21,33 @@ export const SimulationFrame: FC<{
 	const [solverActions] = useActions()
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
-	const simulation = activity?.simulations.find(sim => sim.id === simulationId)
+	const simulation = activity?.runs.find(sim => sim.id === simulationId)
 	const actions = JSON.parse(activity?.actions ?? "[]")
 
-	const handleShare = useCallback(() => { 
-		if (!activity) return;
+	const handleShare = useCallback(() => {
+		if (!activity) return
 
 		try {
-			const workflowActions: Array<{protocol: string, action: string}> = JSON.parse(activity.actions);
-			const cleanedActions = workflowActions.map((action) => ({
+			const workflowActions: Array<{ protocol: string; action: string }> = JSON.parse(activity.actions)
+			const cleanedActions = workflowActions.map(action => ({
 				protocol: action.protocol?.toLowerCase?.(),
 				sentence: solverActions[action.protocol]["schema"][action.action].sentence
-			}));
+			}))
 			console.log("cleanedActions", cleanedActions)
 			const params = new URLSearchParams({
-				name: activity.workflow.name.slice(0, 100), // Reasonable name length
-				protocols: cleanedActions.map(a => a.protocol).join(','),
-				sentences: cleanedActions.map(a => a.sentence).join(',')
-			});
-			const url = `/api/canvas/opengraph?${params.toString()}`;
+				name: activity.plug.name.slice(0, 100), // Reasonable name length
+				protocols: cleanedActions.map(a => a.protocol).join(","),
+				sentences: cleanedActions.map(a => a.sentence).join(",")
+			})
+			const url = `/api/canvas/opengraph?${params.toString()}`
 
-			console.log('Debug - OpenGraph URL:', url);
-			window.open(url, '_blank');
+			console.log("Debug - OpenGraph URL:", url)
+			window.open(url, "_blank")
 		} catch (e) {
 			console.error("Share generation failed:", e, {
-				workflowId: activity.workflow.id,
-				actions: activity.workflow.actions
-			});
+				plugId: activity.plug.id,
+				actions: activity.actions
+			})
 		}
 	}, [activity, solverActions])
 
@@ -62,12 +62,7 @@ export const SimulationFrame: FC<{
 			handleBack={() => handle.frame()}
 			hasOverlay={true}
 		>
-			<ActionPreview
-				index={index}
-				item={activity.workflow.id}
-				actions={actions}
-				errors={simulation.errors ?? []}
-			/>
+			<ActionPreview index={index} item={activity.plug.id} actions={actions} errors={simulation.errors ?? []} />
 
 			{simulation.error && (
 				<p className="mx-auto mt-4 px-8 text-center text-sm font-bold text-plug-red">
@@ -76,24 +71,21 @@ export const SimulationFrame: FC<{
 			)}
 
 			{simulation.status === "success" ? (
-				<Button 
-					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" 
+				<Button
+					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 					onClick={handleShare}
 				>
 					<Share size={18} className="opacity-60" />
 					Share
 				</Button>
 			) : (
-				<Button 
-					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" 
+				<Button
+					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4"
 					onClick={() => {
-						const message = [
-							`Socket: ${activity.workflow.socketId}`,
-							`Simulation ${simulation.id}`
-						].join(' - ');
-						
-						const encodedMessage = encodeURIComponent(message);
-						window.open(`https://t.me/evmchance?text=${encodedMessage}`, '_blank');
+						const message = [`Socket: ${activity.plug.socketId}`, `Simulation ${simulation.id}`].join(" - ")
+
+						const encodedMessage = encodeURIComponent(message)
+						window.open(`https://t.me/evmchance?text=${encodedMessage}`, "_blank")
 					}}
 				>
 					<MessageCircleQuestionIcon size={18} className="opacity-60" />

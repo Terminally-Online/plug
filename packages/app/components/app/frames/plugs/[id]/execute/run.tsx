@@ -46,7 +46,7 @@ export const RunFrame: FC<{
 	} = usePlugStore(item)
 	const [solverActions] = useActions()
 
-	// TODO: The functionality for this was not finished because right now our in our environment we 
+	// TODO: The functionality for this was not finished because right now our in our environment we
 	//       only have one chain that is valid at any given time.
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
 
@@ -105,7 +105,7 @@ export const RunFrame: FC<{
 
 		queue(
 			{
-				workflowId: column.item,
+				plugId: column.item,
 				chainId: chain,
 				startAt: column.schedule?.date?.from ?? new Date(),
 				endAt: column.schedule?.date?.to,
@@ -329,7 +329,7 @@ export const RunFrame: FC<{
 							<AlertTriangle size={14} className="opacity-60" />
 							Only Constraints Added
 						</span>
-					) :  (
+					) : (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							Required Inputs Incomplete

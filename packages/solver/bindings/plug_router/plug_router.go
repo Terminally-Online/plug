@@ -59,7 +59,7 @@ type PlugTypesLibResult struct {
 
 // PlugRouterMetaData contains all meta data concerning the PlugRouter contract.
 var PlugRouterMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"function\",\"name\":\"name\",\"inputs\":[],\"outputs\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.LivePlugs[]\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Result[]\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"symbol\",\"inputs\":[],\"outputs\":[{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"error\",\"name\":\"SocketAddressInvalid\",\"inputs\":[{\"name\":\"intended\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"}]}]",
+	ABI: "[{\"type\":\"function\",\"name\":\"name\",\"inputs\":[],\"outputs\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.LivePlugs[]\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"symbol\",\"inputs\":[],\"outputs\":[{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"event\",\"name\":\"PlugResult\",\"inputs\":[{\"name\":\"index\",\"type\":\"uint8\",\"indexed\":false,\"internalType\":\"uint8\"},{\"name\":\"reason\",\"type\":\"tuple\",\"indexed\":false,\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"SocketAddressInvalid\",\"inputs\":[{\"name\":\"intended\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"}]}]",
 }
 
 // PlugRouterABI is the input ABI used to generate the binding from.
@@ -272,42 +272,177 @@ func (_PlugRouter *PlugRouterCallerSession) Symbol() (string, error) {
 
 // Plug is a paid mutator transaction binding the contract method 0x5365d433.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns((uint8,string) results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns()
 func (_PlugRouter *PlugRouterTransactor) Plug(opts *bind.TransactOpts, livePlugs PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.contract.Transact(opts, "plug", livePlugs)
 }
 
 // Plug is a paid mutator transaction binding the contract method 0x5365d433.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns((uint8,string) results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns()
 func (_PlugRouter *PlugRouterSession) Plug(livePlugs PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.Contract.Plug(&_PlugRouter.TransactOpts, livePlugs)
 }
 
 // Plug is a paid mutator transaction binding the contract method 0x5365d433.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns((uint8,string) results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs) payable returns()
 func (_PlugRouter *PlugRouterTransactorSession) Plug(livePlugs PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.Contract.Plug(&_PlugRouter.TransactOpts, livePlugs)
 }
 
 // Plug0 is a paid mutator transaction binding the contract method 0xf17ae13f.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns((uint8,string)[] results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns()
 func (_PlugRouter *PlugRouterTransactor) Plug0(opts *bind.TransactOpts, livePlugs []PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.contract.Transact(opts, "plug0", livePlugs)
 }
 
 // Plug0 is a paid mutator transaction binding the contract method 0xf17ae13f.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns((uint8,string)[] results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns()
 func (_PlugRouter *PlugRouterSession) Plug0(livePlugs []PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.Contract.Plug0(&_PlugRouter.TransactOpts, livePlugs)
 }
 
 // Plug0 is a paid mutator transaction binding the contract method 0xf17ae13f.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns((uint8,string)[] results)
+// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes)[] livePlugs) payable returns()
 func (_PlugRouter *PlugRouterTransactorSession) Plug0(livePlugs []PlugTypesLibLivePlugs) (*types.Transaction, error) {
 	return _PlugRouter.Contract.Plug0(&_PlugRouter.TransactOpts, livePlugs)
+}
+
+// PlugRouterPlugResultIterator is returned from FilterPlugResult and is used to iterate over the raw logs and unpacked data for PlugResult events raised by the PlugRouter contract.
+type PlugRouterPlugResultIterator struct {
+	Event *PlugRouterPlugResult // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *PlugRouterPlugResultIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(PlugRouterPlugResult)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(PlugRouterPlugResult)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *PlugRouterPlugResultIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *PlugRouterPlugResultIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// PlugRouterPlugResult represents a PlugResult event raised by the PlugRouter contract.
+type PlugRouterPlugResult struct {
+	Index  uint8
+	Reason PlugTypesLibResult
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterPlugResult is a free log retrieval operation binding the contract event 0x387ebc2286e5f30aa44f4fde230e7badbbf2ed0322ac8455948821987c41459e.
+//
+// Solidity: event PlugResult(uint8 index, (uint8,string) reason)
+func (_PlugRouter *PlugRouterFilterer) FilterPlugResult(opts *bind.FilterOpts) (*PlugRouterPlugResultIterator, error) {
+
+	logs, sub, err := _PlugRouter.contract.FilterLogs(opts, "PlugResult")
+	if err != nil {
+		return nil, err
+	}
+	return &PlugRouterPlugResultIterator{contract: _PlugRouter.contract, event: "PlugResult", logs: logs, sub: sub}, nil
+}
+
+// WatchPlugResult is a free log subscription operation binding the contract event 0x387ebc2286e5f30aa44f4fde230e7badbbf2ed0322ac8455948821987c41459e.
+//
+// Solidity: event PlugResult(uint8 index, (uint8,string) reason)
+func (_PlugRouter *PlugRouterFilterer) WatchPlugResult(opts *bind.WatchOpts, sink chan<- *PlugRouterPlugResult) (event.Subscription, error) {
+
+	logs, sub, err := _PlugRouter.contract.WatchLogs(opts, "PlugResult")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(PlugRouterPlugResult)
+				if err := _PlugRouter.contract.UnpackLog(event, "PlugResult", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParsePlugResult is a log parse operation binding the contract event 0x387ebc2286e5f30aa44f4fde230e7badbbf2ed0322ac8455948821987c41459e.
+//
+// Solidity: event PlugResult(uint8 index, (uint8,string) reason)
+func (_PlugRouter *PlugRouterFilterer) ParsePlugResult(log types.Log) (*PlugRouterPlugResult, error) {
+	event := new(PlugRouterPlugResult)
+	if err := _PlugRouter.contract.UnpackLog(event, "PlugResult", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
 }

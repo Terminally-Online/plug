@@ -2,12 +2,12 @@ import { Prisma } from "@prisma/client"
 
 import { SOCKET_BASE_QUERY } from "@/lib"
 
-const userSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
+const socketModel = Prisma.validator<Prisma.SocketDefaultArgs>()({
 	...SOCKET_BASE_QUERY
 })
-export type UserSocketModel = Prisma.UserSocketGetPayload<typeof userSocketModel>
+export type SocketModel = Prisma.SocketGetPayload<typeof socketModel>
 
-const minimalUserSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()({
+const minimalSocketModel = Prisma.validator<Prisma.SocketDefaultArgs>()({
 	include: {
 		identity: {
 			include: {
@@ -20,13 +20,13 @@ const minimalUserSocketModel = Prisma.validator<Prisma.UserSocketDefaultArgs>()(
 	},
 	omit: { createdAt: true, updatedAt: true, admin: true }
 })
-export type MinimalUserSocketModel = Prisma.UserSocketGetPayload<typeof minimalUserSocketModel>
+export type MinimalSocketModel = Prisma.SocketGetPayload<typeof minimalSocketModel>
 
 // ---------------------------------------------------------------------------
 // Tokens
 // ---------------------------------------------------------------------------
-const tokenPriceModel = Prisma.validator<Prisma.TokenPriceCreateArgs>()({})
-export type TokenPriceModel = Prisma.TokenPriceGetPayload<typeof tokenPriceModel>
+const priceModel = Prisma.validator<Prisma.PriceCreateArgs>()({})
+export type PriceModel = Prisma.PriceGetPayload<typeof priceModel>
 
 // ---------------------------------------------------------------------------
 // Positions
@@ -90,5 +90,5 @@ export type PositionCacheModel = Prisma.PositionCacheGetPayload<typeof positionC
 // ---------------------------------------------------------------------------
 // Plugs
 // ---------------------------------------------------------------------------
-const workflowModel = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
-export type WorkflowModel = Prisma.WorkflowGetPayload<typeof workflowModel>
+const plugModel = Prisma.validator<Prisma.PlugDefaultArgs>()({})
+export type PlugModel = Prisma.PlugGetPayload<typeof plugModel>

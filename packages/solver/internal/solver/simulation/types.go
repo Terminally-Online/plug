@@ -2,11 +2,16 @@ package simulation
 
 import (
 	"solver/internal/database/models"
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type SimulationDomain struct {
-	ChainId uint64 `json:"chainId"`
-	From    string `json:"from"`
+	ChainId uint64         `json:"chainId"`
+	From    common.Address `json:"from"`
 }
 
 type SimulationInputs struct {

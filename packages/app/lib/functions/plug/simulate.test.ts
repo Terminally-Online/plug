@@ -6,8 +6,8 @@ const HOUR = 60 * MINUTE
 const DAY = 24 * HOUR
 
 const WORKFLOW = {
-	workflowId: "test",
-	workflow: {
+	plugId: "test",
+	plug: {
 		createdAt: NOW,
 		name: "test",
 		id: "test",
@@ -91,7 +91,7 @@ describe("getNextSimulationAt", () => {
 		describe("failure cases", () => {
 			it("retries within same period using workflow frequency", () => {
 				const result = getNextSimulationAt(dailyExecution, FAILED_SIMULATION, NOW)
-				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.workflow.frequency * MINUTE))
+				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.plug.frequency * MINUTE))
 				expect(result?.periodEndAt).toEqual(dailyExecution.periodEndAt)
 			})
 		})
@@ -126,7 +126,7 @@ describe("getNextSimulationAt", () => {
 		describe("failure cases", () => {
 			it("retries within same period using workflow frequency", () => {
 				const result = getNextSimulationAt(weeklyExecution, FAILED_SIMULATION, NOW)
-				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.workflow.frequency * MINUTE))
+				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.plug.frequency * MINUTE))
 				expect(result?.periodEndAt).toEqual(weeklyExecution.periodEndAt)
 			})
 		})
@@ -161,7 +161,7 @@ describe("getNextSimulationAt", () => {
 		describe("failure cases", () => {
 			it("retries within same period using workflow frequency", () => {
 				const result = getNextSimulationAt(monthlyExecution, FAILED_SIMULATION, NOW)
-				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.workflow.frequency * MINUTE))
+				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.plug.frequency * MINUTE))
 				expect(result?.periodEndAt).toEqual(monthlyExecution.periodEndAt)
 			})
 		})
@@ -196,7 +196,7 @@ describe("getNextSimulationAt", () => {
 		describe("failure cases", () => {
 			it("retries within same period using workflow frequency", () => {
 				const result = getNextSimulationAt(yearlyExecution, FAILED_SIMULATION, NOW)
-				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.workflow.frequency * MINUTE))
+				expect(result?.nextSimulationAt).toEqual(new Date(NOW.getTime() + WORKFLOW.plug.frequency * MINUTE))
 				expect(result?.periodEndAt).toEqual(yearlyExecution.periodEndAt)
 			})
 		})

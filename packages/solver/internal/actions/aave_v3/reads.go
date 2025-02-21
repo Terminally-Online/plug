@@ -24,7 +24,7 @@ func getReserves(chainId uint64) ([]aave_v3_ui_pool_data_provider.IUiPoolDataPro
 		return nil, err
 	}
 	reserves, _, err := dataProvider.GetReservesData(
-		client.ReadOptions(os.Getenv("SOLVER_ADDRESS")),
+		client.ReadOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))),
 		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_address_client"]),
 	)
 	if err != nil {
@@ -34,7 +34,7 @@ func getReserves(chainId uint64) ([]aave_v3_ui_pool_data_provider.IUiPoolDataPro
 	return reserves, nil
 }
 
-func getHealthFactor(chainId uint64, userAddress string) (*big.Int, error) {
+func getHealthFactor(chainId uint64, userAddress common.Address) (*big.Int, error) {
 	client, err := client.New(chainId)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func getHealthFactor(chainId uint64, userAddress string) (*big.Int, error) {
 
 	userAccountData, err := pool.GetUserAccountData(
 		client.SolverReadOptions(),
-		common.HexToAddress(userAddress),
+		userAddress,
 	)
 	if err != nil {
 		return nil, err

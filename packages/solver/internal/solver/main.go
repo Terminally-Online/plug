@@ -40,7 +40,7 @@ func New() Solver {
 	}
 }
 
-func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from string) ([]signature.Plug, error) {
+func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from common.Address) ([]signature.Plug, error) {
 	var inputs struct {
 		Protocol string `json:"protocol"`
 		Action   string `json:"action"`
@@ -86,7 +86,7 @@ func (s *Solver) GetPlugsArray(
 	head []signature.Plug,
 	inputs []byte,
 	chainId uint64,
-	from string,
+	from common.Address,
 ) (plugs []signature.Plug, exclusive bool, error error) {
 	plugs, err := s.GetTransaction(inputs, chainId, from)
 	if err != nil {
@@ -142,35 +142,35 @@ func (s *Solver) GetPlugs(definition simulation.SimulationDefinition) ([]signatu
 	return plugs, nil
 }
 
-func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (signature.LivePlugs, error) {
+func (s *Solver) GetLivePlugs(definition simulation.SimulationDefinition) (*signature.LivePlugs, error) {
 	plugs, err := s.GetPlugs(definition)
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
 	solver, err := signature.GetSolverHash()
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
-	salt, err := signature.GetSaltHash(common.HexToAddress(definition.From))
+	salt, err := signature.GetSaltHash(definition.From)
 	if err != nil {
-		return signature.LivePlugs{}, err
+		return nil, err
 	}
 
 	plugsSigned, plugsSignature, err := signature.GetSignature(
 		big.NewInt(int64(definition.ChainId)),
-		common.HexToAddress(definition.From),
+		definition.From,
 		signature.Plugs{
-			Socket: common.HexToAddress(definition.From),
+			Socket: definition.From,
 			Plugs:  plugs,
 			Solver: solver,
 			Salt:   salt,
 		},
 	)
 	if err != nil {
-		return signature.LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
+		return nil, utils.ErrBuild("failed to sign: " + err.Error())
 	}
 
-	return signature.LivePlugs{
+	return &signature.LivePlugs{
 		Plugs:     plugsSigned,
 		Signature: plugsSignature,
 	}, nil
@@ -182,10 +182,14 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 		return nil, err
 	}
 
+	if len(plugs) > 1 {
+		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
+	}
+
 	simulationRequest := &simulation.SimulationRequest{
 		Id:      definition.Id,
 		ChainId: definition.ChainId,
-		From:    common.HexToAddress(definition.From),
+		From:    definition.From,
 		To:      plugs[0].To,
 		Data:    plugs[0].Data,
 		Value:   plugs[0].Value,
@@ -193,12 +197,10 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 
 	var simulationResponse *simulation.SimulationResponse
 	if definition.Options.Simulate {
-		var simReq *simulation.SimulationRequest
-		simReq, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, simulationRequest)
+		simulationResponse, err = simulation.SimulateRaw(simulationRequest)
 		if err != nil {
 			return nil, err
 		}
-		simulationRequest = simReq
 	}
 
 	return &Solution{
@@ -209,24 +211,19 @@ func (s *Solver) SolveEOA(definition simulation.SimulationDefinition) (solution 
 }
 
 func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *Solution, err error) {
-	// For EOA transactions, we skip plug bundle creation and directly simulate the transaction.
 	if definition.Options.IsEOA {
 		return s.SolveEOA(definition)
 	}
 
-	// Regular plug bundle flow for non-EOA transactions
 	livePlugs, err := s.GetLivePlugs(definition)
 	if err != nil {
 		return nil, err
 	}
 
-	// NOTE: For this to be accurate we need the plugs already signed since that is all
-	//       we can simulate meaning only livePlugs should be returned when we cannot
-	//       realize the state of a simulated plug simulation defintion.
 	var simulationRequest *simulation.SimulationRequest
 	var simulationResponse *simulation.SimulationResponse
 	if definition.Options.Simulate {
-		simulationRequest, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, livePlugs)
+		simulationRequest, simulationResponse, err = simulation.Simulate(definition.Id, definition.ChainId, *livePlugs)
 		if err != nil {
 			return nil, err
 		}
@@ -240,7 +237,7 @@ func (s *Solver) Solve(definition simulation.SimulationDefinition) (solution *So
 	}, nil
 }
 
-func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, error) {
+func (s *Solver) Submit(definitions []simulation.SimulationDefinition) ([]signature.Result, error) {
 	if len(definitions) == 0 {
 		return nil, utils.ErrBuild("no plugs generated to execute")
 	}
@@ -248,7 +245,7 @@ func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, e
 	chainId := definitions[0].ChainId
 	errors := make([]error, len(definitions))
 
-	var livePlugs []signature.LivePlugs
+	var livePlugs []*signature.LivePlugs
 	for i, definition := range definitions {
 		if definition.ChainId != chainId {
 			errors[i] = utils.ErrChainId("chainId", definition.ChainId)
@@ -271,14 +268,10 @@ func (s *Solver) Submit(definitions []simulation.SimulationDefinition) (error, e
 	if err != nil {
 		return nil, err
 	}
-	_, err = provider.Plug(livePlugs)
+	results, err := provider.Plug(livePlugs)
 	if err != nil {
 		return nil, err
 	}
 
-	// router, err := plug_router.NewPlugRouter()
-	// TODO: We need to take transactions `_` and decode their return data so that
-	//       we can get back the results and return them.
-
-	return nil, nil
+	return results, nil
 }

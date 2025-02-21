@@ -46,12 +46,12 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get registrar: %v", err)
 	}
 	var secret [32]byte
-	nameAndAddr := append([]byte(*name), common.HexToAddress(params.From).Bytes()...)
+	nameAndAddr := append([]byte(*name), params.From.Bytes()...)
 	copy(secret[:], nameAndAddr)
 	commitment, err := registrar.MakeCommitment(
 		params.Client.ReadOptions(params.From),
 		*name,
-		common.HexToAddress(params.From),
+		params.From,
 		big.NewInt(secondsPerYear),
 		secret,
 		common.HexToAddress(resolver),
@@ -95,7 +95,7 @@ func HandleActionBuy(rawInputs json.RawMessage, params actions.HandlerParams) ([
 	registerCalldata, err := registrarAbi.Pack(
 		"register",
 		name,
-		common.HexToAddress(params.From),
+		params.From,
 		big.NewInt(secondsPerYear),
 		secret,
 		common.HexToAddress(resolver),

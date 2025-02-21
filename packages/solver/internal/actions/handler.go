@@ -15,7 +15,7 @@ import (
 type HandlerParams struct {
 	Client  *client.Client
 	ChainId uint64
-	From    string
+	From    common.Address
 }
 
 type BaseProtocolHandler interface {

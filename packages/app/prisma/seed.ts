@@ -33,7 +33,7 @@ const seedSockets = async () => {
 		const { bytes, hex: salt } = getSocketSalt(MAGIC_NONCE, socket.address as `0x${string}`)
 		const { address: socketAddress, implementation } = getSocketAddress(bytes)
 
-		await prisma.userSocket.upsert({
+		await prisma.socket.upsert({
 			where: { id: socket.address },
 			update: {
 				admin: true,

@@ -53,7 +53,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	depositCalldata, err := poolAbi.Pack("deposit",
 		token,
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 		uint16(0),
 	)
 	if err != nil {
@@ -96,7 +96,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		amountOut,
 		interestRateMode,
 		uint16(0),
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -147,7 +147,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		tokenIn,
 		amountIn,
 		interestRateMode,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -188,7 +188,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	calldata, err := poolAbi.Pack("withdraw",
 		tokenOut,
 		amountOut,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
