@@ -139,7 +139,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	}
 
 	resp := &SimulationResponse{
-		Id:      req.Id,
+		Id:      utils.GenerateUUID(),
 		Success: trace.Error == "",
 		Data: SimulationOutputData{
 			Raw: trace.Output,
