@@ -16,10 +16,10 @@ type SimulationRequest struct {
 	Id          string           `json:"id,omitempty" gorm:"type:text"`
 	ReferenceId string           `json:"referenceId,omitempty" gorm:"type:text;index"`
 	ChainId     uint64           `json:"chainId" gorm:"type:bigint"`
-	From        common.Address   `json:"from" db_field:"FromStr"`
-	To          common.Address   `json:"to" db_field:"ToStr"`
-	Data        hexutil.Bytes    `json:"data,omitempty" db_field:"DataStr"`
-	Value       *big.Int         `json:"value,omitempty" db_field:"ValueStr"`
+	From        common.Address   `json:"from" db_field:"FromStr" gorm:"-"`
+	To          common.Address   `json:"to" db_field:"ToStr" gorm:"-"`
+	Data        hexutil.Bytes    `json:"data,omitempty" db_field:"DataStr" gorm:"-"`
+	Value       *big.Int         `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit    *uint64          `json:"gasLimit,omitempty" gorm:"type:bigint"`
 	AccessList  types.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
 	ABI         string           `json:"abi,omitempty" gorm:"type:text"`
