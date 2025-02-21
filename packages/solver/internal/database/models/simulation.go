@@ -1,8 +1,8 @@
 package models
 
 import (
-	"fmt"
 	"math/big"
+	"solver/internal/database/serializer"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -16,34 +16,29 @@ type SimulationRequest struct {
 	Id          string           `json:"id,omitempty" gorm:"type:text"`
 	ReferenceId string           `json:"referenceId,omitempty" gorm:"type:text;index"`
 	ChainId     uint64           `json:"chainId" gorm:"type:bigint"`
+	From        common.Address   `json:"from" db_field:"FromStr" gorm:"-"`
+	To          common.Address   `json:"to" db_field:"ToStr" gorm:"-"`
+	Data        hexutil.Bytes    `json:"data,omitempty" db_field:"DataStr" gorm:"-"`
+	Value       *big.Int         `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit    *uint64          `json:"gasLimit,omitempty" gorm:"type:bigint"`
-	valueStr    string           `gorm:"column:value"`
-	Value       *big.Int         `json:"value,omitempty" gorm:"-"`
 	AccessList  types.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
 	ABI         string           `json:"abi,omitempty" gorm:"type:text"`
 
-	// These values are serialized back from strings when the struct is loaded from the database
-	From common.Address `json:"from" gorm:"-"`
-	To   common.Address `json:"to" gorm:"-"`
-	Data hexutil.Bytes  `json:"data,omitempty" gorm:"-"`
-
-	// Store these values as their string representations in the database.
-	FromStr string `json:"-" gorm:"column:from;type:text"`
-	ToStr   string `json:"-" gorm:"column:to;type:text"`
-	DataStr string `json:"-" gorm:"column:data;type:text"`
-
-	// Store the timestamps but do not expose them in the JSON response
+	// Database storage fields
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	FromStr   string         `json:"-" gorm:"column:from;type:text"`
+	ToStr     string         `json:"-" gorm:"column:to;type:text"`
+	DataStr   string         `json:"-" gorm:"column:data;type:text"`
+	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 }
 
 // SimulationResponse represents a simulation response in the database
 type SimulationResponse struct {
-	Id        string `json:"id" gorm:"type:text"`
-	RequestId string `json:"requestId" gorm:"type:text"`
-	// Adding this field to the struct with -:migration will prevent gorm from optimistically preloading the relationship
-	SimulationRequest SimulationRequest    `json:"-" gorm:"foreignKey:RequestId;references:Id;-:migration"`
+	Id                string               `json:"id" gorm:"type:text"`
+	RequestId         string               `json:"requestId" gorm:"type:text"`
+	SimulationRequest SimulationRequest    `json:"-" gorm:"foreignKey:RequestId;references:Id;-:migration"` // Adding this field to the struct with -:migration will prevent gorm from optimistically preloading the relationship
 	GasUsed           uint64               `json:"gasUsed" gorm:"type:bigint"`
 	Success           bool                 `json:"success"`
 	Data              SimulationOutputData `json:"data" gorm:"type:jsonb"`
@@ -61,46 +56,10 @@ type SimulationOutputData struct {
 	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
 }
 
-// Implement database serialization for big.Int
-func (s *SimulationRequest) AfterFind(tx *gorm.DB) error {
-	// Handle existing Value conversion
-	if s.valueStr != "" {
-		value := new(big.Int)
-		_, ok := value.SetString(s.valueStr, 10)
-		if !ok {
-			return fmt.Errorf("failed to parse Value as big.Int: %s", s.valueStr)
-		}
-		s.Value = value
-	}
-
-	// Convert strings back to addresses and data
-	s.From = common.HexToAddress(s.FromStr)
-	s.To = common.HexToAddress(s.ToStr)
-	if s.DataStr != "" {
-		data, err := hexutil.Decode(s.DataStr)
-		if err != nil {
-			return fmt.Errorf("failed to decode data: %v", err)
-		}
-		s.Data = data
-	}
-
-	return nil
+func (s *SimulationRequest) BeforeSave(tx *gorm.DB) error {
+	return serializer.HandleBeforeSave(s)
 }
 
-func (s *SimulationRequest) BeforeSave(tx *gorm.DB) error {
-	// Handle existing Value conversion
-	if s.Value != nil {
-		s.valueStr = s.Value.String()
-	} else {
-		s.valueStr = "0"
-	}
-
-	// Convert addresses and data to strings
-	s.FromStr = s.From.Hex()
-	s.ToStr = s.To.Hex()
-	if len(s.Data) > 0 {
-		s.DataStr = hexutil.Encode(s.Data)
-	}
-
-	return nil
+func (s *SimulationRequest) AfterFind(tx *gorm.DB) error {
+	return serializer.HandleAfterFind(s)
 }
