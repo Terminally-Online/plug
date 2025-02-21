@@ -13,28 +13,32 @@ import (
 // SimulationRequest represents a simulation request in the database
 type SimulationRequest struct {
 	gorm.Model
-	Id         string           `json:"id,omitempty" gorm:"type:text"`
-	ChainId    uint64           `json:"chainId" gorm:"type:bigint"`
-	From       common.Address   `json:"from" gorm:"type:bytea"`
-	To         common.Address   `json:"to" gorm:"type:bytea"`
-	Data       hexutil.Bytes    `json:"data,omitempty" gorm:"type:bytea"`
-	GasLimit   *uint64          `json:"gasLimit,omitempty" gorm:"type:bigint"`
-	Value      *big.Int         `json:"value,omitempty" gorm:"type:text"`
-	AccessList types.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
-	ABI        string           `json:"abi,omitempty" gorm:"type:text"`
+	Id          string           `json:"id,omitempty" gorm:"type:text"`
+	ReferenceId string           `json:"referenceId,omitempty" gorm:"type:text;index"`
+	ChainId     uint64           `json:"chainId" gorm:"type:bigint"`
+	From        common.Address   `json:"from" gorm:"type:bytea"`
+	To          common.Address   `json:"to" gorm:"type:bytea"`
+	Data        hexutil.Bytes    `json:"data,omitempty" gorm:"type:bytea"`
+	GasLimit    *uint64          `json:"gasLimit,omitempty" gorm:"type:bigint"`
+	valueStr    string           `gorm:"column:value"`
+	Value       *big.Int         `json:"value,omitempty" gorm:"-"`
+	AccessList  types.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
+	ABI         string           `json:"abi,omitempty" gorm:"type:text"`
 }
 
 // Implement database serialization for big.Int
 func (s *SimulationRequest) AfterFind(tx *gorm.DB) error {
-	if s.Value != nil {
-		// Convert stored string back to big.Int
-		value := new(big.Int)
-		_, ok := value.SetString(s.Value.String(), 10)
-		if !ok {
-			return fmt.Errorf("failed to parse Value as big.Int: %s", s.Value.String())
-		}
-		s.Value = value
+	if s.valueStr == "" {
+		s.Value = new(big.Int)
+		return nil
 	}
+
+	value := new(big.Int)
+	_, ok := value.SetString(s.valueStr, 10)
+	if !ok {
+		return fmt.Errorf("failed to parse Value as big.Int: %s", s.valueStr)
+	}
+	s.Value = value
 	return nil
 }
 
@@ -57,7 +61,10 @@ type SimulationOutputData struct {
 }
 
 func (s *SimulationRequest) BeforeSave(tx *gorm.DB) error {
-	// Value is already a *big.Int, and its String() method will be used
-	// automatically by GORM when saving to the database
+	if s.Value != nil {
+		s.valueStr = s.Value.String()
+	} else {
+		s.valueStr = "0"
+	}
 	return nil
 }

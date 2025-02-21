@@ -20,7 +20,11 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
+func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
+	if id == "" {
+		return nil, fmt.Errorf("id parameter cannot be empty")
+	}
+
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -30,7 +34,8 @@ func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) 
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
-	return &SimulationRequest{
+
+	req := &SimulationRequest{
 		Id:      id,
 		ChainId: chainId,
 		From:    common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
@@ -38,14 +43,35 @@ func getSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) 
 		Data:    plugCalldata,
 		Value:   big.NewInt(0),
 		ABI:     plug_router.PlugRouterMetaData.ABI,
-	}, nil
+	}
+
+	return req, nil
+}
+
+func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
+	// Set ReferenceId to Id as we're now working with the database where Id is the primary key
+	req.ReferenceId = req.Id
+
+	var existingRequest SimulationRequest
+	if err := database.DB.Where("reference_id = ?", req.ReferenceId).First(&existingRequest).Error; err == nil {
+		return &existingRequest, nil
+	}
+
+	req.Id = utils.GenerateUUID()
+
+	if err := database.DB.Create(req).Error; err != nil {
+		return nil, fmt.Errorf("failed to create simulation request: %v", err)
+	}
+
+	return req, nil
 }
 
 func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	ctx := context.Background()
 
-	if err := database.DB.Create(req).Error; err != nil {
-		return nil, fmt.Errorf("failed to save simulation request: %v", err)
+	dbReq, err := getOrCreateDBSimulationRequest(req)
+	if err != nil {
+		return nil, err
 	}
 
 	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
@@ -163,7 +189,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		// resp.Data.Decoded = decoded
 	}
 
-	resp.RequestId = req.Id
+	resp.RequestId = dbReq.Id
 	if err := database.DB.Create(resp).Error; err != nil {
 		return nil, fmt.Errorf("failed to save simulation response: %v", err)
 	}
@@ -172,7 +198,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 }
 
 func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
-	simulationRequest, err := getSimulationRequest(id, chainId, plugs)
+	simulationRequest, err := formatPlugSimulationRequest(id, chainId, plugs)
 	if err != nil {
 		return nil, nil, err
 	}
