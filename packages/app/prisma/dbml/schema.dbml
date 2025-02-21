@@ -50,17 +50,17 @@ Table SocketIdentity {
   onboardedAt DateTime
   onboardingColor String
   onboardingCount Int [increment, not null]
-  socket UserSocket [not null]
+  socket Socket [not null]
   socketId String [pk]
   farcaster FarcasterUser
   farcasterId String [unique]
   ens ENS
   companion Companion
-  referrer UserSocket
+  referrer Socket
   referrerId String
 }
 
-Table UserSocket {
+Table Socket {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -69,7 +69,7 @@ Table UserSocket {
   salt String
   implementation String
   identity SocketIdentity
-  workflow Workflow [not null]
+  plugs Plug [not null]
   positions PositionCache [not null]
   collectibles CollectibleCache [not null]
   referrals SocketIdentity [not null]
@@ -78,15 +78,15 @@ Table UserSocket {
 Table View {
   date DateTime [not null]
   views Int [not null, default: 0]
-  workflow Workflow [not null]
-  workflowId String [not null]
+  plug Plug [not null]
+  plugId String [not null]
 
   indexes {
-    (workflowId, date) [pk]
+    (plugId, date) [pk]
   }
 }
 
-Table Workflow {
+Table Plug {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -98,15 +98,15 @@ Table Workflow {
   actions String [not null, default: '[]']
   color String [not null]
   tags String[] [not null]
-  workflowForkedId String
+  plugForkedId String
   frequency Int [not null, default: 10]
-  socket UserSocket [not null]
+  socket Socket [not null]
   socketId String [not null]
-  executions Execution [not null]
+  executions Intent [not null]
   views View [not null]
 }
 
-Table Execution {
+Table Intent {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -118,12 +118,12 @@ Table Execution {
   frequency Int [not null, default: 0]
   periodEndAt DateTime
   nextSimulationAt DateTime
-  simulations Simulation [not null]
-  workflow Workflow [not null]
-  workflowId String [not null]
+  runs Run [not null]
+  plug Plug [not null]
+  plugId String [not null]
 }
 
-Table Simulation {
+Table Run {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -132,11 +132,11 @@ Table Simulation {
   error String
   errors String[] [not null]
   gasEstimate Float
-  execution Execution [not null]
-  executionId String [not null]
+  intent Intent [not null]
+  intentId String [not null]
 }
 
-Table TokenPrice {
+Table Price {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -225,7 +225,7 @@ Table PositionCache {
   updatedAt DateTime [default: `now()`, not null]
   balances ImplementationBalance [not null]
   positions Position [not null]
-  socket UserSocket [not null]
+  socket Socket [not null]
   socketId String [not null]
 }
 
@@ -297,17 +297,8 @@ Table CollectibleCache {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   collectibles Collectible [not null]
-  socket UserSocket [not null]
+  socket Socket [not null]
   socketId String [not null]
-}
-
-Table FeatureRequest {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  userAddress String [not null]
-  context String [not null]
-  message String
 }
 
 Table FarcasterAddresses {
@@ -324,19 +315,19 @@ Ref: ENS.socketId - SocketIdentity.socketId [delete: Cascade]
 
 Ref: Companion.socketId - SocketIdentity.socketId [delete: Cascade]
 
-Ref: SocketIdentity.socketId - UserSocket.id [delete: Cascade]
+Ref: SocketIdentity.socketId - Socket.id [delete: Cascade]
 
 Ref: SocketIdentity.farcasterId - FarcasterUser.id [delete: Set Null]
 
-Ref: SocketIdentity.referrerId - UserSocket.id [delete: Cascade]
+Ref: SocketIdentity.referrerId - Socket.id [delete: Cascade]
 
-Ref: View.workflowId > Workflow.id [delete: Cascade]
+Ref: View.plugId > Plug.id [delete: Cascade]
 
-Ref: Workflow.socketId > UserSocket.id [delete: Cascade]
+Ref: Plug.socketId > Socket.id [delete: Cascade]
 
-Ref: Execution.workflowId > Workflow.id [delete: Cascade]
+Ref: Intent.plugId > Plug.id [delete: Cascade]
 
-Ref: Simulation.executionId > Execution.id [delete: Cascade]
+Ref: Run.intentId > Intent.id [delete: Cascade]
 
 Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 
@@ -350,7 +341,7 @@ Ref: Position.protocolName > Protocol.name [delete: Cascade]
 
 Ref: Position.cacheId > PositionCache.id [delete: Cascade]
 
-Ref: PositionCache.socketId > UserSocket.id [delete: Cascade]
+Ref: PositionCache.socketId > Socket.id [delete: Cascade]
 
 Ref: Collectible.(metadataTokenId, metadataAddress, metadataChain) > CollectibleMetadata.(tokenId, collectionAddress, collectionChain)
 
@@ -358,4 +349,4 @@ Ref: Collectible.(collectionAddress, collectionChain) > Collection.(address, cha
 
 Ref: Collectible.cacheId > CollectibleCache.id [delete: Cascade]
 
-Ref: CollectibleCache.socketId > UserSocket.id [delete: Cascade]
+Ref: CollectibleCache.socketId > Socket.id [delete: Cascade]

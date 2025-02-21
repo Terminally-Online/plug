@@ -5,26 +5,14 @@ import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc
 import { getDominantColor } from "@/server/color"
 
 export const misc = createTRPCRouter({
-	featureRequest: anonymousProtectedProcedure
-		.input(z.object({ context: z.string(), message: z.string().optional() }))
-		.mutation(async ({ input, ctx }) => {
-			return await ctx.db.featureRequest.create({
-				data: {
-					userAddress: ctx.session.address,
-					context: input.context,
-					message: input.message
-				}
-			})
-		}),
-
 	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		const socket = await ctx.db.userSocket.findFirst({
+		const socket = await ctx.db.socket.findFirst({
 			where: { id: ctx.session.address }
 		})
 
 		if (socket === null) return { plugs: [], tokens: [], collectibles: [] }
 
-		const plugs = await ctx.db.workflow.findMany({
+		const plugs = await ctx.db.plug.findMany({
 			where: {
 				name: {
 					contains: input,

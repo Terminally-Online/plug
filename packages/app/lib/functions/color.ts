@@ -1,6 +1,7 @@
-import { ASSET_COLORS } from "./blockchain"
 import { Actions } from "@/lib/types"
+
 import { colors } from "../constants/colors"
+import { ASSET_COLORS } from "./blockchain"
 
 export const getTextColor = (backgroundColor: string) => {
 	let r: number, g: number, b: number
@@ -40,49 +41,47 @@ export const getTextColor = (backgroundColor: string) => {
 	return luminance > 0.5 ? "#000000" : "#FFFFFF"
 }
 
-export const getDominantProtocolColor = async (actions: Actions, workflowId: string, ctx: any): Promise<string> => {
-    // Default to Plug color if no actions
-    if (!actions?.length) {
-        const color = colors.plug
-        await updateWorkflowColor(workflowId, color, ctx)
-        return color
-    }
+export const getDominantProtocolColor = async (actions: Actions, plugId: string, ctx: any): Promise<string> => {
+	// Default to Plug color if no actions
+	if (!actions?.length) {
+		const color = colors.plug
+		await updateWorkflowColor(plugId, color, ctx)
+		return color
+	}
 
-    // Count protocol frequency
-    const protocolFrequency: Record<string, number> = {}
-    
-    for (const action of actions) {
-        if (!action?.protocol) continue
-        
-        // Normalize protocol name
-        const normalizedProtocol = action.protocol
-            .split('_')[0]  // Remove version numbers
-            .toLowerCase()
-        
-        protocolFrequency[normalizedProtocol] = 
-            (protocolFrequency[normalizedProtocol] || 0) + 1
-    }
+	// Count protocol frequency
+	const protocolFrequency: Record<string, number> = {}
 
-    // Find protocol with highest frequency
-    const entries = Object.entries(protocolFrequency)
-    if (!entries.length) {
-        const color = colors.plug
-        await updateWorkflowColor(workflowId, color, ctx)
-        return color
-    }
+	for (const action of actions) {
+		if (!action?.protocol) continue
 
-    const dominantProtocol = entries.reduce((a, b) => 
-        a[1] > b[1] ? a : b)[0]
+		// Normalize protocol name
+		const normalizedProtocol = action.protocol
+			.split("_")[0] // Remove version numbers
+			.toLowerCase()
 
-    // Get color from colors constant
-    const color = colors[dominantProtocol as keyof typeof colors] || colors.plug
-    await updateWorkflowColor(workflowId, color, ctx)
-    return color
+		protocolFrequency[normalizedProtocol] = (protocolFrequency[normalizedProtocol] || 0) + 1
+	}
+
+	// Find protocol with highest frequency
+	const entries = Object.entries(protocolFrequency)
+	if (!entries.length) {
+		const color = colors.plug
+		await updateWorkflowColor(plugId, color, ctx)
+		return color
+	}
+
+	const dominantProtocol = entries.reduce((a, b) => (a[1] > b[1] ? a : b))[0]
+
+	// Get color from colors constant
+	const color = colors[dominantProtocol as keyof typeof colors] || colors.plug
+	await updateWorkflowColor(plugId, color, ctx)
+	return color
 }
 
-const updateWorkflowColor = async (workflowId: string, color: string, ctx: any) => {
-    await ctx.db.workflow.update({
-        where: { id: workflowId },
-        data: { color }
-    })
+const updateWorkflowColor = async (plugId: string, color: string, ctx: any) => {
+	await ctx.db.plug.update({
+		where: { id: plugId },
+		data: { color }
+	})
 }

@@ -10,7 +10,7 @@ import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
 export const simulation = createTRPCRouter({
 	simulateNext: apiKeyProcedure.input(z.object({ count: z.number() }).nullish()).mutation(async ({ input, ctx }) => {
 		return await ctx.db.$transaction(async tx => {
-			const executions = await tx.execution.findMany({
+			const executions = await tx.intent.findMany({
 				where: {
 					nextSimulationAt: { lte: new Date() },
 					status: "active"
@@ -20,7 +20,7 @@ export const simulation = createTRPCRouter({
 					id: true,
 					chainId: true,
 					actions: true,
-					workflow: {
+					plug: {
 						select: {
 							socket: { select: { id: true, socketAddress: true } }
 						}
@@ -28,7 +28,7 @@ export const simulation = createTRPCRouter({
 				}
 			})
 
-			await tx.execution.updateMany({
+			await tx.intent.updateMany({
 				where: { id: { in: executions.map(e => e.id) } },
 				data: { status: "processing" }
 			})
@@ -54,7 +54,7 @@ export const simulation = createTRPCRouter({
 				return {
 					id: queuedWorkflow.id,
 					chainId: queuedWorkflow.chainId,
-					from: queuedWorkflow.workflow.socket.socketAddress,
+					from: queuedWorkflow.plug.socket.socketAddress,
 					inputs
 				}
 			})
@@ -68,29 +68,28 @@ export const simulation = createTRPCRouter({
 					id: z.string(),
 					success: z.boolean(),
 					gasUsed: z.number().optional(),
-					errorMessage: z.string().optional(),
+					errorMessage: z.string().optional()
 				})
 			)
 		)
 		.mutation(async ({ input, ctx }) => {
 			return await ctx.db.$transaction(async tx => {
-				console.log('input', input)
+				console.log("input", input)
 
 				return await Promise.all(
 					input.map(async simulation => {
-						const execution = await tx.execution.findUnique({
+						const execution = await tx.intent.findUnique({
 							where: { id: simulation.id },
-							include: { workflow: true, simulations: true }
+							include: { plug: true, runs: true }
 						})
 
 						if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
 						if (execution.status !== "processing") throw new TRPCError({ code: "BAD_REQUEST" })
 
-
 						const status = simulation.success ? "success" : "failure"
 						const nextSimulation = getNextSimulationAt(execution, { status })
 
-						await tx.execution.update({
+						await tx.intent.update({
 							where: { id: simulation.id },
 							data: {
 								status: nextSimulation?.nextSimulationAt ? "active" : "completed",
@@ -99,10 +98,10 @@ export const simulation = createTRPCRouter({
 							}
 						})
 
-						const { id } = await tx.simulation.create({
+						const { id } = await tx.run.create({
 							data: {
 								status,
-								executionId: simulation.id,
+								intentId: simulation.id,
 								error: simulation.errorMessage,
 								// errors: simulation.errors,
 								gasEstimate: simulation.gasUsed

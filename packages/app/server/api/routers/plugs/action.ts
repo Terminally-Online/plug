@@ -28,7 +28,7 @@ export const action = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			if (input.id === undefined) throw new TRPCError({ code: "BAD_REQUEST" })
 
-			const plug = await ctx.db.workflow.findUnique({
+			const plug = await ctx.db.plug.findUnique({
 				where: { id: input.id, socketId: ctx.session.address }
 			})
 
@@ -93,7 +93,7 @@ export const action = createTRPCRouter({
 					]
 				})
 				const generated = message.content[0].type === "text" ? message.content[0].text : undefined
-				const namedPlug = await ctx.db.workflow.update({
+				const namedPlug = await ctx.db.plug.update({
 					where: { id: input.id },
 					data: { name: generated, renamedAt: new Date(), updatedAt: new Date() }
 				})
@@ -101,7 +101,7 @@ export const action = createTRPCRouter({
 				ctx.emitter.emit(events.edit, namedPlug)
 			})(plug.name, plug.namedAt, plug.updatedAt)
 
-			const updated = await ctx.db.workflow.update({
+			const updated = await ctx.db.plug.update({
 				where: { id: input.id, socketId: ctx.session.address },
 				data: {
 					actions: input.actions,

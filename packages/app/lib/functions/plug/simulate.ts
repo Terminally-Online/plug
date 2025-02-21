@@ -8,14 +8,14 @@ export const getNextSimulationAt = (
 		nextSimulationAt: Date | null
 		endAt: Date | null
 		periodEndAt: Date | null
-		workflow: { frequency: number }
+		plug: { frequency: number }
 	},
 	simulation: {
 		status: string
 	},
 	now = new Date()
 ) => {
-	const workflowFrequency = execution.workflow.frequency * MINUTE
+	const workflowFrequency = execution.plug.frequency * MINUTE
 	const executionFrequency = execution.frequency * DAY
 
 	if (execution.endAt && now >= execution.endAt) return null
