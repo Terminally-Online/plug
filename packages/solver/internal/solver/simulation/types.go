@@ -1,11 +1,9 @@
 package simulation
 
 import (
-	"math/big"
+	"solver/internal/database/models"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type SimulationDomain struct {
@@ -38,35 +36,10 @@ type SimulationDefinitions struct {
 	} `json:"result"`
 }
 
-type SimulationRequest struct {
-	Id         string           `json:"id,omitempty"`
-	ChainId    uint64           `json:"chainId"`
-	From       common.Address   `json:"from"`
-	To         common.Address   `json:"to"`
-	Data       hexutil.Bytes    `json:"data,omitempty"`
-	GasLimit   *uint64          `json:"gasLimit,omitempty"`
-	Value      *big.Int         `json:"value,omitempty"`
-	AccessList types.AccessList `json:"accessList,omitempty"`
-	ABI        string           `json:"abi,omitempty"`
-}
-
-type SimulationGas struct {
-	Used uint64 `json:"used"`
-}
-
-type SimulationResponse struct {
-	Id           string        `json:"id,omitempty"`
-	Gas          SimulationGas `json:"gas,omitempty"`
-	Success      bool          `json:"success,omitempty"`
-	Data         OutputData    `json:"data,omitempty"`
-	ErrorMessage string        `json:"errorMessage,omitempty"`
-}
+type SimulationRequest = models.SimulationRequest
+type SimulationResponse = models.SimulationResponse
+type SimulationOutputData = models.SimulationOutputData
 
 type SimulationResponses struct {
 	Json []SimulationResponse `json:"json"`
-}
-
-type OutputData struct {
-	Raw     []byte      `json:"raw"`
-	Decoded interface{} `json:"decoded,omitempty"`
 }
