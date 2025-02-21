@@ -110,7 +110,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	resp := &SimulationResponse{
 		Id:      req.Id,
 		Success: trace.Error == "",
-		Data: OutputData{
+		Data: SimulationOutputData{
 			Raw: trace.Output,
 		},
 	}
@@ -118,7 +118,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.Gas.Used = gasUsed.Uint64()
+			resp.GasUsed = gasUsed.Uint64()
 		}
 	}
 

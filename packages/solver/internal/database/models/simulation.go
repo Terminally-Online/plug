@@ -38,24 +38,24 @@ func (s *SimulationRequest) AfterFind(tx *gorm.DB) error {
 	return nil
 }
 
+// SimulationResponse represents a simulation response in the database
+type SimulationResponse struct {
+	gorm.Model
+	Id           string               `json:"id" gorm:"type:text"`
+	GasUsed      uint64               `json:"gasUsed" gorm:"type:bigint"`
+	Success      bool                 `json:"success"`
+	Data         SimulationOutputData `json:"data" gorm:"type:jsonb"`
+	ErrorMessage string               `json:"errorMessage,omitempty" gorm:"type:text"`
+}
+
+// OutputData represents the output data of a simulation
+type SimulationOutputData struct {
+	Raw     []byte      `json:"raw" gorm:"type:bytea"`
+	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
+}
+
 func (s *SimulationRequest) BeforeSave(tx *gorm.DB) error {
 	// Value is already a *big.Int, and its String() method will be used
 	// automatically by GORM when saving to the database
 	return nil
-}
-
-// SimulationResponse represents a simulation response in the database
-type SimulationResponse struct {
-	gorm.Model
-	Id           string     `json:"id" gorm:"type:text"`
-	GasUsed      uint64     `json:"gasUsed" gorm:"type:bigint"`
-	Success      bool       `json:"success"`
-	Data         OutputData `json:"data" gorm:"type:jsonb"`
-	ErrorMessage string     `json:"errorMessage,omitempty" gorm:"type:text"`
-}
-
-// OutputData represents the output data of a simulation
-type OutputData struct {
-	Raw     []byte      `json:"raw" gorm:"type:bytea"`
-	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
 }

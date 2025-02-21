@@ -2,11 +2,8 @@ package simulation
 
 import (
 	"solver/internal/database/models"
-	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type SimulationDomain struct {
@@ -39,10 +36,9 @@ type SimulationDefinitions struct {
 	} `json:"result"`
 }
 
-// Use the models from the database package
 type SimulationRequest = models.SimulationRequest
 type SimulationResponse = models.SimulationResponse
-type OutputData = models.OutputData
+type SimulationOutputData = models.SimulationOutputData
 
 type SimulationResponses struct {
 	Json []SimulationResponse `json:"json"`
