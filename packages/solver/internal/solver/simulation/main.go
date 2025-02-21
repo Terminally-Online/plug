@@ -45,18 +45,19 @@ func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.Live
 }
 
 func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
-	if req.Id == "" {
-		return nil, fmt.Errorf("simulationRequest id parameter cannot be empty")
+	// If no reference id was passed, we'll generate one and assign it to the request.
+	if req.Id != "" {
+		req.ReferenceId = req.Id
+	} else {
+		req.ReferenceId = utils.GenerateUUID()
 	}
-
-	// Set ReferenceId to Id as we're now working with the database where Id is the primary key
-	req.ReferenceId = req.Id
 
 	var existingRequest SimulationRequest
 	if err := database.DB.Where("reference_id = ?", req.ReferenceId).First(&existingRequest).Error; err == nil {
 		return &existingRequest, nil
 	}
 
+	// Generate the internal UUID for the creation
 	req.Id = utils.GenerateUUID()
 
 	if err := database.DB.Create(req).Error; err != nil {
