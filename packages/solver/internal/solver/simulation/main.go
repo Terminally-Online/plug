@@ -145,6 +145,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		Data: SimulationOutputData{
 			Raw: trace.Output,
 		},
+		RequestId: dbReq.Id,
 	}
 
 	if trace.GasUsed != "" {
@@ -190,7 +191,6 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		// resp.Data.Decoded = decoded
 	}
 
-	resp.RequestId = dbReq.Id
 	if err := database.DB.Create(resp).Error; err != nil {
 		return nil, fmt.Errorf("failed to save simulation response: %v", err)
 	}
