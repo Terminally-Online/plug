@@ -60,14 +60,12 @@ export const RunFrame: FC<{
 					const protocolSchema = solverActions[protocol]
 					const chains = new Set<number>()
 
-					// TODO: Come back and fix this after I commented it out just to fix a build error.
-					// if (protocolSchema?.metadata.chains) {
-					// 	protocolSchema.metadata.chains.forEach(chainId => {
-					// 		if (!connectedChains.some(chain => chain.id === chainId)) return
-					//
-					// 		chains.add(chainId)
-					// 	})
-					// }
+					if (protocolSchema?.metadata.chains) {
+						const protocolChainIds = protocolSchema.metadata.chains.flatMap(chain => chain.chainIds)
+						for (const chain of connectedChains) {
+							if (protocolChainIds.includes(chain.id)) chains.add(chain.id)
+						}
+					}
 
 					return chains
 				})
@@ -79,9 +77,11 @@ export const RunFrame: FC<{
 	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
+		console.log("Supported Chains", supportedChains)
 		if (!supportedChains || supportedChains.length === 0) return null
 		if (supportedChains.length === 1) return supportedChains[0]
 
+		console.log("Current Chain Index", currentChainIndex)
 		return supportedChains[currentChainIndex]
 	}, [supportedChains, currentChainIndex])
 
@@ -101,6 +101,7 @@ export const RunFrame: FC<{
 	}, [isActionful, actions, item])
 
 	const handleRun = useCallback(() => {
+		console.log("Run", column, chain)
 		if (!column || !column.item || !chain) return
 
 		queue(
