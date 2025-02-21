@@ -40,9 +40,10 @@ type SimulationRequest struct {
 
 // SimulationResponse represents a simulation response in the database
 type SimulationResponse struct {
-	Id                string               `json:"id" gorm:"type:text"`
-	RequestId         string               `json:"requestId" gorm:"type:text"`
-	SimulationRequest SimulationRequest    `json:"request" gorm:"foreignKey:RequestId;references:Id"`
+	Id        string `json:"id" gorm:"type:text"`
+	RequestId string `json:"requestId" gorm:"type:text"`
+	// Adding this field to the struct with -:migration will prevent gorm from optimistically preloading the relationship
+	SimulationRequest SimulationRequest    `json:"-" gorm:"foreignKey:RequestId;references:Id;-:migration"`
 	GasUsed           uint64               `json:"gasUsed" gorm:"type:bigint"`
 	Success           bool                 `json:"success"`
 	Data              SimulationOutputData `json:"data" gorm:"type:jsonb"`
