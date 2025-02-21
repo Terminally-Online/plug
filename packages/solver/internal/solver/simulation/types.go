@@ -1,12 +1,7 @@
 package simulation
 
 import (
-	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"gorm.io/gorm"
+	"solver/internal/database/models"
 )
 
 type SimulationDomain struct {
@@ -39,33 +34,11 @@ type SimulationDefinitions struct {
 	} `json:"result"`
 }
 
-type SimulationRequest struct {
-	gorm.Model
-	Id         string           `json:"id,omitempty"`
-	ChainId    uint64           `json:"chainId"`
-	From       common.Address   `json:"from"`
-	To         common.Address   `json:"to"`
-	Data       hexutil.Bytes    `json:"data,omitempty"`
-	GasLimit   *uint64          `json:"gasLimit,omitempty"`
-	Value      *big.Int         `json:"value,omitempty"`
-	AccessList types.AccessList `json:"accessList,omitempty"`
-	ABI        string           `json:"abi,omitempty"`
-}
-
-type SimulationResponse struct {
-	gorm.Model
-	Id           string     `json:"id"`
-	GasUsed      uint64     `json:"gasUsed"`
-	Success      bool       `json:"success"`
-	Data         OutputData `json:"data"`
-	ErrorMessage string     `json:"errorMessage,omitempty"`
-}
+// Use the models from the database package
+type SimulationRequest = models.SimulationRequest
+type SimulationResponse = models.SimulationResponse
+type OutputData = models.OutputData
 
 type SimulationResponses struct {
 	Json []SimulationResponse `json:"json"`
-}
-
-type OutputData struct {
-	Raw     []byte      `json:"raw"`
-	Decoded interface{} `json:"decoded,omitempty"`
 }
