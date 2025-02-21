@@ -88,7 +88,6 @@ export const Part: FC<PartProps> = memo(({
 				]
 				: undefined)
 	const isOptionBased = indexedOptions !== undefined
-
 	const option = Array.isArray(indexedOptions)
 		? indexedOptions.find(option => option.value === value?.value)
 		: undefined

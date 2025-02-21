@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -33,14 +33,6 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		...initialState,
 		values: createStateFromValues(values)
 	}))
-
-	// TODO: We need to figure out a way to reset the state when the sentence/action is changed
-	//       as right now there is a bug that results in actions taking on the values of others
-	//       when a preceeding action with input values is deleted.
-	// NOTE: I think the most proper solution to this would be to add a "id" field to each action
-	//       so that we can have a proper key system because then we could just reset the state
-	//       any time the key changes. A simple useEffect clear will result in the frames
-	//       breaking because you are now stuck inside an infinite rendering loop.
 
 	const parsed = useMemo(() => {
 		const result = parseCordSentence(sentence)

@@ -40,6 +40,7 @@ export type ActionSchemas = {
 export type Action = {
 	protocol: string
 	action: string
+	id: number
 	values: Record<string, { value: string; name: string } & Partial<Options[number]> | undefined>
 }
 
