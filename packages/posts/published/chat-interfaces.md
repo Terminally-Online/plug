@@ -1,9 +1,9 @@
 ---
 tags: perspective
-title: The Underlying Infrastructure Required for Crypto Agents
+title: Chat Interfaces and Crypto Agents
 slug: chat-interfaces
 image: /cdn/papers/hello-world.png
-description: Enabling agents to make onchain transactions.
+description: Building the infrastructure required to enable agents to make onchain transactions.
 created: 02/17/2025
 author: drake
 ---
@@ -38,7 +38,7 @@ The gap between promise and reality becomes clear when we examine actual impleme
 
 ### Nani.ooo
 
-Nani was one of the first intent agents that I came across midway through 2024 and became the first “agent” project I tried out. When I first tried nani.ooo, it was a Windows Desktop-esque experience with different apps I could click into, one of which was the chat interface. After depositing ETH, I was able to use the chat interface to swap to NEETH (their own token). 
+Nani was one of the first intent agents that I came across midway through 2024 and became the first “agent” project I tried out. When I first tried nani.ooo, it was a Windows Desktop-esque experience with different apps I could click into, one of which was the chat interface. After depositing ETH, I was able to use the chat interface to swap to NEETH (their own token).
 
 When I try to use the interface today, the experience is more similar to ChatGPT and it does seem to try to write an intent and post it to the Nani Deployer contract.
 
@@ -89,7 +89,7 @@ But as Chance mentions in [The Glass Box](https://chance.utc24.io/paper/glass-bo
 
 > _These models optimize for scale, minimizing the cognitive load on users. The complexity is hidden to provide an interface that "just works." But here lies the flaw: the more hidden the system, the more prone it becomes to misuse, misunderstanding, and distrust. It introduces fragility where transparency could build resilience._
 
- By trading an aspect of our autonomy for convenience and wonder when offloading decision making to opaque LLMs, we introduce room for influence and error.
+By trading an aspect of our autonomy for convenience and wonder when offloading decision making to opaque LLMs, we introduce room for influence and error.
 
 ## Real Utility in AI Crypto Agents
 
@@ -99,13 +99,13 @@ In many cases, trading off nuance control to an LLM for speed in output is net p
 
 > _There's a new kind of coding I call "vibe coding", where you fully give in to the vibes, embrace exponentials, and forget that the code even exists. It's possible because the LLMs (e.g. Cursor Composer w Sonnet) are getting too good. Also I just talk to Composer with SuperWhisper so I barely even touch the keyboard. I ask for the dumbest things like "decrease the padding on the sidebar by half" because I'm too lazy to find it. I "Accept All" always, I don't read the diffs anymore. When I get error messages I just copy paste them in with no comment, usually that fixes it. The code grows beyond my usual comprehension, I'd have to really read through it for a while. Sometimes the LLMs can't fix a bug so I just work around it or ask for random changes until it goes away. It's not too bad for throwaway weekend projects, but still quite amusing. I'm building a project or webapp, but it's not really coding \- I just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works._
 
-When I use [Cursor](https://www.cursor.com/) and [Claude](https://claude.ai), I sometimes reach this flow state and push features faster than expected. At other times, I find myself in a deadend and have to dump active changes and restart at the most recent working commit. 
+When I use [Cursor](https://www.cursor.com/) and [Claude](https://claude.ai), I sometimes reach this flow state and push features faster than expected. At other times, I find myself in a deadend and have to dump active changes and restart at the most recent working commit.
 
 Vibe coding works in software developments thanks to the ability to revert changes. It's a different story for onchain transactions.
 
 Do you really want to vibe code your financial activities?
 
-You could get away with vibe coding a single trading wallet – this is essentially what I did with Griffain. I said, “Hey I’m feeling frisky today let’s buy some memecoins that fit my parameters” and lil buddy gave me exactly what I wanted. 
+You could get away with vibe coding a single trading wallet – this is essentially what I did with Griffain. I said, “Hey I’m feeling frisky today let’s buy some memecoins that fit my parameters” and lil buddy gave me exactly what I wanted.
 
 ![Griffain Sniper Bot](https://cdn.onplug.io/posts/chat-interfaces/9-griffain.png)
 
@@ -122,4 +122,3 @@ Right now, most crypto AI interfaces can swap and bridge because that's all thei
 This is precisely why we're building Plug the way we are. We're not starting with a chat interface or a single omniscient agent – we're building the foundational infrastructure that enables meaningful agent collaboration. A robust solver that can compose complex transactions across protocols. A growing library of protocol integrations. A framework for writing and executing generalized intents.
 
 When we integrate a protocol into Plug, we're expanding the universe of what's possible for every agent in the ecosystem. Each integration creates new possibilities for composition and automation. We're starting from first principles, focusing on the fundamentals that will empower both humans and agents to do more with crypto.
-
