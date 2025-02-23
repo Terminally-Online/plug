@@ -9,6 +9,7 @@ import { cn, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
+import { ErrorFrame } from "../../frames/plugs/[id]/execute/error"
 
 type Tokens = RouterOutputs["socket"]["balances"]["positions"]["tokens"] | RouterOutputs["solver"]["tokens"]["get"]
 
@@ -83,6 +84,8 @@ export const SocketTokenList: FC<
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets index={index} isEmpty={tokens.length === 0} isViewing="tokens" isReceivable={true} />
+
+			<ErrorFrame index={index} />
 		</div>
 	)
 })
