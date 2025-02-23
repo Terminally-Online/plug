@@ -30,8 +30,8 @@ export const activity = createTRPCRouter({
 				plugId: z.string(),
 				chainId: z.number(),
 				frequency: z.number(),
-				startAt: z.date(),
-				endAt: z.date().optional()
+				startAt: z.coerce.date(),
+				endAt: z.coerce.date().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
