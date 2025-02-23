@@ -4,6 +4,7 @@ import { TransferAmountFrame } from "@/components/app/frames/assets/transfer-amo
 import { TransferNFTFrame } from "@/components/app/frames/assets/transfer-nft"
 import { TransferRecipientFrame } from "@/components/app/frames/assets/transfer-recipient"
 import { RouterOutputs } from "@/server/client"
+import { ErrorFrame } from "../plugs/[id]/execute/error"
 
 type TransferFrameProps = {
 	index: number
