@@ -10,7 +10,7 @@ import (
 
 type Intent struct {
 	Id               string                   `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status           string                   `json:"status,omitempty" gorm:"type:text"`
+	Status           string                   `json:"status,omitempty" gorm:"type:text;default:'active'"`
 	ChainId          int                      `json:"chainId" gorm:"type:int"`
 	From             string                   `json:"from,omitempty" gorm:"type:text"`
 	Actions          []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
@@ -23,7 +23,7 @@ type Intent struct {
 
 	// Relationships
 	Runs     []Run  `json:"runs,omitempty" gorm:"foreignKey:IntentId;references:Id"`
-	ApiKeyId string `json:"apiKeyId,omitempty" gorm:"column:api_key_id;type:text"`
+	ApiKeyId string `json:"-" gorm:"column:api_key_id;type:text"`
 	ApiKey   ApiKey `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response
