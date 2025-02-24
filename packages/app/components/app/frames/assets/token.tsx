@@ -178,20 +178,20 @@ export const TokenFrame: FC<{
 					</button>
 				)}
 
-				{index !== COLUMNS.SIDEBAR_INDEX && <button
+				<button
 					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
 					style={{
 						backgroundColor: color ?? "",
 						color: textColor
 					}}
 					onClick={() => {
-						// handle.transfer(undefined)
+						handle.transfer(undefined)
 						handle.frame(`${token.symbol}-swap-token`)
 					}}
 				>
 					<ArrowRightLeft size={14} className="opacity-60" />
 					Swap
-				</button>}
+				</button>
 			</div>
 
 			<div className="flex flex-col px-6 pb-2 pt-4 font-bold">

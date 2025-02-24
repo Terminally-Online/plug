@@ -1,6 +1,4 @@
 import { FC, useMemo } from "react"
-import { connectedChains } from "@/contexts"
-import { Chain } from "@/lib/types"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Callout } from "@/components/app/utils/callout"
@@ -65,7 +63,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 
 			{actions.map((action, actionIndex) => (
 				<Sentence
-					key={`${index}-${actionIndex}-sentence`}
+					key={`${index}-${actionIndex}-${action.id}-sentence`}
 					index={index}
 					item={item}
 					actionIndex={actionIndex}
@@ -88,6 +86,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 											...actions,
 											{
 												...suggestion,
+												id: Math.floor(Math.random() * 100_000_000_000),
 												...getValues(
 													solverActions[suggestion.protocol].schema[suggestion.action]
 														.sentence

@@ -53,31 +53,31 @@ func New(chainId uint64) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) ReadOptions(address string) *bind.CallOpts {
+func (c *Client) ReadOptions(address common.Address) *bind.CallOpts {
 	return &bind.CallOpts{
-		From:    common.HexToAddress(address),
+		From:    address,
 		Pending: true,
 		Context: context.Background(),
 	}
 }
 func (c *Client) SolverReadOptions() *bind.CallOpts {
-	return c.ReadOptions(os.Getenv("SOLVER_ADDRESS"))
+	return c.ReadOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")))
 }
 
-func (c *Client) WriteOptions(address string, value *big.Int) *bind.TransactOpts {
+func (c *Client) WriteOptions(address common.Address, value *big.Int) *bind.TransactOpts {
 	transactionForwarder := func(_ common.Address, transaction *types.Transaction) (*types.Transaction, error) {
 		return transaction, nil
 	}
 
 	return &bind.TransactOpts{
-		From:   common.HexToAddress(address),
+		From:   address,
 		Signer: transactionForwarder,
 		NoSend: true,
 		Value:  value,
 	}
 }
 func (c *Client) SolverWriteOptions() *bind.TransactOpts {
-	return c.WriteOptions(os.Getenv("SOLVER_ADDRESS"), big.NewInt(0))
+	return c.WriteOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS")), big.NewInt(0))
 }
 
 func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, error) {
@@ -120,7 +120,6 @@ func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, err
 			}
 		}
 	}
-
 
 	return results, nil
 }

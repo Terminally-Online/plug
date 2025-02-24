@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
-import { Cat, ChartBar, LogOut, PanelRightOpen, Plus, ScanFace, Wallet, X } from "lucide-react"
+import { Cat, ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
 
 import { ColumnAuthenticate } from "@/components/app/columns/utils/column-authenticate"
 import { ColumnCompanion } from "@/components/app/columns/utils/column-companion"
@@ -13,7 +13,6 @@ import { Image } from "@/components/app/utils/image"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { useSocket } from "@/state/authentication"
-import { useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
@@ -52,8 +51,7 @@ const ConsoleSidebarAction: FC<
 export const ConsoleSidebarPane = () => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { data: session } = useSession()
-	const { account } = useConnect()
+	const { account: { isAuthenticated, session } } = useConnect()
 	const { is, width, handleActivePane, resize } = useSidebar()
 
 	const [isResizing, setIsResizing] = useState(false)
@@ -84,7 +82,7 @@ export const ConsoleSidebarPane = () => {
 
 	return (
 		<>
-			{(is.authenticating || !account.isAuthenticated || is.stats || is.companion || is.searching) && (
+			{(is.authenticating || !isAuthenticated || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
 						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10"
@@ -124,7 +122,7 @@ export const ConsoleSidebarPane = () => {
 								}
 								nextPadded={false}
 								nextOnClick={() => handleActivePane(null)}
-								nextLabel={account.isAuthenticated ? <X size={14} /> : undefined}
+								nextLabel={isAuthenticated ? <X size={14} /> : undefined}
 							/>
 						</div>
 
@@ -135,7 +133,7 @@ export const ConsoleSidebarPane = () => {
 								<ColumnCompanion index={0} />
 							) : session?.user.id.startsWith("0x") ? (
 								<ColumnWallet index={0} />
-							) : session?.user.id.startsWith("0x") === false || !account.isAuthenticated ? (
+							) : session?.user.id.startsWith("0x") === false || !isAuthenticated ? (
 								<ColumnAuthenticate index={0} />
 							) : (
 								<></>
@@ -159,16 +157,13 @@ export const ConsoleSidebarPane = () => {
 }
 
 export const ConsoleSidebar = () => {
-	const { data: session } = useSession()
-	const { account } = useConnect()
+	const { account: { address, isAuthenticated } } = useConnect()
 	const { disconnect } = useDisconnect(true)
-	const { socket } = useSocket()
+	const { is, handleSidebar: sidebar } = useSidebar()
+	const { socket, avatar } = useSocket()
+	const { handle: { plug: { add } } } = usePlugStore()
 
-	const { avatar } = useSocket()
-	const { handle: handlePlugs } = usePlugStore("NOT_IMPLEMENTED")
-	const { is, handleSidebar } = useSidebar()
-
-	const showRestrictedOptions = session?.user.id.startsWith("0x") && !!socket?.identity?.onboardingAt
+	const showRestrictedOptions = isAuthenticated && !!socket?.identity?.onboardingAt
 
 	return (
 		<div className="flex h-full w-max select-none flex-row bg-transparent">
@@ -176,7 +171,7 @@ export const ConsoleSidebar = () => {
 				<div className="flex w-full flex-col items-start gap-2 p-2">
 					<button
 						className="relative mb-4 h-12 w-12 rounded-sm bg-plug-green/5 transition-all duration-200 ease-in-out"
-						onClick={() => handleSidebar("authenticating")}
+						onClick={() => sidebar("authenticating")}
 					>
 						{avatar ? (
 							<Image
@@ -203,7 +198,7 @@ export const ConsoleSidebar = () => {
 								title="New Plug"
 								isExpanded={is.expanded}
 								isPrimary={true}
-								onClick={() => handlePlugs.plug.add()}
+								onClick={() => add()}
 							/>
 
 							<ConsoleSidebarAction
@@ -216,7 +211,7 @@ export const ConsoleSidebar = () => {
 								title="Stats"
 								isExpanded={is.expanded}
 								isActive={is.stats}
-								onClick={() => handleSidebar("stats")}
+								onClick={() => sidebar("stats")}
 							/>
 
 							<ConsoleSidebarAction
@@ -229,14 +224,14 @@ export const ConsoleSidebar = () => {
 								title="Companion"
 								isExpanded={is.expanded}
 								isActive={is.companion}
-								onClick={() => handleSidebar("companion")}
+								onClick={() => sidebar("companion")}
 							/>
 						</>
 					)}
 				</div>
 
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
-					{(account.address || account.isAuthenticated) && (
+					{(address || isAuthenticated) && (
 						<ConsoleSidebarAction
 							className={cn(is.expanded && "pr-16")}
 							icon={

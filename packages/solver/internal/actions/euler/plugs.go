@@ -64,7 +64,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -72,7 +72,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	depositCall, err := WrapEVCCall(
 		params.ChainId,
 		vault.Vault,
-		common.HexToAddress(params.From),
+		params.From,
 		big.NewInt(0),
 		depositCalldata,
 	)
@@ -168,7 +168,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
@@ -248,12 +248,12 @@ func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerP
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 
 	calldata, err := vaultAbi.Pack(
 		"withdraw",
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 		subAccountAddress,
 	)
 	if err != nil {
@@ -306,7 +306,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		return nil, utils.ErrABI("EulerEvaultImplementation")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 
 	calldata, err := vaultAbi.Pack(
 		"borrow",
@@ -368,7 +368,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, utils.ErrABI("Erc20")
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 
 	approveCalldata, err := erc20Abi.Pack(
 		"approve",
@@ -476,7 +476,7 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		return nil, fmt.Errorf("failed to get account lens: %w", err)
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
 	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(
@@ -553,7 +553,7 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 		return nil, fmt.Errorf("failed to get account lens: %w", err)
 	}
 
-	subAccountAddress := GetSubAccountAddress(common.HexToAddress(params.From), inputs.SubAccountIndex)
+	subAccountAddress := GetSubAccountAddress(params.From, inputs.SubAccountIndex)
 	evcAddress := common.HexToAddress(references.Networks[params.ChainId].References["euler"]["evc"])
 
 	vaultAccountInfos, err := accountLens.GetAccountEnabledVaultsInfo(

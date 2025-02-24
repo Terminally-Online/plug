@@ -45,7 +45,7 @@ export const stats = createTRPCRouter({
 
 					const views = await ctx.db.view.aggregate({
 						where: {
-							workflow: {
+							plug: {
 								socketId: ctx.session.address
 							},
 							date: weekStart
@@ -65,15 +65,15 @@ export const stats = createTRPCRouter({
 					const weekEnd = new Date(weekStart)
 					weekEnd.setDate(weekStart.getDate() + 7)
 
-					const runs = await ctx.db.simulation.count({
+					const runs = await ctx.db.run.count({
 						where: {
 							status: "success",
 							createdAt: {
 								gte: weekStart,
 								lt: weekEnd
 							},
-							execution: {
-								workflow: {
+							intent: {
+								plug: {
 									socketId: ctx.session.address
 								}
 							}
@@ -90,17 +90,17 @@ export const stats = createTRPCRouter({
 					const weekEnd = new Date(weekStart)
 					weekEnd.setDate(weekStart.getDate() + 7)
 
-					const uniqueUsers = await ctx.db.execution.groupBy({
+					const uniqueUsers = await ctx.db.intent.groupBy({
 						by: ["id"],
 						where: {
 							createdAt: {
 								gte: weekStart,
 								lt: weekEnd
 							},
-							workflow: {
+							plug: {
 								socketId: ctx.session.address
 							},
-							simulations: {
+							runs: {
 								some: {
 									status: "success"
 								}

@@ -32,6 +32,7 @@ export const ActionItem: FC<{
 						{
 							protocol,
 							action: actionName,
+							id: Math.floor(Math.random() * 100_000_000_000),
 							...getValues(action.schema[actionName].sentence)
 						}
 					])

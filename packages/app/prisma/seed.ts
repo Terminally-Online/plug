@@ -26,6 +26,11 @@ const seedSockets = async () => {
 			address: "0x1ccb2945F1325e061b40Fe5b0B452f0E76fB7278",
 			name: "stacker.eth",
 			avatar: "https://ipfs.io/ipfs/bafkreicmlgnaxmknw7aumxfxxzysdhwqskjpemeejbijm75nnkk3nrn4xq"
+		},
+		{
+			address: "0x50701f4f523766bFb5C195F93333107d1cB8cD90",
+			name: "nftmason.eth",
+			avatar: "https://ipfs.io/ipfs/bafkreicmlgnaxmknw7aumxfxxzysdhwqskjpemeejbijm75nnkk3nrn4xq"
 		}
 	]
 
@@ -33,7 +38,7 @@ const seedSockets = async () => {
 		const { bytes, hex: salt } = getSocketSalt(MAGIC_NONCE, socket.address as `0x${string}`)
 		const { address: socketAddress, implementation } = getSocketAddress(bytes)
 
-		await prisma.userSocket.upsert({
+		await prisma.socket.upsert({
 			where: { id: socket.address },
 			update: {
 				admin: true,

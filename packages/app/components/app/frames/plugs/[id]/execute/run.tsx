@@ -46,7 +46,7 @@ export const RunFrame: FC<{
 	} = usePlugStore(item)
 	const [solverActions] = useActions()
 
-	// TODO: The functionality for this was not finished because right now our in our environment we 
+	// TODO: The functionality for this was not finished because right now our in our environment we
 	//       only have one chain that is valid at any given time.
 	const [currentChainIndex, setCurrentChainIndex] = useState(0)
 
@@ -60,14 +60,12 @@ export const RunFrame: FC<{
 					const protocolSchema = solverActions[protocol]
 					const chains = new Set<number>()
 
-					// TODO: Come back and fix this after I commented it out just to fix a build error.
-					// if (protocolSchema?.metadata.chains) {
-					// 	protocolSchema.metadata.chains.forEach(chainId => {
-					// 		if (!connectedChains.some(chain => chain.id === chainId)) return
-					//
-					// 		chains.add(chainId)
-					// 	})
-					// }
+					if (protocolSchema?.metadata.chains) {
+						const protocolChainIds = protocolSchema.metadata.chains.flatMap(chain => chain.chainIds)
+						for (const chain of connectedChains) {
+							if (protocolChainIds.includes(chain.id)) chains.add(chain.id)
+						}
+					}
 
 					return chains
 				})
@@ -79,9 +77,11 @@ export const RunFrame: FC<{
 	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
+		console.log("Supported Chains", supportedChains)
 		if (!supportedChains || supportedChains.length === 0) return null
 		if (supportedChains.length === 1) return supportedChains[0]
 
+		console.log("Current Chain Index", currentChainIndex)
 		return supportedChains[currentChainIndex]
 	}, [supportedChains, currentChainIndex])
 
@@ -101,11 +101,12 @@ export const RunFrame: FC<{
 	}, [isActionful, actions, item])
 
 	const handleRun = useCallback(() => {
+		console.log("Run", column, chain)
 		if (!column || !column.item || !chain) return
 
 		queue(
 			{
-				workflowId: column.item,
+				plugId: column.item,
 				chainId: chain,
 				startAt: column.schedule?.date?.from ?? new Date(),
 				endAt: column.schedule?.date?.to,
@@ -329,7 +330,7 @@ export const RunFrame: FC<{
 							<AlertTriangle size={14} className="opacity-60" />
 							Only Constraints Added
 						</span>
-					) :  (
+					) : (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							Required Inputs Incomplete

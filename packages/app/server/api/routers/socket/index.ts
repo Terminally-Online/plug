@@ -60,7 +60,7 @@ export const socket = createTRPCRouter({
 			implementation = socketDetails.implementation
 		}
 
-		await ctx.db.userSocket.upsert({
+		await ctx.db.socket.upsert({
 			where: { id: ctx.session.address },
 			create: {
 				id: ctx.session.address,
@@ -134,7 +134,7 @@ export const socket = createTRPCRouter({
 			}
 		})
 
-		const socket = await ctx.db.userSocket.findFirst({
+		const socket = await ctx.db.socket.findFirst({
 			where: { id: ctx.session.address },
 			...SOCKET_BASE_QUERY
 		})
@@ -152,7 +152,7 @@ export const socket = createTRPCRouter({
 	search: anonymousProtectedProcedure
 		.input(z.object({ search: z.string(), limit: z.number().optional().default(3) }))
 		.query(async ({ input, ctx }) => {
-			return await ctx.db.userSocket.findMany({
+			return await ctx.db.socket.findMany({
 				where: {
 					AND: [
 						{

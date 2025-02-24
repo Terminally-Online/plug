@@ -33,11 +33,11 @@ export const ExecutionFrame: FC<{
 
 	const { visibleSimulations, hasMore, totalSimulations } = useMemo(
 		() => ({
-			visibleSimulations: activity?.simulations?.slice(0, visibleCount) ?? [],
-			totalSimulations: activity?.simulations?.length ?? 0,
-			hasMore: visibleCount < (activity?.simulations?.length ?? 0)
+			visibleSimulations: activity?.runs?.slice(0, visibleCount) ?? [],
+			totalSimulations: activity?.runs?.length ?? 0,
+			hasMore: visibleCount < (activity?.runs?.length ?? 0)
 		}),
-		[activity?.simulations, visibleCount]
+		[activity?.runs, visibleCount]
 	)
 
 	useEffect(() => {
@@ -72,10 +72,10 @@ export const ExecutionFrame: FC<{
 						<div
 							className="mr-4 flex h-8 w-8 min-w-8 items-center justify-center rounded-sm bg-plug-green/10 text-white/60"
 							style={{
-								backgroundImage: cardColors[activity.workflow.color]
+								backgroundImage: cardColors[activity.plug.color]
 							}}
 						/>
-						<span>{activity.workflow.name}</span>
+						<span>{activity.plug.name}</span>
 					</span>
 				}
 				visible={isFrame}
@@ -84,7 +84,7 @@ export const ExecutionFrame: FC<{
 				<div className="flex flex-col">
 					<ActionPreview
 						index={index}
-						item={activity.workflow.id}
+						item={activity.plug.id}
 						actions={actions}
 						errors={visibleSimulations[0]?.errors ?? []}
 					/>
@@ -98,7 +98,7 @@ export const ExecutionFrame: FC<{
 								handle.navigate({
 									index,
 									key: COLUMNS.KEYS.PLUG,
-									item: activity.workflow.id,
+									item: activity.plug.id,
 									from: COLUMNS.KEYS.ACTIVITY
 								})
 							}
@@ -179,7 +179,7 @@ export const ExecutionFrame: FC<{
 						)}
 					</div>
 
-					{(activity.status !== "paused" || activity.simulations.length > 0) && (
+					{(activity.status !== "paused" || activity.runs.length > 0) && (
 						<div className="mb-2 mt-4 flex flex-row items-center gap-4">
 							<p className="font-bold opacity-40">Simulations</p>
 							<div className="h-[2px] w-full bg-plug-green/10" />
@@ -196,7 +196,7 @@ export const ExecutionFrame: FC<{
 											<p>
 												Simulation{" "}
 												<span className="text-sm tabular-nums opacity-40">
-													(#{activity.simulations.length + 1})
+													(#{activity.runs.length + 1})
 												</span>
 											</p>
 											<TimeUntil date={activity.nextSimulationAt} />
@@ -221,7 +221,7 @@ export const ExecutionFrame: FC<{
 											<p>
 												Simulation{" "}
 												<span className="text-sm tabular-nums opacity-40">
-													(#{activity.simulations.length - index})
+													(#{activity.runs.length - index})
 												</span>
 											</p>
 											<DateSince date={simulation.createdAt} />

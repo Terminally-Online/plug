@@ -1,11 +1,9 @@
 import { FC, useCallback, useRef, useState } from "react"
 
-import { CircleDollarSign } from "lucide-react"
-
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS } from "@/lib"
+import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
@@ -14,6 +12,7 @@ import { TransferRecipient } from "./transfer-recipient"
 import { useSocket } from "@/state/authentication"
 import { getAddress } from "viem"
 import { useSendTransaction } from "wagmi"
+import { Marquee } from "../../utils/marquee"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -199,6 +198,16 @@ const ImplementationComponent: FC<{
 	)
 }
 
+const ScrollingError = ({ error }: { error: string | undefined }) => {
+	if (!error) return null
+
+	return <div className="relative min-h-6 overflow-x-hidden">
+		<div className="z-[20] absolute left-0 w-12 bg-gradient-to-r from-plug-white to-plug-white/0 top-0 bottom-0" />
+		<div className="z-[20] absolute right-0 w-12 bg-gradient-to-l from-plug-white to-plug-white/0 top-0 bottom-0" />
+		<Marquee className="-z-1 relative max-w-full text-plug-red font-bold whitespace-nowrap">{error}</Marquee>
+	</div>
+}
+
 export const TransferAmountFrame: FC<{
 	index: number
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -209,10 +218,12 @@ export const TransferAmountFrame: FC<{
 		index,
 		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
+	const { account: { isAuthenticated } } = useConnect()
 	const { socket } = useSocket()
-	const { sendTransaction } = useSendTransaction()
+	const { error, sendTransaction, isLoading } = useSendTransaction()
 
-	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0
+
+	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
 	const from = socket
 		? index === COLUMNS.SIDEBAR_INDEX
 			? getAddress(socket.id)
@@ -252,16 +263,13 @@ export const TransferAmountFrame: FC<{
 	)
 
 	const handleTransfer = useCallback(async () => {
-		if (!intent || intent.transactions.length === 0) return
+		if (!intent || !intent.transaction) return
 
-		const transfer = intent.transactions[0]
-		const transaction = {
-			to: transfer.to,
-			data: transfer.data,
-			value: transfer.value
-		}
-
-		sendTransaction(transaction)
+		sendTransaction({
+			to: intent.transaction.to,
+			data: intent.transaction.data,
+			value: intent.transaction.value
+		})
 	}, [intent, sendTransaction])
 
 	if (!token || !column) return null
@@ -313,6 +321,8 @@ export const TransferAmountFrame: FC<{
 					</div>
 
 					<div className="mx-6 mt-2 flex flex-col gap-4">
+						<ScrollingError error={error?.message ?? ""} />
+
 						<button
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
@@ -323,10 +333,10 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={isReady === false}
-							onClick={isReady ? handleTransfer : () => { }}
+							disabled={isLoading || isReady === false}
+							onClick={!isLoading && isReady ? handleTransfer : () => { }}
 						>
-							{isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
+							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>
