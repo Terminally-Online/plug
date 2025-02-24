@@ -19,7 +19,7 @@ var (
 			IsSearchable:   true,
 		},
 		actions.ActionSwap: {
-			Sentence:       "Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<token_in:address:uint256:uint256>}",
+			Sentence:       "Swap {0<amount:float>} {1<token:address:uint256:uint256>} for {2<tokenIn:address:uint256:uint256>}",
 			Handler:        HandleSwap,
 			IsUserSpecific: true,
 		},

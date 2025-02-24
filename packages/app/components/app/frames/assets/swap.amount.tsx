@@ -8,11 +8,12 @@ import { SwapAmountInput } from "@/components/app/frames/assets/swap.amount.inpu
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, getChainId, getChainName, getTextColor } from "@/lib"
+import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
+import { useSocket } from "@/state/authentication"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -26,16 +27,18 @@ type SwapAmountFrameProps = {
 
 export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFrameProps) => {
 	const {
+		column,
 		isFrame,
 		handle: { frame }
 	} = useColumnStore(index, `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`)
+	const { socket } = useSocket()
 
 	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {
-		const tokenInImplementation = tokenIn.implementations.find(
-			implementation => implementation?.chain === "ethereum"
-		)
 		const tokenOutImplementation = tokenOut.implementations.find(
-			implementation => implementation.chain === "ethereum"
+			implementation => implementation.chain === "base"
+		)
+		const tokenInImplementation = tokenIn.implementations.find(
+			implementation => implementation?.chain === "base"
 		)
 
 		return { tokenOutImplementation, tokenInImplementation }
@@ -62,19 +65,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 
 	const transaction = api.solver.actions.intent.useQuery(
 		{
-			chainId: getChainId(tokenOutImplementation?.chain ?? "ethereum"),
-			from: getAddress("0x62180042606624f02d8a130da8a3171e9b33894d"),
+			chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
+			from: socket ? column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress : "",
 			inputs: [
 				{
 					protocol: "plug",
 					action: "swap",
-					tokenIn: getAddress(
-						tokenInImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-					),
-					tokenOut: getAddress(
-						tokenOutImplementation?.contract ?? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-					),
-					amountOut: parseUnits(debouncedAmount, tokenOutImplementation?.decimals ?? 18).toString()
+					amount: debouncedAmount,
+					token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
+					tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`,
 				}
 			]
 		},
@@ -84,16 +83,32 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 				!!tokenInImplementation &&
 				!!tokenOutImplementation &&
 				debouncedAmount !== "0" &&
-				isSufficientBalance,
+				isSufficientBalance && !!socket,
 			refetchInterval: 3500,
 			staleTime: 1000
 		}
 	)
 
+	// console.log({
+	// 	chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
+	// 	from: socket ? column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress : "",
+	// 	inputs: [
+	// 		{
+	// 			protocol: "plug",
+	// 			action: "swap",
+	// 			amount: debouncedAmount,
+	// 			token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
+	// 			tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`,
+	// 		}
+	// 	]
+	// })
+
+	// console.log(transaction)
+
 	const meta = useMemo(() => {
 		if (!transaction.data) return null
 
-		return transaction.data.transactions[transaction.data.plug.plugs.length - 1].meta
+		return transaction.data.transactions[0].meta
 	}, [transaction.data])
 
 	const isReady =
@@ -161,6 +176,8 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			hasChildrenPadding={false}
 			hasOverlay
 		>
+
+
 			<div>
 				<div className="relative mb-2 flex flex-col gap-2">
 					<SwapAmountInput
@@ -210,7 +227,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 										meta?.buyTokens[
 											getAddress(
 												tokenInImplementation?.contract ??
-													"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+												"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 											)
 										]?.amount ?? 0
 								}
@@ -248,30 +265,6 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						}
 					/>
 				</div>
-
-				<div className="mb-2 flex flex-row items-center justify-between gap-4 px-6">
-					<button
-						className="ml-auto font-bold text-black/40 hover:brightness-105"
-						onClick={() =>
-							setAmounts(prev => ({
-								...prev,
-								[tokenOut.symbol]: {
-									percentage: 100,
-									precise: (tokenOut.implementations[0]?.balance ?? 0).toString()
-								}
-							}))
-						}
-						style={{
-							color:
-								(amounts[tokenOut.symbol].percentage ?? 0) < 100 && isSufficientBalance
-									? tokenInColor
-									: undefined
-						}}
-						disabled={!isSufficientBalance}
-					>
-						Max
-					</button>{" "}
-				</div>
 			</div>
 
 			<div className="px-6">
@@ -280,15 +273,15 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					<div className="h-[2px] w-full bg-plug-green/10" />
 				</div>
 
-				{/* {token.implementations[0].chain && (
+				{/* {tokenOutImplementation && tokenOutImplementation.chain && (
 					<p className="flex flex-row justify-between font-bold">
 						<span className="flex w-max flex-row items-center gap-4">
 							<Waypoints size={18} className="opacity-20" />
 							<span className="opacity-40">Chain</span>
 						</span>{" "}
 						<span className="flex flex-row items-center gap-2 font-bold">
-							<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
-							{getChainName(getChainId(token.implementations[0].chain))}
+							<ChainImage chainId={getChainId(tokenOutImplementation.chain)} size="xs" />
+							{getChainName(getChainId(tokenOutImplementation.chain))}
 						</span>
 					</p>
 				)} */}

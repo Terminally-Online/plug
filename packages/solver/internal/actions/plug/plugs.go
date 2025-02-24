@@ -20,9 +20,9 @@ import (
 )
 
 type SwapInputs struct {
-	TokenIn   string `json:"tokenIn"`
-	TokenOut  string `json:"tokenOut"`
-	AmountOut string `json:"amountOut"`
+	Amount  string `json:"amount"`
+	Token   string `json:"token"`
+	TokenIn string `json:"tokenIn"`
 }
 
 func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -113,17 +113,17 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 // handleEthWethSwap handles direct conversions between ETH and WETH
 func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
-		strings.EqualFold(inputs.TokenOut, wethAddress)
+		strings.EqualFold(inputs.Token, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
-		common.HexToAddress(inputs.TokenOut) == utils.NativeTokenAddress
+		common.HexToAddress(inputs.Token) == utils.NativeTokenAddress
 
 	if !isEthToWeth && !isWethToEth {
 		return nil, nil
 	}
 
-	amountOut, ok := new(big.Int).SetString(inputs.AmountOut, 10)
+	amountOut, ok := new(big.Int).SetString(inputs.Amount, 10)
 	if !ok {
-		return nil, fmt.Errorf("failed to parse amountOut: %s", inputs.AmountOut)
+		return nil, fmt.Errorf("failed to parse amountOut: %s", inputs.Amount)
 	}
 
 	wethAbi, err := weth_address.WethAddressMetaData.GetAbi()
@@ -183,20 +183,20 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 			BuyTokens: map[string]BebopQuoteResponseBuyTokens{
 				common.HexToAddress(inputs.TokenIn).Hex(): {
 					BebopQuoteResponseToken: BebopQuoteResponseToken{
-						Amount:         inputs.AmountOut,
+						Amount:         inputs.Amount,
 						Decimals:       18,
 						PriceUsd:       ethPrice,
 						Symbol:         buySymbol,
 						Price:          ethPrice,
 						PriceBeforeFee: ethPrice,
 					},
-					AmountBeforeFee:   inputs.AmountOut,
+					AmountBeforeFee:   inputs.Amount,
 					DeltaFromExpected: 0,
 				},
 			},
 			SellTokens: map[string]BebopQuoteResponseToken{
-				common.HexToAddress(inputs.TokenOut).Hex(): {
-					Amount:         inputs.AmountOut,
+				common.HexToAddress(inputs.Token).Hex(): {
+					Amount:         inputs.Amount,
 					Decimals:       18,
 					PriceUsd:       ethPrice,
 					Symbol:         sellSymbol,
@@ -212,12 +212,11 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 	}}, nil
 }
 
-// handleBebopSwap handles swaps through the Bebop API
 func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
-	bebopApiUrl := fmt.Sprintf("https://api.bebop.xyz/pmm/ethereum/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
+	bebopApiUrl := fmt.Sprintf("https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
 		inputs.TokenIn,
-		inputs.TokenOut,
-		inputs.AmountOut,
+		inputs.Token,
+		inputs.Amount,
 		params.From,
 	)
 
@@ -267,9 +266,9 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 			return nil, utils.ErrABI("ERC20")
 		}
 
-		amountOut, ok := new(big.Int).SetString(inputs.AmountOut, 10)
+		amountOut, ok := new(big.Int).SetString(inputs.Amount, 10)
 		if !ok {
-			return nil, fmt.Errorf("failed to parse amountOut: %s", inputs.AmountOut)
+			return nil, fmt.Errorf("failed to parse amountOut: %s", inputs.Amount)
 		}
 
 		approveCalldata, err := erc20Abi.Pack("approve",
@@ -281,7 +280,7 @@ func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signatu
 		}
 
 		transactions = append([]signature.Plug{{
-			To:   common.HexToAddress(inputs.TokenOut),
+			To:   common.HexToAddress(inputs.Token),
 			Data: approveCalldata,
 		}}, transactions...)
 	}
@@ -295,21 +294,26 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, fmt.Errorf("failed to unmarshal inputs: %v", err)
 	}
 
-	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
-
-	decimals, err := getERC20Decimals(params.ChainId, inputs.TokenOut)
+	tokenOutParts := strings.Split(inputs.Token, ":")
+	inputs.Token = tokenOutParts[0]
+	decimals, err := strconv.ParseUint(tokenOutParts[1], 10, 8)
 	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
+		return nil, err
+	}
+	if standard, err := strconv.ParseUint(tokenOutParts[2], 10, 64); err != nil || standard != 20 {
+		return nil, utils.ErrNotImplemented("support for 721 and 1155 are not yet implemented")
 	}
 
-	adjustedAmount, err := utils.StringToUint(inputs.AmountOut, *decimals)
+	tokenInParts := strings.Split(inputs.TokenIn, ":")
+	inputs.TokenIn = tokenInParts[0]
+
+	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
+	adjustedAmount, err := utils.StringToUint(inputs.Amount, uint8(decimals))
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert swap amount to uint: %w", err)
 	}
+	inputs.Amount = adjustedAmount.String()
 
-	inputs.AmountOut = adjustedAmount.String()
-
-	// Try ETH ↔ WETH conversion first
 	if txs, err := handleEthWethSwap(inputs, params, wethAddress); err != nil {
 		return nil, err
 	} else if txs != nil {
