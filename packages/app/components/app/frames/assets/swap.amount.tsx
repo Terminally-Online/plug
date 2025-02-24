@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { formatUnits, getAddress, parseUnits } from "viem"
+import { formatUnits, getAddress } from "viem"
 
 import { ArrowRight, Bell, CircleDollarSign, Loader, TriangleRight, Waypoints } from "lucide-react"
 
@@ -48,7 +48,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 	const [tokenInColor, setTokenInColor] = useState("#000000")
 	const [amounts, setAmounts] = useState({
 		[tokenOut.symbol]: {
-			precise: ((tokenOut.implementations[0].balance ?? 0) / 2).toString(),
+			precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
 			percentage: 0
 		},
 		[tokenIn.symbol]: {
@@ -56,13 +56,14 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 			percentage: 0
 		}
 	})
-	const [debouncedAmount, setDebouncedAmount] = useState(((tokenOut.implementations[0].balance ?? 0) / 2).toString())
+	const [debouncedAmount, setDebouncedAmount] = useState(((tokenOutImplementation?.balance ?? 0) / 2).toString())
 
 	const isSufficientBalance =
 		tokenOutImplementation &&
 		(tokenOutImplementation?.balance ?? 0) > 0 &&
 		(tokenOutImplementation?.balance ?? 0) >= Number(amounts[tokenOut.symbol].precise)
 
+	// TODO: Believe we need to handle the cases where we need to run an approval transaction before being able to swap.
 	const transaction = api.solver.actions.intent.useQuery(
 		{
 			chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
@@ -75,7 +76,10 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 					token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
 					tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`,
 				}
-			]
+			],
+			options: {
+				isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX
+			}
 		},
 		{
 			enabled:
@@ -89,43 +93,28 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 		}
 	)
 
-	// console.log({
-	// 	chainId: getChainId(tokenOutImplementation?.chain ?? "base"),
-	// 	from: socket ? column && column.index === COLUMNS.SIDEBAR_INDEX ? socket.id : socket.socketAddress : "",
-	// 	inputs: [
-	// 		{
-	// 			protocol: "plug",
-	// 			action: "swap",
-	// 			amount: debouncedAmount,
-	// 			token: `${getAddress(tokenOutImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenOutImplementation?.decimals ?? 18}:${20}`,
-	// 			tokenIn: `${getAddress(tokenInImplementation?.contract ?? NATIVE_TOKEN_ADDRESS)}:${tokenInImplementation?.decimals ?? 18}:${20}`,
-	// 		}
-	// 	]
-	// })
-
-	// console.log(transaction)
-
-	const meta = useMemo(() => {
-		if (!transaction.data) return null
-
-		return transaction.data.transactions[0].meta
-	}, [transaction.data])
-
 	const isReady =
 		amounts[tokenOut.symbol].precise !== "0" && !transaction.error && !transaction.isLoading && isSufficientBalance
+	const meta = !transaction?.data ? null : transaction.data.transactions[0].meta
+
+	const handleSwap = () => {
+		frame(`${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`)
+	}
 
 	useEffect(() => {
+		if (!tokenOutImplementation) return
+
 		setAmounts({
 			[tokenOut.symbol]: {
-				precise: ((tokenOut.implementations[0].balance ?? 0) / 2).toString(),
-				percentage: (tokenOut.implementations[0].balance ?? 0) / 2 === 0 ? 0 : 50
+				precise: ((tokenOutImplementation?.balance ?? 0) / 2).toString(),
+				percentage: (tokenOutImplementation?.balance ?? 0) / 2 === 0 ? 0 : 50
 			},
 			[tokenIn.symbol]: {
 				precise: "0",
 				percentage: 0
 			}
 		})
-	}, [tokenIn, tokenOut])
+	}, [tokenIn, tokenOut, tokenOutImplementation])
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -378,7 +367,7 @@ export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFramePro
 						borderColor: !isReady ? tokenInColor : "transparent"
 					}}
 					disabled={!isReady}
-					onClick={() => frame(`${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`)}
+					onClick={handleSwap}
 				>
 					{!isSufficientBalance ? (
 						"Insufficient Balance"

@@ -110,8 +110,7 @@ func HandleTransferFrom(rawInputs json.RawMessage, params actions.HandlerParams)
 	return []signature.Plug{}, nil
 }
 
-// handleEthWethSwap handles direct conversions between ETH and WETH
-func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
+func handleWrap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) ([]signature.Plug, error) {
 	isEthToWeth := common.HexToAddress(inputs.TokenIn) == utils.NativeTokenAddress &&
 		strings.EqualFold(inputs.Token, wethAddress)
 	isWethToEth := strings.EqualFold(inputs.TokenIn, wethAddress) &&
@@ -153,7 +152,6 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 		}
 	}
 
-	// Get current ETH price
 	var ethPrice float64
 	ethPrices, err := llama.GetPrices([]string{"ethereum:0x0000000000000000000000000000000000000000"})
 	if err != nil {
@@ -164,7 +162,6 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 	}
 	ethPrice = ethPrices["ethereum:0x0000000000000000000000000000000000000000"].Price
 
-	// Set symbols based on conversion direction
 	buySymbol := "ETH"
 	sellSymbol := "WETH"
 	if isEthToWeth {
@@ -212,8 +209,11 @@ func handleEthWethSwap(inputs SwapInputs, _ actions.HandlerParams, wethAddress s
 	}}, nil
 }
 
-func handleBebopSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
-	bebopApiUrl := fmt.Sprintf("https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
+func handleSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
+	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should 
+	//       consume the chain id provided in the params.
+	bebopApiUrl := fmt.Sprintf(
+		"https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
 		inputs.TokenIn,
 		inputs.Token,
 		inputs.Amount,
@@ -314,68 +314,13 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 	}
 	inputs.Amount = adjustedAmount.String()
 
-	if txs, err := handleEthWethSwap(inputs, params, wethAddress); err != nil {
+	if txs, err := handleWrap(inputs, params, wethAddress); err != nil {
 		return nil, err
 	} else if txs != nil {
 		return txs, nil
 	}
 
-	// Fall back to Bebop swap
-	return handleBebopSwap(inputs, params)
-}
-
-func HandleWrap(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token  string `json:"token"`
-		Amount string `json:"amount"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal wrap inputs: %v", err)
-	}
-
-	amount, err := utils.StringToUint(inputs.Amount, 18)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert wrap amount to uint: %w", err)
-	}
-
-	wethAddress := references.Networks[params.ChainId].References["weth"]["address"]
-
-	if strings.EqualFold(inputs.Token, wethAddress) {
-		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Client)
-		if err != nil {
-			return nil, utils.ErrContract(wethAddress)
-		}
-
-		calldata, err := wethContract.WethAddressTransactor.Withdraw(params.Client.WriteOptions(params.From, big.NewInt(0)), amount)
-		if err != nil {
-			return nil, utils.ErrTransaction(err.Error())
-		}
-
-		return []signature.Plug{{
-			To:   common.HexToAddress(inputs.Token),
-			Data: calldata.Data(),
-		}}, nil
-	}
-
-	if common.HexToAddress(inputs.Token) == utils.NativeTokenAddress {
-		wethContract, err := weth_address.NewWethAddress(common.HexToAddress(wethAddress), params.Client)
-		if err != nil {
-			return nil, utils.ErrContract(wethAddress)
-		}
-
-		calldata, err := wethContract.WethAddressTransactor.Deposit(params.Client.WriteOptions(params.From, amount))
-		if err != nil {
-			return nil, utils.ErrTransaction(err.Error())
-		}
-
-		return []signature.Plug{{
-			To:    common.HexToAddress(wethAddress),
-			Value: amount,
-			Data:  calldata.Data(),
-		}}, nil
-	}
-
-	return nil, fmt.Errorf("token must be either ETH or WETH for wrapping/unwrapping")
+	return handleSwap(inputs, params)
 }
 
 func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
