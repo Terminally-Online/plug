@@ -67,7 +67,7 @@ export const intent = async (input: {
 export const getIntentTransaction = intent
 
 type CreateIntentProps = { chainId: number, actions: string, frequency: number, startAt: Date, endAt: Date | undefined }
-export const createIntent = async (input: CreateIntentProps): Promise<Intent> => { 
+export const createIntent = async (input: CreateIntentProps): Promise<Intent> => {
 	const response = await axios.post(`${env.SOLVER_URL}/solver/save`, input, {
 		headers: {
 			'X-Api-Key': env.SOLVER_API_KEY
@@ -78,7 +78,32 @@ export const createIntent = async (input: CreateIntentProps): Promise<Intent> =>
 
 	return response.data
 }
-export const getIntent = async () => { }
+
+type GetIntentProps = { id: string }
+export const getIntent = async ({ id }: GetIntentProps): Promise<Intent> => { 
+	const response = await axios.get(`${env.SOLVER_URL}/solver/save/${id}`, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data
+}
+
+type DeleteIntentProps = { id: string }
+export const deleteIntent = async ({ id }: DeleteIntentProps): Promise<Intent> => { 
+	const response = await axios.delete(`${env.SOLVER_URL}/solver/save/${id}`, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data
+}
 
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {

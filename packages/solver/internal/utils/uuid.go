@@ -2,8 +2,8 @@ package utils
 
 import (
 	"crypto/rand"
-	"encoding/binary"
 	"fmt"
+	"strings"
 )
 
 // GenerateUUID generates a new UUID v4 string using crypto/rand
@@ -21,25 +21,22 @@ func GenerateUUID() string {
 }
 
 func GenerateApiKey() string {
-	// Word lists for generating memorable combinations
-	adjectives := []string{"happy", "brave", "clever", "swift", "mighty", "jolly", "vibrant",
-		"fierce", "gentle", "mystic", "cosmic", "golden", "silver", "crystal"}
-	nouns := []string{"panda", "rocket", "comet", "wizard", "dragon", "phoenix", "ninja",
-		"falcon", "tiger", "forest", "ocean", "mountain", "shadow", "thunder"}
+	// Possible words for the key
+	words := []string{"bing", "boop", "bop", "bam", "blap"}
 
-	// Generate 8 random bytes (we only need a few but this keeps it similar to your UUID function)
-	randBytes := make([]byte, 8)
+	// Generate 12 random bytes to select words
+	randBytes := make([]byte, 12)
 	_, err := rand.Read(randBytes)
 	if err != nil {
 		panic(fmt.Sprintf("failed to generate random bytes: %v", err))
 	}
 
-	// Use the random bytes to select words and generate a number
-	adjIndex := int(randBytes[0]) % len(adjectives)
-	nounIndex := int(randBytes[1]) % len(nouns)
+	// Create a slice to hold the 12 selected words
+	selectedWords := make([]string, 12)
+	for i := 0; i < 12; i++ {
+		selectedWords[i] = words[int(randBytes[i])%len(words)]
+	}
 
-	// Use remaining bytes for a 4-digit number
-	randomNum := int(binary.BigEndian.Uint16(randBytes[2:4])) % 10000
-
-	return fmt.Sprintf("%s-%s-%04d", adjectives[adjIndex], nouns[nounIndex], randomNum)
+	// Join the words with hyphens
+	return strings.Join(selectedWords, "-")
 }

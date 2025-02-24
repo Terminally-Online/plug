@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"solver/internal/utils"
 	"time"
 
@@ -8,16 +9,17 @@ import (
 )
 
 type Intent struct {
-	Id               string     `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status           string     `json:"status,omitempty" gorm:"type:text"`
-	ChainId          int        `json:"chainId" gorm:"type:int"`
-	From             string     `json:"from,omitempty" gorm:"type:text"`
-	Actions          string     `json:"actions,omitempty" gorm:"type:jsonb"`
-	Frequency        int        `json:"frequency,omitempty" gorm:"type:int"`
-	StartAt          time.Time  `json:"startAt,omitempty" gorm:"type:timestamp"`
-	EndAt            time.Time  `json:"endAt,omitempty" gorm:"type:timestamp"`
-	PeriodEndAt      *time.Time `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
-	NextSimulationAt *time.Time `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
+	Id               string                   `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Status           string                   `json:"status,omitempty" gorm:"type:text"`
+	ChainId          int                      `json:"chainId" gorm:"type:int"`
+	From             string                   `json:"from,omitempty" gorm:"type:text"`
+	Actions          []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
+	Options          map[string]interface{}   `json:"options,omitempty" gorm:"type:jsonb"`
+	Frequency        int                      `json:"frequency,omitempty" gorm:"type:int"`
+	StartAt          time.Time                `json:"startAt,omitempty" gorm:"type:timestamp"`
+	EndAt            time.Time                `json:"endAt,omitempty" gorm:"type:timestamp"`
+	PeriodEndAt      *time.Time               `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
+	NextSimulationAt *time.Time               `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 
 	// Relationships
 	Runs     []Run  `json:"runs,omitempty" gorm:"foreignKey:IntentId;references:Id"`
@@ -63,6 +65,7 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 }
 
 func (i *Intent) BeforeCreate(tx *gorm.DB) error {
+	fmt.Printf("mfer we gotta generate this uuid!")
 	i.Id = utils.GenerateUUID()
 	if i.Frequency > 0 {
 		periodEndAt := i.StartAt.Add(time.Duration(i.Frequency) * 24 * time.Hour)
