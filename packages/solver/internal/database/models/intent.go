@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"solver/internal/utils"
 	"time"
 
@@ -16,8 +15,8 @@ type Intent struct {
 	Actions          []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
 	Options          map[string]interface{}   `json:"options,omitempty" gorm:"type:jsonb"`
 	Frequency        int                      `json:"frequency,omitempty" gorm:"type:int"`
-	StartAt          time.Time                `json:"startAt,omitempty" gorm:"type:timestamp"`
-	EndAt            time.Time                `json:"endAt,omitempty" gorm:"type:timestamp"`
+	StartAt          *time.Time               `json:"startAt,omitempty" gorm:"type:timestamp"`
+	EndAt            *time.Time               `json:"endAt,omitempty" gorm:"type:timestamp"`
 	PeriodEndAt      *time.Time               `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
 	NextSimulationAt *time.Time               `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 
@@ -35,7 +34,7 @@ type Intent struct {
 func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt *time.Time) {
 	now := time.Now()
 
-	if i.EndAt.Before(now) || i.Frequency == 0 {
+	if i.EndAt == nil || i.EndAt.Before(now) || i.Frequency == 0 {
 		return nil, nil
 	}
 
@@ -50,8 +49,8 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 			executionFrequency := time.Duration(i.Frequency) * 24 * time.Hour
 			nextPeriodEnd := i.PeriodEndAt.Add(executionFrequency)
 
-			if nextPeriodEnd.After(i.EndAt) {
-				return &i.EndAt, nil
+			if nextPeriodEnd.After(*i.EndAt) {
+				return i.EndAt, nil
 			}
 
 			return &nextPeriodEnd, i.PeriodEndAt
@@ -65,14 +64,13 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 }
 
 func (i *Intent) BeforeCreate(tx *gorm.DB) error {
-	fmt.Printf("mfer we gotta generate this uuid!")
 	i.Id = utils.GenerateUUID()
 	if i.Frequency > 0 {
 		periodEndAt := i.StartAt.Add(time.Duration(i.Frequency) * 24 * time.Hour)
 		i.PeriodEndAt = &periodEndAt
 	}
 	nextSim := i.StartAt
-	i.NextSimulationAt = &nextSim
+	i.NextSimulationAt = nextSim
 
 	return nil
 }

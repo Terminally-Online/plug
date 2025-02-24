@@ -55,6 +55,8 @@ export const activity = createTRPCRouter({
 
 			ctx.emitter.emit(subscriptions.execution.update, intent)
 
+			// TODO: Add the intent id to the plugs intent id array
+
 			return intent
 		}),
 
