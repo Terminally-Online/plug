@@ -1,7 +1,5 @@
 import { FC, useCallback, useRef, useState } from "react"
 
-import { CircleDollarSign } from "lucide-react"
-
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
@@ -14,6 +12,7 @@ import { TransferRecipient } from "./transfer-recipient"
 import { useSocket } from "@/state/authentication"
 import { getAddress } from "viem"
 import { useSendTransaction } from "wagmi"
+import { Marquee } from "../../utils/marquee"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -202,10 +201,10 @@ const ImplementationComponent: FC<{
 const ScrollingError = ({ error }: { error: string | undefined }) => {
 	if (!error) return null
 
-	return <div className="relative">
+	return <div className="relative min-h-6 overflow-x-hidden">
 		<div className="z-[20] absolute left-0 w-12 bg-gradient-to-r from-plug-white to-plug-white/0 top-0 bottom-0" />
 		<div className="z-[20] absolute right-0 w-12 bg-gradient-to-l from-plug-white to-plug-white/0 top-0 bottom-0" />
-		<marquee className="-z-1 text-plug-red font-bold whitespace-nowrap">{error}</marquee>
+		<Marquee className="-z-1 relative max-w-full text-plug-red font-bold whitespace-nowrap">{error}</Marquee>
 	</div>
 }
 
@@ -220,11 +219,7 @@ export const TransferAmountFrame: FC<{
 		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
 	const { socket } = useSocket()
-	const { error, sendTransaction, isLoading, isError } = useSendTransaction({
-		// mutation: { 
-		// 	onError: () => handle.frame("error") 
-		// } 
-	})
+	const { error, sendTransaction, isLoading } = useSendTransaction()
 
 	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
 	const from = socket
@@ -324,7 +319,7 @@ export const TransferAmountFrame: FC<{
 					</div>
 
 					<div className="mx-6 mt-2 flex flex-col gap-4">
-						<ScrollingError error={error?.message} />
+						<ScrollingError error={error?.message ?? ""} />
 
 						<button
 							className={cn(
