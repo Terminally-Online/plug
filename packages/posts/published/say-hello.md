@@ -5,40 +5,34 @@ slug: hello-world
 image: /cdn/papers/hello-world.png
 description: Command centers for the future built by the terminally online.
 created: 01/28/2025
-author: danner
+author: drakedanner
 ---
 
-We are Terminally Online and Plug is the first of several products we have to launch so that we can build with you.
-
-You may know us individually as [danner](https://twitter.com/drakedanner), or [chance](https://twitter.com/nftchance). We've been terminally online for years and I am sure you have too. We've spent the past 5 years plugged into the EVM landscape and we're here to plug you in too.
+We are Terminally Online Inc. and you may know us individually as [danner](https://twitter.com/drakedanner) or [chance](https://twitter.com/nftchance). We've spent the past 5 years plugged into the EVM landscape and we're here to plug you in too.
 
 ## The Reality Check
 
-If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got your yield farms here, your LP positions there, and god forbid you try to time a swap across multiple protocols without missing the perfect entry.
+If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord and Telegra notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got yield farms here, LP positions there, and god forbid you try to time a transaction across multiple protocols without missing the perfect entry.
 
-We've been there. We are there. And we're building the solution we've always wanted. Initially, when we set out to build Plug, we considered building a product that allowed users to log off and spend more time touching grass. As we continued to build, we realized - that's not who we are; that's not who you are. 
+We've been there. We are there. And we're building the solution we've always wanted. Initially, when we set out to build Plug, we considered building a product that allowed users to log off and spend more time touching grass. As we continued to build, we realized - that's not who we are; that's not who you are.
 
-Let's be real - I've got 47 browser tabs open right now, three different DEX aggregators running, and I'm probably farming yield in my sleep. This isn't just a problem to solve - it's who we are. The question isn't how to log off, it's how to become terminal. We live in the ether, we spend our days streaming our homes to those we build with. We named our company Terminally Online for a reason. We don't log off and we are here to build for others like us.
-
+Let's be real - I've got 47 browser tabs open right now. This isn't just a problem to solve - it's who we are. The question isn't how to log off, it's how to become even more online. We live in the ether, we spend our days streaming our homes to those we build with. We named our company Terminally Online for a reason. We don't log off and we are here to build for others like us.
 
 ## Our Journey Here
 
 I've spent my entire life seeking the cutting edge of functional technology and my entire career in early stage fintech and crypto startups. I've had the opportunity to build teams and hire across every department imaginable. I've gotten to perform a laundry list of operational and technical roles and the teams I've worked with have built systems that have processed $5b+ across compliant Web2 and Web3 rails. I've gotten to work with Chance over the years as he's enabled nearly a million gas optimized transactions and developed delightful software experiences.
-
 We're excited to begin releasing product that we fully own and direct.
 
 ## Meet Plug
 
 We're not here to tell you to touch grass. We're here to build the command center for the terminally online. Your protocols, your strategies, your automations - all running exactly how you want them, when you want them. No more tab juggling required.
-
 For the first time ever, you can:
 
 - Schedule constraints-driven transactions (because sometimes you need to sleep)
 - Access all major protocol functionality without bouncing between apps
 - Create and share strategies that actually make you money
 - Set up "if this, then that" executions that squeeze maximum value from every move
-
-One interface to access Etherem, one interface to combine protocols, one interface to schedule transactions, and one interface to manage your onchain experience.
+  One interface to access Etherem, one interface to combine protocols, one interface to schedule transactions, and one interface to manage your onchain experience.
 
 ## What's Coming
 
