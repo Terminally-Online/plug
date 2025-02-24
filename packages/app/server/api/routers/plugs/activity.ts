@@ -4,25 +4,22 @@ import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
-import { createIntent } from "@/lib"
+import { createIntent, deleteIntent, getIntent, toggleIntent, Intent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-const execution = Prisma.validator<Prisma.IntentDefaultArgs>()({
-	include: {
-		plug: true,
-		runs: { orderBy: { createdAt: "desc" } }
-	}
-})
-export type Execution = Prisma.IntentGetPayload<typeof execution>
-
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.intent.findMany({
-			where: { plug: { socketId: ctx.session.address } },
-			orderBy: { createdAt: "desc" },
-			include: { plug: true, runs: { orderBy: { createdAt: "desc" } } }
-		})
+			const intents = await getIntent({
+				address: ctx.session.address,
+			})
+		return [] as Array<Intent>
+
+		// return await ctx.db.intent.findMany({
+		// 	where: { plug: { socketId: ctx.session.address } },
+		// 	orderBy: { createdAt: "desc" },
+		// 	include: { plug: true, runs: { orderBy: { createdAt: "desc" } } }
+		// })
 	}),
 
 	queue: protectedProcedure
@@ -61,37 +58,23 @@ export const activity = createTRPCRouter({
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.findUnique({
-			where: { id: input.id },
-			include: { plug: true }
-		})
+		const intent = await toggleIntent(input)
 
-		if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
+		ctx.emitter.emit(subscriptions.execution.update, intent)
 
-		const toggled = await ctx.db.intent.update({
-			where: { id: input.id },
-			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
-			include: {
-				plug: true,
-				runs: { orderBy: { createdAt: "desc" } }
-			}
-		})
-
-		ctx.emitter.emit(subscriptions.execution.update, toggled)
-
-		return toggled
+		return intent
 	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.delete({
-			where: { id: input.id }
-		})
+		const intent = await deleteIntent(input)
 
-		ctx.emitter.emit(subscriptions.execution.delete, execution)
+		ctx.emitter.emit(subscriptions.execution.delete, intent)
 
-		return execution
+		// TODO: Remove the intent from the plugs intent id array
+
+		return intent
 	}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.execution.update),
-	onDelete: subscription<Execution>("protected", subscriptions.execution.delete)
+	onActivity: subscription<Intent>("protected", subscriptions.execution.update),
+	onDelete: subscription<Intent>("protected", subscriptions.execution.delete)
 })

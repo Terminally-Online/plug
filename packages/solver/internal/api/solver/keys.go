@@ -43,22 +43,25 @@ func (h *Handler) ReadApiKey(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateApiKey(w http.ResponseWriter, r *http.Request) {
-	// vars := mux.Vars(r)
-	// id := vars["id"]
+	vars := mux.Vars(r)
+	id := vars["id"]
 
-	// var apiKey models.ApiKey
-	// if err := database.DB.First(&apiKey, "id = ?", id).Error; err != nil {
-	// 	utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
-	// 	return
-	// }
+	var apiKey models.ApiKey
+	if err := database.DB.First(&apiKey, "id = ?", id).Error; err != nil {
+		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
+		return
+	}
 
-	// var newApiKey models.ApiKey
-	// if err := json.NewDecoder(r.Body).Decode(&newApiKey); err != nil {
-	// 	utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	var newApiKey models.ApiKey
+	if err := json.NewDecoder(r.Body).Decode(&newApiKey); err != nil {
+		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	// apiKey.RateLimit = newApiKey.RateLimit
+	if err := database.DB.Model(&apiKey).Updates(newApiKey).Error; err != nil {
+		utils.MakeHttpError(w, "failed to update api key: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *Handler) DeleteApiKey(w http.ResponseWriter, r *http.Request) {

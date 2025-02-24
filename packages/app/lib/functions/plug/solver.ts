@@ -66,9 +66,39 @@ export const intent = async (input: {
 }
 export const getIntentTransaction = intent
 
+const save = async <TData>(method: "get" | "post" | "delete", path: string, input?: TInput) => {
+	const url = `${env.SOLVER_URL}/solver/save${path ? `/${path}` : ''}`
+	const config = {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	}
+
+	let response
+	switch (method) {
+		case "post":
+			response = await axios.post<TData>(url, input ?? {}, config) 
+			break
+		case "get":
+		case "delete":
+			response = await axios[method]<TData>(url, config)
+			break
+		default:
+			throw new TRPCError({ code: "BAD_REQUEST" })
+	}
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data
+}
+
 type CreateIntentProps = { chainId: number, actions: string, frequency: number, startAt: Date, endAt: Date | undefined }
-export const createIntent = async (input: CreateIntentProps): Promise<Intent> => {
-	const response = await axios.post(`${env.SOLVER_URL}/solver/save`, input, {
+export const createIntent = async (input: Omit<Partial<Intent>, "nextSimulationAt" | "periodEndAt">) => save("post", "", input)
+
+type GetIntentProps = { id?: string, address?: string }
+export const getIntent = async ({ id, address }: GetIntentProps): Promise<Array<Intent>> => { 
+	if (!id && !address) throw new TRPCError({ code: "BAD_REQUEST" })
+	const response = await axios.get(`${env.SOLVER_URL}/solver/save/${id ?? address}`, {
 		headers: {
 			'X-Api-Key': env.SOLVER_API_KEY
 		}
@@ -79,9 +109,9 @@ export const createIntent = async (input: CreateIntentProps): Promise<Intent> =>
 	return response.data
 }
 
-type GetIntentProps = { id: string }
-export const getIntent = async ({ id }: GetIntentProps): Promise<Intent> => { 
-	const response = await axios.get(`${env.SOLVER_URL}/solver/save/${id}`, {
+type ToggleIntentProps = { id: string }
+export const toggleIntent = async ({ id }: ToggleIntentProps): Promise<Intent> => { 
+	const response = await axios.post(`${env.SOLVER_URL}/solver/save/${id}/toggle`, {  }, {
 		headers: {
 			'X-Api-Key': env.SOLVER_API_KEY
 		}
