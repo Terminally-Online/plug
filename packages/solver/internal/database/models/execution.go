@@ -1,6 +1,7 @@
 package models
 
 import (
+	"solver/internal/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,10 +15,17 @@ type Execution struct {
 	TransactionHash string `json:"transactionHash,omitempty" gorm:"type:text"`
 
 	// Relationships
-	Run Run `json:"run,omitempty" gorm:"foreignKey:ExecutionId;references:Id"`
+	RunId string `json:"runId,omitempty" gorm:"type:text;uniqueIndex"`
+	Run   Run    `json:"run,omitempty" gorm:"foreignKey:RunId;references:Id"`
 
-	// Database storage fields
+	// Store the timestamps but do not expose them in the JSON response
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (e *Execution) BeforeCreate(tx *gorm.DB) error {
+	e.Id = utils.GenerateUUID()
+
+	return nil
 }

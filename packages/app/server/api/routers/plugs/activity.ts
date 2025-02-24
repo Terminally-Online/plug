@@ -4,6 +4,7 @@ import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
+import { createIntent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
@@ -35,47 +36,26 @@ export const activity = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const workflow = await ctx.db.plug.findUnique({
+			const plug = await ctx.db.plug.findUnique({
 				where: {
 					id: input.plugId,
 					socketId: ctx.session.address
 				}
 			})
 
-			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
+			if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-			// NOTE: We have a try/catch here so that if someone posts in invalid JSON, we don't
-			// crash the server and instead return the proper 400 (Bad Request) error. We do not
-			// need to utilize the parsed JSON here because we are only using it to validate the
-			// JSON string will be fine when sent to the Solver backend.
-			try {
-				JSON.parse(workflow.actions)
-				const execution = await ctx.db.intent.create({
-					data: {
-						plugId: input.plugId,
-						chainId: input.chainId,
-						actions: workflow.actions,
+			const intent = await createIntent({
+				chainId: input.chainId,
+				actions: plug.actions,
+				frequency: input.frequency,
+				startAt: input.startAt,
+				endAt: input.endAt,
+			})
 
-						frequency: input.frequency,
-						startAt: input.startAt,
-						endAt: input.endAt,
-						periodEndAt: input.frequency
-							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
-							: null,
-						nextSimulationAt: input.startAt
-					},
-					include: {
-						plug: true,
-						runs: { orderBy: { createdAt: "desc" } }
-					}
-				})
+			ctx.emitter.emit(subscriptions.execution.update, intent)
 
-				ctx.emitter.emit(subscriptions.execution.update, execution)
-
-				return execution
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+			return intent
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {

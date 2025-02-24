@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { ActionSchemas } from "@/lib/types"
+import { ActionSchemas, Intent } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
@@ -43,6 +43,7 @@ export const schemas = async (
 
 	return response.data
 }
+export const getIntentSchemas = schemas
 
 export const intent = async (input: {
 	chainId: number
@@ -63,6 +64,21 @@ export const intent = async (input: {
 
 	return response.data
 }
+export const getIntentTransaction = intent
+
+type CreateIntentProps = { chainId: number, actions: string, frequency: number, startAt: Date, endAt: Date | undefined }
+export const createIntent = async (input: CreateIntentProps): Promise<Intent> => { 
+	const response = await axios.post(`${env.SOLVER_URL}/solver/save`, input, {
+		headers: {
+			'X-Api-Key': env.SOLVER_API_KEY
+		}
+	})
+
+	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+	return response.data
+}
+export const getIntent = async () => { }
 
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {

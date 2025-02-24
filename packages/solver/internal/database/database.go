@@ -108,5 +108,9 @@ func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.SimulationRequest{},
 		&models.SimulationResponse{},
+		&models.ApiKey{},
+		&models.Execution{},
+		&models.Run{},
+		&models.Intent{},
 	)
 }
