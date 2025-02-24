@@ -3,7 +3,7 @@ import { FC, useCallback, useRef, useState } from "react"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS } from "@/lib"
+import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
@@ -218,8 +218,10 @@ export const TransferAmountFrame: FC<{
 		index,
 		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
+	const { account: { isAuthenticated } } = useConnect()
 	const { socket } = useSocket()
 	const { error, sendTransaction, isLoading } = useSendTransaction()
+
 
 	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
 	const from = socket
@@ -334,7 +336,7 @@ export const TransferAmountFrame: FC<{
 							disabled={isLoading || isReady === false}
 							onClick={!isLoading && isReady ? handleTransfer : () => { }}
 						>
-							{isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
+							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>
