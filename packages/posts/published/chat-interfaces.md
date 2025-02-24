@@ -14,7 +14,7 @@ So when someone sends me yet another crypto agent chat interface, I get why they
 Just tell an AI what you want, and it handles all the complexity of crypto for you. No more juggling DEX interfaces, tracking yield farms, or monitoring positions across chains. Just vibes and gains.
 But I'm frustrated because no one has shown me an agent that can do something other than swap or bridge. No one has shown me a chat interface for transaction definition that actually works. Right now, we're swimming in demos and pitch decks while hard problems remain unsolved.
 Although it's early, there's an exciting future for these proof of concept ideas. Many societal markers point towards a future with systems that transact on behalf of humans using crypto: users believe in this future, investors believe in this future enough to fund it, builders are attempting to create this future, etc.
-![Crypto investments by venture capitalists in 2024 grew primarily in Generative AI compared to 2023](https://cdn.onplug.io/posts/chat-interfaces/0-investments.png)
+
 Last week we budgeted a few hours to explore what a chat interface for Plug might look like. It is scrappy, but it's better than every single market-available "agent" that exists today.
 Morgan can read your wallet contents, build and discover Plugs to use, suggest actions based on your goals, run and schedule your Plugs, re-organize the app with a live context-based layout, etc. It only took a ~300 lines of code to significantly improve upon the experience that is readily available today.
 ![An example of Plug's chat interface in action](https://cdn.onplug.io/posts/chat-interfaces/1-morgan.png)
