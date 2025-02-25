@@ -4,24 +4,22 @@ import { z } from "zod"
 
 import { Prisma } from "@prisma/client"
 
+import { createIntent, deleteIntent, getIntent, toggleIntent, Intent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-const execution = Prisma.validator<Prisma.IntentDefaultArgs>()({
-	include: {
-		plug: true,
-		runs: { orderBy: { createdAt: "desc" } }
-	}
-})
-export type Execution = Prisma.IntentGetPayload<typeof execution>
-
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.intent.findMany({
-			where: { plug: { socketId: ctx.session.address } },
-			orderBy: { createdAt: "desc" },
-			include: { plug: true, runs: { orderBy: { createdAt: "desc" } } }
-		})
+			const intents = await getIntent({
+				address: ctx.session.address,
+			})
+		return [] as Array<Intent>
+
+		// return await ctx.db.intent.findMany({
+		// 	where: { plug: { socketId: ctx.session.address } },
+		// 	orderBy: { createdAt: "desc" },
+		// 	include: { plug: true, runs: { orderBy: { createdAt: "desc" } } }
+		// })
 	}),
 
 	queue: protectedProcedure
@@ -35,81 +33,48 @@ export const activity = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const workflow = await ctx.db.plug.findUnique({
+			const plug = await ctx.db.plug.findUnique({
 				where: {
 					id: input.plugId,
 					socketId: ctx.session.address
 				}
 			})
 
-			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
+			if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-			// NOTE: We have a try/catch here so that if someone posts in invalid JSON, we don't
-			// crash the server and instead return the proper 400 (Bad Request) error. We do not
-			// need to utilize the parsed JSON here because we are only using it to validate the
-			// JSON string will be fine when sent to the Solver backend.
-			try {
-				JSON.parse(workflow.actions)
-				const execution = await ctx.db.intent.create({
-					data: {
-						plugId: input.plugId,
-						chainId: input.chainId,
-						actions: workflow.actions,
+			const intent = await createIntent({
+				chainId: input.chainId,
+				actions: plug.actions,
+				frequency: input.frequency,
+				startAt: input.startAt,
+				endAt: input.endAt,
+			})
 
-						frequency: input.frequency,
-						startAt: input.startAt,
-						endAt: input.endAt,
-						periodEndAt: input.frequency
-							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
-							: null,
-						nextSimulationAt: input.startAt
-					},
-					include: {
-						plug: true,
-						runs: { orderBy: { createdAt: "desc" } }
-					}
-				})
+			ctx.emitter.emit(subscriptions.execution.update, intent)
 
-				ctx.emitter.emit(subscriptions.execution.update, execution)
+			// TODO: Add the intent id to the plugs intent id array
 
-				return execution
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+			return intent
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.findUnique({
-			where: { id: input.id },
-			include: { plug: true }
-		})
+		const intent = await toggleIntent(input)
 
-		if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
+		ctx.emitter.emit(subscriptions.execution.update, intent)
 
-		const toggled = await ctx.db.intent.update({
-			where: { id: input.id },
-			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
-			include: {
-				plug: true,
-				runs: { orderBy: { createdAt: "desc" } }
-			}
-		})
-
-		ctx.emitter.emit(subscriptions.execution.update, toggled)
-
-		return toggled
+		return intent
 	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.delete({
-			where: { id: input.id }
-		})
+		const intent = await deleteIntent(input)
 
-		ctx.emitter.emit(subscriptions.execution.delete, execution)
+		ctx.emitter.emit(subscriptions.execution.delete, intent)
 
-		return execution
+		// TODO: Remove the intent from the plugs intent id array
+
+		return intent
 	}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.execution.update),
-	onDelete: subscription<Execution>("protected", subscriptions.execution.delete)
+	onActivity: subscription<Intent>("protected", subscriptions.execution.update),
+	onDelete: subscription<Intent>("protected", subscriptions.execution.delete)
 })

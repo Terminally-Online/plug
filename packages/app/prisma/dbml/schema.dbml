@@ -102,38 +102,7 @@ Table Plug {
   frequency Int [not null, default: 10]
   socket Socket [not null]
   socketId String [not null]
-  executions Intent [not null]
   views View [not null]
-}
-
-Table Intent {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  status String [not null, default: 'active']
-  chainId Int [not null, default: 1]
-  actions String [not null, default: '[]']
-  startAt DateTime [not null]
-  endAt DateTime
-  frequency Int [not null, default: 0]
-  periodEndAt DateTime
-  nextSimulationAt DateTime
-  runs Run [not null]
-  plug Plug [not null]
-  plugId String [not null]
-}
-
-Table Run {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
-  status String [not null]
-  result Json
-  error String
-  errors String[] [not null]
-  gasEstimate Float
-  intent Intent [not null]
-  intentId String [not null]
 }
 
 Table Price {
@@ -324,10 +293,6 @@ Ref: SocketIdentity.referrerId - Socket.id [delete: Cascade]
 Ref: View.plugId > Plug.id [delete: Cascade]
 
 Ref: Plug.socketId > Socket.id [delete: Cascade]
-
-Ref: Intent.plugId > Plug.id [delete: Cascade]
-
-Ref: Run.intentId > Intent.id [delete: Cascade]
 
 Ref: Implementation.(fungibleName, fungibleSymbol) > Fungible.(name, symbol) [delete: Cascade]
 

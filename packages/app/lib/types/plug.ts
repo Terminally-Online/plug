@@ -57,3 +57,32 @@ export type Transfer = {
 	precise?: string
 	tokenId?: string
 }
+
+export type Run = {
+  id: string
+  status: string
+  result?: string
+  error?: string
+  errors?: string[]
+  gasEstimate?: number
+  data: {
+    raw: Uint8Array
+    decoded?: unknown
+  }
+  intentId?: string
+  intent?: Intent
+}
+
+export type Intent = {
+  id: string
+  status?: string
+  chainId: number
+  from?: string
+  actions?: string
+  frequency?: number
+  startAt?: Date
+  endAt?: Date
+  periodEndAt?: Date | null
+  nextSimulationAt?: Date | null
+  runs?: Array<Run>
+}
