@@ -11,7 +11,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { TimeUntil } from "@/components/shared/utils/time-until"
 import { useActivities } from "@/contexts"
-import { cardColors, ChainId, chains, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
+import { cardColors, ChainId, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
@@ -22,19 +22,20 @@ const ITEMS_PER_PAGE = 10
 export const ExecutionFrame: FC<{
 	index: number
 	icon: JSX.Element
-	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
+	activity: RouterOutputs["plugs"]["activity"]["get"][number]
 }> = ({ index, icon, activity }) => {
+	const loadMoreRef = useRef<HTMLDivElement>(null)
+
 	const { isFrame, handle } = useColumnStore(index, `${activity?.id}-activity`)
 	const { handle: activityHandle } = useActivities()
 	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
-	const loadMoreRef = useRef<HTMLDivElement>(null)
 
 	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity?.actions])
 
-	const { visibleSimulations, hasMore, totalSimulations } = useMemo(
+	const { visibleRuns, totalRuns, hasMore } = useMemo(
 		() => ({
-			visibleSimulations: activity?.runs?.slice(0, visibleCount) ?? [],
-			totalSimulations: activity?.runs?.length ?? 0,
+			visibleRuns: activity?.runs?.slice(0, visibleCount) ?? [],
+			totalRuns: activity?.runs?.length ?? 0,
 			hasMore: visibleCount < (activity?.runs?.length ?? 0)
 		}),
 		[activity?.runs, visibleCount]
@@ -47,7 +48,7 @@ export const ExecutionFrame: FC<{
 		const observer = new IntersectionObserver(
 			entries => {
 				if (entries[0].isIntersecting && hasMore) {
-					setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, totalSimulations))
+					setVisibleCount(prev => Math.min(prev + ITEMS_PER_PAGE, totalRuns))
 				}
 			},
 			{ threshold: 0.1 }
@@ -58,7 +59,7 @@ export const ExecutionFrame: FC<{
 		}
 
 		return () => observer.disconnect()
-	}, [isFrame, activity, hasMore, totalSimulations])
+	}, [isFrame, activity, hasMore, totalRuns])
 
 	if (!activity) return null
 
@@ -86,7 +87,7 @@ export const ExecutionFrame: FC<{
 						index={index}
 						item={activity.plug.id}
 						actions={actions}
-						errors={visibleSimulations[0]?.errors ?? []}
+						errors={visibleRuns[0]?.errors ?? []}
 					/>
 
 					<div className="my-4 flex flex-row items-center gap-2">
@@ -212,7 +213,7 @@ export const ExecutionFrame: FC<{
 							</Accordion>
 						)}
 
-						{visibleSimulations.map((simulation, index) => (
+						{visibleRuns.map((simulation, index) => (
 							<Accordion key={simulation.id} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
 								<div className="flex flex-row gap-2">
 									<ActivityIcon status={simulation.status} />
@@ -224,13 +225,13 @@ export const ExecutionFrame: FC<{
 													(#{activity.runs.length - index})
 												</span>
 											</p>
-											<DateSince date={simulation.createdAt} />
+											{/*<DateSince date={simulation.createdAt} />*/}
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
 											<p>{formatTitle(simulation.status)}</p>
-											<p>
+											{/*<p>
 												<Counter count={simulation.createdAt.toLocaleDateString()} />
-											</p>
+											</p>*/}
 										</div>
 									</div>
 								</div>

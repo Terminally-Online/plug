@@ -203,6 +203,7 @@ model Plug {
   tags         String[]
   plugForkedId String?
   frequency    Int      @default(10)
+  intentIds    String[]
 
   // ---------------------------------------------------------------------------
   // Many-to-one
@@ -213,7 +214,7 @@ model Plug {
   // ---------------------------------------------------------------------------
   // One-to-many
   // ---------------------------------------------------------------------------
-  views      View[]
+  views View[]
 }
 
 model Price {

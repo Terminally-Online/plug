@@ -100,6 +100,7 @@ Table Plug {
   tags String[] [not null]
   plugForkedId String
   frequency Int [not null, default: 10]
+  intentIds String[] [not null]
   socket Socket [not null]
   socketId String [not null]
   views View [not null]

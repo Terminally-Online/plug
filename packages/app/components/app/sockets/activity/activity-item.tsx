@@ -120,7 +120,7 @@ export const ActivityItem: FC<{
 									{activity.plug.name}
 								</p>
 								<div className="flex-shrink-0">
-									<DateSince date={new Date(activity.createdAt)} />
+									{/*<DateSince date={new Date(activity.createdAt)} />*/}
 								</div>
 							</div>
 							<div className="flex w-full flex-row items-center justify-between gap-2 text-sm font-bold text-black text-opacity-40">
@@ -154,7 +154,7 @@ export const ActivityItem: FC<{
 			<ExecutionFrame
 				index={index}
 				icon={<ActivityIcon status={activity?.status ?? "pending"} />}
-				activity={activity}
+				activity={activity!!}
 			/>
 			<SimulationFrame index={index} activity={activity} simulationId={simulationId} />
 		</>

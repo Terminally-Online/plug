@@ -107,9 +107,9 @@ export const SimulationFrame: FC<{
 			<p className="flex flex-row items-center justify-between gap-4 font-bold">
 				<Clock10 size={18} className="opacity-20" />
 				<span className="opacity-40">Simulated</span>{" "}
-				<span className="ml-auto">
+				{/*<span className="ml-auto">
 					<DateSince date={simulation.createdAt} />
-				</span>
+				</span>*/}
 			</p>
 
 			{simulation.gasEstimate && (

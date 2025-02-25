@@ -66,10 +66,6 @@ export const intent = async (input: {
 }
 export const getIntentTransaction = intent
 
-
-
-
-
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {
 		headers: {

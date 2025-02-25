@@ -1,5 +1,3 @@
-import { z } from "zod"
-
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 
 export const stats = createTRPCRouter({
@@ -15,12 +13,14 @@ export const stats = createTRPCRouter({
 
 		const getWeekStart = (date: Date) => {
 			const result = new Date(date)
-			result.setDate(date.getDate() - ((date.getDay() + 6) % 7)) // Get Monday
+			result.setDate(date.getDate() - ((date.getDay() + 6) % 7))
 			result.setUTCHours(0, 0, 0, 0)
 			return result
 		}
 
-		const [referralCounts, viewCounts, runCounts, userCounts] = await Promise.all([
+		const [referralCounts, viewCounts
+			// , runCounts, userCounts
+		] = await Promise.all([
 			Promise.all(
 				periods.map(async date => {
 					const weekStart = getWeekStart(date)
@@ -59,66 +59,68 @@ export const stats = createTRPCRouter({
 				})
 			),
 
-			Promise.all(
-				periods.map(async date => {
-					const weekStart = getWeekStart(date)
-					const weekEnd = new Date(weekStart)
-					weekEnd.setDate(weekStart.getDate() + 7)
-
-					const runs = await ctx.db.run.count({
-						where: {
-							status: "success",
-							createdAt: {
-								gte: weekStart,
-								lt: weekEnd
-							},
-							intent: {
-								plug: {
-									socketId: ctx.session.address
-								}
-							}
-						}
-					})
-
-					return runs
-				})
-			),
-
-			Promise.all(
-				periods.map(async date => {
-					const weekStart = getWeekStart(date)
-					const weekEnd = new Date(weekStart)
-					weekEnd.setDate(weekStart.getDate() + 7)
-
-					const uniqueUsers = await ctx.db.intent.groupBy({
-						by: ["id"],
-						where: {
-							createdAt: {
-								gte: weekStart,
-								lt: weekEnd
-							},
-							plug: {
-								socketId: ctx.session.address
-							},
-							runs: {
-								some: {
-									status: "success"
-								}
-							}
-						}
-					})
-
-					return uniqueUsers.length
-				})
-			)
+			// Promise.all(
+			// 	periods.map(async date => {
+			// 		const weekStart = getWeekStart(date)
+			// 		const weekEnd = new Date(weekStart)
+			// 		weekEnd.setDate(weekStart.getDate() + 7)
+			//
+			// 		const runs = await ctx.db.run.count({
+			// 			where: {
+			// 				status: "success",
+			// 				createdAt: {
+			// 					gte: weekStart,
+			// 					lt: weekEnd
+			// 				},
+			// 				intent: {
+			// 					plug: {
+			// 						socketId: ctx.session.address
+			// 					}
+			// 				}
+			// 			}
+			// 		})
+			//
+			// 		return runs
+			// 	})
+			// ),
+			//
+			// Promise.all(
+			// 	periods.map(async date => {
+			// 		const weekStart = getWeekStart(date)
+			// 		const weekEnd = new Date(weekStart)
+			// 		weekEnd.setDate(weekStart.getDate() + 7)
+			//
+			// 		const uniqueUsers = await ctx.db.intent.groupBy({
+			// 			by: ["id"],
+			// 			where: {
+			// 				createdAt: {
+			// 					gte: weekStart,
+			// 					lt: weekEnd
+			// 				},
+			// 				plug: {
+			// 					socketId: ctx.session.address
+			// 				},
+			// 				runs: {
+			// 					some: {
+			// 						status: "success"
+			// 					}
+			// 				}
+			// 			}
+			// 		})
+			//
+			// 		return uniqueUsers.length
+			// 	})
+			// )
 		])
 
 		return {
 			counts: {
 				referrals: referralCounts,
 				views: viewCounts,
-				runs: runCounts,
-				users: userCounts
+				runs: 0,
+				users: 0
+				// runs: runCounts,
+				// users: userCounts
 			},
 			periods: periods.map(date => {
 				const weekStart = getWeekStart(date)

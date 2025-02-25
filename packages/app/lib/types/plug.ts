@@ -75,14 +75,14 @@ export type Run = {
 
 export type Intent = {
   id: string
-  status?: string
+  status: string
   chainId: number
-  from?: string
-  actions?: string
-  frequency?: number
-  startAt?: Date
+  from: string
+  actions: string
+  frequency: number
+  startAt: Date
   endAt?: Date
   periodEndAt?: Date | null
   nextSimulationAt?: Date | null
-  runs?: Array<Run>
+  runs: Array<Run>
 }

@@ -5,7 +5,7 @@ import axios from "axios"
 import { env } from "@/env"
 import { Intent } from "@/lib/types"
 
-type CreateIntentProps = Omit<Partial<Intent>, "nextSimulationAt" | "periodEndAt">
+type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" | "runs">
 type GetIntentProps = { id?: string, address?: string }
 type IntentIdProps = { id: string }
 
