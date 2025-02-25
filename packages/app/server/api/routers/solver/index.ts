@@ -7,5 +7,5 @@ import { tokens } from "./tokens"
 export const solver = createTRPCRouter({
 	actions,
 	killer,
-	tokens
+	tokens,
 })
