@@ -13,7 +13,7 @@ import (
 
 // SimulationRequest represents a simulation request in the database
 type SimulationRequest struct {
-	Id          string           `json:"id,omitempty" gorm:"type:text"`
+	Id          string           `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	ReferenceId string           `json:"referenceId,omitempty" gorm:"type:text;index"`
 	ChainId     uint64           `json:"chainId" gorm:"type:bigint"`
 	From        common.Address   `json:"from" db_field:"FromStr" gorm:"-"`
@@ -36,7 +36,7 @@ type SimulationRequest struct {
 
 // SimulationResponse represents a simulation response in the database
 type SimulationResponse struct {
-	Id                string               `json:"id" gorm:"type:text"`
+	Id                string               `json:"id" gorm:"primaryKey;type:text"`
 	RequestId         string               `json:"requestId" gorm:"type:text"`
 	SimulationRequest SimulationRequest    `json:"-" gorm:"foreignKey:RequestId;references:Id;-:migration"` // Adding this field to the struct with -:migration will prevent gorm from optimistically preloading the relationship
 	GasUsed           uint64               `json:"gasUsed" gorm:"type:bigint"`
