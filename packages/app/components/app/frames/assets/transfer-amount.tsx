@@ -222,7 +222,6 @@ export const TransferAmountFrame: FC<{
 	const { socket } = useSocket()
 	const { error, sendTransaction, isLoading } = useSendTransaction()
 
-
 	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
 	const from = socket
 		? index === COLUMNS.SIDEBAR_INDEX
@@ -258,19 +257,10 @@ export const TransferAmountFrame: FC<{
 			}
 		},
 		{
-			enabled: isFrame && isReady && !!column && !!socket && !!implementation
+			enabled: isFrame && isReady && !!column && !!socket && !!implementation,
+			onSuccess: () => { handle.frame(`${token?.symbol}-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "transfer"}-success`) }
 		}
 	)
-
-	const handleTransfer = useCallback(async () => {
-		if (!intent || !intent.transaction) return
-
-		sendTransaction({
-			to: intent.transaction.to,
-			data: intent.transaction.data,
-			value: intent.transaction.value
-		})
-	}, [intent, sendTransaction])
 
 	if (!token || !column) return null
 
@@ -333,8 +323,12 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={isLoading || isReady === false}
-							onClick={!isLoading && isReady ? handleTransfer : () => { }}
+							disabled={intent && isLoading || isReady === false}
+							onClick={intent && !isLoading && isReady ? () => sendTransaction({
+								to: intent.transaction.to,
+								data: intent.transaction.data,
+								value: intent.transaction.value
+							}) : () => { }}
 						>
 							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
