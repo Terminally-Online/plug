@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { Action, getNextSimulationAt } from "@/lib"
+import { Action } from "@/lib"
 import { subscriptions } from "@/server/subscription"
 
 import { apiKeyProcedure, createTRPCRouter } from "../../trpc"
@@ -87,16 +87,17 @@ export const simulation = createTRPCRouter({
 						if (execution.status !== "processing") throw new TRPCError({ code: "BAD_REQUEST" })
 
 						const status = simulation.success ? "success" : "failure"
-						const nextSimulation = getNextSimulationAt(execution, { status })
-
-						await tx.intent.update({
-							where: { id: simulation.id },
-							data: {
-								status: nextSimulation?.nextSimulationAt ? "active" : "completed",
-								nextSimulationAt: nextSimulation?.nextSimulationAt ?? null,
-								periodEndAt: nextSimulation?.periodEndAt ?? execution.periodEndAt
-							}
-						})
+						// const nextSimulation = getNextSimulationAt(execution, { status })
+						// const nextSimulation = {}
+						//
+						// await tx.intent.update({
+						// 	where: { id: simulation.id },
+						// 	data: {
+						// 		status: nextSimulation?.nextSimulationAt ? "active" : "completed",
+						// 		nextSimulationAt: nextSimulation?.nextSimulationAt ?? null,
+						// 		periodEndAt: nextSimulation?.periodEndAt ?? execution.periodEndAt
+						// 	}
+						// })
 
 						const { id } = await tx.run.create({
 							data: {
