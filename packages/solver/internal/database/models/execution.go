@@ -8,7 +8,7 @@ import (
 )
 
 type Execution struct {
-	Id              string `json:"id,omitempty" gorm:"primaryKey;type:text;uniqueIndex:,option:NOT UPDATABLE"`
+	Id              string `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	Status          string `json:"status,omitempty" gorm:"type:text"`
 	GasUsed         uint64 `json:"gasUsed,omitempty" gorm:"type:bigint"`
 	GasPrice        uint64 `json:"gasPrice,omitempty" gorm:"type:bigint"`

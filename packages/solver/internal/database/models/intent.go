@@ -41,7 +41,7 @@ func (is Inputs) Value() (driver.Value, error) {
 }
 
 type Intent struct {
-	Id         string                 `json:"id,omitempty" gorm:"primaryKey;type:text;uniqueIndex:,option:NOT UPDATABLE"`
+	Id         string                 `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	Status     string                 `json:"status,omitempty" gorm:"type:text;default:'active'"`
 	ChainId    uint64                 `json:"chainId" gorm:"type:int"`
 	From       string                 `json:"from,omitempty" gorm:"type:text"`
