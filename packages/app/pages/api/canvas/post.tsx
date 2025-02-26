@@ -57,10 +57,10 @@ export default async function handler(req: NextRequest) {
 
     return new ImageResponse(
       <div
-        tw="flex flex-col w-full h-full bg-[#FDFFF7] relative"
+        tw="flex flex-col w-full h-full relative"
         style={{
           fontFamily: "Satoshi",
-          background: "linear-gradient(30deg, #FDFFF7, #FDFFF7, rgba(210,243,138,0.2))"
+          background: "#FEFFF7"
         }}
       >
         {/* Background curved path inspired by landing page */}
@@ -75,18 +75,31 @@ export default async function handler(req: NextRequest) {
           }}
         >
           <path
-            d="M1200 0C900 150 950 50 700 100C450 150 400 350 200 300C0 250 -100 450 100 550C300 650 500 500 800 550C1100 600 1050 450 1200 630"
+            d="M-100 600C150 500 450 700 700 550C950 400 1100 550 1300 500"
             stroke="url(#gradient)"
-            strokeWidth="40"
+            strokeWidth="80"
             fill="none"
+            strokeLinecap="round"
             style={{
-              opacity: 0.6
+              opacity: 1
+            }}
+          />
+          {/* Dotted overlay path for animated effect */}
+          <path
+            d="M-100 600C150 500 450 700 700 550C950 400 1100 550 1300 500"
+            stroke="#FEFFF7"
+            strokeWidth="80"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray="4 4"
+            style={{
+              opacity: 0.7
             }}
           />
           <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#D2F38A" />
-              <stop offset="1" stopColor="#385842" />
+            <linearGradient id="gradient" x1="0" y1="550" x2="1200" y2="550" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stopColor="#385842" />
+              <stop offset="1" stopColor="#D2F38A" />
             </linearGradient>
           </defs>
         </svg>
@@ -99,12 +112,8 @@ export default async function handler(req: NextRequest) {
           }}
         >
           <h1 
-            tw="text-[110px] font-black leading-[1.1] text-left max-w-[95%]"
+            tw="text-[110px] font-black leading-[1.1] text-left max-w-[95%] text-[#385842]"
             style={{
-              backgroundImage: "linear-gradient(to right, #385842, #385842)",
-              backgroundClip: "text",
-              color: "transparent",
-              textShadow: "0px 0px 10px rgba(210,243,138,0.5)",
               position: "relative",
               zIndex: 20,
               paddingBottom: "20px" // Add padding to prevent text cutoff
