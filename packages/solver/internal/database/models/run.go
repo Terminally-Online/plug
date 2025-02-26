@@ -19,7 +19,7 @@ type Run struct {
 	To          string                   `json:"to,omitempty" gorm:"type:text"`
 	Value       *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	Inputs      []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
-	CallData    hexutil.Bytes            `json:"callData,omitempty" db_field:"CalldataStr" gorm:"-"`
+	CallData    hexutil.Bytes            `json:"-" db_field:"CalldataStr" gorm:"-"`
 	ResultData  RunOutputData            `json:"resultData" gorm:"type:jsonb"`
 
 	// Relationships

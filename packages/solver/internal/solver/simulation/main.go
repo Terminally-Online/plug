@@ -127,19 +127,18 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 			return run, nil
 		}
 
-		methodID := transaction.Data[:4]
+		methodIDHex := transaction.Data[:10]
+		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
-			if bytes.Equal(m.ID, common.Hex2Bytes(methodID)) {
+			if bytes.Equal(m.ID, methodID) {
 				method = &m
 				break
 			}
 		}
 
 		if method == nil {
-			errorStr := "method not found in ABI"
-			run.Error = &errorStr
-			return run, nil
+			return nil, fmt.Errorf("method not found for ID: %x", methodID)
 		}
 
 		// TODO: Do this when there is nothing left more pressing to work on. This
