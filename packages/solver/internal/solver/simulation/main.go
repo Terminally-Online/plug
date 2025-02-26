@@ -19,8 +19,6 @@ import (
 func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	fmt.Printf("simulateRaw input transaction %v\n", transaction)
-
 	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
 	if err != nil {
 		return nil, err
@@ -76,8 +74,6 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	callTraceConfig := map[string]interface{}{
 		"tracer": "callTracer",
 	}
-
-	fmt.Printf("tx: %v\n", tx)
 
 	var trace struct {
 		Type     string         `json:"type"`

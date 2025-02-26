@@ -24,13 +24,13 @@ type Run struct {
 
 	// Relationships
 	IntentId  string     `json:"intentId,omitempty" gorm:"type:text"`
-	Intent    Intent     `json:"intent,omitempty" gorm:"foreignKey:IntentId;references:Id"`
-	Execution *Execution `json:"execution,omitempty" gorm:"foreignKey:RunId"`
+	Intent    Intent     `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	Execution *Execution `json:"-" gorm:"foreignKey:RunId"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	ValueStr    string         `json:"-" gorm:"column:value;type:text"`
 	CallDataStr string         `json:"-" gorm:"column:calldata;type:text"`
-	CreatedAt   time.Time      `json:"createdAt"`
+	CreatedAt   time.Time      `json:"-"`
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
