@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { Plug } from "@prisma/client"
 
-import { createIntent, deleteIntent, getIntent, toggleIntent, Intent } from "@/lib"
+import { createIntent, deleteIntent, getIntent, toggleIntent, Intent, Action } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
@@ -42,11 +42,24 @@ export const activity = createTRPCRouter({
 
 			console.log('got plug', plug)
 
+			const actions = JSON.parse(plug.actions as string).map((action: Action) => ({
+				protocol: action.protocol,
+				action: action.action,
+				...Object.entries(action.values ?? []).reduce(
+					(acc, [_, value]) => {
+						if (!value?.name) return acc
+						acc[value.name] = value.value
+						return acc
+					},
+					{} as Record<string, string>
+				)
+			})) as Array<Record<string, string>>
+
 			const intent = await createIntent({
 				chainId: input.chainId,
 				from: ctx.session.address,
 				status: "active",
-				actions: JSON.parse(plug.actions),
+				actions,
 				frequency: input.frequency,
 				startAt: input.startAt,
 				endAt: input.endAt,

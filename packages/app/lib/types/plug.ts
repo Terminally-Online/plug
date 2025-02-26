@@ -78,7 +78,7 @@ export type Intent = {
   status: string
   chainId: number
   from: string
-  actions: string
+  actions: Array<Record<string, string>>
   frequency: number
   startAt: Date
   endAt?: Date
