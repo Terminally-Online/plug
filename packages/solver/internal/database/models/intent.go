@@ -18,8 +18,8 @@ type Intent struct {
 	From       string                   `json:"from,omitempty" gorm:"type:text"`
 	Value      *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit   *uint64                  `json:"gasLimit,omitempty" gorm:"type:int"`
-	Inputs     []map[string]interface{} `json:"inputs,omitempty" gorm:"type:jsonb"`
-	Options    map[string]interface{}   `json:"options,omitempty" gorm:"type:jsonb"`
+	Inputs     []map[string]interface{} `json:"inputs,omitempty" db_field:"InputsStr" gorm:"-"`
+	Options    map[string]interface{}   `json:"options,omitempty" db_field:"OptionsStr" gorm:"-"`
 	Frequency  int                      `json:"frequency,omitempty" gorm:"type:int"`
 	AccessList types.AccessList         `json:"accessList,omitempty" gorm:"type:jsonb"`
 
@@ -34,10 +34,12 @@ type Intent struct {
 	ApiKey   ApiKey `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Database storage fields
-	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	ValueStr   string         `json:"-" gorm:"column:value;type:text"`
+	InputsStr  string         `json:"-" gorm:"column:inputs;type:jsonb"`
+	OptionsStr string         `json:"-" gorm:"column:options;type:jsonb"`
+	CreatedAt  time.Time      `json:"-"`
+	UpdatedAt  time.Time      `json:"-"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 func (i *Intent) GetOrCreate(db *gorm.DB) (*Intent, error) {
