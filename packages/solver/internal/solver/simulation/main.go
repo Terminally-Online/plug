@@ -102,7 +102,11 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	}
 
 	run := &models.Run{
-		Status: status,
+		From:     transaction.From,
+		To:       transaction.To,
+		CallData: hexutil.Bytes(transaction.Data),
+		Value:    value,
+		Status:   status,
 		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
