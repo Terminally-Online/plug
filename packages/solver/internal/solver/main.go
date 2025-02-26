@@ -197,8 +197,12 @@ func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature
 		From:    intent.From,
 		To:      references.Networks[intent.ChainId].References["plug"]["router"],
 		ChainId: intent.ChainId,
-		Value:   hexutil.EncodeBig(intent.Value),
 		Data:    hexutil.Bytes.String(plugCalldata),
+	}
+
+	if intent.Value != nil {
+		transactionValue := hexutil.EncodeBig(intent.Value)
+		transaction.Value = transactionValue
 	}
 
 	if intent.GasLimit != nil {
@@ -266,10 +270,13 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
+	fmt.Printf("building transaction\n")
 	transaction, err := s.BuildPlugTransaction(intent, *livePlugs)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("transaction: %v\n", transaction)
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
