@@ -1,20 +1,26 @@
 package models
 
 import (
+	"math/big"
 	"solver/internal/utils"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"gorm.io/gorm"
 )
 
 type Run struct {
-	Id          string        `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status      string        `json:"status" gorm:"type:text"`
-	Result      string        `json:"result,omitempty" gorm:"type:jsonb"`
-	Error       string        `json:"error,omitempty" gorm:"type:text"`
-	Errors      []string      `json:"errors,omitempty" gorm:"type:text[]"`
-	GasEstimate uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
-	Data        RunOutputData `json:"data" gorm:"type:jsonb"`
+	Id          string                   `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Status      string                   `json:"status" gorm:"type:text"`
+	Error       *string                  `json:"error,omitempty" gorm:"type:text"`
+	Errors      []string                 `json:"errors,omitempty" gorm:"type:text[]"`
+	GasEstimate uint64                   `json:"gasEstimate,omitempty" gorm:"type:bigint"`
+	From        string                   `json:"from,omitempty" gorm:"type:text"`
+	To          string                   `json:"to,omitempty" gorm:"type:text"`
+	Value       *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
+	Inputs      []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
+	CallData    hexutil.Bytes            `json:"callData,omitempty" db_field:"CalldataStr" gorm:"-"`
+	ResultData  RunOutputData            `json:"resultData" gorm:"type:jsonb"`
 
 	// Relationships
 	IntentId  string     `json:"intentId,omitempty" gorm:"type:text"`
@@ -22,9 +28,11 @@ type Run struct {
 	Execution *Execution `json:"execution,omitempty" gorm:"foreignKey:RunId"`
 
 	// Store the timestamps but do not expose them in the JSON response
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	ValueStr    string         `json:"-" gorm:"column:value;type:text"`
+	CallDataStr string         `json:"-" gorm:"column:calldata;type:text"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type RunOutputData struct {

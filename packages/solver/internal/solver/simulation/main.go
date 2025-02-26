@@ -5,11 +5,10 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"os"
 	"solver/bindings/plug_router"
-	"solver/internal/bindings/references"
 	"solver/internal/client"
 	"solver/internal/database"
+	"solver/internal/database/models"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"
@@ -19,30 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 )
-
-func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
-	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("PlugRouter")
-	}
-
-	plugCalldata, err := routerAbi.Pack("plug", plugs)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	req := &SimulationRequest{
-		Id:      id,
-		ChainId: chainId,
-		From:    common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-		To:      common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
-		Data:    plugCalldata,
-		Value:   big.NewInt(0),
-		ABI:     plug_router.PlugRouterMetaData.ABI,
-	}
-
-	return req, nil
-}
 
 func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
 	// If no reference id was passed, we'll generate one and assign it to the request.
@@ -67,15 +42,10 @@ func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest,
 	return req, nil
 }
 
-func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
+func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	dbReq, err := getOrCreateDBSimulationRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(intent.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -87,21 +57,21 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": req.From.Hex(),
-		"to":   req.To.Hex(),
+		"from": intent.From,
+		"to":   intent.To,
 	}
 
-	if req.Value != nil && req.Value.Sign() > 0 {
-		tx["value"] = hexutil.EncodeBig(req.Value)
+	if intent.Value != nil && intent.Value.Sign() > 0 {
+		tx["value"] = hexutil.EncodeBig(intent.Value)
 	}
-	if len(req.Data) > 0 {
-		tx["data"] = req.Data.String()
+	if len(calldata) > 0 {
+		tx["data"] = hexutil.Bytes.String(calldata)
 	}
-	if req.GasLimit != nil {
-		tx["gas"] = hexutil.EncodeUint64(*req.GasLimit)
+	if intent.GasLimit != nil {
+		tx["gas"] = hexutil.EncodeUint64(*intent.GasLimit)
 	}
-	if len(req.AccessList) > 0 {
-		tx["accessList"] = req.AccessList
+	if len(intent.AccessList) > 0 {
+		tx["accessList"] = intent.AccessList
 	}
 
 	var blockNumber string
@@ -139,34 +109,39 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		return nil, fmt.Errorf("trace call failed: %v", err)
 	}
 
-	resp := &SimulationResponse{
-		Id:      utils.GenerateUUID(),
-		Success: trace.Error == "",
-		Data: SimulationOutputData{
+	status := "success"
+	if trace.Error != "" {
+		status = "failed"
+	}
+
+	run := &models.Run{
+		Status: status,
+		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
-		RequestId: dbReq.Id,
+		IntentId: intent.Id,
 	}
 
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
 		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.GasUsed = gasUsed.Uint64()
+			run.GasEstimate = gasUsed.Uint64()
 		}
 	}
 
 	if trace.Error != "" {
-		resp.ErrorMessage = trace.Error
+		run.Error = &trace.Error
 	}
 
-	if req.ABI != "" && len(trace.Output) > 0 && len(req.Data) >= 4 {
-		parsedABI, err := abi.JSON(strings.NewReader(req.ABI))
+	if ABI != nil && len(trace.Output) > 0 && len(calldata) >= 4 {
+		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
-			resp.ErrorMessage = fmt.Sprintf("failed to parse ABI: %v", err)
-			return resp, nil
+			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
+			run.Error = &errorStr
+			return run, nil
 		}
 
-		methodID := req.Data[:4]
+		methodID := calldata[:4]
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
 			if bytes.Equal(m.ID, methodID) {
@@ -176,8 +151,9 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		}
 
 		if method == nil {
-			resp.ErrorMessage = "method not found in ABI"
-			return resp, nil
+			errorStr := "method not found in ABI"
+			run.Error = &errorStr
+			return run, nil
 		}
 
 		// TODO: Do this when there is nothing left more pressing to work on. This
@@ -191,23 +167,28 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		// resp.Data.Decoded = decoded
 	}
 
-	if err := database.DB.Create(resp).Error; err != nil {
-		return nil, fmt.Errorf("failed to save simulation response: %v", err)
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
-	return resp, nil
+	return run, nil
 }
 
-func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
-	simulationRequest, err := formatPlugSimulationRequest(id, chainId, plugs)
+func Simulate(intent models.Intent, plugs signature.LivePlugs) (*models.Run, error) {
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
-		return nil, nil, err
+		return nil, utils.ErrABI("PlugRouter")
 	}
 
-	simulationResponse, err := SimulateRaw(simulationRequest)
+	plugCalldata, err := routerAbi.Pack("plug", plugs)
 	if err != nil {
-		return nil, nil, err
+		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	return simulationRequest, simulationResponse, nil
+	runResponse, err := SimulateRaw(&intent, plugCalldata, &plug_router.PlugRouterMetaData.ABI)
+	if err != nil {
+		return nil, err
+	}
+
+	return runResponse, nil
 }

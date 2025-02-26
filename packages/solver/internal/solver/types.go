@@ -1,8 +1,11 @@
 package solver
 
 import (
+	"solver/internal/database/models"
+	"solver/internal/solver"
 	"solver/internal/solver/signature"
-	"solver/internal/solver/simulation"
+
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type SolutionStatus struct {
@@ -10,9 +13,20 @@ type SolutionStatus struct {
 	Error   string `json:"error,omitempty"`
 }
 
+type Transaction struct {
+	From       string           `json:"from"`
+	To         string           `json:"to"`
+	ChainId    uint64           `json:"chainId"`
+	Value      string           `json:"value"`
+	Data       string           `json:"data"`
+	Gas        string           `json:"gas"`
+	AccessList types.AccessList `json:"accessList"`
+}
+
 type Solution struct {
-	Transactions []signature.Plug               `json:"transactions"`
-	LivePlugs    *signature.LivePlugs            `json:"livePlugs,omitempty"`
-	Transaction  *simulation.SimulationRequest  `json:"transaction,omitempty"`
-	Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
+	Transactions []signature.Plug     `json:"transactions"`
+	LivePlugs    *signature.LivePlugs `json:"livePlugs,omitempty"`
+	Intent       *models.Intent       `json:"intent,omitempty"`
+	Run          *models.Run          `json:"simulation,omitempty"`
+	Transaction  *solver.Transaction  `json:"transaction,omitempty"`
 }
