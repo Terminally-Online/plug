@@ -33,6 +33,9 @@ export default function Document() {
 				<meta name="twitter:creator" content="@onplug_io" />
 				<meta name="twitter:description" content={description} />
 				<meta name="twitter:image" content="https://onplug.io/opengraph.png" />
+
+				{/* Viewport */}
+				<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
 			</Head>
 
 			<body>
