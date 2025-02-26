@@ -1,3 +1,0 @@
-package views
-
-func GetNext() { }
