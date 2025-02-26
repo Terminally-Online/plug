@@ -19,29 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
-	// If no reference id was passed, we'll generate one and assign it to the request.
-	if req.Id != "" {
-		req.ReferenceId = req.Id
-	} else {
-		req.ReferenceId = utils.GenerateUUID()
-	}
-
-	var existingRequest SimulationRequest
-	if err := database.DB.Where("reference_id = ?", req.ReferenceId).First(&existingRequest).Error; err == nil {
-		return &existingRequest, nil
-	}
-
-	// Generate the internal UUID for the creation
-	req.Id = utils.GenerateUUID()
-
-	if err := database.DB.Create(req).Error; err != nil {
-		return nil, fmt.Errorf("failed to create simulation request: %v", err)
-	}
-
-	return req, nil
-}
-
 func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 

@@ -235,7 +235,7 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 		Transactions: plugs,
 		Intent:       &intent,
 		Run:          run,
-		Transaction:  transaction,
+		Transaction:  &transaction,
 	}, nil
 }
 

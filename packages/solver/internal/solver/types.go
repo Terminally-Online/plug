@@ -2,7 +2,6 @@ package solver
 
 import (
 	"solver/internal/database/models"
-	"solver/internal/solver"
 	"solver/internal/solver/signature"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -28,5 +27,5 @@ type Solution struct {
 	LivePlugs    *signature.LivePlugs `json:"livePlugs,omitempty"`
 	Intent       *models.Intent       `json:"intent,omitempty"`
 	Run          *models.Run          `json:"simulation,omitempty"`
-	Transaction  *solver.Transaction  `json:"transaction,omitempty"`
+	Transaction  *Transaction         `json:"transaction,omitempty"`
 }
