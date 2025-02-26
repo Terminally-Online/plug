@@ -291,7 +291,16 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
+	intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
+	if err := database.DB.Model(&intent).Updates(map[string]interface{}{
+		"period_end_at":      intent.PeriodEndAt,
+		"next_simulation_at": intent.NextSimulationAt,
+	}).Error; err != nil {
+		return nil, fmt.Errorf("failed to update intent: %v", err)
+	}
+
 	return &Solution{
+		Status:       SolutionStatus{Success: true},
 		Transactions: livePlugs.Plugs.Plugs, // Transactions in the `livePlug`.
 		LivePlugs:    livePlugs,             // The `livePlug` included in the bundle.
 		Intent:       intent,                // Intent the solver built from.

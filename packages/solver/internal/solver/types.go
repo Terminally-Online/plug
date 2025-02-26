@@ -12,6 +12,7 @@ type SolutionStatus struct {
 }
 
 type Solution struct {
+	Status       SolutionStatus          `json:"status"`
 	Transactions []signature.Plug        `json:"transactions"`
 	LivePlugs    *signature.LivePlugs    `json:"livePlugs,omitempty"`
 	Intent       *models.Intent          `json:"intent,omitempty"`

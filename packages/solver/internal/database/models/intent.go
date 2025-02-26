@@ -43,19 +43,42 @@ type Intent struct {
 	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
+func (i *Intent) BeforeCreate(tx *gorm.DB) error {
+	i.Id = utils.GenerateUUID()
+	if i.Frequency > 0 {
+		periodEndAt := i.StartAt.Add(time.Duration(i.Frequency) * 24 * time.Hour)
+		i.PeriodEndAt = &periodEndAt
+	}
+	nextSim := i.StartAt
+	i.NextSimulationAt = nextSim
+
+	return nil
+}
+
+
+func (i *Intent) BeforeSave(tx *gorm.DB) error {
+	return serializer.HandleBeforeSave(i)
+}
+
+func (i *Intent) AfterCreate(tx *gorm.DB) error {
+	i.Runs = []Run{}
+
+	return nil
+}
+
+func (i *Intent) AfterFind(tx *gorm.DB) error {
+	return serializer.HandleAfterFind(i)
+}
+
 func (i *Intent) GetOrCreate(db *gorm.DB) (*Intent, error) {
 	var intent Intent
-	result := db.Where("id = ?", i.Id).First(&intent)
-
-	if result.Error == gorm.ErrRecordNotFound {
-		// If not found, create the new intent and return the created instance
+	if err := db.Where("id = ?", i.Id).First(&intent).Error; err == gorm.ErrRecordNotFound {
 		if err := db.Create(i).Error; err != nil {
 			return nil, fmt.Errorf("failed to create intent: %w", err)
 		}
 		return i, nil
 	}
 
-	// If found, return the existing intent
 	return &intent, nil
 }
 
@@ -89,35 +112,4 @@ func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt
 	}
 
 	return nil, nil
-}
-
-func (i *Intent) BeforeCreate(tx *gorm.DB) error {
-	i.Id = utils.GenerateUUID()
-	if i.Frequency > 0 {
-		periodEndAt := i.StartAt.Add(time.Duration(i.Frequency) * 24 * time.Hour)
-		i.PeriodEndAt = &periodEndAt
-	}
-	nextSim := i.StartAt
-	i.NextSimulationAt = nextSim
-
-	return nil
-}
-
-func (i *Intent) AfterCreate(tx *gorm.DB) error {
-	i.Runs = []Run{}
-
-	return nil
-}
-
-func (i *Intent) BeforeSave(tx *gorm.DB) error {
-	return serializer.HandleBeforeSave(i)
-}
-
-func (i *Intent) BeforeUpdate(tx *gorm.DB) error {
-	// TODO: @masonchain - We can't do it on every update, but after every simulation e need to call GetNextSimulationAt and update the PeriodEndAt and NextSimulationAt
-	return nil
-}
-
-func (i *Intent) AfterFind(tx *gorm.DB) error {
-	return serializer.HandleAfterFind(i)
 }

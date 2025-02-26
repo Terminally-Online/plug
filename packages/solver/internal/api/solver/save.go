@@ -40,14 +40,14 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 
 	var intents []models.Intent
 	query := database.DB
-
 	if strings.HasPrefix(id, "0x") {
 		query = query.Where("\"from\" = ?", id)
 	} else {
 		query = query.Where("id = ?", id)
 	}
-
-	result := query.Order("created_at desc").Find(&intents)
+	result := query.
+		Order("created_at desc").
+		Find(&intents)
 	if result.Error != nil {
 		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
 		return

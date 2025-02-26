@@ -1,34 +1,39 @@
 package cron
 
 import (
-	// "log"
-	// "solver/internal/helpers/plug"
+	"log"
+	"solver/internal/database"
+	"solver/internal/database/models"
 	"solver/internal/solver"
-	// "solver/internal/solver/simulation"
+	"time"
 )
 
 func Simulations(s solver.Solver) {
-	// if s.IsKilled {
-	// 	return
-	// }
+	if s.IsKilled {
+		return
+	}
 
-	// next, err := plug.PostNext()
-	// if err != nil {
-	// 	return
-	// }
-	//
-	// var simulationResponses []simulation.SimulationResponse
-	// for _, definition := range next.Result.Data.Json {
-	// 	solution, err := s.Solve(definition)
-	// 	simulationResponses = append(simulationResponses, simulation.SimulationResponse{
-	// 		Success: err == nil && solution.Simulation.Success,
-	// 	})
-	// }
-	// if len(simulationResponses) == 0 {
-	// 	return
-	// }
-	//
-	// if err := plug.PostSimulations(simulationResponses); err != nil {
-	// 	log.Println(err.Error())
-	// }
+	var intents []models.Intent
+	query := database.DB.
+		Where("next_simulation_at <= ? AND status = ?", time.Now(), "active").
+		Order("next_simulation_at asc").
+		Find(&intents)
+	if query.Error != nil {
+		log.Printf("database error: %v", query.Error.Error())
+		return
+	}
+
+	solutions := make([]solver.Solution, 0, len(intents))
+	for index, intent := range intents {
+		if solution, err := s.Solve(&intent); err != nil {
+			solutions[index] = solver.Solution{
+				Status: solver.SolutionStatus{
+					Success: false,
+					Error:   err.Error(),
+				},
+			}
+		} else {
+			solutions[index] = *solution
+		}
+	}
 }
