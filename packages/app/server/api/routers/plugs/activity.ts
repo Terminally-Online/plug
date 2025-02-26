@@ -40,19 +40,11 @@ export const activity = createTRPCRouter({
 					id: input.plugId
 				}
 			})
-			const inputs = JSON.parse(plug.actions as string).map((action: Action) => ({
-				protocol: action.protocol,
-				action: action.action,
-				...Object.entries(action.values ?? []).reduce(
-					(acc, [_, value]) => (!value?.key ? acc : { ...acc, [value.key]: value.value }),
-					{} as Record<string, string>
-				)
-			})) as Array<{ protocol: string; action: string;[key: string]: string }>
 			const intent = await createIntent({
 				chainId: input.chainId,
 				from: ctx.session.address,
 				status: "active",
-				inputs,
+				inputs: JSON.parse(plug.actions),
 				frequency: input.frequency,
 				startAt: input.startAt.toISOString(),
 				endAt: input.endAt?.toISOString()

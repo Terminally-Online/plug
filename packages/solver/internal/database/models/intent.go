@@ -41,7 +41,7 @@ func (is Inputs) Value() (driver.Value, error) {
 }
 
 type Intent struct {
-	Id         string                 `json:"id,omitempty" gorm:"primaryKey;type:text;uniqueIndex:,option:NOT UPDATABLE"`
+	Id         string                 `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	Status     string                 `json:"status,omitempty" gorm:"type:text;default:'active'"`
 	ChainId    uint64                 `json:"chainId" gorm:"type:int"`
 	From       string                 `json:"from,omitempty" gorm:"type:text"`
@@ -58,7 +58,7 @@ type Intent struct {
 	NextSimulationAt *time.Time `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 
 	// Relationships
-	Runs     []Run  `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	Runs     []Run  `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
 	ApiKeyId string `json:"-" gorm:"column:api_key_id;type:text"`
 	ApiKey   ApiKey `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
@@ -66,7 +66,7 @@ type Intent struct {
 	ValueStr   string         `json:"-" gorm:"column:value;type:text"`
 	InputsStr  string         `json:"-" gorm:"column:inputs;type:jsonb"`
 	OptionsStr string         `json:"-" gorm:"column:options;type:jsonb"`
-	CreatedAt  time.Time      `json:"-"`
+	CreatedAt  time.Time      `json:"createdAt"`
 	UpdatedAt  time.Time      `json:"-"`
 	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
 }

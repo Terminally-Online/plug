@@ -11,7 +11,7 @@ import (
 )
 
 type Run struct {
-	Id          string                   `json:"id,omitempty" gorm:"primaryKey;type:text;uniqueIndex:,option:NOT UPDATABLE"`
+	Id          string                   `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	Status      string                   `json:"status" gorm:"type:text"`
 	Error       *string                  `json:"error,omitempty" gorm:"type:text"`
 	Errors      []string                 `json:"errors,omitempty" gorm:"type:text[]"`

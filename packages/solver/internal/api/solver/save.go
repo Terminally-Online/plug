@@ -47,7 +47,7 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("id = ?", id)
 	}
 
-	result := query.Find(&intents)
+	result := query.Order("created_at desc").Find(&intents)
 	if result.Error != nil {
 		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
 		return
