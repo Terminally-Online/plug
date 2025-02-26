@@ -8,7 +8,7 @@ import (
 )
 
 type ApiKey struct {
-	Id        string  `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Id        string  `json:"id,omitempty" gorm:"primaryKey;type:text;uniqueIndex:,option:NOT UPDATABLE"`
 	Key       string  `json:"key" gorm:"uniqueIndex;type:text;not null"`
 	SocketId  *string `json:"socketId,omitempty" gorm:"type:text"`
 	RateLimit int     `json:"rateLimit" gorm:"type:integer;not null;default:100"`
