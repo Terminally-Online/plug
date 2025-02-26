@@ -15,7 +15,6 @@ type DBSerializer interface {
 	AfterFind(tx *gorm.DB) error
 }
 
-// Define supported types and their conversion rules
 var typeConverters = map[string]struct {
 	toStr   func(interface{}) string
 	fromStr func(string) (interface{}, error)
@@ -56,7 +55,6 @@ var typeConverters = map[string]struct {
 	},
 }
 
-// HandleBeforeSave handles the conversion of fields to their string representation
 func HandleBeforeSave(model interface{}) error {
 	modelValue := reflect.ValueOf(model).Elem()
 	modelType := modelValue.Type()
@@ -88,41 +86,37 @@ func HandleBeforeSave(model interface{}) error {
 	return nil
 }
 
-// HandleAfterFind handles the conversion of string fields back to their original types
 func HandleAfterFind(model interface{}) error {
 	modelValue := reflect.ValueOf(model).Elem()
 	modelType := modelValue.Type()
 
 	for i := 0; i < modelType.NumField(); i++ {
 		field := modelType.Field(i)
-		dbField := field.Tag.Get("db_field")
-		if dbField == "" {
-			continue
-		}
-
 		fieldValue := modelValue.Field(i)
-		strField := modelValue.FieldByName(dbField)
 
-		if !strField.IsValid() {
-			continue
+		dbField := field.Tag.Get("db_field")
+		if dbField != "" {
+			strField := modelValue.FieldByName(dbField)
+			if strField.IsValid() {
+				converter, ok := typeConverters[fieldValue.Type().String()]
+				if ok {
+					strValue := strField.String()
+					if strValue != "" {
+						value, err := converter.fromStr(strValue)
+						if err != nil {
+							return fmt.Errorf("failed to convert field %s: %v", field.Name, err)
+						}
+						fieldValue.Set(reflect.ValueOf(value))
+					}
+				}
+			}
 		}
 
-		converter, ok := typeConverters[fieldValue.Type().String()]
-		if !ok {
-			continue
+		if fieldValue.Kind() == reflect.Slice && fieldValue.IsNil() {
+			emptySlice := reflect.MakeSlice(fieldValue.Type(), 0, 0)
+			fieldValue.Set(emptySlice)
 		}
-
-		strValue := strField.String()
-		if strValue == "" {
-			continue
-		}
-
-		value, err := converter.fromStr(strValue)
-		if err != nil {
-			return fmt.Errorf("failed to convert field %s: %v", field.Name, err)
-		}
-
-		fieldValue.Set(reflect.ValueOf(value))
 	}
+	
 	return nil
 }

@@ -5,7 +5,7 @@ import axios from "axios"
 import { env } from "@/env"
 import { Intent } from "@/lib/types"
 
-type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" | "runs">
+type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" | "runs" | "createdAt">
 type GetIntentProps = { id?: string, address?: string }
 type IntentIdProps = { id: string }
 
@@ -17,8 +17,6 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 			'X-Api-Key': env.SOLVER_API_KEY
 		}
 	}
-
-	console.log('submitting request with', method, url, config)
 
 	try {
 		let response
@@ -37,13 +35,10 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 				throw new TRPCError({ code: "METHOD_NOT_SUPPORTED" })
 		}
 
-		console.log('response.status', response.status, response.data)
-
 		if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 		return response.data
 	} catch (error) {
-		console.error('Request failed:', error)
 		throw new TRPCError({
 			code: "INTERNAL_SERVER_ERROR",
 			cause: error

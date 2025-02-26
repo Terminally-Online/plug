@@ -175,7 +175,7 @@ export const ExecutionFrame: FC<{
 									<Pause size={18} className="opacity-20" />
 									<span className="opacity-40">Stop At</span>
 								</span>{" "}
-								<Counter count={activity.endAt.toLocaleDateString()} />
+								<Counter count={new Date(activity.endAt).toLocaleDateString()} />
 							</p>
 						)}
 					</div>
@@ -200,12 +200,12 @@ export const ExecutionFrame: FC<{
 													(#{activity.runs.length + 1})
 												</span>
 											</p>
-											<TimeUntil date={activity.nextSimulationAt} />
+											<TimeUntil date={new Date(activity.nextSimulationAt)} />
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
 											<p>Upcoming</p>
 											<p>
-												<Counter count={activity.nextSimulationAt.toLocaleDateString()} />
+												<Counter count={new Date(activity.nextSimulationAt).toLocaleDateString()} />
 											</p>
 										</div>
 									</div>
@@ -213,25 +213,25 @@ export const ExecutionFrame: FC<{
 							</Accordion>
 						)}
 
-						{visibleRuns.map((simulation, index) => (
-							<Accordion key={simulation.id} onExpand={() => handle.frame(`${simulation.id}-simulation`)}>
+						{visibleRuns.map((run, index) => (
+							<Accordion key={run.id} onExpand={() => handle.frame(`${run.id}-simulation`)}>
 								<div className="flex flex-row gap-2">
-									<ActivityIcon status={simulation.status} />
+									<ActivityIcon status={run.status} />
 									<div className="flex w-full flex-col">
 										<div className="flex flex-row items-center justify-between gap-2 font-bold">
 											<p>
-												Simulation{" "}
+												Run{" "}
 												<span className="text-sm tabular-nums opacity-40">
 													(#{activity.runs.length - index})
 												</span>
 											</p>
-											{/*<DateSince date={simulation.createdAt} />*/}
+											<DateSince date={run.createdAt} />
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
-											<p>{formatTitle(simulation.status)}</p>
-											{/*<p>
-												<Counter count={simulation.createdAt.toLocaleDateString()} />
-											</p>*/}
+											<p>{formatTitle(run.status)}</p>
+											<p>
+												<Counter count={run.createdAt.toLocaleDateString()} />
+											</p>
 										</div>
 									</div>
 								</div>

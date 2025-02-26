@@ -61,8 +61,8 @@ export const activity = createTRPCRouter({
 				status: "active",
 				actions,
 				frequency: input.frequency,
-				startAt: input.startAt,
-				endAt: input.endAt,
+				startAt: input.startAt.toUTCString(),
+				endAt: input.endAt?.toUTCString(),
 			})
 
 			console.log('created intent')

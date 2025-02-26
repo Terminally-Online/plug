@@ -59,30 +59,32 @@ export type Transfer = {
 }
 
 export type Run = {
-  id: string
-  status: string
-  result?: string
-  error?: string
-  errors?: string[]
-  gasEstimate?: number
-  data: {
-    raw: Uint8Array
-    decoded?: unknown
-  }
-  intentId?: string
-  intent?: Intent
+	id: string
+	status: string
+	result?: string
+	error?: string
+	errors?: string[]
+	gasEstimate?: number
+	data: {
+		raw: Uint8Array
+		decoded?: unknown
+	}
+	intentId?: string
+	intent?: Intent
+	createdAt: string
 }
 
 export type Intent = {
-  id: string
-  status: string
-  chainId: number
-  from: string
-  actions: Array<Record<string, string>>
-  frequency: number
-  startAt: Date
-  endAt?: Date
-  periodEndAt?: Date | null
-  nextSimulationAt?: Date | null
-  runs: Array<Run>
+	id: string
+	status: string
+	chainId: number
+	from: string
+	actions: Array<Record<string, string>>
+	frequency: number
+	startAt: string
+	endAt?: string
+	periodEndAt?: string | null
+	nextSimulationAt?: string | null
+	runs: Array<Run>
+	createdAt: string
 }

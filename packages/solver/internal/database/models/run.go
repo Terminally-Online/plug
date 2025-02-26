@@ -30,7 +30,7 @@ type Run struct {
 	// Store the timestamps but do not expose them in the JSON response
 	ValueStr    string         `json:"-" gorm:"column:value;type:text"`
 	CallDataStr string         `json:"-" gorm:"column:calldata;type:text"`
-	CreatedAt   time.Time      `json:"-"`
+	CreatedAt   time.Time      `json:"createdAt"`
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
