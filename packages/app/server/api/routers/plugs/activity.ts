@@ -1,27 +1,27 @@
-import { TRPCError } from "@trpc/server"
-
 import { z } from "zod"
 
-import { Prisma } from "@prisma/client"
+import { Plug } from "@prisma/client"
 
+import { Action, createIntent, deleteIntent, getIntent, Intent, toggleIntent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-const execution = Prisma.validator<Prisma.IntentDefaultArgs>()({
-	include: {
-		plug: true,
-		runs: { orderBy: { createdAt: "desc" } }
-	}
-})
-export type Execution = Prisma.IntentGetPayload<typeof execution>
+type IntentWithPlug = Intent & { plug: Plug }
 
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.intent.findMany({
-			where: { plug: { socketId: ctx.session.address } },
-			orderBy: { createdAt: "desc" },
-			include: { plug: true, runs: { orderBy: { createdAt: "desc" } } }
+		const intents = await getIntent({ address: ctx.session.address })
+
+		const intentIds = intents.map(intent => intent.id)
+		const plugs = await ctx.db.plug.findMany({
+			where: { intentIds: { hasSome: intentIds } }
 		})
+
+		return intents.map(intent => {
+			const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
+			if (!plug) return
+			return { ...intent, plug }
+		}).filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
@@ -35,81 +35,52 @@ export const activity = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const workflow = await ctx.db.plug.findUnique({
+			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
-					id: input.plugId,
-					socketId: ctx.session.address
+					id: input.plugId
 				}
 			})
+			const intent = await createIntent({
+				chainId: input.chainId,
+				from: ctx.session.address,
+				status: "active",
+				inputs: JSON.parse(plug.actions),
+				frequency: input.frequency,
+				startAt: input.startAt.toISOString(),
+				endAt: input.endAt?.toISOString()
+			})
 
-			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
-
-			// NOTE: We have a try/catch here so that if someone posts in invalid JSON, we don't
-			// crash the server and instead return the proper 400 (Bad Request) error. We do not
-			// need to utilize the parsed JSON here because we are only using it to validate the
-			// JSON string will be fine when sent to the Solver backend.
-			try {
-				JSON.parse(workflow.actions)
-				const execution = await ctx.db.intent.create({
+			const updated = {
+				...intent,
+				plug: await ctx.db.plug.update({
+					where: { id: input.plugId, socketId: ctx.session.address },
 					data: {
-						plugId: input.plugId,
-						chainId: input.chainId,
-						actions: workflow.actions,
-
-						frequency: input.frequency,
-						startAt: input.startAt,
-						endAt: input.endAt,
-						periodEndAt: input.frequency
-							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
-							: null,
-						nextSimulationAt: input.startAt
-					},
-					include: {
-						plug: true,
-						runs: { orderBy: { createdAt: "desc" } }
+						intentIds: {
+							push: intent.id
+						}
 					}
 				})
-
-				ctx.emitter.emit(subscriptions.execution.update, execution)
-
-				return execution
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
+			ctx.emitter.emit(subscriptions.execution.update, updated)
+			return updated
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.findUnique({
-			where: { id: input.id },
-			include: { plug: true }
-		})
+		const intent = await toggleIntent(input)
 
-		if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
+		ctx.emitter.emit(subscriptions.execution.update, intent)
 
-		const toggled = await ctx.db.intent.update({
-			where: { id: input.id },
-			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
-			include: {
-				plug: true,
-				runs: { orderBy: { createdAt: "desc" } }
-			}
-		})
-
-		ctx.emitter.emit(subscriptions.execution.update, toggled)
-
-		return toggled
+		return intent
 	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.intent.delete({
-			where: { id: input.id }
-		})
+		const intent = await deleteIntent(input)
 
-		ctx.emitter.emit(subscriptions.execution.delete, execution)
+		ctx.emitter.emit(subscriptions.execution.delete, intent)
 
-		return execution
+		return intent
 	}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.execution.update),
-	onDelete: subscription<Execution>("protected", subscriptions.execution.delete)
+	onActivity: subscription<IntentWithPlug>("protected", subscriptions.execution.update),
+	onDelete: subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
 })

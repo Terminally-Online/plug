@@ -1,6 +1,7 @@
 package solver
 
 import (
+	"solver/internal/database/models"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 )
@@ -11,8 +12,9 @@ type SolutionStatus struct {
 }
 
 type Solution struct {
-	Transactions []signature.Plug               `json:"transactions"`
-	LivePlugs    *signature.LivePlugs            `json:"livePlugs,omitempty"`
-	Transaction  *simulation.SimulationRequest  `json:"transaction,omitempty"`
-	Simulation   *simulation.SimulationResponse `json:"simulation,omitempty"`
+	Transactions []signature.Plug        `json:"transactions"`
+	LivePlugs    *signature.LivePlugs    `json:"livePlugs,omitempty"`
+	Intent       *models.Intent          `json:"intent,omitempty"`
+	Run          *models.Run             `json:"simulation,omitempty"`
+	Transaction  *simulation.Transaction `json:"transaction,omitempty"`
 }

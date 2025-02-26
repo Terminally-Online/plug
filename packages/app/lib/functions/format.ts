@@ -176,7 +176,8 @@ export const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const formatFrequency = (frequencyValue: number) => {
+export const formatFrequency = (frequencyValue: number = 0) => {
 	const frequencyIndex = frequencies.findIndex(frequency => parseInt(frequency.value) === frequencyValue)
+
 	return frequencies[frequencyIndex].label
 }

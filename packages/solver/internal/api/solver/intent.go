@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
-	"solver/internal/solver/simulation"
+	"solver/internal/database"
+	"solver/internal/database/models"
 	"solver/internal/utils"
 	"strconv"
 	"strings"
@@ -196,13 +197,20 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
-	var definition simulation.SimulationDefinition
-	if err := json.NewDecoder(r.Body).Decode(&definition); err != nil {
+	var intentInput models.Intent
+	if err := json.NewDecoder(r.Body).Decode(&intentInput); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if solution, err := h.Solver.Solve(definition); err != nil {
+	intentInput.ApiKeyId = r.Header.Get("X-Api-Key-Id")
+	intent, err := intentInput.GetOrCreate(database.DB)
+	if err != nil {
+		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if solution, err := h.Solver.Solve(intent); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {

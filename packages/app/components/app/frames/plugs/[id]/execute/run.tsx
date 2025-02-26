@@ -101,18 +101,22 @@ export const RunFrame: FC<{
 	}, [isActionful, actions, item])
 
 	const handleRun = useCallback(() => {
-		console.log("Run", column, chain)
 		if (!column || !column.item || !chain) return
 
+		const intent = {
+			plugId: column.item,
+			chainId: chain,
+			startAt: column.schedule?.date?.from ?? new Date(),
+			endAt: column.schedule?.date?.to,
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+		}
+
+		console.log(intent)
+
 		queue(
+			intent,
 			{
-				plugId: column.item,
-				chainId: chain,
-				startAt: column.schedule?.date?.from ?? new Date(),
-				endAt: column.schedule?.date?.to,
-				frequency: parseInt(column.schedule?.repeats?.value ?? "0")
-			},
-			{
+				onError: data => console.error(data),
 				onSuccess: data => {
 					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
 					frame(`${data.id}-activity`)

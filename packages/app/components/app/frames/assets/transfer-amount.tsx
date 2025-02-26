@@ -10,7 +10,7 @@ import { COLUMNS, useColumnStore } from "@/state/columns"
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
 import { useSocket } from "@/state/authentication"
-import { getAddress } from "viem"
+import { getAddress, isAddress } from "viem"
 import { useSendTransaction } from "wagmi"
 import { Marquee } from "../../utils/marquee"
 
@@ -231,7 +231,7 @@ export const TransferAmountFrame: FC<{
 	const recipient = column && socket
 		? index === COLUMNS.SIDEBAR_INDEX
 			? getAddress(socket.socketAddress)
-			: column.transfer?.recipient
+			: column.transfer?.recipient && isAddress(column.transfer?.recipient)
 				? getAddress(column.transfer?.recipient)
 				: ""
 		: ""

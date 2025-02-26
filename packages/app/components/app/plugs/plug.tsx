@@ -29,12 +29,12 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 
 	const own = plug !== undefined && session && session.address === plug.socketId
 
-	useEffect(() => {
-		if (!plug || plug.actions !== "[]" || hasOpenedActions) return
-
-		frame(`${item}-actions`)
-		setHasOpenedActions(true)
-	}, [item, plug, hasOpenedActions, frame])
+	// useEffect(() => {
+	// 	if (!plug || plug.actions !== "[]" || hasOpenedActions) return
+	//
+	// 	frame(`${item}-actions`)
+	// 	setHasOpenedActions(true)
+	// }, [item, plug, hasOpenedActions, frame])
 
 	if (!plug || !session || !column) return null
 
@@ -65,7 +65,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 						variant="secondary"
 						className="w-max bg-white py-4"
 						onClick={() => {
-							schedule() // NOTE: Clear the schedule when we have a one-off run use.
+							// schedule() // NOTE: Clear the schedule when we have a one-off run use.
 							frame("run")
 						}}
 					>

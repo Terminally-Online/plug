@@ -193,11 +193,11 @@ export const plugs = createTRPCRouter({
 						},
 						include: {
 							socket: { include: { identity: { include: { ens: true } } } },
-							_count: {
-								select: {
-									executions: true
-								}
-							},
+							// _count: {
+							// 	select: {
+							// 		executions: true
+							// 	}
+							// },
 							views: {
 								select: {
 									views: true
@@ -222,11 +222,11 @@ export const plugs = createTRPCRouter({
 						},
 						include: {
 							socket: { include: { identity: { include: { ens: true } } } },
-							_count: {
-								select: {
-									executions: true
-								}
-							},
+							// _count: {
+							// 	select: {
+							// 		executions: true
+							// 	}
+							// },
 							views: {
 								select: {
 									views: true
@@ -251,11 +251,11 @@ export const plugs = createTRPCRouter({
 					},
 					include: {
 						socket: { include: { identity: { include: { ens: true } } } },
-						_count: {
-							select: {
-								executions: true
-							}
-						},
+						// _count: {
+						// 	select: {
+						// 		executions: true
+						// 	}
+						// },
 						views: {
 							select: { views: true }
 						}

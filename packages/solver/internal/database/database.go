@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"solver/internal/database/models"
+	"solver/internal/utils"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -83,6 +85,10 @@ func GetEnvOrDefault(key, defaultValue string) string {
 }
 
 func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+
 	var err error
 	DB, err = Initialize()
 	if err != nil {
@@ -101,12 +107,54 @@ func Initialize() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
+	if err := Seed(db); err != nil {
+		return nil, fmt.Errorf("failed to seed: %w", err)
+	}
+
 	return db, nil
 }
 
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&models.SimulationRequest{},
-		&models.SimulationResponse{},
+		&models.ApiKey{},
+		&models.Execution{},
+		&models.Run{},
+		&models.Intent{},
 	)
+}
+
+func Seed(db *gorm.DB) error {
+	appApiKey := os.Getenv("PLUG_APP_API_KEY")
+	if appApiKey == "" {
+		panic("PLUG_APP_API_KEY environment variable is not set")
+	}
+
+	dev := "0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E"
+	var existingApiKey1 models.ApiKey
+	if err := db.Where("socket_id = ?", dev).First(&existingApiKey1).Error; err == gorm.ErrRecordNotFound {
+		apiKey := models.ApiKey{
+			SocketId:  &dev,
+			Key:       appApiKey,
+			Role:      "admin",
+			RateLimit: 1_000_000,
+		}
+		if err := db.Create(&apiKey).Error; err != nil {
+			return utils.ErrBuild("failed to save first api key: " + err.Error())
+		}
+	}
+
+	demo := "0x62180042606624f02d8a130da8a3171e9b33894d"
+	var existingApiKey2 models.ApiKey
+	if err := db.Where("socket_id = ?", demo).First(&existingApiKey2).Error; err == gorm.ErrRecordNotFound {
+		apiKey := models.ApiKey{
+			SocketId:  &demo,
+			Key:       "bingbopboombam",
+			RateLimit: 10,
+		}
+		if err := db.Create(&apiKey).Error; err != nil {
+			return utils.ErrBuild("failed to save second api key: " + err.Error())
+		}
+	}
+
+	return nil
 }

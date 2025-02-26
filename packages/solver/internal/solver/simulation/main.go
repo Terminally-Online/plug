@@ -5,13 +5,9 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"os"
 	"solver/bindings/plug_router"
-	"solver/internal/bindings/references"
 	"solver/internal/client"
-	"solver/internal/database"
-	"solver/internal/solver/signature"
-	"solver/internal/utils"
+	"solver/internal/database/models"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -20,62 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func formatPlugSimulationRequest(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, error) {
-	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("PlugRouter")
-	}
-
-	plugCalldata, err := routerAbi.Pack("plug", plugs)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	req := &SimulationRequest{
-		Id:      id,
-		ChainId: chainId,
-		From:    common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-		To:      common.HexToAddress(references.Networks[chainId].References["plug"]["router"]),
-		Data:    plugCalldata,
-		Value:   big.NewInt(0),
-		ABI:     plug_router.PlugRouterMetaData.ABI,
-	}
-
-	return req, nil
-}
-
-func getOrCreateDBSimulationRequest(req *SimulationRequest) (*SimulationRequest, error) {
-	// If no reference id was passed, we'll generate one and assign it to the request.
-	if req.Id != "" {
-		req.ReferenceId = req.Id
-	} else {
-		req.ReferenceId = utils.GenerateUUID()
-	}
-
-	var existingRequest SimulationRequest
-	if err := database.DB.Where("reference_id = ?", req.ReferenceId).First(&existingRequest).Error; err == nil {
-		return &existingRequest, nil
-	}
-
-	// Generate the internal UUID for the creation
-	req.Id = utils.GenerateUUID()
-
-	if err := database.DB.Create(req).Error; err != nil {
-		return nil, fmt.Errorf("failed to create simulation request: %v", err)
-	}
-
-	return req, nil
-}
-
-func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
+func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	dbReq, err := getOrCreateDBSimulationRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	rpcUrl, err := client.GetQuicknodeUrl(req.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -87,21 +31,30 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": req.From.Hex(),
-		"to":   req.To.Hex(),
+		"from": transaction.From,
+		"to":   transaction.To,
 	}
 
-	if req.Value != nil && req.Value.Sign() > 0 {
-		tx["value"] = hexutil.EncodeBig(req.Value)
+	value := new(big.Int)
+	if transaction.Value != "" {
+		if _, ok := value.SetString(transaction.Value, 16); !ok {
+			return nil, fmt.Errorf("failed to parse value: %v", transaction.Value)
+		}
+
+		if value.Sign() > 0 {
+			tx["value"] = transaction.Value
+		}
 	}
-	if len(req.Data) > 0 {
-		tx["data"] = req.Data.String()
+
+	if len(transaction.Data) > 0 {
+		tx["data"] = transaction.Data
 	}
-	if req.GasLimit != nil {
-		tx["gas"] = hexutil.EncodeUint64(*req.GasLimit)
+
+	if transaction.Gas != nil {
+		tx["gas"] = transaction.Gas
 	}
-	if len(req.AccessList) > 0 {
-		tx["accessList"] = req.AccessList
+	if len(transaction.AccessList) > 0 {
+		tx["accessList"] = transaction.AccessList
 	}
 
 	var blockNumber string
@@ -139,34 +92,43 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		return nil, fmt.Errorf("trace call failed: %v", err)
 	}
 
-	resp := &SimulationResponse{
-		Id:      utils.GenerateUUID(),
-		Success: trace.Error == "",
-		Data: SimulationOutputData{
+	status := "success"
+	if trace.Error != "" {
+		status = "failed"
+	}
+
+	run := &models.Run{
+		From:     transaction.From,
+		To:       transaction.To,
+		CallData: hexutil.Bytes(transaction.Data),
+		Value:    value,
+		Status:   status,
+		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
-		RequestId: dbReq.Id,
 	}
 
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
-		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.GasUsed = gasUsed.Uint64()
+		if _, ok := gasUsed.SetString(trace.GasUsed, 0); ok {
+			run.GasEstimate = gasUsed.Uint64()
 		}
 	}
 
 	if trace.Error != "" {
-		resp.ErrorMessage = trace.Error
+		run.Error = &trace.Error
 	}
 
-	if req.ABI != "" && len(trace.Output) > 0 && len(req.Data) >= 4 {
-		parsedABI, err := abi.JSON(strings.NewReader(req.ABI))
+	if ABI != nil && len(trace.Output) > 0 && len(transaction.Data) >= 4 {
+		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
-			resp.ErrorMessage = fmt.Sprintf("failed to parse ABI: %v", err)
-			return resp, nil
+			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
+			run.Error = &errorStr
+			return run, nil
 		}
 
-		methodID := req.Data[:4]
+		methodIDHex := transaction.Data[:10]
+		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
 			if bytes.Equal(m.ID, methodID) {
@@ -176,8 +138,7 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		}
 
 		if method == nil {
-			resp.ErrorMessage = "method not found in ABI"
-			return resp, nil
+			return nil, fmt.Errorf("method not found for ID: %x", methodID)
 		}
 
 		// TODO: Do this when there is nothing left more pressing to work on. This
@@ -191,23 +152,14 @@ func SimulateRaw(req *SimulationRequest) (*SimulationResponse, error) {
 		// resp.Data.Decoded = decoded
 	}
 
-	if err := database.DB.Create(resp).Error; err != nil {
-		return nil, fmt.Errorf("failed to save simulation response: %v", err)
-	}
-
-	return resp, nil
+	return run, nil
 }
 
-func Simulate(id string, chainId uint64, plugs signature.LivePlugs) (*SimulationRequest, *SimulationResponse, error) {
-	simulationRequest, err := formatPlugSimulationRequest(id, chainId, plugs)
+func Simulate(transaction Transaction) (*models.Run, error) {
+	runResponse, err := SimulateRaw(transaction, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	simulationResponse, err := SimulateRaw(simulationRequest)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return simulationRequest, simulationResponse, nil
+	return runResponse, nil
 }

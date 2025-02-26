@@ -131,11 +131,11 @@ export const ActivityItem: FC<{
 									</span>
 								</p>
 								<p className="flex flex-row gap-2 truncate overflow-ellipsis whitespace-nowrap">
-									<Counter count={activity.startAt.toLocaleDateString()} />
+									<Counter count={new Date(activity.startAt).toLocaleDateString()} />
 									{activity.endAt ? (
 										<>
 											<span className="opacity-60">→</span>
-											<Counter count={activity.endAt.toLocaleDateString()} />
+											<Counter count={new Date(activity.endAt).toLocaleDateString()} />
 										</>
 									) : activity.frequency !== 0 ? (
 										<>
@@ -154,7 +154,7 @@ export const ActivityItem: FC<{
 			<ExecutionFrame
 				index={index}
 				icon={<ActivityIcon status={activity?.status ?? "pending"} />}
-				activity={activity}
+				activity={activity!!}
 			/>
 			<SimulationFrame index={index} activity={activity} simulationId={simulationId} />
 		</>

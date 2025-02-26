@@ -203,6 +203,7 @@ model Plug {
   tags         String[]
   plugForkedId String?
   frequency    Int      @default(10)
+  intentIds    String[]
 
   // ---------------------------------------------------------------------------
   // Many-to-one
@@ -213,73 +214,7 @@ model Plug {
   // ---------------------------------------------------------------------------
   // One-to-many
   // ---------------------------------------------------------------------------
-  executions Intent[]
-  views      View[]
-}
-
-model Intent {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  status  String @default("active")
-  chainId Int    @default(1)
-  actions String @default("[]")
-
-  startAt DateTime
-  endAt   DateTime?
-
-  frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
-  periodEndAt      DateTime?
-  nextSimulationAt DateTime?
-
-  // ---------------------------------------------------------------------------
-  // One-to-many
-  // ---------------------------------------------------------------------------
-  runs Run[]
-
-  // ---------------------------------------------------------------------------
-  // Many-to-one
-  // ---------------------------------------------------------------------------
-  plug   Plug   @relation(fields: [plugId], references: [id], onDelete: Cascade)
-  plugId String
-
-  // ---------------------------------------------------------------------------
-  // Indexes
-  // ---------------------------------------------------------------------------
-  @@index([plugId])
-  @@index([startAt])
-  @@index([nextSimulationAt])
-}
-
-model Run {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  status      String
-  result      Json?
-  error       String?
-  errors      String[] @default([])
-  gasEstimate Float?
-
-  // ---------------------------------------------------------------------------
-  // Many-to-one
-  // ---------------------------------------------------------------------------
-  intent   Intent @relation(fields: [intentId], references: [id], onDelete: Cascade)
-  intentId String
+  views View[]
 }
 
 model Price {

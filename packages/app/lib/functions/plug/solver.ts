@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { ActionSchemas } from "@/lib/types"
+import { ActionSchemas, Intent } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
@@ -43,6 +43,7 @@ export const schemas = async (
 
 	return response.data
 }
+export const getIntentSchemas = schemas
 
 export const intent = async (input: {
 	chainId: number
@@ -63,6 +64,7 @@ export const intent = async (input: {
 
 	return response.data
 }
+export const getIntentTransaction = intent
 
 export const killed = async () => {
 	const response = await axios.get(`${env.SOLVER_URL}/solver/kill`, {
