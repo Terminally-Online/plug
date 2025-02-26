@@ -13,6 +13,7 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
+	"solver/internal/bindings/references"
 	"solver/internal/client"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
@@ -180,7 +181,7 @@ func (s *Solver) GetLivePlugs(intent models.Intent) (*signature.LivePlugs, error
 	}, nil
 }
 
-func (s *Solver) GetPlugTransaction(intent models.Intent, livePlugs signature.LivePlugs) (transaction *Transaction, err error) {
+func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -191,13 +192,17 @@ func (s *Solver) GetPlugTransaction(intent models.Intent, livePlugs signature.Li
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	transaction = &Transaction{
+	transaction = &simulation.Transaction{
 		From:    intent.From,
-		To:      intent.To,
+		To:      references.Networks[intent.ChainId].References["plug"]["router"],
 		ChainId: intent.ChainId,
 		Value:   hexutil.EncodeBig(intent.Value),
 		Data:    hexutil.Bytes.String(plugCalldata),
-		Gas:     hexutil.EncodeUint64(*intent.GasLimit),
+	}
+
+	if intent.GasLimit != nil {
+		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
+		transaction.Gas = &gasLimitStr
 	}
 
 	return transaction, nil
@@ -214,21 +219,25 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
 	}
 
+	transaction := simulation.Transaction{
+		From:    intent.From,
+		ChainId: intent.ChainId,
+		To:      plugs[0].To.Hex(),
+		Value:   plugs[0].Value.String(),
+		Data:    hexutil.Bytes.String(plugs[0].Data),
+	}
+
+	if intent.GasLimit != nil {
+		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
+		transaction.Gas = &gasLimitStr
+	}
+
 	var run *models.Run
-	if intent.Options["simulate"].(bool) {
-		run, err = simulation.SimulateRaw(&intent, nil, nil)
+	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
+		run, err = simulation.SimulateRaw(transaction, nil, nil)
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	transaction := Transaction{
-		From:    intent.From,
-		To:      intent.To,
-		ChainId: intent.ChainId,
-		Value:   hexutil.EncodeBig(intent.Value),
-		Data:    hexutil.Bytes.String(plugs[0].Data),
-		Gas:     hexutil.EncodeUint64(*intent.GasLimit),
 	}
 
 	return &Solution{
@@ -240,7 +249,7 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 }
 
 func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
-	if intent.Options["isEOA"].(bool) {
+	if isEOA, ok := intent.Options["isEOA"].(bool); ok && isEOA {
 		return s.SolveEOA(intent)
 	}
 
@@ -249,17 +258,17 @@ func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
+	transaction, err := s.BuildPlugTransaction(intent, *livePlugs)
+	if err != nil {
+		return nil, err
+	}
+
 	var run *models.Run
-	if intent.Options["simulate"].(bool) {
-		run, err = simulation.Simulate(intent, *livePlugs)
+	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
+		run, err = simulation.Simulate(*transaction, *livePlugs)
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	transaction, err := s.GetPlugTransaction(intent, *livePlugs)
-	if err != nil {
-		return nil, err
 	}
 
 	return &Solution{
@@ -293,7 +302,7 @@ func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
 			continue
 		}
 
-		if intent.Options["submit"].(bool) && solution.Run.Status == "success" {
+		if submit, ok := intent.Options["submit"].(bool); ok && submit && solution.Run.Status == "success" {
 			livePlugs = append(livePlugs, solution.LivePlugs)
 		}
 	}

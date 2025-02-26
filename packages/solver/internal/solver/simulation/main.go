@@ -19,10 +19,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.Run, error) {
+func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := client.GetQuicknodeUrl(intent.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -34,21 +34,30 @@ func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.R
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": intent.From,
-		"to":   intent.To,
+		"from": transaction.From,
+		"to":   transaction.To,
 	}
 
-	if intent.Value != nil && intent.Value.Sign() > 0 {
-		tx["value"] = hexutil.EncodeBig(intent.Value)
+	value := new(big.Int)
+	if transaction.Value != "" {
+		if _, ok := value.SetString(transaction.Value, 16); !ok {
+			return nil, fmt.Errorf("failed to parse value: %v", transaction.Value)
+		}
+
+		if value.Sign() > 0 {
+			tx["value"] = transaction.Value
+		}
 	}
+
 	if len(calldata) > 0 {
 		tx["data"] = hexutil.Bytes.String(calldata)
 	}
-	if intent.GasLimit != nil {
-		tx["gas"] = hexutil.EncodeUint64(*intent.GasLimit)
+
+	if transaction.Gas != nil {
+		tx["gas"] = transaction.Gas
 	}
-	if len(intent.AccessList) > 0 {
-		tx["accessList"] = intent.AccessList
+	if len(transaction.AccessList) > 0 {
+		tx["accessList"] = transaction.AccessList
 	}
 
 	var blockNumber string
@@ -96,12 +105,11 @@ func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.R
 		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
-		IntentId: intent.Id,
 	}
 
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
-		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
+		if _, ok := gasUsed.SetString(trace.GasUsed, 16); ok {
 			run.GasEstimate = gasUsed.Uint64()
 		}
 	}
@@ -151,7 +159,7 @@ func SimulateRaw(intent *models.Intent, calldata []byte, ABI *string) (*models.R
 	return run, nil
 }
 
-func Simulate(intent models.Intent, plugs signature.LivePlugs) (*models.Run, error) {
+func Simulate(transaction Transaction, plugs signature.LivePlugs) (*models.Run, error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -162,7 +170,7 @@ func Simulate(intent models.Intent, plugs signature.LivePlugs) (*models.Run, err
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	runResponse, err := SimulateRaw(&intent, plugCalldata, &plug_router.PlugRouterMetaData.ABI)
+	runResponse, err := SimulateRaw(transaction, plugCalldata, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
 		return nil, err
 	}

@@ -15,7 +15,6 @@ type Intent struct {
 	Status     string                   `json:"status,omitempty" gorm:"type:text;default:'active'"`
 	ChainId    uint64                   `json:"chainId" gorm:"type:int"`
 	From       string                   `json:"from,omitempty" gorm:"type:text"`
-	To         string                   `json:"to,omitempty" gorm:"type:text"`
 	Value      *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit   *uint64                  `json:"gasLimit,omitempty" gorm:"type:int"`
 	Inputs     []map[string]interface{} `json:"inputs,omitempty" gorm:"type:jsonb"`
