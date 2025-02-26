@@ -30,8 +30,16 @@ export async function getStaticPaths() {
 }
 
 export default function Page({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
+	// Create a summary from content if no description
+	const summaryText = post.description || post.content.substring(0, 160).replace(/[#*`]/g, '').trim();
+	
 	return (
-		<StaticLayout title={post.title}>
+		<StaticLayout 
+			title={post.title}
+			ogTitle={`Plug Posts | ${post.title}`}
+			ogDescription={summaryText}
+			ogImage={`${process.env.NEXT_PUBLIC_URL || ''}/api/canvas/post?name=${encodeURIComponent(post.title)}`}
+		>
 			<LandingContainer>
 				<motion.article
 					initial={{ opacity: 0, y: 20 }}
