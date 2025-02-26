@@ -15,6 +15,7 @@ import (
 	"solver/internal/actions/yearn_v3"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
+	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
@@ -234,10 +235,16 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.SimulateRaw(transaction, nil, nil)
+		run, err = simulation.SimulateRaw(transaction, nil)
 		if err != nil {
 			return nil, err
 		}
+	}
+	run.IntentId = intent.Id
+
+	fmt.Printf("run: %v\n", run)
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
 	return &Solution{
@@ -265,10 +272,15 @@ func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.Simulate(*transaction, *livePlugs)
+		run, err = simulation.Simulate(*transaction)
 		if err != nil {
 			return nil, err
 		}
+	}
+	run.IntentId = intent.Id
+
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
 	return &Solution{

@@ -7,10 +7,7 @@ import (
 	"math/big"
 	"solver/bindings/plug_router"
 	"solver/internal/client"
-	"solver/internal/database"
 	"solver/internal/database/models"
-	"solver/internal/solver/signature"
-	"solver/internal/utils"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -19,8 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models.Run, error) {
+func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
+
+	fmt.Printf("simulateRaw input transaction %v\n", transaction)
 
 	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
 	if err != nil {
@@ -49,8 +48,8 @@ func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models
 		}
 	}
 
-	if len(calldata) > 0 {
-		tx["data"] = hexutil.Bytes.String(calldata)
+	if len(transaction.Data) > 0 {
+		tx["data"] = transaction.Data
 	}
 
 	if transaction.Gas != nil {
@@ -77,6 +76,8 @@ func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models
 	callTraceConfig := map[string]interface{}{
 		"tracer": "callTracer",
 	}
+
+	fmt.Printf("tx: %v\n", tx)
 
 	var trace struct {
 		Type     string         `json:"type"`
@@ -118,7 +119,7 @@ func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models
 		run.Error = &trace.Error
 	}
 
-	if ABI != nil && len(trace.Output) > 0 && len(calldata) >= 4 {
+	if ABI != nil && len(trace.Output) > 0 && len(transaction.Data) >= 4 {
 		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
 			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
@@ -126,10 +127,10 @@ func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models
 			return run, nil
 		}
 
-		methodID := calldata[:4]
+		methodID := transaction.Data[:4]
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
-			if bytes.Equal(m.ID, methodID) {
+			if bytes.Equal(m.ID, common.Hex2Bytes(methodID)) {
 				method = &m
 				break
 			}
@@ -152,25 +153,11 @@ func SimulateRaw(transaction Transaction, calldata []byte, ABI *string) (*models
 		// resp.Data.Decoded = decoded
 	}
 
-	if err := database.DB.Create(run).Error; err != nil {
-		return nil, fmt.Errorf("failed to save simulation run: %v", err)
-	}
-
 	return run, nil
 }
 
-func Simulate(transaction Transaction, plugs signature.LivePlugs) (*models.Run, error) {
-	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-	if err != nil {
-		return nil, utils.ErrABI("PlugRouter")
-	}
-
-	plugCalldata, err := routerAbi.Pack("plug", plugs)
-	if err != nil {
-		return nil, utils.ErrTransaction(err.Error())
-	}
-
-	runResponse, err := SimulateRaw(transaction, plugCalldata, &plug_router.PlugRouterMetaData.ABI)
+func Simulate(transaction Transaction) (*models.Run, error) {
+	runResponse, err := SimulateRaw(transaction, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
 		return nil, err
 	}
