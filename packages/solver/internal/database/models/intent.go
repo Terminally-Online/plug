@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/utils"
@@ -37,6 +38,22 @@ type Intent struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (i *Intent) GetOrCreate(db *gorm.DB) (*Intent, error) {
+	var intent Intent
+	result := db.Where("id = ?", i.Id).First(&intent)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		// If not found, create the new intent and return the created instance
+		if err := db.Create(i).Error; err != nil {
+			return nil, fmt.Errorf("failed to create intent: %w", err)
+		}
+		return i, nil
+	}
+
+	// If found, return the existing intent
+	return &intent, nil
 }
 
 func (i *Intent) GetNextSimulationAt() (periodEndAt *time.Time, nextSimulationAt *time.Time) {

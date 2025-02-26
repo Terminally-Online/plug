@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/utils"
 	"strconv"
@@ -196,9 +197,16 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
-	var intent models.Intent
-	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
+	var intentInput models.Intent
+	if err := json.NewDecoder(r.Body).Decode(&intentInput); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	intentInput.ApiKeyId = r.Header.Get("X-Api-Key-Id")
+	intent, err := intentInput.GetOrCreate(database.DB)
+	if err != nil {
+		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

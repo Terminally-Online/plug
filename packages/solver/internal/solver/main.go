@@ -113,7 +113,7 @@ func (s *Solver) GetPlugsArray(
 	return append(head, plugs...), false, nil
 }
 
-func (s *Solver) GetPlugs(intent models.Intent) ([]signature.Plug, error) {
+func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 	var plugs []signature.Plug
 	for _, input := range intent.Inputs {
 		inputsMap := map[string]interface{}{
@@ -147,7 +147,7 @@ func (s *Solver) GetPlugs(intent models.Intent) ([]signature.Plug, error) {
 	return plugs, nil
 }
 
-func (s *Solver) GetLivePlugs(intent models.Intent) (*signature.LivePlugs, error) {
+func (s *Solver) GetLivePlugs(intent *models.Intent) (*signature.LivePlugs, error) {
 	plugs, err := s.GetPlugs(intent)
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func (s *Solver) GetLivePlugs(intent models.Intent) (*signature.LivePlugs, error
 	}, nil
 }
 
-func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
+func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -209,7 +209,7 @@ func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.
 	return transaction, nil
 }
 
-func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) {
+func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error) {
 	plugs, err := s.GetPlugs(intent)
 	if err != nil {
 		return nil, err
@@ -249,13 +249,13 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 
 	return &Solution{
 		Transactions: plugs,
-		Intent:       &intent,
+		Intent:       intent,
 		Run:          run,
 		Transaction:  &transaction,
 	}, nil
 }
 
-func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
+func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	if isEOA, ok := intent.Options["isEOA"].(bool); ok && isEOA {
 		return s.SolveEOA(intent)
 	}
@@ -286,7 +286,7 @@ func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
 	return &Solution{
 		Transactions: livePlugs.Plugs.Plugs, // Transactions in the `livePlug`.
 		LivePlugs:    livePlugs,             // The `livePlug` included in the bundle.
-		Intent:       &intent,               // Intent the solver built from.
+		Intent:       intent,                // Intent the solver built from.
 		Run:          run,                   // Simulation results of solver run.
 		Transaction:  transaction,           // Transaction the solver runs.
 	}, nil
@@ -305,10 +305,9 @@ func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
 		if intent.ChainId != chainId {
 			errors[i] = utils.ErrChainId("chainId", intent.ChainId)
 			continue
-
 		}
 
-		solution, err := s.Solve(intent)
+		solution, err := s.Solve(&intent)
 		if err != nil {
 			errors[i] = err
 			continue
