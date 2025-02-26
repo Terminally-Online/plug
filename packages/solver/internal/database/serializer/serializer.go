@@ -53,28 +53,6 @@ var typeConverters = map[string]struct {
 			return n, nil
 		},
 	},
-	"[]map[string]interface {}": {
-		toStr: func(v interface{}) string {
-			if v == nil {
-				return "[]"
-			}
-			return "[]" // Let GORM handle non-empty JSONB serialization
-		},
-		fromStr: func(s string) (interface{}, error) {
-			return []map[string]interface{}{}, nil
-		},
-	},
-	"map[string]interface {}": {
-		toStr: func(v interface{}) string {
-			if v == nil {
-				return "{}"
-			}
-			return "{}" // Let GORM handle non-empty JSONB serialization
-		},
-		fromStr: func(s string) (interface{}, error) {
-			return map[string]interface{}{}, nil
-		},
-	},
 }
 
 func HandleBeforeSave(model interface{}) error {
