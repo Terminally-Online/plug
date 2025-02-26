@@ -22,14 +22,13 @@ export const SimulationFrame: FC<{
 	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
 
 	const simulation = activity?.runs.find(sim => sim.id === simulationId)
-	const actions = JSON.parse(activity?.actions ?? "[]")
+	const actions = activity?.inputs
 
 	const handleShare = useCallback(() => {
 		if (!activity) return
 
 		try {
-			const workflowActions: Array<{ protocol: string; action: string }> = JSON.parse(activity.actions)
-			const cleanedActions = workflowActions.map(action => ({
+			const cleanedActions = activity.inputs.map(action => ({
 				protocol: action.protocol?.toLowerCase?.(),
 				sentence: solverActions[action.protocol]["schema"][action.action].sentence
 			}))
@@ -46,7 +45,7 @@ export const SimulationFrame: FC<{
 		} catch (e) {
 			console.error("Share generation failed:", e, {
 				plugId: activity.plug.id,
-				actions: activity.actions
+				actions: activity.inputs
 			})
 		}
 	}, [activity, solverActions])
@@ -107,9 +106,9 @@ export const SimulationFrame: FC<{
 			<p className="flex flex-row items-center justify-between gap-4 font-bold">
 				<Clock10 size={18} className="opacity-20" />
 				<span className="opacity-40">Simulated</span>{" "}
-				{/*<span className="ml-auto">
-					<DateSince date={simulation.createdAt} />
-				</span>*/}
+				<span className="ml-auto">
+					<DateSince date={new Date(simulation.createdAt)} />
+				</span>
 			</p>
 
 			{simulation.gasEstimate && (

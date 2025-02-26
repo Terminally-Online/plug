@@ -30,7 +30,8 @@ export const ExecutionFrame: FC<{
 	const { handle: activityHandle } = useActivities()
 	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
-	const actions = useMemo(() => JSON.parse(activity?.actions ?? "[]"), [activity?.actions])
+	const actions = activity?.inputs ?? []
+	console.log('actions', actions)
 
 	const { visibleRuns, totalRuns, hasMore } = useMemo(
 		() => ({
@@ -225,12 +226,12 @@ export const ExecutionFrame: FC<{
 													(#{activity.runs.length - index})
 												</span>
 											</p>
-											<DateSince date={run.createdAt} />
+											<DateSince date={new Date(run.createdAt)} />
 										</div>
 										<div className="flex flex-row items-center justify-between gap-2 text-sm font-bold opacity-40">
 											<p>{formatTitle(run.status)}</p>
 											<p>
-												<Counter count={run.createdAt.toLocaleDateString()} />
+												<Counter count={new Date(run.createdAt).toLocaleDateString()} />
 											</p>
 										</div>
 									</div>

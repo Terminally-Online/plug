@@ -7,14 +7,14 @@ import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 import { Frame } from "@/components/app/frames/base"
 import { Dropdown } from "@/components/app/inputs/dropdown"
 import { Button } from "@/components/shared/buttons/button"
-import { cn, frequencies } from "@/lib"
+import { cn, frequencies, useConnect } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 
 export const ScheduleFrame: FC<{
 	index: number
 	item: string
 }> = ({ index }) => {
-	const { data: session } = useSession()
+	const { account: { isAuthenticated } } = useConnect()
 	const { column, isFrame, handle } = useColumnStore(index, "schedule")
 
 	if (!column) return null
@@ -28,7 +28,7 @@ export const ScheduleFrame: FC<{
 					<span className="opacity-40">Run:</span> Schedule
 				</span>
 			}
-			visible={(isFrame && session && session.user.anonymous === false) || false}
+			visible={(isFrame && isAuthenticated) || false}
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-4">

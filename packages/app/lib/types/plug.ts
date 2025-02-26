@@ -2,9 +2,9 @@ import { DateRange } from "react-day-picker"
 
 import { frequencies } from "@/lib"
 import { connectedChains } from "@/contexts"
-import { Option } from "@/state/plugs"
 
 export type Options = {
+	key: string
 	value: string
 	name: string
 	label: string
@@ -41,7 +41,7 @@ export type Action = {
 	protocol: string
 	action: string
 	id: number
-	values: Record<string, { value: string; name: string } & Partial<Options[number]> | undefined>
+	values: Record<string, { key: string; value: string; name: string } & Partial<Options[number]> | undefined>
 }
 
 export type Actions = Array<Action>
@@ -79,7 +79,7 @@ export type Intent = {
 	status: string
 	chainId: number
 	from: string
-	actions: Array<Record<string, string>>
+	inputs: Array<{ protocol: string; action: string, [key: string]: string }>
 	frequency: number
 	startAt: string
 	endAt?: string

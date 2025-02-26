@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { Plug } from "@prisma/client"
 
-import { createIntent, deleteIntent, getIntent, toggleIntent, Intent, Action } from "@/lib"
+import { Action, createIntent, deleteIntent, getIntent, Intent, toggleIntent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
@@ -36,36 +36,26 @@ export const activity = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
-					id: input.plugId,
+					id: input.plugId
 				}
 			})
-
-			console.log('got plug', plug)
-
-			const actions = JSON.parse(plug.actions as string).map((action: Action) => ({
+			const inputs = JSON.parse(plug.actions as string).map((action: Action) => ({
 				protocol: action.protocol,
 				action: action.action,
 				...Object.entries(action.values ?? []).reduce(
-					(acc, [_, value]) => {
-						if (!value?.name) return acc
-						acc[value.name] = value.value
-						return acc
-					},
+					(acc, [_, value]) => (!value?.key ? acc : { ...acc, [value.key]: value.value }),
 					{} as Record<string, string>
 				)
-			})) as Array<Record<string, string>>
-
+			})) as Array<{ protocol: string; action: string; [key: string]: string }>
 			const intent = await createIntent({
 				chainId: input.chainId,
 				from: ctx.session.address,
 				status: "active",
-				actions,
+				inputs,
 				frequency: input.frequency,
-				startAt: input.startAt.toUTCString(),
-				endAt: input.endAt?.toUTCString(),
+				startAt: input.startAt.toISOString(),
+				endAt: input.endAt?.toISOString()
 			})
-
-			console.log('created intent')
 
 			const updated = {
 				...intent,
@@ -78,11 +68,7 @@ export const activity = createTRPCRouter({
 					}
 				})
 			}
-
-			console.log('updated', updated)
-
 			ctx.emitter.emit(subscriptions.execution.update, updated)
-
 			return updated
 		}),
 

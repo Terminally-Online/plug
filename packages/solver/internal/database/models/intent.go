@@ -1,6 +1,9 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/utils"
@@ -10,17 +13,46 @@ import (
 	"gorm.io/gorm"
 )
 
+// InputsSlice is a custom type that implements sql.Scanner for proper JSONB handling
+type InputsSlice []map[string]interface{}
+
+// Scan implements the sql.Scanner interface for InputsSlice
+func (is *InputsSlice) Scan(value interface{}) error {
+	if value == nil {
+		*is = make(InputsSlice, 0)
+		return nil
+	}
+
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("failed to unmarshal JSONB value: invalid data type")
+	}
+
+	if err := json.Unmarshal(bytes, is); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Value implements the driver.Valuer interface for InputsSlice
+func (is InputsSlice) Value() (driver.Value, error) {
+	if is == nil {
+		return nil, nil
+	}
+	return json.Marshal(is)
+}
+
 type Intent struct {
-	Id         string                   `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	Status     string                   `json:"status,omitempty" gorm:"type:text;default:'active'"`
-	ChainId    uint64                   `json:"chainId" gorm:"type:int"`
-	From       string                   `json:"from,omitempty" gorm:"type:text"`
-	Value      *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	GasLimit   *uint64                  `json:"gasLimit,omitempty" gorm:"type:int"`
-	Inputs     []map[string]interface{} `json:"inputs,omitempty" gorm:"type:jsonb"`
-	Options    map[string]interface{}   `json:"options,omitempty" gorm:"type:jsonb"`
-	Frequency  int                      `json:"frequency,omitempty" gorm:"type:int"`
-	AccessList types.AccessList         `json:"accessList,omitempty" gorm:"type:jsonb"`
+	Id         string                 `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Status     string                 `json:"status,omitempty" gorm:"type:text;default:'active'"`
+	ChainId    uint64                 `json:"chainId" gorm:"type:int"`
+	From       string                 `json:"from,omitempty" gorm:"type:text"`
+	Value      *big.Int               `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
+	GasLimit   *uint64                `json:"gasLimit,omitempty" gorm:"type:int"`
+	Inputs     InputsSlice            `json:"inputs,omitempty" gorm:"type:jsonb"`
+	Options    map[string]interface{} `json:"options,omitempty" gorm:"type:jsonb"`
+	Frequency  int                    `json:"frequency,omitempty" gorm:"type:int"`
+	AccessList types.AccessList       `json:"accessList,omitempty" gorm:"type:jsonb"`
 
 	StartAt          *time.Time `json:"startAt,omitempty" gorm:"type:timestamp"`
 	EndAt            *time.Time `json:"endAt,omitempty" gorm:"type:timestamp"`

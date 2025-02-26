@@ -78,6 +78,7 @@ func HandleBeforeSave(model interface{}) error {
 			continue
 		}
 
+		// TODO: This is causing us to lose zero-value fields.
 		if !fieldValue.IsZero() {
 			strValue := converter.toStr(fieldValue.Interface())
 			strField.SetString(strValue)
@@ -112,6 +113,8 @@ func HandleAfterFind(model interface{}) error {
 			}
 		}
 
+		// NOTE: Handles the conversion of nil arrays to empty arrays by set
+		//       the value to an empty slice when the reflection is a slice.
 		if fieldValue.Kind() == reflect.Slice && fieldValue.IsNil() {
 			emptySlice := reflect.MakeSlice(fieldValue.Type(), 0, 0)
 			fieldValue.Set(emptySlice)

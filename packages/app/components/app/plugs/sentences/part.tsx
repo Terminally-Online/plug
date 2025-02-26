@@ -38,6 +38,7 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 
 export type HandleValueProps = {
 	index: number,
+	key: string
 	value: string,
 	name: string,
 	isNumber?: boolean
@@ -238,6 +239,7 @@ export const Part: FC<PartProps> = memo(({
 									handleSearch={data =>
 										handleValue({
 											index: input?.index ?? "",
+											key: input?.name ?? "",
 											name: input?.name ?? "",
 											label,
 											value: data,
@@ -271,6 +273,7 @@ export const Part: FC<PartProps> = memo(({
 													handleValue({
 														...option,
 														index: input.index,
+														key: input?.name ?? "",
 														// NOTE: Support toggling of the option by clicking it again.
 														value: option.value === value?.value
 															? ""
