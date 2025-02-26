@@ -2,7 +2,9 @@ package solver
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"strings"
 
 	"solver/internal/database"
 	"solver/internal/database/models"
@@ -17,16 +19,19 @@ func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	log.Printf("creating intent")
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "key = ?", r.Header.Get("X-Api-Key")).Error; err != nil {
 		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
 		return
 	}
+	log.Printf("getting api key")
 	inputs.ApiKeyId = apiKey.Id
 	if err := database.DB.Omit("nextSimulationAt", "periodEndAt").Create(&inputs).Error; err != nil {
 		utils.MakeHttpError(w, "failed to save intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	log.Printf("returning inputs")
 	if err := json.NewEncoder(w).Encode(inputs); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
@@ -37,20 +42,24 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	var apiKey models.ApiKey
-	if err := database.DB.First(&apiKey, "id = ?", r.Header.Get("X-Api-Key")).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
+	var intents []models.Intent
+	query := database.DB
+
+	if strings.HasPrefix(id, "0x") {
+		query = query.Where("\"from\" = ?", id)
+	} else {
+		query = query.Where("id = ?", id)
+	}
+
+	result := query.Find(&intents)
+	if result.Error != nil {
+		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	var intent models.Intent
-	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(intent); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(intents); err != nil {
+		utils.MakeHttpError(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

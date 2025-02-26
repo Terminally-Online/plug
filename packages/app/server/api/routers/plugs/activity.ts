@@ -6,7 +6,7 @@ import { createIntent, deleteIntent, getIntent, toggleIntent, Intent } from "@/l
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-type IntentWithPlug = Intent & { plug: Plug } 
+type IntentWithPlug = Intent & { plug: Plug }
 
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
@@ -37,19 +37,22 @@ export const activity = createTRPCRouter({
 			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
 					id: input.plugId,
-					socketId: ctx.session.address
 				}
 			})
+
+			console.log('got plug', plug)
 
 			const intent = await createIntent({
 				chainId: input.chainId,
 				from: ctx.session.address,
 				status: "active",
-				actions: plug.actions,
+				actions: JSON.parse(plug.actions),
 				frequency: input.frequency,
 				startAt: input.startAt,
 				endAt: input.endAt,
 			})
+
+			console.log('created intent')
 
 			const updated = {
 				...intent,
@@ -62,6 +65,8 @@ export const activity = createTRPCRouter({
 					}
 				})
 			}
+
+			console.log('updated', updated)
 
 			ctx.emitter.emit(subscriptions.execution.update, updated)
 
@@ -85,5 +90,5 @@ export const activity = createTRPCRouter({
 	}),
 
 	onActivity: subscription<IntentWithPlug>("protected", subscriptions.execution.update),
-	onDelete:   subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
+	onDelete: subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
 })

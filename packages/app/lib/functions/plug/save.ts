@@ -9,6 +9,7 @@ type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" 
 type GetIntentProps = { id?: string, address?: string }
 type IntentIdProps = { id: string }
 
+
 const save = async <TData>(method: "get" | "post" | "delete", path: string, input?: unknown) => {
 	const url = `${env.SOLVER_URL}/solver/save${path ? `/${path}` : ''}`
 	const config = {
@@ -17,26 +18,41 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 		}
 	}
 
-	let response
-	switch (method) {
-		case "post":
-			response = await axios.post<TData>(url, input ?? {}, config) 
-			break
-		case "get":
-		case "delete":
-			response = await axios[method]<TData>(url, config)
-			break
-		default:
-			throw new TRPCError({ code: "BAD_REQUEST" })
+	console.log('submitting request with', method, url, config)
+
+	try {
+		let response
+		switch (method) {
+			case "post":
+				console.log("submitting post request")
+				response = await axios.post<TData>(url, input ?? {}, config)
+				break
+			case "get":
+				response = await axios[method]<TData>(url, config)
+				break
+			case "delete":
+				response = await axios[method]<TData>(url, config)
+				break
+			default:
+				throw new TRPCError({ code: "METHOD_NOT_SUPPORTED" })
+		}
+
+		console.log('response.status', response.status, response.data)
+
+		if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+
+		return response.data
+	} catch (error) {
+		console.error('Request failed:', error)
+		throw new TRPCError({
+			code: "INTERNAL_SERVER_ERROR",
+			cause: error
+		})
 	}
-
-	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
-
-	return response.data
 }
 
 export const createIntent = async (props: CreateIntentProps) => await save<Intent>("post", "", props)
-export const getIntent = async ({ id, address }: GetIntentProps): Promise<Array<Intent>> => { 
+export const getIntent = async ({ id, address }: GetIntentProps): Promise<Array<Intent>> => {
 	if (!id && !address) throw new TRPCError({ code: "BAD_REQUEST" })
 
 	return await save("get", id ? `/${id}` : `/${address}`)
