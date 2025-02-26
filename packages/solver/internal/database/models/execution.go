@@ -16,7 +16,7 @@ type Execution struct {
 
 	// Relationships
 	RunId string `json:"runId,omitempty" gorm:"type:text;uniqueIndex"`
-	Run   Run    `json:"run,omitempty" gorm:"foreignKey:RunId;references:Id"`
+	Run   Run    `json:"-" gorm:"foreignKey:RunId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	CreatedAt time.Time      `json:"-"`

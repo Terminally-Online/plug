@@ -43,6 +43,8 @@ func (h *Handler) ApiKey(next http.Handler) http.Handler {
 			return
 		}
 
+		r.Header.Set("X-Api-Key-Id", dbApiKey.Id)
+
 		next.ServeHTTP(w, r)
 	})
 }

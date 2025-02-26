@@ -2,6 +2,7 @@ package models
 
 import (
 	"math/big"
+	"solver/internal/database/serializer"
 	"solver/internal/utils"
 	"time"
 
@@ -18,19 +19,20 @@ type Run struct {
 	From        string                   `json:"from,omitempty" gorm:"type:text"`
 	To          string                   `json:"to,omitempty" gorm:"type:text"`
 	Value       *big.Int                 `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	Inputs      []map[string]interface{} `json:"actions,omitempty" gorm:"type:jsonb"`
-	CallData    hexutil.Bytes            `json:"callData,omitempty" db_field:"CalldataStr" gorm:"-"`
+	Inputs      []map[string]interface{} `json:"inputs,omitempty" db_field:"InputsStr" gorm:"-"`
+	CallData    hexutil.Bytes            `json:"-" db_field:"CallDataStr" gorm:"-"`
 	ResultData  RunOutputData            `json:"resultData" gorm:"type:jsonb"`
 
 	// Relationships
 	IntentId  string     `json:"intentId,omitempty" gorm:"type:text"`
-	Intent    Intent     `json:"intent,omitempty" gorm:"foreignKey:IntentId;references:Id"`
-	Execution *Execution `json:"execution,omitempty" gorm:"foreignKey:RunId"`
+	Intent    Intent     `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	Execution *Execution `json:"-" gorm:"foreignKey:RunId"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	ValueStr    string         `json:"-" gorm:"column:value;type:text"`
 	CallDataStr string         `json:"-" gorm:"column:calldata;type:text"`
-	CreatedAt   time.Time      `json:"createdAt"`
+	InputsStr   string         `json:"-" gorm:"column:inputs;type:jsonb"`
+	CreatedAt   time.Time      `json:"-"`
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
@@ -42,6 +44,13 @@ type RunOutputData struct {
 
 func (r *Run) BeforeCreate(tx *gorm.DB) error {
 	r.Id = utils.GenerateUUID()
-
 	return nil
+}
+
+func (r *Run) BeforeSave(tx *gorm.DB) error {
+	return serializer.HandleBeforeSave(r)
+}
+
+func (r *Run) AfterFind(tx *gorm.DB) error {
+	return serializer.HandleAfterFind(r)
 }

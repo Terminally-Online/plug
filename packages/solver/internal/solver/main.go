@@ -15,6 +15,7 @@ import (
 	"solver/internal/actions/yearn_v3"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
+	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
@@ -112,7 +113,7 @@ func (s *Solver) GetPlugsArray(
 	return append(head, plugs...), false, nil
 }
 
-func (s *Solver) GetPlugs(intent models.Intent) ([]signature.Plug, error) {
+func (s *Solver) GetPlugs(intent *models.Intent) ([]signature.Plug, error) {
 	var plugs []signature.Plug
 	for _, input := range intent.Inputs {
 		inputsMap := map[string]interface{}{
@@ -146,7 +147,7 @@ func (s *Solver) GetPlugs(intent models.Intent) ([]signature.Plug, error) {
 	return plugs, nil
 }
 
-func (s *Solver) GetLivePlugs(intent models.Intent) (*signature.LivePlugs, error) {
+func (s *Solver) GetLivePlugs(intent *models.Intent) (*signature.LivePlugs, error) {
 	plugs, err := s.GetPlugs(intent)
 	if err != nil {
 		return nil, err
@@ -181,7 +182,7 @@ func (s *Solver) GetLivePlugs(intent models.Intent) (*signature.LivePlugs, error
 	}, nil
 }
 
-func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
+func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -196,8 +197,12 @@ func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.
 		From:    intent.From,
 		To:      references.Networks[intent.ChainId].References["plug"]["router"],
 		ChainId: intent.ChainId,
-		Value:   hexutil.EncodeBig(intent.Value),
 		Data:    hexutil.Bytes.String(plugCalldata),
+	}
+
+	if intent.Value != nil {
+		transactionValue := hexutil.EncodeBig(intent.Value)
+		transaction.Value = transactionValue
 	}
 
 	if intent.GasLimit != nil {
@@ -208,7 +213,7 @@ func (s *Solver) BuildPlugTransaction(intent models.Intent, livePlugs signature.
 	return transaction, nil
 }
 
-func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) {
+func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error) {
 	plugs, err := s.GetPlugs(intent)
 	if err != nil {
 		return nil, err
@@ -234,21 +239,28 @@ func (s *Solver) SolveEOA(intent models.Intent) (solution *Solution, err error) 
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.SimulateRaw(transaction, nil, nil)
+		run, err = simulation.SimulateRaw(transaction, nil)
 		if err != nil {
 			return nil, err
 		}
 	}
+	run.IntentId = intent.Id
+	run.Inputs = intent.Inputs
+
+	fmt.Printf("run: %v\n", run)
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
+	}
 
 	return &Solution{
 		Transactions: plugs,
-		Intent:       &intent,
+		Intent:       intent,
 		Run:          run,
 		Transaction:  &transaction,
 	}, nil
 }
 
-func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
+func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	if isEOA, ok := intent.Options["isEOA"].(bool); ok && isEOA {
 		return s.SolveEOA(intent)
 	}
@@ -258,23 +270,32 @@ func (s *Solver) Solve(intent models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
+	fmt.Printf("building transaction\n")
 	transaction, err := s.BuildPlugTransaction(intent, *livePlugs)
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Printf("transaction: %v\n", transaction)
+
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.Simulate(*transaction, *livePlugs)
+		run, err = simulation.Simulate(*transaction)
 		if err != nil {
 			return nil, err
 		}
+	}
+	run.IntentId = intent.Id
+	run.Inputs = intent.Inputs
+
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
 	return &Solution{
 		Transactions: livePlugs.Plugs.Plugs, // Transactions in the `livePlug`.
 		LivePlugs:    livePlugs,             // The `livePlug` included in the bundle.
-		Intent:       &intent,               // Intent the solver built from.
+		Intent:       intent,                // Intent the solver built from.
 		Run:          run,                   // Simulation results of solver run.
 		Transaction:  transaction,           // Transaction the solver runs.
 	}, nil
@@ -293,10 +314,9 @@ func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
 		if intent.ChainId != chainId {
 			errors[i] = utils.ErrChainId("chainId", intent.ChainId)
 			continue
-
 		}
 
-		solution, err := s.Solve(intent)
+		solution, err := s.Solve(&intent)
 		if err != nil {
 			errors[i] = err
 			continue
