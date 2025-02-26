@@ -17,10 +17,11 @@ export const activity = createTRPCRouter({
 			where: { intentIds: { hasSome: intentIds } }
 		})
 
-		return intents.map(intent => ({
-			...intent,
-			plug: plugs.find(plug => plug.intentIds.includes(intent.id))!!
-		}))
+		return intents.map(intent => {
+			const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
+			if (!plug) return
+			return { ...intent, plug }
+		}).filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
@@ -46,7 +47,7 @@ export const activity = createTRPCRouter({
 					(acc, [_, value]) => (!value?.key ? acc : { ...acc, [value.key]: value.value }),
 					{} as Record<string, string>
 				)
-			})) as Array<{ protocol: string; action: string; [key: string]: string }>
+			})) as Array<{ protocol: string; action: string;[key: string]: string }>
 			const intent = await createIntent({
 				chainId: input.chainId,
 				from: ctx.session.address,

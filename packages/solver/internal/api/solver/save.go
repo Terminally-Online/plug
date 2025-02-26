@@ -2,7 +2,6 @@ package solver
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 
@@ -19,19 +18,16 @@ func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Printf("creating intent")
 	var apiKey models.ApiKey
 	if err := database.DB.First(&apiKey, "key = ?", r.Header.Get("X-Api-Key")).Error; err != nil {
 		utils.MakeHttpError(w, "failed to find api key: "+err.Error(), http.StatusNotFound)
 		return
 	}
-	log.Printf("getting api key")
 	inputs.ApiKeyId = apiKey.Id
 	if err := database.DB.Omit("nextSimulationAt", "periodEndAt").Create(&inputs).Error; err != nil {
 		utils.MakeHttpError(w, "failed to save intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Printf("returning inputs")
 	if err := json.NewEncoder(w).Encode(inputs); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return

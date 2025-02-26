@@ -13,13 +13,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// InputsSlice is a custom type that implements sql.Scanner for proper JSONB handling
-type InputsSlice []map[string]interface{}
+type Inputs []map[string]any
 
-// Scan implements the sql.Scanner interface for InputsSlice
-func (is *InputsSlice) Scan(value interface{}) error {
+func (is *Inputs) Scan(value any) error {
 	if value == nil {
-		*is = make(InputsSlice, 0)
+		*is = make(Inputs, 0)
 		return nil
 	}
 
@@ -34,8 +32,7 @@ func (is *InputsSlice) Scan(value interface{}) error {
 	return nil
 }
 
-// Value implements the driver.Valuer interface for InputsSlice
-func (is InputsSlice) Value() (driver.Value, error) {
+func (is Inputs) Value() (driver.Value, error) {
 	if is == nil {
 		return nil, nil
 	}
@@ -49,7 +46,7 @@ type Intent struct {
 	From       string                 `json:"from,omitempty" gorm:"type:text"`
 	Value      *big.Int               `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit   *uint64                `json:"gasLimit,omitempty" gorm:"type:int"`
-	Inputs     InputsSlice            `json:"inputs,omitempty" gorm:"type:jsonb"`
+	Inputs     Inputs                 `json:"inputs,omitempty" gorm:"type:jsonb"`
 	Options    map[string]interface{} `json:"options,omitempty" gorm:"type:jsonb"`
 	Frequency  int                    `json:"frequency,omitempty" gorm:"type:int"`
 	AccessList types.AccessList       `json:"accessList,omitempty" gorm:"type:jsonb"`
@@ -111,6 +108,12 @@ func (i *Intent) BeforeCreate(tx *gorm.DB) error {
 	}
 	nextSim := i.StartAt
 	i.NextSimulationAt = nextSim
+
+	return nil
+}
+
+func (i *Intent) AfterCreate(tx *gorm.DB) error {
+	i.Runs = []Run{}
 
 	return nil
 }
