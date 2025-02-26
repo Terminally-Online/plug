@@ -131,7 +131,7 @@ export const ActivityItem: FC<{
 									</span>
 								</p>
 								<p className="flex flex-row gap-2 truncate overflow-ellipsis whitespace-nowrap">
-									<Counter count={activity.startAt.toLocaleDateString()} />
+									<Counter count={new Date(activity.startAt).toLocaleDateString()} />
 									{activity.endAt ? (
 										<>
 											<span className="opacity-60">→</span>

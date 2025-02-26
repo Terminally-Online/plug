@@ -167,7 +167,7 @@ export const ExecutionFrame: FC<{
 								<Play size={18} className="opacity-20" />
 								<span className="opacity-40">Start At</span>
 							</span>{" "}
-							<Counter count={activity.startAt.toLocaleDateString()} />
+							<Counter count={new Date(activity.startAt).toLocaleDateString()} />
 						</p>
 						{activity.endAt && (
 							<p className="flex flex-row justify-between font-bold">
