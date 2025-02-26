@@ -110,7 +110,7 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
-		if _, ok := gasUsed.SetString(trace.GasUsed, 16); ok {
+		if _, ok := gasUsed.SetString(trace.GasUsed, 0); ok {
 			run.GasEstimate = gasUsed.Uint64()
 		}
 	}
