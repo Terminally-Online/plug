@@ -11,22 +11,22 @@ var (
 	icon = "https://cdn.onplug.io/protocols/aave.png"
 	tags = []string{"lending", "defi"}
 
-	chains  = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
+	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
 			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>}",
 			Handler:  HandleActionDeposit,
 		},
 		actions.ActionBorrow: {
-			Sentence: "Borrow {0<tokenOut:address:uint8>} {1<amountOut:float>}",
+			Sentence: "Borrow {0<amount:float>} {1<token:address:uint8>}",
 			Handler:  HandleActionBorrow,
 		},
 		actions.ActionRepay: {
-			Sentence: "Repay {0<tokenIn:address:uint8>} {1<amountIn:float>}",
+			Sentence: "Repay {0<amount:float>} {1<token:address:uint8>}",
 			Handler:  HandleActionRepay,
 		},
 		actions.ActionWithdraw: {
-			Sentence: "Withdraw {0<tokenOut:address:uint8>} {1<amountOut:float>}",
+			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>}",
 			Handler:  HandleActionWithdraw,
 		},
 		actions.ConstraintHealthFactor: {
@@ -36,7 +36,7 @@ var (
 		},
 		actions.ConstraintAPY: {
 			Type:     actions.TypeConstraint,
-			Sentence: "{0<direction:int8>} APY of {1<token:address>} is {2<operator:int8>} than {3<threshold:float>}%",
+			Sentence: "{0<action:int8>} APY of {1<token:address:uint8>} is {2<operator:int8>} than {3<threshold:float>}%",
 			Handler:  HandleConstraintAPY,
 		},
 	}

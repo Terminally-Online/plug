@@ -10,15 +10,15 @@ var (
 	icon = "https://cdn.onplug.io/protocols/yearn.png"
 	tags = []string{"yield", "defi"}
 
-	chains = append(references.Mainnet.ChainIds, references.Base.ChainIds...)
+	chains = []*references.Network{references.Mainnet, references.Base}
 	
 	schemas = map[string]actions.ActionDefinition{
 		actions.ActionDeposit: {
-			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}.",
+			Sentence: "Deposit {0<amount:float>} {1<token:address:uint8>} into {1=>2<vault:address>}",
 			Handler:  HandleActionDeposit,
 		},
 		actions.ActionWithdraw: {
-			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}.",
+			Sentence: "Withdraw {0<amount:float>} {1<token:address:uint8>} from {1=>2<vault:address>}",
 			Handler:  HandleActionWithdraw,
 		},
 		// actions.ActionWithdrawMax: {
@@ -43,7 +43,7 @@ var (
 		},
 		actions.ConstraintAPY: {
 			Type:     actions.TypeConstraint,
-			Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>}%.",
+			Sentence: "APY of {0<vault:address>} is {1<operator:int8>} than {2<threshold:float>} %",
 			Handler:  HandleConstraintAPY,
 		},
 	}

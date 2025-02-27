@@ -4,65 +4,70 @@ import (
 	"fmt"
 	"solver/internal/actions"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type YearnV3OptionsProvider struct{}
 
-func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
-	underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
-	if err != nil {
-		return nil, err
-	}
-	underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(chainId)
-	if err != nil {
-		return nil, err
-	}
-	availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(chainId)
-	if err != nil {
-		return nil, err
-	}
-	vaultOptions, err := GetVaultOptions(chainId)
-	if err != nil {
-		return nil, err
-	}
-
+func (p *YearnV3OptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
-	case actions.ActionDeposit:
+	case actions.ActionDeposit, actions.ActionWithdraw:
+		underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
+		underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: underlyingAssetOptions},
 			2: {Complex: underlyingAssetToVaultOptions},
 		}, nil
-	case actions.ActionWithdraw:
-		return map[int]actions.Options{
-			1: {Simple: underlyingAssetOptions},
-			2: {Complex: underlyingAssetToVaultOptions},
-		}, nil
+
 	case actions.ActionWithdrawMax:
+		underlyingAssetOptions, err := GetUnderlyingAssetOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
+		underlyingAssetToVaultOptions, err := GetUnderlyingAssetToVaultOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: underlyingAssetOptions},
 			1: {Complex: underlyingAssetToVaultOptions},
 		}, nil
-	case actions.ActionStake:
+
+	case actions.ActionStake, actions.ActionRedeem:
+		availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: availableStakingGaugeOptions},
 		}, nil
-	case actions.ActionStakeMax:
+
+	case actions.ActionStakeMax, actions.ActionRedeemMax:
+		availableStakingGaugeOptions, err := GetAvailableStakingGaugeOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: availableStakingGaugeOptions},
 		}, nil
-	case actions.ActionRedeem:
-		return map[int]actions.Options{
-			1: {Simple: availableStakingGaugeOptions},
-		}, nil
-	case actions.ActionRedeemMax:
-		return map[int]actions.Options{
-			0: {Simple: availableStakingGaugeOptions},
-		}, nil
+
 	case actions.ConstraintAPY:
+		vaultOptions, err := GetVaultOptions(chainId)
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			0: {Simple: vaultOptions},
 			1: {Simple: actions.BaseThresholdFields},
 		}, nil
+
 	default:
 		return nil, fmt.Errorf("unsupported action for options: %s", action)
 	}
@@ -78,14 +83,12 @@ func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {
 	for _, token := range tokens {
 		tokenDetails[strings.ToLower(token.Address)] = token
 	}
-
 	vaults, err := GetVaults(chainId)
 	if err != nil {
 		return nil, err
 	}
 
 	tokenMap := make(map[string]actions.Option)
-
 	for _, vault := range vaults {
 		lowerAddr := strings.ToLower(vault.Token.Address)
 
@@ -95,7 +98,7 @@ func GetUnderlyingAssetOptions(chainId uint64) ([]actions.Option, error) {
 					Value: fmt.Sprintf("%s:%d", token.Address, token.Decimals),
 					Name:  token.Name,
 					Label: token.Symbol,
-					Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/1/%s", vault.Token.Address),
+					Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, lowerAddr)},
 				}
 			}
 		}
@@ -122,7 +125,7 @@ func GetUnderlyingAssetToVaultOptions(chainId uint64) (map[string][]actions.Opti
 			Value: vault.Address,
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, strings.ToLower(vault.Token.Address))},
 		})
 	}
 
@@ -145,7 +148,7 @@ func GetAvailableStakingGaugeOptions(chainId uint64) ([]actions.Option, error) {
 			Value: fmt.Sprintf("%s:%d", vault.Address, vault.Decimals),
 			Name:  vault.DisplayName,
 			Label: vault.FormattedSymbol,
-			Icon:  fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon:  actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, strings.ToLower(vault.Token.Address))},
 		})
 	}
 
@@ -168,7 +171,7 @@ func GetVaultOptions(chainId uint64) ([]actions.Option, error) {
 				Label: "APR",
 				Value: fmt.Sprintf("%.2f%%", vault.APR.ForwardAPR.NetAPR*100+vault.Extra.StakingRewardsAPR*100),
 			},
-			Icon: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, vault.Token.Address),
+			Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s", chainId, strings.ToLower(vault.Token.Address))},
 		})
 	}
 

@@ -101,7 +101,7 @@ export const ConsoleColumn: FC<{
 						>
 							<div
 								className={cn(
-									"group relative z-[30] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[999999] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging ? "bg-plug-green/5" : "hover:bg-plug-green/5"
 								)}
 								{...provided.dragHandleProps}

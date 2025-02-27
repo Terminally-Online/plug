@@ -3,24 +3,27 @@ package actions
 import (
 	"encoding/json"
 	"fmt"
+	"solver/internal/bindings/references"
+	"solver/internal/client"
 	"solver/internal/solver/signature"
+	"solver/internal/utils"
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type HandlerParams struct {
-	Provider *ethclient.Client
-	ChainId  uint64
-	From     string
+	Client  *client.Client
+	ChainId uint64
+	From    common.Address
 }
 
 type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
 	GetActions() []string
-	GetChains() []uint64
-	GetSchema(chainId string, action string) (*ChainSchema, error)
+	GetChains(chainId string) ([]*references.Network, error)
+	GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error)
 	GetSchemas() map[string]ChainSchema
 	GetTransaction(action string, rawInputs json.RawMessage, params HandlerParams) ([]signature.Plug, error)
 }
@@ -32,7 +35,7 @@ type Protocol struct {
 	Name            string
 	Icon            string
 	Tags            []string
-	Chains          []uint64
+	Chains          []*references.Network
 	OptionsProvider OptionsProvider
 	Schemas         map[string]ChainSchema
 	txHandlers      map[string]TransactionHandler
@@ -43,51 +46,44 @@ type BaseHandler struct {
 	protocol Protocol
 }
 
-var (
-	errUnsupportedAction = "unsupported action: %s"
-	errInvalidChainID    = "invalid chain id: %s"
-	errUnsupportedChain  = "unsupported chain id: %d"
-	errFailedOptions     = "failed to get options: %w"
-)
-
 type ActionDefinition struct {
-	Type     string `default:"action"`
-	Sentence string
-	Handler  TransactionHandler
+	Type           string `default:"action,omitempty"`
+	Sentence       string
+	Handler        TransactionHandler
+	IsUserSpecific bool
+	IsSearchable   bool
 }
+
+var (
+	errUnsupportedAction  = "unsupported action: %s"
+	errInvalidChainID     = "invalid chain id: %s"
+	errUnsupportedChainID = "unsupported chain id: %s"
+	errFailedOptions      = "failed to get options: %w"
+)
 
 func NewBaseHandler(
 	name string,
 	icon string,
 	tags []string,
-	chains []uint64,
+	chains []*references.Network,
 	actionDefinitions map[string]ActionDefinition,
 	optionsProvider OptionsProvider,
 ) *BaseHandler {
-	// Extract sentences and handlers from definitions
 	sentences := make(map[string]string, len(actionDefinitions))
 	transactions := make(map[string]TransactionHandler, len(actionDefinitions))
 	for action, def := range actionDefinitions {
 		sentences[action] = def.Sentence
 		transactions[action] = def.Handler
 	}
-
-	// Create options handlers for each action
 	getOptionsFor := func(action string) OptionsHandler {
 		return func(chainId uint64) (map[int]Options, error) {
-			return optionsProvider.GetOptions(chainId, action)
+			return optionsProvider.GetOptions(chainId, common.Address(utils.ZeroAddress), map[int]string{}, action)
 		}
 	}
-
 	optHandlers := make(map[string]OptionsHandler, len(actionDefinitions))
 	for action := range actionDefinitions {
 		optHandlers[action] = getOptionsFor(action)
 	}
-
-	// Create cached provider
-	cachedProvider := NewCachedOptionsProvider(optionsProvider)
-
-	// Initialize schemas
 	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
 		schemas[action] = ChainSchema{
@@ -98,12 +94,12 @@ func NewBaseHandler(
 					}
 					return def.Type
 				}(),
-				Sentence: def.Sentence,
+				Sentence:       def.Sentence,
+				IsUserSpecific: def.IsUserSpecific,
 			},
 		}
 	}
-
-	// Create the handler
+	cachedProvider := NewCachedOptionsProvider(optionsProvider)
 	handler := &BaseHandler{
 		protocol: Protocol{
 			Name:            name,
@@ -117,14 +113,15 @@ func NewBaseHandler(
 		},
 	}
 
-	// Start pre-warming cache in background
-	actions := make([]string, 0, len(actionDefinitions))
+	actions := make([]string, 3, len(actionDefinitions))
 	for action := range actionDefinitions {
 		actions = append(actions, action)
 	}
 	go func() {
-		for _, chainId := range chains {
-			cachedProvider.PreWarmCache(chainId, actions)
+		for _, chain := range chains {
+			for _, chainId := range chain.ChainIds {
+				cachedProvider.PreWarmCache(chainId, common.Address(utils.ZeroAddress), actions)
+			}
 		}
 	}()
 
@@ -143,12 +140,28 @@ func (h *BaseHandler) GetTags() []string {
 	return h.protocol.Tags
 }
 
-func (h *BaseHandler) GetChains() []uint64 {
-	return h.protocol.Chains
+func (h *BaseHandler) GetChains(chainId string) ([]*references.Network, error) {
+	if chainId == "" {
+		return h.protocol.Chains, nil
+	}
+
+	chainIdInt, err := strconv.ParseUint(chainId, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf(errInvalidChainID, chainId)
+	}
+
+	for _, chain := range h.protocol.Chains {
+		for _, supportedChainId := range chain.ChainIds {
+			if chainIdInt == supportedChainId {
+				return []*references.Network{chain}, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf(errUnsupportedChainID, chainId)
 }
 
 func (h *BaseHandler) GetActions() []string {
-	// Pre-allocate slice with exact capacity needed
 	actions := make([]string, 0, len(h.protocol.Schemas))
 	for action := range h.protocol.Schemas {
 		actions = append(actions, action)
@@ -160,7 +173,7 @@ func (h *BaseHandler) GetSchemas() map[string]ChainSchema {
 	return h.protocol.Schemas
 }
 
-func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, error) {
+func (h *BaseHandler) GetSchema(chainId string, from common.Address, search map[int]string, action string) (*ChainSchema, error) {
 	chainSchema, exists := h.protocol.Schemas[action]
 	if !exists {
 		return nil, fmt.Errorf(errUnsupportedAction, action)
@@ -172,22 +185,19 @@ func (h *BaseHandler) GetSchema(chainId string, action string) (*ChainSchema, er
 			return nil, fmt.Errorf(errInvalidChainID, chainId)
 		}
 
-		supported := false
-		for _, supportedChainId := range h.protocol.Chains {
-			if supportedChainId == chainIdInt {
-				supported = true
-				break
-			}
-		}
-		if !supported {
-			return nil, fmt.Errorf(errUnsupportedChain, chainIdInt)
+		// NOTE: Override the address value so that we utilize the cache from the global state
+		//       instead of using the "from" parameter as a key lookup even when provided if
+		//       the action being queried against only supports global state.
+		if !h.protocol.Schemas[action].Schema.IsUserSpecific {
+			from = utils.ZeroAddress
 		}
 
-		options, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, action)
+		inputs, err := h.protocol.OptionsProvider.GetOptions(chainIdInt, from, search, action)
 		if err != nil {
 			return nil, fmt.Errorf(errFailedOptions, err)
 		}
-		chainSchema.Schema.Options = options
+
+		chainSchema.Schema.Options = inputs
 	}
 
 	return &chainSchema, nil

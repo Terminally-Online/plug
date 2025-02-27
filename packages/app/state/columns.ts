@@ -7,6 +7,7 @@ import { Column, Schedule, Transfer } from "@/lib"
 import { atomWithStorage, splitAtom } from "jotai/utils"
 
 export const COLUMNS = {
+	SIDEBAR_INDEX: -2,
 	MOBILE_INDEX: -1,
 	DEFAULT_WIDTH: 520,
 	OFFSET: 2,
@@ -34,8 +35,8 @@ export const COLUMNS = {
 }
 
 export const DEFAULT_COLUMNS = [
-	{ key: COLUMNS.KEYS.PANE, index: -2 },
-	{ key: COLUMNS.KEYS.HOME, index: -1 },
+	{ key: COLUMNS.KEYS.PANE, index: COLUMNS.SIDEBAR_INDEX },
+	{ key: COLUMNS.KEYS.HOME, index: COLUMNS.MOBILE_INDEX },
 	{ key: COLUMNS.KEYS.DISCOVER, index: 0 },
 	{ key: COLUMNS.KEYS.MY_PLUGS, index: 1 },
 	{ key: COLUMNS.KEYS.ACTIVITY, index: 2 },

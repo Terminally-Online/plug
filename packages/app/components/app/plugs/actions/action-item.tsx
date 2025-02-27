@@ -32,6 +32,7 @@ export const ActionItem: FC<{
 						{
 							protocol,
 							action: actionName,
+							id: Math.floor(Math.random() * 100_000_000_000),
 							...getValues(action.schema[actionName].sentence)
 						}
 					])
@@ -62,15 +63,22 @@ export const ActionItem: FC<{
 					{formatTitle(actionName)}
 				</p>
 
+				{/* TODO: Re-implement this once we have more than one chain id active otherwise it is
+					      just a redundant display because they all support the same chain.
 				<div className="ml-auto flex flex-row items-center">
+					<pre>{JSON.stringify(
+						action.metadata.chains
+						, null, 2)}</pre>
+
 					{action.metadata.chains
-						.filter(chain => connectedChains.some(c => c.id === chain))
+						.filter(chain => connectedChains.some(c => chain.chainIds.includes(c.id)))
 						.map(chain => (
 							<div key={chain} className="-ml-1">
 								<ChainImage chainId={chain} />
 							</div>
 						))}
 				</div>
+				*/}
 			</div>
 		</Accordion>
 	)

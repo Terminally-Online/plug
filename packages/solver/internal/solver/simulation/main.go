@@ -1,18 +1,14 @@
 package simulation
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"math/big"
-	"net/http"
-	"os"
-	"solver/internal/utils"
-
-	"strings"
-
 	"bytes"
+	"context"
+	"fmt"
+	"math/big"
+	"solver/bindings/plug_router"
+	"solver/internal/client"
+	"solver/internal/database/models"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -20,52 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-type Simulator struct {
-	signer common.Address
-}
-
-func New() Simulator {
-	return Simulator{
-		signer: common.HexToAddress(os.Getenv("SOLVER_ADDRESS")),
-	}
-}
-
-func (s *Simulator) PostSimulation(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading request body: %v", err), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	var req SimulationRequest
-	if err := json.Unmarshal(body, &req); err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing request: %v", err), http.StatusBadRequest)
-		return
-	}
-
-	if req.ChainId == 0 {
-		http.Error(w, "Chain ID is required", http.StatusBadRequest)
-		return
-	}
-
-	resp, err := s.Simulate(req)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Simulation failed: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, fmt.Sprintf("Error encoding response: %v", err), http.StatusInternalServerError)
-		return
-	}
-}
-
-func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error) {
+func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := utils.GetProviderUrl(req.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -77,70 +31,103 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": req.From.Hex(),
-		"to":   req.To.Hex(),
+		"from": transaction.From,
+		"to":   transaction.To,
 	}
 
-	if req.Value != nil && req.Value.Sign() > 0 {
-		tx["value"] = hexutil.EncodeBig(req.Value)
+	value := new(big.Int)
+	if transaction.Value != "" {
+		if _, ok := value.SetString(transaction.Value, 16); !ok {
+			return nil, fmt.Errorf("failed to parse value: %v", transaction.Value)
+		}
+
+		if value.Sign() > 0 {
+			tx["value"] = transaction.Value
+		}
 	}
-	if len(req.Data) > 0 {
-		tx["data"] = req.Data.String()
+
+	if len(transaction.Data) > 0 {
+		tx["data"] = transaction.Data
 	}
-	if req.GasLimit != nil {
-		tx["gas"] = hexutil.EncodeUint64(*req.GasLimit)
+
+	if transaction.Gas != nil {
+		tx["gas"] = transaction.Gas
 	}
-	if len(req.AccessList) > 0 {
-		tx["accessList"] = req.AccessList
+	if len(transaction.AccessList) > 0 {
+		tx["accessList"] = transaction.AccessList
 	}
+
+	var blockNumber string
+	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
+		return nil, fmt.Errorf("failed to get block number: %v", err)
+	}
+
+	var baseFee struct {
+		BaseFeePerGas string `json:"baseFeePerGas"`
+	}
+	if err := rpcClient.CallContext(ctx, &baseFee, "eth_getBlockByNumber", blockNumber, false); err != nil {
+		return nil, fmt.Errorf("failed to get base fee: %v", err)
+	}
+
+	tx["gasPrice"] = baseFee.BaseFeePerGas
 
 	callTraceConfig := map[string]interface{}{
 		"tracer": "callTracer",
 	}
 
 	var trace struct {
-		Type    string         `json:"type"`
-		From    common.Address `json:"from"`
-		To      common.Address `json:"to"`
-		Value   string         `json:"value"`
-		Gas     string         `json:"gas"`
-		GasUsed string         `json:"gasUsed"`
-		Input   hexutil.Bytes  `json:"input"`
-		Output  hexutil.Bytes  `json:"output"`
-		Error   string         `json:"error"`
+		Type     string         `json:"type"`
+		From     common.Address `json:"from"`
+		To       common.Address `json:"to"`
+		Value    string         `json:"value"`
+		Gas      string         `json:"gas"`
+		GasUsed  string         `json:"gasUsed"`
+		GasPrice string         `json:"gasPrice"`
+		Input    hexutil.Bytes  `json:"input"`
+		Output   hexutil.Bytes  `json:"output"`
+		Error    string         `json:"error"`
 	}
 
 	if err := rpcClient.CallContext(ctx, &trace, "debug_traceCall", tx, "latest", callTraceConfig); err != nil {
 		return nil, fmt.Errorf("trace call failed: %v", err)
 	}
 
-	resp := &SimulationResponse{
-		ExecutionId: req.ExecutionId,
-		Success: trace.Error == "",
-		Data: OutputData{
+	status := "success"
+	if trace.Error != "" {
+		status = "failed"
+	}
+
+	run := &models.Run{
+		From:   transaction.From,
+		To:     transaction.To,
+		Value:  value,
+		Status: status,
+		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
 	}
 
 	if trace.GasUsed != "" {
 		gasUsed := new(big.Int)
-		if _, ok := gasUsed.SetString(trace.GasUsed[2:], 16); ok {
-			resp.GasUsed = gasUsed.Uint64()
+		if _, ok := gasUsed.SetString(trace.GasUsed, 0); ok {
+			run.GasEstimate = gasUsed.Uint64()
 		}
 	}
 
 	if trace.Error != "" {
-		resp.ErrorMessage = trace.Error
+		run.Error = &trace.Error
 	}
 
-	if req.ABI != "" && len(trace.Output) > 0 && len(req.Data) >= 4 {
-		parsedABI, err := abi.JSON(strings.NewReader(req.ABI))
+	if ABI != nil && len(trace.Output) > 0 && len(transaction.Data) >= 4 {
+		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
-			resp.ErrorMessage = fmt.Sprintf("failed to parse ABI: %v", err)
-			return resp, nil
+			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
+			run.Error = &errorStr
+			return run, nil
 		}
 
-		methodID := req.Data[:4]
+		methodIDHex := transaction.Data[:10]
+		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
 			if bytes.Equal(m.ID, methodID) {
@@ -150,18 +137,28 @@ func (s *Simulator) Simulate(req SimulationRequest) (*SimulationResponse, error)
 		}
 
 		if method == nil {
-			resp.ErrorMessage = "method not found in ABI"
-			return resp, nil
+			return nil, fmt.Errorf("method not found for ID: %x", methodID)
 		}
 
+		// TODO: Do this when there is nothing left more pressing to work on. This
+		//       really should not be prioritized unless there are zero tickets and
+		//       we have an actual use for it somewhere in the app or idea.
 		// decoded, err := method.Outputs.Unpack(trace.Output)
 		// if err != nil {
 		// 	resp.ErrorMessage = fmt.Sprintf("failed to decode return data: %v", err)
 		// 	return resp, nil
 		// }
-		//
 		// resp.Data.Decoded = decoded
 	}
 
-	return resp, nil
+	return run, nil
+}
+
+func Simulate(transaction Transaction) (*models.Run, error) {
+	runResponse, err := SimulateRaw(transaction, &plug_router.PlugRouterMetaData.ABI)
+	if err != nil {
+		return nil, err
+	}
+
+	return runResponse, nil
 }

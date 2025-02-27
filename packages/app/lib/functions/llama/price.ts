@@ -7,7 +7,7 @@ const PRICE_CACHE_TIME = 3 * 60 * 1000
 export const getPriceKey = (chain: string, address: string) => `${chain.toLowerCase()}:${address}`
 
 export const getPrices = async (queries: string[]) => {
-	const cachedPrices = await db.tokenPrice.findMany({
+	const cachedPrices = await db.price.findMany({
 		where: { id: { in: queries } }
 	})
 
@@ -66,7 +66,7 @@ export const getPrices = async (queries: string[]) => {
 
 	await Promise.all(
 		transformed.map(async price => {
-			await db.tokenPrice.upsert({
+			await db.price.upsert({
 				where: { id: price.id },
 				create: price,
 				update: price
@@ -74,7 +74,7 @@ export const getPrices = async (queries: string[]) => {
 		})
 	)
 
-	return await db.tokenPrice.findMany({
+	return await db.price.findMany({
 		where: { id: { in: queries } },
 		select: { id: true, price: true, change: true }
 	})

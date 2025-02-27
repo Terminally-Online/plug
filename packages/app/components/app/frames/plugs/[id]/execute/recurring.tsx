@@ -20,7 +20,7 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 			handleBack={() => handle.frame("schedule")}
 			hasOverlay={true}
 		>
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2">
 				{frequencies.map(frequency => (
 					<Button
 						key={frequency.label}

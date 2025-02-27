@@ -5,49 +5,55 @@ import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc
 import { getDominantColor } from "@/server/color"
 
 export const misc = createTRPCRouter({
-	featureRequest: anonymousProtectedProcedure
-		.input(z.object({ context: z.string(), message: z.string().optional() }))
-		.mutation(async ({ input, ctx }) => {
-			return await ctx.db.featureRequest.create({
-				data: {
-					userAddress: ctx.session.address,
-					context: input.context,
-					message: input.message
-				}
-			})
-		}),
-
 	search: anonymousProtectedProcedure.input(z.string().optional()).query(async ({ input, ctx }) => {
-		const socket = await ctx.db.userSocket.findFirst({
+		const socket = await ctx.db.socket.findFirst({
 			where: { id: ctx.session.address }
 		})
 
 		if (socket === null) return { plugs: [], tokens: [], collectibles: [] }
 
-		const plugs = await ctx.db.workflow.findMany({
-			where: {
-				name: {
-					contains: input,
-					mode: "insensitive",
-					notIn: ["Untitled Plug", ""]
-				},
-				OR: [
-					// Show user's own plugs (including private)
-					{
-						socketId: ctx.session.address
+		const addForkCounts = async <T extends { id: string }>(plugs: T[]) => {
+			const forkCounts = await Promise.all(
+				plugs.map(async plug => ({
+					id: plug.id,
+					forks: await ctx.db.plug.count({
+						where: { plugForkedId: plug.id }
+					})
+				}))
+			)
+
+			return plugs.map(plug => ({
+				...plug,
+				forkCount: forkCounts.find(f => f.id === plug.id)?.forks ?? 0
+			}))
+		}
+
+		const plugs = await addForkCounts(
+			await ctx.db.plug.findMany({
+				where: {
+					name: {
+						contains: input,
+						mode: "insensitive",
+						notIn: ["Untitled Plug", ""]
 					},
-					// Show other users' public plugs
-					{
-						socketId: {
-							not: ctx.session.address
+					OR: [
+						// Show user's own plugs (including private)
+						{
+							socketId: ctx.session.address
 						},
-						isPrivate: false,
-						actions: { not: "[]" }
-					}
-				]
-			},
-			orderBy: { updatedAt: "desc" }
-		})
+						// Show other users' public plugs
+						{
+							socketId: {
+								not: ctx.session.address
+							},
+							isPrivate: false,
+							actions: { not: "[]" }
+						}
+					]
+				},
+				orderBy: { updatedAt: "desc" }
+			})
+		)
 
 		const { tokens } = ctx.session.user.anonymous
 			? { tokens: [] }

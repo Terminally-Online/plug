@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
 
@@ -54,10 +54,39 @@ export const OPTIONS: Options = [
 ] as const
 
 export const ColumnAdd = ({ index }: { index: number }) => {
+	const resizeRef = useRef<HTMLDivElement>(null)
+
 	const { getFlag } = useFlags()
-	const { socket } = useSocket()
 	const { columns, handle } = useColumnStore()
+	const { socket } = useSocket()
 	const { handle: plugHandle } = usePlugStore()
+
+	const [width, setWidth] = useState(COLUMNS.DEFAULT_WIDTH)
+	const [isResizing, setIsResizing] = useState(false)
+
+	useEffect(() => {
+		const getBoundedWidth = (width: number) => Math.min(Math.max(width, 380), 620)
+
+		const handleMouseMove = (e: MouseEvent) => {
+			if (!resizeRef.current || !isResizing) return
+
+			setWidth(getBoundedWidth(e.clientX - resizeRef.current.getBoundingClientRect().left))
+		}
+
+		const handleMouseUp = () => {
+			setIsResizing(false)
+		}
+
+		if (isResizing) {
+			window.addEventListener("mousemove", handleMouseMove)
+			window.addEventListener("mouseup", handleMouseUp)
+		}
+
+		return () => {
+			window.removeEventListener("mousemove", handleMouseMove)
+			window.removeEventListener("mouseup", handleMouseUp)
+		}
+	}, [isResizing])
 
 	const flagOptions = useMemo(() => {
 		const options: Options = []
@@ -68,29 +97,26 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 				description: "Install Plug as an app on your device.",
 				icon: <Star size={14} className="opacity-40" />
 			})
-		
-		if (socket?.admin) {
-			options.push({
-				label: "ADMIN",
-				description: "Manage administrative settings.",
-				icon: <LockIcon size={14} className="opacity-40" />
-			})
-		}
 
 		return options
-	}, [getFlag, socket])
+	}, [getFlag])
 
 	const isApproved = Boolean(socket?.identity?.approvedAt)
 	if (!isApproved) return null
 
 	const options = [
-		...OPTIONS,
 		...flagOptions,
+		...OPTIONS,
 		{
 			label: "SETTINGS",
 			description: "View and manage your Plug settings.",
 			icon: <Cog size={14} className="opacity-40" />
-		}
+		},
+		socket?.admin ? {
+			label: "ADMIN",
+			description: "Manage administrative settings.",
+			icon: <LockIcon size={14} className="opacity-40" />
+		} : {}
 	]
 
 	const isBody = index != columns.length - 2
@@ -98,12 +124,13 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 	return (
 		<>
 			<div
+				ref={resizeRef}
 				className={cn(
 					"relative flex select-none flex-col rounded-lg",
 					!isBody && "my-2 border-[1px] border-plug-green/10 bg-white",
 					columns.some(column => column.index >= 0) ? "" : "ml-2"
 				)}
-				style={{ minWidth: "480px" }}
+				style={{ width, minWidth: width }}
 			>
 				{!isBody && (
 					<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
@@ -143,7 +170,7 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 									</div>
 
 									<div className="flex flex-col items-start text-left font-bold">
-										<p>{formatTitle(option.label.replace("_", " ").toLowerCase())}</p>
+										<p>{formatTitle(option?.label?.replace("_", " ").toLowerCase() ?? "")}</p>
 										<p className="text-sm opacity-40">{option.description}</p>
 									</div>
 								</div>
@@ -151,6 +178,17 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 						))}
 					</div>
 				</div>
+
+			</div>
+
+			<div
+				className="h-full cursor-col-resize pl-2"
+				onMouseDown={e => {
+					e.preventDefault()
+					setIsResizing(true)
+				}}
+			>
+				<div className="h-full w-[1px] bg-plug-green/10" />
 			</div>
 		</>
 	)

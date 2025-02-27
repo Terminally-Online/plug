@@ -98,7 +98,7 @@ const Page = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 							<Button
 								variant="white"
 								onClick={() => router.push(routes.app)}
-								className="mt-4 bg-plug-yellow text-plug-green"
+								className="mt-8 border-plug-yellow bg-plug-yellow text-plug-green"
 							>
 								Enter App
 							</Button>

@@ -36,7 +36,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 				<motion.article
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
-					className="mx-auto flex max-w-3xl flex-col gap-4 pb-24 font-bold"
+					className="mx-auto flex max-w-3xl w-full overflow-x-hidden flex-col gap-4 pb-24 font-bold"
 				>
 					<motion.h1
 						className="text-[48px] font-black leading-tight md:text-[72px] lg:max-w-[840px] lg:text-[82px] xl:max-w-[1240px] xl:text-[96px]"
@@ -68,41 +68,43 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 						</p>
 					</div>
 
-					{post.slug in postAnimations && <>{postAnimations[post.slug as keyof typeof postAnimations]}</>}
+					{post.slug in postAnimations && <div className="min-h-[480px] overflow-hidden">
+						{postAnimations[post.slug as keyof typeof postAnimations]}
+					</div>}
 
 					<ReactMarkdown
 						components={{
 							h1: ({ children }) => (
-								<h1 className="text-[60px] font-black md:text-[80px] 2xl:text-[180px]">{children}</h1>
+								<h1 className="text-[48px] md:text-[72px] lg:text-[96px] xl:text-[120px] font-black">{children}</h1>
 							),
 							h2: ({ children }) => (
-								<h2 className="mt-8 text-[48px] font-black md:text-[60px] 2xl:text-[60px]">
+								<h2 className="mt-8 text-[36px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black">
 									{children}
 								</h2>
 							),
 							h3: ({ children }) => (
-								<h3 className="mt-8 text-[36px] font-black md:text-[48px] 2xl:text-[48px]">
+								<h3 className="mt-8 text-[28px] md:text-[36px] lg:text-[48px] xl:text-[56px] font-black">
 									{children}
 								</h3>
 							),
 							h4: ({ children }) => (
-								<h4 className="mt-8 text-[24px] font-black md:text-[36px] 2xl:text-[36px]">
+								<h4 className="mt-8 text-[24px] md:text-[28px] lg:text-[36px] xl:text-[42px] font-black">
 									{children}
 								</h4>
 							),
 							h5: ({ children }) => (
-								<h5 className="mt-8 text-[20px] font-black md:text-[24px] 2xl:text-[24px]">
+								<h5 className="mt-8 text-[20px] md:text-[24px] lg:text-[28px] xl:text-[32px] font-black">
 									{children}
 								</h5>
 							),
 							h6: ({ children }) => (
-								<h6 className="mt-8 text-[16px] font-black md:text-[20px] 2xl:text-[18px]">
+								<h6 className="mt-8 text-[16px] md:text-[18px] lg:text-[20px] xl:text-[24px] font-black">
 									{children}
 								</h6>
 							),
-							p: ({ children }) => <p className="text-justify opacity-80">{children}</p>,
-							ul: ({ children }) => <ul className="list-disc text-justify opacity-60">{children}</ul>,
-							ol: ({ children }) => <ol className="list-decimal text-justify opacity-60">{children}</ol>,
+							p: ({ children }) => <p className="break-words opacity-80">{children}</p>,
+							ul: ({ children }) => <ul className="list-disc break-words opacity-60">{children}</ul>,
+							ol: ({ children }) => <ol className="list-decimal break-words opacity-60">{children}</ol>,
 							li: ({ children }) => <li className="mb-2 list-item">{children}</li>,
 							a: ({ children, ...props }) => {
 								const faviconUrl = getFavicon(props.href ?? "")
@@ -110,7 +112,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 								return (
 									<span
 										{...props}
-										className="group inline cursor-pointer underline transition-opacity duration-200 hover:opacity-80"
+										className="group inline cursor-pointer underline break-words transition-opacity duration-200 hover:opacity-80"
 										onClick={e => {
 											e.preventDefault()
 											e.stopPropagation()
@@ -138,15 +140,14 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 								)
 							},
 							img: ({ src, alt }) => (
-								<span className="group relative transition-all duration-200">
+								<span className="group relative max-w-full overflow-hidden transition-all duration-200">
 									<Image
 										src={src ?? ""}
 										alt={alt ?? ""}
 										width={1920}
 										height={1080}
-										className="mx-auto max-h-[420px] w-full grayscale transition-all duration-200 group-hover:grayscale-0"
+										className="mx-auto max-h-[420px] w-full object-contain transition-all duration-200"
 									/>
-									<span className="absolute inset-0 bg-plug-yellow mix-blend-multiply transition-opacity duration-200 group-hover:opacity-0" />
 								</span>
 							)
 						}}

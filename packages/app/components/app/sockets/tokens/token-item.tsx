@@ -27,7 +27,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => {} : () => handle.frame()}>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => { } : () => handle.frame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>
@@ -87,7 +87,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 										"ml-auto flex flex-row items-center text-sm",
 										token.change === undefined
 											? "opacity-60"
-											: token.change > 0
+											: token.change >= 0
 												? "text-plug-green"
 												: "text-red-500"
 									)}

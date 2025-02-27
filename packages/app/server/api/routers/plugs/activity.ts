@@ -2,114 +2,100 @@ import { TRPCError } from "@trpc/server"
 
 import { z } from "zod"
 
-import { Prisma } from "@prisma/client"
+import { Plug } from "@prisma/client"
 
+import { Action, createIntent, deleteIntent, getIntent, Intent, toggleIntent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-const execution = Prisma.validator<Prisma.ExecutionDefaultArgs>()({
-	include: {
-		workflow: true,
-		simulations: { orderBy: { createdAt: "desc" } }
-	}
-})
-export type Execution = Prisma.ExecutionGetPayload<typeof execution>
+type IntentWithPlug = Intent & { plug: Plug }
 
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		return await ctx.db.execution.findMany({
-			where: { workflow: { socketId: ctx.session.address } },
-			orderBy: { createdAt: "desc" },
-			include: { workflow: true, simulations: { orderBy: { createdAt: "desc" } } }
+		const intents = await getIntent({ address: ctx.session.address })
+
+		const intentIds = intents.map(intent => intent.id)
+		const plugs = await ctx.db.plug.findMany({
+			where: { intentIds: { hasSome: intentIds } }
 		})
+
+		return intents
+			.map(intent => {
+				const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
+				if (!plug) return
+				return { ...intent, plug }
+			})
+			.filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
 		.input(
 			z.object({
-				workflowId: z.string(),
+				plugId: z.string(),
 				chainId: z.number(),
 				frequency: z.number(),
-				startAt: z.date(),
-				endAt: z.date().optional()
+				startAt: z.coerce.date(),
+				endAt: z.coerce.date().optional()
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const workflow = await ctx.db.workflow.findUnique({
+			const plug = await ctx.db.plug.findUniqueOrThrow({
 				where: {
-					id: input.workflowId,
-					socketId: ctx.session.address
+					id: input.plugId
 				}
 			})
+			const intent = await createIntent({
+				chainId: input.chainId,
+				from: ctx.session.address,
+				status: "active",
+				inputs: JSON.parse(plug.actions),
+				frequency: input.frequency,
+				startAt: input.startAt.toISOString(),
+				endAt: input.endAt?.toISOString()
+			})
 
-			if (!workflow) throw new TRPCError({ code: "NOT_FOUND" })
-
-			// NOTE: We have a try/catch here so that if someone posts in invalid JSON, we don't
-			// crash the server and instead return the proper 400 (Bad Request) error. We do not
-			// need to utilize the parsed JSON here because we are only using it to validate the
-			// JSON string will be fine when sent to the Solver backend.
-			try {
-				JSON.parse(workflow.actions)
-				const execution = await ctx.db.execution.create({
+			const updated = {
+				...intent,
+				plug: await ctx.db.plug.update({
+					where: { id: input.plugId, socketId: ctx.session.address },
 					data: {
-						workflowId: input.workflowId,
-						chainId: input.chainId,
-						actions: workflow.actions,
-
-						frequency: input.frequency,
-						startAt: input.startAt,
-						endAt: input.endAt,
-						periodEndAt: input.frequency
-							? new Date(input.startAt.getTime() + input.frequency * 60 * 1000 * 60 * 24)
-							: null,
-						nextSimulationAt: input.startAt
-					},
-					include: {
-						workflow: true,
-						simulations: { orderBy: { createdAt: "desc" } }
+						intentIds: {
+							push: intent.id
+						}
 					}
 				})
-
-				ctx.emitter.emit(subscriptions.execution.update, execution)
-
-				return execution
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
 			}
+
+			ctx.emitter.emit(subscriptions.execution.update, updated)
+
+			return updated
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.execution.findUnique({
-			where: { id: input.id },
-			include: { workflow: true }
-		})
-
-		if (!execution) throw new TRPCError({ code: "NOT_FOUND" })
-
-		const toggled = await ctx.db.execution.update({
-			where: { id: input.id },
-			data: { status: execution.status.trim() !== "active" ? "active" : "paused" },
-			include: {
-				workflow: true,
-				simulations: { orderBy: { createdAt: "desc" } }
+		const plug = await ctx.db.plug.findFirstOrThrow({
+			where: {
+				socketId: ctx.session.address,
+				intentIds: { has: input.id }
 			}
 		})
 
-		ctx.emitter.emit(subscriptions.execution.update, toggled)
+		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-		return toggled
+		const intent = { ...(await toggleIntent(input)), plug }
+
+		// ctx.emitter.emit(subscriptions.execution.update, intent)
+
+		// return intent
 	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const execution = await ctx.db.execution.delete({
-			where: { id: input.id }
-		})
+		const intent = await deleteIntent(input)
 
-		ctx.emitter.emit(subscriptions.execution.delete, execution)
+		ctx.emitter.emit(subscriptions.execution.delete, intent)
 
-		return execution
+		return intent
 	}),
 
-	onActivity: subscription<Execution>("protected", subscriptions.execution.update),
-	onDelete: subscription<Execution>("protected", subscriptions.execution.delete)
+	onActivity: subscription<IntentWithPlug>("protected", subscriptions.execution.update),
+	onDelete: subscription<IntentWithPlug>("protected", subscriptions.execution.delete)
 })

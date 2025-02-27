@@ -2,8 +2,13 @@ import { FC, HTMLAttributes, useState } from "react"
 import { Button } from "@/components/shared/buttons/button"
 import { api } from "@/server/client"
 import { Square, Loader, PlayIcon } from "lucide-react"
+import { useSetAtom } from "jotai"
+import { columnAtomFamily, columnsStorageAtom } from "@/state/column-atoms"
+import { DEFAULT_COLUMNS } from "@/state/columns"
 
 export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
+	const setColumns = useSetAtom(columnsStorageAtom)
+
 	const [killed, setKilled] = useState(false)
 
 	const { isLoading } = api.solver.killer.killed.useQuery(undefined, {
@@ -16,9 +21,9 @@ export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 	})
 
 	return (
-		<div {...props} className="p-4 flex items-center justify-between">
+		<div {...props} className="p-4 flex items-center flex-col gap-2">
 			<Button
-				variant={isLoading ? "primaryDisabled" : killed ? "primary" : "destructive"}
+				variant={isLoading ? "primaryDisabled" : "primary"}
 				onClick={() => toggleSolverMutation.mutate()}
 				disabled={isLoading}
 				className="w-full py-4 justify-center flex flex-row items-center gap-2"
@@ -30,8 +35,16 @@ export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }
 				) : (
 					<Square className="h-4 w-4 fill-current opacity-60" />
 				)}
-
 				{killed ? "Revive" : "Kill"} Solver
+			</Button>
+
+			<Button
+				variant={isLoading ? "primaryDisabled" : "primary"}
+				onClick={() => setColumns(DEFAULT_COLUMNS)}
+				className="w-full py-4 justify-center flex flex-row items-center gap-2"
+			>
+				<Square className="h-4 w-4 fill-current opacity-60" />
+				Reset Columns
 			</Button>
 		</div>
 	)

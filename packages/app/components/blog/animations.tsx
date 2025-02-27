@@ -1,43 +1,92 @@
+import { cn } from "@/lib"
 import { motion } from "framer-motion"
 
 export const postAnimations = {
-	"pulse-of-crypto": (
+	"hello-world": (
 		<div
 			className="grid items-center justify-center gap-[2px]"
 			style={{
-				gridTemplateColumns: "repeat(20, 1fr)"
+				gridTemplateColumns: "repeat(19, 1fr)"
 			}}
 		>
 			{Array.from({ length: 160 }).map((_, index) => {
-				const row = Math.floor(index / 20)
-				const col = index % 20
+				const row = Math.floor(index / 19)
+				const col = index % 19
 
-				const frequency = 0.5
-				const amplitude = 5
-				const speed = 0.1
+				const pattern = [
+					[0, 2, 2, 0, 0, 2, 2, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 2, 0],
+					[0, 0, 2, 2, 0, 0, 2, 2, 0, 2, 0, 2, 2, 0, 0, 2, 2, 0, 0],
+					[2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 2],
+					[2, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 2, 2],
+					[0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 0],
+					[2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2],
+					[2, 2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 2],
+					[0, 2, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 0],
+				]
 
-				const waveRow = Math.sin(col * frequency) * amplitude + 4
-
-				const distanceFromWave = Math.abs(row - waveRow)
-				const isPartOfWave = distanceFromWave < 2
+				const pixelType = pattern[row]?.[col] || 0
+				const isPartOfSun = pixelType === 1
+				const isRay = pixelType === 2
 
 				return (
 					<motion.div
 						key={index}
-						className="mx-auto h-8 w-full rounded-[4px]"
-						initial={{ backgroundColor: "#385842" }}
+						className={cn(
+							"mx-auto h-8 w-full rounded-[4px]",
+							isPartOfSun ? "bg-plug-yellow" : isRay ? "bg-plug-yellow" : "bg-transparent"
+						)}
+						initial={{
+							opacity: 0,
+							...(!isRay && { y: 40 })
+						}}
 						animate={{
-							backgroundColor: isPartOfWave ? ["#385842", "#D2F38A", "#385842"] : ["#385842"]
+							opacity: 1,
+							y: 0,
+							...(isRay && { opacity: [0.4, 1, 0.4] })
 						}}
 						transition={{
-							duration: 2,
-							repeat: Infinity,
+							duration: isRay ? 1.5 + Math.random() * 0.5 : 0.5,
+							repeat: isRay ? Infinity : 0,
 							repeatType: "reverse",
-							delay: col * speed
+							ease: "easeInOut",
+							delay: isPartOfSun
+								? 0
+								: isRay
+									? 0.5 + (row * 0.1) + (Math.random() * 0.3)
+									: 0
 						}}
 					/>
 				)
 			})}
 		</div>
-	)
+	),
+	"chat-interfaces": (<div className="w-full h-1/2 flex items-center justify-center mt-8 relative">
+			{Array.from({ length: 36 }).map((_, bubbleIndex) => (
+				<motion.div 
+					key={bubbleIndex} 
+					className="border-[12px] border-plug-white absolute rounded-full bg-[#EAEEE5] p-12 flex flex-row items-center gap-4"
+					style={{
+						left: `${-50 + Math.random() * 150}%`,
+						top: `${-50 + Math.random() * 150}%`,
+					}}
+				>
+					{Array.from({ length: 3 }).map((_, dotIndex) => (
+						<motion.div
+							key={`${bubbleIndex}-${dotIndex}`}
+							className="w-8 h-8 rounded-full bg-plug-green/10"
+							initial={{ y: -10 }}
+							animate={{ y: 10 }}
+							transition={{
+								repeat: Infinity,
+								repeatType: "reverse",
+								ease: "easeInOut",
+								delay: 0.1 * dotIndex,
+								repeatDelay: 0.1,
+							}}
+						/>
+					))}
+				</motion.div>
+	
+			))}
+		</div>)
 }

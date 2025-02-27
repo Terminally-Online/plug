@@ -1,9 +1,13 @@
 package references
 
 type Network struct {
-	ChainIds   []uint64
-	Explorer   string
-	References map[string]map[string]string
+	Name       string                       `json:"name"`
+	ChainIds   []uint64                     `json:"chainIds"`
+	Explorer   string                       `json:"explorer"`
+	References map[string]map[string]string `json:"references,omitempty"`
+	Icon       struct {
+		Default string `json:"default"`
+	} `json:"icon"`
 }
 
 type AdditionalSource struct {

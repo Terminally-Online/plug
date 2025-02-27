@@ -6,10 +6,6 @@ import { ZerionFungibles } from "@/lib/types"
 
 import { getZerionApiKey } from "./authentication"
 
-const SEARCH_TOKENS_CACHE_TIME = 10 * 60 * 1000
-
-const cache = new Map<string, { timestamp: number; tokens: any[] }>()
-
 type Tokens = {
 	price: number
 	change: number
@@ -48,6 +44,9 @@ type Tokens = {
 	}
 }[]
 
+const SEARCH_TOKENS_CACHE_TIME = 10 * 60 * 1000
+const cache = new Map<string, { timestamp: number; tokens: any[] }>()
+
 export const getTokens = async (search: string = "", chains: string[] = ["base"]): Promise<Tokens> => {
 	const cacheKey = `${chains.join(",")}-${search}`
 	if (cache.has(cacheKey)) {
@@ -69,7 +68,6 @@ export const getTokens = async (search: string = "", chains: string[] = ["base"]
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
 	const data: ZerionFungibles = response.data
-
 	const tokens = data.data.map(token => ({
 		...token.attributes,
 		icon: token.attributes?.icon?.url || undefined,

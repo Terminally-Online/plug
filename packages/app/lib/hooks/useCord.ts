@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
 	CordState,
@@ -8,7 +8,6 @@ import {
 	resolveSentence,
 	setValue,
 	shouldRenderInput,
-	UseCordReturn
 } from "@terminallyonline/cord"
 
 const createStateFromValues = (values: Record<string, string | undefined>) => {
@@ -105,9 +104,9 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 					values: newValues,
 					validationErrors: result.error
 						? new Map(prev.validationErrors).set(index, {
-								type: "validation",
-								message: result.error
-							})
+							type: "validation",
+							message: result.error
+						})
 						: new Map([...prev.validationErrors].filter(([k]) => k !== index))
 				}))
 			},

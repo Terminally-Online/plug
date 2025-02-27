@@ -12,19 +12,6 @@ import { useSocket } from "@/state/authentication"
 
 const GRADIENTS = ["#00E100, #A3F700", "#FFA800, #FAFF00", "#4E7FFD, #9E62FF", "#F94EFD, #FD4ECC"]
 
-type StatsResponse = {
-	counts: {
-		referrals: number[]
-		views: number[]
-		runs: number[]
-		users: number[]
-	}
-	periods: {
-		weekStart: string
-		weekEnd: string
-	}[]
-}
-
 const ProfileStat: FC<{
 	index: number
 	isActive: boolean
@@ -98,8 +85,10 @@ const ProfileStats = () => {
 	// Construct stats array with real data
 	const stats: number[][] =
 		statsData?.periods.map((_, index) => [
-			statsData.counts.users[index] ?? 0,
-			statsData.counts.runs[index] ?? 0,
+			0,
+			0,
+			// statsData.counts.users[index] ?? 0,
+			// statsData.counts.runs[index] ?? 0,
 			statsData.counts.views[index] ?? 0,
 			statsData.counts.referrals[index] ?? 0
 		]) ?? Array(4).fill([0, 0, 0, 0])

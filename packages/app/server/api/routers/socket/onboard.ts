@@ -22,7 +22,7 @@ export const onboard = createTRPCRouter({
 				}
 			})
 
-			const socket = await ctx.db.userSocket.findUnique({
+			const socket = await ctx.db.socket.findUnique({
 				where: { id: ctx.session.address },
 				...SOCKET_BASE_QUERY
 			})

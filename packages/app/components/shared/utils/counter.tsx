@@ -5,14 +5,7 @@ import { motion } from "framer-motion"
 import { formatForDisplay, useClient } from "@/lib"
 import { cn } from "@/lib/utils"
 
-const MinusColumn = () => <span>-</span>
-const CommaColumn = () => <span>,</span>
-const DecimalColumn = () => <span>.</span>
-const SlashColumn = () => <span>/</span>
-const ColonColumn = () => <span>:</span>
-const PercentColumn = () => <span>%</span>
-const LeftChevronColumn = () => <span>&lt;</span>
-const RightChevronColumn = () => <span>&gt;</span>
+
 
 const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	const [y, setY] = useState(0)
@@ -55,25 +48,13 @@ export const Counter: FC<
 	return (
 		<span className={cn("relative flex w-full flex-row-reverse overflow-hidden", className)} {...props}>
 			{count !== undefined && count !== null ? (
-				numArray.map((number, index) =>
-					number === "." ? (
-						<DecimalColumn key={index} />
-					) : number === "-" ? (
-						"-"
-					) : number === "," ? (
-						<CommaColumn key={index} />
-					) : number === "/" ? (
-						<SlashColumn key={index} />
-					) : number === "%" ? (
-						<PercentColumn key={index} />
-					) : number === "<" ? (
-						<LeftChevronColumn key={index} />
-					) : number === ">" ? (
-						<RightChevronColumn key={index} />
-					) : number === ":" ? (
-						<ColonColumn key={index} />
+				numArray.map((char, index) =>
+					char === " " ? (
+						<span key={index}>&nbsp;</span>
+					) : !isNaN(Number(char)) ? (
+						<NumberColumn key={index} digit={char} />
 					) : (
-						<NumberColumn key={index} digit={number} />
+						<span key={index}>{char}</span>
 					)
 				)
 			) : (
