@@ -245,7 +245,6 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		}
 	}
 	run.IntentId = intent.Id
-	run.Inputs = intent.Inputs
 
 	if err := database.DB.Create(run).Error; err != nil {
 		return nil, fmt.Errorf("failed to save simulation run: %v", err)
@@ -285,7 +284,6 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		}
 	}
 	run.IntentId = intent.Id
-	run.Inputs = intent.Inputs
 
 	if err := database.DB.Create(run).Error; err != nil {
 		return nil, fmt.Errorf("failed to save simulation run: %v", err)
