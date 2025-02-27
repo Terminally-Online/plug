@@ -1,3 +1,5 @@
+import { TRPCError } from "@trpc/server"
+
 import { z } from "zod"
 
 import { Plug } from "@prisma/client"
@@ -17,11 +19,13 @@ export const activity = createTRPCRouter({
 			where: { intentIds: { hasSome: intentIds } }
 		})
 
-		return intents.map(intent => {
-			const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
-			if (!plug) return
-			return { ...intent, plug }
-		}).filter(intent => intent != undefined)
+		return intents
+			.map(intent => {
+				const plug = plugs.find(plug => plug.intentIds.includes(intent.id))
+				if (!plug) return
+				return { ...intent, plug }
+			})
+			.filter(intent => intent != undefined)
 	}),
 
 	queue: protectedProcedure
@@ -61,16 +65,27 @@ export const activity = createTRPCRouter({
 					}
 				})
 			}
+
 			ctx.emitter.emit(subscriptions.execution.update, updated)
+
 			return updated
 		}),
 
 	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-		const intent = await toggleIntent(input)
+		const plug = await ctx.db.plug.findFirstOrThrow({
+			where: {
+				socketId: ctx.session.address,
+				intentIds: { has: input.id }
+			}
+		})
 
-		ctx.emitter.emit(subscriptions.execution.update, intent)
+		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-		return intent
+		const intent = { ...(await toggleIntent(input)), plug }
+
+		// ctx.emitter.emit(subscriptions.execution.update, intent)
+
+		// return intent
 	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
