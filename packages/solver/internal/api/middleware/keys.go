@@ -20,6 +20,12 @@ type KeyCache struct {
 	windowStart atomic.Int64
 }
 
+type RateLimitInfo struct {
+	Used  int64     `json:"used"`
+	Limit int       `json:"limit"`
+	Reset time.Time `json:"reset"`
+}
+
 type KeyRateLimiter struct {
 	keys map[string]*KeyCache
 	mu   sync.RWMutex // mutex for map operations
@@ -38,7 +44,7 @@ Allow does a few things to facilitate the rate limiting of an API key.
 3. We check if the rate limit has been reached, and if not, we increment the count atomically.
 4. If the rate limit has been reached, we return false, otherwise return true.
 */
-func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, statusCode int, err error) {
+func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, limitInfo RateLimitInfo, statusCode int, err error) {
 	now := time.Now().Unix()
 
 	rl.mu.RLock()
@@ -54,7 +60,7 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, statusCo
 		if cachedKey, exists = rl.keys[apiKey]; !exists {
 			dbApiKey, statusCode, err := lookupApiKey(apiKey)
 			if err != nil {
-				return models.ApiKey{}, statusCode, err
+				return models.ApiKey{}, RateLimitInfo{}, statusCode, err
 			}
 
 			cachedKey = &KeyCache{
@@ -62,9 +68,16 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, statusCo
 			}
 			cachedKey.windowStart.Store(now)
 			cachedKey.count.Store(1)
-
 			rl.keys[apiKey] = cachedKey
-			return *dbApiKey, http.StatusOK, nil
+
+			resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
+			limitInfo = RateLimitInfo{
+				Used:  cachedKey.count.Load(),
+				Limit: cachedKey.key.RateLimit,
+				Reset: resetTime,
+			}
+
+			return *cachedKey.key, limitInfo, http.StatusOK, nil
 		}
 	}
 
@@ -77,32 +90,48 @@ func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, statusCo
 		if err != nil {
 			delete(rl.keys, apiKey)
 			rl.mu.Unlock()
-			return models.ApiKey{}, statusCode, err
+			return models.ApiKey{}, RateLimitInfo{}, statusCode, err
 		}
 
 		cachedKey.key = dbApiKey
 		cachedKey.windowStart.Store(now)
 		cachedKey.count.Store(1)
 
+		resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
+		limitInfo = RateLimitInfo{
+			Used:  cachedKey.count.Load(),
+			Limit: cachedKey.key.RateLimit,
+			Reset: resetTime,
+		}
+
 		rl.mu.Unlock()
-		return *cachedKey.key, http.StatusOK, nil
+		return *cachedKey.key, limitInfo, http.StatusOK, nil
 	}
 
-	newCount := cachedKey.count.Add(1)
-	if newCount > int64(cachedKey.key.RateLimit) {
-		return *cachedKey.key, http.StatusTooManyRequests, fmt.Errorf("rate limit exceeded")
+	currentCount := cachedKey.count.Load()
+	resetTime := time.Unix(cachedKey.windowStart.Load()+WINDOW_SECONDS, 0)
+	limitInfo = RateLimitInfo{
+		Used:  currentCount,
+		Limit: cachedKey.key.RateLimit,
+		Reset: resetTime,
 	}
 
-	return *cachedKey.key, http.StatusOK, nil
+	if currentCount >= int64(cachedKey.key.RateLimit) {
+		return *cachedKey.key, limitInfo, http.StatusTooManyRequests, fmt.Errorf("rate limit exceeded")
+	}
+
+	limitInfo.Used = cachedKey.count.Add(1)
+	return *cachedKey.key, limitInfo, http.StatusOK, nil
 }
 
-func lookupApiKey(apiKeyId string) (dbKey *models.ApiKey, statusCode int, err error) {
-	if apiKeyId == "" {
+func lookupApiKey(apiKey string) (dbKey *models.ApiKey, statusCode int, err error) {
+	if apiKey == "" {
 		return nil, http.StatusUnauthorized, fmt.Errorf("missing api key")
 	}
 
 	dbApiKey := &models.ApiKey{}
-	if err := database.DB.Unscoped().Where("id = ?", apiKeyId).First(dbApiKey); err != nil {
+	result := database.DB.Unscoped().Where("key = ?", apiKey).First(dbApiKey)
+	if result.Error != nil {
 		return nil, http.StatusUnauthorized, fmt.Errorf("invalid api key")
 	}
 
@@ -117,7 +146,7 @@ func (h *Handler) AdminApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
 
-		dbKey, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
+		dbKey, _, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
 		if err != nil {
 			http.Error(w, err.Error(), statusCode)
 			return
@@ -137,13 +166,16 @@ func (h *Handler) AdminApiKey(next http.Handler) http.Handler {
 func (h *Handler) ApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
-		dbKey, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
+		dbKey, limitInfo, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
 		if err != nil {
 			http.Error(w, err.Error(), statusCode)
 			return
 		}
 
 		r.Header.Set("X-Api-Key-Id", dbKey.Id)
+		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", limitInfo.Limit))
+		w.Header().Set("X-RateLimit-Used", fmt.Sprintf("%d", limitInfo.Used))
+		w.Header().Set("X-RateLimit-Reset", fmt.Sprintf("%d", limitInfo.Reset.Unix()))
 
 		next.ServeHTTP(w, r)
 	})
