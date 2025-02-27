@@ -11,6 +11,7 @@ import { LandingContainer } from "@/components/landing/layout/container"
 import { StaticLayout } from "@/components/landing/layout/static"
 import { Counter } from "@/components/shared/utils/counter"
 import { getFavicon, getPost, Post, PostLookup, posts } from "@/lib"
+import { env } from "@/env"
 
 export const dynamicParams = false
 
@@ -30,15 +31,15 @@ export async function getStaticPaths() {
 }
 
 export default function Page({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
-	// Create a summary from content if no description
 	const summaryText = post.description || post.content.substring(0, 160).replace(/[#*`]/g, '').trim();
-	
+
+	const opengraphImage = `${env.NEXT_PUBLIC_APP_URL || ''}/api/canvas/post?name=${encodeURIComponent(post.title)}&description=${encodeURIComponent(summaryText.replace("...", ""))}&author=${post.attributes.author}&at=${encodeURIComponent(post.attributes.created)}`
+
 	return (
-		<StaticLayout 
+		<StaticLayout
 			title={post.title}
-			ogTitle={`Plug Posts | ${post.title}`}
-			ogDescription={summaryText}
-			ogImage={`${process.env.NEXT_PUBLIC_URL || ''}/api/canvas/post?name=${encodeURIComponent(post.title)}`}
+			description={summaryText}
+			img={opengraphImage}
 		>
 			<LandingContainer>
 				<motion.article
