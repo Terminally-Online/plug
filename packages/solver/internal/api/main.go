@@ -30,9 +30,8 @@ func SetupRouter(s solver.Handler) *mux.Router {
 
 	protected.HandleFunc("/solver/save", s.CreateIntent).Methods("POST")
 	protected.HandleFunc("/solver/save/{id}", s.ReadIntent).Methods("GET")
-	protected.HandleFunc("/solver/save/{id}", s.UpdateIntent).Methods("POST")
+	protected.HandleFunc("/solver/save/{id}", s.ToggleIntent).Methods("POST")
 	protected.HandleFunc("/solver/save/{id}", s.DeleteIntent).Methods("DELETE")
-	protected.HandleFunc("/solver/save/{id}/toggle", s.ToggleIntent).Methods("POST")
 
 	// API key protected routes that can be killed
 	killable := protected.PathPrefix("").Subrouter()

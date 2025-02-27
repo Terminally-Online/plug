@@ -51,5 +51,5 @@ export const getIntent = async ({ id, address }: GetIntentProps): Promise<Array<
 
 	return await save("get", id ? `/${id}` : `/${address}`)
 }
-export const toggleIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}/toggle`)
+export const toggleIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}`)
 export const deleteIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("delete", `/${id}`)

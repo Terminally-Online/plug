@@ -200,10 +200,10 @@ model Plug {
   isPrivate    Boolean  @default(false)
   actions      String   @default("[]")
   color        String
-  tags         String[]
+  tags         String[] @default([])
   plugForkedId String?
   frequency    Int      @default(10)
-  intentIds    String[]
+  intentIds    String[] @default([])
 
   // ---------------------------------------------------------------------------
   // Many-to-one
