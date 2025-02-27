@@ -18,109 +18,60 @@ export default async function handler(req: NextRequest) {
     const { searchParams } = req.nextUrl
 
     const name = searchParams.get("name") ?? ""
-    // We're no longer using these parameters in the display
-    // const description = searchParams.get("description") ?? ""
-    // const at = searchParams.get("at") ? new Date(searchParams.get("at") ?? "") : new Date()
+    const description = searchParams.get("description") ?? ""
+    const author = searchParams.get("author") ?? "drakedanner"
+    const at = searchParams.get("at") ? new Date(searchParams.get("at") ?? "") : new Date()
 
-    // Function to properly capitalize title words
     const formatTitle = (title: string) => {
-      // Words to keep lowercase unless they're the first or last word
       const lowercaseWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'from', 'by', 'in', 'of'];
-      
-      // Words to always uppercase (acronyms and special terms)
       const specialTerms: Record<string, string> = {
         'defi': 'DeFi',
         'nft': 'NFT',
         'dao': 'DAO',
         'web3': 'Web3',
         'plug': 'Plug',
-        'and': '&'      
-        };
-      
+        'and': '&'
+      };
+
       const words = title.split(' ');
-      
+
       return words.map((word, index) => {
-        // Check if it's a special term
         const lowerWord = word.toLowerCase();
         if (lowerWord in specialTerms) {
           return specialTerms[lowerWord];
         }
-        
-        // First word, last word, or not a lowercase word
+
         if (index === 0 || index === words.length - 1 || !lowercaseWords.includes(lowerWord)) {
           return word.charAt(0).toUpperCase() + word.slice(1);
         }
-        
+
         return lowerWord;
       }).join(' ');
     }
 
     return new ImageResponse(
       <div
-        tw="flex flex-col w-full h-full relative"
+        tw="flex flex-col w-full h-full relative justify-end relative"
         style={{
           fontFamily: "Satoshi",
           background: "#FEFFF7"
         }}
       >
-        {/* Background curved path inspired by landing page */}
-        <svg
-          viewBox="0 0 1200 630"
-          fill="none"
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            zIndex: 1
-          }}
-        >
-          <path
-            d="M-100 600C150 500 450 700 700 550C950 400 1100 550 1300 500"
-            stroke="url(#gradient)"
-            strokeWidth="80"
-            fill="none"
-            strokeLinecap="round"
-            style={{
-              opacity: 1
-            }}
-          />
-          {/* Dotted overlay path for animated effect */}
-          <path
-            d="M-100 600C150 500 450 700 700 550C950 400 1100 550 1300 500"
-            stroke="#FEFFF7"
-            strokeWidth="80"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray="4 4"
-            style={{
-              opacity: 0.7
-            }}
-          />
-          <defs>
-            <linearGradient id="gradient" x1="0" y1="550" x2="1200" y2="550" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stopColor="#385842" />
-              <stop offset="1" stopColor="#D2F38A" />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        {/* Title container with higher z-index and adjusted positioning */}
-        <div 
-          tw="flex flex-col p-12 z-20 h-full justify-start pt-12"
-          style={{
-            position: "relative"
-          }}
-        >
-          <h1 
-            tw="text-[110px] font-black leading-[1.1] text-left max-w-[95%] text-[#385842]"
-            style={{
-              position: "relative",
-              zIndex: 20,
-              paddingBottom: "20px" // Add padding to prevent text cutoff
-            }}
-          >
+        <div tw="flex flex-col p-12">
+          <h1 tw="relative text-[110px] font-black text-left max-w-[90%] text-[#385842]">
             {formatTitle(name)}
           </h1>
+          <p tw="text-[24px] opacity-40 font-bold w-[60%]">
+            {description.length > 80 ? `${description}...` : description}
+          </p>
+        </div>
+
+        <div tw="flex flex-row justify-between bg-[#D2F38A] px-12 py-4 font-bold">
+          <div tw="flex flex-row items-center">
+            <img tw="w-8 h-8 rounded-full mr-4" src={`https://cdn.onplug.io/users/${author}.png`} alt={author} />
+            <p>{author}</p>
+          </div>
+          <p>{at.toLocaleDateString()}</p>
         </div>
       </div>,
       {
