@@ -58,6 +58,8 @@ export default async function handler(req: NextRequest) {
         }}
       >
         <div tw="flex flex-col p-12">
+          <img tw="h-16 my-12" src="https://onplug.io/plug-logo-lime.svg" alt="plug logo" />
+
           <h1 tw="relative text-[110px] font-black text-left max-w-[90%] text-[#385842]">
             {formatTitle(name)}
           </h1>
