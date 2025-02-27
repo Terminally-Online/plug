@@ -19,7 +19,12 @@ const Page = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 	const router = useRouter()
 
 	return (
-		<StaticLayout title="Blog">
+		<StaticLayout 
+			title="Blog"
+			ogTitle="Plug Posts | Latest Articles"
+			ogDescription="Learn about automation strategies, protocol integrations, and stay updated with the latest news from the Plug ecosystem."
+			ogImage={`${process.env.NEXT_PUBLIC_URL || ''}/api/canvas/post?name=${encodeURIComponent("Plug Blog Posts")}`}
+		>
 			<LandingContainer>
 				<div className="flex flex-col pb-32 pt-8">
 					<div className="flex flex-col gap-4 md:my-auto xl:gap-8">
