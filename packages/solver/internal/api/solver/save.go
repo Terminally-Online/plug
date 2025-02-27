@@ -88,30 +88,7 @@ func (h *Handler) ToggleIntent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateIntent(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	var updates models.Intent
-	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
-		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	var intent models.Intent
-	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
-		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
-		return
-	}
-
-	if err := database.DB.Model(&intent).Omit("id").Updates(updates).Error; err != nil {
-		utils.MakeHttpError(w, "failed to update intent: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(intent); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		return
-	}
+	http.Error(w, "updating intents is not supported", http.StatusNotImplemented)
 }
 
 func (h *Handler) DeleteIntent(w http.ResponseWriter, r *http.Request) {
