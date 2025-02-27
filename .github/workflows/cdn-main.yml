@@ -5,8 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "cdn/**"
-      - "cdn/**/*"
+      - "packages/cdn/**"
       - ".github/workflows/cdn-main.yml"
 
   workflow_dispatch:

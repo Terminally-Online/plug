@@ -8,7 +8,6 @@ import { PlugLib, PlugTypesLib, PlugAddressesLib } from "../libraries/Plug.Lib.s
 
 import { PlugFactoryInterface } from "../interfaces/Plug.Factory.Interface.sol";
 import { PlugSocketInterface } from "../interfaces/Plug.Socket.Interface.sol";
-import { console2 } from "forge-std/console2.sol";
 
 /**
  * @title Plug
@@ -28,28 +27,17 @@ contract Plug is PlugInterface {
     /**
      * See {PlugInterface-plug}.
      */
-    function plug(PlugTypesLib.LivePlugs calldata $livePlugs)
-        external
-        payable
-        virtual
-        returns (PlugTypesLib.Result memory $results)
-    {
-        $results = _plug($livePlugs, msg.sender);
+    function plug(PlugTypesLib.LivePlugs calldata $livePlugs) external payable virtual {
+        emit PlugLib.PlugResult(0, _plug($livePlugs, msg.sender));
     }
 
     /**
      * See {PlugInterface-tryPlug}.
      */
-    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs)
-        external
-        payable
-        virtual
-        returns (PlugTypesLib.Result[] memory $results)
-    {
+    function plug(PlugTypesLib.LivePlugs[] calldata $livePlugs) external payable virtual {
         uint256 length = $livePlugs.length;
-        $results = new PlugTypesLib.Result[](length);
         for (uint8 i; i < length; i++) {
-            $results[i] = _plug($livePlugs[i], msg.sender);
+            emit PlugLib.PlugResult(i, _plug($livePlugs[i], msg.sender));
         }
     }
 
@@ -151,6 +139,7 @@ contract Plug is PlugInterface {
                 mstore(0x40, add(slicedData, add(0x20, errLength)))
             }
             (uint8 index, string memory reason) = abi.decode(slicedData, (uint8, string));
+
             return PlugTypesLib.Result({ index: index, error: reason });
         }
     }

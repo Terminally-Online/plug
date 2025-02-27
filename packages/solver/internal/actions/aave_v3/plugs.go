@@ -53,7 +53,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	depositCalldata, err := poolAbi.Pack("deposit",
 		token,
 		amount,
-		common.HexToAddress(params.From),
+		params.From,
 		uint16(0),
 	)
 	if err != nil {
@@ -96,7 +96,7 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 		amountOut,
 		interestRateMode,
 		uint16(0),
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -110,8 +110,8 @@ func HandleActionBorrow(rawInputs json.RawMessage, params actions.HandlerParams)
 
 func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  // Address of the token to repay.
-		Amount string `json:"amount"` // Raw amount of tokens to repay.
+		Token  string `json:"token"`  
+		Amount string `json:"amount"` 
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal repay inputs: %w", err)
@@ -147,7 +147,7 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 		tokenIn,
 		amountIn,
 		interestRateMode,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -164,8 +164,8 @@ func HandleActionRepay(rawInputs json.RawMessage, params actions.HandlerParams) 
 
 func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Token  string `json:"token"`  // Address of the token to receive (redeeming for).
-		Amount string `json:"amount"` // Raw amount of tokens to send.
+		Token  string `json:"token"`  
+		Amount string `json:"amount"` 
 	}
 
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -188,7 +188,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	calldata, err := poolAbi.Pack("withdraw",
 		tokenOut,
 		amountOut,
-		common.HexToAddress(params.From),
+		params.From,
 	)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
@@ -202,8 +202,8 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 
 func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Operator  int    `json:"operator"`  // The operator to use for the threshold comparison.
-		Threshold string `json:"threshold"` // The threshold value to compare against.
+		Operator  int    `json:"operator"`
+		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal health factor inputs: %w", err)
@@ -239,22 +239,25 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 
 func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs struct {
-		Direction int    `json:"direction"` // -1 for borrow, 1 for deposit
-		Token     string `json:"token"`     // Underlying token address
-		Operator  int    `json:"operator"`  // -1 for less than, 1 for greater than
-		Threshold string `json:"threshold"` // Percentage
+		Action    int    `json:"action"`
+		Token     string `json:"token"`
+		Operator  int    `json:"operator"`
+		Threshold string `json:"threshold"`
 	}
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal apy constraint inputs")
 	}
 
-	// Convert threshold percentage to RAY units (27 decimals)
+	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token with decimals: %w", err)
+	}
+
 	threshold, err := utils.StringToUint(inputs.Threshold, 27)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert deposit amount to uint: %w", err)
 	}
 
-	// NOTE: We pass in `true` to force a cache update because we want the latest APY results.
 	reserves, err := getReserves(params.ChainId)
 	if err != nil {
 		return nil, err
@@ -262,7 +265,7 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 
 	var targetReserve *aave_v3_ui_pool_data_provider.IUiPoolDataProviderV3AggregatedReserveData
 	for _, reserve := range reserves {
-		if reserve.UnderlyingAsset == common.HexToAddress(inputs.Token) {
+		if reserve.UnderlyingAsset == *token {
 			targetReserve = &reserve
 			break
 		}
@@ -272,13 +275,13 @@ func HandleConstraintAPY(rawInputs json.RawMessage, params actions.HandlerParams
 	}
 
 	var rate *big.Int
-	switch inputs.Direction {
+	switch inputs.Action {
 	case -1:
 		rate = targetReserve.VariableBorrowRate
 	case 1:
 		rate = targetReserve.LiquidityRate
 	default:
-		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Direction)
+		return nil, fmt.Errorf("invalid direction: must be either -1 (borrow) or 1 (deposit), got %d", inputs.Action)
 	}
 
 	switch inputs.Operator {

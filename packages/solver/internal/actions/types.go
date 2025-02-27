@@ -11,6 +11,7 @@ const (
 	ProtocolENS     string = "ens"
 	ProtocolMorpho  string = "morpho"
 	ProtocolBebop   string = "bebop"
+	ProtocolEuler   string = "euler"
 
 	ActionDeposit      string = "deposit"
 	ActionBorrow       string = "borrow"
@@ -37,4 +38,5 @@ const (
 	ConstraintAvailableLiquidity string = "available_liquidity"
 	ConstraintTimeLeft           string = "time_left"
 	ConstraintPrice              string = "price"
+	ConstraintBalance            string = "balance"
 )

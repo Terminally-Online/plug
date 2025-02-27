@@ -153,7 +153,7 @@ const EmptyAssets: FC<
 				{...props}
 			>
 				{isReceivable && (
-					<Button sizing="sm" onClick={() => handleSidebar("authenticating")}>
+					<Button variant={authenticating ? "primaryDisabled" : "primary"} sizing="sm" onClick={() => handleSidebar("authenticating")}>
 						{authenticating ? "Depositing..." : "Deposit"}
 					</Button>
 				)}
@@ -182,7 +182,7 @@ const EmptyPlugs: FC<
 			/>
 
 			<Base
-				className={cn("absolute bottom-0 left-0 right-0 top-0 z-[99999]", className)}
+				className={cn("absolute bottom-0 left-0 right-0 top-0 z-[9999]", className)}
 				title="Nothing to see here, yet."
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}

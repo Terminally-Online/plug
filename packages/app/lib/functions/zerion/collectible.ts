@@ -137,7 +137,7 @@ export const getCollectibles = async (
 	socketAddress?: string,
 	chains: string[] = ["base"]
 ): Promise<Awaited<ReturnType<typeof findCollectibles>>> => {
-	const socket = await db.userSocket.findFirst({
+	const socket = await db.socket.findFirst({
 		where: { id: address }
 	})
 

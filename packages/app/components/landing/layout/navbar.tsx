@@ -32,9 +32,9 @@ export const Navbar: FC = () => {
 					<button onClick={() => handleCallToAction(routes.twitter)}>
 						<Twitter size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
 					</button>
-					{/* <button onClick={() => handleCallToAction(routes.posts)}>
+					<button onClick={() => handleCallToAction(routes.posts)}>
 						<Book size={18} className="opacity-80 transition-opacity duration-200 hover:opacity-100" />
-					</button> */}
+					</button>
 				</div>
 
 				<div className="mx-8 hidden h-[2px] w-full bg-plug-green/10 xl:block" />

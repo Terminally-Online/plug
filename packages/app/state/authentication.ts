@@ -1,6 +1,6 @@
 import { SignInResponse } from "next-auth/react"
 
-import { UserSocketModel } from "@/prisma/types"
+import { SocketModel } from "@/prisma/types"
 
 import { atom, useAtomValue } from "jotai"
 import qrcode from "qrcode-generator"

@@ -20,7 +20,7 @@ export const getBlockExplorerBlock = (chainId: ChainId, block: string | undefine
 	return `${getBlockExplorerUrl(chainId)}/block/${block}`
 }
 
-export const getChainId = (chainName: string) => {
+export const getChainId = (chainName: string = "") => {
 	switch (chainName.toLowerCase()) {
 		case "anvil":
 		case "local":

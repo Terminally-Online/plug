@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/utils"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -259,7 +261,7 @@ func GetMarket(uniqueKey string, chainId uint64) (Market, error) {
 	return Market{}, fmt.Errorf("market not found for unique key: %s", uniqueKey)
 }
 
-func GetDistributions(address string, chainId uint64) ([]Distribution, error) {
+func GetDistributions(address common.Address, chainId uint64) ([]Distribution, error) {
 	url := fmt.Sprintf(rewardsApiUrl, address, chainId)
 
 	response, err := utils.MakeHTTPRequest(

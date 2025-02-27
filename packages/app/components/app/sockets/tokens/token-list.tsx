@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, useMemo, useState } from "react"
+import { FC, HTMLAttributes, memo, useMemo } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -9,6 +9,7 @@ import { cn, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useHoldings } from "@/state/positions"
+import { ErrorFrame } from "../../frames/plugs/[id]/execute/error"
 
 type Tokens = RouterOutputs["socket"]["balances"]["positions"]["tokens"] | RouterOutputs["solver"]["tokens"]["get"]
 
@@ -22,7 +23,7 @@ export const SocketTokenList: FC<
 	}
 > = memo(({ index, columnTokens, expanded, count = 5, isColumn = true, className, ...props }) => {
 	const { isAnonymous, socket } = useSocket()
-	const { tokens: apiTokens, lastUpdate } = useHoldings(socket?.socketAddress)
+	const { tokens: apiTokens } = useHoldings(socket?.socketAddress)
 
 	const tokens = columnTokens ?? apiTokens
 
@@ -83,6 +84,8 @@ export const SocketTokenList: FC<
 
 			<Callout.Anonymous index={index} viewing="tokens" isAbsolute={true} />
 			<Callout.EmptyAssets index={index} isEmpty={tokens.length === 0} isViewing="tokens" isReceivable={true} />
+
+			<ErrorFrame index={index} />
 		</div>
 	)
 })

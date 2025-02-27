@@ -6,7 +6,7 @@ import { Eye, GitFork, Play } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, colors, formatAddress, formatTitle } from "@/lib"
+import { cn, colors, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
@@ -54,7 +54,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 								<Counter count={plug?.views?.[0]?.views ?? 0} />
 							</span>
 						</p>
-						<p className="flex flex-row items-end gap-2 truncate text-sm font-bold tabular-nums">
+						{/*<p className="flex flex-row items-end gap-2 truncate text-sm font-bold tabular-nums">
 							<Play
 								size={14}
 								className="h-4 w-4 opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-60"
@@ -62,7 +62,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 							<span className="opacity-40 transition-all duration-200 ease-in-out group-hover:opacity-100">
 								<Counter count={plug?._count?.executions ?? 0} />
 							</span>
-						</p>
+						</p>*/}
 					</div>
 
 					<p className="flex flex-row items-end gap-2 truncate text-sm font-bold tabular-nums">

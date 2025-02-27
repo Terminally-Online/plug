@@ -41,9 +41,10 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vaults: %v", err)
 	}
+
 	var targetVault *YearnVault
 	for _, vault := range vaults {
-		if strings.EqualFold(vault.Address, inputs.Vault) {
+		if strings.EqualFold(strings.ToLower(vault.Address), strings.ToLower(inputs.Vault)) {
 			targetVault = &vault
 			break
 		}
@@ -68,7 +69,7 @@ func HandleActionDeposit(rawInputs json.RawMessage, params actions.HandlerParams
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -124,7 +125,7 @@ func HandleActionWithdraw(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Pool")
 	}
-	depositCalldata, err := vaultAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	depositCalldata, err := vaultAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -182,7 +183,7 @@ func HandleActionStake(rawInputs json.RawMessage, params actions.HandlerParams) 
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, common.HexToAddress(params.From))
+	stakeCalldata, err := gaugeAbi.Pack("deposit", amount, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -226,19 +227,12 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 		return nil, fmt.Errorf("staking not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, err
-	}
-
-	erc20Contract, err := erc_20.NewErc20(*token, provider)
+	erc20Contract, err := erc_20.NewErc20(*token, params.Client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
 	}
 
-	callOpts := utils.BuildCallOpts(params.From, big.NewInt(0))
-
-	balance, err := erc20Contract.BalanceOf(callOpts, common.HexToAddress(params.From))
+	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get vault token balance: %v", err)
 	}
@@ -256,7 +250,7 @@ func HandleActionStakeMax(rawInputs json.RawMessage, params actions.HandlerParam
 	if err != nil {
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
-	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, common.HexToAddress(params.From))
+	stakeCalldata, err := gaugeAbi.Pack("deposit", balance, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -305,18 +299,12 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, fmt.Errorf("redeem not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, err
-	}
-
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), provider)
+	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), params.Client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
 
-	callOpts := utils.BuildCallOpts(params.From, big.NewInt(0))
-	maxRedeem, err := gaugeContract.MaxRedeem(callOpts, common.HexToAddress(params.From))
+	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
 	}
@@ -330,7 +318,7 @@ func HandleActionRedeem(rawInputs json.RawMessage, params actions.HandlerParams)
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
-	calldata, err := gaugeAbi.Pack("redeem", amount, common.HexToAddress(params.From), common.HexToAddress(params.From))
+	calldata, err := gaugeAbi.Pack("redeem", amount, params.From, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
@@ -370,18 +358,12 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, fmt.Errorf("redeem not available for vault: %s", token)
 	}
 
-	provider, err := utils.GetProvider(params.ChainId)
-	if err != nil {
-		return nil, err
-	}
-
-	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), provider)
+	gaugeContract, err := yearn_v3_gauge.NewYearnV3Gauge(common.HexToAddress(targetVault.Staking.Address), params.Client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gauge contract instance: %v", err)
 	}
 
-	callOpts := utils.BuildCallOpts(params.From, big.NewInt(0))
-	maxRedeem, err := gaugeContract.MaxRedeem(callOpts, common.HexToAddress(params.From))
+	maxRedeem, err := gaugeContract.MaxRedeem(params.Client.ReadOptions(params.From), params.From)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get max redeemable amount: %v", err)
 	}
@@ -395,7 +377,7 @@ func HandleActionRedeemMax(rawInputs json.RawMessage, params actions.HandlerPara
 		return nil, utils.ErrABI("YearnV3Gauge")
 	}
 
-	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, common.HexToAddress(params.From), common.HexToAddress(params.From))
+	calldata, err := gaugeAbi.Pack("redeem", maxRedeem, params.From, params.From)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}

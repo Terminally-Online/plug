@@ -1,37 +1,36 @@
 import { useSession } from "next-auth/react"
-import { FC } from "react"
-import { DayPicker } from "react-day-picker"
+import { FC, lazy, Suspense, useMemo } from "react"
+// Import the DayPicker type but use lazy loading for the actual component
+import type { DayPicker as DayPickerType } from "react-day-picker"
 
 import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { Dropdown } from "@/components/app/inputs/dropdown"
 import { Button } from "@/components/shared/buttons/button"
-import { cn, frequencies } from "@/lib"
+import { cn, frequencies, useConnect } from "@/lib"
 import { useColumnStore } from "@/state/columns"
+
+// Lazy load the DayPicker component to improve initial render performance
+const DayPicker = lazy(() => import("react-day-picker").then(mod => ({ default: mod.DayPicker })))
 
 export const ScheduleFrame: FC<{
 	index: number
 	item: string
 }> = ({ index }) => {
-	const { data: session } = useSession()
+	const {
+		account: { isAuthenticated }
+	} = useConnect()
 	const { column, isFrame, handle } = useColumnStore(index, "schedule")
 
-	if (!column) return null
+	// Memoized DayPicker component to prevent unnecessary renders
+	const MemoizedDayPicker = useMemo(() => {
+		if (!column) return null
 
-	return (
-		<Frame
-			index={index}
-			icon={<CalendarPlus size={18} className="opacity-40" />}
-			label={
-				<span className="text-lg font-bold">
-					<span className="opacity-40">Run:</span> Schedule
-				</span>
-			}
-			visible={(isFrame && session && session.user.anonymous === false) || false}
-			hasOverlay={true}
-		>
-			<div className="flex flex-col gap-4">
+		return (
+			<Suspense
+				fallback={<div className="flex h-72 w-full items-center justify-center">Loading calendar...</div>}
+			>
 				<DayPicker
 					mode="range"
 					selected={column?.schedule?.date}
@@ -83,6 +82,26 @@ export const ScheduleFrame: FC<{
 						IconRight: () => <ChevronRight size={14} className="h-4 w-4" />
 					}}
 				/>
+			</Suspense>
+		)
+	}, [column, handle])
+
+	if (!column) return null
+
+	return (
+		<Frame
+			index={index}
+			icon={<CalendarPlus size={18} className="opacity-40" />}
+			label={
+				<span className="text-lg font-bold">
+					<span className="opacity-40">Run:</span> Schedule
+				</span>
+			}
+			visible={(isFrame && isAuthenticated) || false}
+			hasOverlay={true}
+		>
+			<div className="flex flex-col gap-4">
+				{MemoizedDayPicker}
 
 				<Dropdown
 					icon={<Clock size={14} className="opacity-60" />}

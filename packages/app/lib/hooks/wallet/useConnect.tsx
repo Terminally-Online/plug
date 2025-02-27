@@ -25,12 +25,14 @@ import {
 	walletConnectURIAtom
 } from "@/state/authentication"
 import { useColumnStore } from "@/state/columns"
+import { Session } from "next-auth"
 
 const ConnectionContext = createContext<
 	| {
 			connection: UseConnectReturnType<ResolvedRegister["config"]>
 			account: UseAccountReturnType<ResolvedRegister["config"]> & {
-				isAuthenticated: boolean
+				isAuthenticated: boolean,
+				session: Session | null
 			}
 			sign: UseSignMessageReturnType
 			prove: (index: number, from?: string, address?: string) => Promise<void>
@@ -55,12 +57,13 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	const chainId = useChainId()
 	const account = useAccount()
 	const sign = useSignMessage()
+
 	const { disconnect } = useDisconnect()
 
 	const { handle } = useColumnStore()
 	const { data: session } = useSession()
 
-	const isAuthenticated = session?.user.id?.startsWith("0x") || false
+	const isAuthenticated = account.status === "connected" && session?.user.id?.startsWith("0x") || false
 
 	/**
 	 * Trigger and handle the signing of a message to prove ownership of the address.
@@ -167,7 +170,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 	}, [account.address, walletConnectProvider, walletConnectURI, init, setWalletConnectURI])
 
 	return (
-		<ConnectionContext.Provider value={{ connection, account: { ...account, isAuthenticated }, sign, prove }}>
+		<ConnectionContext.Provider value={{ connection, account: { ...account, isAuthenticated, session }, sign, prove }}>
 			{children}
 		</ConnectionContext.Provider>
 	)

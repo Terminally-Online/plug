@@ -19,7 +19,7 @@ export const chains = {
 		...mainnet,
 		alchemyPrefix: "eth-mainnet",
 		color: "#393939",
-		logo: "/blockchain/ethereum.png",
+		logo: "https://cdn.onplug.io/blockchain/ethereum.png",
 		rpcUrls: {
 			...mainnet.rpcUrls,
 			...getAppRPCs("eth-mainnet")
@@ -51,7 +51,7 @@ export const chains = {
 		},
 		alchemyPrefix: "eth-mainnet-forked",
 		color: "#FAFF00",
-		logo: "/protocols/plug.png",
+		logo: "https://cdn.onplug.io/protocols/plug.png",
 		rpcUrls: {
 			default: {
 				http: [`http://${ANVIL_RPC}`],
@@ -67,7 +67,7 @@ export const chains = {
 		...optimism,
 		alchemyPrefix: "opt-mainnet",
 		color: "#FF0420",
-		logo: "/blockchain/optimism.png",
+		logo: "https://cdn.onplug.io/blockchain/optimism.png",
 		rpcUrls: {
 			...optimism.rpcUrls,
 			...getAppRPCs("opt-mainnet")
@@ -77,7 +77,7 @@ export const chains = {
 		...base,
 		alchemyPrefix: "base-mainnet",
 		color: "#0052FF",
-		logo: "/blockchain/base.png",
+		logo: "https://cdn.onplug.io/blockchain/base.png",
 		rpcUrls: {
 			...base.rpcUrls,
 			...getAppRPCs("base-mainnet")

@@ -23,7 +23,7 @@ export const formatBalance = (value: string | bigint | bigint | undefined, decim
 	return Number.parseFloat((Number(value) / 10 ** Number(decimals)).toFixed(4))
 }
 
-export const formatTitle = (title: string) =>
+export const formatTitle = (title: string = "") =>
 	title
 		.replaceAll("_", " ")
 		.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, "$1$3 $2$4")
@@ -176,7 +176,8 @@ export const frequencies = [
 	{ label: "Yearly", value: "365" }
 ]
 
-export const formatFrequency = (frequencyValue: number) => {
+export const formatFrequency = (frequencyValue: number = 0) => {
 	const frequencyIndex = frequencies.findIndex(frequency => parseInt(frequency.value) === frequencyValue)
+
 	return frequencies[frequencyIndex].label
 }

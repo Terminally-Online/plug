@@ -10,8 +10,8 @@ import { activity } from "@/server/api/routers/plugs/activity"
 import { anonymousProtectedProcedure, createTRPCRouter, publicProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-const workflow = Prisma.validator<Prisma.WorkflowDefaultArgs>()({})
-export type Workflow = Prisma.WorkflowGetPayload<typeof workflow>
+const plug = Prisma.validator<Prisma.PlugDefaultArgs>()({})
+export type Plug = Prisma.PlugGetPayload<typeof plug>
 
 export const plugs = createTRPCRouter({
 	get: publicProcedure
@@ -28,7 +28,7 @@ export const plugs = createTRPCRouter({
 			weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
 			weekStart.setUTCHours(0, 0, 0, 0)
 
-			const workflows = await ctx.db.workflow.findMany({
+			const workflows = await ctx.db.plug.findMany({
 				where: {
 					id: { in: input.ids },
 					isPrivate: false
@@ -40,7 +40,7 @@ export const plugs = createTRPCRouter({
 					w => !input.viewed.includes(w.id) && w.socketId !== ctx.session?.address // Exclude creator views
 				)
 				.map(w => ({
-					workflowId: w.id,
+					plugId: w.id,
 					date: weekStart,
 					views: 1
 				}))
@@ -53,7 +53,7 @@ export const plugs = createTRPCRouter({
 
 				await ctx.db.view.updateMany({
 					where: {
-						workflowId: { in: newViews.map(v => v.workflowId) },
+						plugId: { in: newViews.map(v => v.plugId) },
 						date: weekStart
 					},
 					data: {
@@ -96,7 +96,7 @@ export const plugs = createTRPCRouter({
 							actions: { not: "[]" }
 						}
 
-			const count = await ctx.db.workflow.count({
+			const count = await ctx.db.plug.count({
 				where: {
 					name: search
 						? {
@@ -116,7 +116,7 @@ export const plugs = createTRPCRouter({
 				}
 			})
 
-			const plugs = await ctx.db.workflow.findMany({
+			const plugs = await ctx.db.plug.findMany({
 				where: {
 					name: search
 						? {
@@ -165,24 +165,25 @@ export const plugs = createTRPCRouter({
 			})
 		)
 		.query(async ({ input, ctx }) => {
-			try {
-				const addForkCounts = async (ctx: any, workflows: any[]) => {
-					const forkCounts = await Promise.all(
-						workflows.map(async workflow => ({
-							id: workflow.id,
-							forks: await ctx.db.workflow.count({
-								where: { workflowForkedId: workflow.id }
-							})
-						}))
-					)
-					return workflows.map(workflow => ({
-						...workflow,
-						forkCount: forkCounts.find(f => f.id === workflow.id)?.forks ?? 0
+			const addForkCounts = async <T extends { id: string }>(plugs: T[]) => {
+				const forkCounts = await Promise.all(
+					plugs.map(async plug => ({
+						id: plug.id,
+						forks: await ctx.db.plug.count({
+							where: { plugForkedId: plug.id }
+						})
 					}))
-				}
+				)
 
-				if (input.target === "mine") {
-					const workflows = await ctx.db.workflow.findMany({
+				return plugs.map(plug => ({
+					...plug,
+					forkCount: forkCounts.find(f => f.id === plug.id)?.forks ?? 0
+				}))
+			}
+
+			if (input.target === "mine") {
+				addForkCounts(
+					await ctx.db.plug.findMany({
 						where: {
 							socketId: ctx.session.address
 						},
@@ -192,11 +193,11 @@ export const plugs = createTRPCRouter({
 						},
 						include: {
 							socket: { include: { identity: { include: { ens: true } } } },
-							_count: {
-								select: {
-									executions: true
-								}
-							},
+							// _count: {
+							// 	select: {
+							// 		executions: true
+							// 	}
+							// },
 							views: {
 								select: {
 									views: true
@@ -204,46 +205,15 @@ export const plugs = createTRPCRouter({
 							}
 						}
 					})
-					return addForkCounts(ctx, workflows)
-				}
+				)
+			}
 
-				if (input.target === "curated")
-					return addForkCounts(
-						ctx,
-						await ctx.db.workflow.findMany({
-							where: {
-								isPrivate: false,
-								isCurated: true,
-								actions: { not: "[]" }
-							},
-							take: input.limit ? input.limit : undefined,
-							orderBy: {
-								updatedAt: "desc"
-							},
-							include: {
-								socket: { include: { identity: { include: { ens: true } } } },
-								_count: {
-									select: {
-										executions: true
-									}
-								},
-								views: {
-									select: {
-										views: true
-									}
-								}
-							}
-						})
-					)
-
+			if (input.target === "curated")
 				return addForkCounts(
-					ctx,
-					await ctx.db.workflow.findMany({
+					await ctx.db.plug.findMany({
 						where: {
 							isPrivate: false,
-							socketId: {
-								not: ctx.session.address
-							},
+							isCurated: true,
 							actions: { not: "[]" }
 						},
 						take: input.limit ? input.limit : undefined,
@@ -252,27 +222,53 @@ export const plugs = createTRPCRouter({
 						},
 						include: {
 							socket: { include: { identity: { include: { ens: true } } } },
-							_count: {
-								select: {
-									executions: true
-								}
-							},
+							// _count: {
+							// 	select: {
+							// 		executions: true
+							// 	}
+							// },
 							views: {
-								select: { views: true }
+								select: {
+									views: true
+								}
 							}
 						}
 					})
 				)
-			} catch (error) {
-				throw new TRPCError({ code: "BAD_REQUEST" })
-			}
+
+			return addForkCounts(
+				await ctx.db.plug.findMany({
+					where: {
+						isPrivate: false,
+						socketId: {
+							not: ctx.session.address
+						},
+						actions: { not: "[]" }
+					},
+					take: input.limit ? input.limit : undefined,
+					orderBy: {
+						updatedAt: "desc"
+					},
+					include: {
+						socket: { include: { identity: { include: { ens: true } } } },
+						// _count: {
+						// 	select: {
+						// 		executions: true
+						// 	}
+						// },
+						views: {
+							select: { views: true }
+						}
+					}
+				})
+			)
 		}),
 
 	add: anonymousProtectedProcedure
 		.input(z.object({ index: z.number().optional(), from: z.string().optional() }).optional())
 		.mutation(async ({ input, ctx }) => {
 			try {
-				const plug = await ctx.db.workflow.create({
+				const plug = await ctx.db.plug.create({
 					data: {
 						name: "Untitled Plug",
 						socketId: ctx.session.address,
@@ -294,7 +290,7 @@ export const plugs = createTRPCRouter({
 		.input(z.object({ plug: z.string(), index: z.number(), from: z.string() }))
 		.mutation(async ({ input, ctx }) => {
 			try {
-				const forking = await ctx.db.workflow.findUnique({
+				const forking = await ctx.db.plug.findUnique({
 					where: { id: input.plug }
 				})
 
@@ -303,16 +299,16 @@ export const plugs = createTRPCRouter({
 				const { id, ...forkingData } = forking
 
 				const name = forking.name.replace(/ \(#\d+\)$/, "")
-				const count = await ctx.db.workflow.count({
-					where: { workflowForkedId: forking.workflowForkedId || input.plug }
+				const count = await ctx.db.plug.count({
+					where: { plugForkedId: forking.plugForkedId || input.plug }
 				})
 				const forkNumber = count + 1
-				const plug = await ctx.db.workflow.create({
+				const plug = await ctx.db.plug.create({
 					data: {
 						...forkingData,
 						name: `${name} (#${forkNumber})`,
 						socketId: ctx.session.address,
-						workflowForkedId: forking.workflowForkedId || input.plug
+						plugForkedId: forking.plugForkedId || input.plug
 					}
 				})
 
@@ -340,7 +336,7 @@ export const plugs = createTRPCRouter({
 
 				const { id, ...data } = input
 
-				const plug = await ctx.db.workflow.update({
+				const plug = await ctx.db.plug.update({
 					where: {
 						id,
 						socketId: ctx.session.address
@@ -359,7 +355,7 @@ export const plugs = createTRPCRouter({
 	delete: anonymousProtectedProcedure
 		.input(z.object({ plug: z.string(), index: z.number(), from: z.string().nullish() }))
 		.mutation(async ({ input, ctx }) => {
-			const plug = await ctx.db.workflow.delete({
+			const plug = await ctx.db.plug.delete({
 				where: {
 					id: input.plug,
 					socketId: ctx.session.address
@@ -371,9 +367,9 @@ export const plugs = createTRPCRouter({
 			return { plug, index: input.index, from: input.from }
 		}),
 
-	onAdd: subscription<Workflow>("anonymous", subscriptions.plugs.add),
-	onEdit: subscription<Workflow>("anonymous", subscriptions.plugs.edit),
-	onDelete: subscription<Workflow>("anonymous", subscriptions.plugs.delete),
+	onAdd: subscription<Plug>("anonymous", subscriptions.plugs.add),
+	onEdit: subscription<Plug>("anonymous", subscriptions.plugs.edit),
+	onDelete: subscription<Plug>("anonymous", subscriptions.plugs.delete),
 
 	action,
 	activity

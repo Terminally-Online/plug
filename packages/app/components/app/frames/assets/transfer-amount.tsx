@@ -1,17 +1,18 @@
-import Image from "next/image"
-import { FC, useCallback, useMemo, useRef, useState } from "react"
-
-import { CircleDollarSign, Waypoints } from "lucide-react"
+import { FC, useCallback, useRef, useState } from "react"
 
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains, cn, formatTitle, getChainId, getChainName } from "@/lib"
-import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect } from "@/lib"
+import { api, RouterOutputs } from "@/server/client"
+import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
+import { useSocket } from "@/state/authentication"
+import { getAddress, isAddress } from "viem"
+import { useSendTransaction } from "wagmi"
+import { Marquee } from "../../utils/marquee"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -43,7 +44,7 @@ const ImplementationComponent: FC<{
 				if (containerRef.current) {
 					const rect = containerRef.current.getBoundingClientRect()
 					const x = e.clientX - rect.left
-					const percentage = Math.min(Math.max((x / rect.width) * 100, 0), 100)
+					const percentage = Math.floor(Math.min(Math.max((x / rect.width) * 100, 0), 100))
 
 					handle.transfer(prev => ({
 						...prev,
@@ -66,7 +67,7 @@ const ImplementationComponent: FC<{
 
 					handle.transfer(prev => ({
 						...prev,
-						precise: finalAmount
+						precise: percentage >= 99.5 ? implementation.balance.toString() : finalAmount
 					}))
 
 					setIsPrecise(true)
@@ -129,13 +130,7 @@ const ImplementationComponent: FC<{
 					<div className="flex flex-col items-center">
 						<p className="mr-auto font-bold">{formatTitle(token.symbol)}</p>
 						<div className="relative flex flex-row items-center gap-2">
-							<Image
-								className="h-4 w-4 rounded-full"
-								src={chains[getChainId(implementation.chain)].logo}
-								alt=""
-								width={24}
-								height={24}
-							/>
+							<ChainImage chainId={getChainId(implementation.chain)} size="xs" />
 							<p className="flex flex-row text-sm font-bold text-black/40">
 								<Counter count={column?.transfer?.percentage ?? 0} decimals={0} />%
 							</p>
@@ -161,8 +156,8 @@ const ImplementationComponent: FC<{
 						>
 							<Counter
 								count={
-									Number(column?.transfer?.precise).toLocaleString("en-US", {
-										maximumFractionDigits: 40
+									Number(column?.transfer?.precise ?? 0).toLocaleString("en-US", {
+										maximumFractionDigits: 18
 									}) ?? "0"
 								}
 							/>
@@ -203,6 +198,16 @@ const ImplementationComponent: FC<{
 	)
 }
 
+const ScrollingError = ({ error }: { error: string | undefined }) => {
+	if (!error) return null
+
+	return <div className="relative min-h-6 overflow-x-hidden">
+		<div className="z-[20] absolute left-0 w-12 bg-gradient-to-r from-plug-white to-plug-white/0 top-0 bottom-0" />
+		<div className="z-[20] absolute right-0 w-12 bg-gradient-to-l from-plug-white to-plug-white/0 top-0 bottom-0" />
+		<Marquee className="-z-1 relative max-w-full text-plug-red font-bold whitespace-nowrap">{error}</Marquee>
+	</div>
+}
+
 export const TransferAmountFrame: FC<{
 	index: number
 	token: NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -211,10 +216,51 @@ export const TransferAmountFrame: FC<{
 }> = ({ index, token, color, textColor }) => {
 	const { isFrame, column, handle } = useColumnStore(
 		index,
-		index === -2 ? `${token?.symbol}-transfer-deposit` : `${token?.symbol}-transfer-amount`
+		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
 	)
+	const { account: { isAuthenticated } } = useConnect()
+	const { socket } = useSocket()
+	const { error, sendTransaction, isLoading } = useSendTransaction()
 
-	const isReady = useMemo(() => token && column && parseFloat(column?.transfer?.precise ?? "0") > 0, [token, column])
+	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
+	const from = socket
+		? index === COLUMNS.SIDEBAR_INDEX
+			? getAddress(socket.id)
+			: getAddress(socket.socketAddress)
+		: ""
+	const recipient = column && socket
+		? index === COLUMNS.SIDEBAR_INDEX
+			? getAddress(socket.socketAddress)
+			: column.transfer?.recipient && isAddress(column.transfer?.recipient)
+				? getAddress(column.transfer?.recipient)
+				: ""
+		: ""
+	// TODO: This is just hard-coded to base for now. It should support having multiple
+	//       chains in the same execution at once.
+	const implementation = token?.implementations.find(implementation => implementation.chain === "base")
+	const { data: intent } = api.solver.actions.intent.useQuery(
+		{
+			chainId: getChainId("base"),
+			from,
+			inputs: [
+				{
+					protocol: "plug",
+					action: "transfer",
+					amount: `${column?.transfer?.precise ?? 0}`,
+					token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
+					recipient
+				}
+			],
+			options: {
+				isEOA: true,
+				simulate: true,
+			}
+		},
+		{
+			enabled: isFrame && isReady && !!column && !!socket && !!implementation,
+			onSuccess: () => { handle.frame(`${token?.symbol}-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "transfer"}-success`) }
+		}
+	)
 
 	if (!token || !column) return null
 
@@ -234,16 +280,16 @@ export const TransferAmountFrame: FC<{
 						/>
 					</div>
 				}
-				label={`${index === -2 ? "Deposit" : "Transfer"}`}
+				label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
 				handleBack={() =>
-					handle.frame(index !== -2 ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+					handle.frame(index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
 				}
 				hasChildrenPadding={false}
 				hasOverlay
 			>
 				<div className="mb-4 flex flex-col gap-2">
-					{index !== -2 && (
+					{index !== COLUMNS.SIDEBAR_INDEX && (
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
@@ -251,72 +297,22 @@ export const TransferAmountFrame: FC<{
 							/>
 						</div>
 					)}
+
 					<div className="flex flex-col gap-2">
-						<div className="flex flex-col gap-2">
-							{token.implementations.map((implementation, implementationIndex) => (
-								<ImplementationComponent
-									key={implementationIndex}
-									index={index}
-									implementation={implementation}
-									token={token}
-									color={color}
-								/>
-							))}
-						</div>
-
-						<div className="flex flex-row items-center justify-between gap-4 px-6">
-							<p
-								className="ml-auto cursor-pointer font-bold text-black/40 hover:brightness-105"
-								onClick={() =>
-									handle.transfer(prev => ({
-										...prev,
-										percentage: 100,
-										precise: token?.implementations[0].balance.toString()
-									}))
-								}
-								style={{ color: (column?.transfer?.percentage ?? 0) < 100 ? color : undefined }}
-							>
-								Max
-							</p>
-						</div>
-
-						<div className="px-6">
-							<div className="mb-2 flex flex-row items-center gap-4">
-								<p className="font-bold opacity-40">Details</p>
-								<div className="h-[2px] w-full bg-plug-green/10" />
-							</div>
-
-							{token.implementations[0].chain && (
-								<p className="flex flex-row justify-between font-bold">
-									<span className="flex w-max flex-row items-center gap-4">
-										<Waypoints size={18} className="opacity-20" />
-										<span className="opacity-40">Chain</span>
-									</span>{" "}
-									<span className="flex flex-row items-center gap-2 font-bold">
-										<ChainImage chainId={getChainId(token.implementations[0].chain)} size="xs" />
-										{getChainName(getChainId(token.implementations[0].chain))}
-									</span>
-								</p>
-							)}
-
-							<p className="flex flex-row justify-between font-bold">
-								<span className="flex w-full flex-row items-center gap-4">
-									<CircleDollarSign size={18} className="opacity-20" />
-									<span className="opacity-40">Fee</span>
-								</span>{" "}
-								<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-									<span className="ml-auto flex flex-row items-center gap-1 pl-2 opacity-40">
-										<Counter count={0.00011} /> ETH
-									</span>
-									<span className="ml-2 flex flex-row items-center">
-										$<Counter count={0.049} />
-									</span>
-								</span>
-							</p>
-						</div>
+						{token.implementations.map((implementation, implementationIndex) => (
+							<ImplementationComponent
+								key={implementationIndex}
+								index={index}
+								implementation={implementation}
+								token={token}
+								color={color}
+							/>
+						))}
 					</div>
 
 					<div className="mx-6 mt-2 flex flex-col gap-4">
+						<ScrollingError error={error?.message ?? ""} />
+
 						<button
 							className={cn(
 								"flex w-full items-center justify-center gap-2 rounded-lg border-[1px] py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 hover:brightness-105",
@@ -327,9 +323,14 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={isReady === false}
+							disabled={intent && isLoading || isReady === false}
+							onClick={intent && !isLoading && isReady ? () => sendTransaction({
+								to: intent.transaction.to,
+								data: intent.transaction.data,
+								value: intent.transaction.value
+							}) : () => { }}
 						>
-							{isReady ? (index === -2 ? "Deposit" : "Send") : "Enter Amount"}
+							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>

@@ -5,6 +5,7 @@ on:
     branches: ["**"]
     paths:
       - "packages/app/**"
+      - "packages/posts/**"
 
   workflow_dispatch:
 

@@ -27,6 +27,13 @@ Nothing in this specification interfaces with external materials except token co
 | ERC721  | Approve      | Action | Token  |             |                                                                      |
 | ERC1155 | Approve      | Action | Token  |             |                                                                      |
 
+| ERC20   | Swap         | Action | Token  |             |                                                                      |
+| ERC20   | Price        | Action | Token  |             |                                                                      |
+| ERC20   | Balance      | Action | Token  |             |                                                                      |
+| ERC721  | Balance      | Action | Token  |             |                                                                      |
+| ERC1155 | Balance      | Action | Token  |             |                                                                      |   
+
+
 
 # Plug Constraints
 A set of constraints made available by Plug to ease intent creation and increase control.
@@ -46,6 +53,8 @@ Users can check if asset prices are above or below US dollar values.
 _If_ **{amount in}** **{token in}** _is_ **{greater, less}** _than_ **{amount out}** _USD._
 
 _If_ **1** **ETH** _is_ **greater** _than_ **3000** _USD._
+
+
 
 | Input Slot | Input | Type | Example |
 | :--- | :--- | :--- | :--- |

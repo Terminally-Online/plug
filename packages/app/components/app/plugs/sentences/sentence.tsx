@@ -1,19 +1,16 @@
-import { FC, HTMLAttributes, useState } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
 
-import { Hash, SearchIcon, X } from "lucide-react"
+import { motion } from "framer-motion"
+import { X } from "lucide-react"
 
-import { getInputPlaceholder } from "@terminallyonline/cord"
-
-import { Frame } from "@/components/app/frames/base"
-import { Search } from "@/components/app/inputs/search"
-import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Counter } from "@/components/shared/utils/counter"
-import { Action, cn, formatTitle, Options, useCord } from "@/lib"
+import { Action, cn, useCord } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+
+import { HandleValueProps, Part } from "./part"
 
 type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
@@ -24,450 +21,231 @@ type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
 	actionIndex: number
 }
 
-export const Sentence: FC<SentenceProps> = ({
-	index,
-	item,
-	action,
-	actionIndex,
-	preview = false,
-	error = false,
-	className,
-	...props
-}) => {
-	const {
-		column,
-		handle: { frame }
-	} = useColumnStore(index)
-	const {
-		own,
-		actions: plugActions,
-		handle: {
-			action: { edit }
-		},
-		solver: { actions: solverActions }
-	} = usePlugStore(item, action)
+export const Sentence: FC<SentenceProps> = memo(
+	({ index, item, action, actionIndex, preview = false, error = false, className, ...props }) => {
+		const [search, setSearch] = useState<Record<number, string | undefined>>({})
 
-	const actionSchema = solverActions ? solverActions[action.protocol] : undefined
-	const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
+		const {
+			column,
+			handle: { frame }
+		} = useColumnStore(index)
+		const {
+			own,
+			actions: plugActions,
+			handle: {
+				action: { edit }
+			},
+			solver: { actions: solverActions }
+		} = usePlugStore(item, { protocol: action.protocol, action: action.action, search })
 
-	const values = Object.entries(action.values ?? []).reduce(
-		(acc, [key, value]) => {
-			if (value) {
-				acc[key] = value.value
-			}
-			return acc
-		},
-		{} as Record<string, string>
-	)
+		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
+		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
+		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
 
-	const {
-		state: { parsed },
-		actions: { setValue },
-		helpers: { getInputName, getInputValue, getInputError, isValid, isComplete }
-	} = useCord(sentence, values)
+		const values = Object.entries(action.values ?? []).reduce(
+			(acc, [key, value]) => {
+				if (value) {
+					acc[key] = value.value
+				}
+				return acc
+			},
+			{} as Record<string, string>
+		)
 
-	const [search, setSearch] = useState("")
+		const {
+			state: { parsed },
+			actions: { setValue },
+			helpers: { getInputValue, getInputError, isValid, isComplete }
+		} = useCord(sentence, values)
 
-	const parts = parsed
-		? parsed.template
-				.split(/(\{[^}]+\})/g)
-				.map(part => {
-					if (part.match(/\{[^}]+\}/)) return [part]
-					return part.split(/(\s+)/g)
-				})
-				.flat()
-		: []
+		const parts = parsed
+			? parsed.template
+					.split(/(\{[^}]+\})/g)
+					.map(part => {
+						if (part.match(/\{[^}]+\}/)) return [part]
+						return part.split(/(\s+)/g)
+					})
+					.flat()
+			: []
 
-	const handleValue = (index: number, value: string, isNumber?: boolean) => {
-		const inputName = getInputName(index)
+		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
+			setValue(index, value)
 
-		if (!parsed || !inputName) return
-
-		setValue(index, value)
-
-		edit({
-			id: item,
-			actions: JSON.stringify(
-				plugActions.map((action, nestedActionIndex) => ({
-					...action,
-					values:
-						nestedActionIndex === actionIndex
-							? {
-									...action.values,
-									[index]: { value: isNumber ? parseFloat(value) : value, name: inputName }
-								}
-							: action.values
-				}))
-			)
-		})
-	}
-
-	if (!column || !solverActions || !actionSchema || !parsed) return null
-
-	return (
-		<>
-			<Accordion
-				className={cn(
-					"cursor-default hover:bg-white",
-					isValid && isComplete && !error
-						? "border-plug-yellow hover:border-plug-yellow"
-						: "border-plug-red hover:border-plug-red",
-					className
-				)}
-				data-sentence
-				data-chains={actionSchema.metadata.chains.join(",")}
-				data-valid={isValid && isComplete}
-				data-action-preview={item}
-				{...props}
-			>
-				<div className={cn("flex flex-row items-center font-bold")}>
-					<div className="flex w-full flex-wrap items-center gap-[4px]">
-						<div className="flex flex-row items-start gap-[4px]">
-							<div className="relative mt-1 h-6 w-10 flex-shrink-0">
-								<Image
-									className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
-									src={actionSchema.metadata.icon}
-									alt={`Icon for ${action.protocol}`}
-									width={64}
-									height={64}
-								/>
-								<Image
-									className="absolute mr-2 h-6 w-6 rounded-sm"
-									src={actionSchema.metadata.icon}
-									alt={`Icon for ${action.protocol}`}
-									width={64}
-									height={64}
-								/>
-							</div>
-
-							<div className="flex flex-wrap items-center gap-y-1">
-								{parts.map((part, partIndex) => {
-									const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
-
-									if (!match) {
-										// Preserve whitespace for text parts
-										return (
-											<span key={partIndex} className="whitespace-pre">
-												{part}
-											</span>
-										)
+			edit({
+				id: item,
+				actions: JSON.stringify(
+					plugActions.map((action, nestedActionIndex) => ({
+						...action,
+						values:
+							nestedActionIndex === actionIndex
+								? {
+										...action.values,
+										[index]: {
+											...rest,
+											value: isNumber ? parseFloat(value) : value
+										}
 									}
+								: action.values
+					}))
+				)
+			})
+		}
 
-									const inputIndex = parseInt(match[2] || match[1])
-									const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
-									const input = parsed.inputs.find(i => i.index === inputIndex)
+		const handleSearch = useCallback((s: string | null, index: number) => {
+			const parsedIndex = parseInt(String(index))
+			const newValue = s ?? undefined
 
-									if (!input) return null
+			// Only update if the value has actually changed
+			setSearch(prev => {
+				if (prev[parsedIndex] === newValue) return prev
+				return {
+					...prev,
+					[parsedIndex]: newValue
+				}
+			})
+		}, [])
 
-									const value = getInputValue(inputIndex)
-									const inputError = getInputError(inputIndex)
-									const dependentOnValue =
-										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
-										undefined
+		if (!column) return null
 
-									const sentenceOptions = solverActions[action.protocol].schema[action.action].options
-									const options =
-										sentenceOptions &&
-										(Array.isArray(sentenceOptions[optionsIndex])
-											? (sentenceOptions[optionsIndex] as Options)
-											: sentenceOptions &&
-												  typeof sentenceOptions?.[optionsIndex] === "object" &&
-												  dependentOnValue
-												? (sentenceOptions[optionsIndex] as Record<string, Options>)[
-														dependentOnValue
-													]
-												: undefined)
-									const isOptionBased = options !== undefined
+		if (!solverActions || !actionSchema)
+			return (
+				<motion.div
+					className="bg-[length:200%_200% mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
+					initial={{ y: 20 }}
+					animate={{ y: 0 }}
+				>
+					<p className="hidden py-4 font-bold">.</p>
+				</motion.div>
+			)
 
-									// NOTE: This is not the most performant way to do this, but for now it works.
-									const option = Array.isArray(options)
-										? options.find(option => option.value === value?.value)
-										: undefined
+		if (!parsed)
+			return (
+				<motion.div
+					className="mb-2 rounded-lg border-[1px] border-plug-red p-4"
+					initial={{ y: 20 }}
+					animate={{ y: 0 }}
+				>
+					<p className="font-bold text-plug-red">
+						Failed to parse: <span className="opacity-60">{sentence}</span>
+					</p>
+				</motion.div>
+			)
 
-									const filteredOptions =
-										options?.filter(
-											option =>
-												option.label.toLowerCase().includes(search.toLowerCase()) ||
-												option.name?.toLowerCase().includes(search.toLowerCase()) ||
-												option.value.toLowerCase().includes(search.toLowerCase())
-										) ?? []
+		return (
+			<motion.div initial={{ y: 20 }} animate={{ y: 0 }}>
+				<Accordion
+					className={cn(
+						"cursor-default hover:bg-white",
+						isValid && isComplete && !error
+							? "border-plug-yellow hover:border-plug-yellow"
+							: "border-plug-red hover:border-plug-red",
+						className
+					)}
+					data-sentence
+					data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
+					data-valid={isValid && isComplete}
+					data-action-preview={item}
+					{...props}
+				>
+					<div className={cn("flex flex-row items-center font-bold")}>
+						<div className="flex w-full flex-wrap items-center gap-[4px]">
+							<div className="flex flex-row items-start gap-[4px]">
+								<div className="relative mt-1 h-6 w-10 flex-shrink-0">
+									<Image
+										className="absolute mr-2 h-6 w-6 rounded-sm blur-xl filter"
+										src={actionSchema.metadata.icon}
+										alt={`Icon for ${action.protocol}`}
+										width={64}
+										height={64}
+									/>
+									<Image
+										className="absolute mr-2 h-6 w-6 rounded-sm"
+										src={actionSchema.metadata.icon}
+										alt={`Icon for ${action.protocol}`}
+										width={64}
+										height={64}
+									/>
+								</div>
 
-									const isReady =
-										(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
-										input.dependentOn === undefined
-									const isEmpty = !value?.value
-									const isValid = !isEmpty && !inputError && !error
+								<div className="flex flex-wrap items-center gap-y-1">
+									{!solverActions && <p>Failed to retrieve action schema: {action.protocol}</p>}
 
-									return (
-										<>
-											<button
-												className={cn(
-													"rounded-sm bg-gradient-to-tr px-2 py-1 font-bold transition-all duration-200 ease-in-out",
-													!isValid ? "text-plug-red" : "text-plug-green",
-													own && !preview ? "cursor-pointer" : "cursor-default"
-												)}
-												style={{
-													background: !isValid
-														? "linear-gradient(to top right, rgba(255,0,0,0.1), rgba(255,0,0,0.1))"
-														: `linear-gradient(to top right, rgba(56, 88, 66, 0.2), rgba(210, 243, 138, 0.2))`
-												}}
-												onClick={() =>
-													own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined
-												}
-											>
-												{(option && option.label) ||
-													value?.value ||
-													input.name
-														?.replaceAll("_", " ")
-														.replace(/([A-Z])/g, " $1")
-														.toLowerCase() ||
-													`Input #${input.index}`}
-											</button>
+									{solverActions &&
+										parts.map((part, partIndex) => {
+											const match = part.match(/\{(\d+)(?:=>(\d+))?\}/)
 
-											<Frame
-												index={index}
-												icon={
-													<div className="relative h-10 min-w-10">
-														<Image
-															src={actionSchema.metadata.icon}
-															alt={`Action ${actionIndex} icon`}
-															width={64}
-															height={64}
-															className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 rounded-sm blur-2xl filter"
-														/>
-														<Image
-															src={actionSchema.metadata.icon}
-															alt={`Action ${actionIndex} icon`}
-															width={64}
-															height={64}
-															className="relative left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-sm"
-														/>
-													</div>
-												}
-												label={
-													<span className="relative text-lg">
-														<span className={"opacity-40"}>
-															{formatTitle(action.action)}:
-														</span>
-														<span>
-															{" "}
-															{formatTitle(input.name ?? `Input #${inputIndex}`)}
-														</span>
+											if (!match)
+												return (
+													<span key={partIndex} className="whitespace-pre">
+														{part}
 													</span>
-												}
-												visible={column.frame === `${actionIndex}-${inputIndex}`}
-												handleBack={
-													inputIndex > 0
-														? () => frame(`${actionIndex}-${inputIndex - 1}`)
-														: undefined
-												}
-												hasOverlay
-												hasChildrenPadding={false}
-												scrollBehavior="partial"
-											>
-												{column.frame === `${actionIndex}-${inputIndex}` ? (
-													<>
-														<div className="flex flex-col gap-2 overflow-y-auto px-6">
-															{!isReady && (
-																<div className="mb-2 flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
-																	<p className="mx-auto max-w-[380px]">
-																		Please enter a value for{" "}
-																		{
-																			parsed.inputs.find(
-																				i => i.index === input.dependentOn
-																			)?.name
-																		}{" "}
-																		before continuing.
-																	</p>
-																</div>
-															)}
+												)
 
-															{isReady && !isOptionBased && (
-																<Search
-																	className="mb-4"
-																	icon={<Hash size={14} />}
-																	placeholder={getInputPlaceholder(input.type)}
-																	search={value?.value}
-																	handleSearch={data =>
-																		handleValue(
-																			input.index,
-																			data,
-																			input.type?.toString().includes("int")
-																		)
-																	}
-																	isNumber={
-																		input.type?.toString().includes("int") ||
-																		input.type?.toString().includes("float")
-																	}
-																	focus={true}
-																/>
-															)}
+											const inputIndex = parseInt(match[2] || match[1])
+											const optionsIndex = match[2] ? parseInt(match[1]) : inputIndex
+											const input = parsed.inputs.find(i => i.index === inputIndex)
 
-															{isReady && isOptionBased && (
-																<>
-																	<Search
-																		icon={<SearchIcon size={14} />}
-																		placeholder="Search options"
-																		search={search}
-																		handleSearch={setSearch}
-																		focus
-																		clear
-																	/>
+											if (!input) return null
 
-																	<div className="mb-4 flex w-full flex-col gap-2">
-																		{filteredOptions.map((option, optionIndex) => (
-																			<Accordion
-																				key={`${index}-${actionIndex}-${optionIndex}`}
-																				onExpand={() =>
-																					handleValue(
-																						input.index,
-																						option.value === value?.value
-																							? ""
-																							: option.value
-																					)
-																				}
-																				className="relative"
-																			>
-																				{option.value === value?.value && (
-																					<div className="absolute bottom-0 right-0 h-24 w-24 bg-plug-yellow blur-[80px] filter" />
-																				)}
-
-																				<div className="flex flex-row items-center gap-4">
-																					{option.icon && (
-																						<div className="flex items-center space-x-2">
-																							{option.icon
-																								.split("%7C")
-																								.map(icon =>
-																									decodeURIComponent(
-																										icon
-																									)
-																								)
-																								.map(
-																									(
-																										icon,
-																										tokenIndex
-																									) => (
-																										<TokenImage
-																											key={
-																												tokenIndex
-																											}
-																											logo={icon}
-																											symbol={
-																												option.label
-																											}
-																											className={cn(
-																												tokenIndex >
-																													0
-																													? "-ml-24"
-																													: ""
-																											)}
-																										/>
-																									)
-																								)}
-																						</div>
-																					)}
-																					<div className="flex w-full flex-col">
-																						<p className="flex w-full flex-row justify-between gap-2 truncate">
-																							{option.name}
-																							{option.info && (
-																								<span className="ml-auto tabular-nums">
-																									<Counter
-																										count={
-																											option.info
-																												.value
-																										}
-																									/>
-																								</span>
-																							)}
-																						</p>
-																						<p className="flex flex-row justify-between gap-2 text-sm tabular-nums opacity-40">
-																							{option.label}
-																							{option.info && (
-																								<span className="ml-auto tabular-nums">
-																									{option.info.label}
-																								</span>
-																							)}
-																						</p>
-																					</div>
-																				</div>
-																			</Accordion>
-																		))}
-																	</div>
-																</>
-															)}
-														</div>
-														<div className="mt-auto bg-white">
-															<div className="relative">
-																{options && options.length > 0 && (
-																	<div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-b from-white/0 to-white" />
-																)}
-																<div className="mb-4 px-6">
-																	<Button
-																		variant={
-																			!isEmpty && !error
-																				? "primary"
-																				: "primaryDisabled"
-																		}
-																		className="w-full py-4"
-																		onClick={() =>
-																			frame(
-																				inputIndex + 1 < parsed.inputs.length
-																					? `${actionIndex}-${inputIndex + 1}`
-																					: undefined
-																			)
-																		}
-																		disabled={isEmpty || error}
-																	>
-																		{isOptionBased && isEmpty
-																			? "Choose option"
-																			: isEmpty || error
-																				? inputError?.message || "Enter value"
-																				: parsed.inputs.length - 1 > inputIndex
-																					? "Next"
-																					: "Done"}
-																	</Button>
-																</div>
-															</div>
-														</div>
-													</>
-												) : (
-													<></>
-												)}
-											</Frame>
-										</>
-									)
-								})}
+											return (
+												<Part
+													key={`${index}-${actionIndex}-${actionIndex}-${partIndex}`}
+													index={index}
+													column={column}
+													frame={frame}
+													own={own}
+													preview={preview}
+													error={error}
+													actionIcon={actionSchema.metadata.icon}
+													action={action}
+													actionIndex={actionIndex}
+													parsed={parsed}
+													input={input}
+													inputIndex={inputIndex}
+													optionsIndex={optionsIndex}
+													options={options}
+													getInputValue={getInputValue}
+													getInputError={getInputError}
+													search={search}
+													handleSearch={handleSearch}
+													handleValue={handleValue}
+												/>
+											)
+										})}
+								</div>
 							</div>
 						</div>
+
+						{preview === false && own && (
+							<Button
+								variant="secondary"
+								className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
+								onClick={() =>
+									edit({
+										id: item,
+										actions: JSON.stringify(plugActions.filter((_, i) => i !== actionIndex))
+									})
+								}
+							>
+								<X size={14} className="opacity-60" />
+							</Button>
+						)}
 					</div>
+				</Accordion>
 
-					{preview === false && own && (
-						<Button
-							variant="secondary"
-							className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
-							onClick={() =>
-								edit({
-									id: item,
-									actions: JSON.stringify(plugActions.filter((_, i) => i !== actionIndex))
-								})
-							}
-						>
-							<X size={14} className="opacity-60" />
-						</Button>
-					)}
-				</div>
-			</Accordion>
+				{actionIndex < plugActions.length - 1 && (
+					<div
+						className={cn(
+							"mx-auto h-2 w-[2px]",
+							isValid && isComplete && !error
+								? "bg-plug-yellow hover:border-plug-yellow"
+								: "bg-plug-red hover:border-plug-red"
+						)}
+					/>
+				)}
+			</motion.div>
+		)
+	}
+)
 
-			{actionIndex < plugActions.length - 1 && (
-				<div
-					className={cn(
-						"mx-auto h-2 w-[2px]",
-						isValid && isComplete && !error
-							? "bg-plug-yellow hover:border-plug-yellow"
-							: "bg-plug-red hover:border-plug-red"
-					)}
-				/>
-			)}
-		</>
-	)
-}
+Sentence.displayName = "Sentence"

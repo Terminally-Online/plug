@@ -5,16 +5,25 @@ import (
 	"fmt"
 	"net/http"
 	"solver/internal/actions"
-	"solver/internal/solver/signature"
-	"solver/internal/solver/simulation"
+	"solver/internal/bindings/references"
+	"solver/internal/database"
+	"solver/internal/database/models"
 	"solver/internal/utils"
+	"strconv"
+	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
+type IntentDomain struct {
+	ChainId uint64 `json:"chainId"`
+	From    string `json:"from"`
+}
+
 type IntentRequest struct {
-	Id      string            `json:"id"`
-	ChainId uint64            `json:"chainId"`
-	From    string            `json:"from"`
-	Inputs  []json.RawMessage `json:"inputs"`
+	Id     string            `json:"id"`
+	Inputs []json.RawMessage `json:"inputs"`
+	IntentDomain
 }
 
 func (r *IntentRequest) Validate() error {
@@ -44,26 +53,50 @@ func (req *IntentRequest) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
+	chainId := r.URL.Query().Get("chainId")
 	protocol := r.URL.Query().Get("protocol")
 	action := r.URL.Query().Get("action")
-	chainId := r.URL.Query().Get("chainId")
+	from := r.URL.Query().Get("from")
 
-	// Case 1: No protocol - return all schemas for all protocols without options.
+	searchParams := make(map[int]string)
+	for key, values := range r.URL.Query() {
+		if strings.HasPrefix(key, "search[") && strings.HasSuffix(key, "]") {
+			index := strings.TrimPrefix(strings.TrimSuffix(key, "]"), "search[")
+			if len(values) > 0 {
+				indexInt, err := strconv.Atoi(index)
+				if err != nil {
+					continue
+				}
+				searchParams[indexInt] = values[0]
+			}
+		}
+	}
+
 	if protocol == "" {
 		allSchemas := make(map[string]actions.ProtocolSchema)
 
-		for protocol, handler := range h.Solver.GetProtocols() {
+		for protocol, handler := range h.Solver.Protocols {
+			protocolChains, err := handler.GetChains(chainId)
+			if err != nil {
+				continue
+			}
+			chains := make([]*references.Network, len(protocolChains))
+			for i, chain := range protocolChains {
+				chainCopy := *chain
+				chainCopy.References = nil
+				chains[i] = &chainCopy
+			}
+
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
 					Tags:   handler.GetTags(),
-					Chains: handler.GetChains(),
+					Chains: chains,
 				},
 				Schema: make(map[string]actions.Schema),
 			}
 
-			// Get all schemas without options
 			schemas := handler.GetSchemas()
 			for _, supportedAction := range handler.GetActions() {
 				if chainSchema, ok := schemas[supportedAction]; ok {
@@ -73,7 +106,13 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
+
 			allSchemas[protocol] = protocolSchema
+		}
+
+		if len(allSchemas) == 0 {
+			utils.MakeHttpError(w, fmt.Sprintf("no protocols found on chainId %s", chainId), http.StatusNotFound)
+			return
 		}
 
 		if err := json.NewEncoder(w).Encode(allSchemas); err != nil {
@@ -82,19 +121,31 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handler, exists := h.Solver.GetProtocolHandler(protocol)
+	handler, exists := h.Solver.Protocols[protocol]
 	if !exists {
 		utils.MakeHttpError(w, fmt.Sprintf("unsupported protocol: %s", protocol), http.StatusBadRequest)
 		return
 	}
 
-	// Case 2: Protocol only - return all schemas for that protocol without options.
+	protocolChains, err := handler.GetChains(chainId)
+	if err != nil {
+		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	chains := make([]*references.Network, len(protocolChains))
+	for _, chain := range protocolChains {
+		chainCopy := *chain
+		chainCopy.References = nil
+		chains = append(chains, &chainCopy)
+	}
+
 	if action == "" {
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.GetIcon(),
 				Tags:   handler.GetTags(),
-				Chains: handler.GetChains(),
+				Chains: chains,
 			},
 			Schema: make(map[string]actions.Schema),
 		}
@@ -119,8 +170,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Case 3: Protocol and action - return specific schema
-	chainSchema, err := handler.GetSchema(chainId, action)
+	chainSchema, err := handler.GetSchema(chainId, common.HexToAddress(from), searchParams, action)
 	if err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
 		return
@@ -130,7 +180,7 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.GetIcon(),
 			Tags:   handler.GetTags(),
-			Chains: handler.GetChains(),
+			Chains: chains,
 		},
 		Schema: map[string]actions.Schema{
 			action: chainSchema.Schema,
@@ -146,72 +196,25 @@ func (h *Handler) GetIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) PostIntent(w http.ResponseWriter, r *http.Request) {
-	var req IntentRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
+	var intentInput models.Intent
+	if err := json.NewDecoder(r.Body).Decode(&intentInput); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	transactionsBatch := make([]signature.Plug, 0)
-	var breakOuter bool
-	for _, inputs := range req.Inputs {
-		transactions, err := h.Solver.GetTransaction(inputs, req.ChainId, req.From)
-		if err != nil {
-			utils.MakeHttpError(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		// NOTE: Some plug actions have exclusive transactions that need to be run alone
-		//       before the rest of the Plug can run. For this, we will just break out
-		//       of the loop and execute any solo transactions that are needed for
-		//       the rest of the batch to run in sequence.
-		for _, transaction := range transactions {
-			if transaction.Exclusive {
-				// NOTE: Set the field to false to avoid tarnishing the response shape.
-				transaction.Exclusive = false
-				transactionsBatch = []signature.Plug{transaction}
-				breakOuter = true
-				break
-			}
-		}
-
-		if breakOuter {
-			break
-		}
-
-		transactionsBatch = append(transactionsBatch, transactions...)
-	}
-
-	if len(transactionsBatch) == 0 {
-		utils.MakeHttpError(w, "has no transactions to execute", http.StatusBadRequest)
-		return
-	}
-
-	message, err := h.Solver.GetPlugs(req.ChainId, req.From, transactionsBatch)
+	intentInput.ApiKeyId = r.Header.Get("X-Api-Key-Id")
+	intent, err := intentInput.GetOrCreate(database.DB)
 	if err != nil {
-		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
+		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	simulationRequest, simulationResponse, err := h.Solver.GetSimulation("1", req.ChainId, message)
-	if err != nil {
+	if solution, err := h.Solver.Solve(intent); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	type IntentResponse struct {
-		Message     signature.LivePlugs           `json:"message"`
-		Transaction simulation.SimulationRequest  `json:"transaction"`
-		Simulation  simulation.SimulationResponse `json:"simulation"`
-	}
-	response := IntentResponse{
-		Message:     *message,
-		Transaction: simulationRequest,
-		Simulation:  simulationResponse,
-	}
-
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+	} else {
+		if err := json.NewEncoder(w).Encode(solution); err != nil {
+			utils.MakeHttpError(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		}
 	}
 }

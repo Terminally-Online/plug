@@ -3,6 +3,8 @@ package ens
 import (
 	"fmt"
 	"solver/internal/actions"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (
@@ -12,22 +14,29 @@ const (
 
 type EnsOptionsProvider struct{}
 
-func (p *EnsOptionsProvider) GetOptions(chainId uint64, action string) (map[int]actions.Options, error) {
-	durationOptions, err := GetDurationOptions()
-	if err != nil {
-		return nil, err
-	}
-
+func (p *EnsOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
 	switch action {
 	case actions.ActionRenew:
+		durationOptions, err := GetDurationOptions()
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil
 	case actions.ConstraintPrice:
+		durationOptions, err := GetDurationOptions()
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil
 	case TimeLeft:
+		durationOptions, err := GetDurationOptions()
+		if err != nil {
+			return nil, err
+		}
 		return map[int]actions.Options{
 			1: {Simple: durationOptions},
 		}, nil

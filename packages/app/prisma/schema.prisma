@@ -111,12 +111,12 @@ model SocketIdentity {
   onboardingAt    DateTime?
   onboardedAt     DateTime?
   onboardingColor String?
-  onboardingCount Int       @default(0)
+  onboardingCount Int       @default(autoincrement())
 
   // ---------------------------------------------------------------------------
   // One-to-one
   // ---------------------------------------------------------------------------
-  socket      UserSocket     @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socket      Socket         @relation(fields: [socketId], references: [id], onDelete: Cascade)
   socketId    String         @id @unique
   farcaster   FarcasterUser? @relation(fields: [farcasterId], references: [id], onDelete: SetNull)
   farcasterId String?        @unique
@@ -126,11 +126,11 @@ model SocketIdentity {
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  referrer   UserSocket? @relation(fields: [referrerId], references: [id], name: "Referral")
+  referrer   Socket? @relation(fields: [referrerId], references: [id], name: "Referral")
   referrerId String?
 }
 
-model UserSocket {
+model Socket {
   // ---------------------------------------------------------------------------
   // Core
   // ---------------------------------------------------------------------------
@@ -152,9 +152,9 @@ model UserSocket {
   identity SocketIdentity?
 
   // ---------------------------------------------------------------------------
-  // One-to-many 
+  // One-to-many
   // ---------------------------------------------------------------------------
-  workflow     Workflow[]
+  plugs        Plug[]
   positions    PositionCache[]
   collectibles CollectibleCache[]
   referrals    SocketIdentity[]   @relation("Referral")
@@ -175,14 +175,14 @@ model View {
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  workflowId String
+  plug   Plug   @relation(fields: [plugId], references: [id], onDelete: Cascade)
+  plugId String
 
-  @@id([workflowId, date])
+  @@id([plugId, date])
   @@index([date])
 }
 
-model Workflow {
+model Plug {
   // ---------------------------------------------------------------------------
   // Core
   // ---------------------------------------------------------------------------
@@ -195,94 +195,29 @@ model Workflow {
   // ---------------------------------------------------------------------------
   // Fields
   // ---------------------------------------------------------------------------
-  name             String   @default("Untitled")
-  isCurated        Boolean  @default(false)
-  isPrivate        Boolean  @default(false)
-  actions          String   @default("[]")
-  color            String
-  tags             String[]
-  workflowForkedId String?
-  frequency        Int      @default(10)
+  name         String   @default("Untitled")
+  isCurated    Boolean  @default(false)
+  isPrivate    Boolean  @default(false)
+  actions      String   @default("[]")
+  color        String
+  tags         String[] @default([])
+  plugForkedId String?
+  frequency    Int      @default(10)
+  intentIds    String[] @default([])
 
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socket   Socket @relation(fields: [socketId], references: [id], onDelete: Cascade)
   socketId String
 
   // ---------------------------------------------------------------------------
   // One-to-many
   // ---------------------------------------------------------------------------
-  executions Execution[]
-  views      View[]
+  views View[]
 }
 
-model Execution {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  status  String @default("active")
-  chainId Int    @default(1)
-  actions String @default("[]")
-
-  startAt DateTime
-  endAt   DateTime?
-
-  frequency        Int       @default(0) // 0=never, 1=daily, 7=weekly, etc.
-  periodEndAt      DateTime?
-  nextSimulationAt DateTime?
-
-  // ---------------------------------------------------------------------------
-  // One-to-many
-  // ---------------------------------------------------------------------------
-  simulations Simulation[]
-
-  // ---------------------------------------------------------------------------
-  // Many-to-one
-  // ---------------------------------------------------------------------------
-  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  workflowId String
-
-  // ---------------------------------------------------------------------------
-  // Indexes
-  // ---------------------------------------------------------------------------
-  @@index([workflowId])
-  @@index([startAt])
-  @@index([nextSimulationAt])
-}
-
-model Simulation {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  status      String
-  result      Json?
-  error       String?
-  errors      String[] @default([])
-  gasEstimate Float?
-
-  // ---------------------------------------------------------------------------
-  // Many-to-one
-  // ---------------------------------------------------------------------------
-  execution   Execution @relation(fields: [executionId], references: [id], onDelete: Cascade)
-  executionId String
-}
-
-model TokenPrice {
+model Price {
   // ---------------------------------------------------------------------------
   // Core
   // ---------------------------------------------------------------------------
@@ -444,7 +379,7 @@ model PositionCache {
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socket   Socket @relation(fields: [socketId], references: [id], onDelete: Cascade)
   socketId String
 }
 
@@ -563,22 +498,6 @@ model CollectibleCache {
   // ---------------------------------------------------------------------------
   // Many-to-one
   // ---------------------------------------------------------------------------
-  socket   UserSocket @relation(fields: [socketId], references: [id], onDelete: Cascade)
+  socket   Socket @relation(fields: [socketId], references: [id], onDelete: Cascade)
   socketId String
-}
-
-model FeatureRequest {
-  // ---------------------------------------------------------------------------
-  // Core
-  // ---------------------------------------------------------------------------
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  // ---------------------------------------------------------------------------
-  // Fields
-  // ---------------------------------------------------------------------------
-  userAddress String
-  context     String
-  message     String?
 }

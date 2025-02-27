@@ -11,7 +11,7 @@ export const maintenance = createTRPCRouter({
 		const cutoffDate = new Date()
 		cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_OLDER_THAN_DAYS)
 
-		return await ctx.db.userSocket.deleteMany({
+		return await ctx.db.socket.deleteMany({
 			where: {
 				id: {
 					startsWith: "anonymous-"

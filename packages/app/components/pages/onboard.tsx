@@ -1,25 +1,26 @@
-import { useSession } from "next-auth/react"
-import Image from "next/image"
 import { useRouter } from "next/router"
-import { FC, HTMLAttributes, PropsWithChildren, useState } from "react"
+import { FC, HTMLAttributes, PropsWithChildren } from "react"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
-import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon, XIcon } from "lucide-react"
+import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon } from "lucide-react"
 
 import { useSetAtom } from "jotai"
 
-import { useData } from "@/contexts"
 import { cn } from "@/lib"
 import { api } from "@/server/client"
-import { socketAtom, socketModelAtom, useSocket } from "@/state/authentication"
+import { socketModelAtom } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 
 import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
 import { Button } from "../shared/buttons/button"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
+import { ConsoleSidebarPane } from "../app/sidebar"
+import { Ticket } from "./ticket"
 
-const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
+export const colors = ["#F3EF8A", "#8AF3E6", "#EB8AF3", "#9F8AF3", "#F3908A", "#F3B08A", "#8AAEF3", "#92F38A"]
 
 const actions = [
 	{ name: "Mint Plug Founders Ticket.", sentence: `Mint [Plug Founders Ticket] in [Color:${colors.join(",")}].` },
@@ -81,13 +82,17 @@ export const ConsoleOnboarding = () => {
 	}
 
 	return (
-		<div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-12">
-			<div className="flex h-full max-h-[960px] w-[460px] items-center justify-center rounded-lg border-[1px] border-plug-green/10">
-				{step < 5 && <ConsoleOnboardingStepOne step={step} handleStep={handleStepChange} />}
-			</div>
+		<>
+			<ConsoleSidebarPane />
+			<div className="relative flex h-full w-full flex-col items-center justify-center gap-8 p-12">
 
-			<div className="absolute bottom-0 z-[9999] h-12 w-full bg-plug-white" />
-		</div>
+				<div className="flex h-full max-h-[960px] w-[460px] items-center justify-center rounded-lg border-[1px] border-plug-green/10">
+					{step < 5 && <ConsoleOnboardingStepOne step={step} handleStep={handleStepChange} />}
+				</div>
+
+				<div className="absolute bottom-0 z-[9999] h-12 w-full bg-plug-white" />
+			</div>
+		</>
 	)
 }
 
@@ -175,9 +180,20 @@ export const ConsoleOnboardingStepOne: FC<
 		handle: { frame }
 	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
 
-	const setSocket = useSetAtom(socketModelAtom)
+	const router = useRouter()
+	const color = (router.query.color as string) || ""
 
-	const [color, setColor] = useState("")
+	const setColor = (newColor: string) => {
+		router.replace(
+			{
+				query: { ...router.query, color: newColor }
+			},
+			undefined,
+			{ shallow: true }
+		)
+	}
+
+	const setSocket = useSetAtom(socketModelAtom)
 
 	const onboard = api.socket.onboard.onboard.useMutation({
 		onSuccess: socket => setSocket(socket)
@@ -205,19 +221,7 @@ export const ConsoleOnboardingStepOne: FC<
 
 					{step !== 0 && (
 						<div className="mb-auto flex h-full flex-col gap-2">
-							{color && (
-								<div className="-z-1 absolute inset-0 select-none overflow-hidden rounded-b-lg">
-									<div className="group absolute -bottom-1/2 left-0 right-0 w-full rounded-lg p-8 px-12 transition-all duration-200 hover:bottom-0">
-										<Image
-											className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-											src={`http://localhost:3000/api/canvas/nft?color=${color.replace("#", "") || "FDFFF7"}&number=${Math.floor(Math.random() * 100000)}`}
-											alt="Plug Founding Ticket"
-											width={1000}
-											height={1600}
-										/>
-									</div>
-								</div>
-							)}
+							{color && <Ticket color={color} />}
 
 							{Array.from({ length: Math.min(step, actions.length) }).map((_, actionIndex) => {
 								const action = actions[actions.length - 1 - actionIndex]
@@ -289,17 +293,17 @@ export const ConsoleOnboardingStepOne: FC<
 						tooltip={
 							column?.frame
 								? ""
-								: session?.user.id.startsWith("0x")
+								: !color ? "Please select a 'color' for your ticket to proceed." : session?.user.id.startsWith("0x")
 									? "Click here to run your Plug and mint your Ticket!"
 									: color ? "Please log in to run your Plug." : ""
 						}
 					>
 						<Button
 							className="flex w-full flex-row items-center justify-center gap-2 py-4"
-							variant={!session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
+							variant={!color || !session?.user.id.startsWith("0x") || step < 2 ? "primaryDisabled" : "primary"}
 							onClick={
-								!session?.user.id.startsWith("0x") || step < 2
-									? () => {}
+								!color || !session?.user.id.startsWith("0x") || step < 2
+									? () => { }
 									: () => onboard.mutate({ onboardingColor: color })
 							}
 						>
@@ -345,7 +349,8 @@ export const ConsoleOnboardingStepOne: FC<
 					<Button
 						className="mt-2 w-full py-4"
 						variant={color ? "primary" : "primaryDisabled"}
-						onClick={color ? () => frame("onboarding-colors") : () => {}}
+						onClick={color ? () => frame("onboarding-colors") : () => { }}
+						disabled={!color}
 					>
 						{color ? "Done" : "Select Color"}
 					</Button>
@@ -372,9 +377,9 @@ export const ConsoleOnboardingStepOne: FC<
 										onClick={
 											actionIndex === 0
 												? () => {
-														handleStep()
-														frame()
-													}
+													handleStep()
+													frame()
+												}
 												: undefined
 										}
 									>

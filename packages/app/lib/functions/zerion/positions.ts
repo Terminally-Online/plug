@@ -406,7 +406,7 @@ const findPositions = async (id: string, search: string = "") => {
  * @throws {TRPCError} Throws a FORBIDDEN error if the socket address isn't the address of the wallet owned socket.
  */
 export const getPositions = async (address: string, socketAddress?: string, search?: string, chains = ["base"]) => {
-	const socket = await db.userSocket.findFirst({
+	const socket = await db.socket.findFirst({
 		where: { id: address }
 	})
 

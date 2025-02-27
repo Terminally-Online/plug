@@ -143,11 +143,11 @@ export const SocketTokenPriceChart: FC<{
 			setIsLoading(true)
 			setQueriedKeys(keys.join(","))
 
-			const failure = {
-				timestamp: new Date().toISOString(),
-				price: 0,
-				error: "Could not load price data."
-			}
+			// const failure = {
+			// 	timestamp: new Date().toISOString(),
+			// 	price: 0,
+			// 	error: "Could not load price data."
+			// }
 
 			await Promise.allSettled(
 				periods.map(async period => {
@@ -195,7 +195,7 @@ export const SocketTokenPriceChart: FC<{
 	return (
 		<div className="w-full overflow-x-hidden pt-8">
 			{isLoading ? (
-				<div className="flex min-h-[240px] flex-col items-center justify-center">
+				<div className="flex min-h-[120px] flex-col items-center justify-center">
 					<p className="font-bold opacity-40">Loading price data...</p>
 				</div>
 			) : (
@@ -207,7 +207,7 @@ export const SocketTokenPriceChart: FC<{
 				// </div>
 				// )
 				<>
-					<ResponsiveContainer minHeight={240} height="100%" width="100%" style={{ marginLeft: "-16%" }}>
+					<ResponsiveContainer minHeight={120} height="100%" width="100%" style={{ marginLeft: "-16%" }}>
 						<LineChart onMouseMove={handleMouseMove} onMouseLeave={() => handleTooltip(undefined)}>
 							{priceData &&
 								keys.map(key => {
