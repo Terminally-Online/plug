@@ -2,24 +2,20 @@ package middleware
 
 import (
 	"net/http"
-	"os"
 	"solver/internal/solver"
 )
 
 type Handler struct {
-	apiKey string
-	solver solver.Solver
+	apiKeyLimiter *KeyRateLimiter
+	solver        solver.Solver
 }
 
 func New(s solver.Solver) *Handler {
-	apiKey := os.Getenv("PLUG_APP_API_KEY")
-	if apiKey == "" {
-		panic("PLUG_APP_API_KEY environment variable is not set")
-	}
+	apiKeyLimiter := NewKeyRateLimiter()
 
 	return &Handler{
-		apiKey: apiKey,
-		solver: s,
+		apiKeyLimiter: apiKeyLimiter,
+		solver:        s,
 	}
 }
 

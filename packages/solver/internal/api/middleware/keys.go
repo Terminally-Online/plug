@@ -1,49 +1,149 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"sync"
+	"sync/atomic"
+	"time"
 )
+
+const (
+	WINDOW_SECONDS = 60
+)
+
+type KeyCache struct {
+	key         *models.ApiKey
+	count       atomic.Int64
+	windowStart atomic.Int64
+}
+
+type KeyRateLimiter struct {
+	keys map[string]*KeyCache
+	mu   sync.RWMutex // mutex for map operations
+}
+
+func NewKeyRateLimiter() *KeyRateLimiter {
+	return &KeyRateLimiter{
+		keys: make(map[string]*KeyCache),
+	}
+}
+
+/*
+Allow does a few things to facilitate the rate limiting of an API key.
+1. We check if the key currently exists in the rate limit cache. If it doesn't, we create a new entry in the cache.
+2. If it does exist, we check if the window has expired. If it has, we reset the window and count, and refetch the key details from the database.
+3. We check if the rate limit has been reached, and if not, we increment the count atomically.
+4. If the rate limit has been reached, we return false, otherwise return true.
+*/
+func (rl *KeyRateLimiter) Allow(apiKey string) (keyModel models.ApiKey, statusCode int, err error) {
+	now := time.Now().Unix()
+
+	rl.mu.RLock()
+	cachedKey, exists := rl.keys[apiKey]
+	rl.mu.RUnlock()
+
+	// If the key does not exist in cache yet, look it up and create a new entry
+	if !exists {
+		rl.mu.Lock()
+		defer rl.mu.Unlock()
+
+		// Check again with write lock, if it still doesn't exist, create a new entry
+		if cachedKey, exists = rl.keys[apiKey]; !exists {
+			dbApiKey, statusCode, err := lookupApiKey(apiKey)
+			if err != nil {
+				return models.ApiKey{}, statusCode, err
+			}
+
+			cachedKey = &KeyCache{
+				key: dbApiKey,
+			}
+			cachedKey.windowStart.Store(now)
+			cachedKey.count.Store(1)
+
+			rl.keys[apiKey] = cachedKey
+			return *dbApiKey, http.StatusOK, nil
+		}
+	}
+
+	// Check if window expired and reset count and window if it has
+	windowStart := cachedKey.windowStart.Load()
+	if now-windowStart >= WINDOW_SECONDS {
+		rl.mu.Lock()
+
+		dbApiKey, statusCode, err := lookupApiKey(apiKey)
+		if err != nil {
+			delete(rl.keys, apiKey)
+			rl.mu.Unlock()
+			return models.ApiKey{}, statusCode, err
+		}
+
+		cachedKey.key = dbApiKey
+		cachedKey.windowStart.Store(now)
+		cachedKey.count.Store(1)
+
+		rl.mu.Unlock()
+		return *cachedKey.key, http.StatusOK, nil
+	}
+
+	newCount := cachedKey.count.Add(1)
+	if newCount > int64(cachedKey.key.RateLimit) {
+		return *cachedKey.key, http.StatusTooManyRequests, fmt.Errorf("rate limit exceeded")
+	}
+
+	return *cachedKey.key, http.StatusOK, nil
+}
+
+func lookupApiKey(apiKeyId string) (dbKey *models.ApiKey, statusCode int, err error) {
+	if apiKeyId == "" {
+		return nil, http.StatusUnauthorized, fmt.Errorf("missing api key")
+	}
+
+	dbApiKey := &models.ApiKey{}
+	if err := database.DB.Unscoped().Where("id = ?", apiKeyId).First(dbApiKey); err != nil {
+		return nil, http.StatusUnauthorized, fmt.Errorf("invalid api key")
+	}
+
+	if !dbApiKey.DeletedAt.Time.IsZero() {
+		return nil, http.StatusUnauthorized, fmt.Errorf("revoked api key")
+	}
+
+	return dbApiKey, http.StatusOK, nil
+}
 
 func (h *Handler) AdminApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
-		if apiKey == "" {
-			http.Error(w, "missing api key", http.StatusUnauthorized)
+
+		dbKey, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
+		if err != nil {
+			http.Error(w, err.Error(), statusCode)
 			return
 		}
 
-		var dbApiKey models.ApiKey
-		if err := database.DB.Where("key = ?", apiKey).First(&dbApiKey).Error; err != nil {
-			http.Error(w, "invalid api key", http.StatusUnauthorized)
-			return
-		}
-		if dbApiKey.Role != "admin" {
+		if dbKey.Role != "admin" {
 			http.Error(w, "invalid api key role", http.StatusUnauthorized)
 			return
 		}
+
+		r.Header.Set("X-Api-Key-Id", dbKey.Id)
 
 		next.ServeHTTP(w, r)
 	})
 }
 
-// TODO: Implement rate limiting middleware
 func (h *Handler) ApiKey(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
-		if apiKey == "" {
-			http.Error(w, "missing api key", http.StatusUnauthorized)
+		dbKey, statusCode, err := h.apiKeyLimiter.Allow(apiKey)
+		if err != nil {
+			http.Error(w, err.Error(), statusCode)
 			return
 		}
 
-		var dbApiKey models.ApiKey
-		if err := database.DB.Where("key = ?", apiKey).First(&dbApiKey).Error; err != nil {
-			http.Error(w, "invalid api key", http.StatusUnauthorized)
-			return
-		}
-
-		r.Header.Set("X-Api-Key-Id", dbApiKey.Id)
+		r.Header.Set("X-Api-Key-Id", dbKey.Id)
 
 		next.ServeHTTP(w, r)
 	})
