@@ -1,7 +1,4 @@
-import { useSession } from "next-auth/react"
 import { FC, lazy, Suspense, useMemo } from "react"
-// Import the DayPicker type but use lazy loading for the actual component
-import type { DayPicker as DayPickerType } from "react-day-picker"
 
 import { CalendarPlus, ChevronLeft, ChevronRight, Clock } from "lucide-react"
 
@@ -11,7 +8,6 @@ import { Button } from "@/components/shared/buttons/button"
 import { cn, frequencies, useConnect } from "@/lib"
 import { useColumnStore } from "@/state/columns"
 
-// Lazy load the DayPicker component to improve initial render performance
 const DayPicker = lazy(() => import("react-day-picker").then(mod => ({ default: mod.DayPicker })))
 
 export const ScheduleFrame: FC<{
@@ -23,7 +19,6 @@ export const ScheduleFrame: FC<{
 	} = useConnect()
 	const { column, isFrame, handle } = useColumnStore(index, "schedule")
 
-	// Memoized DayPicker component to prevent unnecessary renders
 	const MemoizedDayPicker = useMemo(() => {
 		if (!column) return null
 
@@ -44,42 +39,47 @@ export const ScheduleFrame: FC<{
 					className={cn(
 						"select-none",
 						column.schedule &&
-							column.schedule.date &&
-							(column.schedule.date.from || column.schedule.date.to)
+						column.schedule.date &&
+						(column.schedule.date.from || column.schedule.date.to)
 					)}
 					classNames={{
-						months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+						months: "flex flex-col relative",
 						month: "space-y-4 w-full",
-						caption: "flex justify-center pt-1 relative items-center",
+						month_caption: "flex justify-center pt-1 relative items-center",
 						caption_label: "text-sm font-bold opacity-40",
-						nav: "space-x-1 flex items-center",
-						nav_button: cn(
-							"inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-							"border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-							"p-1 bg-transparent opacity-40 hover:opacity-100"
+						nav: "flex items-center",
+						button_previous: cn(
+							"rounded-sm p-1 bg-white border-[1px] border-plug-green/10 text-black hover:bg-plug-green/10 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-plug-green/5 [&.active]:text-opacity-100 [&.active]:hover:bg-plug-green/10 [&.active]:hover:border-plug-green/5",
+							"absolute left-0 top-1 z-[20]",
 						),
-						nav_button_previous: "absolute left-1",
-						nav_button_next: "absolute right-1",
-						table: "w-full border-collapse space-y-1",
-						head_row: "flex justify-between",
-						head_cell: "rounded-sm my-2 w-9 font-bold text-sm opacity-40",
-						row: "flex w-full mt-2 justify-between",
-						cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-sm [&:has([aria-selected].day-outside)]:bg-accent/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-						day: cn(
-							"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-bold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-							"hover:bg-accent hover:text-accent-foreground h-7 w-7 bg-transparent p-0 hover:opacity-100"
+						button_next: cn(
+							"rounded-sm p-1 bg-white border-[1px] border-plug-green/10 text-black hover:bg-plug-green/10 items-center flex justify-center text-opacity-60 whitespace-nowrap [&.active]:bg-plug-green/5 [&.active]:text-opacity-100 [&.active]:hover:bg-plug-green/10 [&.active]:hover:border-plug-green/5",
+							"absolute right-0 top-1 z-[20]",
 						),
-						day_range_end: "day-range-end",
-						day_selected:
-							"bg-gradient-to-tr from-plug-yellow to-plug-yellow text-plug-green hover:bg-primary hover:brightness-105 focus:brightness-105",
-						day_today: "bg-accent text-accent-foreground",
-						day_disabled: "text-black/40",
-						day_range_middle: "aria-selected:bg-plug-yellow aria-selected:text-text-plug-green",
-						day_hidden: "invisible"
+						month_grid: "w-full border-collapse",
+						weekdays: "flex gap-2 items-center w-full",
+						weekday: "rounded-sm my-2 w-9 font-bold text-sm opacity-40 w-full",
+						week: "flex w-full justify-between gap-2 mt-2",
+						day: "rounded-sm h-full w-full text-center text-sm p-0 relative [&:has([aria-selected].day-outside)]:bg-accent/50 focus-within:relative focus-within:z-20",
+						day_button: cn(
+							"min-w-7 min-h-7",
+							"inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+							"hover:brightness-105 focus:brightness-105 p-0"
+						),
+						range_middle: "aria-selected:bg-plug-yellow aria-selected:text-text-plug-green",
+						range_end: "day-range-end",
+						selected:
+							"bg-plug-yellow text-plug-green hover:brightness-105 focus:brightness-105",
+						today: "bg-plug-green/10 text-black/40",
+						disabled: "text-black/40",
+						hidden: "invisible"
 					}}
 					components={{
-						IconLeft: () => <ChevronLeft size={14} className="h-4 w-4" />,
-						IconRight: () => <ChevronRight size={14} className="h-4 w-4" />
+						Chevron: (props) => {
+							if (props.orientation === "left")
+								return <ChevronLeft size={14} className="h-4 w-4 opacity-60" />
+							return <ChevronRight size={14} className="h-4 w-4 opacity-60" />
+						}
 					}}
 				/>
 			</Suspense>
