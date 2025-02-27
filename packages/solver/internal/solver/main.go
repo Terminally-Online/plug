@@ -268,13 +268,10 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
-	fmt.Printf("building transaction\n")
 	transaction, err := s.BuildPlugTransaction(intent, *livePlugs)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("transaction: %v\n", transaction)
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {

@@ -23,7 +23,7 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	solutions := make([]solver.Solution, 0, len(intents))
+	solutions := make([]solver.Solution, len(intents))
 	for index, intent := range intents {
 		if solution, err := s.Solve(&intent); err != nil {
 			solutions[index] = solver.Solution{
