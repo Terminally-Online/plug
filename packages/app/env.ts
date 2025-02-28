@@ -35,7 +35,8 @@ export const env = createEnv({
 			.default("true")
 			.transform(val => val === "true"),
 		NEXT_PUBLIC_WALLETCONNECT_ID: z.string(),
-		NEXT_PUBLIC_ALCHEMY_KEY: z.string()
+		NEXT_PUBLIC_QUICKNODE_NAME: z.string(),
+		NEXT_PUBLIC_QUICKNODE_KEY: z.string()
 	},
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
@@ -56,7 +57,8 @@ export const env = createEnv({
 		NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 		NEXT_PUBLIC_EARLY_ACCESS: process.env.NEXT_PUBLIC_EARLY_ACCESS,
 		NEXT_PUBLIC_WALLETCONNECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
-		NEXT_PUBLIC_ALCHEMY_KEY: process.env.NEXT_PUBLIC_ALCHEMY_KEY
+		NEXT_PUBLIC_QUICKNODE_NAME: process.env.NEXT_PUBLIC_QUICKNODE_NAME,
+		NEXT_PUBLIC_QUICKNODE_KEY: process.env.NEXT_PUBLIC_QUICKNODE_KEY
 	},
 	emptyStringAsUndefined: true,
 	isServer: typeof window === "undefined",

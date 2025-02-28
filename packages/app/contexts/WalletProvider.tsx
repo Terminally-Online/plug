@@ -2,7 +2,7 @@ import { FC, PropsWithChildren } from "react"
 
 import { Chain, createClient } from "viem"
 import { anvil, base, mainnet } from "viem/chains"
-import { createConfig, http, WagmiProvider } from "wagmi"
+import { createConfig, webSocket, WagmiProvider } from "wagmi"
 import { coinbaseWallet, safe, walletConnect } from "wagmi/connectors"
 
 import { env } from "@/env"
@@ -46,8 +46,8 @@ export const wagmiConfig = createConfig({
 		return createClient({
 			chain,
 			batch: { multicall: true },
-			pollingInterval: 12_000,
-			transport: http(chain.rpcUrls[RPCType.AppOnly].http[0])
+			pollingInterval: 200,
+			transport: webSocket(chain.rpcUrls[RPCType.AppOnly].webSocket?.[0] ?? "")
 		})
 	}
 })

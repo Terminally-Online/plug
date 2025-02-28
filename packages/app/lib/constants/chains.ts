@@ -7,8 +7,12 @@ import { Chain, RPCType } from "@/lib/types"
 const getAppRPCs = (prefix: string) => {
 	return {
 		[RPCType.AppOnly]: {
-			http: [`https://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`],
-			webSocket: [`wss://${prefix}.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`]
+			http: [
+				`https://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`,
+			],
+			webSocket: [
+				`wss://${env.NEXT_PUBLIC_QUICKNODE_NAME}${prefix}.quiknode.pro/${env.NEXT_PUBLIC_QUICKNODE_KEY}`,
+			]
 		}
 	}
 }
@@ -17,12 +21,11 @@ export const ANVIL_RPC = "127.0.0.1:8545"
 export const chains = {
 	[mainnet.id]: {
 		...mainnet,
-		alchemyPrefix: "eth-mainnet",
 		color: "#393939",
 		logo: "https://cdn.onplug.io/blockchain/ethereum.png",
 		rpcUrls: {
 			...mainnet.rpcUrls,
-			...getAppRPCs("eth-mainnet")
+			...getAppRPCs("")
 		}
 	} as const satisfies Chain,
 	[31337]: {
@@ -49,7 +52,6 @@ export const chains = {
 				blockCreated: 14_353_601
 			}
 		},
-		alchemyPrefix: "eth-mainnet-forked",
 		color: "#FAFF00",
 		logo: "https://cdn.onplug.io/protocols/plug.png",
 		rpcUrls: {
@@ -65,22 +67,20 @@ export const chains = {
 	} as const satisfies Chain,
 	[optimism.id]: {
 		...optimism,
-		alchemyPrefix: "opt-mainnet",
 		color: "#FF0420",
 		logo: "https://cdn.onplug.io/blockchain/optimism.png",
 		rpcUrls: {
 			...optimism.rpcUrls,
-			...getAppRPCs("opt-mainnet")
+			...getAppRPCs(".optimism")
 		}
 	} as const satisfies Chain,
 	[base.id]: {
 		...base,
-		alchemyPrefix: "base-mainnet",
 		color: "#0052FF",
 		logo: "https://cdn.onplug.io/blockchain/base.png",
 		rpcUrls: {
 			...base.rpcUrls,
-			...getAppRPCs("base-mainnet")
+			...getAppRPCs(".base-mainnet")
 		}
 	} as const satisfies Chain
 }

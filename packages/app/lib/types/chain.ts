@@ -13,7 +13,6 @@ type ChainRpcUrls = {
 }
 
 export interface Chain extends WagmiChain {
-	alchemyPrefix: string
 	color: `#${string}` | `rgb(${number}, ${number}, ${number})` | `rgba(${number}, ${number}, ${number}, ${number})`
 	logo: `${string}.png`
 	blockExplorers?: WagmiChain["blockExplorers"]

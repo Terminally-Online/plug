@@ -4,42 +4,42 @@ import { env } from "@/env"
 
 const outputString = `   ◍ Plug Anvil Fork Network`
 
-function startAnvilFork() {
-	const forkUrl = `https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`
-	const blockNumber = "19250000" // We can make this configurable later if needed
-	const chainId = "31337" // Anvil's default chain ID
-
-	const anvil = spawn("anvil", ["--fork-url", forkUrl, "--fork-block-number", blockNumber, "--chain-id", chainId])
-
-	anvil.stdout.on("data", data => {
-		console.log(data.toString())
-	})
-
-	anvil.stderr.on("data", data => {
-		console.error(data.toString())
-	})
-
-	anvil.on("close", code => {
-		if (code !== 0) {
-			console.error(`Anvil process exited with code ${code}`)
-		}
-	})
-
-	process.on("SIGINT", () => {
-		anvil.kill()
-		process.exit()
-	})
-
-	process.on("SIGTERM", () => {
-		anvil.kill()
-		process.exit()
-	})
-
-	console.log(`${outputString}
-   - URL: http://127.0.0.1:8545
-   - Block: ${blockNumber}
-   - Chain ID: ${chainId}
-`)
-}
-
-startAnvilFork()
+// function startAnvilFork() {
+// 	// const forkUrl = `https://eth-mainnet.g.alchemy.com/v2/${env.NEXT_PUBLIC_ALCHEMY_KEY}`
+// 	const blockNumber = "19250000" // We can make this configurable later if needed
+// 	const chainId = "31337" // Anvil's default chain ID
+//
+// 	const anvil = spawn("anvil", ["--fork-url", forkUrl, "--fork-block-number", blockNumber, "--chain-id", chainId])
+//
+// 	anvil.stdout.on("data", data => {
+// 		console.log(data.toString())
+// 	})
+//
+// 	anvil.stderr.on("data", data => {
+// 		console.error(data.toString())
+// 	})
+//
+// 	anvil.on("close", code => {
+// 		if (code !== 0) {
+// 			console.error(`Anvil process exited with code ${code}`)
+// 		}
+// 	})
+//
+// 	process.on("SIGINT", () => {
+// 		anvil.kill()
+// 		process.exit()
+// 	})
+//
+// 	process.on("SIGTERM", () => {
+// 		anvil.kill()
+// 		process.exit()
+// 	})
+//
+// 	console.log(`${outputString}
+//    - URL: http://127.0.0.1:8545
+//    - Block: ${blockNumber}
+//    - Chain ID: ${chainId}
+// `)
+// }
+//
+// startAnvilFork()
