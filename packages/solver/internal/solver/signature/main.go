@@ -16,7 +16,7 @@ var (
 	domainVersion = "0.0.1"
 )
 
-func GetSolverHash() ([]byte, error) { 
+func GetSolverHash() ([]byte, error) {
 	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
 	//       end up having the case where things are Plugs are not properly executed because they are being
@@ -32,7 +32,7 @@ func GetSolverHash() ([]byte, error) {
 	return solver, nil
 }
 
-func GetSaltHash(from common.Address) ([]byte, error) { 
+func GetSaltHash(from common.Address) ([]byte, error) {
 	salt, err := abi.Arguments{
 		{Type: abi.Type{T: abi.UintTy, Size: 96}},
 		{Type: abi.Type{T: abi.AddressTy}},
@@ -119,33 +119,3 @@ func GetSignature(chainId *big.Int, socket common.Address, plugs Plugs) (Plugs, 
 
 	return plugs, signature, nil
 }
-
-// TODO: This can be removed if you stumble upon it and you don't know why this is here.
-//       I should have deleted this in my cleanup of a PR but I missed it - CHANCE.
-// func GetLivePlugs(chainId uint64, from string, transactions []Plug) (LivePlugs, error) {
-// 	solver, err := GetSolverHash()
-// 	if err != nil {
-// 		return LivePlugs{}, err
-// 	}
-// 	salt, err := GetSaltHash(common.HexToAddress(from))
-// 	if err != nil {
-// 		return LivePlugs{}, err
-// 	}
-// 	plugs, plugsSignature, err := GetSignature(
-// 		big.NewInt(int64(chainId)),
-// 		common.HexToAddress(from),
-// 		Plugs{
-// 			Socket: common.HexToAddress(from),
-// 			Plugs:  transactions,
-// 			Solver: solver,
-// 			Salt:   salt,
-// 		},
-// 	)
-// 	if err != nil {
-// 		return LivePlugs{}, utils.ErrBuild("failed to sign: " + err.Error())
-// 	}
-// 	return LivePlugs{
-// 		Plugs:     plugs,
-// 		Signature: plugsSignature,
-// 	}, nil
-// }

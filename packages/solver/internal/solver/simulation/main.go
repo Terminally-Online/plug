@@ -16,10 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, error) {
+func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(transactionBundle.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -31,30 +31,11 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": transaction.From,
-		"to":   transaction.To,
-	}
-
-	value := new(big.Int)
-	if transaction.Value != nil && *transaction.Value != "" {
-		if _, ok := value.SetString(*transaction.Value, 16); !ok {
-			return nil, fmt.Errorf("failed to parse value: %v", *transaction.Value)
-		}
-
-		if value.Sign() > 0 {
-			tx["value"] = transaction.Value
-		}
-	}
-
-	if len(transaction.Data) > 0 {
-		tx["data"] = transaction.Data
-	}
-
-	if transaction.GasLimit != nil {
-		tx["gas"] = transaction.GasLimit
-	}
-	if len(transaction.AccessList) > 0 {
-		tx["accessList"] = transaction.AccessList
+		"from":  transactionBundle.From,
+		"to":    transactionBundle.To,
+		"data":  transactionBundle.Data,
+		"value": transactionBundle.Value,
+		"gas":   transactionBundle.Gas,
 	}
 
 	var blockNumber string
@@ -98,10 +79,12 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 	}
 
 	run := &models.Run{
-		From:   transaction.From,
-		To:     transaction.To,
-		Value:  value,
-		Status: status,
+		TransactionBundleId: transactionBundle.Id,
+		IntentId:            transactionBundle.IntentId,
+		From:                transactionBundle.From,
+		To:                  transactionBundle.To,
+		Value:               transactionBundle.Value,
+		Status:              status,
 		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
@@ -118,7 +101,7 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 		run.Error = &trace.Error
 	}
 
-	if ABI != nil && len(trace.Output) > 0 && len(transaction.Data) >= 4 {
+	if ABI != nil && len(trace.Output) > 0 && len(transactionBundle.Data) >= 4 {
 		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
 			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
@@ -126,7 +109,7 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 			return run, nil
 		}
 
-		methodIDHex := transaction.Data[:10]
+		methodIDHex := transactionBundle.Data[:10]
 		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
@@ -154,8 +137,8 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 	return run, nil
 }
 
-func Simulate(transaction models.Transaction) (*models.Run, error) {
-	runResponse, err := SimulateRaw(transaction, &plug_router.PlugRouterMetaData.ABI)
+func Simulate(transactionBundle *models.TransactionBundle) (*models.Run, error) {
+	runResponse, err := SimulateRaw(transactionBundle, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
 		return nil, err
 	}

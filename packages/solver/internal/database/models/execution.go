@@ -15,8 +15,8 @@ type Execution struct {
 	TransactionHash string `json:"transactionHash,omitempty" gorm:"type:text"`
 
 	// Relationships
-	TransactionId string      `json:"transactionId,omitempty" gorm:"type:text"`
-	Transaction   Transaction `json:"-" gorm:"foreignKey:TransactionId;references:Id"`
+	TransactionBundleId string            `json:"transactionBundleId,omitempty" gorm:"type:text"`
+	TransactionBundle   TransactionBundle `json:"-" gorm:"foreignKey:TransactionBundleId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	CreatedAt time.Time      `json:"-"`

@@ -20,13 +20,11 @@ type Run struct {
 	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
 
-	// Relationships
-	IntentId      string       `json:"intentId,omitempty" gorm:"type:text"`
-	Intent        Intent       `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	TransactionId *string      `json:"transactionId,omitempty" gorm:"type:text"`
-	Transaction   *Transaction `json:"transaction,omitempty" gorm:"foreignKey:TransactionId;references:Id"`
+	IntentId            string            `json:"intentId,omitempty" gorm:"type:text"`
+	Intent              Intent            `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	TransactionBundleId string            `json:"transactionBundleId,omitempty" gorm:"type:text"`
+	TransactionBundle   TransactionBundle `json:"transactionBundle,omitempty" gorm:"foreignKey:TransactionBundleId;references:Id"`
 
-	// Store the timestamps but do not expose them in the JSON response
 	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`

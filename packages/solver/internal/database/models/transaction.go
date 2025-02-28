@@ -1,30 +1,53 @@
 package models
 
 import (
+	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/utils"
 	"time"
 
-	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
 )
 
-type Transaction struct {
-	Id         string              `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	From       string              `json:"from,omitempty" gorm:"type:text"`
-	To         string              `json:"to,omitempty" gorm:"type:text"`
-	ChainId    uint64              `json:"chainId" gorm:"type:int"`
-	Data       string              `json:"data,omitempty" gorm:"type:text"`
-	Value      *string             `json:"value,omitempty" gorm:"type:text"`
-	GasLimit   *string             `json:"gasLimit,omitempty" gorm:"type:text"`
-	AccessList ethTypes.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
+type TransactionBundle struct {
+	Id        string   `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	Signature *string  `json:"signature,omitempty" gorm:"type:text"`
+	ChainId   uint64   `json:"chainId" gorm:"type:int"`
+	From      string   `json:"from,omitempty" gorm:"type:text"`
+	To        string   `json:"to,omitempty" gorm:"type:text"`
+	Data      string   `json:"data,omitempty" gorm:"type:text"`
+	Value     *big.Int `json:"value,omitempty" gorm:"type:bigint"`
+	Gas       *big.Int `json:"gas,omitempty" gorm:"type:bigint"`
 
-	IntentId string `json:"intentId,omitempty" gorm:"type:text"`
-	Intent   Intent `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	IntentId     string        `json:"intentId,omitempty" gorm:"type:text"`
+	Intent       Intent        `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	Transactions []Transaction `json:"transactions" gorm:"foreignKey:BundleId;references:Id"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+type Transaction struct {
+	Id        string   `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	From      string   `json:"from,omitempty" gorm:"type:text"`
+	To        string   `json:"to,omitempty" gorm:"type:text"`
+	Data      string   `json:"data,omitempty" gorm:"type:text"`
+	Value     *big.Int `json:"value,omitempty" gorm:"type:bigint"`
+	Gas       *big.Int `json:"gas,omitempty" gorm:"type:bigint"`
+	Exclusive bool     `json:"exclusive,omitempty" gorm:"type:boolean"`
+
+	BundleId string            `json:"bundleId,omitempty" gorm:"type:text"`
+	Bundle   TransactionBundle `json:"-" gorm:"foreignKey:BundleId;references:Id"`
+
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+func (t *TransactionBundle) BeforeCreate(tx *gorm.DB) error {
+	t.Id = utils.GenerateUUID()
+	return nil
 }
 
 func (t *Transaction) BeforeCreate(tx *gorm.DB) error {

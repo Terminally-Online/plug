@@ -30,10 +30,10 @@ type Intent struct {
 	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 
 	// Relationships
-	Runs         []Run         `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
-	Transactions []Transaction `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	ApiKeyId     string        `json:"-" gorm:"column:api_key_id;type:text"`
-	ApiKey       ApiKey        `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
+	Runs               []Run               `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
+	TransactionBundles []TransactionBundle `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	ApiKeyId           string              `json:"-" gorm:"column:api_key_id;type:text"`
+	ApiKey             ApiKey              `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Database storage fields
 	ValueStr   string         `json:"-" gorm:"column:value;type:text"`
