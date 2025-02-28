@@ -206,7 +206,7 @@ func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature
 
 	if intent.Value != nil {
 		transactionValue := hexutil.EncodeBig(intent.Value)
-		transaction.Value = transactionValue
+		transaction.Value = &transactionValue
 	}
 
 	if intent.GasLimit != nil {
@@ -235,13 +235,17 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		From:     intent.From,
 		ChainId:  intent.ChainId,
 		To:       plugs[0].To.Hex(),
-		Value:    plugs[0].Value.String(),
 		Data:     hexutil.Bytes(data).String(),
 	}
 
 	if intent.GasLimit != nil {
 		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
 		transaction.GasLimit = &gasLimitStr
+	}
+
+	if intent.Value != nil {
+		transactionValue := hexutil.EncodeBig(intent.Value)
+		transaction.Value = &transactionValue
 	}
 
 	if err := database.DB.Create(&transaction).Error; err != nil {

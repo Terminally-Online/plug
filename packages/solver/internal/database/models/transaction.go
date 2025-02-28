@@ -14,8 +14,8 @@ type Transaction struct {
 	From       string              `json:"from,omitempty" gorm:"type:text"`
 	To         string              `json:"to,omitempty" gorm:"type:text"`
 	ChainId    uint64              `json:"chainId" gorm:"type:int"`
-	Value      string              `json:"value,omitempty" gorm:"type:text"`
 	Data       string              `json:"data,omitempty" gorm:"type:text"`
+	Value      *string             `json:"value,omitempty" gorm:"type:text"`
 	GasLimit   *string             `json:"gasLimit,omitempty" gorm:"type:text"`
 	AccessList ethTypes.AccessList `json:"accessList,omitempty" gorm:"type:jsonb"`
 
