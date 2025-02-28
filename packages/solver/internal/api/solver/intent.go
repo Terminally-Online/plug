@@ -197,17 +197,21 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
-	var intentInput models.Intent
-	if err := json.NewDecoder(r.Body).Decode(&intentInput); err != nil {
+	var intent *models.Intent
+	if err := json.NewDecoder(r.Body).Decode(&intent); err != nil {
 		utils.MakeHttpError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	intentInput.ApiKeyId = r.Header.Get("X-Api-Key-Id")
-	intent, err := intentInput.GetOrCreate(database.DB)
-	if err != nil {
-		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
-		return
+	intent.ApiKeyId = r.Header.Get("X-Api-Key-Id")
+	var err error
+
+	if save, ok := intent.Options["save"].(bool); ok && save {
+		intent, err = intent.GetOrCreate(database.DB)
+		if err != nil {
+			utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	if solution, err := h.Solver.Solve(intent); err != nil {
