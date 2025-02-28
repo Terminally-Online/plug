@@ -4,14 +4,31 @@ import { FC, PropsWithChildren } from "react"
 import { LandingFooter } from "@/components/landing/layout/footer"
 import { Navbar } from "@/components/landing/layout/navbar"
 
-export const StaticLayout: FC<PropsWithChildren & { title: string }> = ({ title, children }) => (
+type StaticLayoutProps = PropsWithChildren & {
+	title: string,
+	description?: string,
+	img?: string
+}
+
+export const StaticLayout: FC<StaticLayoutProps> = ({
+	title,
+	description,
+	img,
+	children
+}) => (
 	<>
 		<Head>
 			<title>{title} | Plug</title>
+			<meta property="og:title" content={`${title} | Plug`} />
+
+			{description && <meta property="og:description" content={description} />}
+			{img && <meta property="og:image" content={img} />}
 		</Head>
 
 		<Navbar />
+
 		{children}
+
 		<LandingFooter />
 	</>
 )

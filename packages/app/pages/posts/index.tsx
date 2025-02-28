@@ -19,7 +19,7 @@ const Page = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 	const router = useRouter()
 
 	return (
-		<StaticLayout title="Blog">
+		<StaticLayout title="Posts">
 			<LandingContainer>
 				<div className="flex flex-col pb-32 pt-8">
 					<div className="flex flex-col gap-4 md:my-auto xl:gap-8">
