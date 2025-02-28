@@ -4,7 +4,7 @@ import { z } from "zod"
 
 import { Plug } from "@prisma/client"
 
-import { Action, createIntent, deleteIntent, getIntent, Intent, toggleIntent } from "@/lib"
+import { createIntent, deleteIntent, getIntent, Intent, toggleIntent } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
@@ -82,9 +82,8 @@ export const activity = createTRPCRouter({
 		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
 		const intent = { ...(await toggleIntent(input)), plug }
-
+		// TODO: This is not working for some reason.
 		// ctx.emitter.emit(subscriptions.execution.update, intent)
-
 		// return intent
 	}),
 

@@ -4,7 +4,7 @@ import { TransferAmountFrame } from "@/components/app/frames/assets/transfer-amo
 import { TransferNFTFrame } from "@/components/app/frames/assets/transfer-nft"
 import { TransferRecipientFrame } from "@/components/app/frames/assets/transfer-recipient"
 import { RouterOutputs } from "@/server/client"
-import { ErrorFrame } from "../plugs/[id]/execute/error"
+import { TransferSuccessFrame } from "./transfer-success"
 
 type TransferFrameProps = {
 	index: number
@@ -15,24 +15,26 @@ type TransferFrameProps = {
 	textColor: string
 }
 
-export const TransferFrame: FC<TransferFrameProps> = ({ index, token, collectible, collection, color, textColor }) => {
+export const TransferFrame: FC<TransferFrameProps> = ({ index, token, collectible, collection, ...colors }) => {
 	const isNFT = Boolean(collectible && collection)
-	const isERC1155 = isNFT && collectible?.interface === "ERC1155"
 
 	return (
 		<>
 			<TransferRecipientFrame index={index} token={token} collectible={collectible} collection={collection} />
 
-			{token && <TransferAmountFrame index={index} token={token} color={color} textColor={textColor} />}
+			{token && <>
+				<TransferAmountFrame index={index} token={token} {...colors} />
+				<TransferSuccessFrame index={index} token={token} {...colors} />
+			</>}
 
 			{isNFT && collectible && collection && (
 				<TransferNFTFrame
 					index={index}
+					isERC1155={isNFT && collectible?.interface === "ERC1155"
+}
 					collectible={collectible}
 					collection={collection}
-					color={color}
-					textColor={textColor}
-					isERC1155={isERC1155}
+					{...colors}
 				/>
 			)}
 		</>

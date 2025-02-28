@@ -13,6 +13,7 @@ import { useSocket } from "@/state/authentication"
 import { getAddress, isAddress } from "viem"
 import { useSendTransaction } from "wagmi"
 import { Marquee } from "../../utils/marquee"
+import { usePlugStore } from "@/state/plugs"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -220,6 +221,11 @@ export const TransferAmountFrame: FC<{
 	)
 	const { account: { isAuthenticated } } = useConnect()
 	const { socket } = useSocket()
+	// const {
+	// 	handle: {
+	// 		plug: { queue }
+	// 	}
+	// } = usePlugStore(item)
 	const { error, sendTransaction, isLoading } = useSendTransaction()
 
 	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
@@ -237,30 +243,73 @@ export const TransferAmountFrame: FC<{
 		: ""
 	// TODO: This is just hard-coded to base for now. It should support having multiple
 	//       chains in the same execution at once.
-	const implementation = token?.implementations.find(implementation => implementation.chain === "base")
-	const { data: intent } = api.solver.actions.intent.useQuery(
-		{
-			chainId: getChainId("base"),
-			from,
-			inputs: [
-				{
-					protocol: "plug",
-					action: "transfer",
-					amount: `${column?.transfer?.precise ?? 0}`,
-					token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
-					recipient
-				}
-			],
-			options: {
-				isEOA: true,
-				simulate: true,
+	const chain = "base"
+	const chainId = getChainId(chain)
+	const implementation = token?.implementations.find(implementation => implementation.chain === chain)
+	const request = {
+		chainId,
+		from,
+		inputs: [
+			{
+				protocol: "plug",
+				action: "transfer",
+				amount: `${column?.transfer?.precise ?? 0}`,
+				token: `${implementation?.contract ?? NATIVE_TOKEN_ADDRESS}:${implementation?.decimals ?? 18}:20`,
+				recipient
 			}
-		},
-		{
-			enabled: isFrame && isReady && !!column && !!socket && !!implementation,
-			onSuccess: () => { handle.frame(`${token?.symbol}-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "transfer"}-success`) }
+		],
+		options: {
+			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
+			simulate: true,
 		}
-	)
+	}
+
+	const { data: intent } = api.solver.actions.intent.useQuery(request, {
+		enabled: isFrame && isReady && !!column && !!socket && !!implementation,
+	})
+
+	const handleTransaction = () => {
+		if (!column) return
+
+
+		if (column.index === COLUMNS.SIDEBAR_INDEX)
+			sendTransaction({
+				to: intent.transaction.to,
+				data: intent.transaction.data,
+				value: intent.transaction.value
+			}, { onSuccess: data => {
+					handle.navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+					handle.frame(`${data}-activity`)
+				} })
+		else
+			// TODO: Implement the socket side logic for transfers.
+			return
+	}
+
+	const handleRun = () => {
+		if (!column || !column.item || !chainId) return
+
+		const intent = {
+			plugId: column.item,
+			chainId,
+			startAt: column.schedule?.date?.from ?? new Date(),
+			endAt: column.schedule?.date?.to,
+			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
+		}
+
+		// TODO: Transfers do not have a plug id to associate things to -- Not sure what to do about this.
+
+		// queue(
+		// 	intent,
+		// 	{
+		// 		onError: data => console.error(data),
+		// 		onSuccess: data => {
+		// 			navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+		// 			frame(`${data.id}-activity`)
+		// 		}
+		// 	}
+		// )
+	}
 
 	if (!token || !column) return null
 
@@ -324,11 +373,7 @@ export const TransferAmountFrame: FC<{
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
 							disabled={intent && isLoading || isReady === false}
-							onClick={intent && !isLoading && isReady ? () => sendTransaction({
-								to: intent.transaction.to,
-								data: intent.transaction.data,
-								value: intent.transaction.value
-							}) : () => { }}
+							onClick={intent && !isLoading && isReady ? handleTransaction : () => { }}
 						>
 							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>

@@ -77,11 +77,9 @@ export const RunFrame: FC<{
 	}, [actions, solverActions])
 
 	const chain = useMemo(() => {
-		console.log("Supported Chains", supportedChains)
 		if (!supportedChains || supportedChains.length === 0) return null
 		if (supportedChains.length === 1) return supportedChains[0]
 
-		console.log("Current Chain Index", currentChainIndex)
 		return supportedChains[currentChainIndex]
 	}, [supportedChains, currentChainIndex])
 
@@ -110,8 +108,6 @@ export const RunFrame: FC<{
 			endAt: column.schedule?.date?.to,
 			frequency: parseInt(column.schedule?.repeats?.value ?? "0")
 		}
-
-		console.log(intent)
 
 		queue(
 			intent,
