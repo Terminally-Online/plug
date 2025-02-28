@@ -12,8 +12,8 @@ type IntentWithPlug = Intent & { plug: Plug }
 
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		const intents = await getIntent({ address: ctx.session.address })
-
+		const socket = await ctx.db.socket.findFirstOrThrow({ where: { id: ctx.session.address }})
+		const intents = await getIntent({ addresses: [ctx.session.address, socket.socketAddress] })
 		const intentIds = intents.map(intent => intent.id)
 		const plugs = await ctx.db.plug.findMany({
 			where: { intentIds: { hasSome: intentIds } }

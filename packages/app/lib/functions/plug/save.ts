@@ -6,7 +6,7 @@ import { env } from "@/env"
 import { Intent } from "@/lib/types"
 
 type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" | "runs" | "createdAt">
-type GetIntentProps = { id?: string; address?: string }
+type GetIntentProps = { id?: string; address?: string, addresses?: string[] }
 type IntentIdProps = { id: string }
 
 const save = async <TData>(method: "get" | "post" | "delete", path: string, input?: unknown) => {
@@ -21,7 +21,6 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 		let response
 		switch (method) {
 			case "post":
-				console.log("submitting post request")
 				response = await axios.post<TData>(url, input ?? {}, config)
 				break
 			case "get":
@@ -46,10 +45,10 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 }
 
 export const createIntent = async (props: CreateIntentProps) => await save<Intent>("post", "", props)
-export const getIntent = async ({ id, address }: GetIntentProps): Promise<Array<Intent>> => {
-	if (!id && !address) throw new TRPCError({ code: "BAD_REQUEST" })
+export const getIntent = async ({ id, address, addresses }: GetIntentProps): Promise<Array<Intent>> => {
+	if (!id && !address && !addresses) throw new TRPCError({ code: "BAD_REQUEST" })
 
-	return await save("get", id ? `/${id}` : `/${address}`)
+	return await save("get", id ? `/${id}` : addresses ? `/${addresses.join(",")}` : `/${address}`)
 }
 export const toggleIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}`)
 export const deleteIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("delete", `/${id}`)
