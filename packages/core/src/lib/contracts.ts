@@ -1011,6 +1011,11 @@ export const contracts = [
             },
             {
                 "type": "error",
+                "name": "FnSelectorNotRecognized",
+                "inputs": []
+            },
+            {
+                "type": "error",
                 "name": "NewOwnerIsZeroAddress",
                 "inputs": []
             },
