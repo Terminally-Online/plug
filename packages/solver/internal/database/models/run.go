@@ -21,9 +21,10 @@ type Run struct {
 	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
 
 	// Relationships
-	IntentId  string     `json:"intentId,omitempty" gorm:"type:text"`
-	Intent    Intent     `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	Execution *Execution `json:"-" gorm:"foreignKey:RunId"`
+	IntentId      string       `json:"intentId,omitempty" gorm:"type:text"`
+	Intent        Intent       `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	TransactionId *string      `json:"transactionId,omitempty" gorm:"type:text"`
+	Transaction   *Transaction `json:"transaction,omitempty" gorm:"foreignKey:TransactionId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	ValueStr  string         `json:"-" gorm:"column:value;type:text"`

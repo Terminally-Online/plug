@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
+func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
 	rpcUrl, err := client.GetQuicknodeUrl(transaction.ChainId)
@@ -50,8 +50,8 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 		tx["data"] = transaction.Data
 	}
 
-	if transaction.Gas != nil {
-		tx["gas"] = transaction.Gas
+	if transaction.GasLimit != nil {
+		tx["gas"] = transaction.GasLimit
 	}
 	if len(transaction.AccessList) > 0 {
 		tx["accessList"] = transaction.AccessList
@@ -154,7 +154,7 @@ func SimulateRaw(transaction Transaction, ABI *string) (*models.Run, error) {
 	return run, nil
 }
 
-func Simulate(transaction Transaction) (*models.Run, error) {
+func Simulate(transaction models.Transaction) (*models.Run, error) {
 	runResponse, err := SimulateRaw(transaction, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
 		return nil, err
