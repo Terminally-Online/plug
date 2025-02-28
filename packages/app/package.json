@@ -72,7 +72,7 @@
 		"sharp": "^0.33.5",
 		"superjson": "^2.2.2",
 		"tailwind-merge": "^2.5.4",
-		"utf-8-validate": "5.0.10",
+		"utf-8-validate": "6.0.5",
 		"viem": "^2.21.37",
 		"wagmi": "^2.12.25",
 		"ws": "^8.17.1",
