@@ -55,7 +55,6 @@ export const ConsolePage = () => {
 
 		hasHandledInitialUrl.current = true
 
-		// Clear the plug param from URL while preserving other params
 		const { plug, ...restQuery } = router.query
 		router.replace(
 			{

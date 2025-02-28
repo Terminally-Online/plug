@@ -179,10 +179,11 @@ export const TokenFrame: FC<{
 				)}
 
 				<button
-					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90"
+					className="flex w-full items-center justify-center gap-2 rounded-lg py-4 font-bold transition-all duration-200 ease-in-out hover:opacity-90 border-[1px]"
 					style={{
-						backgroundColor: color ?? "",
-						color: textColor
+						backgroundColor: index !== COLUMNS.SIDEBAR_INDEX ? color : "",
+						borderColor: color ?? "",
+						color: index !== COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
 					}}
 					onClick={() => {
 						handle.transfer(undefined)
