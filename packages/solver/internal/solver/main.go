@@ -182,7 +182,7 @@ func (s *Solver) GetLivePlugs(intent *models.Intent) (*signature.LivePlugs, erro
 	}, nil
 }
 
-func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature.LivePlugs) (transaction *simulation.Transaction, err error) {
+func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature.LivePlugs) (transaction *models.Transaction, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -195,21 +195,23 @@ func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature
 
 	identifier := []byte("plug")
 	data := append(plugCalldata, identifier...)
-	transaction = &simulation.Transaction{
-		From:    intent.From,
-		To:      references.Networks[intent.ChainId].References["plug"]["router"],
-		ChainId: intent.ChainId,
-		Data:    hexutil.Bytes(data).String(),
+	transaction = &models.Transaction{
+		IntentId:   intent.Id,
+		From:       intent.From,
+		To:         references.Networks[intent.ChainId].References["plug"]["router"],
+		ChainId:    intent.ChainId,
+		Data:       hexutil.Bytes(data).String(),
+		AccessList: intent.AccessList,
 	}
 
 	if intent.Value != nil {
 		transactionValue := hexutil.EncodeBig(intent.Value)
-		transaction.Value = transactionValue
+		transaction.Value = &transactionValue
 	}
 
 	if intent.GasLimit != nil {
 		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
-		transaction.Gas = &gasLimitStr
+		transaction.GasLimit = &gasLimitStr
 	}
 
 	return transaction, nil
@@ -228,17 +230,26 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 
 	identifier := []byte("plug")
 	data := append(plugs[0].Data, identifier...)
-	transaction := simulation.Transaction{
-		From:    intent.From,
-		ChainId: intent.ChainId,
-		To:      plugs[0].To.Hex(),
-		Value:   plugs[0].Value.String(),
-		Data:    hexutil.Bytes(data).String(),
+	transaction := models.Transaction{
+		IntentId: intent.Id,
+		From:     intent.From,
+		ChainId:  intent.ChainId,
+		To:       plugs[0].To.Hex(),
+		Data:     hexutil.Bytes(data).String(),
 	}
 
 	if intent.GasLimit != nil {
 		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
-		transaction.Gas = &gasLimitStr
+		transaction.GasLimit = &gasLimitStr
+	}
+
+	if intent.Value != nil {
+		transactionValue := hexutil.EncodeBig(intent.Value)
+		transaction.Value = &transactionValue
+	}
+
+	if err := database.DB.Create(&transaction).Error; err != nil {
+		return nil, fmt.Errorf("failed to save transaction: %v", err)
 	}
 
 	var run *models.Run
@@ -257,6 +268,7 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	}
 
 	return &Solution{
+		Status:       SolutionStatus{Success: true},
 		Transactions: plugs,
 		Intent:       intent,
 		Run:          run,
@@ -277,6 +289,10 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	transaction, err := s.BuildPlugTransaction(intent, *livePlugs)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := database.DB.Create(transaction).Error; err != nil {
+		return nil, fmt.Errorf("failed to save transaction: %v", err)
 	}
 
 	var run *models.Run
