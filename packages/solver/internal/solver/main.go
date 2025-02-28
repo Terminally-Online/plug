@@ -193,11 +193,13 @@ func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
+	identifier := []byte("plug")
+	data := append(plugCalldata, identifier...)
 	transaction = &simulation.Transaction{
 		From:    intent.From,
 		To:      references.Networks[intent.ChainId].References["plug"]["router"],
 		ChainId: intent.ChainId,
-		Data:    hexutil.Bytes.String(plugCalldata),
+		Data:    hexutil.Bytes(data).String(),
 	}
 
 	if intent.Value != nil {
@@ -224,12 +226,14 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
 	}
 
+	identifier := []byte("plug")
+	data := append(plugs[0].Data, identifier...)
 	transaction := simulation.Transaction{
 		From:    intent.From,
 		ChainId: intent.ChainId,
 		To:      plugs[0].To.Hex(),
 		Value:   plugs[0].Value.String(),
-		Data:    hexutil.Bytes.String(plugs[0].Data),
+		Data:    hexutil.Bytes(data).String(),
 	}
 
 	if intent.GasLimit != nil {

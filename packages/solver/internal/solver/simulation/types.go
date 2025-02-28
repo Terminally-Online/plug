@@ -8,6 +8,6 @@ type Transaction struct {
 	ChainId    uint64           `json:"chainId"`
 	Value      string           `json:"value"`
 	Data       string           `json:"data"`
-	Gas        *string          `json:"gas"`
-	AccessList types.AccessList `json:"accessList"`
+	Gas        *string          `json:"gas,omitempty"`
+	AccessList types.AccessList `json:"accessList,omitempty"`
 }
