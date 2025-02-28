@@ -40,7 +40,10 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 
 	var intents []models.Intent
 	query := database.DB
-	if strings.HasPrefix(id, "0x") {
+	if strings.Contains(id, ",") {
+		addresses := strings.Split(id, ",")
+		query = query.Where("\"from\" IN ?", addresses)
+	} else if strings.HasPrefix(id, "0x") {
 		query = query.Where("\"from\" = ?", id)
 	} else {
 		query = query.Where("id = ?", id)
