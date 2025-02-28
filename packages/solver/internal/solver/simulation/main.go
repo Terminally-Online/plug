@@ -36,9 +36,9 @@ func SimulateRaw(transaction models.Transaction, ABI *string) (*models.Run, erro
 	}
 
 	value := new(big.Int)
-	if transaction.Value != "" {
-		if _, ok := value.SetString(transaction.Value, 16); !ok {
-			return nil, fmt.Errorf("failed to parse value: %v", transaction.Value)
+	if transaction.Value != nil && *transaction.Value != "" {
+		if _, ok := value.SetString(*transaction.Value, 16); !ok {
+			return nil, fmt.Errorf("failed to parse value: %v", *transaction.Value)
 		}
 
 		if value.Sign() > 0 {
