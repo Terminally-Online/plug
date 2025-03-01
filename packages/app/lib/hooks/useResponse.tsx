@@ -1,5 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { UseTRPCQueryResult } from '@trpc/react-query/shared';
+
+type Callbacks<TData, TError> = {
+  onSuccess?: (data: TData) => void;
+  onError?: (error: TError) => void;
+  onLoading?: () => void;
+  onSettled?: (data: TData | undefined, error: TError | undefined) => void;
+};
 
 /**
  * A hook that wraps tRPC query hooks to provide callback functionality
@@ -7,40 +14,43 @@ import type { UseTRPCQueryResult } from '@trpc/react-query/shared';
  */
 export function useResponse<TData, TError>(
   queryHook: () => UseTRPCQueryResult<TData, TError>,
-  callbacks?: {
-    onSuccess?: (data: TData) => void;
-    onError?: (error: TError) => void;
-    onLoading?: () => void;
-    onSettled?: (data: TData | undefined, error: TError | undefined) => void;
-  }
+  callbacks?: Callbacks<TData, TError>
 ): UseTRPCQueryResult<TData, TError> {
   const query = queryHook();
   const { data, isLoading, isError, error, isSuccess } = query;
+  
+  const callbackRefs = useRef(callbacks);
+  
+  useEffect(() => {
+    callbackRefs.current = callbacks;
+  });
 
   useEffect(() => {
-    if (isSuccess && callbacks?.onSuccess && data !== undefined) {
-      // Force type assertion here to handle the async iterable issue
-      callbacks.onSuccess(data as TData);
+    if (isSuccess && data !== undefined) {
+      callbackRefs.current?.onSuccess?.(data as TData);
     }
-  }, [isSuccess, data, callbacks]);
+  }, [isSuccess, data]);
 
   useEffect(() => {
-    if (isError && callbacks?.onError && error !== null) {
-      callbacks.onError(error as TError);
+    if (isError && error !== null) {
+      callbackRefs.current?.onError?.(error as TError);
     }
-  }, [isError, error, callbacks]);
+  }, [isError, error]);
 
   useEffect(() => {
-    if (isLoading && callbacks?.onLoading) {
-      callbacks.onLoading();
+    if (isLoading) {
+      callbackRefs.current?.onLoading?.();
     }
-  }, [isLoading, callbacks]);
+  }, [isLoading]);
 
   useEffect(() => {
-    if (!isLoading && callbacks?.onSettled) {
-      callbacks.onSettled(data as TData | undefined, error as TError | undefined);
+    if (!isLoading) {
+      callbackRefs.current?.onSettled?.(
+        data as TData | undefined,
+        error as TError | undefined
+      );
     }
-  }, [isLoading, data, error, callbacks]);
+  }, [isLoading, data, error]);
 
   return query;
 }

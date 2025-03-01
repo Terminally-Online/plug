@@ -8,7 +8,6 @@ import { useMediaQuery } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { COLUMNS, useColumnStore } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
-import { useSubscriptions } from "@/state/subscriptions"
 
 import { DesktopConsole } from "./desktop"
 import { MobileConsole } from "./mobile"
@@ -16,7 +15,6 @@ import { MobileConsole } from "./mobile"
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
 
-	useSubscriptions()
 	useSession({
 		required: true,
 		onUnauthenticated: () =>

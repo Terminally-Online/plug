@@ -13,7 +13,7 @@ type Props = PropsWithChildren<{
 	noPadding?: boolean
 	accordion?: React.ReactNode
 }> &
-	React.HTMLAttributes<HTMLButtonElement>
+	React.HTMLAttributes<HTMLDivElement>
 
 export const Accordion: FC<Props> = memo(
 	({
@@ -32,7 +32,7 @@ export const Accordion: FC<Props> = memo(
 		if (!isClient) return null
 
 		return (
-			<button
+			<div
 				className={cn(
 					"group flex w-full flex-col items-center overflow-hidden rounded-[16px] border-[1px] border-plug-green/10 outline-none",
 					expanded && "bg-plug-green/5 hover:bg-white",
@@ -53,7 +53,7 @@ export const Accordion: FC<Props> = memo(
 
 					{accordion && <AccordionContent expanded={expanded}>{accordion}</AccordionContent>}
 				</div>
-			</button>
+			</div>
 		)
 	}
 )

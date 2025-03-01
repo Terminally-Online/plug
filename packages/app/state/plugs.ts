@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { useMemo } from "react"
 
-import { atom, useAtom, useAtomValue } from "jotai"
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai"
 
 import { Plug } from "@prisma/client"
 
@@ -102,18 +102,27 @@ const usePlugActions = () => {
 
 export const usePlugSubscriptions = () => {
 	const session = useSession()
-	const [, setPlugs] = useAtom(plugsAtom)
+
+	const setPlugs = useSetAtom(plugsAtom)
 
 	api.plugs.onAdd.useSubscription(undefined, {
 		enabled: Boolean(session.data),
 		onData: data =>
-			setPlugs(prev => prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)))
+			setPlugs(prev => {
+				const exists = prev.some(p => p.id === data.id)
+				if (!exists) return [...prev, data]
+				return prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p))
+			})
 	})
 
 	api.plugs.onEdit.useSubscription(undefined, {
 		enabled: Boolean(session.data),
 		onData: data =>
-			setPlugs(prev => prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p)))
+			setPlugs(prev => {
+				const exists = prev.some(p => p.id === data.id)
+				if (!exists) return [...prev, data]
+				return prev.map(p => (p.id === data.id && p.updatedAt < data.updatedAt ? { ...p, ...data } : p))
+			})
 	})
 
 	api.plugs.onDelete.useSubscription(undefined, {
@@ -151,6 +160,7 @@ export const usePlugStore = (
 		onSuccess: data =>
 			setPlugs(prev => {
 				const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+
 				return [...prev, ...uniqueData]
 			})
 	})

@@ -19,6 +19,7 @@ export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> 
 }) => {
 	const { data: session } = useSession()
 	const { search, tag, handleSearch, handleTag } = useSearch()
+
 	const { plugs } = usePlugStore()
 
 	const visiblePlugs = useMemo(() => {

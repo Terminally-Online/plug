@@ -60,12 +60,12 @@ export const DateSince: FC<{ date: Date; ago?: boolean } & HTMLAttributes<HTMLPa
 	}, [date])
 
 	return (
-		<p className="flex w-max flex-row whitespace-nowrap" {...props}>
+		<div className="flex w-max flex-row whitespace-nowrap" {...props}>
 			<span>
 				<Counter count={timeSince.interval} decimals={0} />
 			</span>
 			{timeSince.unit}
 			{ago && <span className="ml-1">ago</span>}
-		</p>
+		</div>
 	)
 }

@@ -17,9 +17,8 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 	return (
 		<div className="flex flex-col gap-2">
 			{actions.map((action, actionIndex) => (
-				<>
+				<div key={`${index}-${actionIndex}`}>
 					<Sentence
-						key={`${index}-${actionIndex}`}
 						index={index}
 						item={item}
 						actionIndex={actionIndex}
@@ -31,7 +30,7 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 					{errors && errors[actionIndex] && (
 						<p className="text-sm font-bold text-plug-red">Error: {errors[actionIndex]}</p>
 					)}
-				</>
+				</div>
 			))}
 		</div>
 	)

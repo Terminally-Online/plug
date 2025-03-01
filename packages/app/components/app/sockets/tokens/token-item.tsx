@@ -53,7 +53,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 						<div className="flex w-full flex-col items-center truncate overflow-ellipsis tabular-nums">
 							<div className="flex w-full flex-row font-bold">
 								<p className="truncate whitespace-nowrap font-bold">{token.name}</p>
-								<p className="ml-auto flex flex-row items-center">
+								<div className="ml-auto flex flex-row items-center">
 									$
 									<Counter
 										count={(token.value ?? token.price ?? 0).toLocaleString("en-US", {
@@ -62,7 +62,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 										})}
 										decimals={2}
 									/>
-								</p>
+								</div>
 							</div>
 
 							<div className="flex w-full flex-row gap-4 font-bold">
@@ -82,7 +82,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 									</div>
 								</div>
 
-								<p
+								<div
 									className={cn(
 										"ml-auto flex flex-row items-center text-sm",
 										token.change === undefined
@@ -101,7 +101,7 @@ export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, i
 											"-"
 										)}
 									</>
-								</p>
+								</div>
 
 								{/* <pre className="text-left text-xs">
 									{JSON.stringify({ ...token, description: "" }, null, 2)}

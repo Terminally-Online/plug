@@ -31,7 +31,6 @@ export const ExecutionFrame: FC<{
 	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
 	const actions = activity?.inputs ?? []
-	console.log('actions', actions)
 
 	const { visibleRuns, totalRuns, hasMore } = useMemo(
 		() => ({
