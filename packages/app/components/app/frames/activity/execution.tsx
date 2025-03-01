@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react"
+import { FC, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
 import { Bell, Calendar, Eye, Pause, Play, Waypoints } from "lucide-react"
 

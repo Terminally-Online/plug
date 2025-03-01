@@ -184,9 +184,9 @@ export const ColumnCompanion: FC<HTMLAttributes<HTMLDivElement> & { index: numbe
 					variant={canFeed ? "primary" : "primaryDisabled"}
 					className="flex w-full items-center justify-center py-4"
 					onClick={canFeed ? () => feedMutation.mutate() : () => {}}
-					disabled={feedMutation.isLoading || !canFeed}
+					disabled={feedMutation.isPending || !canFeed}
 				>
-					{feedMutation.isLoading ? (
+					{feedMutation.isPending ? (
 						"..."
 					) : canFeed && !feed ? (
 						"Feed"

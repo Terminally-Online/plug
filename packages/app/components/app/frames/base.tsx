@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren, type JSX } from "react";
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, X } from "lucide-react"

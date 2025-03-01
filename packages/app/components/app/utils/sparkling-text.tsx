@@ -50,8 +50,8 @@ export const SparklingText: FC<
 	>
 > = memo(({ children, item, color, sparkles = true, sparkleKey, ...props }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
-	const previousSparkleKey = useRef<number | undefined>()
-	const previousItem = useRef<string | undefined>()
+	const previousSparkleKey = useRef<number | undefined>(undefined)
+	const previousItem = useRef<string | undefined>(undefined)
 	const hasAnimated = useRef(false)
 
 	const [sparkleCount, setSparkleCount] = useState(0)

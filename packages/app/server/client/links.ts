@@ -1,6 +1,7 @@
 import { NextPageContext } from "next"
 
 import { createWSClient, httpBatchLink, loggerLink, wsLink } from "@trpc/client"
+import superjson from "superjson"
 
 import { env } from "@/env"
 import { type AppRouter } from "@/server/api/root"
@@ -19,24 +20,27 @@ export const getBaseUrl = () => {
 
 function getEndingLink(ctx: NextPageContext | undefined) {
 	if (typeof window === "undefined") {
-		return httpBatchLink({
+		return httpBatchLink<AppRouter>({
 			url: `${getBaseUrl()}/api/trpc`,
 			headers() {
 				if (!ctx?.req?.headers) {
-					return {}
+					return {};
 				}
+				// To use SSR properly, you need to forward client headers to the server
+				// This is so you can pass through things like cookies when we're server-side rendering
 				return {
-					...ctx.req.headers,
-					"x-ssr": "1"
-				}
-			}
+					cookie: ctx.req.headers.cookie,
+				};
+			},
+			transformer: superjson
 		})
 	}
 	const client = createWSClient({
 		url: env.NEXT_PUBLIC_WS_URL
 	})
 	return wsLink<AppRouter>({
-		client
+		client,
+		transformer: superjson
 	})
 }
 

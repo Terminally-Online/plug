@@ -29,7 +29,7 @@ export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handl
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
 
 	const { data: tokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
-		keepPreviousData: true
+		placeholderData: (prev) => prev
 	})
 
 	return (

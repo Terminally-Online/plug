@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, PropsWithChildren, ReactNode } from "react"
+import { FC, HTMLAttributes, PropsWithChildren, ReactNode, type JSX } from "react";
 
 import { HTMLMotionProps, motion } from "framer-motion"
 import { Loader } from "lucide-react"

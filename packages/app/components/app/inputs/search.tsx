@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, RefObject, useEffect, useRef } from "react"
+import { FC, PropsWithChildren, RefObject, useEffect, useRef, type JSX } from "react";
 
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
@@ -6,7 +6,7 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Props = {
-	ref?: RefObject<HTMLInputElement | HTMLTextAreaElement>
+	ref?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>
 	icon: JSX.Element
 	placeholder: string
 	search?: string
@@ -70,8 +70,8 @@ export const Search: FC<Props> = ({
 	}, [focus, ref])
 
 	return (
-		<div className={cn("group flex flex-col gap-2", className)}>
-			<div
+        <div className={cn("group flex flex-col gap-2", className)}>
+            <div
 				className={cn(
 					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-plug-green/10 p-4 px-6 transition-colors duration-200 ease-in-out",
 					textArea ? "rounded-lg" : "rounded-[16px]",
@@ -82,7 +82,7 @@ export const Search: FC<Props> = ({
 				<div className={cn("w-max opacity-40", textArea && "mb-auto mt-1")}>{icon}</div>
 				{textArea === false ? (
 					<input
-						ref={ref as RefObject<HTMLInputElement>}
+						ref={ref as RefObject<HTMLInputElement | null>}
 						type={isNumber ? "number" : "text"}
 						placeholder={placeholder}
 						className="w-full cursor-pointer bg-transparent font-bold outline-none"
@@ -92,7 +92,7 @@ export const Search: FC<Props> = ({
 					/>
 				) : (
 					<textarea
-						ref={ref as RefObject<HTMLTextAreaElement>}
+						ref={ref as RefObject<HTMLTextAreaElement | null>}
 						placeholder={placeholder}
 						className="max-h-[40vh] w-full cursor-pointer bg-transparent font-bold opacity-40 outline-none group-hover:opacity-100"
 						value={search}
@@ -122,6 +122,6 @@ export const Search: FC<Props> = ({
 
 				{children && <div className="ml-auto">{children}</div>}
 			</div>
-		</div>
-	)
+        </div>
+    );
 }

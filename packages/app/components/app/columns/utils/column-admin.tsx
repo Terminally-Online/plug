@@ -5,13 +5,14 @@ import { Square, Loader, PlayIcon } from "lucide-react"
 import { useSetAtom } from "jotai"
 import { columnAtomFamily, columnsStorageAtom } from "@/state/column-atoms"
 import { DEFAULT_COLUMNS } from "@/state/columns"
+import { useResponse } from "@/lib/hooks/useResponse"
 
 export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const setColumns = useSetAtom(columnsStorageAtom)
 
 	const [killed, setKilled] = useState(false)
 
-	const { isLoading } = api.solver.killer.killed.useQuery(undefined, {
+	const { isLoading } = useResponse(() => api.solver.killer.killed.useQuery(undefined), {
 		onSuccess: data => setKilled(data.killed)
 	})
 

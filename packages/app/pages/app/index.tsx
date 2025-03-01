@@ -1,3 +1,5 @@
+"use client"
+
 import { NextPageContext } from "next"
 import { Session } from "next-auth"
 import { getSession, SessionProvider, signIn } from "next-auth/react"

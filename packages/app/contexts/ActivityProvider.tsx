@@ -3,6 +3,7 @@ import { ContextType, createContext, FC, PropsWithChildren, useContext, useState
 import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useWatchPendingTransactions } from "wagmi"
+import { useResponse } from "@/lib/hooks/useResponse"
 
 export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
@@ -15,10 +16,9 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 
 	const [activities, setActivities] = useState<ContextType<typeof ActivityContext>["activities"]>([])
 
-	const { isLoading } = api.plugs.activity.get.useQuery(undefined, {
+	const { isLoading } = useResponse(() => api.plugs.activity.get.useQuery(undefined, {
 		enabled: isAnonymous === false,
-		onSuccess: data => setActivities(data)
-	})
+	}), { onSuccess: data => setActivities(data) })
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {
 		onData: data => {
@@ -54,8 +54,8 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 		})
 	}
 
-	useWatchPendingTransactions({ 
-		onTransactions: data => { console.log(data) }, 
+	useWatchPendingTransactions({
+		onTransactions: data => { console.log(data) },
 		poll: true,
 		pollingInterval: 1_000,
 		syncConnectedChain: true

@@ -31,7 +31,7 @@ export const SocketTokenList: FC<
 
 	const { data: searchedTokens } = api.solver.tokens.get.useQuery(debouncedSearch, {
 		enabled: search !== "" && expanded,
-		keepPreviousData: true
+		placeholderData: (prev) => prev
 	})
 
 	const visibleTokens = useMemo(() => {

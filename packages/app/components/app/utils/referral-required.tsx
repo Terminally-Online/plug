@@ -5,10 +5,8 @@ import { Asterisk } from "lucide-react"
 
 import { Search } from "@/components/app/inputs/search"
 import { Button } from "@/components/shared/buttons/button"
-import { useData } from "@/contexts/DataProvider"
-import { cn, greenGradientStyle, useConnect } from "@/lib"
+import { cn, useConnect } from "@/lib"
 import { api } from "@/server/client"
-import { useSocket } from "@/state/authentication"
 
 const TWEET_TEMPLATES = [
 	`Just discovered @onplug_io - a game-changing platform for automated trading. Can't wait to get access!`,
@@ -23,13 +21,11 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 export const ReferralRequired: FC = () => {
 	const searchParams = useSearchParams()
 	const { account } = useConnect()
-	const { socket } = useSocket()
-	const { socketQuery } = useData()
 
-	const { mutate, error, isLoading, isError, isSuccess } = api.socket.referral.submit.useMutation({
+	const { mutate, error, isPending, isError, isSuccess } = api.socket.referral.submit.useMutation({
 		onSuccess: () => {
 			// Refetch socket data which will trigger reactive updates
-			socketQuery.refetch()
+			// socketQuery.refetch()
 		}
 	})
 	const requestAccess = api.socket.referral.request.useMutation()
@@ -94,22 +90,22 @@ export const ReferralRequired: FC = () => {
 									variant="secondary"
 									className="w-max py-4"
 									onClick={handleRequestAccess}
-									disabled={requestAccess.isLoading}
+									disabled={requestAccess.isPending}
 								>
-									{requestAccess.isLoading ? "Requesting..." : "Get Access"}
+									{requestAccess.isPending ? "Requesting..." : "Get Access"}
 								</Button>
 
 								<button
 									className={cn(
 										"w-full rounded-lg py-4 font-bold",
-										referralCode && isLoading === false
+										referralCode && isPending === false
 											? "cursor-pointer bg-plug-yellow text-plug-green"
 											: "border-[1px] border-plug-green bg-white text-plug-green"
 									)}
 									onClick={() => referralCode && mutate(referralCode)}
-									disabled={isLoading || !referralCode}
+									disabled={isPending || !referralCode}
 								>
-									{isLoading ? "Submitting..." : "Submit Code"}
+									{isPending ? "Submitting..." : "Submit Code"}
 								</button>
 							</div>
 

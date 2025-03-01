@@ -120,7 +120,7 @@ const ConnectorQrCode = () => {
 			>
 				{connection.isError
 					? "Error connecting. Please click try and again and follow the steps to connect in your wallet."
-					: connection.isLoading
+					: connection.isPending
 						? "Open the wallet you selected to confirm the connection with Plug."
 						: "Scan the QR code to connect your wallet from your camera or the in-wallet scanner."}
 			</p>
@@ -175,10 +175,10 @@ const Connector: FC<{ connector: wagmiConnector; index: number; from?: string }>
 
 	const updateRecentConnectorId = useSetAtom(recentConnectorIdAtom)
 
-	const isLoading = connection.isLoading && connection.variables?.connector === connector
+	const isLoading = connection.isPending && connection.variables?.connector === connector
 	const isRecent = connector.id === useRecentConnectorId()
 	const isDetected = connector.isInjected as boolean
-	const isDisabled = Boolean(connection?.isLoading)
+	const isDisabled = Boolean(connection?.isPending)
 	const icon = CONNECTOR_ICON_OVERRIDE_MAP[connector.id] ?? connector.icon
 
 	const Badge = () => {
@@ -262,7 +262,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 
 			{session?.user.id !== account.address &&
 				account.address &&
-				sign.isLoading === false &&
+				sign.isPending === false &&
 				authentication.isLoading === false && (
 					<Callout
 						title={sign.failureReason ? "Signature error." : "Prove ownership."}
@@ -279,7 +279,7 @@ export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 					</Callout>
 				)}
 
-			{account.address && sign.isLoading && (
+			{account.address && sign.isPending && (
 				<Callout
 					title="Proving ownership."
 					description={`Completing the signing process to prove ownership of ${formatAddress(account.address)}`}

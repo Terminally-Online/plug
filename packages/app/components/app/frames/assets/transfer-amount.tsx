@@ -226,9 +226,9 @@ export const TransferAmountFrame: FC<{
 	// 		plug: { queue }
 	// 	}
 	// } = usePlugStore(item)
-	const { error, sendTransaction, isLoading } = useSendTransaction()
+	const { error, sendTransaction, isPending } = useSendTransaction()
 
-	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isLoading
+	const isReady = token && column && parseFloat(column?.transfer?.precise ?? "0") > 0 && !isPending
 	const from = socket
 		? index === COLUMNS.SIDEBAR_INDEX
 			? getAddress(socket.id)
@@ -371,10 +371,10 @@ export const TransferAmountFrame: FC<{
 								color: isReady ? textColor : color,
 								borderColor: isReady ? "#FFFFFF" : color
 							}}
-							disabled={intent && isLoading || isReady === false}
-							onClick={intent && !isLoading && isReady ? handleTransaction : () => { }}
+							disabled={intent && isPending || isReady === false}
+							onClick={intent && !isPending && isReady ? handleTransaction : () => { }}
 						>
-							{!isAuthenticated ? "Connect Wallet" : isLoading ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
+							{!isAuthenticated ? "Connect Wallet" : isPending ? "Transfering..." : isReady ? (index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Send") : "Enter Amount"}
 						</button>
 					</div>
 				</div>

@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react"
+import { FC, PropsWithChildren, type JSX } from "react";
 
 import { ChevronDown } from "lucide-react"
 

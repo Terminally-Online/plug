@@ -6,50 +6,38 @@ import { useSetAtom } from "jotai"
 import { api } from "@/server/client"
 import { actionsAtom } from "@/state/actions"
 import { socketModelAtom } from "@/state/authentication"
+import { useResponse } from "@/lib/hooks/useResponse"
 
-/**
- * This is the data layer for the application. It is implemented as a context for simplicity
- * of use. In reality, the state is atomic with the use of jotai so that we do not trigger
- * rerenders where is not needed.
- */
-interface DataContextType {
-	socketQuery: ReturnType<typeof api.socket.get.useQuery>
-}
-
+type DataContextType = {}
 export const DataContext = createContext<DataContextType>({} as DataContextType)
 
 export const DataProvider: FC<PropsWithChildren<{ session: Session | null }>> = ({ session, children }) => {
 	const setSocket = useSetAtom(socketModelAtom)
 	const setActions = useSetAtom(actionsAtom)
 
-	// Initialize socket query with exposed reference
-	const socketQuery = api.socket.get.useQuery(undefined, {
-		enabled: session !== null,
-		onSuccess: data => setSocket(data)
-	})
+	useResponse(
+		() => api.socket.get.useQuery(undefined, {
+			enabled: session !== null,
+		}),
+		{ onSuccess: socket => setSocket(socket) }
+	)
 
-	api.solver.actions.schemas.useQuery(
-		// TODO: Needs to support the definition of multiple chain ids when we expand out.
-		{ chainId: 8453 },
-		{
-			onError: data => console.error(data),
-			onSuccess: data => setActions(data),
-			refetchInterval: 5 * 60 * 1000
-		}
+	useResponse(
+		() => api.solver.actions.schemas.useQuery(
+			{ chainId: 8453 },
+			{
+				enabled: session !== null,
+				refetchInterval: 5 * 60 * 1000
+			}
+		),
+		{ onSuccess: actions => setActions(actions) }
 	)
 
 	return (
-		<DataContext.Provider
-			value={{
-				socketQuery
-			}}
-		>
+		<DataContext.Provider value={{}}>
 			{children}
 		</DataContext.Provider>
 	)
 }
 
-/**
- * Hook to access the data context
- */
 export const useData = () => useContext(DataContext)

@@ -1,5 +1,13 @@
 import Image from "next/image"
-import React, { createContext, FC, ReactElement, useContext, useMemo, useSyncExternalStore } from "react"
+import React, {
+    createContext,
+    FC,
+    ReactElement,
+    useContext,
+    useMemo,
+    useSyncExternalStore,
+    type JSX,
+} from "react";
 import { isAndroid, isBrowser, isChrome, isIOS, isMacOs, isSafari, isWindows, osName } from "react-device-detect"
 
 type OSType = "macOS" | "iOS" | "android" | "linux" | "windows" | "safari" | "chrome" | "arc"
@@ -143,7 +151,7 @@ const subscribeToBeforeInstallPrompt = (callback: () => void): (() => void) => {
 	}
 }
 
-export const BeforeInstallProvider: FC<{ children: ReactElement }> = ({ children }) => {
+export const BeforeInstallProvider: FC<{ children: ReactElement<any> }> = ({ children }) => {
 	const appInstallManager = useSyncExternalStore(
 		subscribeToBeforeInstallPrompt,
 		() => appInstallManagerStore,

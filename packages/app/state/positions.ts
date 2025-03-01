@@ -6,6 +6,7 @@ import { api, RouterOutputs } from "@/server/client"
 
 import { useSocket } from "./authentication"
 import { atomFamily, atomWithStorage } from "jotai/utils"
+import { useResponse } from "@/lib/hooks/useResponse"
 
 type Balances = RouterOutputs["socket"]["balances"]
 
@@ -51,12 +52,11 @@ const useFetchHoldings = (address: string) => {
 		isSuccess: isSuccessPositions,
 		isFetching: isFetchingPositions,
 		refetch: refetchPositions
-	} = api.socket.balances.positions.useQuery(address, {
+	} = useResponse(() => api.socket.balances.positions.useQuery(address, {
 		enabled: !!address && address.startsWith("0x"),
-		onSuccess: updatePositions,
 		refetchInterval: CACHE_DURATION,
 		staleTime: CACHE_DURATION
-	})
+	}), { onSuccess: updatePositions })
 
 	const {
 		data: collectiblesData,
@@ -64,12 +64,11 @@ const useFetchHoldings = (address: string) => {
 		isSuccess: isSuccessCollectibles,
 		isFetching: isFetchingCollectibles,
 		refetch: refetchCollectibles
-	} = api.socket.balances.collectibles.useQuery(address, {
+	} = useResponse(() => api.socket.balances.collectibles.useQuery(address, {
 		enabled: !!address && address.startsWith("0x"),
-		onSuccess: updateCollectibles,
 		refetchInterval: CACHE_DURATION,
 		staleTime: CACHE_DURATION
-	})
+	}), { onSuccess: updateCollectibles })
 
 	useEffect(() => {
 		if (positionsData) updatePositions(positionsData)

@@ -96,7 +96,7 @@ export type Intent = {
 
 export type IntentResponse<TDecoded extends {} = Record<string, unknown>> = {
 	status: { success: boolean }
-	transactions: Array<{ to: string, data: string, value: number, gas: number }>
+	transactions: Array<{ to: string, data: string, value: number, gas: number, meta: any }>
 	intent: Intent
 	simulation: {
 		status: string

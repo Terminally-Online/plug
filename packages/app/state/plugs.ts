@@ -10,6 +10,7 @@ import { api } from "@/server/client"
 
 import { COLUMNS, useColumnStore } from "./columns"
 import { atomWithStorage } from "jotai/utils"
+import { useResponse } from "@/lib/hooks/useResponse"
 
 export const plugsAtom = atom<Plug[]>([])
 export const viewedPlugsAtom = atomWithStorage<Set<string>>("plug.viewed", new Set<string>())
@@ -140,43 +141,41 @@ export const usePlugStore = (
 			action: action?.action,
 			search: Object.entries(action?.search ?? {}).map(([key, value]) => `search[${key}]=${value}`)
 		},
-		{ enabled: Boolean(action), keepPreviousData: true }
+		{ enabled: Boolean(action), placeholderData: (prev) => prev }
 	)
 
-	api.plugs.all.useQuery(
+	useResponse(() => api.plugs.all.useQuery(
 		{ target: "mine" },
-		{
-			enabled: Boolean(session.data),
-			onSuccess: data =>
-				setPlugs(prev => {
-					const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
-					return [...prev, ...uniqueData]
-				})
-		}
-	)
+		{ enabled: Boolean(session.data) }
+	), {
+		onSuccess: data =>
+			setPlugs(prev => {
+				const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+				return [...prev, ...uniqueData]
+			})
+	})
 
-	api.plugs.get.useQuery(
+	useResponse(() => api.plugs.get.useQuery(
 		{ ids, viewed: Array.from(viewedPlugs) },
-		{
-			enabled: Boolean(session.data) && ids.length > 0,
-			onSuccess: data => {
-				setPlugs(prev => {
-					const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
-					return [...prev, ...uniqueData]
-				})
-				setViewedPlugs(prev => {
-					const newSet = new Set([...Array.from(prev)].slice(-49))
-					data.forEach(plug => newSet.add(plug.id))
-					if (newSet.size > 50) {
-						const entries = Array.from(newSet)
-						newSet.clear()
-						entries.slice(-50).forEach(id => newSet.add(id))
-					}
-					return newSet
-				})
-			}
+		{ enabled: Boolean(session.data) && ids.length > 0 }
+	), {
+		onSuccess: data => {
+			setPlugs(prev => {
+				const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+				return [...prev, ...uniqueData]
+			})
+			setViewedPlugs(prev => {
+				const newSet = new Set([...Array.from(prev)].slice(-49))
+				data.forEach(plug => newSet.add(plug.id))
+				if (newSet.size > 50) {
+					const entries = Array.from(newSet)
+					newSet.clear()
+					entries.slice(-50).forEach(id => newSet.add(id))
+				}
+				return newSet
+			})
 		}
-	)
+	})
 
 	const plug = plugs.find(p => p.id === id)
 	const own = (plug && session.data && session.data.address === plug.socketId) || false
