@@ -11,10 +11,10 @@ type SolutionStatus struct {
 }
 
 type Solution struct {
-	Status       SolutionStatus       `json:"status"`
-	Transactions []signature.Plug     `json:"transactions"`
-	LivePlugs    *signature.LivePlugs `json:"livePlugs,omitempty"`
-	Intent       *models.Intent       `json:"intent,omitempty"`
-	Run          *models.Run          `json:"simulation,omitempty"`
-	Transaction  *models.Transaction  `json:"transaction,omitempty"`
+	Status       SolutionStatus            `json:"status"`
+	Transactions *[]models.Transaction     `json:"transactions"`
+	LivePlugs    *signature.LivePlugs      `json:"livePlugs,omitempty"`
+	Intent       *models.Intent            `json:"intent,omitempty"`
+	Run          *models.Run               `json:"simulation,omitempty"`
+	Transaction  *models.TransactionBundle `json:"transaction,omitempty"`
 }

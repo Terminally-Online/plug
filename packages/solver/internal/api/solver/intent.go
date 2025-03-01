@@ -206,12 +206,10 @@ func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
 	intent.ApiKeyId = r.Header.Get("X-Api-Key-Id")
 	var err error
 
-	if save, ok := intent.Options["save"].(bool); ok && save {
-		intent, err = intent.GetOrCreate(database.DB)
-		if err != nil {
-			utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+	intent, err = intent.GetOrCreate(database.DB)
+	if err != nil {
+		utils.MakeHttpError(w, "failed to initialize intent: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	if solution, err := h.Solver.Solve(intent); err != nil {
