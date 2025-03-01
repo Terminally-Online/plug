@@ -15,12 +15,12 @@ import (
 	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Solver struct {
@@ -230,7 +230,7 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	transactions[0] = models.Transaction{
 		From:      intent.From,
 		To:        plugs[0].To.Hex(),
-		Data:      hexutil.Bytes(data).String(),
+		Data:      data,
 		Value:     plugs[0].Value,
 		Gas:       plugs[0].Gas,
 		Exclusive: plugs[0].Exclusive,
@@ -259,10 +259,8 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	}
 	run.IntentId = intent.Id
 
-	if save, ok := intent.Options["save"].(bool); ok && save {
-		if err := database.DB.Create(run).Error; err != nil {
-			return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		}
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
 	return &Solution{
@@ -296,7 +294,7 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		transaction := models.Transaction{
 			From:      intent.From,
 			To:        plug.To.Hex(),
-			Data:      hexutil.Bytes(data).String(),
+			Data:      data,
 			Value:     plug.Value,
 			Gas:       plug.Gas,
 			Exclusive: plug.Exclusive,
@@ -304,10 +302,10 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		transactions[idx] = transaction
 	}
 
-	signature := hexutil.Encode(livePlugs.Signature)
+	signature := &livePlugs.Signature
 	transactionBundle := models.TransactionBundle{
 		IntentId:     intent.Id,
-		Signature:    &signature,
+		Signature:    types.ByteArrayPtr{Bytes: signature},
 		Transactions: transactions,
 	}
 
@@ -326,17 +324,15 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	run.IntentId = intent.Id
 	intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
 
-	if save, ok := intent.Options["save"].(bool); ok && save {
-		if err := database.DB.Create(run).Error; err != nil {
-			return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		}
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
+	}
 
-		if err := database.DB.Model(&intent).Updates(map[string]interface{}{
-			"period_end_at":      intent.PeriodEndAt,
-			"next_simulation_at": intent.NextSimulationAt,
-		}).Error; err != nil {
-			return nil, fmt.Errorf("failed to update intent: %v", err)
-		}
+	if err := database.DB.Model(&intent).Updates(map[string]interface{}{
+		"period_end_at":      intent.PeriodEndAt,
+		"next_simulation_at": intent.NextSimulationAt,
+	}).Error; err != nil {
+		return nil, fmt.Errorf("failed to update intent: %v", err)
 	}
 
 	return &Solution{

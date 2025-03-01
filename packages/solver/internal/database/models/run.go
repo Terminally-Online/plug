@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/utils"
@@ -47,4 +48,23 @@ func (r *Run) BeforeSave(tx *gorm.DB) error {
 
 func (r *Run) AfterFind(tx *gorm.DB) error {
 	return serializer.HandleAfterFind(r)
+}
+
+func (r Run) MarshalJSON() ([]byte, error) {
+	type Alias Run
+
+	// Create a temp struct without the bundle
+	tmp := &struct {
+		*Alias
+		TransactionBundle *TransactionBundle `json:"transactionBundle,omitempty"`
+	}{
+		Alias: (*Alias)(&r),
+	}
+
+	// Only include the bundle if it has a non-zero ID
+	if r.TransactionBundle.Id != "" {
+		tmp.TransactionBundle = &r.TransactionBundle
+	}
+
+	return json.Marshal(tmp)
 }
