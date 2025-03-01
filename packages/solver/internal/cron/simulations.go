@@ -25,6 +25,8 @@ func Simulations(s solver.Solver) {
 
 	solutions := make([]solver.Solution, len(intents))
 	for index, intent := range intents {
+		// TODO MASON: if the intent has a "save" option, then rebuild the solver.Solution from the database models, and return that instead of having a fresh solve.
+
 		if solution, err := s.Solve(&intent); err != nil {
 			solutions[index] = solver.Solution{
 				Status: solver.SolutionStatus{

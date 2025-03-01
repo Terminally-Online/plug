@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO MASON: Rename these back to Plug and LivePlug to be consistent with the rest of the codebase
 type TransactionBundle struct {
 	Id        string   `json:"id,omitempty" gorm:"primaryKey;type:text"`
 	ChainId   uint64   `json:"chainId" gorm:"type:int"`

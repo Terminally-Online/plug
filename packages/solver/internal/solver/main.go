@@ -178,13 +178,17 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 	}, nil
 }
 
+// TODO MASON: Implement this method that builds the solution from the saved transaction bundle.
+// func (s *Solver) GetSavedSolution(intent *models.Intent) (Solution, error) {
+// }
+
 func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.TransactionBundle, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
 	}
 
-	// TODO: we should be able to use the pack method with translated models.Transactions instead of signature.Plugs to be sure it's always backwards compatible.
+	// TODO MASON: we should be able to use the pack method with translated models.Transactions instead of signature.Plugs to be sure it's always backwards compatible.
 	plugCalldata, err := routerAbi.Pack("plug", livePlugs)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
