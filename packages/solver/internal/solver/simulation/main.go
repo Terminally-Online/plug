@@ -121,7 +121,8 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 			return run, nil
 		}
 
-		methodID := transactionBundle.Data[:4]
+		methodIDHex := transactionBundle.Data[:10]
+		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
 			if bytes.Equal(m.ID, methodID) {

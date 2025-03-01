@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
 	"solver/internal/actions/ens"
@@ -12,15 +13,16 @@ import (
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
 	"solver/internal/actions/yearn_v3"
+	"solver/internal/bindings/references"
 	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
-	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Solver struct {
@@ -176,41 +178,47 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 	}, nil
 }
 
-// TODO: Mason you can remove this function once you've fixed the handling of plugs with the database.
-// func (s *Solver) BuildPlugTransaction(intent *models.Intent, livePlugs signature.LivePlugs) (transaction *models.Transaction, err error) {
-// 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
-// 	if err != nil {
-// 		return nil, utils.ErrABI("PlugRouter")
-// 	}
+func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.TransactionBundle, err error) {
+	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
+	if err != nil {
+		return nil, utils.ErrABI("PlugRouter")
+	}
 
-// 	plugCalldata, err := routerAbi.Pack("plug", livePlugs)
-// 	if err != nil {
-// 		return nil, utils.ErrTransaction(err.Error())
-// 	}
+	// TODO: we should be able to use the pack method with translated models.Transactions instead of signature.Plugs to be sure it's always backwards compatible.
+	plugCalldata, err := routerAbi.Pack("plug", livePlugs)
+	if err != nil {
+		return nil, utils.ErrTransaction(err.Error())
+	}
 
-// 	identifier := []byte("plug")
-// 	data := append(plugCalldata, identifier...)
-// 	transaction = &models.Transaction{
-// 		IntentId:   intent.Id,
-// 		From:       intent.From,
-// 		To:         references.Networks[intent.ChainId].References["plug"]["router"],
-// 		ChainId:    intent.ChainId,
-// 		Data:       hexutil.Bytes(data).String(),
-// 		AccessList: intent.AccessList,
-// 	}
+	identifier := []byte("plug")
+	transactions := make([]models.Transaction, len(livePlugs.Plugs.Plugs))
+	for idx, plug := range livePlugs.Plugs.Plugs {
+		data := append(plug.Data, identifier...)
+		transaction := models.Transaction{
+			From:      intent.From,
+			To:        plug.To.Hex(),
+			Data:      hexutil.Bytes(data).String(),
+			Value:     plug.Value,
+			Gas:       plug.Gas,
+			Exclusive: plug.Exclusive,
+		}
+		transactions[idx] = transaction
+	}
 
-// 	if intent.Value != nil {
-// 		transactionValue := hexutil.EncodeBig(intent.Value)
-// 		transaction.Value = &transactionValue
-// 	}
+	data := append(plugCalldata, identifier...)
+	signature := hexutil.Bytes(livePlugs.Signature).String()
+	bundle := models.TransactionBundle{
+		IntentId:     intent.Id,
+		Signature:    &signature,
+		Transactions: transactions,
+		Data:         hexutil.Bytes(data).String(),
+		ChainId:      intent.ChainId,
+		From:         intent.From,
+		To:           references.Networks[intent.ChainId].References["plug"]["router"],
+	}
 
-// 	if intent.GasLimit != nil {
-// 		gasLimitStr := hexutil.EncodeUint64(*intent.GasLimit)
-// 		transaction.GasLimit = &gasLimitStr
-// 	}
-
-// 	return transaction, nil
-// }
+	return &bundle, nil
+}
 
 func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error) {
 	plugs, err := s.GetPlugs(intent)
@@ -230,7 +238,7 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	transactions[0] = models.Transaction{
 		From:      intent.From,
 		To:        plugs[0].To.Hex(),
-		Data:      data,
+		Data:      hexutil.Bytes(data).String(),
 		Value:     plugs[0].Value,
 		Gas:       plugs[0].Gas,
 		Exclusive: plugs[0].Exclusive,
@@ -243,6 +251,7 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		To:           plugs[0].To.Hex(),
 		Value:        plugs[0].Value,
 		Gas:          plugs[0].Gas,
+		Data:         hexutil.Bytes(data).String(),
 		Transactions: transactions,
 	}
 
@@ -287,35 +296,18 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
-	transactions := make([]models.Transaction, len(livePlugs.Plugs.Plugs))
-	for idx, plug := range livePlugs.Plugs.Plugs {
-		identifier := []byte("plug")
-		data := append(plug.Data, identifier...)
-		transaction := models.Transaction{
-			From:      intent.From,
-			To:        plug.To.Hex(),
-			Data:      data,
-			Value:     plug.Value,
-			Gas:       plug.Gas,
-			Exclusive: plug.Exclusive,
-		}
-		transactions[idx] = transaction
+	transactionBundle, err := s.BuildPlugTransactionBundle(intent, *livePlugs)
+	if err != nil {
+		return nil, err
 	}
 
-	signature := &livePlugs.Signature
-	transactionBundle := models.TransactionBundle{
-		IntentId:     intent.Id,
-		Signature:    types.ByteArrayPtr{Bytes: signature},
-		Transactions: transactions,
-	}
-
-	if err := database.DB.Create(&transactionBundle).Error; err != nil {
+	if err := database.DB.Create(transactionBundle).Error; err != nil {
 		return nil, fmt.Errorf("failed to save transaction bundle: %v", err)
 	}
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.Simulate(&transactionBundle)
+		run, err = simulation.Simulate(transactionBundle)
 		if err != nil {
 			return nil, err
 		}
@@ -341,7 +333,7 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		LivePlugs:    livePlugs,                       // The `livePlug` included in the bundle.
 		Intent:       intent,                          // Intent the solver built from.
 		Run:          run,                             // Simulation results of solver run.
-		Transaction:  &transactionBundle,              // Transaction the solver runs.
+		Transaction:  transactionBundle,               // Transaction the solver runs.
 	}, nil
 }
 
