@@ -93,3 +93,25 @@ export type Intent = {
 	runs: Array<Run>
 	createdAt: string
 }
+
+export type IntentResponse<TDecoded extends {} = Record<string, unknown>> = {
+	status: { success: boolean }
+	transactions: Array<{ to: string, data: string, value: number, gas: number }>
+	intent: Intent
+	simulation: {
+		status: string
+		from: string
+		to: string
+		value: number
+		gasEstimate: number
+		resultData: { raw?: string, decoded?: TDecoded }
+	}
+	transaction: {
+		from: `0x${string}`
+		to: `0x${string}`
+		chainId: number
+		value: bigint
+		data: `0x${string}`
+		gas: number
+	}
+}

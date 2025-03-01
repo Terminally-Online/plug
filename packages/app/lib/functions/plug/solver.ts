@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { ActionSchemas, Intent } from "@/lib/types"
+import { ActionSchemas, IntentResponse } from "@/lib/types"
 
 let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
 
@@ -62,7 +62,7 @@ export const intent = async (input: {
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	return response.data
+	return response.data as IntentResponse
 }
 export const getIntentTransaction = intent
 

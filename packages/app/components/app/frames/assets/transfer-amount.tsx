@@ -269,8 +269,7 @@ export const TransferAmountFrame: FC<{
 	})
 
 	const handleTransaction = () => {
-		if (!column) return
-
+		if (!column || !intent) return
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
 			sendTransaction({
