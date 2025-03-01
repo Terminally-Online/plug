@@ -261,10 +261,8 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	}
 	run.IntentId = intent.Id
 
-	if save, ok := intent.Options["save"].(bool); ok && save {
-		if err := database.DB.Create(run).Error; err != nil {
-			return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		}
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
 	}
 
 	return &Solution{
@@ -306,17 +304,15 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	run.IntentId = intent.Id
 	intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
 
-	if save, ok := intent.Options["save"].(bool); ok && save {
-		if err := database.DB.Create(run).Error; err != nil {
-			return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		}
+	if err := database.DB.Create(run).Error; err != nil {
+		return nil, fmt.Errorf("failed to save simulation run: %v", err)
+	}
 
-		if err := database.DB.Model(&intent).Updates(map[string]interface{}{
-			"period_end_at":      intent.PeriodEndAt,
-			"next_simulation_at": intent.NextSimulationAt,
-		}).Error; err != nil {
-			return nil, fmt.Errorf("failed to update intent: %v", err)
-		}
+	if err := database.DB.Model(&intent).Updates(map[string]interface{}{
+		"period_end_at":      intent.PeriodEndAt,
+		"next_simulation_at": intent.NextSimulationAt,
+	}).Error; err != nil {
+		return nil, fmt.Errorf("failed to update intent: %v", err)
 	}
 
 	return &Solution{
