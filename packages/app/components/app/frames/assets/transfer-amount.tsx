@@ -5,7 +5,7 @@ import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { TransferRecipient } from "./transfer-recipient"
@@ -13,7 +13,7 @@ import { useSocket } from "@/state/authentication"
 import { getAddress, isAddress } from "viem"
 import { useSendTransaction } from "wagmi"
 import { Marquee } from "../../utils/marquee"
-import { usePlugStore } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 type Implementation = NonNullable<
 	RouterOutputs["socket"]["balances"]["positions"]
@@ -28,7 +28,8 @@ const ImplementationComponent: FC<{
 	const containerRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
-	const { column, handle } = useColumnStore(index)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const { transfer } = useColumnActions(index)
 
 	const [isPrecise, setIsPrecise] = useState(false)
 
@@ -47,7 +48,7 @@ const ImplementationComponent: FC<{
 					const x = e.clientX - rect.left
 					const percentage = Math.floor(Math.min(Math.max((x / rect.width) * 100, 0), 100))
 
-					handle.transfer(prev => ({
+					transfer(prev => ({
 						...prev,
 						percentage
 					}))
@@ -66,7 +67,7 @@ const ImplementationComponent: FC<{
 						}
 					}
 
-					handle.transfer(prev => ({
+					transfer(prev => ({
 						...prev,
 						precise: percentage >= 99.5 ? implementation.balance.toString() : finalAmount
 					}))
@@ -86,7 +87,7 @@ const ImplementationComponent: FC<{
 			document.addEventListener("mousemove", handleDrag)
 			document.addEventListener("mouseup", handleDragEnd)
 		},
-		[implementation, handle]
+		[implementation, transfer]
 	)
 
 	const handleAmountChange = (value: string) => {
@@ -94,7 +95,7 @@ const ImplementationComponent: FC<{
 		const parsedValue = parseFloat(numericValue)
 
 		if (numericValue === "") {
-			handle.transfer(prev => ({ ...prev, precise: "0" }))
+			transfer(prev => ({ ...prev, precise: "0" }))
 		} else if (!isNaN(parsedValue)) {
 			const maxBalance = implementation.balance
 			const clampedValue = Math.min(Math.max(parsedValue, 0), maxBalance)
@@ -103,9 +104,9 @@ const ImplementationComponent: FC<{
 			const precise = numericValue.includes(".")
 				? numericValue.split(".")[0] + "." + numericValue.split(".")[1].slice(0, 18)
 				: clampedValue.toString()
-			handle.transfer(prev => ({ ...prev, percentage, precise }))
+			transfer(prev => ({ ...prev, percentage, precise }))
 		} else {
-			handle.transfer(prev => ({ ...prev, precise: numericValue }))
+			transfer(prev => ({ ...prev, precise: numericValue }))
 		}
 	}
 
@@ -215,10 +216,11 @@ export const TransferAmountFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, column, handle } = useColumnStore(
-		index,
-		`${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
-	)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${token?.symbol}-transfer-${index === COLUMNS.SIDEBAR_INDEX ? "deposit" : "amount"}`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, navigate } = useColumnActions(index, frameKey)
+
 	const { account: { isAuthenticated } } = useConnect()
 	const { socket } = useSocket()
 	// const {
@@ -276,10 +278,12 @@ export const TransferAmountFrame: FC<{
 				to: intent.transaction.to,
 				data: intent.transaction.data,
 				value: intent.transaction.value
-			}, { onSuccess: data => {
-					handle.navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
-					handle.frame(`${data}-activity`)
-				} })
+			}, {
+				onSuccess: data => {
+					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })
+					frame(`${data}-activity`)
+				}
+			})
 		else
 			// TODO: Implement the socket side logic for transfers.
 			return
@@ -331,7 +335,7 @@ export const TransferAmountFrame: FC<{
 				label={`${index === COLUMNS.SIDEBAR_INDEX ? "Deposit" : "Transfer"}`}
 				visible={isFrame}
 				handleBack={() =>
-					handle.frame(index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
+					frame(index !== COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-recipient` : `${token.symbol}-token`)
 				}
 				hasChildrenPadding={false}
 				hasOverlay
@@ -341,7 +345,7 @@ export const TransferAmountFrame: FC<{
 						<div className="px-6">
 							<TransferRecipient
 								address={column?.transfer?.recipient ?? ""}
-								handleSelect={() => handle.frame(`${token.symbol}-transfer-recipient`)}
+								handleSelect={() => frame(`${token.symbol}-transfer-recipient`)}
 							/>
 						</div>
 					)}

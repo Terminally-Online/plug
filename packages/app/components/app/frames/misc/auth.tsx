@@ -4,16 +4,19 @@ import { User } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { AuthButton } from "@/components/shared/buttons/auth"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom} from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 export const AuthFrame = () => {
-	const index = -1
 	const { data: session } = useSession()
-	const { isFrame } = useColumnStore(index, "auth")
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
+	const frameKey = "auth"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 
 	return (
 		<Frame
-			index={index}
+			index={COLUMNS.MOBILE_INDEX}
 			icon={<User size={18} />}
 			label={session?.address ? "Account" : "Login"}
 			visible={isFrame}

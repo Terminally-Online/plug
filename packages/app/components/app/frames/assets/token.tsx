@@ -9,9 +9,10 @@ import { Image } from "@/components/app/utils/image"
 import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getBlockExplorerAddress, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
+import { useAtom, useAtomValue } from "jotai"
 
 export const TokenFrame: FC<{
 	index: number
@@ -19,7 +20,10 @@ export const TokenFrame: FC<{
 	color: string
 	textColor: string
 }> = ({ index, token, color, textColor }) => {
-	const { isFrame, handle } = useColumnStore(index, `${token?.symbol}-token`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${token?.symbol}-token`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, transfer } = useColumnActions(index)
 
 	const [header, setHeader] = useState<{
 		title?: string
@@ -158,8 +162,8 @@ export const TokenFrame: FC<{
 							color: index === COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
 						}}
 						onClick={() => {
-							handle.transfer(undefined)
-							handle.frame(
+							transfer(undefined)
+							frame(
 								index === COLUMNS.SIDEBAR_INDEX ? `${token.symbol}-transfer-deposit` : `${token.symbol}-transfer-recipient`
 							)
 						}}
@@ -186,8 +190,8 @@ export const TokenFrame: FC<{
 						color: index !== COLUMNS.SIDEBAR_INDEX ? textColor : color ?? ""
 					}}
 					onClick={() => {
-						handle.transfer(undefined)
-						handle.frame(`${token.symbol}-swap-token`)
+						transfer(undefined)
+						frame(`${token.symbol}-swap-token`)
 					}}
 				>
 					<ArrowRightLeft size={14} className="opacity-60" />

@@ -2,12 +2,9 @@ import { FC } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { connectedChains } from "@/contexts"
 import { ActionSchema, formatTitle, getValues } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
-
-import { ChainImage } from "../../sockets/chains/chain.image"
 
 export const ActionItem: FC<{
 	index: number
@@ -17,7 +14,8 @@ export const ActionItem: FC<{
 	action: ActionSchema
 	image?: boolean
 }> = ({ index, item, protocol, actionName, action }) => {
-	const { handle } = useColumnStore(index)
+	const { frame } = useColumnActions(index)
+
 	const { plug, actions, handle: plugHandle } = usePlugStore(item)
 
 	if (!plug) return null
@@ -37,7 +35,7 @@ export const ActionItem: FC<{
 						}
 					])
 				})
-				handle.frame()
+				frame()
 			}}
 		>
 			<div className="flex flex-row items-center gap-2">

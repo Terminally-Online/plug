@@ -7,12 +7,13 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Action, cn, useCord } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
 import { HandleValueProps, Part } from "./part"
+import { useAtom } from "jotai"
 
-type SentenceProps = HTMLAttributes<HTMLButtonElement> & {
+type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
 	item: string
 	preview?: boolean
@@ -25,10 +26,9 @@ export const Sentence: FC<SentenceProps> = memo(
 	({ index, item, action, actionIndex, preview = false, error = false, className, ...props }) => {
 		const [search, setSearch] = useState<Record<number, string | undefined>>({})
 
-		const {
-			column,
-			handle: { frame }
-		} = useColumnStore(index)
+		const [column] = useAtom(columnByIndexAtom(index))
+		const { frame } = useColumnActions(index)
+
 		const {
 			own,
 			actions: plugActions,
@@ -60,12 +60,12 @@ export const Sentence: FC<SentenceProps> = memo(
 
 		const parts = parsed
 			? parsed.template
-					.split(/(\{[^}]+\})/g)
-					.map(part => {
-						if (part.match(/\{[^}]+\}/)) return [part]
-						return part.split(/(\s+)/g)
-					})
-					.flat()
+				.split(/(\{[^}]+\})/g)
+				.map(part => {
+					if (part.match(/\{[^}]+\}/)) return [part]
+					return part.split(/(\s+)/g)
+				})
+				.flat()
 			: []
 
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
@@ -79,12 +79,12 @@ export const Sentence: FC<SentenceProps> = memo(
 						values:
 							nestedActionIndex === actionIndex
 								? {
-										...action.values,
-										[index]: {
-											...rest,
-											value: isNumber ? parseFloat(value) : value
-										}
+									...action.values,
+									[index]: {
+										...rest,
+										value: isNumber ? parseFloat(value) : value
 									}
+								}
 								: action.values
 					}))
 				)
@@ -191,7 +191,6 @@ export const Sentence: FC<SentenceProps> = memo(
 												<Part
 													key={`${index}-${actionIndex}-${actionIndex}-${partIndex}`}
 													index={index}
-													column={column}
 													frame={frame}
 													own={own}
 													preview={preview}

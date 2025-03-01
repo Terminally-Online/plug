@@ -5,23 +5,23 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 
 export const SocketPositionItem: FC<{
 	index: number
 	protocol?: RouterOutputs["socket"]["balances"]["positions"]["protocols"][number]
 }> = ({ index, protocol }) => {
-	const { handle } = useColumnStore(index, `${protocol?.name ?? ""}-position`)
+	const { frame } = useColumnActions(index, `${protocol?.name ?? ""}-position`)
 
 	const { positions } = protocol ?? {}
 
 	const change = positions
 		? positions.reduce((acc, position) => acc + (position.change ?? 0), 0) /
-			positions.filter(position => position.change !== undefined).length
+		positions.filter(position => position.change !== undefined).length
 		: 0
 
 	return (
-		<Accordion loading={positions === undefined} onExpand={() => handle.frame()}>
+		<Accordion loading={positions === undefined} onExpand={() => frame()}>
 			{protocol === undefined ? (
 				<div className="invisible">
 					<p>.</p>

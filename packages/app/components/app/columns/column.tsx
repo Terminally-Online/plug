@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react"
+import React, { FC, memo, useEffect, useRef, useState } from "react"
 
 import { Check, ChevronLeft, GitFork, Settings, Share, X } from "lucide-react"
 
@@ -19,10 +19,11 @@ import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
 import { Button } from "@/components/shared/buttons/button"
 import { cardColors, cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 
 import { SparklingText } from "../utils/sparkling-text"
+import { useAtom } from "jotai"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -30,14 +31,14 @@ const MAX_COLUMN_WIDTH = 680
 const getBoundedWidth = (width: number) => Math.min(Math.max(width, MIN_COLUMN_WIDTH), MAX_COLUMN_WIDTH)
 
 export const ConsoleColumn: FC<{
-	id: number
-}> = ({ id }) => {
+	index: number
+}> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const {
-		column,
-		handle: { frame, remove, resize, navigate }
-	} = useColumnStore(id)
+	const { socket } = useSocket()
+	const [column] = useAtom(columnByIndexAtom(index))
+	const { frame, remove, resize, navigate } = useColumnActions(index)
+
 	const {
 		plug,
 		own,
@@ -45,7 +46,6 @@ export const ConsoleColumn: FC<{
 			plug: { fork }
 		}
 	} = usePlugStore(column?.item ?? "")
-	const { socket } = useSocket()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)
@@ -139,8 +139,8 @@ export const ConsoleColumn: FC<{
 													className="text-lg font-bold"
 													sparkles={Boolean(
 														plug?.renamedAt &&
-															plug.renamedAt > (plug.createdAt ?? 0) &&
-															plug.renamedAt !== plug.createdAt
+														plug.renamedAt > (plug.createdAt ?? 0) &&
+														plug.renamedAt !== plug.createdAt
 													)}
 													sparkleKey={plug?.renamedAt?.getTime()}
 													color={cardColors[plug?.color ?? "yellow"]}
@@ -294,4 +294,6 @@ export const ConsoleColumn: FC<{
 			</Draggable>
 		</div>
 	)
-}
+})
+
+ConsoleColumn.displayName = "ConsoleColumn"

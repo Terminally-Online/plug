@@ -5,12 +5,12 @@ import { AnimatePresence, motion } from "framer-motion"
 import { MotionProps } from "framer-motion"
 import { FileWarning, LogIn, PaintBucket, PlugIcon, Rocket, SearchIcon } from "lucide-react"
 
-import { useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 
 import { cn } from "@/lib"
 import { api } from "@/server/client"
 import { socketModelAtom } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { Frame } from "../app/frames/base"
 import { Callout } from "../app/utils/callout"
@@ -174,11 +174,11 @@ export const ConsoleOnboardingStepOne: FC<
 	MotionProps & HTMLAttributes<HTMLDivElement> & { step: number; handleStep: () => void }
 > = ({ step, handleStep }) => {
 	const { data: session } = useSession()
-	const {
-		column,
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(COLUMNS.MOBILE_INDEX, "onboarding-actions")
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
+	const frameKey = "onboarding-actions"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(COLUMNS.MOBILE_INDEX, frameKey)
 
 	const router = useRouter()
 	const color = (router.query.color as string) || ""

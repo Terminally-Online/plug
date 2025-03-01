@@ -11,7 +11,7 @@ import { DateSince } from "@/components/shared/utils/date-since"
 import { formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
 import { useActions } from "@/state/actions"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 
 export const SimulationFrame: FC<{
 	index: number
@@ -19,7 +19,8 @@ export const SimulationFrame: FC<{
 	simulationId: string | undefined
 }> = ({ index, activity, simulationId }) => {
 	const [solverActions] = useActions()
-	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
+
+	const { frame } = useColumnActions(index, `${activity?.id}-activity`)
 
 	const simulation = activity?.runs.find(sim => sim.id === simulationId)
 	const actions = activity?.inputs
@@ -58,7 +59,7 @@ export const SimulationFrame: FC<{
 			icon={<ActivityIcon status={simulation.status} />}
 			label={`Simulation ${formatTitle(simulation.status)}`}
 			visible={simulation !== undefined}
-			handleBack={() => handle.frame()}
+			handleBack={() => frame()}
 			hasOverlay={true}
 		>
 			<ActionPreview index={index} item={activity.plug.id} actions={actions} errors={simulation.errors ?? []} />

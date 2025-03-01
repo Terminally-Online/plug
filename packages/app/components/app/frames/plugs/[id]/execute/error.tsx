@@ -3,10 +3,13 @@ import { FC } from "react"
 import { ShieldX } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 export const ErrorFrame: FC<{ index: number }> = ({ index }) => {
-    const { column, isFrame } = useColumnStore(index, "error")
+    const [column] = useAtom(columnByIndexAtom(index))
+    const frameKey = "error"
+    const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 
     if (!column) return null
 

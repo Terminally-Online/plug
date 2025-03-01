@@ -9,7 +9,8 @@ import { SocketActivity } from "@/components/app/sockets/activity/activity-list"
 import { SocketAssets } from "@/components/app/sockets/assets"
 import { Plugs } from "@/components/shared/framework/plugs"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS } from "@/state/columns"
+import { useAtom } from "jotai"
 
 const ProfileContent = () => {
 	const { data: sessionData } = useSession()
@@ -27,7 +28,7 @@ const ProfileContent = () => {
 }
 
 export const PageContent = () => {
-	const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
 
 	if (!column) return null
 

@@ -9,7 +9,8 @@ import { Image } from "@/components/app/utils/image"
 import { Counter } from "@/components/shared/utils/counter"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 export const PositionFrame: FC<{
 	index: number
@@ -17,7 +18,9 @@ export const PositionFrame: FC<{
 }> = ({ index, protocol }) => {
 	const { positions } = protocol
 
-	const { isFrame } = useColumnStore(index, `${protocol.name}-position`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${protocol.name}-position`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 
 	const [color, setColor] = useState("")
 	const [colors, setColors] = useState<Record<string, string>>({})
@@ -75,8 +78,8 @@ export const PositionFrame: FC<{
 						enabled={isFrame}
 						keys={keys}
 						colors={colors}
-						// handleHeader={setHeader}
-						// handleTooltip={setTooltipData}
+					// handleHeader={setHeader}
+					// handleTooltip={setTooltipData}
 					/>
 				)}
 
@@ -131,16 +134,16 @@ export const PositionFrame: FC<{
 															Object.keys(colors).includes(key)
 																? undefined
 																: color =>
-																		setColors(prev =>
-																			prev
-																				? {
-																						...prev,
-																						[key]: color
-																					}
-																				: {
-																						[key]: color
-																					}
-																		)
+																	setColors(prev =>
+																		prev
+																			? {
+																				...prev,
+																				[key]: color
+																			}
+																			: {
+																				[key]: color
+																			}
+																	)
 														}
 													/>
 

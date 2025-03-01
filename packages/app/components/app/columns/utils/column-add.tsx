@@ -1,14 +1,14 @@
-import Link from "next/link"
 import { useEffect, useMemo, useRef, useState, type JSX } from "react";
 
-import { Activity, Cable, Cog, Coins, ExternalLink, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
+import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { COLUMNS, primaryColumnsAtom, useColumnActions } from "@/state/columns"
 import { Flag, useFlags } from "@/state/flags"
 import { usePlugStore } from "@/state/plugs"
+import { useAtomValue } from "jotai";
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]
@@ -57,7 +57,10 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { getFlag } = useFlags()
-	const { columns, handle } = useColumnStore()
+
+	const columns = useAtomValue(primaryColumnsAtom)
+	const { add, navigate } = useColumnActions(index)
+
 	const { socket } = useSocket()
 	const { handle: plugHandle } = usePlugStore()
 
@@ -160,8 +163,8 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 								key={option.label}
 								onExpand={() =>
 									isBody
-										? handle.navigate({ index, key: option.label })
-										: handle.add({ key: option.label })
+										? navigate({ index, key: option.label })
+										: add({ key: option.label })
 								}
 							>
 								<div className="flex flex-row items-center gap-2">

@@ -7,10 +7,13 @@ import { Search } from "@/components/app/inputs/search"
 import { ActionItem } from "@/components/app/plugs/actions/action-item"
 import { useDebounce } from "@/lib"
 import { useActions } from "@/state/actions"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 export const ActionsFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { column, isFrame } = useColumnStore(index, `${item}-actions`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${item}-actions`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 
 	const [actions] = useActions()
 

@@ -1,10 +1,10 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 
-import { atom, useAtom, useAtomValue } from "jotai"
+import { atom, useAtom } from "jotai"
 
 import { Column, Schedule, Transfer } from "@/lib"
 
-import { atomWithStorage, splitAtom } from "jotai/utils"
+import { atomFamily, atomWithStorage } from "jotai/utils"
 
 export const COLUMNS = {
 	SIDEBAR_INDEX: -2,
@@ -47,53 +47,181 @@ export const DEFAULT_COLUMNS = [
 	width: COLUMNS.DEFAULT_WIDTH
 }))
 
-const columnsStorageAtom = atomWithStorage<Column[]>("plug.columns", DEFAULT_COLUMNS)
-const primaryColumnsAtom = atom(
+export const columnsStorageAtom = atomWithStorage<Column[]>("plug.columns", DEFAULT_COLUMNS)
+export const primaryColumnsAtom = atom(
 	get => get(columnsStorageAtom),
 	(get, set, update: Column[] | ((prev: Column[]) => Column[])) => {
 		set(columnsStorageAtom, typeof update === "function" ? update(get(columnsStorageAtom)) : update)
 	}
 )
 
-const columnAtomsAtom = splitAtom(columnsStorageAtom)
-const columnByIndexAtom = atom(get => {
-	const columnAtoms = get(columnAtomsAtom)
-	return (searchIndex: number): Column | undefined => {
-		for (const columnAtom of columnAtoms) {
-			const column = get(columnAtom)
-			if (column && (column.index === searchIndex || column.id === searchIndex)) {
-				return column
-			}
-		}
-		return undefined
+export const columnIndexMapAtom = atom(get => {
+  const columns = get(columnsStorageAtom)
+  return new Map(columns.map(col => [col.index, col]))
+})
+
+export const columnByIndexAtom = atomFamily((searchIndex: number) =>
+  atom(get => get(columnIndexMapAtom).get(searchIndex))
+)
+
+export const isFrameAtom = atom(
+	_ => (column?: Column, key?: string) => column?.frame === key
+)
+
+export const addColumnAtom = atom(
+	null,
+	(get, set, { index, key, from, item }: Partial<Column>) => {
+		const columns = get(primaryColumnsAtom)
+		
+		const newColumn = {
+			id: Math.random() * 1e18,
+			key,
+			index: index ?? columns.length - COLUMNS.OFFSET,
+			from,
+			item,
+			width: COLUMNS.DEFAULT_WIDTH
+		} as Column
+
+		set(primaryColumnsAtom, prev => {
+			const updatedColumns = [...prev]
+			const insertIndex = index !== undefined ? index + COLUMNS.OFFSET : updatedColumns.length
+			updatedColumns.splice(insertIndex, 0, newColumn)
+			
+			return updatedColumns.map((col, idx) => ({
+				...col,
+				index: idx - COLUMNS.OFFSET
+			}))
+		})
+
 	}
-})
+)
 
-const isFrameAtom = atom(_ => (column?: Column, key?: string) => {
-	if (!column) return false
-	return column.frame === key
-})
+export const navigateColumnAtom = atom(
+	null,
+	(_, set, { index, key, item, from }: Partial<Column> & { index: number }) => {
+		set(primaryColumnsAtom, prev => {
+			const targetColumn = prev.find(col => col.index === index)
+			if (!targetColumn || (targetColumn.key === key && targetColumn.item === item && targetColumn.from === from)) {
+				return prev
+			}
+			return prev.map(col => 
+				col.index === index ? { ...col, key: key ?? col.key, item, from } : col
+			)
+		})
+	}
+)
 
-export const useColumnData = (index?: number) => {
-	const getColumnByIndex = useAtomValue(columnByIndexAtom)
-	const column = useMemo(() => (index !== undefined ? getColumnByIndex(index) : undefined), [index, getColumnByIndex])
-	return { column }
-}
+export const removeColumnAtom = atom(
+	null,
+	(_, set, index: number) => {
+		set(primaryColumnsAtom, prev => {
+			const updatedColumns = [...prev]
+			updatedColumns.splice(index + COLUMNS.OFFSET, 1)
+			return updatedColumns.map((col, idx) => ({
+				...col,
+				index: idx - COLUMNS.OFFSET
+			}))
+		})
 
-export const useColumn = (index: number) => {
-	const getColumnByIndex = useAtomValue(columnByIndexAtom)
-	return useMemo(() => getColumnByIndex(index), [index, getColumnByIndex])
-}
+	}
+)
 
-export const useColumnStore = (index?: number, key?: string) => {
-	const [columns, setColumns] = useAtom(primaryColumnsAtom)
-	const [columnAtoms, columnDispatch] = useAtom(columnAtomsAtom)
-	const getColumnByIndex = useAtomValue(columnByIndexAtom)
-	const isFrame = useAtomValue(isFrameAtom)
+export const moveColumnAtom = atom(
+	null,
+	(_, set, { from, to }: { from: number; to: number }) => {
+		if (from === to) return
 
-	const column = useMemo(() => (index !== undefined ? getColumnByIndex(index) : undefined), [index, getColumnByIndex])
+		set(primaryColumnsAtom, prev => {
+			const updatedColumns = [...prev]
+			const [movedColumn] = updatedColumns.splice(from + COLUMNS.OFFSET, 1)
+			updatedColumns.splice(to + COLUMNS.OFFSET, 0, movedColumn)
+			return updatedColumns.map((col, idx) => ({ 
+				...col, 
+				index: idx - COLUMNS.OFFSET 
+			}))
+		})
+	}
+)
 
-	const handleScroll = useCallback(() => {
+export const resizeColumnAtom = atom(
+	null,
+	(_, set, { index, width }: { index: number; width: number }) => {
+		set(primaryColumnsAtom, prev => {
+			const targetColumn = prev.find(col => col.index === index)
+			if (!targetColumn || targetColumn.width === width) return prev
+			return prev.map(col => 
+				col.index === index ? { ...col, width } : col
+			)
+		})
+	}
+)
+
+export const frameColumnAtom = atom(
+	null,
+	(_, set, { index, key, columnKey }: { index: number; key?: string; columnKey?: string }) => {
+		set(primaryColumnsAtom, prev => {
+			const targetColumn = prev.find(col => col.index === index || col.id === index)
+			if (!targetColumn) return prev
+
+			const frameKey = columnKey || key
+			const newFrame = targetColumn.frame === frameKey ? undefined : frameKey
+
+			if (targetColumn.frame === newFrame) return prev
+
+			return prev.map(col => 
+				col.index === index ? { ...col, frame: newFrame } : col
+			)
+		})
+	}
+)
+
+export const chainColumnAtom = atom(
+	null,
+	(_, set, { index, chain }: { index: number; chain?: number }) => {
+		set(primaryColumnsAtom, prev =>
+			prev.map(col => 
+				col.index === index ? { ...col, chain } : col
+			)
+		)
+	}
+)
+
+export const scheduleColumnAtom = atom(
+	null,
+	(_, set, { index, schedule }: { index: number; schedule?: Schedule }) => {
+		set(primaryColumnsAtom, prev =>
+			prev.map(col => 
+				col.index === index ? { ...col, schedule } : col
+			)
+		)
+	}
+)
+
+export const transferColumnAtom = atom(
+	null,
+	(_, set, { index, updater }: { 
+		index: number; 
+		updater: Transfer | undefined | ((prev: Transfer | undefined) => Transfer)
+	}) => {
+		set(primaryColumnsAtom, prev => {
+			const targetColumn = prev.find(col => col.index === index)
+			if (!targetColumn) return prev
+
+			const newTransfer = typeof updater === "function" 
+				? updater(targetColumn.transfer) 
+				: updater
+
+			if (targetColumn.transfer === newTransfer) return prev
+
+			return prev.map(col => 
+				col.index === index ? { ...col, transfer: newTransfer } : col
+			)
+		})
+	}
+)
+
+export const useScrollToLastColumn = () => {
+	return useCallback(() => {
 		queueMicrotask(() => {
 			requestAnimationFrame(() => {
 				const container = document.querySelector(".flex.h-full.flex-row.overflow-x-auto")
@@ -104,154 +232,72 @@ export const useColumnStore = (index?: number, key?: string) => {
 			})
 		})
 	}, [])
+}
 
-	const handle = {
+export const useColumnActions = (index?: number, key?: string) => {
+	const [, addColumn] = useAtom(addColumnAtom)
+	const [, navigateColumn] = useAtom(navigateColumnAtom)
+	const [, removeColumn] = useAtom(removeColumnAtom)
+	const [, moveColumn] = useAtom(moveColumnAtom)
+	const [, resizeColumn] = useAtom(resizeColumnAtom)
+	const [, frameColumn] = useAtom(frameColumnAtom)
+	const [, chainColumn] = useAtom(chainColumnAtom)
+	const [, scheduleColumn] = useAtom(scheduleColumnAtom)
+	const [, transferColumn] = useAtom(transferColumnAtom)
+	
+	const handleScroll = useScrollToLastColumn()
+
+	return {
 		add: useCallback(
-			({ index, key, from, item }: Partial<Column>) => {
-				const newColumn = {
-					id: Math.random() * 1e18,
-					key,
-					index: index ?? columns.length - COLUMNS.OFFSET,
-					from,
-					item,
-					width: COLUMNS.DEFAULT_WIDTH
-				} as Column
-
-				// Find position based on array position instead
-				const insertIndex = index !== undefined ? index + COLUMNS.OFFSET : undefined
-				const targetAtom = insertIndex !== undefined ? columnAtoms[insertIndex] : undefined
-
-				columnDispatch({
-					type: "insert",
-					value: newColumn,
-					before: targetAtom
-				})
-
+			(params: Partial<Column>) => {
+				addColumn(params)
 				handleScroll()
 			},
-			[columns.length, columnAtoms, columnDispatch, handleScroll]
+			[addColumn, handleScroll]
 		),
-
 		navigate: useCallback(
-			({ index, key, item, from }: Partial<Column> & { index: number }) => {
-				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index)
-					if (!targetColumn) return prev
-
-					if (targetColumn.key === key && targetColumn.item === item && targetColumn.from === from) {
-						return prev
-					}
-
-					return prev.map(col => (col.index === index ? { ...col, key: key ?? col.key, item, from } : col))
-				})
-			},
-			[setColumns]
+			(params: Partial<Column> & { index: number }) => navigateColumn(params),
+			[navigateColumn]
 		),
-
 		remove: useCallback(
-			(index: number) => {
-				const targetAtom = columnAtoms[index + COLUMNS.OFFSET]
-				if (!targetAtom) return
-
-				columnDispatch({
-					type: "remove",
-					atom: targetAtom
-				})
-
-				setColumns(prev =>
-					prev.map((col, idx) => ({
-						...col,
-						index: idx - COLUMNS.OFFSET
-					}))
-				)
-			},
-			[columnAtoms, columnDispatch, setColumns]
+			(idx: number) => removeColumn(idx),
+			[removeColumn]
 		),
-
 		move: useCallback(
-			({ from, to }: { from: number; to: number }) => {
-				if (from === to) return
-
-				setColumns(prev => {
-					const updatedColumns = [...prev]
-					const [movedColumn] = updatedColumns.splice(from + COLUMNS.OFFSET, 1)
-					updatedColumns.splice(to + COLUMNS.OFFSET, 0, movedColumn)
-					return updatedColumns.map((col, idx) => ({ ...col, index: idx - COLUMNS.OFFSET }))
-				})
-			},
-			[, setColumns]
+			(params: { from: number; to: number }) => moveColumn(params),
+			[moveColumn]
 		),
-
 		resize: useCallback(
-			({ index, width }: { index: number; width: number }) => {
-				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index)
-
-					if (!targetColumn || targetColumn.width === width) return prev
-
-					return prev.map(col => (col.index === index ? { ...col, width } : col))
-				})
-			},
-			[setColumns]
+			(params: { index: number; width: number }) => resizeColumn(params),
+			[resizeColumn]
 		),
-
 		frame: useCallback(
 			(columnKey?: string) => {
 				if (index === undefined) return
-
-				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index || col.id === index)
-					if (!targetColumn) return prev
-
-					const frameKey = columnKey || key
-					const newFrame = targetColumn.frame === frameKey ? undefined : frameKey
-
-					if (targetColumn.frame === newFrame) return prev
-
-					return prev.map(col => (col.index === index ? { ...col, frame: newFrame } : col))
-				})
+				frameColumn({ index, key, columnKey })
 			},
-			[index, key, setColumns]
+			[frameColumn, index, key]
 		),
-
-
-		chain: useCallback((chain?: number) =>
-			setColumns(prev => {
-				return prev.map(col => (col.index === index ? { ...col, chain } : col))
-			})
-			, [index, setColumns]),
-
+		chain: useCallback(
+			(chain?: number) => {
+				if (index === undefined) return
+				chainColumn({ index, chain })
+			},
+			[chainColumn, index]
+		),
 		schedule: useCallback(
-			(schedule?: Schedule) => setColumns(prev => {
-				return prev.map(col => (col.index === index ? { ...col, schedule } : col))
-			})
-			,
-			[index, setColumns]
+			(schedule?: Schedule) => {
+				if (index === undefined) return
+				scheduleColumn({ index, schedule })
+			},
+			[scheduleColumn, index]
 		),
-
 		transfer: useCallback(
 			(updater: Transfer | undefined | ((prev: Transfer | undefined) => Transfer)) => {
 				if (index === undefined) return
-
-				setColumns(prev => {
-					const targetColumn = prev.find(col => col.index === index)
-					if (!targetColumn) return prev
-
-					const newTransfer = typeof updater === "function" ? updater(targetColumn.transfer) : updater
-
-					if (targetColumn.transfer === newTransfer) return prev
-
-					return prev.map(col => (col.index === index ? { ...col, transfer: newTransfer } : col))
-				})
+				transferColumn({ index, updater })
 			},
-			[index, setColumns]
+			[transferColumn, index]
 		)
-	}
-
-	return {
-		columns,
-		column,
-		isFrame: useMemo(() => isFrame(column, key), [isFrame, column, key]),
-		handle
 	}
 }

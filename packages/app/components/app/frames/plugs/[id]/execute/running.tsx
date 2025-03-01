@@ -3,12 +3,17 @@ import { FC, useEffect } from "react"
 import { LoaderCircle } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
-import { useColumnStore } from "@/state/columns"
-import { usePlugData } from "@/state/plugs"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { workflowByIdAtom } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame, handle } = useColumnStore(index, "running")
-	const { plug } = usePlugData(item)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey="running"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey)
+
+	const plug = useAtomValue(workflowByIdAtom)(item)
 
 	// TODO: We un-implemented this when beginning to store frames on columns.
 	const prevFrame = "NOT_IMPLEMENTED" as string
@@ -18,9 +23,9 @@ export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item 
 	useEffect(() => {
 		if (!isFrame) return
 
-		const timeout = setTimeout(() => handle.frame("ran"), 2500)
+		const timeout = setTimeout(() => frame("ran"), 2500)
 		return () => clearTimeout(timeout)
-	}, [isFrame, handle])
+	}, [isFrame, frame])
 
 	if (!plug) return null
 

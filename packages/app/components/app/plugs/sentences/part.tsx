@@ -12,12 +12,12 @@ import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, useColumnActions } from "@/state/columns"
+import { useAtom } from "jotai"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
-	column: NonNullable<ReturnType<typeof useColumnStore>["column"]>
-	frame: ReturnType<typeof useColumnStore>["handle"]["frame"]
+	frame: ReturnType<typeof useColumnActions>["frame"]
 	own?: boolean
 	preview?: boolean
 	error?: boolean
@@ -47,7 +47,6 @@ export type HandleValueProps = {
 export const Part: FC<PartProps> = memo(
 	({
 		index,
-		column,
 		frame,
 		own,
 		preview,
@@ -69,6 +68,8 @@ export const Part: FC<PartProps> = memo(
 		const [searching, , handleDebounce] = useDebounce(search[optionsIndex] ?? "", 250, debounced =>
 			handleSearch(debounced, input.index)
 		)
+
+		const [column] = useAtom(columnByIndexAtom(index))
 
 		const value = getInputValue(inputIndex)
 		const inputError = getInputError(inputIndex)

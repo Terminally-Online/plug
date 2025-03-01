@@ -3,9 +3,9 @@ import { Button } from "@/components/shared/buttons/button"
 import { api } from "@/server/client"
 import { Square, Loader, PlayIcon } from "lucide-react"
 import { useSetAtom } from "jotai"
-import { columnAtomFamily, columnsStorageAtom } from "@/state/column-atoms"
 import { DEFAULT_COLUMNS } from "@/state/columns"
 import { useResponse } from "@/lib/hooks/useResponse"
+import { columnsStorageAtom } from "@/state/columns"
 
 export const ConsoleAdmin: FC<HTMLAttributes<HTMLDivElement> & { index: number }> = ({ index, ...props }) => {
 	const setColumns = useSetAtom(columnsStorageAtom)

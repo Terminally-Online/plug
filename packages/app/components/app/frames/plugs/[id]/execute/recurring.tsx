@@ -5,10 +5,14 @@ import { Clock } from "lucide-react"
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/shared/buttons/button"
 import { frequencies } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
-	const { column, isFrame, handle } = useColumnStore(index, "recurring")
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = "recurring"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, schedule } = useColumnActions(index, frameKey)
 
 	return (
 		<Frame
@@ -17,7 +21,7 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 			icon={<Clock size={18} className="opacity-40" />}
 			label="Recurring Frequency"
 			visible={isFrame}
-			handleBack={() => handle.frame("schedule")}
+			handleBack={() => frame("schedule")}
 			hasOverlay={true}
 		>
 			<div className="flex flex-col gap-2">
@@ -27,8 +31,8 @@ export const RecurringFrame: FC<{ index: number }> = ({ index }) => {
 						variant="secondary"
 						className="py-4"
 						onClick={() => {
-							handle.schedule({ date: column?.schedule?.date, repeats: frequency })
-							handle.frame("schedule")
+							schedule({ date: column?.schedule?.date, repeats: frequency })
+							frame("schedule")
 						}}
 					>
 						{frequency.label}

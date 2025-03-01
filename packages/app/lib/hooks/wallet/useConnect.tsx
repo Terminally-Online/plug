@@ -24,7 +24,7 @@ import {
 	walletConnectProviderAtom,
 	walletConnectURIAtom
 } from "@/state/authentication"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 import { Session } from "next-auth"
 
 const ConnectionContext = createContext<
@@ -60,8 +60,9 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 
 	const { disconnect } = useDisconnect()
 
-	const { handle } = useColumnStore()
 	const { data: session } = useSession()
+
+	const { navigate } = useColumnActions()
 
 	const isAuthenticated = account.status === "connected" && session?.user.id?.startsWith("0x") || false
 
@@ -114,7 +115,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 							console.log("Authenticated", authenticationResponse)
 
 							setAuthenticationResponse(authenticationResponse)
-							handle.navigate({ index, key: from })
+							navigate({ index, key: from })
 						},
 						onError: (e, account) => {
 							console.error("Authentication error", e)
@@ -134,7 +135,7 @@ export function ConnectionProvider({ children }: PropsWithChildren) {
 				disconnect()
 			}
 		},
-		[handle, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
+		[navigate, connection, chainId, account, sign, disconnect, setAuthenticationLoading, setAuthenticationResponse]
 	)
 
 	/**

@@ -1,17 +1,20 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 
 import { PencilLine, Settings } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
-import { Checkbox } from "@/components/app/inputs/checkbox"
 import { Search } from "@/components/app/inputs/search"
 import { Button } from "@/components/shared/buttons/button"
-import { cardColors, useDebounce } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { useDebounce } from "@/lib"
+import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
-	const { isFrame } = useColumnStore(index, "manage")
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = "manage"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+
 	const { plug, handle } = usePlugStore(item)
 
 	const handleNameChange = (newName: string) => {

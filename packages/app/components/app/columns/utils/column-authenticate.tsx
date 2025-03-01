@@ -6,7 +6,7 @@ import { Connector as wagmiConnector } from "wagmi"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 
 import { Animate } from "@/components/app/utils/animate"
 import { Callout } from "@/components/app/utils/callout"
@@ -24,7 +24,7 @@ import {
 	useRecentConnectorId
 } from "@/lib"
 import { authenticationAtom, walletConnectURIMatrixAtom } from "@/state/authentication"
-import { useColumnData } from "@/state/columns"
+import { columnByIndexAtom } from "@/state/columns"
 
 const QR_CODE_SIZE = 200
 const QR_CODE_PIXEL_SPACING = 0.3
@@ -240,7 +240,7 @@ const Connectors: FC<{ index: number; from?: string }> = ({ index, from }) => {
 export const ColumnAuthenticate: FC<{ index: number }> = ({ index }) => {
 	const { data: session } = useSession()
 	const { account, sign, prove } = useConnect()
-	const { column } = useColumnData(index)
+	const [column] = useAtom(columnByIndexAtom(index))
 
 	const authentication = useAtomValue(authenticationAtom)
 

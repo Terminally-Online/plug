@@ -5,7 +5,8 @@ import { Callout } from "@/components/app/utils/callout"
 import { useActivities } from "@/contexts"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS } from "@/state/columns"
+import { useAtom } from "jotai"
 
 const SocketActivityList: FC<{
 	activities: any[] | undefined
@@ -37,7 +38,8 @@ export const SocketActivity: FC<HTMLAttributes<HTMLDivElement> & { index?: numbe
 	className,
 	...props
 }) => {
-	const { column } = useColumnStore(index, "simulation")
+	const [column] = useAtom(columnByIndexAtom(index))
+
 	const { isAnonymous } = useSocket()
 	const { activities } = useActivities()
 

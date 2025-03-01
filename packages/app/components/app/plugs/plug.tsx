@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, HTMLAttributes, useEffect, useState } from "react"
+import { FC, HTMLAttributes, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -12,8 +12,9 @@ import { Search } from "@/components/app/inputs/search"
 import { ActionView } from "@/components/app/plugs/actions/action-view"
 import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
-import { COLUMNS, useColumnStore } from "@/state/columns"
-import { usePlugData } from "@/state/plugs"
+import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
+import { workflowByIdAtom } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
 	index = COLUMNS.MOBILE_INDEX,
@@ -22,8 +23,12 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	...props
 }) => {
 	const { data: session } = useSession()
-	const { column, handle: { frame, schedule } } = useColumnStore(index)
-	const { plug } = usePlugData(item)
+
+	const [column] = useAtom(columnByIndexAtom(index))
+	const { frame } = useColumnActions(index)
+
+	const getPlug = useAtomValue(workflowByIdAtom)
+	const plug = item ? getPlug(item) : undefined
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
 

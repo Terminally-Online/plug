@@ -8,7 +8,8 @@ import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { getChainId, useDebounce } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -21,10 +22,10 @@ type SwapTokenFrameProps = {
 }
 
 export const SwapTokenFrame: FC<SwapTokenFrameProps> = ({ index, tokenOut, handleTokenIn }) => {
-	const {
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(index, `${tokenOut.symbol}-swap-token`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${tokenOut.symbol}-swap-token`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey)
 
 	const [search, debouncedSearch, handleSearch] = useDebounce("")
 

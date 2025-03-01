@@ -4,20 +4,19 @@ import { Calendar, CheckCircle, CircleDollarSign, Pause, Play, Waypoints } from 
 
 import { Frame } from "@/components/app/frames/base"
 import { ChainImage } from "@/components/app/sockets/chains/chain.image"
-import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
-import { chains } from "@/lib"
-import { useColumnStore } from "@/state/columns"
-import { usePlugData } from "@/state/plugs"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { workflowByIdAtom } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const {
-		column,
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(index, "ran")
-	const { plug } = usePlugData(item)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = "ran"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey)
+
+	const plug = useAtomValue(workflowByIdAtom)(item)
 
 	if (!plug || !column) return null
 

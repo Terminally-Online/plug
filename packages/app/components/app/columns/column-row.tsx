@@ -6,16 +6,19 @@ import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd"
 
 import { ConsoleColumn } from "@/components/app/columns/column"
 import { ColumnAdd } from "@/components/app/columns/utils/column-add"
-import { useColumnStore } from "@/state/columns"
+import { moveColumnAtom, primaryColumnsAtom} from "@/state/columns"
 import { ConsoleSidebarPane } from "../sidebar"
+import { useAtom, useAtomValue} from "jotai"
 
 export const ConsoleColumnRow = () => {
-	const { columns, handle } = useColumnStore()
+	const columns = useAtomValue(primaryColumnsAtom)
+
+	const [, move] = useAtom(moveColumnAtom)
 
 	const onDragEnd = (result: DropResult) => {
 		if (!columns || !result.destination) return
 
-		handle.move({
+		move({
 			from: result.source.index,
 			to: result.destination.index
 		})
@@ -33,7 +36,7 @@ export const ConsoleColumnRow = () => {
 								.filter(column => column?.index >= 0)
 								.sort((a, b) => a.index - b.index)
 								.map(column => (
-									<ConsoleColumn key={String(column.id)} id={column.index} />
+									<ConsoleColumn key={String(column.id)} index={column.index} />
 								))}
 							{provided.placeholder}
 						</div>

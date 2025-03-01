@@ -1,15 +1,15 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 
 import { Bell, Waypoints } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
-import { Image } from "@/components/app/utils/image"
-import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
+import { cn, getChainId } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { Counter } from "@/components/shared/utils/counter"
+import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -23,11 +23,10 @@ type TransferSuccessFrame = {
 }
 
 export const TransferSuccessFrame: FC<TransferSuccessFrame> = ({ index, token, color, textColor }) => {
-	const {
-		column,
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(index, `${token.symbol}-transfer-success`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${token.symbol}-transfer-success`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey)
 
 	return (
 		<Frame
@@ -55,8 +54,8 @@ export const TransferSuccessFrame: FC<TransferSuccessFrame> = ({ index, token, c
 					<span className="w-min inline-flex mr-1 tabular-nums">
 						<Counter count={column?.transfer?.precise ?? ""} />{" "}
 					</span>
-					<div 
-						className="px-2 rounded-xs inline-flex items-center" 
+					<div
+						className="px-2 rounded-xs inline-flex items-center"
 						style={{ backgroundColor: color, color: textColor }}
 					>
 						{token?.symbol}

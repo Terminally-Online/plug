@@ -9,7 +9,7 @@ import { Counter } from "@/components/shared/utils/counter"
 import { DateSince } from "@/components/shared/utils/date-since"
 import { cardColors, ChainId, formatTitle } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../chains/chain.image"
 
@@ -93,11 +93,11 @@ export const ActivityItem: FC<{
 	activity: RouterOutputs["plugs"]["activity"]["get"][number] | undefined
 	simulationId: string | undefined
 }> = ({ index, activity, simulationId }) => {
-	const { handle } = useColumnStore(index, `${activity?.id}-activity`)
+	const { frame } = useColumnActions(index, `${activity?.id}-activity`)
 
 	return (
 		<>
-			<Accordion loading={activity === undefined} onExpand={() => handle.frame()}>
+			<Accordion loading={activity === undefined} onExpand={() => frame()}>
 				{activity === undefined ? (
 					<div className="invisible">
 						<p>.</p>

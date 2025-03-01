@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useState } from "react"
 
 import { Bell, Waypoints } from "lucide-react"
 
@@ -7,7 +7,8 @@ import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Image } from "@/components/app/utils/image"
 import { chains, cn, formatTitle, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -20,10 +21,10 @@ type SwapConfirmFrameProps = {
 }
 
 export const SwapConfirmFrame: FC<SwapConfirmFrameProps> = ({ index, tokenIn, tokenOut }) => {
-	const {
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(index, `${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${tokenOut.symbol}-${tokenIn.symbol}-swap-confirm`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey) 
 
 	const [tokenOutColor, setTokenOutColor] = useState("#000000")
 	const [tokenInColor, setTokenInColor] = useState("#000000")

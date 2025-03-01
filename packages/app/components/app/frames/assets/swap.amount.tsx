@@ -10,10 +10,11 @@ import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getChainName, getTextColor, NATIVE_TOKEN_ADDRESS } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
 import { useSocket } from "@/state/authentication"
+import { useAtom, useAtomValue } from "jotai"
 
 type Token =
 	| NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
@@ -26,11 +27,11 @@ type SwapAmountFrameProps = {
 }
 
 export const SwapAmountFrame = ({ index, tokenIn, tokenOut }: SwapAmountFrameProps) => {
-	const {
-		column,
-		isFrame,
-		handle: { frame }
-	} = useColumnStore(index, `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${tokenOut.symbol}-${tokenIn.symbol}-swap-amount`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame } = useColumnActions(index, frameKey)
+
 	const { socket } = useSocket()
 
 	const { tokenOutImplementation, tokenInImplementation } = useMemo(() => {

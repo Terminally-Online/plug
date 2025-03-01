@@ -13,9 +13,10 @@ import { TimeUntil } from "@/components/shared/utils/time-until"
 import { useActivities } from "@/contexts"
 import { cardColors, ChainId, cn, formatFrequency, formatTitle, getChainName } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
+import { useAtom, useAtomValue } from "jotai";
 
 const ITEMS_PER_PAGE = 10
 
@@ -26,7 +27,11 @@ export const ExecutionFrame: FC<{
 }> = ({ index, icon, activity }) => {
 	const loadMoreRef = useRef<HTMLDivElement>(null)
 
-	const { isFrame, handle } = useColumnStore(index, `${activity?.id}-activity`)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${activity?.id}-activity`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, navigate } = useColumnActions(index, frameKey)
+
 	const { handle: activityHandle } = useActivities()
 	const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
@@ -96,7 +101,7 @@ export const ExecutionFrame: FC<{
 								"w-full": activity.status === "completed"
 							})}
 							onClick={() =>
-								handle.navigate({
+								navigate({
 									index,
 									key: COLUMNS.KEYS.PLUG,
 									item: activity.plug.id,
@@ -214,7 +219,7 @@ export const ExecutionFrame: FC<{
 						)}
 
 						{visibleRuns.map((run, index) => (
-							<Accordion key={run.id} onExpand={() => handle.frame(`${run.id}-simulation`)}>
+							<Accordion key={run.id} onExpand={() => frame(`${run.id}-simulation`)}>
 								<div className="flex flex-row gap-2">
 									<ActivityIcon status={run.status} />
 									<div className="flex w-full flex-col">

@@ -6,12 +6,16 @@ import { Frame } from "@/components/app/frames/base"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { routes, useClipboard } from "@/lib"
-import { useColumnStore } from "@/state/columns"
-import { usePlugData } from "@/state/plugs"
+import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
+import { workflowByIdAtom } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const ShareFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
-	const { isFrame } = useColumnStore(index, "share")
-	const { plug } = usePlugData(item)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = "share"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+
+	const plug = useAtomValue(workflowByIdAtom)(item)
 
 	const { copied, handleCopied } = useClipboard(`${window?.location.origin}/app/${plug ? `?id=${plug.id}` : ""}`)
 

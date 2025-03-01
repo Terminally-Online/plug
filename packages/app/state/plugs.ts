@@ -8,7 +8,7 @@ import { Plug } from "@prisma/client"
 import { Actions } from "@/lib"
 import { api } from "@/server/client"
 
-import { COLUMNS, useColumnStore } from "./columns"
+import { COLUMNS, primaryColumnsAtom, useColumnActions } from "./columns"
 import { atomWithStorage } from "jotai/utils"
 import { useResponse } from "@/lib/hooks/useResponse"
 
@@ -30,21 +30,22 @@ export type Value = string | Option | undefined | null
 export const spreadPlugs = (plugs: Array<Plug> | undefined, plug: Plug) => (!plugs ? [plug] : [plug, ...plugs])
 
 const usePlugActions = () => {
-	const { columns, handle } = useColumnStore()
+	const columns = useAtomValue(primaryColumnsAtom)
+	const { add, frame, navigate } = useColumnActions()
 
 	const [plugs, setPlugs] = useAtom(plugsAtom)
 
 	const addMutation = api.plugs.add.useMutation({
 		onSuccess: data => {
 			if (data.index !== undefined)
-				handle.navigate({
+				navigate({
 					key: COLUMNS.KEYS.PLUG,
 					index: data.index,
 					from: data.from,
 					item: data.plug.id
 				})
 			else
-				handle.add({
+				add({
 					index: columns[columns.length - 1].index + 1,
 					key: COLUMNS.KEYS.PLUG,
 					from: data.from,
@@ -62,12 +63,12 @@ const usePlugActions = () => {
 		onSuccess: (result, variables) => {
 			setPlugs(prev => prev.filter(plug => plug.id !== variables.plug))
 
-			handle.navigate({
+			navigate({
 				key: COLUMNS.KEYS.MY_PLUGS,
 				index: result.index
 			})
 
-			handle.frame()
+			frame()
 		}
 	})
 
@@ -75,7 +76,7 @@ const usePlugActions = () => {
 		onSuccess: result => {
 			if (!plugs?.find(plug => plug.id === result.plug.id)) setPlugs(prev => spreadPlugs(prev, result.plug))
 
-			handle.navigate({
+			navigate({
 				key: COLUMNS.KEYS.PLUG,
 				index: result.index,
 				from: result.from,
@@ -136,12 +137,13 @@ export const usePlugStore = (
 	action?: { protocol: string; action: string; search: Record<number, string | undefined> }
 ) => {
 	const session = useSession()
-	const { columns } = useColumnStore()
+
+	// const columns = useAtomValue(primaryColumnsAtom)
 
 	const [plugs, setPlugs] = useAtom(plugsAtom)
 	const [viewedPlugs, setViewedPlugs] = useAtom(viewedPlugsAtom)
 
-	const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
+	// const ids = (columns?.map(column => column?.item).filter(Boolean) as string[]) || []
 
 	const { data: solverActions } = api.solver.actions.schemas.useQuery(
 		{
@@ -150,7 +152,7 @@ export const usePlugStore = (
 			action: action?.action,
 			search: Object.entries(action?.search ?? {}).map(([key, value]) => `search[${key}]=${value}`)
 		},
-		{ enabled: Boolean(action), placeholderData: (prev) => prev }
+		{ enabled: Boolean(action?.protocol ?? action?.action) ?? false, placeholderData: (prev) => prev }
 	)
 
 	useResponse(() => api.plugs.all.useQuery(
@@ -165,27 +167,27 @@ export const usePlugStore = (
 			})
 	})
 
-	useResponse(() => api.plugs.get.useQuery(
-		{ ids, viewed: Array.from(viewedPlugs) },
-		{ enabled: Boolean(session.data) && ids.length > 0 }
-	), {
-		onSuccess: data => {
-			setPlugs(prev => {
-				const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
-				return [...prev, ...uniqueData]
-			})
-			setViewedPlugs(prev => {
-				const newSet = new Set([...Array.from(prev)].slice(-49))
-				data.forEach(plug => newSet.add(plug.id))
-				if (newSet.size > 50) {
-					const entries = Array.from(newSet)
-					newSet.clear()
-					entries.slice(-50).forEach(id => newSet.add(id))
-				}
-				return newSet
-			})
-		}
-	})
+	// useResponse(() => api.plugs.get.useQuery(
+	// 	{ ids, viewed: Array.from(viewedPlugs) },
+	// 	{ enabled: Boolean(session.data) && ids.length > 0 }
+	// ), {
+	// 	onSuccess: data => {
+	// 		setPlugs(prev => {
+	// 			const uniqueData = data.filter(d => !prev.some(p => p.id === d.id))
+	// 			return [...prev, ...uniqueData]
+	// 		})
+	// 		setViewedPlugs(prev => {
+	// 			const newSet = new Set([...Array.from(prev)].slice(-49))
+	// 			data.forEach(plug => newSet.add(plug.id))
+	// 			if (newSet.size > 50) {
+	// 				const entries = Array.from(newSet)
+	// 				newSet.clear()
+	// 				entries.slice(-50).forEach(id => newSet.add(id))
+	// 			}
+	// 			return newSet
+	// 		})
+	// 	}
+	// })
 
 	const plug = plugs.find(p => p.id === id)
 	const own = (plug && session.data && session.data.address === plug.socketId) || false
@@ -217,22 +219,4 @@ export const usePlugStore = (
 			actions: solverActions
 		}
 	}
-}
-
-export const usePlugData = (id?: string) => {
-	const getWorkflowById = useAtomValue(workflowByIdAtom)
-	const plug = id ? getWorkflowById(id) : undefined
-	const session = useSession()
-
-	const own = plug && session.data && session.data.address === plug.socketId
-	const actions: Actions = useMemo(() => {
-		if (!plug) return []
-		try {
-			return JSON.parse(plug.actions)
-		} catch {
-			return []
-		}
-	}, [plug])
-
-	return { plug, own, actions }
 }

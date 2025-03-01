@@ -10,18 +10,20 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 // NOTE: This is only accessible on the mobile view so the index will always be -1.
 export const AccountFrame = () => {
 	const { socket, avatar } = useSocket()
-	const { isFrame } = useColumnStore(COLUMNS.MOBILE_INDEX, "account")
-
 	const { disconnect } = useDisconnect({
 		mutation: {
 			onSuccess: () => signOut({ callbackUrl: "/" })
 		}
 	})
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
+	const isFrame = useAtomValue(isFrameAtom)(column, "account")
 
 	if (!socket) return null
 

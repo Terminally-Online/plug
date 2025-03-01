@@ -15,8 +15,9 @@ import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { formatAddress, getChainId, greenGradientStyle, useConnect } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 import { useRecipients } from "@/state/recipients"
+import { useAtom, useAtomValue } from "jotai"
 
 type TokenType = NonNullable<RouterOutputs["socket"]["balances"]["positions"]>["tokens"][number]
 type CollectibleType = NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
@@ -153,12 +154,14 @@ interface TransferRecipientFrameProps {
 
 export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index, token, collectible, collection }) => {
 	const { account } = useConnect()
-	const { column, isFrame, handle } = useColumnStore(
-		index,
-		token
-			? `${token.symbol}-transfer-recipient`
-			: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
-	)
+
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = token
+		? `${token.symbol}-transfer-recipient`
+		: `${collection?.address}-${collection?.chain}-${collectible?.tokenId}-transfer-recipient`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, transfer } = useColumnActions(index, frameKey)
+
 	const formattedRecipient = formatRecipientInput(column?.transfer?.recipient ?? "")
 	const { recipients, handleRecent } = useRecipients(formattedRecipient)
 
@@ -183,25 +186,25 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 	const handleSelect = (address: string) => {
 		if (address !== account.address) handleRecent(address)
 
-		handle.transfer(prev => ({
+		transfer(prev => ({
 			...prev,
 			recipient: address
 		}))
 
 		if (address !== "") {
 			if (token) {
-				handle.frame(`${token.symbol}-transfer-amount`)
+				frame(`${token.symbol}-transfer-amount`)
 			} else if (collectible && collection) {
-				handle.frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`)
+				frame(`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-amount`)
 			}
 		}
 	}
 
 	const handleBack = () => {
 		if (token) {
-			handle.frame(`${token.symbol}-token`)
+			frame(`${token.symbol}-token`)
 		} else if (collectible && collection) {
-			handle.frame(`${collection.address}-${collection.chain}-${collectible.tokenId}`)
+			frame(`${collection.address}-${collection.chain}-${collectible.tokenId}`)
 		}
 	}
 
@@ -223,7 +226,7 @@ export const TransferRecipientFrame: FC<TransferRecipientFrameProps> = ({ index,
 					icon={<SearchIcon size={14} className="opacity-60" />}
 					placeholder="Search addresses or ENS"
 					search={column?.transfer?.recipient ?? ""}
-					handleSearch={recipient => handle.transfer(prev => ({ ...prev, recipient }))}
+					handleSearch={recipient => transfer(prev => ({ ...prev, recipient }))}
 					clear
 				/>
 

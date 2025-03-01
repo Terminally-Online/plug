@@ -6,10 +6,10 @@ import { Header } from "@/components/app/layout/header"
 import { PlugGrid } from "@/components/app/plugs/grid/grid"
 import { Callout } from "@/components/app/utils/callout"
 import { api } from "@/server/client"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumnActions } from "@/state/columns"
 
 const Discover: FC<{ index: number }> = ({ index }) => {
-	const { handle } = useColumnStore(index)
+	const { navigate } = useColumnActions(index)
 
 	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "others",
@@ -28,7 +28,7 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 				icon={<Puzzle size={14} className="opacity-40" />}
 				label="Discover"
 				nextOnClick={() =>
-					handle.navigate({
+					navigate({
 						index,
 						key: COLUMNS.KEYS.DISCOVER,
 						from: COLUMNS.KEYS.HOME
@@ -45,7 +45,7 @@ const Discover: FC<{ index: number }> = ({ index }) => {
 }
 
 const Mine: FC<{ index: number }> = ({ index }) => {
-	const { handle } = useColumnStore(index)
+	const { navigate } = useColumnActions(index)
 
 	const { data: plugs, isLoading } = api.plugs.all.useQuery({
 		target: "mine",
@@ -64,7 +64,7 @@ const Mine: FC<{ index: number }> = ({ index }) => {
 				icon={<PlugZap size={14} className="opacity-40" />}
 				label="My Plugs"
 				nextOnClick={() =>
-					handle.navigate({
+					navigate({
 						index,
 						key: COLUMNS.KEYS.MY_PLUGS,
 						from: COLUMNS.KEYS.HOME

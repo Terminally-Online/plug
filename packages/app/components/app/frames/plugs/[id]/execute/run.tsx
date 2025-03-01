@@ -7,7 +7,6 @@ import {
 	Calendar,
 	CircleDollarSign,
 	Eye,
-	Globe,
 	Hash,
 	Library,
 	Pause,
@@ -25,19 +24,21 @@ import { Counter } from "@/components/shared/utils/counter"
 import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useAtom, useAtomValue } from "jotai"
 
 export const RunFrame: FC<{
 	index: number
 	item: string
 }> = ({ index, item }) => {
 	const { data: session } = useSession()
-	const {
-		column,
-		isFrame,
-		handle: { frame, navigate }
-	} = useColumnStore(index, "run")
+
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = "run"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, navigate } = useColumnActions(index, frameKey)
+
 	const {
 		actions,
 		handle: {
@@ -48,7 +49,7 @@ export const RunFrame: FC<{
 
 	// TODO: The functionality for this was not finished because right now our in our environment we
 	//       only have one chain that is valid at any given time.
-	const [currentChainIndex, setCurrentChainIndex] = useState(0)
+	const [currentChainIndex] = useState(0)
 
 	const supportedChains = useMemo(() => {
 		if (!actions || !solverActions) return []

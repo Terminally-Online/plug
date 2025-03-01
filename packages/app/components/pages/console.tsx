@@ -6,11 +6,12 @@ import { LoaderCircle } from "lucide-react"
 
 import { useMediaQuery } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { COLUMNS, primaryColumnsAtom, useColumnActions } from "@/state/columns"
+import { plugsAtom } from "@/state/plugs"
 
 import { DesktopConsole } from "./desktop"
 import { MobileConsole } from "./mobile"
+import { useAtomValue } from "jotai"
 
 export const ConsolePage = () => {
 	const hasHandledInitialUrl = useRef(false)
@@ -28,9 +29,12 @@ export const ConsolePage = () => {
 
 	const router = useRouter()
 	const { md } = useMediaQuery()
+
 	const { socket } = useSocket()
-	const { columns, handle } = useColumnStore()
-	const { plugs } = usePlugStore()
+
+	const columns = useAtomValue(primaryColumnsAtom)
+	const { add } = useColumnActions()
+	const plugs = useAtomValue(plugsAtom)
 
 	useEffect(() => {
 		if (!socket || !socket.identity) return
@@ -63,13 +67,13 @@ export const ConsolePage = () => {
 			{ shallow: true }
 		)
 
-		handle.add({
+		add({
 			index: columns[columns.length - 1]?.index + 1 || 0,
 			key: COLUMNS.KEYS.PLUG,
 			item: plugId,
 			from: COLUMNS.KEYS.MY_PLUGS
 		})
-	}, [router, router.query, columns, plugs, handle])
+	}, [router, router.query, columns, plugs, add])
 
 	if (!socket)
 		return (
@@ -78,14 +82,5 @@ export const ConsolePage = () => {
 			</div>
 		)
 
-	return (
-		<>
-			{/*
-	            <FeatureRequestFrame />
-	            <DeletedFrame />
-	        */}
-
-			{md ? <DesktopConsole /> : <MobileConsole />}
-		</>
-	)
+	return md ? <DesktopConsole /> : <MobileConsole />
 }

@@ -6,7 +6,7 @@ import { ChevronLeft, X } from "lucide-react"
 import { Header } from "@/components/app/layout/header"
 import { Button } from "@/components/shared/buttons/button"
 import { cn, useMediaQuery } from "@/lib"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { COLUMNS, useColumnActions } from "@/state/columns"
 
 type Props = React.HTMLAttributes<HTMLDivElement> &
 	PropsWithChildren & {
@@ -35,7 +35,7 @@ export const Frame: FC<Props> = ({
 	scrollBehavior = "content"
 }) => {
 	const { md } = useMediaQuery()
-	const { handle } = useColumnStore(index)
+	const { frame } = useColumnActions(index)
 
 	return (
 		<AnimatePresence>
@@ -55,9 +55,9 @@ export const Frame: FC<Props> = ({
 							"bottom-0 left-0 right-0 z-[10] cursor-pointer",
 							index === COLUMNS.MOBILE_INDEX ? "top-0" : "top-[60px]",
 							(handleBack === undefined || hasOverlay === true) &&
-								"rounded-b-lg bg-gradient-to-b from-plug-green/10 to-plug-green/20"
+							"rounded-b-lg bg-gradient-to-b from-plug-green/10 to-plug-green/20"
 						)}
-						onClick={() => handle.frame()}
+						onClick={() => frame()}
 					/>
 
 					<motion.div
@@ -85,7 +85,7 @@ export const Frame: FC<Props> = ({
 								className="h-10"
 								icon={icon}
 								label={label}
-								nextOnClick={() => handle.frame()}
+								nextOnClick={() => frame()}
 								nextLabel={next ?? <X size={14} className="opacity-60 hover:opacity-100" />}
 								nextEmpty={next !== undefined}
 								nextPadded={false}

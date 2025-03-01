@@ -8,7 +8,7 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, getChainId, getTextColor } from "@/lib"
 import { RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../chains/chain.image"
 
@@ -20,14 +20,14 @@ type SocketTokenItemProps = {
 	isListToken?: boolean
 }
 
-export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token, isListToken }) => {
-	const { handle } = useColumnStore(index, `${token?.symbol}-token`)
+export const SocketTokenItem: FC<SocketTokenItemProps> = memo(({ index, token }) => {
+	const { frame } = useColumnActions(index, `${token?.symbol}-token`)
 	const [color, setColor] = useState(DEFAULT_TOKEN_COLOR)
 	const textColor = getTextColor(color)
 
 	return (
 		<>
-			<Accordion loading={token === undefined} onExpand={token === undefined ? () => { } : () => handle.frame()}>
+			<Accordion loading={token === undefined} onExpand={token === undefined ? () => { } : () => frame()}>
 				{token === undefined ? (
 					<div className="invisible">
 						<p>.</p>

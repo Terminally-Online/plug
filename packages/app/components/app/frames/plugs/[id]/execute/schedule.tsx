@@ -6,7 +6,8 @@ import { Frame } from "@/components/app/frames/base"
 import { Dropdown } from "@/components/app/inputs/dropdown"
 import { Button } from "@/components/shared/buttons/button"
 import { cn, frequencies, useConnect } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
+import { useAtom, useAtomValue } from "jotai"
 
 const DayPicker = lazy(() => import("react-day-picker").then(mod => ({ default: mod.DayPicker })))
 
@@ -17,7 +18,11 @@ export const ScheduleFrame: FC<{
 	const {
 		account: { isAuthenticated }
 	} = useConnect()
-	const { column, isFrame, handle } = useColumnStore(index, "schedule")
+
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey="schedule"
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, schedule } = useColumnActions(index, frameKey)
 
 	const MemoizedDayPicker = useMemo(() => {
 		if (!column) return null
@@ -29,7 +34,7 @@ export const ScheduleFrame: FC<{
 				<DayPicker
 					mode="range"
 					selected={column?.schedule?.date}
-					onSelect={date => handle.schedule({ date, repeats: column?.schedule?.repeats || frequencies[0] })}
+					onSelect={date => schedule({ date, repeats: column?.schedule?.repeats || frequencies[0] })}
 					showOutsideDays
 					fixedWeeks
 					weekStartsOn={1}
@@ -84,7 +89,7 @@ export const ScheduleFrame: FC<{
 				/>
 			</Suspense>
 		)
-	}, [column, handle])
+	}, [column, schedule])
 
 	if (!column) return null
 
@@ -108,7 +113,7 @@ export const ScheduleFrame: FC<{
 					placeholder="Frequency"
 					value={column.schedule?.repeats.label || "Once"}
 					options={frequencies}
-					handleClick={() => handle.frame("recurring")}
+					handleClick={() => frame("recurring")}
 				/>
 
 				<Button
@@ -118,7 +123,7 @@ export const ScheduleFrame: FC<{
 							: "primaryDisabled"
 					}
 					className="w-full py-4"
-					onClick={() => handle.frame("run")}
+					onClick={() => frame("run")}
 					disabled={!column.schedule || !column.schedule.date || !column.schedule.date.from}
 				>
 					{column.schedule && column.schedule.date && column.schedule.date.from ? "Next" : "Select a Date"}

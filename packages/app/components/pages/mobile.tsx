@@ -1,20 +1,9 @@
-import { useSession } from "next-auth/react"
 import { memo } from "react"
 import { FC, HTMLAttributes } from "react"
 
-import { AlertCircle, MessageCircleIcon } from "lucide-react"
+import { MessageCircleIcon } from "lucide-react"
 
-import { AuthFrame } from "@/components/app/frames/misc/auth"
-import { PageContent } from "@/components/page/content"
-import { PageHeader } from "@/components/page/header"
-import { PageNavbar } from "@/components/page/navbar"
-import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnData } from "@/state/columns"
-
-import { ColumnAuthenticate } from "../app/columns/utils/column-authenticate"
-import Container from "../app/layout/container"
 import { Callout } from "../app/utils/callout"
-import { ReferralRequired } from "../app/utils/referral-required"
 import { Button } from "../shared/buttons/button"
 
 export const ExperiencingIssues: FC<HTMLAttributes<HTMLOrSVGElement>> = ({ ...props }) => {
@@ -47,17 +36,6 @@ export const ExperiencingIssues: FC<HTMLAttributes<HTMLOrSVGElement>> = ({ ...pr
 }
 
 export const MobileConsole = memo(() => {
-	// const { data: session } = useSession()
-	// const { socket } = useSocket()
-	// const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
-
-	// const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
-
-	// const isAuthenticated = session?.user.id?.startsWith("0x")
-	// const isReferred = Boolean(socket && socket.identity?.referrerId)
-
-	// const showUI = !isAuthenticated || isReferred
-
 	return (
 		<div className="absolute inset-0 flex h-full w-full flex-col items-center justify-center bg-plug-white">
 			<ExperiencingIssues className="mb-12 h-48 w-48" />
@@ -78,26 +56,6 @@ export const MobileConsole = memo(() => {
 			</Callout>
 		</div>
 	)
-
-	// return (
-	// 	<>
-	// 		{showUI && <PageHeader />}
-	// 		{!isAuthenticated ? (
-	// 			<Container>
-	// 				<ColumnAuthenticate index={COLUMNS.MOBILE_INDEX} />
-	// 			</Container>
-	// 		) : !isReferred ? (
-	// 			<Container>
-	// 				<ReferralRequired />
-	// 			</Container>
-	// 		) : (
-	// 			<PageContent />
-	// 		)}
-	// 		{showUI && showNavbar && <PageNavbar />}
-
-	// 		<AuthFrame />
-	// 	</>
-	// )
 })
 
 MobileConsole.displayName = "MobileConsole"

@@ -21,9 +21,7 @@ import {
 import { TransferFrame } from "@/components/app/frames/assets/transfer"
 import { Frame } from "@/components/app/frames/base"
 import { CollectibleImage } from "@/components/app/sockets/collectibles/collectible-image"
-import { Image } from "@/components/app/utils/image"
 import {
-	chains,
 	cn,
 	formatAddress,
 	formatTitle,
@@ -33,9 +31,10 @@ import {
 	getTextColor
 } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
-import { useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
 
 import { ChainImage } from "../../sockets/chains/chain.image"
+import { useAtom, useAtomValue } from "jotai"
 
 type Traits = Array<{ trait_type: string; value: string }>
 
@@ -44,10 +43,10 @@ export const CollectibleFrame: FC<{
 	collection: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]
 	collectible: NonNullable<RouterOutputs["socket"]["balances"]["collectibles"]>[number]["collectibles"][number]
 }> = memo(({ index, collection, collectible }) => {
-	const { isFrame, handle } = useColumnStore(
-		index,
-		`${collection.address}-${collection.chain}-${collectible?.tokenId}`
-	)
+	const [column] = useAtom(columnByIndexAtom(index))
+	const frameKey = `${collection.address}-${collection.chain}-${collectible?.tokenId}`
+	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
+	const { frame, transfer } = useColumnActions(index, frameKey)
 
 	const { data: metadata } = api.socket.balances.metadata.useQuery(
 		{
@@ -171,8 +170,8 @@ export const CollectibleFrame: FC<{
 				<div className="flex flex-row gap-2 px-6 pb-4">
 					<button
 						onClick={() => {
-							handle.transfer({ percentage: 0, precise: "0", recipient: undefined })
-							handle.frame(
+							transfer({ percentage: 0, precise: "0", recipient: undefined })
+							frame(
 								`${collection.address}-${collection.chain}-${collectible.tokenId}-transfer-recipient`
 							)
 						}}

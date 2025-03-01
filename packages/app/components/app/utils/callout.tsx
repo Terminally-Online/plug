@@ -1,14 +1,15 @@
 import { FC, HTMLAttributes, PropsWithChildren, ReactNode, type JSX } from "react";
 
-import { HTMLMotionProps, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import { Loader } from "lucide-react"
 
 import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
+import { useAtom } from "jotai";
 
 const Base: FC<
 	PropsWithChildren & {
@@ -68,8 +69,8 @@ const Loading: FC<
 	Omit<HTMLAttributes<HTMLDivElement>, "title" | "description"> & {
 		index: number
 	}
-> = ({ index, className, ...props }) => {
-	const { column } = useColumnData(index)
+> = ({ index, className, ...props }) => { 
+	const [column] = useAtom(columnByIndexAtom(index))
 
 	if (!column) return null
 
@@ -167,9 +168,8 @@ const EmptyPlugs: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column } = useColumnData(index)
+	const [column] = useAtom(columnByIndexAtom(index))
 	const { handle } = usePlugStore()
-
 	if (!column || isEmpty === false) return null
 
 	return (
@@ -200,7 +200,7 @@ const EmptyPlug: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { column } = useColumnData(index)
+	const [column] = useAtom(columnByIndexAtom(index))
 	if (!column || isEmpty === false) return null
 	return (
 		<Base
@@ -230,8 +230,10 @@ const EmptyActivity: FC<
 		isEmpty: boolean
 	}
 > = ({ index, isEmpty, className, ...props }) => {
-	const { handle } = useColumnStore(index)
+	const { navigate } = useColumnActions(index)
+
 	if (isEmpty === false) return null
+
 	return (
 		<>
 			<div
@@ -247,7 +249,7 @@ const EmptyActivity: FC<
 				description="When you create and run Plugs, their activity will appear here."
 				{...props}
 			>
-				<Button sizing="sm" onClick={() => handle.navigate({ index, key: COLUMNS.KEYS.DISCOVER })}>
+				<Button sizing="sm" onClick={() => navigate({ index, key: COLUMNS.KEYS.DISCOVER })}>
 					Discover
 				</Button>
 			</Base>

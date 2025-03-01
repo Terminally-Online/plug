@@ -1,22 +1,22 @@
 import { useSession } from "next-auth/react"
 
-import { ChevronLeft, Ellipsis, GitFork, HelpCircle, LogOut, Share } from "lucide-react"
+import { Ellipsis, GitFork, LogOut, Share } from "lucide-react"
 
-import BlockiesSvg from "blockies-react-svg"
 
 import { Container } from "@/components/app/layout/container"
 import { Header } from "@/components/app/layout/header"
-import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
-import { cardColors, cn, formatAddress, formatTimeSince, formatTitle } from "@/lib"
+import { cardColors } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
-import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnData, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useAtom } from "jotai"
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
-	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
+	const { frame, navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
 	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
 
 	const own = plug !== undefined && session && session.address === plug.socketId
@@ -28,7 +28,7 @@ const PlugHeader = () => {
 			<Header
 				size="lg"
 				onBack={() =>
-					handle.navigate({
+					navigate({
 						index: -1,
 						key: column.from ?? COLUMNS.KEYS.HOME
 					})
@@ -42,7 +42,7 @@ const PlugHeader = () => {
 					/>
 				}
 				label={plug.name === "" ? "Untitled Plug" : plug.name}
-				nextOnClick={own ? () => handle.frame("manage") : () => {}}
+				nextOnClick={own ? () => frame("manage") : () => { }}
 				nextLabel={
 					<div className="flex flex-row items-center gap-2">
 						<Button
@@ -65,7 +65,7 @@ const PlugHeader = () => {
 							className="h-8 w-8 rounded-sm p-2 transition-colors hover:bg-plug-green/5"
 							onClick={e => {
 								e.stopPropagation()
-								handle.frame("share")
+								frame("share")
 							}}
 						>
 							<Share size={14} />
@@ -87,13 +87,14 @@ const PlugHeader = () => {
 }
 
 const DiscoverHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return <Header size="lg" onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })} label="Discover" />
+	const { navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
+	return <Header size="lg" onBack={() => navigate({ index: -1, key: COLUMNS.KEYS.HOME })} label="Discover" />
 }
 
 const MyPlugsHeader = () => {
-	const { handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
-	return <Header size="lg" onBack={() => handle.navigate({ index: -1, key: COLUMNS.KEYS.HOME })} label="My Plugs" />
+	const { navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
+
+	return <Header size="lg" onBack={() => navigate({ index: -1, key: COLUMNS.KEYS.HOME })} label="My Plugs" />
 }
 
 const AuthenticateHeader = () => {
@@ -105,8 +106,9 @@ const AuthenticateHeader = () => {
 }
 
 const ProfileHeader = () => {
-	const { column } = useColumnStore(COLUMNS.MOBILE_INDEX)
 	const { disconnect } = useDisconnect(true)
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
 
 	if (!column) return null
 
@@ -129,7 +131,7 @@ const ProfileHeader = () => {
 }
 
 export const PageHeader = () => {
-	const { column } = useColumnData(COLUMNS.MOBILE_INDEX)
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
 	const { data: session } = useSession()
 
 	if (!column) return null

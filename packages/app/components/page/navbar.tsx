@@ -8,13 +8,16 @@ import { Bell, HousePlug, Plus, Search } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
-import { COLUMNS, useColumnStore } from "@/state/columns"
+import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useAtom} from "jotai"
 
 export const PageNavbar = memo(() => {
 	const { data: session } = useSession()
 	const { avatar } = useSocket()
-	const { column, handle } = useColumnStore(COLUMNS.MOBILE_INDEX)
+
+	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
+	const { navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
 	const { handle: plugHandle } = usePlugStore()
 
 	const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
@@ -27,7 +30,7 @@ export const PageNavbar = memo(() => {
 				{/* Home Button */}
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
+					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
 				>
 					<HousePlug
 						size={24}
@@ -41,7 +44,7 @@ export const PageNavbar = memo(() => {
 				{/* Search Button */}
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
+					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
 				>
 					<Search
 						size={24}
@@ -62,7 +65,7 @@ export const PageNavbar = memo(() => {
 							},
 							{
 								onSuccess: result =>
-									handle.navigate({
+									navigate({
 										index: COLUMNS.MOBILE_INDEX,
 										key: COLUMNS.KEYS.PLUG,
 										item: result.plug.id
@@ -79,7 +82,7 @@ export const PageNavbar = memo(() => {
 
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
-					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.ACTIVITY })}
+					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.ACTIVITY })}
 				>
 					<Bell
 						size={24}
@@ -93,7 +96,7 @@ export const PageNavbar = memo(() => {
 				{/* Profile Button */}
 				<button
 					className="group h-8 w-8"
-					onClick={() => handle.navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.PROFILE })}
+					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.PROFILE })}
 				>
 					{session && (
 						<div className="relative h-8 w-8 rounded-md bg-plug-green/5 transition-all duration-200 ease-in-out">

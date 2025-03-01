@@ -6,8 +6,9 @@ import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Action, formatTitle, getValues } from "@/lib"
 import { useActions } from "@/state/actions"
-import { useColumnData } from "@/state/columns"
+import { columnByIndexAtom } from "@/state/columns"
 import { usePlugStore } from "@/state/plugs"
+import { useAtom } from "jotai"
 
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -18,7 +19,7 @@ const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): R
 }
 
 export const ActionView: FC<{ index: number }> = ({ index }) => {
-	const { column } = useColumnData(index)
+	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
 	const { item } = column ?? {}

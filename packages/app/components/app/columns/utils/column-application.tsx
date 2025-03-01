@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/shared/buttons/button"
 import { useBeforeInstall } from "@/contexts"
 import { cn, GTM_EVENTS, useAnalytics } from "@/lib"
-import { useColumnStore } from "@/state/columns"
+import { useColumnActions } from "@/state/columns"
 import { Flag } from "@/state/flags"
 import { useFlags } from "@/state/flags"
 
@@ -19,7 +19,7 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 	const { data: session } = useSession()
 	const { prompt, isNativePromptAvailable, instructions } = useBeforeInstall()
 	const { handleFlag } = useFlags()
-	const { handle } = useColumnStore()
+	const { remove } = useColumnActions()
 
 	const handlePWAInstall = useAnalytics(GTM_EVENTS.CTA_CLICKED, session?.user?.id, true, "/")
 
@@ -30,9 +30,9 @@ export const ColumnApplication: FC<HTMLAttributes<HTMLDivElement> & { index: num
 			if (added) handlePWAInstall()
 
 			handleFlag(Flag.SHOW_PWA, false)
-			handle.remove(index)
+			remove(index)
 		},
-		[index, handle, handleFlag, handlePWAInstall]
+		[index, remove, handleFlag, handlePWAInstall]
 	)
 
 	if (instructions.length === 0) return null
