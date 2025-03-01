@@ -33,18 +33,22 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 	tx := map[string]interface{}{
 		"from": transactionBundle.From,
 		"to":   transactionBundle.To,
-		"data": transactionBundle.Data,
+	}
+
+	if len(transactionBundle.Data) > 0 {
+		tx["data"] = transactionBundle.Data
 	}
 
 	if transactionBundle.Value != nil {
-		txHex := hexutil.EncodeBig(transactionBundle.Value)
-		tx["value"] = txHex
+		value := hexutil.EncodeBig(transactionBundle.Value)
+		tx["value"] = value
 	}
 
 	if transactionBundle.Gas != nil {
-		txHex := hexutil.EncodeBig(transactionBundle.Gas)
-		tx["gas"] = txHex
+		gas := hexutil.EncodeBig(transactionBundle.Gas)
+		tx["gas"] = gas
 	}
+	fmt.Printf("tx: %v\n", tx)
 
 	var blockNumber string
 	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {
