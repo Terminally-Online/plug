@@ -49,6 +49,7 @@ const headers = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	poweredByHeader: false,
+	devIndicators: false,
 	trailingSlash: true,
 	images: {
 		remotePatterns,
