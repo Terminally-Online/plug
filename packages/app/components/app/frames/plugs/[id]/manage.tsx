@@ -7,20 +7,21 @@ import { Search } from "@/components/app/inputs/search"
 import { Button } from "@/components/shared/buttons/button"
 import { useDebounce } from "@/lib"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
 import { useAtom, useAtomValue } from "jotai"
+import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }> = ({ index, item, from }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const frameKey = "manage"
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 
-	const { plug, handle } = usePlugStore(item)
+	const [plug] = useAtom(plugByIdAtom(item))
+	const { edit, delete: deletePlug } = usePlugActions()
 
 	const handleNameChange = (newName: string) => {
 		if (!plug || !newName || newName === plug.name) return
 
-		handle.plug.edit({ ...plug, name: newName, namedAt: new Date() })
+		edit({ ...plug, name: newName, namedAt: new Date() })
 	}
 
 	const [name, _, handleName] = useDebounce(plug?.name ?? "", 1000, handleNameChange)
@@ -47,7 +48,7 @@ export const ManagePlugFrame: FC<{ index: number; item: string; from?: string }>
 				<Button
 					variant="destructive"
 					className="w-full py-4"
-					onClick={() => handle.plug.delete({ plug: plug.id, index, from })}
+					onClick={() => deletePlug({ plug: plug.id, index, from })}
 				>
 					Delete
 				</Button>

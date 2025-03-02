@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, useCallback, useMemo, useState } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
 import { X } from "lucide-react"
@@ -6,7 +6,7 @@ import { X } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, Actions, cn, useConnect, useCord } from "@/lib"
+import { Action, cn, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
@@ -31,15 +31,6 @@ export const Sentence: FC<SentenceProps> = memo(
 		const { frame } = useColumnActions(index)
 
 		const [plug] = useAtom(plugByIdAtom(item))
-		const actions: Actions = useMemo(() => {
-			if (!plug) return []
-
-			try {
-				return JSON.parse(plug.actions)
-			} catch {
-				return []
-			}
-		}, [plug])
 		const own = plug && session && session.address === plug.socketId || false
 
 		const editPlug = useSetAtom(editPlugAtom)
@@ -105,7 +96,7 @@ export const Sentence: FC<SentenceProps> = memo(
 			edit({
 				id: item,
 				actions: JSON.stringify(
-					actions.map((action, nestedActionIndex) => ({
+					plug?.actions.map((action, nestedActionIndex) => ({
 						...action,
 						values:
 							nestedActionIndex === actionIndex
@@ -239,7 +230,7 @@ export const Sentence: FC<SentenceProps> = memo(
 								onClick={() =>
 									edit({
 										id: item,
-										actions: JSON.stringify(actions.filter((_, i) => i !== actionIndex))
+										actions: JSON.stringify(plug?.actions.filter((_, i) => i !== actionIndex))
 									})
 								}
 							>
@@ -249,7 +240,7 @@ export const Sentence: FC<SentenceProps> = memo(
 					</div>
 				</Accordion>
 
-				{actionIndex < actions.length - 1 && (
+				{plug?.actions && actionIndex < plug?.actions.length - 1 && (
 					<div
 						className={cn(
 							"mx-auto h-2 w-[2px]",

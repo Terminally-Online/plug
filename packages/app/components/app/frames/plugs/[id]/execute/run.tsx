@@ -25,8 +25,8 @@ import { connectedChains } from "@/contexts"
 import { ChainId, cn, formatTitle, getChainName } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
 import { useAtom, useAtomValue } from "jotai"
+import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 export const RunFrame: FC<{
 	index: number
@@ -39,12 +39,9 @@ export const RunFrame: FC<{
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame, navigate } = useColumnActions(index, frameKey)
 
-	const {
-		actions,
-		handle: {
-			plug: { queue }
-		}
-	} = usePlugStore(item)
+	const [plug] = useAtom(plugByIdAtom(item))
+	const { queue } = usePlugActions()
+
 	const [solverActions] = useActions()
 
 	// TODO: The functionality for this was not finished because right now our in our environment we
@@ -52,10 +49,10 @@ export const RunFrame: FC<{
 	const [currentChainIndex] = useState(0)
 
 	const supportedChains = useMemo(() => {
-		if (!actions || !solverActions) return []
+		if (!plug || !plug.actions || !solverActions) return []
 
 		return Array.from(
-			actions
+			plug.actions
 				.map(action => {
 					const protocol = action.protocol
 					const protocolSchema = solverActions[protocol]
@@ -75,7 +72,7 @@ export const RunFrame: FC<{
 					return new Set([...acc].filter(chainId => chains.has(chainId)))
 				}, new Set<number>())
 		) as ChainId[]
-	}, [actions, solverActions])
+	}, [plug, solverActions])
 
 	const chain = useMemo(() => {
 		if (!supportedChains || supportedChains.length === 0) return null
@@ -85,19 +82,19 @@ export const RunFrame: FC<{
 	}, [supportedChains, currentChainIndex])
 
 	const isActionful = useMemo(() => {
-		if (!solverActions) return false
+		if (!plug || !solverActions) return false
 
-		return actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
-	}, [actions, solverActions])
+		return plug.actions.some(action => solverActions[action.protocol]?.schema[action.action]?.type === "action")
+	}, [plug, solverActions])
 
 	const isReady = useMemo(() => {
-		if (!actions || actions.length === 0) return false
+		if (!plug || plug.actions.length === 0) return false
 		if (!isActionful) return false
 
 		const sentences = document.querySelectorAll(`[data-sentence][data-action-preview="${item}"]`)
 
 		return Array.from(sentences).every(sentence => sentence.getAttribute("data-valid") === "true")
-	}, [isActionful, actions, item])
+	}, [isActionful, plug, item])
 
 	const handleRun = useCallback(() => {
 		if (!column || !column.item || !chain) return
@@ -141,7 +138,7 @@ export const RunFrame: FC<{
 			handleBack={column.schedule ? () => frame("schedule") : undefined}
 		>
 			<div className="flex flex-col">
-				{actions && actions.length > 0 ? (
+				{plug && plug.actions && plug.actions.length > 0 ? (
 					<ActionPreview index={index} item={item} />
 				) : (
 					<div className="flex rounded-lg border-[1px] border-plug-green/10 p-4 py-4 text-center font-bold text-black/40">
@@ -158,14 +155,14 @@ export const RunFrame: FC<{
 							<div className="h-[2px] w-full bg-plug-green/10" />
 						</div>
 
-						{solverActions && (
+						{solverActions && plug?.actions && (
 							<p className="relative flex flex-row gap-4 font-bold">
 								<span className="flex w-max flex-row items-center gap-4">
 									<Library size={18} className="opacity-20" />
 									<span className="opacity-40">Protocols</span>
 								</span>{" "}
 								<div className="relative ml-auto flex w-[45%] overflow-hidden">
-									{actions.length >= 3 && (
+									{plug.actions.length >= 3 && (
 										<>
 											<div className="absolute left-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-r from-plug-white to-transparent" />
 											<div className="absolute right-0 top-0 z-[1] h-full w-1/4 bg-gradient-to-l from-plug-white to-transparent" />
@@ -175,24 +172,24 @@ export const RunFrame: FC<{
 									<motion.div
 										className="ml-auto flex flex-row items-center justify-start gap-1 font-bold tabular-nums"
 										animate={{
-											x: actions.length >= 3 ? ["0%", "-50%"] : 0
+											x: plug.actions.length >= 3 ? ["0%", "-50%"] : 0
 										}}
 										transition={{
-											duration: actions.length >= 3 ? actions.length * 10 : 0,
+											duration: plug.actions.length >= 3 ? plug?.actions && plug.actions.length * 10 : 0,
 											ease: "linear",
 											repeat: Infinity,
 											repeatDelay: 0
 										}}
 									>
-										{[...Array(actions.length >= 3 ? 6 : 1)].map((_, i) => (
+										{[...Array(plug.actions.length >= 3 ? 6 : 1)].map((_, i) => (
 											<div key={i} className="flex flex-row items-center gap-4">
-												{Array.from(new Set(actions?.map(action => action.protocol))).map(
+												{Array.from(new Set(plug.actions?.map(action => action.protocol))).map(
 													protocol => (
 														<div
 															key={protocol}
 															className={cn(
 																"flex w-max flex-row items-center gap-2",
-																actions.length >= 3 && "ml-4"
+																plug.actions.length >= 3 && "ml-4"
 															)}
 														>
 															<Image
@@ -221,7 +218,7 @@ export const RunFrame: FC<{
 								<span className="opacity-40">Actions</span>
 							</span>{" "}
 							<span className="flex flex-row items-center gap-1 font-bold tabular-nums">
-								<Counter count={actions?.length ?? 0} />
+								<Counter count={plug?.actions?.length ?? 0} />
 							</span>
 						</p>
 
@@ -321,7 +318,7 @@ export const RunFrame: FC<{
 							<Send size={14} className="opacity-60" />
 							Submit
 						</span>
-					) : actions?.length === 0 ? (
+					) : !plug?.actions || plug?.actions?.length === 0 ? (
 						<span className="flex flex-row items-center justify-center gap-2">
 							<AlertTriangle size={14} className="opacity-60" />
 							No Actions Added

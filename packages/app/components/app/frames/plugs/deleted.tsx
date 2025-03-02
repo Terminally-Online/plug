@@ -5,15 +5,14 @@ import { Trash2 } from "lucide-react"
 import { Frame } from "@/components/app/frames/base"
 import { Button } from "@/components/shared/buttons/button"
 import { columnByIndexAtom, isFrameAtom } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { usePlugActions } from "@/state/plugs"
 import { useAtom, useAtomValue } from "jotai"
 
 export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const isFrame = useAtomValue(isFrameAtom)(column, "deleted")
 
-
-	const { handle } = usePlugStore()
+	const { add } = usePlugActions()
 
 	return (
 		<Frame index={index} className="z-[2]" icon={<Trash2 size={18} />} label="Plug Deleted" visible={isFrame}>
@@ -22,7 +21,7 @@ export const DeletedFrame: FC<{ index: number }> = ({ index }) => {
 				creator.
 			</p>
 
-			<Button className="mt-4 w-full" onClick={() => handle.plug.add()}>
+			<Button className="mt-4 w-full" onClick={() => add()}>
 				Create New
 			</Button>
 		</Frame>

@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react"
 import { FC, ReactNode, useEffect, useRef, useState } from "react"
 
 import { Cat, ChartBar, LogOut, Plus, ScanFace, Wallet, X } from "lucide-react"
@@ -13,7 +12,7 @@ import { Image } from "@/components/app/utils/image"
 import { cn, useConnect } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { useSocket } from "@/state/authentication"
-import { usePlugStore } from "@/state/plugs"
+import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 
 const ConsoleSidebarAction: FC<
@@ -161,7 +160,7 @@ export const ConsoleSidebar = () => {
 	const { disconnect } = useDisconnect(true)
 	const { is, handleSidebar: sidebar } = useSidebar()
 	const { socket, avatar } = useSocket()
-	const { handle: { plug: { add } } } = usePlugStore()
+	const { add } = usePlugActions()
 
 	const showRestrictedOptions = isAuthenticated && !!socket?.identity?.onboardingAt
 

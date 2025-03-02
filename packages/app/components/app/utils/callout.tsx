@@ -7,7 +7,7 @@ import { Button } from "@/components/shared/buttons/button"
 import { cn, greenGradientStyle } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { usePlugActions } from "@/state/plugs"
 import { useSidebar } from "@/state/sidebar"
 import { useAtom } from "jotai";
 
@@ -169,7 +169,9 @@ const EmptyPlugs: FC<
 	}
 > = ({ index, isEmpty, className, ...props }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
-	const { handle } = usePlugStore()
+
+	const { add } = usePlugActions()
+
 	if (!column || isEmpty === false) return null
 
 	return (

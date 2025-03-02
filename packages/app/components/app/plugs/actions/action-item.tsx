@@ -1,10 +1,12 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { ActionSchema, formatTitle, getValues } from "@/lib"
 import { useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
+import { useAtom, useSetAtom } from "jotai"
+import { api } from "@/server/client"
 
 export const ActionItem: FC<{
 	index: number
@@ -16,17 +18,25 @@ export const ActionItem: FC<{
 }> = ({ index, item, protocol, actionName, action }) => {
 	const { frame } = useColumnActions(index)
 
-	const { plug, actions, handle: plugHandle } = usePlugStore(item)
+	const [plug] = useAtom(plugByIdAtom(item))
+	const editPlug = useSetAtom(editPlugAtom)
+	const actionMutation = api.plugs.action.edit.useMutation({
+		onSuccess: result => editPlug(result)
+	})
+	const edit = useCallback(
+		(...params: Parameters<typeof actionMutation.mutate>) => actionMutation.mutate(...params),
+		[actionMutation]
+	)
 
 	if (!plug) return null
 
 	return (
 		<Accordion
 			onExpand={() => {
-				plugHandle.action.edit({
+				edit({
 					id: plug.id,
 					actions: JSON.stringify([
-						...actions,
+						...plug.actions,
 						{
 							protocol,
 							action: actionName,

@@ -2,24 +2,24 @@ import { useSession } from "next-auth/react"
 
 import { Ellipsis, GitFork, LogOut, Share } from "lucide-react"
 
-
 import { Container } from "@/components/app/layout/container"
 import { Header } from "@/components/app/layout/header"
 import { Button } from "@/components/shared/buttons/button"
 import { cardColors } from "@/lib"
 import { useDisconnect } from "@/lib/hooks/wallet/useDisconnect"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
 import { useAtom } from "jotai"
+import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 const PlugHeader = () => {
 	const { data: session } = useSession()
 
 	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
 	const { frame, navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
-	const { plug, handle: plugHandle } = usePlugStore(column?.item ?? "")
 
-	const own = plug !== undefined && session && session.address === plug.socketId
+	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
+	const own = plug && session && session.address === plug.socketId
+	const { fork } = usePlugActions()
 
 	if (!column || !plug) return null
 
@@ -50,7 +50,7 @@ const PlugHeader = () => {
 							className="h-8 w-8 rounded-sm p-2 transition-colors hover:bg-plug-green/5"
 							onClick={e => {
 								e.stopPropagation()
-								plugHandle.plug.fork({
+								fork({
 									plug: plug.id,
 									index: -1,
 									from: column.key

@@ -17,13 +17,13 @@ import { SocketCollectionList } from "@/components/app/sockets/collectibles/coll
 import { SocketPositionList } from "@/components/app/sockets/position/position-list"
 import { SocketTokenList } from "@/components/app/sockets/tokens/token-list"
 import { Button } from "@/components/shared/buttons/button"
-import { cardColors, cn, formatTitle } from "@/lib"
+import { cardColors, cn, formatTitle, useConnect } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
 
 import { SparklingText } from "../utils/sparkling-text"
 import { useAtom } from "jotai"
+import { plugByIdAtom, usePlugActions } from "@/state/plugs"
 
 const MIN_COLUMN_WIDTH = 420
 const MAX_COLUMN_WIDTH = 680
@@ -35,17 +35,15 @@ export const ConsoleColumn: FC<{
 }> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
+	const { account: { session }} = useConnect()
 	const { socket } = useSocket()
+
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame, remove, resize, navigate } = useColumnActions(index)
 
-	const {
-		plug,
-		own,
-		handle: {
-			plug: { fork }
-		}
-	} = usePlugStore(column?.item ?? "")
+	const [plug] = useAtom(plugByIdAtom(column?.item ?? "__non-existant__"))
+	const own = plug && session && session.address === plug.socketId || false
+	const { fork } = usePlugActions()
 
 	const [width, setWidth] = useState(column?.width ?? 0)
 	const [isResizing, setIsResizing] = useState(false)

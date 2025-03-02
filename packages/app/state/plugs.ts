@@ -34,7 +34,18 @@ const plugIdMapAtom = atom(get => {
 	const plugs = get(plugsStorageAtom)
 	return new Map(plugs.map(p => [p.id, p]))
 })
-export const plugByIdAtom = atomFamily((id: string) => atom(get => get(plugIdMapAtom).get(id)))
+export const plugByIdAtom = atomFamily((id: string) => atom(get => {
+	const plug = get(plugIdMapAtom).get(id)
+	if (!plug) return
+	try {
+		return {
+			...plug,
+			actions: JSON.parse(plug.actions) as Actions
+		}
+	} catch { 
+		return undefined
+	}
+}))
 export const plugIdsAtom = selectAtom(
 	plugsAtom,
 	plugs => plugs.map(p => p.id),
@@ -152,7 +163,6 @@ export const usePlugSubscriptions = ({ enabled }: { enabled: boolean }) => {
 	api.plugs.onAdd.useSubscription(undefined, {
 		enabled,
 		onData: data => {
-			// Only add if the plug is new or it's been updated
 			if (
 				!plugIdSet.has(data.id) ||
 				(plugs.find(p => p.id === data.id)?.updatedAt || 0) < (data.updatedAt || 0)
@@ -165,7 +175,6 @@ export const usePlugSubscriptions = ({ enabled }: { enabled: boolean }) => {
 	api.plugs.onEdit.useSubscription(undefined, {
 		enabled,
 		onData: data => {
-			// Only update if plug exists and has been updated
 			const existingPlug = plugs.find(p => p.id === data.id)
 			if (
 				existingPlug &&
@@ -179,84 +188,9 @@ export const usePlugSubscriptions = ({ enabled }: { enabled: boolean }) => {
 	api.plugs.onDelete.useSubscription(undefined, {
 		enabled,
 		onData: data => {
-			// Only delete if the plug exists
 			if (plugIdSet.has(data.id)) {
 				deletePlug(data.id)
 			}
 		}
 	})
-}
-
-// Helper function to safely use plugByIdAtom without conditional hook calls
-const useSafePlugById = (id: string | undefined) => {
-	// Create a dummy ID that will never match any real plug if id is undefined
-	const safeId = id || "___nonexistent___"
-	const plug = useAtomValue(plugByIdAtom(safeId))
-	// Only return the plug if id is defined
-	return id ? plug : undefined
-}
-
-export const usePlugStore = (
-	id?: string,
-	action?: { protocol: string; action: string; search: Record<number, string | undefined> }
-) => {
-	const session = useSession()
-	const plugIds = useAtomValue(plugIdsAtom)
-	const [, editPlug] = useAtom(editPlugAtom)
-
-	const plug = useSafePlugById(id)
-
-	const { data: solverActions } = api.solver.actions.schemas.useQuery(
-		{
-			chainId: 8453,
-			protocol: action?.protocol,
-			action: action?.action,
-			search: Object.entries(action?.search ?? {}).map(([key, value]) => `search[${key}]=${value}`)
-		},
-		{ enabled: Boolean(action?.protocol ?? action?.action) ?? false, placeholderData: prev => prev }
-	)
-
-	const own = (plug && session.data && session.data.address === plug.socketId) || false
-
-	// Memoize parsed actions to prevent unnecessary recalculation
-	const actions: Actions = useMemo(() => {
-		if (!plug) return []
-		try {
-			return JSON.parse(plug.actions)
-		} catch {
-			return []
-		}
-	}, [plug])
-
-	const actionMutation = api.plugs.action.edit.useMutation({
-		onSuccess: result => editPlug(result)
-	})
-
-	// Use a stable reference for the edit action
-	const editAction = useCallback(
-		(params: Parameters<typeof actionMutation.mutate>[0]) => actionMutation.mutate(params),
-		[actionMutation]
-	)
-
-	const plugActions = usePlugActions()
-
-	// Create a stable object reference
-	return useMemo(
-		() => ({
-			plugIds,
-			plug,
-			own,
-			actions,
-			handle: {
-				plug: plugActions,
-				action: {
-					edit: editAction
-				}
-			},
-			solver: {
-				actions: solverActions
-			}
-		}),
-		[plugIds, plug, own, actions, solverActions, editAction, plugActions]
-	)
 }

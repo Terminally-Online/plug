@@ -9,8 +9,8 @@ import { Image } from "@/components/app/utils/image"
 import { cn } from "@/lib"
 import { useSocket } from "@/state/authentication"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
 import { useAtom} from "jotai"
+import { usePlugActions } from "@/state/plugs"
 
 export const PageNavbar = memo(() => {
 	const { data: session } = useSession()
@@ -18,7 +18,7 @@ export const PageNavbar = memo(() => {
 
 	const [column] = useAtom(columnByIndexAtom(COLUMNS.MOBILE_INDEX))
 	const { navigate } = useColumnActions(COLUMNS.MOBILE_INDEX)
-	const { handle: plugHandle } = usePlugStore()
+	const { add } = usePlugActions()
 
 	const showNavbar = column?.key !== COLUMNS.KEYS.PLUG
 
@@ -27,7 +27,6 @@ export const PageNavbar = memo(() => {
 	return (
 		<div className="fixed bottom-0 left-0 right-0 z-[10] border-t-[1px] border-plug-green/10 bg-white">
 			<div className="relative z-[11] flex flex-row items-center justify-between gap-2 px-8 py-4">
-				{/* Home Button */}
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
 					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
@@ -41,7 +40,6 @@ export const PageNavbar = memo(() => {
 					/>
 				</button>
 
-				{/* Search Button */}
 				<button
 					className="group flex h-8 w-8 items-center justify-center"
 					onClick={() => navigate({ index: COLUMNS.MOBILE_INDEX, key: COLUMNS.KEYS.HOME })}
@@ -58,7 +56,7 @@ export const PageNavbar = memo(() => {
 				<button
 					className="group flex h-8 w-8 items-center justify-center rounded-md bg-plug-yellow text-plug-green transition-all duration-200 ease-in-out hover:bg-plug-yellow/50"
 					onClick={async () => {
-						plugHandle.plug.add(
+						add(
 							{
 								index: COLUMNS.MOBILE_INDEX,
 								from: COLUMNS.KEYS.HOME
