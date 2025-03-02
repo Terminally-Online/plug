@@ -8,11 +8,21 @@ export const EIP712_TYPES = {
 } as const
 
 export const LIVE_PLUGS_TYPES = {
+	Slice: [
+		{ name: 'index', type: 'uint8' },
+		{ name: 'start', type: 'uint256' },
+		{ name: 'length', type: 'uint256' }
+	],
+	Update: [
+		{ name: 'start', type: 'uint256' },
+		{ name: 'slice', type: 'Slice' }
+	],
 	Plug: [
+		{ name: 'selector', type: 'uint8' },
 		{ name: 'to', type: 'address' },
 		{ name: 'data', type: 'bytes' },
 		{ name: 'value', type: 'uint256' },
-		{ name: 'gas', type: 'uint256' }
+		{ name: 'updates', type: 'Update[]' }
 	],
 	Plugs: [
 		{ name: 'socket', type: 'address' },

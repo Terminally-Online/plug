@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export const AddressSchema = z.string().transform((val, ctx) => {
 	if (!/^0x[a-fA-F0-9]{40}$/.test(val))
@@ -49,13 +49,13 @@ export type Bytes = z.infer<typeof BytesSchema>
 
 export const EVM_TYPES = [
 	// * Basic types
-	["bool", "z.boolean()"],
-	["string", "z.string()"],
+	['bool', 'z.boolean()'],
+	['string', 'z.string()'],
 
 	// * Format dependent types
-	["address", "AddressSchema"],
-	["bytes", "BytesSchema"],
-	["bytes32", "Bytes32Schema"],
+	['address', 'AddressSchema'],
+	['bytes', 'BytesSchema'],
+	['bytes32', 'Bytes32Schema'],
 
 	// * Regex dependent types such as uint and int
 	// `(u)int<M>`: (un)signed integer type of `M` bits, `0 < M <= 256`, `M % 8 == 0`
@@ -64,6 +64,6 @@ export const EVM_TYPES = [
 		/^u?int(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)?$/,
 
 		// allow zod number and bigint
-		"z.bigint()"
+		'z.bigint()'
 	]
 ] as const
