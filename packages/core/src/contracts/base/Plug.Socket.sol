@@ -175,19 +175,18 @@ contract PlugSocket is
             action = $plugs.plugs[i];
             data = action.data[1:];
             updatesLength = action.updates.length;
-            for (ii = 0; ii < updatesLength; ii) {
+            for (ii = 0; ii < updatesLength; ii++) {
                 PlugTypesLib.Update calldata update = action.updates[ii];
                 PlugTypesLib.Slice calldata slice = update.slice;
                 bytes memory inherited = results[slice.index];
-
                 require(slice.start + slice.length <= inherited.length, "PlugCore:out-of-bounds");
                 bytes memory sliced =
                     LibBytes.slice(inherited, slice.start, slice.start + slice.length);
 
-                require(slice.start + slice.length <= data.length, "PlugCore:would-overflow");
+                require(update.start + slice.length <= data.length, "PlugCore:would-overflow");
                 data = LibBytes.concat(
-                    LibBytes.concat(LibBytes.slice(data, 0, slice.start), sliced),
-                    LibBytes.slice(data, slice.start + slice.length, data.length)
+                    LibBytes.concat(LibBytes.slice(data, 0, update.start), sliced),
+                    LibBytes.slice(data, update.start + slice.length, data.length)
                 );
             }
 
