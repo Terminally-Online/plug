@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { FC } from "react"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Actions } from "@/lib"
@@ -12,16 +12,8 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 	errors = []
 }) => {
 	const [plug] = useAtom(plugByIdAtom(item))
-	const plugActions: Actions = useMemo(() => {
-		if (!plug) return []
-		try {
-			return JSON.parse(plug.actions)
-		} catch {
-			return []
-		}
-	}, [plug])
 
-	actions = actions ?? plugActions
+	actions = actions ?? plug?.actions ?? []
 
 	return (
 		<div className="flex flex-col gap-2">

@@ -189,7 +189,7 @@ const EmptyPlugs: FC<
 				description={" Go ahead and create a Plug from scratch or view the Plugs of another account."}
 				{...props}
 			>
-				<Button sizing="sm" onClick={() => handle.plug.add({ index, from: column.key })}>
+				<Button sizing="sm" onClick={() => add({ index, from: column.key })}>
 					Create
 				</Button>
 			</Base>
