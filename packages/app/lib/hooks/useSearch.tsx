@@ -1,8 +1,8 @@
-import { useState } from "react"
+import useDebounce from "./useDebounce"
 
 export const useSearch = () => {
-	const [search, handleSearch] = useState("")
-	const [tag, handleTag] = useState("")
+	const [search, debouncedSearch, handleSearch] = useDebounce("")
+	const [tag, debouncedTag, handleTag] = useDebounce("")
 
 	const handleReset = () => {
 		handleSearch("")
@@ -11,8 +11,10 @@ export const useSearch = () => {
 
 	return {
 		search,
+		debouncedSearch,
 		handleSearch,
 		tag,
+		debouncedTag, 
 		handleTag,
 		handleReset
 	}

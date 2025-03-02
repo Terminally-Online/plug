@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react"
 import { FC, HTMLAttributes, useMemo } from "react"
 
 import { SearchIcon } from "lucide-react"
@@ -10,31 +9,30 @@ import { PlugGrid } from "@/components/app/plugs/grid/grid"
 import { Callout } from "@/components/app/utils/callout"
 import { cn, useSearch } from "@/lib"
 import { COLUMNS } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { plugsAtom } from "@/state/plugs"
+import { useAtomValue } from "jotai"
 
 export const PlugsMine: FC<HTMLAttributes<HTMLDivElement> & { index?: number }> = ({
 	index = -1,
 	className,
 	...props
 }) => {
-	const { data: session } = useSession()
 	const { search, tag, handleSearch, handleTag } = useSearch()
 
-	const { plugs } = usePlugStore()
+	const plugs = useAtomValue(plugsAtom)
 
 	const visiblePlugs = useMemo(() => {
-		if (plugs === undefined || plugs.length === 0) {
+		if (!plugs || plugs.length === 0)
 			return Array(12).fill(undefined)
-		}
 
-		return plugs
-			.filter(plug => plug.socketId === session?.user?.id)
-			.filter(plug => search === "" || plug.name.toLowerCase().includes(search.toLowerCase()))
-	}, [plugs, session?.user?.id, search])
+		if (!search) return plugs
+
+		return plugs.filter(plug => plug.name.toLowerCase().includes(search.toLowerCase()))
+	}, [plugs, search])
 
 	return (
 		<div className={cn("flex flex-col gap-2", className)} {...props}>
-			{((plugs && plugs.length > 0)) && (
+			{(plugs && plugs.length > 0) && (
 				<Container>
 					<Search
 						icon={<SearchIcon size={14} className="opacity-60" />}

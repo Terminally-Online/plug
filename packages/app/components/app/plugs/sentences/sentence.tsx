@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useMemo, useState } from "react"
 
 import { motion } from "framer-motion"
 import { X } from "lucide-react"
@@ -6,12 +6,13 @@ import { X } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, cn, useCord } from "@/lib"
+import { Action, Actions, cn, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { usePlugStore } from "@/state/plugs"
+import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
 import { HandleValueProps, Part } from "./part"
-import { useAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
+import { api } from "@/server/client"
 
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
@@ -24,24 +25,64 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 
 export const Sentence: FC<SentenceProps> = memo(
 	({ index, item, action, actionIndex, preview = false, error = false, className, ...props }) => {
-		const [search, setSearch] = useState<Record<number, string | undefined>>({})
+		const { account: { session } } = useConnect()
 
 		const [column] = useAtom(columnByIndexAtom(index))
 		const { frame } = useColumnActions(index)
 
-		const {
-			own,
-			actions: plugActions,
-			handle: {
-				action: { edit }
-			},
-			solver: { actions: solverActions }
-		} = usePlugStore(item, { protocol: action.protocol, action: action.action, search })
+		const [plug] = useAtom(plugByIdAtom(item))
+		const actions: Actions = useMemo(() => {
+			if (!plug) return []
 
+			try {
+				return JSON.parse(plug.actions)
+			} catch {
+				return []
+			}
+		}, [plug])
+		const own = plug && session && session.address === plug.socketId || false
+
+		const editPlug = useSetAtom(editPlugAtom)
+		const actionMutation = api.plugs.action.edit.useMutation({
+			onSuccess: result => editPlug(result)
+		})
+		const edit = useCallback(
+			(...params: Parameters<typeof actionMutation.mutate>) => actionMutation.mutate(...params),
+			[actionMutation]
+		)
+
+		const [search, setSearch] = useState<Record<number, string | undefined>>({})
+		const [debouncedSearch, setDebouncedSearch] = useState<typeof search>({})
+		const handleSearch = useCallback((s: string | null, index: number) => {
+			const parsedIndex = parseInt(String(index))
+			const newValue = s ?? undefined
+
+			setSearch(prev => prev[parsedIndex] === newValue ? prev : {
+				...prev,
+				[parsedIndex]: newValue
+			})
+
+			const timeoutId = setTimeout(() => {
+				setDebouncedSearch(prev => prev[parsedIndex] === newValue ? prev : {
+					...prev,
+					[parsedIndex]: newValue
+				})
+			}, 300)
+
+			return () => clearTimeout(timeoutId)
+		}, [])
+		const { data: solverActions } = api.solver.actions.schemas.useQuery(
+			{
+				chainId: 8453,
+				protocol: action?.protocol,
+				action: action?.action,
+				search: Object.entries(debouncedSearch ?? {}).map(([key, value]) => `search[${key}]=${value}`)
+			},
+			{ enabled: Boolean(action?.protocol ?? action?.action) ?? false, placeholderData: prev => prev }
+		)
 		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
-
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
 				if (value) {
@@ -53,20 +94,10 @@ export const Sentence: FC<SentenceProps> = memo(
 		)
 
 		const {
-			state: { parsed },
+			state: { parsed, parts },
 			actions: { setValue },
 			helpers: { getInputValue, getInputError, isValid, isComplete }
 		} = useCord(sentence, values)
-
-		const parts = parsed
-			? parsed.template
-				.split(/(\{[^}]+\})/g)
-				.map(part => {
-					if (part.match(/\{[^}]+\}/)) return [part]
-					return part.split(/(\s+)/g)
-				})
-				.flat()
-			: []
 
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
@@ -74,7 +105,7 @@ export const Sentence: FC<SentenceProps> = memo(
 			edit({
 				id: item,
 				actions: JSON.stringify(
-					plugActions.map((action, nestedActionIndex) => ({
+					actions.map((action, nestedActionIndex) => ({
 						...action,
 						values:
 							nestedActionIndex === actionIndex
@@ -90,20 +121,6 @@ export const Sentence: FC<SentenceProps> = memo(
 				)
 			})
 		}
-
-		const handleSearch = useCallback((s: string | null, index: number) => {
-			const parsedIndex = parseInt(String(index))
-			const newValue = s ?? undefined
-
-			// Only update if the value has actually changed
-			setSearch(prev => {
-				if (prev[parsedIndex] === newValue) return prev
-				return {
-					...prev,
-					[parsedIndex]: newValue
-				}
-			})
-		}, [])
 
 		if (!column) return null
 
@@ -222,7 +239,7 @@ export const Sentence: FC<SentenceProps> = memo(
 								onClick={() =>
 									edit({
 										id: item,
-										actions: JSON.stringify(plugActions.filter((_, i) => i !== actionIndex))
+										actions: JSON.stringify(actions.filter((_, i) => i !== actionIndex))
 									})
 								}
 							>
@@ -232,7 +249,7 @@ export const Sentence: FC<SentenceProps> = memo(
 					</div>
 				</Accordion>
 
-				{actionIndex < plugActions.length - 1 && (
+				{actionIndex < actions.length - 1 && (
 					<div
 						className={cn(
 							"mx-auto h-2 w-[2px]",

@@ -40,7 +40,7 @@ export const PageContent = () => {
 				</Container>
 			)
 		case COLUMNS.KEYS.PLUG:
-			return <Plug index={COLUMNS.MOBILE_INDEX} item={column.item} from={column.from} />
+			return column.item ? <Plug index={COLUMNS.MOBILE_INDEX} item={column.item} from={column.from} /> : null
 		case COLUMNS.KEYS.HOME:
 			return (
 				<Container className="mb-24">

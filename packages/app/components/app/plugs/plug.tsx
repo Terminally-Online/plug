@@ -13,10 +13,10 @@ import { ActionView } from "@/components/app/plugs/actions/action-view"
 import { Button } from "@/components/shared/buttons/button"
 import { cn } from "@/lib"
 import { columnByIndexAtom, COLUMNS, useColumnActions } from "@/state/columns"
-import { workflowByIdAtom } from "@/state/plugs"
-import { useAtom, useAtomValue } from "jotai"
+import { plugByIdAtom } from "@/state/plugs"
+import { useAtom } from "jotai"
 
-export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: string; from?: string }> = ({
+export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: string; from?: string }> = ({
 	index = COLUMNS.MOBILE_INDEX,
 	item,
 	from,
@@ -26,9 +26,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 
 	const [column] = useAtom(columnByIndexAtom(index))
 	const { frame } = useColumnActions(index)
-
-	const getPlug = useAtomValue(workflowByIdAtom)
-	const plug = item ? getPlug(item) : undefined
+	const [plug] = useAtom(plugByIdAtom(item))
 
 	const [hasOpenedActions, setHasOpenedActions] = useState(false)
 
@@ -41,7 +39,7 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item?: 
 	// 	setHasOpenedActions(true)
 	// }, [item, plug, hasOpenedActions, frame])
 
-	if (!plug || !session || !column) return null
+	if (!column || !plug) return null
 
 	return (
 		<div {...props}>

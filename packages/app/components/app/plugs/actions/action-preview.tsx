@@ -2,8 +2,8 @@ import { FC, useMemo } from "react"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Actions } from "@/lib"
-import { workflowByIdAtom } from "@/state/plugs"
-import { useAtomValue } from "jotai"
+import { plugByIdAtom } from "@/state/plugs"
+import { useAtom } from "jotai"
 
 export const ActionPreview: FC<{ index: number; item: string; actions?: Actions; errors?: Array<string | null> }> = ({
 	index,
@@ -11,7 +11,7 @@ export const ActionPreview: FC<{ index: number; item: string; actions?: Actions;
 	actions,
 	errors = []
 }) => {
-	const plug = useAtomValue(workflowByIdAtom)(item)
+	const [plug] = useAtom(plugByIdAtom(item))
 	const plugActions: Actions = useMemo(() => {
 		if (!plug) return []
 		try {

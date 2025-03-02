@@ -142,7 +142,7 @@ export const ConsoleColumn: FC<{
 														plug.renamedAt > (plug.createdAt ?? 0) &&
 														plug.renamedAt !== plug.createdAt
 													)}
-													sparkleKey={plug?.renamedAt?.getTime()}
+													sparkleKey={new Date(plug?.renamedAt ?? "")?.getTime()}
 													color={cardColors[plug?.color ?? "yellow"]}
 													item={column.item ?? ""}
 												>
@@ -251,7 +251,7 @@ export const ConsoleColumn: FC<{
 									<PlugsDiscover index={column.index} className="pt-4" />
 								) : column.key === COLUMNS.KEYS.MY_PLUGS ? (
 									<PlugsMine index={column.index} className="pt-4" />
-								) : column.key === COLUMNS.KEYS.PLUG ? (
+								) : column.key === COLUMNS.KEYS.PLUG && column.item ? (
 									<Plug
 										index={column.index}
 										item={column.item}

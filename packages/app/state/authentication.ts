@@ -5,6 +5,7 @@ import qrcode from "qrcode-generator"
 
 import { WalletConnectProvider } from "@/lib"
 import { RouterOutputs } from "@/server/client"
+import { atomWithStorage } from "jotai/utils"
 
 export const authenticationResponseAtom = atom<SignInResponse | undefined>(undefined)
 export const authenticationLoadingAtom = atom(false)
@@ -36,7 +37,7 @@ export const walletConnectURIMatrixAtom = atom<
 	}
 })
 
-export const socketModelAtom = atom<RouterOutputs["socket"]["get"] | undefined>(undefined)
+export const socketModelAtom = atomWithStorage<RouterOutputs["socket"]["get"] | undefined>("plug.socketModel", undefined)
 export const socketAtom = atom(get => {
 	const socket = get(socketModelAtom)
 

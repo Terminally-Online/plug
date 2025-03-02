@@ -7,7 +7,7 @@ import { ChainImage } from "@/components/app/sockets/chains/chain.image"
 import { Button } from "@/components/shared/buttons/button"
 import { Counter } from "@/components/shared/utils/counter"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { workflowByIdAtom } from "@/state/plugs"
+import { plugByIdAtom } from "@/state/plugs"
 import { useAtom, useAtomValue } from "jotai"
 
 export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
@@ -16,7 +16,7 @@ export const RanFrame: FC<{ index: number; item: string }> = ({ index, item }) =
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame } = useColumnActions(index, frameKey)
 
-	const plug = useAtomValue(workflowByIdAtom)(item)
+	const [plug] = useAtom(plugByIdAtom(item))
 
 	if (!plug || !column) return null
 

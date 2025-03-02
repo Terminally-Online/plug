@@ -182,7 +182,7 @@ export const plugs = createTRPCRouter({
 			}
 
 			if (input.target === "mine") {
-				addForkCounts(
+				return addForkCounts(
 					await ctx.db.plug.findMany({
 						where: {
 							socketId: ctx.session.address

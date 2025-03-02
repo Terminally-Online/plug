@@ -4,6 +4,7 @@ import { api, RouterOutputs } from "@/server/client"
 import { useSocket } from "@/state/authentication"
 import { useWatchPendingTransactions } from "wagmi"
 import { useResponse } from "@/lib/hooks/useResponse"
+import { useConnect } from "@/lib"
 
 export const ActivityContext = createContext<{
 	activities: RouterOutputs["plugs"]["activity"]["get"]
@@ -12,12 +13,13 @@ export const ActivityContext = createContext<{
 }>({ activities: [], isLoading: true, handle: { toggle: () => { }, delete: () => { } } })
 
 export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
+	const { account: { session }} = useConnect()
 	const { isAnonymous } = useSocket()
 
 	const [activities, setActivities] = useState<ContextType<typeof ActivityContext>["activities"]>([])
 
 	const { isLoading } = useResponse(() => api.plugs.activity.get.useQuery(undefined, {
-		enabled: isAnonymous === false,
+		enabled: session !== null && isAnonymous === false,
 	}), { onSuccess: data => setActivities(data) })
 
 	api.plugs.activity.onActivity.useSubscription(undefined, {

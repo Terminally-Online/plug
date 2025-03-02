@@ -63,6 +63,16 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		}
 	}, [parsed, filteredInputs])
 
+	const parts = useMemo(() => parsedWithFilteredInputs
+		? parsedWithFilteredInputs.template
+			.split(/(\{[^}]+\})/g)
+			.map(part => {
+				if (part.match(/\{[^}]+\}/)) return [part]
+				return part.split(/(\s+)/g)
+			})
+			.flat()
+		: [], [parsedWithFilteredInputs])
+
 	const resolvedSentence = useMemo(() => {
 		if (!parsed) return null
 
@@ -154,6 +164,7 @@ export const useCord = (sentence: string, values: Record<string, string | undefi
 		state: {
 			...state,
 			parsed: parsedWithFilteredInputs,
+			parts,
 			resolvedSentence
 		},
 		actions,

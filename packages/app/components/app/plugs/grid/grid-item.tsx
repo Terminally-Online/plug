@@ -7,7 +7,7 @@ import { Eye, GitFork } from "lucide-react"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { cn, colors, formatTitle } from "@/lib"
-import { RouterOutputs } from "@/server/client"
+import { api, RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnActions } from "@/state/columns"
 
 import { Avatar } from "../../sockets/profile"

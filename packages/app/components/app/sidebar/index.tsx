@@ -231,7 +231,7 @@ export const ConsoleSidebar = () => {
 				</div>
 
 				<div className="mt-auto flex w-full flex-col items-center gap-2 p-2">
-					{(address || isAuthenticated) && (
+					{(socket || address || isAuthenticated) && (
 						<ConsoleSidebarAction
 							className={cn(is.expanded && "pr-16")}
 							icon={

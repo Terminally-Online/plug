@@ -36,6 +36,12 @@ export const ConsolePage = () => {
 	const { add } = useColumnActions()
 	const plugs = useAtomValue(plugsAtom)
 
+	// useEffect(() => {
+	// 	if (!socket || socket.id === address) return
+	//
+	// 	disconnect()
+	// }, [socket, address, disconnect])
+
 	useEffect(() => {
 		if (!socket || !socket.identity) return
 

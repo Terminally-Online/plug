@@ -4,7 +4,7 @@ import { LoaderCircle } from "lucide-react"
 
 import { Frame } from "@/components/app/frames/base"
 import { columnByIndexAtom, isFrameAtom, useColumnActions } from "@/state/columns"
-import { workflowByIdAtom } from "@/state/plugs"
+import { plugByIdAtom } from "@/state/plugs"
 import { useAtom, useAtomValue } from "jotai"
 
 export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item }) => {
@@ -13,7 +13,7 @@ export const RunningFrame: FC<{ index: number; item: string }> = ({ index, item 
 	const isFrame = useAtomValue(isFrameAtom)(column, frameKey)
 	const { frame } = useColumnActions(index, frameKey)
 
-	const plug = useAtomValue(workflowByIdAtom)(item)
+	const [plug] = useAtom(plugByIdAtom(item))
 
 	// TODO: We un-implemented this when beginning to store frames on columns.
 	const prevFrame = "NOT_IMPLEMENTED" as string
