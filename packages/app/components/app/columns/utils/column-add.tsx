@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type JSX } from "react";
+import { memo, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
 import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
 
@@ -53,7 +53,7 @@ export const OPTIONS: Options = [
 	}
 ] as const
 
-export const ColumnAdd = ({ index }: { index: number }) => {
+export const ColumnAdd = memo(({ index }: { index: number }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
 	const { getFlag } = useFlags()
@@ -195,4 +195,6 @@ export const ColumnAdd = ({ index }: { index: number }) => {
 			</div>
 		</>
 	)
-}
+})
+
+ColumnAdd.displayName = "ColumnAdd"

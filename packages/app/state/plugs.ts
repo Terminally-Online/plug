@@ -1,5 +1,3 @@
-import { useSession } from "next-auth/react"
-import { useCallback } from "react"
 import { useMemo } from "react"
 
 import { atom, useAtom, useAtomValue } from "jotai"
