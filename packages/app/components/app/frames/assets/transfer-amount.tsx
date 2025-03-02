@@ -3,7 +3,7 @@ import { FC, useCallback, useRef, useState } from "react"
 import { Frame } from "@/components/app/frames/base"
 import { TokenImage } from "@/components/app/sockets/tokens/token-image"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect } from "@/lib"
+import { cn, formatTitle, getChainId, NATIVE_TOKEN_ADDRESS, useConnect, useDebounceInline } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { columnByIndexAtom, COLUMNS, isFrameAtom, useColumnActions } from "@/state/columns"
 
@@ -243,12 +243,13 @@ export const TransferAmountFrame: FC<{
 				? getAddress(column.transfer?.recipient)
 				: ""
 		: ""
+
 	// TODO: This is just hard-coded to base for now. It should support having multiple
 	//       chains in the same execution at once.
 	const chain = "base"
 	const chainId = getChainId(chain)
 	const implementation = token?.implementations.find(implementation => implementation.chain === chain)
-	const request = {
+	const request = useDebounceInline({
 		chainId,
 		from,
 		inputs: [
@@ -264,8 +265,7 @@ export const TransferAmountFrame: FC<{
 			isEOA: column && column.index === COLUMNS.SIDEBAR_INDEX,
 			simulate: true,
 		}
-	}
-
+	})
 	const { data: intent } = api.solver.actions.intent.useQuery(request, {
 		enabled: isFrame && isReady && !!column && !!socket && !!implementation,
 	})

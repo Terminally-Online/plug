@@ -1,4 +1,4 @@
-import useDebounce from "./useDebounce"
+import { useDebounce } from "./useDebounce"
 
 export const useSearch = () => {
 	const [search, debouncedSearch, handleSearch] = useDebounce("")

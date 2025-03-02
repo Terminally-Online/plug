@@ -1,16 +1,18 @@
 import { usePathname } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-export const useDebounce = (
-	initial: string,
-	delay = 250,
-	callback = (_: string) => {}
-): [string, string, (value: string) => void, React.MutableRefObject<string>] => {
+const DEFAULT_DELAY = 250
+
+export const useDebounce = <T,>(
+	initial: T,
+	delay = DEFAULT_DELAY,
+	callback = (_: T) => {}
+): [T, T, (value: T) => void, React.ForwardedRef<T>] => {
 	const pathname = usePathname()
 
-	const valueRef = useRef<string>(initial)
+	const valueRef = useRef<T>(initial)
 
-	const [value, setValue] = useState<string>(initial)
+	const [value, setValue] = useState<T>(initial)
 	const [debounced, setDebounced] = useState<typeof value>(value)
 
 	const debouncedCallback = useCallback(() => {
@@ -34,4 +36,21 @@ export const useDebounce = (
 	return [value, debounced, setValue, valueRef]
 }
 
-export default useDebounce
+export const useDebounceInline = <T,>(
+	value: T,
+	delay = DEFAULT_DELAY,
+	callback?: (value: T) => void
+): T => {
+	const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setDebouncedValue(value)
+			callback?.(value)
+		}, delay)
+
+		return () => clearTimeout(timeout)
+	}, [value, delay, callback])
+
+	return debouncedValue
+}
