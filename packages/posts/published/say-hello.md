@@ -12,7 +12,7 @@ We are Terminally Online Inc. and you may know us individually as [danner](https
 
 ## The Reality Check
 
-If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord and Telegra notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got yield farms here, LP positions there, and god forbid you try to time a transaction across multiple protocols without missing the perfect entry.
+If you're reading this, you probably have a setup that looks familiar: Multiple monitors, endless Discord and Telegram notifications, and more browser windows than your RAM signed up for. The state of DeFi feels like trying to play 4D chess while juggling. You've got yield farms here, LP positions there, and god forbid you try to time a transaction across multiple protocols without missing the perfect entry.
 
 We've been there. We are there. And we're building the solution we've always wanted. Initially, when we set out to build Plug, we considered building a product that allowed users to log off and spend more time touching grass. As we continued to build, we realized - that's not who we are; that's not who you are.
 
@@ -32,7 +32,7 @@ For the first time ever, you can:
 - Access all major protocol functionality without bouncing between apps
 - Create and share strategies that actually make you money
 - Set up "if this, then that" executions that squeeze maximum value from every move
-  One interface to access Etherem, one interface to combine protocols, one interface to schedule transactions, and one interface to manage your onchain experience.
+  One interface to access Ethereum, one interface to combine protocols, one interface to schedule transactions, and one interface to manage your onchain experience.
 
 ## What's Coming
 
