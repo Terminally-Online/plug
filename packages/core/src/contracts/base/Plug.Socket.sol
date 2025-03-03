@@ -171,6 +171,9 @@ contract PlugSocket is
 
         uint8 ii;
         uint256 updatesLength;
+
+        bytes memory inherited;
+        bytes memory sliced;
         for (uint8 i; i < length; i++) {
             action = $plugs.plugs[i];
             data = action.data[1:];
@@ -178,10 +181,9 @@ contract PlugSocket is
             for (ii = 0; ii < updatesLength; ii++) {
                 PlugTypesLib.Update calldata update = action.updates[ii];
                 PlugTypesLib.Slice calldata slice = update.slice;
-                bytes memory inherited = results[slice.index];
+                inherited = results[slice.index];
                 require(slice.start + slice.length <= inherited.length, "PlugCore:out-of-bounds");
-                bytes memory sliced =
-                    LibBytes.slice(inherited, slice.start, slice.start + slice.length);
+                sliced = LibBytes.slice(inherited, slice.start, slice.start + slice.length);
 
                 require(update.start + slice.length <= data.length, "PlugCore:would-overflow");
                 data = LibBytes.concat(
@@ -222,9 +224,7 @@ contract PlugSocket is
         if (nonces.get(nonce) == true) {
             revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:nonce-invalid");
         }
-
         nonces.set(nonce);
-
         $allowed = oneClickersToAllowed[signer] || owner() == signer;
     }
 
@@ -240,14 +240,14 @@ contract PlugSocket is
     }
 
     /**
-     * See { UUPSUpgradeable._authorizeUpgrade }
-     */
-    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
-
-    /**
      * See { PlugTrading._guardInitializeOwnership }
      */
     function _guardInitializeOwnership() internal pure virtual returns (bool $guard) {
         $guard = true;
     }
+
+    /**
+     * See { UUPSUpgradeable._authorizeUpgrade }
+     */
+    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
 }

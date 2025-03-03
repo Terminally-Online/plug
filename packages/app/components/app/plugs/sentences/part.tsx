@@ -2,6 +2,8 @@ import { FC, HTMLAttributes, memo } from "react"
 
 import { Hash, SearchIcon } from "lucide-react"
 
+import { useAtom } from "jotai"
+
 import { getInputPlaceholder, InputReference } from "@terminallyonline/cord"
 
 import { Frame } from "@/components/app/frames/base"
@@ -13,7 +15,6 @@ import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
 import { Action, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { useAtom } from "jotai"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
