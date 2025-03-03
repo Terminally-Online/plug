@@ -87,27 +87,27 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 								<h1 className="text-[48px] md:text-[72px] lg:text-[96px] xl:text-[120px] font-black">{children}</h1>
 							),
 							h2: ({ children }) => (
-								<h2 className="mt-8 text-[36px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black">
+								<h2 className="mt-8 text-[36px] md:text-[32px] lg:text-[60px] xl:text-[72px] font-black">
 									{children}
 								</h2>
 							),
 							h3: ({ children }) => (
-								<h3 className="mt-8 text-[28px] md:text-[36px] lg:text-[48px] xl:text-[56px] font-black">
+								<h3 className="mt-8 text-[28px] md:text-[28px] lg:text-[48px] xl:text-[56px] font-black">
 									{children}
 								</h3>
 							),
 							h4: ({ children }) => (
-								<h4 className="mt-8 text-[24px] md:text-[28px] lg:text-[36px] xl:text-[42px] font-black">
+								<h4 className="mt-8 text-[24px] md:text-[24px] lg:text-[36px] xl:text-[42px] font-black">
 									{children}
 								</h4>
 							),
 							h5: ({ children }) => (
-								<h5 className="mt-8 text-[20px] md:text-[24px] lg:text-[28px] xl:text-[32px] font-black">
+								<h5 className="mt-8 text-[20px] md:text-[18px] lg:text-[28px] xl:text-[32px] font-black">
 									{children}
 								</h5>
 							),
 							h6: ({ children }) => (
-								<h6 className="mt-8 text-[16px] md:text-[18px] lg:text-[20px] xl:text-[24px] font-black">
+								<h6 className="mt-8 text-[16px] md:text-[14px] lg:text-[20px] xl:text-[24px] font-black">
 									{children}
 								</h6>
 							),
