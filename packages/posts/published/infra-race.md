@@ -10,7 +10,7 @@ author: drakedanner
 
 There's a scene in the Big Short where Brownfield Fund visits JPMorgan with the goal of getting an International Swaps and Derivatives Association (ISDA) agreement to be able to transact in long term derivatives. The owners of Brownfield saw an opportunity, but they needed an ISDA to be execute the trade. The only problem? Their AUM of $30m was "about 1 billion 470 million short" of the capital requirement needed to qualify for an ISDA. No ISDA, no trade.
 
-![Image from the Big Short discussing the value of the ISDA](https://cdn.onplug.io/posts/infra-race/2-isda.png)
+![Image from the Big Short discussing the value of the ISDA](https://cdn.onplug.io/posts/infra-race/isda-2.png)
 
 Success in markets is often viewed through the lens of information and execution speed but the example from The Big Short highlights an oft-overlooked third component: Transaction Infrastructure. Even if you have the best information in the world, you may not be able to execute the trade without the right infrastructure.
 
