@@ -59,7 +59,7 @@
     "abitype": "^1.0.2",
     "commander": "^12.1.0",
     "ethers": "^6.13.2",
-    "lucide-react": "^0.471.1",
+    "lucide-react": "^0.477.0",
     "pathe": "^1.1.2",
     "solady": "^0.1.10",
     "viem": "^2.9.17",
