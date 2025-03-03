@@ -485,7 +485,7 @@ abstract contract TestPlug is TestPlus {
         $plug = PlugTypesLib.Plug({
             selector: 0x00,
             to: $to,
-            data: abi.encodePacked($plugType, $data),
+            data: $data,
             value: $value,
             updates: updates
         });

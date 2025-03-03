@@ -7,13 +7,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-const (
-	EIP712_DOMAIN_TYPEHASH = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
-	PLUG_TYPEHASH          = "0x0d73e94823fdaacb148d9146f00bc268b7834e768ced483d796db05a52e1e395"
-	PLUGS_TYPEHASH         = "0x4ddfe68cf187b28815da9c19a2cb9477b3f3293c6170c7e3e56842b550ac141d"
-	LIVE_PLUGS_TYPEHASH    = "0x049e34029d287aa78a0f5a45ebdf78081b3357f85f5ab4cfcffb786eff0b3375"
-)
-
 type Transaction struct {
 	From  common.Address `json:"from"`
 	To    common.Address `json:"to"`
@@ -29,21 +22,55 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
+type Slice struct {
+	Index  uint8    `json:"index"`  // Index of the plug in the sequence that produces this data
+	Start  *big.Int `json:"start"`  // Starting byte position within the result data
+	Length *big.Int `json:"length"` // Length of bytes to extract
+}
+
+func (s Slice) Wrap() plug_router.PlugTypesLibSlice {
+	return plug_router.PlugTypesLibSlice{
+		Index:  s.Index,
+		Start:  s.Start,
+		Length: s.Length,
+	}
+}
+
+type Update struct {
+	Start *big.Int `json:"start"` // Starting position where the slice should be inserted
+	Slice Slice    `json:"slice"` // The slice specification
+}
+
+func (p Update) Wrap() plug_router.PlugTypesLibUpdate {
+	return plug_router.PlugTypesLibUpdate{
+		Start: p.Start,
+		Slice: p.Slice.Wrap(),
+	}
+}
+
 type Plug struct {
-	To        common.Address `json:"to"`
-	Data      []byte         `json:"data"`
-	Value     *big.Int       `json:"value"`
-	Gas       *big.Int       `json:"gas"`
-	Exclusive bool           `json:"exclusive,omitempty"`
-	Meta      interface{}    `json:"meta,omitempty"`
+	Selector uint8          `json:"selector"` // 0x00 for call, 0x01 for delegatecall
+	To       common.Address `json:"to"`       // Target contract address
+	Data     []byte         `json:"data"`     // Calldata for the interaction
+	Value    *big.Int       `json:"value"`    // ETH value to send with the call
+	Updates  []Update       `json:"updates"`  // List of updates to apply to the data
+
+	Exclusive bool        `json:"exclusive,omitempty"`
+	Meta      interface{} `json:"meta,omitempty"`
 }
 
 func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
+	updates := make([]plug_router.PlugTypesLibUpdate, len(p.Updates))
+	for index, update := range p.Updates {
+		updates[index] = update.Wrap()
+	}
+
 	return plug_router.PlugTypesLibPlug{
-		To:    p.To,
-		Data:  p.Data,
-		Value: p.Value,
-		Gas:   p.Gas,
+		Selector: p.Selector,
+		To:       p.To,
+		Data:     p.Data,
+		Value:    p.Value,
+		Updates:  updates,
 	}
 }
 

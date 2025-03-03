@@ -217,19 +217,16 @@ contract PlugTest is Test {
 
     function test_PlugSwapVerifyOutput() public {
         // Create a plug that performs a swap and returns the output amount
-        bytes memory swapCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                PlugMockDex.swap.selector,
-                address(mockERC20), // tokenIn
-                address(mockERC20), // tokenOut
-                10 ether, // amountIn
-                19 ether // minAmountOut (slightly less than expected 20 ether)
-            )
+        bytes memory swapCallData = abi.encodeWithSelector(
+            PlugMockDex.swap.selector,
+            address(mockERC20), // tokenIn
+            address(mockERC20), // tokenOut
+            10 ether, // amountIn
+            19 ether // minAmountOut (slightly less than expected 20 ether)
         );
 
         PlugTypesLib.Plug memory swapPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(dex),
             value: 0,
             data: swapCallData,
@@ -237,13 +234,10 @@ contract PlugTest is Test {
         });
 
         // Create a plug that does nothing - we'll just use it to verify the first plug executed correctly
-        bytes memory echoCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(mock.emptyEcho.selector)
-        );
+        bytes memory echoCallData = abi.encodeWithSelector(mock.emptyEcho.selector);
 
         PlugTypesLib.Plug memory echoPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mock),
             value: 0,
             data: echoCallData,
@@ -273,19 +267,16 @@ contract PlugTest is Test {
 
     function test_DataUpdate_SwapHalfOfSwapOutput() public {
         // First plug: Swap 10 tokens for 20 tokens (based on 2:1 rate)
-        bytes memory firstSwapCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                PlugMockDex.swap.selector,
-                address(mockERC20), // tokenIn
-                address(mockERC20), // tokenOut
-                10 ether, // amountIn
-                19 ether // minAmountOut
-            )
+        bytes memory firstSwapCallData = abi.encodeWithSelector(
+            PlugMockDex.swap.selector,
+            address(mockERC20), // tokenIn
+            address(mockERC20), // tokenOut
+            10 ether, // amountIn
+            19 ether // minAmountOut
         );
 
         PlugTypesLib.Plug memory firstSwapPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(dex),
             value: 0,
             data: firstSwapCallData,
@@ -293,17 +284,14 @@ contract PlugTest is Test {
         });
 
         // Second plug: Take the output from the first swap and use 10 ether of it for a transfer
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mockERC20.transfer.selector,
-                recipient,
-                10 ether // Transfer 10 ether - half of the expected 20 ether output from first swap
-            )
+        bytes memory transferCallData = abi.encodeWithSelector(
+            mockERC20.transfer.selector,
+            recipient,
+            10 ether // Transfer 10 ether - half of the expected 20 ether output from first swap
         );
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
             data: transferCallData,
@@ -336,35 +324,18 @@ contract PlugTest is Test {
         assertEq(dexBalance, 990 ether, "DEX balance incorrect");
     }
 
-    function test_BasicPlugExecution() public {
-        // Simplest test to ensure the execution framework works
-        PlugTypesLib.Plug[] memory plugsArray = new PlugTypesLib.Plug[](1);
-        plugsArray[0] = createPlug(PLUG_NO_VALUE, PLUG_EXECUTION);
-
-        PlugTypesLib.LivePlugs[] memory livePlugsArray = new PlugTypesLib.LivePlugs[](1);
-        livePlugsArray[0] = createLivePlugs(plugsArray);
-
-        // Execute the plugs
-        plug.plug(livePlugsArray);
-
-        // If we get here, the execution worked
-    }
-
     function test_SimpleUpdateMechanism() public {
         // First plug: Swap 10 tokens for 20 tokens (based on 2:1 rate)
-        bytes memory firstSwapCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                PlugMockDex.swap.selector,
-                address(mockERC20), // tokenIn
-                address(mockERC20), // tokenOut
-                10 ether, // amountIn
-                19 ether // minAmountOut
-            )
+        bytes memory firstSwapCallData = abi.encodeWithSelector(
+            PlugMockDex.swap.selector,
+            address(mockERC20), // tokenIn
+            address(mockERC20), // tokenOut
+            10 ether, // amountIn
+            19 ether // minAmountOut
         );
 
         PlugTypesLib.Plug memory firstSwapPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(dex),
             value: 0,
             data: firstSwapCallData,
@@ -372,17 +343,14 @@ contract PlugTest is Test {
         });
 
         // Second plug: Transfer a fixed amount (will NOT use update in this test)
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mockERC20.transfer.selector,
-                recipient,
-                5 ether // Fixed amount for transfer
-            )
+        bytes memory transferCallData = abi.encodeWithSelector(
+            mockERC20.transfer.selector,
+            recipient,
+            5 ether // Fixed amount for transfer
         );
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
             data: transferCallData,
@@ -420,19 +388,16 @@ contract PlugTest is Test {
         // It returns a uint256 representing the output amount of tokens.
 
         // Step 1: Create a plug that performs a swap
-        bytes memory swapCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                PlugMockDex.swap.selector,
-                address(mockERC20), // tokenIn
-                address(mockERC20), // tokenOut
-                10 ether, // amountIn
-                19 ether // minAmountOut
-            )
+        bytes memory swapCallData = abi.encodeWithSelector(
+            PlugMockDex.swap.selector,
+            address(mockERC20), // tokenIn
+            address(mockERC20), // tokenOut
+            10 ether, // amountIn
+            19 ether // minAmountOut
         );
 
         PlugTypesLib.Plug memory swapPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(dex),
             value: 0,
             data: swapCallData,
@@ -440,8 +405,6 @@ contract PlugTest is Test {
         });
 
         // Step 2: Create a transfer plug that will use the output from the swap
-        // The key here is to make sure we're constructing the correct format for the transfer call
-
         // Create an ABI-encoded transfer call with the correct arguments
         bytes memory transferData = abi.encodeWithSelector(
             mockERC20.transfer.selector,
@@ -449,15 +412,8 @@ contract PlugTest is Test {
             uint256(0) // This placeholder will be replaced with the swap output
         );
 
-        // Add the plug type byte at the beginning
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            transferData // The actual function call data
-        );
-
         // Create an update that will take the swap output and insert it at the amount position
-        // The ERC20 transfer function has a 4-byte selector followed by two 32-byte parameters
-        // The amount parameter is the second one, starting at position 4 + 32 = 36
+        // Since we're no longer stripping the first byte, position is just 4 + 32 = 36
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](1);
         updates[0] = PlugTypesLib.Update({
             start: 36, // 4 (selector) + 32 (address param)
@@ -469,10 +425,10 @@ contract PlugTest is Test {
         });
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferData, // No need for leading type byte
             updates: updates
         });
 
@@ -504,16 +460,13 @@ contract PlugTest is Test {
 
     function test_SimpleDataUpdate() public {
         // Create a plug that returns a simple uint256 value
-        bytes memory echoCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mock.mutedEcho.selector,
-                uint256(10) // Input value doesn't matter, function will return 2
-            )
+        bytes memory echoCallData = abi.encodeWithSelector(
+            mock.mutedEcho.selector,
+            uint256(10) // Input value doesn't matter, function will return 2
         );
 
         PlugTypesLib.Plug memory returnPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mock),
             value: 0,
             data: echoCallData,
@@ -527,15 +480,10 @@ contract PlugTest is Test {
             uint256(0) // Will be replaced by the return value from the first plug (2)
         );
 
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            transferData
-        );
-
         // Create an update that will take the return value and place it in the amount parameter
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](1);
         updates[0] = PlugTypesLib.Update({
-            start: 36, // Position after function selector (4 bytes) + recipient address (32 bytes)
+            start: 36, // Position remains the same since no byte is stripped
             slice: PlugTypesLib.Slice({
                 index: 0, // First plug
                 start: 0, // Start of return data
@@ -544,10 +492,10 @@ contract PlugTest is Test {
         });
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferData, // No need for leading type byte
             updates: updates
         });
 
@@ -581,16 +529,11 @@ contract PlugTest is Test {
             5 ether // Fixed amount of 5 ether
         );
 
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            transferData
-        );
-
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferData, // No leading byte needed
             updates: new PlugTypesLib.Update[](0)
         });
 
@@ -617,16 +560,13 @@ contract PlugTest is Test {
 
     function test_SimpleUpdatePrecise() public {
         // Step 1: Create a plug that performs a basic echo operation to return a value
-        bytes memory echoCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mock.mutedEcho.selector,
-                uint256(10) // Returns 2
-            )
+        bytes memory echoCallData = abi.encodeWithSelector(
+            mock.mutedEcho.selector,
+            uint256(10) // Returns 2
         );
 
         PlugTypesLib.Plug memory echoPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mock),
             value: 0,
             data: echoCallData,
@@ -635,21 +575,8 @@ contract PlugTest is Test {
 
         // Step 2: Create the transfer plug
         // The ERC20 transfer function signature is: transfer(address,uint256)
-        // First, get the exact bytes for the transfer call
         bytes memory transferSelector =
             abi.encodeWithSelector(mockERC20.transfer.selector, recipient, 0);
-
-        // Now, create the plug call data with our plug type
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            transferSelector
-        );
-
-        // Analyze the transfer data to ensure our update position is correct
-        // The function selector is 4 bytes (bytes 0-3)
-        // The recipient address is 32 bytes (bytes 4-35)
-        // The amount is 32 bytes (bytes 36-67)
-        // With the plug type byte stripped in _plug function, the amount starts at byte 36
 
         // Create an update that targets exactly where the amount parameter is
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](1);
@@ -663,10 +590,10 @@ contract PlugTest is Test {
         });
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferSelector,
             updates: updates
         });
 
@@ -692,18 +619,15 @@ contract PlugTest is Test {
         assertEq(recipientBalance, 2, "Recipient balance incorrect");
     }
 
-    function test_UpdateWithByteAdjustment() public {
+    function test_UpdateWithCorrectPosition() public {
         // Step 1: Create a plug that performs a basic echo operation to return a value
-        bytes memory echoCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mock.mutedEcho.selector,
-                uint256(10) // Returns 2
-            )
+        bytes memory echoCallData = abi.encodeWithSelector(
+            mock.mutedEcho.selector,
+            uint256(10) // Returns 2
         );
 
         PlugTypesLib.Plug memory echoPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mock),
             value: 0,
             data: echoCallData,
@@ -715,17 +639,7 @@ contract PlugTest is Test {
         bytes memory transferData =
             abi.encodeWithSelector(mockERC20.transfer.selector, recipient, 0);
 
-        // Now, create the plug call data with our plug type
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            transferData
-        );
-
-        // In the _plug function, the first byte is skipped with: data = action.data[1:]
-        // The function selector is 4 bytes (bytes 0-3)
-        // The recipient address is 32 bytes (bytes 4-35)
-        // The amount starts at byte 36 once the plug type byte is stripped
-
+        // No byte stripping happens now, so position calculation is straightforward
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](1);
         updates[0] = PlugTypesLib.Update({
             start: 36, // 4 (selector) + 32 (address)
@@ -737,10 +651,10 @@ contract PlugTest is Test {
         });
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferData,
             updates: updates
         });
 
@@ -777,18 +691,12 @@ contract PlugTest is Test {
             2 ether // exact amount, no updates needed
         );
 
-        // Add the plug type byte at the beginning
-        bytes memory fullCallData = abi.encodePacked(
-            bytes1(0x02), // plug type byte
-            transferCallData // the raw transfer data
-        );
-
-        // Create our plug directly
+        // Create our plug directly, using the selector field instead of prepending a byte
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: fullCallData,
+            data: transferCallData,
             updates: new PlugTypesLib.Update[](0) // No updates needed
          });
 
@@ -817,19 +725,16 @@ contract PlugTest is Test {
         // STRATEGY:
         // 1. First plug: run mutedEcho to return a value (2)
         // 2. Create a properly formatted transfer with all zeros for the amount
-        // 3. Handle update at the correct position (36) to update the amount
+        // 3. Handle update at the correct position to update the amount
 
         // Create a plug that performs a basic echo operation to return a value (2)
-        bytes memory echoCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type (PLUG_EXECUTION)
-            abi.encodeWithSelector(
-                mock.mutedEcho.selector,
-                uint256(10) // Returns 2
-            )
+        bytes memory echoCallData = abi.encodeWithSelector(
+            mock.mutedEcho.selector,
+            uint256(10) // Returns 2
         );
 
         PlugTypesLib.Plug memory echoPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mock),
             value: 0,
             data: echoCallData,
@@ -843,17 +748,11 @@ contract PlugTest is Test {
             uint256(0) // amount (to be updated)
         );
 
-        // Create the plug call data
-        bytes memory transferCallData = abi.encodePacked(
-            bytes1(0x02), // The plug type byte
-            transferData // The transfer data
-        );
-
         // Define the update with the correct position
-        // Important: In _plug function, data = action.data[1:] removes the first byte
+        // Since we're no longer stripping the first byte anymore, position is straightforward
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](1);
         updates[0] = PlugTypesLib.Update({
-            start: 36, // Position AFTER first byte is removed (4+32)
+            start: 36, // Position is 4+32
             slice: PlugTypesLib.Slice({
                 index: 0, // Reference the first plug's result
                 start: 0, // Start from beginning of result
@@ -862,10 +761,10 @@ contract PlugTest is Test {
         });
 
         PlugTypesLib.Plug memory transferPlug = PlugTypesLib.Plug({
-            selector: 0x00, // Call
+            selector: 0x00, // Normal call
             to: address(mockERC20),
             value: 0,
-            data: transferCallData,
+            data: transferData,
             updates: updates
         });
 

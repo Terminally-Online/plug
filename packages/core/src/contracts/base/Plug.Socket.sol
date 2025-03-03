@@ -176,7 +176,8 @@ contract PlugSocket is
         bytes memory sliced;
         for (uint8 i; i < length; i++) {
             action = $plugs.plugs[i];
-            data = action.data[1:];
+            data = action.data;
+
             updatesLength = action.updates.length;
             for (ii = 0; ii < updatesLength; ii++) {
                 PlugTypesLib.Update calldata update = action.updates[ii];

@@ -45,10 +45,11 @@ type PlugTypesLibLivePlugs struct {
 
 // PlugTypesLibPlug is an auto generated low-level Go binding around an user-defined struct.
 type PlugTypesLibPlug struct {
-	To    common.Address
-	Data  []byte
-	Value *big.Int
-	Gas   *big.Int
+	Selector uint8
+	To       common.Address
+	Data     []byte
+	Value    *big.Int
+	Updates  []PlugTypesLibUpdate
 }
 
 // PlugTypesLibPlugs is an auto generated low-level Go binding around an user-defined struct.
@@ -65,9 +66,22 @@ type PlugTypesLibResult struct {
 	Error string
 }
 
+// PlugTypesLibSlice is an auto generated low-level Go binding around an user-defined struct.
+type PlugTypesLibSlice struct {
+	Index  uint8
+	Start  *big.Int
+	Length *big.Int
+}
+
+// PlugTypesLibUpdate is an auto generated low-level Go binding around an user-defined struct.
+type PlugTypesLibUpdate struct {
+	Start *big.Int
+	Slice PlugTypesLibSlice
+}
+
 // PlugSocketMetaData contains all meta data concerning the PlugSocket contract.
 var PlugSocketMetaData = &bind.MetaData{
-	ABI: "[{\"type\":\"constructor\",\"inputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"fallback\",\"stateMutability\":\"payable\"},{\"type\":\"receive\",\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"cancelOwnershipHandover\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"completeOwnershipHandover\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"domain\",\"inputs\":[],\"outputs\":[{\"name\":\"domain\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.EIP712Domain\",\"components\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"domainHash\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getEIP712DomainHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.EIP712Domain\",\"components\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getLivePlugsHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getLivePlugsSigner\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"signer\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPlugArrayHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getPlugHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plug\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getPlugsDigest\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"digest\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPlugsHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"initialize\",\"inputs\":[{\"name\":\"owner\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"oneClicker\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"name\",\"inputs\":[],\"outputs\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"oneClick\",\"inputs\":[{\"name\":\"oneClickers\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"allowance\",\"type\":\"bool[]\",\"internalType\":\"bool[]\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"oneClickersToAllowed\",\"inputs\":[{\"name\":\"oneClicker\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"allowed\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"owner\",\"inputs\":[],\"outputs\":[{\"name\":\"result\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"ownershipHandoverExpiresAt\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"solver\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"gas\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"proxiableUUID\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"renounceOwnership\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"requestOwnershipHandover\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"symbol\",\"inputs\":[],\"outputs\":[{\"name\":\"symbol\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"transferOwnership\",\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"upgradeToAndCall\",\"inputs\":[{\"name\":\"newImplementation\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"event\",\"name\":\"OwnershipHandoverCanceled\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OwnershipHandoverRequested\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OwnershipTransferred\",\"inputs\":[{\"name\":\"oldOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"newOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Upgraded\",\"inputs\":[{\"name\":\"implementation\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"AlreadyInitialized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"NewOwnerIsZeroAddress\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"NoHandoverRequest\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"PlugFailed\",\"inputs\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"reason\",\"type\":\"string\",\"internalType\":\"string\"}]},{\"type\":\"error\",\"name\":\"Reentrancy\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Unauthorized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"UnauthorizedCallContext\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"UpgradeFailed\",\"inputs\":[]}]",
+	ABI: "[{\"type\":\"constructor\",\"inputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"fallback\",\"stateMutability\":\"payable\"},{\"type\":\"receive\",\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"cancelOwnershipHandover\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"completeOwnershipHandover\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"domain\",\"inputs\":[],\"outputs\":[{\"name\":\"domain\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.EIP712Domain\",\"components\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"domainHash\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getEIP712DomainHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.EIP712Domain\",\"components\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\",\"internalType\":\"address\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getLivePlugsHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getLivePlugsSigner\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"signer\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPlugArrayHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getPlugHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plug\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getPlugsDigest\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"digest\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"getPlugsHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getSliceHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getUpdateArrayHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"getUpdateHash\",\"inputs\":[{\"name\":\"input\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Update\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}],\"outputs\":[{\"name\":\"typeHash\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"initialize\",\"inputs\":[{\"name\":\"owner\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"oneClicker\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"name\",\"inputs\":[],\"outputs\":[{\"name\":\"name\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"function\",\"name\":\"oneClick\",\"inputs\":[{\"name\":\"oneClickers\",\"type\":\"address[]\",\"internalType\":\"address[]\"},{\"name\":\"allowance\",\"type\":\"bool[]\",\"internalType\":\"bool[]\"}],\"outputs\":[],\"stateMutability\":\"nonpayable\"},{\"type\":\"function\",\"name\":\"oneClickersToAllowed\",\"inputs\":[{\"name\":\"oneClicker\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"allowed\",\"type\":\"bool\",\"internalType\":\"bool\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"owner\",\"inputs\":[],\"outputs\":[{\"name\":\"result\",\"type\":\"address\",\"internalType\":\"address\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"ownershipHandoverExpiresAt\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"result\",\"type\":\"uint256\",\"internalType\":\"uint256\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"plug\",\"inputs\":[{\"name\":\"livePlugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.LivePlugs\",\"components\":[{\"name\":\"plugs\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Plugs\",\"components\":[{\"name\":\"socket\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"plugs\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Plug[]\",\"components\":[{\"name\":\"selector\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"to\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"value\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"updates\",\"type\":\"tuple[]\",\"internalType\":\"structPlugTypesLib.Update[]\",\"components\":[{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"slice\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Slice\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"start\",\"type\":\"uint256\",\"internalType\":\"uint256\"},{\"name\":\"length\",\"type\":\"uint256\",\"internalType\":\"uint256\"}]}]}]},{\"name\":\"solver\",\"type\":\"bytes\",\"internalType\":\"bytes\"},{\"name\":\"salt\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"signature\",\"type\":\"bytes\",\"internalType\":\"bytes\"}]},{\"name\":\"solver\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[{\"name\":\"results\",\"type\":\"tuple\",\"internalType\":\"structPlugTypesLib.Result\",\"components\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"error\",\"type\":\"string\",\"internalType\":\"string\"}]}],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"proxiableUUID\",\"inputs\":[],\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\",\"internalType\":\"bytes32\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"renounceOwnership\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"requestOwnershipHandover\",\"inputs\":[],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"symbol\",\"inputs\":[],\"outputs\":[{\"name\":\"symbol\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"view\"},{\"type\":\"function\",\"name\":\"transferOwnership\",\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\",\"internalType\":\"address\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"upgradeToAndCall\",\"inputs\":[{\"name\":\"newImplementation\",\"type\":\"address\",\"internalType\":\"address\"},{\"name\":\"data\",\"type\":\"bytes\",\"internalType\":\"bytes\"}],\"outputs\":[],\"stateMutability\":\"payable\"},{\"type\":\"function\",\"name\":\"version\",\"inputs\":[],\"outputs\":[{\"name\":\"version\",\"type\":\"string\",\"internalType\":\"string\"}],\"stateMutability\":\"pure\"},{\"type\":\"event\",\"name\":\"OwnershipHandoverCanceled\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OwnershipHandoverRequested\",\"inputs\":[{\"name\":\"pendingOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"OwnershipTransferred\",\"inputs\":[{\"name\":\"oldOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"},{\"name\":\"newOwner\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"event\",\"name\":\"Upgraded\",\"inputs\":[{\"name\":\"implementation\",\"type\":\"address\",\"indexed\":true,\"internalType\":\"address\"}],\"anonymous\":false},{\"type\":\"error\",\"name\":\"AlreadyInitialized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"FnSelectorNotRecognized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"NewOwnerIsZeroAddress\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"NoHandoverRequest\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"PlugFailed\",\"inputs\":[{\"name\":\"index\",\"type\":\"uint8\",\"internalType\":\"uint8\"},{\"name\":\"reason\",\"type\":\"string\",\"internalType\":\"string\"}]},{\"type\":\"error\",\"name\":\"Reentrancy\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"Unauthorized\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"UnauthorizedCallContext\",\"inputs\":[]},{\"type\":\"error\",\"name\":\"UpgradeFailed\",\"inputs\":[]}]",
 }
 
 // PlugSocketABI is the input ABI used to generate the binding from.
@@ -309,9 +323,9 @@ func (_PlugSocket *PlugSocketCallerSession) GetEIP712DomainHash(input PlugTypesL
 	return _PlugSocket.Contract.GetEIP712DomainHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetLivePlugsHash is a free data retrieval call binding the contract method 0x5c2b1d15.
+// GetLivePlugsHash is a free data retrieval call binding the contract method 0xb51f81f6.
 //
-// Solidity: function getLivePlugsHash(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getLivePlugsHash(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCaller) GetLivePlugsHash(opts *bind.CallOpts, input PlugTypesLibLivePlugs) ([32]byte, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getLivePlugsHash", input)
@@ -326,23 +340,23 @@ func (_PlugSocket *PlugSocketCaller) GetLivePlugsHash(opts *bind.CallOpts, input
 
 }
 
-// GetLivePlugsHash is a free data retrieval call binding the contract method 0x5c2b1d15.
+// GetLivePlugsHash is a free data retrieval call binding the contract method 0xb51f81f6.
 //
-// Solidity: function getLivePlugsHash(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getLivePlugsHash(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketSession) GetLivePlugsHash(input PlugTypesLibLivePlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetLivePlugsHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetLivePlugsHash is a free data retrieval call binding the contract method 0x5c2b1d15.
+// GetLivePlugsHash is a free data retrieval call binding the contract method 0xb51f81f6.
 //
-// Solidity: function getLivePlugsHash(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getLivePlugsHash(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCallerSession) GetLivePlugsHash(input PlugTypesLibLivePlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetLivePlugsHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetLivePlugsSigner is a free data retrieval call binding the contract method 0xc2a11d7e.
+// GetLivePlugsSigner is a free data retrieval call binding the contract method 0x190dc9ac.
 //
-// Solidity: function getLivePlugsSigner(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) view returns(address signer)
+// Solidity: function getLivePlugsSigner(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) view returns(address signer)
 func (_PlugSocket *PlugSocketCaller) GetLivePlugsSigner(opts *bind.CallOpts, input PlugTypesLibLivePlugs) (common.Address, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getLivePlugsSigner", input)
@@ -357,23 +371,23 @@ func (_PlugSocket *PlugSocketCaller) GetLivePlugsSigner(opts *bind.CallOpts, inp
 
 }
 
-// GetLivePlugsSigner is a free data retrieval call binding the contract method 0xc2a11d7e.
+// GetLivePlugsSigner is a free data retrieval call binding the contract method 0x190dc9ac.
 //
-// Solidity: function getLivePlugsSigner(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) view returns(address signer)
+// Solidity: function getLivePlugsSigner(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) view returns(address signer)
 func (_PlugSocket *PlugSocketSession) GetLivePlugsSigner(input PlugTypesLibLivePlugs) (common.Address, error) {
 	return _PlugSocket.Contract.GetLivePlugsSigner(&_PlugSocket.CallOpts, input)
 }
 
-// GetLivePlugsSigner is a free data retrieval call binding the contract method 0xc2a11d7e.
+// GetLivePlugsSigner is a free data retrieval call binding the contract method 0x190dc9ac.
 //
-// Solidity: function getLivePlugsSigner(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) input) view returns(address signer)
+// Solidity: function getLivePlugsSigner(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) input) view returns(address signer)
 func (_PlugSocket *PlugSocketCallerSession) GetLivePlugsSigner(input PlugTypesLibLivePlugs) (common.Address, error) {
 	return _PlugSocket.Contract.GetLivePlugsSigner(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugArrayHash is a free data retrieval call binding the contract method 0x748e4da6.
+// GetPlugArrayHash is a free data retrieval call binding the contract method 0xe450bc51.
 //
-// Solidity: function getPlugArrayHash((address,bytes,uint256,uint256)[] input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugArrayHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[] input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCaller) GetPlugArrayHash(opts *bind.CallOpts, input []PlugTypesLibPlug) ([32]byte, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getPlugArrayHash", input)
@@ -388,23 +402,23 @@ func (_PlugSocket *PlugSocketCaller) GetPlugArrayHash(opts *bind.CallOpts, input
 
 }
 
-// GetPlugArrayHash is a free data retrieval call binding the contract method 0x748e4da6.
+// GetPlugArrayHash is a free data retrieval call binding the contract method 0xe450bc51.
 //
-// Solidity: function getPlugArrayHash((address,bytes,uint256,uint256)[] input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugArrayHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[] input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketSession) GetPlugArrayHash(input []PlugTypesLibPlug) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugArrayHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugArrayHash is a free data retrieval call binding the contract method 0x748e4da6.
+// GetPlugArrayHash is a free data retrieval call binding the contract method 0xe450bc51.
 //
-// Solidity: function getPlugArrayHash((address,bytes,uint256,uint256)[] input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugArrayHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[] input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCallerSession) GetPlugArrayHash(input []PlugTypesLibPlug) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugArrayHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugHash is a free data retrieval call binding the contract method 0x68f9e3f4.
+// GetPlugHash is a free data retrieval call binding the contract method 0x06d2d460.
 //
-// Solidity: function getPlugHash((address,bytes,uint256,uint256) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[]) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCaller) GetPlugHash(opts *bind.CallOpts, input PlugTypesLibPlug) ([32]byte, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getPlugHash", input)
@@ -419,23 +433,23 @@ func (_PlugSocket *PlugSocketCaller) GetPlugHash(opts *bind.CallOpts, input Plug
 
 }
 
-// GetPlugHash is a free data retrieval call binding the contract method 0x68f9e3f4.
+// GetPlugHash is a free data retrieval call binding the contract method 0x06d2d460.
 //
-// Solidity: function getPlugHash((address,bytes,uint256,uint256) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[]) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketSession) GetPlugHash(input PlugTypesLibPlug) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugHash is a free data retrieval call binding the contract method 0x68f9e3f4.
+// GetPlugHash is a free data retrieval call binding the contract method 0x06d2d460.
 //
-// Solidity: function getPlugHash((address,bytes,uint256,uint256) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugHash((uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[]) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCallerSession) GetPlugHash(input PlugTypesLibPlug) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugsDigest is a free data retrieval call binding the contract method 0xe43dd213.
+// GetPlugsDigest is a free data retrieval call binding the contract method 0x17943105.
 //
-// Solidity: function getPlugsDigest((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) view returns(bytes32 digest)
+// Solidity: function getPlugsDigest((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) view returns(bytes32 digest)
 func (_PlugSocket *PlugSocketCaller) GetPlugsDigest(opts *bind.CallOpts, input PlugTypesLibPlugs) ([32]byte, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getPlugsDigest", input)
@@ -450,23 +464,23 @@ func (_PlugSocket *PlugSocketCaller) GetPlugsDigest(opts *bind.CallOpts, input P
 
 }
 
-// GetPlugsDigest is a free data retrieval call binding the contract method 0xe43dd213.
+// GetPlugsDigest is a free data retrieval call binding the contract method 0x17943105.
 //
-// Solidity: function getPlugsDigest((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) view returns(bytes32 digest)
+// Solidity: function getPlugsDigest((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) view returns(bytes32 digest)
 func (_PlugSocket *PlugSocketSession) GetPlugsDigest(input PlugTypesLibPlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugsDigest(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugsDigest is a free data retrieval call binding the contract method 0xe43dd213.
+// GetPlugsDigest is a free data retrieval call binding the contract method 0x17943105.
 //
-// Solidity: function getPlugsDigest((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) view returns(bytes32 digest)
+// Solidity: function getPlugsDigest((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) view returns(bytes32 digest)
 func (_PlugSocket *PlugSocketCallerSession) GetPlugsDigest(input PlugTypesLibPlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugsDigest(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugsHash is a free data retrieval call binding the contract method 0xfa6b2348.
+// GetPlugsHash is a free data retrieval call binding the contract method 0xe75e0ad6.
 //
-// Solidity: function getPlugsHash((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugsHash((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCaller) GetPlugsHash(opts *bind.CallOpts, input PlugTypesLibPlugs) ([32]byte, error) {
 	var out []interface{}
 	err := _PlugSocket.contract.Call(opts, &out, "getPlugsHash", input)
@@ -481,18 +495,111 @@ func (_PlugSocket *PlugSocketCaller) GetPlugsHash(opts *bind.CallOpts, input Plu
 
 }
 
-// GetPlugsHash is a free data retrieval call binding the contract method 0xfa6b2348.
+// GetPlugsHash is a free data retrieval call binding the contract method 0xe75e0ad6.
 //
-// Solidity: function getPlugsHash((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugsHash((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketSession) GetPlugsHash(input PlugTypesLibPlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugsHash(&_PlugSocket.CallOpts, input)
 }
 
-// GetPlugsHash is a free data retrieval call binding the contract method 0xfa6b2348.
+// GetPlugsHash is a free data retrieval call binding the contract method 0xe75e0ad6.
 //
-// Solidity: function getPlugsHash((address,(address,bytes,uint256,uint256)[],bytes,bytes) input) pure returns(bytes32 typeHash)
+// Solidity: function getPlugsHash((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) input) pure returns(bytes32 typeHash)
 func (_PlugSocket *PlugSocketCallerSession) GetPlugsHash(input PlugTypesLibPlugs) ([32]byte, error) {
 	return _PlugSocket.Contract.GetPlugsHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetSliceHash is a free data retrieval call binding the contract method 0x161937ea.
+//
+// Solidity: function getSliceHash((uint8,uint256,uint256) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCaller) GetSliceHash(opts *bind.CallOpts, input PlugTypesLibSlice) ([32]byte, error) {
+	var out []interface{}
+	err := _PlugSocket.contract.Call(opts, &out, "getSliceHash", input)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// GetSliceHash is a free data retrieval call binding the contract method 0x161937ea.
+//
+// Solidity: function getSliceHash((uint8,uint256,uint256) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketSession) GetSliceHash(input PlugTypesLibSlice) ([32]byte, error) {
+	return _PlugSocket.Contract.GetSliceHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetSliceHash is a free data retrieval call binding the contract method 0x161937ea.
+//
+// Solidity: function getSliceHash((uint8,uint256,uint256) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCallerSession) GetSliceHash(input PlugTypesLibSlice) ([32]byte, error) {
+	return _PlugSocket.Contract.GetSliceHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetUpdateArrayHash is a free data retrieval call binding the contract method 0x0b21e86f.
+//
+// Solidity: function getUpdateArrayHash((uint256,(uint8,uint256,uint256))[] input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCaller) GetUpdateArrayHash(opts *bind.CallOpts, input []PlugTypesLibUpdate) ([32]byte, error) {
+	var out []interface{}
+	err := _PlugSocket.contract.Call(opts, &out, "getUpdateArrayHash", input)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// GetUpdateArrayHash is a free data retrieval call binding the contract method 0x0b21e86f.
+//
+// Solidity: function getUpdateArrayHash((uint256,(uint8,uint256,uint256))[] input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketSession) GetUpdateArrayHash(input []PlugTypesLibUpdate) ([32]byte, error) {
+	return _PlugSocket.Contract.GetUpdateArrayHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetUpdateArrayHash is a free data retrieval call binding the contract method 0x0b21e86f.
+//
+// Solidity: function getUpdateArrayHash((uint256,(uint8,uint256,uint256))[] input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCallerSession) GetUpdateArrayHash(input []PlugTypesLibUpdate) ([32]byte, error) {
+	return _PlugSocket.Contract.GetUpdateArrayHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetUpdateHash is a free data retrieval call binding the contract method 0xb2f65adb.
+//
+// Solidity: function getUpdateHash((uint256,(uint8,uint256,uint256)) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCaller) GetUpdateHash(opts *bind.CallOpts, input PlugTypesLibUpdate) ([32]byte, error) {
+	var out []interface{}
+	err := _PlugSocket.contract.Call(opts, &out, "getUpdateHash", input)
+
+	if err != nil {
+		return *new([32]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+
+	return out0, err
+
+}
+
+// GetUpdateHash is a free data retrieval call binding the contract method 0xb2f65adb.
+//
+// Solidity: function getUpdateHash((uint256,(uint8,uint256,uint256)) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketSession) GetUpdateHash(input PlugTypesLibUpdate) ([32]byte, error) {
+	return _PlugSocket.Contract.GetUpdateHash(&_PlugSocket.CallOpts, input)
+}
+
+// GetUpdateHash is a free data retrieval call binding the contract method 0xb2f65adb.
+//
+// Solidity: function getUpdateHash((uint256,(uint8,uint256,uint256)) input) pure returns(bytes32 typeHash)
+func (_PlugSocket *PlugSocketCallerSession) GetUpdateHash(input PlugTypesLibUpdate) ([32]byte, error) {
+	return _PlugSocket.Contract.GetUpdateHash(&_PlugSocket.CallOpts, input)
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -796,46 +903,46 @@ func (_PlugSocket *PlugSocketTransactorSession) OneClick(oneClickers []common.Ad
 	return _PlugSocket.Contract.OneClick(&_PlugSocket.TransactOpts, oneClickers, allowance)
 }
 
-// Plug is a paid mutator transaction binding the contract method 0xd4a5b876.
+// Plug is a paid mutator transaction binding the contract method 0x53f022b4.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketTransactor) Plug(opts *bind.TransactOpts, livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
-	return _PlugSocket.contract.Transact(opts, "plug", livePlugs, solver)
+// Solidity: function plug((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) plugs) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketTransactor) Plug(opts *bind.TransactOpts, plugs PlugTypesLibPlugs) (*types.Transaction, error) {
+	return _PlugSocket.contract.Transact(opts, "plug", plugs)
 }
 
-// Plug is a paid mutator transaction binding the contract method 0xd4a5b876.
+// Plug is a paid mutator transaction binding the contract method 0x53f022b4.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketSession) Plug(livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
-	return _PlugSocket.Contract.Plug(&_PlugSocket.TransactOpts, livePlugs, solver)
+// Solidity: function plug((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) plugs) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketSession) Plug(plugs PlugTypesLibPlugs) (*types.Transaction, error) {
+	return _PlugSocket.Contract.Plug(&_PlugSocket.TransactOpts, plugs)
 }
 
-// Plug is a paid mutator transaction binding the contract method 0xd4a5b876.
+// Plug is a paid mutator transaction binding the contract method 0x53f022b4.
 //
-// Solidity: function plug(((address,(address,bytes,uint256,uint256)[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketTransactorSession) Plug(livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
-	return _PlugSocket.Contract.Plug(&_PlugSocket.TransactOpts, livePlugs, solver)
+// Solidity: function plug((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes) plugs) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketTransactorSession) Plug(plugs PlugTypesLibPlugs) (*types.Transaction, error) {
+	return _PlugSocket.Contract.Plug(&_PlugSocket.TransactOpts, plugs)
 }
 
-// Plug0 is a paid mutator transaction binding the contract method 0xf702cff1.
+// Plug0 is a paid mutator transaction binding the contract method 0xaf433c7c.
 //
-// Solidity: function plug((address,(address,bytes,uint256,uint256)[],bytes,bytes) plugs) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketTransactor) Plug0(opts *bind.TransactOpts, plugs PlugTypesLibPlugs) (*types.Transaction, error) {
-	return _PlugSocket.contract.Transact(opts, "plug0", plugs)
+// Solidity: function plug(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketTransactor) Plug0(opts *bind.TransactOpts, livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
+	return _PlugSocket.contract.Transact(opts, "plug0", livePlugs, solver)
 }
 
-// Plug0 is a paid mutator transaction binding the contract method 0xf702cff1.
+// Plug0 is a paid mutator transaction binding the contract method 0xaf433c7c.
 //
-// Solidity: function plug((address,(address,bytes,uint256,uint256)[],bytes,bytes) plugs) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketSession) Plug0(plugs PlugTypesLibPlugs) (*types.Transaction, error) {
-	return _PlugSocket.Contract.Plug0(&_PlugSocket.TransactOpts, plugs)
+// Solidity: function plug(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketSession) Plug0(livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
+	return _PlugSocket.Contract.Plug0(&_PlugSocket.TransactOpts, livePlugs, solver)
 }
 
-// Plug0 is a paid mutator transaction binding the contract method 0xf702cff1.
+// Plug0 is a paid mutator transaction binding the contract method 0xaf433c7c.
 //
-// Solidity: function plug((address,(address,bytes,uint256,uint256)[],bytes,bytes) plugs) payable returns((uint8,string) results)
-func (_PlugSocket *PlugSocketTransactorSession) Plug0(plugs PlugTypesLibPlugs) (*types.Transaction, error) {
-	return _PlugSocket.Contract.Plug0(&_PlugSocket.TransactOpts, plugs)
+// Solidity: function plug(((address,(uint8,address,bytes,uint256,(uint256,(uint8,uint256,uint256))[])[],bytes,bytes),bytes) livePlugs, address solver) payable returns((uint8,string) results)
+func (_PlugSocket *PlugSocketTransactorSession) Plug0(livePlugs PlugTypesLibLivePlugs, solver common.Address) (*types.Transaction, error) {
+	return _PlugSocket.Contract.Plug0(&_PlugSocket.TransactOpts, livePlugs, solver)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
