@@ -86,7 +86,32 @@ export const postAnimations = {
 						/>
 					))}
 				</motion.div>
-	
+
 			))}
-		</div>)
+		</div>),
+	"infra-race": (<div className="grid grid-cols-11 grid-rows-10 w-full h-full">
+		{Array.from({ length: 110 }).map((_, index) => {
+			const row = Math.floor(index / 11);
+			const col = index % 11;
+			return (
+				<motion.div 
+					key={index} 
+					className={cn(
+						"w-full h-full",
+						index % 2 == 0 ? "bg-plug-green/10" : ""
+					)}
+					animate={{
+						y: [-2, 2, -2],
+						x: [-1, 1, -1]
+					}}
+					transition={{
+						duration: 2,
+						repeat: Infinity,
+						ease: "easeInOut",
+						delay: (row * 0.1) + (col * 0.1)
+					}}
+				/>
+			)
+		})}
+	</div>)
 }
