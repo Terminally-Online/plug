@@ -21,6 +21,7 @@ import { PlugMockERC20 } from "../../mocks/Plug.Mock.ERC20.sol";
 import { PlugMockERC721 } from "../../mocks/Plug.Mock.ERC721.sol";
 import { PlugMockERC1155 } from "../../mocks/Plug.Mock.ERC1155.sol";
 import { PlugMockEcho } from "../../mocks/Plug.Mock.Echo.sol";
+import { PlugMockDynamicData } from "../../mocks/Plug.Mock.DynamicData.sol";
 
 /// @dev `address(bytes20(uint160(uint256(keccak256("hevm cheat code")))))`.
 address constant _VM_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
@@ -403,6 +404,7 @@ abstract contract TestPlug is TestPlus {
     PlugMockERC721 internal mockERC721;
     PlugMockERC1155 internal mockERC1155;
     PlugMockDex internal dex;
+    PlugMockDynamicData internal mockDynamicData;
 
     Plug internal plug;
     PlugFactory internal factory;
@@ -429,6 +431,12 @@ abstract contract TestPlug is TestPlus {
 
     address internal recipient = address(0x3);
 
+    event ArrayReceived(uint256[] values);
+    event StringReceived(string value);
+    event BytesReceived(bytes value);
+    event StructReceived(uint256 id, string name, uint256[] values);
+    event NestedArrayReceived(uint256[][] values);
+
     function setUpPlug() internal {
         factoryOwner = _randomNonZeroAddress();
         signer = vm.addr(signerPrivateKey);
@@ -439,6 +447,7 @@ abstract contract TestPlug is TestPlus {
         mockERC20 = new PlugMockERC20();
         mockERC721 = new PlugMockERC721();
         mockERC1155 = new PlugMockERC1155();
+        mockDynamicData = new PlugMockDynamicData();
 
         plug = deployPlug();
         factory = deployFactory();
