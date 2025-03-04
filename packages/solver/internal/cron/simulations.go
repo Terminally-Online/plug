@@ -25,7 +25,19 @@ func Simulations(s solver.Solver) {
 
 	solutions := make([]solver.Solution, len(intents))
 	for index, intent := range intents {
-		if solution, err := s.Solve(&intent); err != nil {
+		if intent.Saved {
+			solution, err := s.RebuildSolutionFromModels(&intent)
+			if err != nil {
+				solutions[index] = solver.Solution{
+					Status: solver.SolutionStatus{
+						Success: false,
+						Error:   err.Error(),
+					},
+				}
+				continue
+			}
+			solutions[index] = *solution
+		} else if solution, err := s.Solve(&intent); err != nil {
 			solutions[index] = solver.Solution{
 				Status: solver.SolutionStatus{
 					Success: false,

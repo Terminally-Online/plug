@@ -24,6 +24,9 @@ func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	inputs.ApiKeyId = apiKey.Id
+	if val, exists := inputs.Options["save"]; exists {
+		inputs.Saved = val.(bool)
+	}
 	if err := database.DB.Omit("nextSimulationAt", "periodEndAt").Create(&inputs).Error; err != nil {
 		utils.MakeHttpError(w, "failed to save intent: "+err.Error(), http.StatusInternalServerError)
 		return

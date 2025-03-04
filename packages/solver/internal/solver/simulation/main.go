@@ -16,10 +16,10 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*models.Run, error) {
+func SimulateRaw(livePlug *models.LivePlug, ABI *string) (*models.Run, error) {
 	ctx := context.Background()
 
-	rpcUrl, err := client.GetQuicknodeUrl(transactionBundle.ChainId)
+	rpcUrl, err := client.GetQuicknodeUrl(livePlug.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -31,21 +31,21 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 	defer rpcClient.Close()
 
 	tx := map[string]interface{}{
-		"from": transactionBundle.From,
-		"to":   transactionBundle.To,
+		"from": livePlug.From,
+		"to":   livePlug.To,
 	}
 
-	if len(transactionBundle.Data) > 0 {
-		tx["data"] = transactionBundle.Data
+	if len(livePlug.Data) > 0 {
+		tx["data"] = livePlug.Data
 	}
 
-	if transactionBundle.Value != nil {
-		value := hexutil.EncodeBig(transactionBundle.Value)
+	if livePlug.Value != nil {
+		value := hexutil.EncodeBig(livePlug.Value)
 		tx["value"] = value
 	}
 
-	if transactionBundle.Gas != nil {
-		gas := hexutil.EncodeBig(transactionBundle.Gas)
+	if livePlug.Gas != nil {
+		gas := hexutil.EncodeBig(livePlug.Gas)
 		tx["gas"] = gas
 	}
 	fmt.Printf("tx: %v\n", tx)
@@ -91,12 +91,12 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 	}
 
 	run := &models.Run{
-		TransactionBundleId: transactionBundle.Id,
-		IntentId:            transactionBundle.IntentId,
-		From:                transactionBundle.From,
-		To:                  transactionBundle.To,
-		Value:               transactionBundle.Value,
-		Status:              status,
+		LivePlugId: livePlug.Id,
+		IntentId:   livePlug.IntentId,
+		From:       livePlug.From,
+		To:         livePlug.To,
+		Value:      livePlug.Value,
+		Status:     status,
 		ResultData: models.RunOutputData{
 			Raw: trace.Output,
 		},
@@ -113,7 +113,7 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 		run.Error = &trace.Error
 	}
 
-	if ABI != nil && len(trace.Output) > 0 && len(transactionBundle.Data) >= 4 {
+	if ABI != nil && len(trace.Output) > 0 && len(livePlug.Data) >= 4 {
 		parsedABI, err := abi.JSON(strings.NewReader(*ABI))
 		if err != nil {
 			errorStr := fmt.Sprintf("failed to parse ABI: %v", err)
@@ -121,7 +121,7 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 			return run, nil
 		}
 
-		methodIDHex := transactionBundle.Data[:10]
+		methodIDHex := livePlug.Data[:10]
 		methodID := common.Hex2Bytes(methodIDHex[2:])
 		var method *abi.Method
 		for _, m := range parsedABI.Methods {
@@ -149,8 +149,8 @@ func SimulateRaw(transactionBundle *models.TransactionBundle, ABI *string) (*mod
 	return run, nil
 }
 
-func Simulate(transactionBundle *models.TransactionBundle) (*models.Run, error) {
-	runResponse, err := SimulateRaw(transactionBundle, &plug_router.PlugRouterMetaData.ABI)
+func Simulate(livePlug *models.LivePlug) (*models.Run, error) {
+	runResponse, err := SimulateRaw(livePlug, &plug_router.PlugRouterMetaData.ABI)
 	if err != nil {
 		return nil, err
 	}

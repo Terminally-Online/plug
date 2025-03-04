@@ -178,23 +178,23 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 	}, nil
 }
 
-func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.TransactionBundle, err error) {
+func (s *Solver) BuildLivePlugModels(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.LivePlug, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
 	}
 
-	// TODO: we should be able to use the pack method with translated models.Transactions instead of signature.Plugs to be sure it's always backwards compatible.
+	// TODO MASON: we should be able to use the pack method with translated models.Transactions instead of signature.Plugs to be sure it's always backwards compatible.
 	plugCalldata, err := routerAbi.Pack("plug", livePlugs)
 	if err != nil {
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
 	identifier := []byte("plug")
-	transactions := make([]models.Transaction, len(livePlugs.Plugs.Plugs))
+	plugs := make([]models.Plug, len(livePlugs.Plugs.Plugs))
 	for idx, plug := range livePlugs.Plugs.Plugs {
 		data := append(plug.Data, identifier...)
-		transaction := models.Transaction{
+		plugModel := models.Plug{
 			From:      intent.From,
 			To:        plug.To.Hex(),
 			Data:      hexutil.Bytes(data).String(),
@@ -202,22 +202,84 @@ func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs sig
 			Gas:       plug.Gas,
 			Exclusive: plug.Exclusive,
 		}
-		transactions[idx] = transaction
+		plugs[idx] = plugModel
 	}
 
 	data := append(plugCalldata, identifier...)
 	signature := hexutil.Bytes(livePlugs.Signature).String()
-	bundle := models.TransactionBundle{
-		IntentId:     intent.Id,
-		Signature:    &signature,
-		Transactions: transactions,
-		Data:         hexutil.Bytes(data).String(),
-		ChainId:      intent.ChainId,
-		From:         intent.From,
-		To:           references.Networks[intent.ChainId].References["plug"]["router"],
+	bundle := models.LivePlug{
+		IntentId:  intent.Id,
+		Signature: &signature,
+		Plugs:     plugs,
+		Data:      hexutil.Bytes(data).String(),
+		ChainId:   intent.ChainId,
+		From:      intent.From,
+		To:        references.Networks[intent.ChainId].References["plug"]["router"],
 	}
 
 	return &bundle, nil
+}
+
+func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
+	// Get the latest LivePlug for this intent
+	var livePlug models.LivePlug
+	if err := database.DB.Where("intent_id = ?", intent.Id).
+		Order("created_at DESC").
+		First(&livePlug).Error; err != nil {
+		return nil, fmt.Errorf("failed to find live plug: %v", err)
+	}
+
+	// Get the latest Run for this intent
+	var run models.Run
+	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlug.Id).
+		Order("created_at DESC").
+		First(&run).Error; err != nil {
+		return nil, fmt.Errorf("failed to find run: %v", err)
+	}
+
+	// Get the associated plugs
+	var plugs []models.Plug
+	if err := database.DB.Where("bundle_id = ?", livePlug.Id).
+		Find(&plugs).Error; err != nil {
+		return nil, fmt.Errorf("failed to find plugs: %v", err)
+	}
+	livePlug.Plugs = plugs
+
+	// Reconstruct LivePlugs from the stored signature and plugs
+	var livePlugs *signature.LivePlugs
+	if livePlug.Signature != nil {
+		// Only reconstruct LivePlugs if this wasn't an EOA transaction
+		signatureBytes := []byte(*livePlug.Signature)
+
+		// Convert models.Plug to signature.Plug
+		signaturePugs := make([]signature.Plug, len(plugs))
+		for i, plug := range plugs {
+			signaturePugs[i] = signature.Plug{
+				To:        common.HexToAddress(plug.To),
+				Value:     plug.Value,
+				Gas:       plug.Gas,
+				Data:      []byte(plug.Data),
+				Exclusive: plug.Exclusive,
+			}
+		}
+
+		livePlugs = &signature.LivePlugs{
+			Signature: signatureBytes,
+			Plugs: signature.Plugs{
+				Socket: common.HexToAddress(intent.From),
+				Plugs:  signaturePugs,
+			},
+		}
+	}
+
+	return &Solution{
+		Status:       SolutionStatus{Success: run.Status == "success"},
+		Transactions: &livePlug.Plugs,
+		LivePlugs:    livePlugs,
+		Intent:       intent,
+		Run:          &run,
+		Transaction:  &livePlug,
+	}, nil
 }
 
 func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error) {
@@ -234,8 +296,8 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	identifier := []byte("plug")
 	data := append(plugs[0].Data, identifier...)
 
-	transactions := make([]models.Transaction, len(plugs))
-	transactions[0] = models.Transaction{
+	plugModels := make([]models.Plug, len(plugs))
+	plugModels[0] = models.Plug{
 		From:      intent.From,
 		To:        plugs[0].To.Hex(),
 		Data:      hexutil.Bytes(data).String(),
@@ -244,24 +306,24 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		Exclusive: plugs[0].Exclusive,
 	}
 
-	transactionBundle := models.TransactionBundle{
-		IntentId:     intent.Id,
-		ChainId:      intent.ChainId,
-		From:         intent.From,
-		To:           plugs[0].To.Hex(),
-		Value:        plugs[0].Value,
-		Gas:          plugs[0].Gas,
-		Data:         hexutil.Bytes(data).String(),
-		Transactions: transactions,
+	livePlug := models.LivePlug{
+		IntentId: intent.Id,
+		ChainId:  intent.ChainId,
+		From:     intent.From,
+		To:       plugs[0].To.Hex(),
+		Value:    plugs[0].Value,
+		Gas:      plugs[0].Gas,
+		Data:     hexutil.Bytes(data).String(),
+		Plugs:    plugModels,
 	}
 
-	if err := database.DB.Create(&transactionBundle).Error; err != nil {
+	if err := database.DB.Create(&livePlug).Error; err != nil {
 		return nil, fmt.Errorf("failed to save transaction bundle: %v", err)
 	}
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.SimulateRaw(&transactionBundle, nil)
+		run, err = simulation.SimulateRaw(&livePlug, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -274,10 +336,10 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 
 	return &Solution{
 		Status:       SolutionStatus{Success: true},
-		Transactions: &transactions,
+		Transactions: &plugModels,
 		Intent:       intent,
 		Run:          run,
-		Transaction:  &transactionBundle,
+		Transaction:  &livePlug,
 	}, nil
 }
 
@@ -296,18 +358,18 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
-	transactionBundle, err := s.BuildPlugTransactionBundle(intent, *livePlugs)
+	livePlugModel, err := s.BuildLivePlugModels(intent, *livePlugs)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := database.DB.Create(transactionBundle).Error; err != nil {
+	if err := database.DB.Create(livePlugModel).Error; err != nil {
 		return nil, fmt.Errorf("failed to save transaction bundle: %v", err)
 	}
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		run, err = simulation.Simulate(transactionBundle)
+		run, err = simulation.Simulate(livePlugModel)
 		if err != nil {
 			return nil, err
 		}
@@ -329,11 +391,11 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 
 	return &Solution{
 		Status:       SolutionStatus{Success: true},
-		Transactions: &transactionBundle.Transactions, // Transactions in the `livePlug`.
-		LivePlugs:    livePlugs,                       // The `livePlug` included in the bundle.
-		Intent:       intent,                          // Intent the solver built from.
-		Run:          run,                             // Simulation results of solver run.
-		Transaction:  transactionBundle,               // Transaction the solver runs.
+		Transactions: &livePlugModel.Plugs, // Transactions in the `livePlug`.
+		LivePlugs:    livePlugs,            // The `livePlug` included in the bundle.
+		Intent:       intent,               // Intent the solver built from.
+		Run:          run,                  // Simulation results of solver run.
+		Transaction:  livePlugModel,        // Transaction the solver runs.
 	}, nil
 }
 

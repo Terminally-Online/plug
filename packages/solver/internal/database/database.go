@@ -117,11 +117,11 @@ func Initialize() (*gorm.DB, error) {
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.ApiKey{},
-		&models.Execution{},
-		&models.Run{},
 		&models.Intent{},
-		&models.Transaction{},
-		&models.TransactionBundle{},
+		&models.LivePlug{},
+		&models.Plug{},
+		&models.Run{},
+		&models.Execution{},
 	)
 }
 
