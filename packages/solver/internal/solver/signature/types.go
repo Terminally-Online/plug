@@ -23,9 +23,10 @@ type EIP712Domain struct {
 }
 
 type Slice struct {
-	Index  uint8    `json:"index"`  // Index of the plug in the sequence that produces this data
-	Start  *big.Int `json:"start"`  // Starting byte position within the result data
-	Length *big.Int `json:"length"` // Length of bytes to extract
+	Name   *string  `json:"name,omitempty"` // Optional name for reference
+	Index  uint8    `json:"index"`          // Index of the plug in the sequence that produces this data
+	Start  *big.Int `json:"start"`          // Starting byte position within the result data
+	Length *big.Int `json:"length"`         // Length of bytes to extract
 }
 
 func (s Slice) Wrap() plug_router.PlugTypesLibSlice {
