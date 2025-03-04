@@ -57,9 +57,11 @@ export const viewedPlugsAtom = atomWithStorage<Set<string>>("plug.viewed", new S
 export const addPlugAtom = atom(null, (_, set, plug: Plug) => {
 	set(plugsAtom, prev => {
 		const exists = prev.some(p => p.id === plug.id)
+
 		if (exists) {
 			return prev.map(p => (p.id === plug.id && p.updatedAt < plug.updatedAt ? { ...p, ...plug } : p))
 		}
+
 		return [plug, ...prev]
 	})
 })

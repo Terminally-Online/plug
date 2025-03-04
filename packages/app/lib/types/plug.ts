@@ -38,8 +38,8 @@ export type ActionSchemas = {
 }
 
 
-type InputValue = { key: string; value: string; name: string } & Partial<Options[number]> | undefined
-type InputValues = Record<string, InputValue>
+export type InputValue = { key: string; value: string; name: string } & Partial<Options[number]> | undefined
+export type InputValues = Record<string, InputValue>
 
 export type Action = {
 	protocol: string

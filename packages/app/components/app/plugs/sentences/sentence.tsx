@@ -1,12 +1,12 @@
 import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
-import { X } from "lucide-react"
+import { Hash, X } from "lucide-react"
 
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, cn, useConnect, useCord } from "@/lib"
+import { Action, cn, InputValue, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
@@ -17,14 +17,16 @@ import { api } from "@/server/client"
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
 	item: string
-	preview?: boolean
-	error?: boolean
 	action: Action
 	actionIndex: number
+	preview?: boolean
+	error?: boolean
+	linked?: InputValue[]
+	dragging?: boolean
 }
 
 export const Sentence: FC<SentenceProps> = memo(
-	({ index, item, action, actionIndex, preview = false, error = false, className, ...props }) => {
+	({ index, item, action, actionIndex, preview = false, error = false, linked = [], dragging = false, className, ...props }) => {
 		const { account: { session } } = useConnect()
 
 		const [column] = useAtom(columnByIndexAtom(index))
@@ -140,22 +142,24 @@ export const Sentence: FC<SentenceProps> = memo(
 			)
 
 		return (
-			<motion.div initial={{ y: 20 }} animate={{ y: 0 }}>
+			<div className="w-full">
 				<Accordion
 					className={cn(
 						"cursor-default hover:bg-white",
 						isValid && isComplete && !error
 							? "border-plug-yellow hover:border-plug-yellow"
 							: "border-plug-red hover:border-plug-red",
+						linked && linked.length > 0 && "border-orange-300 hover:border-orange-300",
 						className
 					)}
+					noPadding
 					data-sentence
 					data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
 					data-valid={isValid && isComplete}
 					data-action-preview={item}
 					{...props}
 				>
-					<div className={cn("flex flex-row items-center font-bold")}>
+					<div className={cn("flex flex-row items-center font-bold p-4")}>
 						<div className="flex w-full flex-wrap items-center gap-[4px]">
 							<div className="flex flex-row items-start gap-[4px]">
 								<div className="relative mt-1 h-6 w-10 flex-shrink-0">
@@ -238,19 +242,28 @@ export const Sentence: FC<SentenceProps> = memo(
 							</Button>
 						)}
 					</div>
+
+					<div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
+						<p className="font-bold w-full flex flex-row gap-2 items-center">
+							<Hash size={14} className="opacity-20" />
+							Amount
+							<span className="ml-auto opacity-40">uint256</span>
+						</p>
+					</div>
 				</Accordion>
 
-				{plug?.actions && actionIndex < plug?.actions.length - 1 && (
+				{!dragging && plug?.actions && actionIndex < plug?.actions.length - 1 && (
 					<div
 						className={cn(
-							"mx-auto h-2 w-[2px]",
+							"mx-auto h-2 w-[1px]",
 							isValid && isComplete && !error
 								? "bg-plug-yellow hover:border-plug-yellow"
-								: "bg-plug-red hover:border-plug-red"
+								: "bg-plug-red hover:border-plug-red",
+							linked && linked.length > 0 && "bg-orange-300 hover:border-orange:300"
 						)}
 					/>
 				)}
-			</motion.div>
+			</div>
 		)
 	}
 )
