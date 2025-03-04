@@ -1,8 +1,13 @@
 package plug
 
 import (
+	"fmt"
+	"solver/bindings/erc_20"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/coil"
+
+	"github.com/ethereum/go-ethereum/log"
 )
 
 var (
@@ -35,6 +40,7 @@ var (
 			Handler:        HandleReadBalance,
 			IsUserSpecific: true,
 			IsSearchable:   true,
+			Coils:          getCoils(ReadBalance),
 		},
 	}
 )
@@ -48,4 +54,24 @@ func New() actions.BaseProtocolHandler {
 		schemas,
 		&PlugOptionsProvider{},
 	)
+}
+
+func getCoils(action string) []coil.Update {
+	switch action {
+	case ReadBalance:
+		erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
+		if err != nil {
+			log.Error("failed to get abi", "error", err)
+			return nil
+		}
+		coils, err := coil.FindCoils(erc20Abi, "balanceOf", nil, nil)
+		fmt.Printf("\n\ncoilsaaa: %v\n\n", coils)
+		if err != nil {
+			log.Error("failed to find coils", "error", err)
+			return nil
+		}
+		return coils
+	default:
+		return nil
+	}
 }

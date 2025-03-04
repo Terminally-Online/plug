@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/coil"
 )
 
 type Chain struct {
@@ -34,6 +35,7 @@ type Schema struct {
 	Sentence       string          `json:"sentence"`
 	IsUserSpecific bool            `json:"isUserSpecific,omitempty"`
 	Options        map[int]Options `json:"options,omitempty"`
+	Coils          []coil.Update   `json:"coils,omitempty"`
 }
 
 func (o Options) MarshalJSON() ([]byte, error) {

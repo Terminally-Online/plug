@@ -3,6 +3,7 @@ package signature
 import (
 	"math/big"
 	"solver/bindings/plug_router"
+	"solver/internal/solver/coil"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -22,39 +23,12 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
-type Slice struct {
-	Name   *string  `json:"name,omitempty"` // Optional name for reference
-	Index  uint8    `json:"index"`          // Index of the plug in the sequence that produces this data
-	Start  *big.Int `json:"start"`          // Starting byte position within the result data
-	Length *big.Int `json:"length"`         // Length of bytes to extract
-}
-
-func (s Slice) Wrap() plug_router.PlugTypesLibSlice {
-	return plug_router.PlugTypesLibSlice{
-		Index:  s.Index,
-		Start:  s.Start,
-		Length: s.Length,
-	}
-}
-
-type Update struct {
-	Start *big.Int `json:"start"` // Starting position where the slice should be inserted
-	Slice Slice    `json:"slice"` // The slice specification
-}
-
-func (p Update) Wrap() plug_router.PlugTypesLibUpdate {
-	return plug_router.PlugTypesLibUpdate{
-		Start: p.Start,
-		Slice: p.Slice.Wrap(),
-	}
-}
-
 type Plug struct {
 	Selector uint8          `json:"selector"` // 0x00 for call, 0x01 for delegatecall
 	To       common.Address `json:"to"`       // Target contract address
 	Data     []byte         `json:"data"`     // Calldata for the interaction
 	Value    *big.Int       `json:"value"`    // ETH value to send with the call
-	Updates  []Update       `json:"updates"`  // List of updates to apply to the data
+	Updates  []coil.Update  `json:"updates"`  // List of updates to apply to the data
 
 	Exclusive bool        `json:"exclusive,omitempty"`
 	Meta      interface{} `json:"meta,omitempty"`

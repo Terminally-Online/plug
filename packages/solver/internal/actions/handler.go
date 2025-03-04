@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
+	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -50,6 +51,7 @@ type ActionDefinition struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
 	Handler        TransactionHandler
+	Coils          []coil.Update
 	IsUserSpecific bool
 	IsSearchable   bool
 }
@@ -96,6 +98,7 @@ func NewBaseHandler(
 				}(),
 				Sentence:       def.Sentence,
 				IsUserSpecific: def.IsUserSpecific,
+				Coils:          def.Coils,
 			},
 		}
 	}

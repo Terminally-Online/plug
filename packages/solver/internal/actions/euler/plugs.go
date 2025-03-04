@@ -62,20 +62,6 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		return nil, utils.ErrTransaction(err.Error())
 	}
 
-	coils, err := coil.NewCoil(erc20Abi, "approve")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create coil: %w", err)
-	}
-	approvalAmountUpdate := []signature.Update{coils.Updates[0]}
-
-	fmt.Printf("coil: %v\n", coils)
-
-	secondCoils, err := coil.NewCoil(vaultAbi, "accountLiquidity")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create second coil: %w", err)
-	}
-	fmt.Printf("secondCoil: %v\n", secondCoils)
-
 	depositCalldata, err := vaultAbi.Pack(
 		"deposit",
 		amount,
@@ -90,7 +76,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		params.From,
 		big.NewInt(0),
 		depositCalldata,
-		&approvalAmountUpdate,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
@@ -618,7 +604,7 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 	return nil, nil
 }
 
-func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte, updates *[]signature.Update) (signature.Plug, error) {
+func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte, updates *[]coil.Update) (signature.Plug, error) {
 	evc, err := euler_evc.EulerEvcMetaData.GetAbi()
 	if err != nil {
 		return signature.Plug{}, utils.ErrABI("EulerEvc")
