@@ -483,7 +483,8 @@ abstract contract TestPlug is TestPlus {
     {
         PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](0);
         $plug = PlugTypesLib.Plug({
-            selector: 0x00,
+            // Use TYPE_CALL_WITH_VALUE (0x02) for value transfers
+            selector: $value > 0 ? 0x02 : 0x00,
             to: $to,
             data: $data,
             value: $value,

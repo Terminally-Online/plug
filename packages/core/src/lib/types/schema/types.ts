@@ -13,7 +13,8 @@ export type EIP712Domain = z.infer<typeof EIP712DomainSchema>
 export const SliceSchema = z.object({
 	index: z.bigint(),
 	start: z.bigint(),
-	length: z.bigint()
+	length: z.bigint(),
+	typeId: z.bigint()
 })
 export type Slice = z.infer<typeof SliceSchema>
 

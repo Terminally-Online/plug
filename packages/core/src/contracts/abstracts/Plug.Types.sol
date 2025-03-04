@@ -54,12 +54,14 @@ library PlugTypesLib {
      * 		{ name: 'index', type: 'uint8' }
      * 		{ name: 'start', type: 'uint256' }
      * 		{ name: 'length', type: 'uint256' }
+     * 		{ name: 'typeId', type: 'uint8' }
      * }>
      */
     struct Slice {
         uint8 index;
         uint256 start;
         uint256 length;
+        uint8 typeId;
     }
 
     /**
@@ -168,10 +170,11 @@ abstract contract PlugTypes {
      *      { name: 'index', type: 'uint8' }
      *      { name: 'start', type: 'uint256' }
      *      { name: 'length', type: 'uint256' }
+     *      { name: 'typeId', type: 'uint8' }
      * }>>
      */
     bytes32 constant SLICE_TYPEHASH =
-        0x705d2fbc03b585d2178271bc5e779f63e494ae79418e11352a00b51e1edeeaae;
+        0xf8939514938e0a800705081290e2e4c7efcf49061b28bf5b38f457c851eb82ac;
 
     /**
      * @notice Type hash representing the Update data type providing EIP-712
@@ -182,7 +185,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant UPDATE_TYPEHASH =
-        0x56b7ba00148b10c99ae43c2f84a4ec0ec1dfa2e5d7d5954f23e627d964b83435;
+        0x85c9aec0e14ad33e63489c03355fa65515340a998cc26cd360d11267b451b6fd;
 
     /**
      * @notice Type hash representing the Plug data type providing EIP-712
@@ -196,7 +199,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant PLUG_TYPEHASH =
-        0x77f9edb2051551cf1c4102bcde8eba61d391a9e0536544fe44cc2330cc4913fa;
+        0x8adbed414e194dcdb13ff4e505a6ab838020fe2e144c9d773a6a63b399104584;
 
     /**
      * @notice Type hash representing the Plugs data type providing EIP-712
@@ -209,7 +212,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant PLUGS_TYPEHASH =
-        0xf730b3caf995a40c1030675beebec0f819730393c3020ff6bd0295c733af216b;
+        0xad37dd17963f530e0696a34fb50e96c004ad0a3380a5e9c1dc82de9eb692b5d9;
 
     /**
      * @notice Type hash representing the LivePlugs data type providing EIP-712
@@ -220,7 +223,7 @@ abstract contract PlugTypes {
      * }>>
      */
     bytes32 constant LIVE_PLUGS_TYPEHASH =
-        0xb17d5f6d50f15d707601c6994c8e42d3c170be70fe81f012884129e8e5bf41ff;
+        0x4223462a204a553d0ecb26b955c1f59fcf6a0662da793ddfd0d17a33c99b97f2;
 
     /**
      * @notice Initialize the contract with the name and version of the protocol.
@@ -354,7 +357,9 @@ abstract contract PlugTypes {
         virtual
         returns (bytes32 $typeHash)
     {
-        $typeHash = keccak256(abi.encode(SLICE_TYPEHASH, $input.index, $input.start, $input.length));
+        $typeHash = keccak256(
+            abi.encode(SLICE_TYPEHASH, $input.index, $input.start, $input.length, $input.typeId)
+        );
     }
 
     /**

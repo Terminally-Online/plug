@@ -11,7 +11,8 @@ export const LIVE_PLUGS_TYPES = {
 	Slice: [
 		{ name: 'index', type: 'uint8' },
 		{ name: 'start', type: 'uint256' },
-		{ name: 'length', type: 'uint256' }
+		{ name: 'length', type: 'uint256' },
+		{ name: 'typeId', type: 'uint8' }
 	],
 	Update: [
 		{ name: 'start', type: 'uint256' },

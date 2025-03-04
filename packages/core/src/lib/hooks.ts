@@ -22,6 +22,82 @@ export const plugAbi = [
     inputs: [
       {
         name: '$livePlugs',
+        internalType: 'struct PlugTypesLib.LivePlugs[]',
+        type: 'tuple[]',
+        components: [
+          {
+            name: 'plugs',
+            internalType: 'struct PlugTypesLib.Plugs',
+            type: 'tuple',
+            components: [
+              { name: 'socket', internalType: 'address', type: 'address' },
+              {
+                name: 'plugs',
+                internalType: 'struct PlugTypesLib.Plug[]',
+                type: 'tuple[]',
+                components: [
+                  { name: 'selector', internalType: 'uint8', type: 'uint8' },
+                  { name: 'to', internalType: 'address', type: 'address' },
+                  { name: 'data', internalType: 'bytes', type: 'bytes' },
+                  { name: 'value', internalType: 'uint256', type: 'uint256' },
+                  {
+                    name: 'updates',
+                    internalType: 'struct PlugTypesLib.Update[]',
+                    type: 'tuple[]',
+                    components: [
+                      {
+                        name: 'start',
+                        internalType: 'uint256',
+                        type: 'uint256',
+                      },
+                      {
+                        name: 'slice',
+                        internalType: 'struct PlugTypesLib.Slice',
+                        type: 'tuple',
+                        components: [
+                          {
+                            name: 'index',
+                            internalType: 'uint8',
+                            type: 'uint8',
+                          },
+                          {
+                            name: 'start',
+                            internalType: 'uint256',
+                            type: 'uint256',
+                          },
+                          {
+                            name: 'length',
+                            internalType: 'uint256',
+                            type: 'uint256',
+                          },
+                          {
+                            name: 'typeId',
+                            internalType: 'uint8',
+                            type: 'uint8',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              { name: 'solver', internalType: 'bytes', type: 'bytes' },
+              { name: 'salt', internalType: 'bytes', type: 'bytes' },
+            ],
+          },
+          { name: 'signature', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    name: 'plug',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '$livePlugs',
         internalType: 'struct PlugTypesLib.LivePlugs',
         type: 'tuple',
         components: [
@@ -70,76 +146,10 @@ export const plugAbi = [
                             internalType: 'uint256',
                             type: 'uint256',
                           },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              { name: 'solver', internalType: 'bytes', type: 'bytes' },
-              { name: 'salt', internalType: 'bytes', type: 'bytes' },
-            ],
-          },
-          { name: 'signature', internalType: 'bytes', type: 'bytes' },
-        ],
-      },
-    ],
-    name: 'plug',
-    outputs: [],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
-        name: '$livePlugs',
-        internalType: 'struct PlugTypesLib.LivePlugs[]',
-        type: 'tuple[]',
-        components: [
-          {
-            name: 'plugs',
-            internalType: 'struct PlugTypesLib.Plugs',
-            type: 'tuple',
-            components: [
-              { name: 'socket', internalType: 'address', type: 'address' },
-              {
-                name: 'plugs',
-                internalType: 'struct PlugTypesLib.Plug[]',
-                type: 'tuple[]',
-                components: [
-                  { name: 'selector', internalType: 'uint8', type: 'uint8' },
-                  { name: 'to', internalType: 'address', type: 'address' },
-                  { name: 'data', internalType: 'bytes', type: 'bytes' },
-                  { name: 'value', internalType: 'uint256', type: 'uint256' },
-                  {
-                    name: 'updates',
-                    internalType: 'struct PlugTypesLib.Update[]',
-                    type: 'tuple[]',
-                    components: [
-                      {
-                        name: 'start',
-                        internalType: 'uint256',
-                        type: 'uint256',
-                      },
-                      {
-                        name: 'slice',
-                        internalType: 'struct PlugTypesLib.Slice',
-                        type: 'tuple',
-                        components: [
                           {
-                            name: 'index',
+                            name: 'typeId',
                             internalType: 'uint8',
                             type: 'uint8',
-                          },
-                          {
-                            name: 'start',
-                            internalType: 'uint256',
-                            type: 'uint256',
-                          },
-                          {
-                            name: 'length',
-                            internalType: 'uint256',
-                            type: 'uint256',
                           },
                         ],
                       },
@@ -395,6 +405,11 @@ export const plugSocketAbi = [
                             internalType: 'uint256',
                             type: 'uint256',
                           },
+                          {
+                            name: 'typeId',
+                            internalType: 'uint8',
+                            type: 'uint8',
+                          },
                         ],
                       },
                     ],
@@ -466,6 +481,11 @@ export const plugSocketAbi = [
                             internalType: 'uint256',
                             type: 'uint256',
                           },
+                          {
+                            name: 'typeId',
+                            internalType: 'uint8',
+                            type: 'uint8',
+                          },
                         ],
                       },
                     ],
@@ -510,6 +530,7 @@ export const plugSocketAbi = [
                   { name: 'index', internalType: 'uint8', type: 'uint8' },
                   { name: 'start', internalType: 'uint256', type: 'uint256' },
                   { name: 'length', internalType: 'uint256', type: 'uint256' },
+                  { name: 'typeId', internalType: 'uint8', type: 'uint8' },
                 ],
               },
             ],
@@ -547,6 +568,7 @@ export const plugSocketAbi = [
                   { name: 'index', internalType: 'uint8', type: 'uint8' },
                   { name: 'start', internalType: 'uint256', type: 'uint256' },
                   { name: 'length', internalType: 'uint256', type: 'uint256' },
+                  { name: 'typeId', internalType: 'uint8', type: 'uint8' },
                 ],
               },
             ],
@@ -598,6 +620,7 @@ export const plugSocketAbi = [
                         internalType: 'uint256',
                         type: 'uint256',
                       },
+                      { name: 'typeId', internalType: 'uint8', type: 'uint8' },
                     ],
                   },
                 ],
@@ -653,6 +676,7 @@ export const plugSocketAbi = [
                         internalType: 'uint256',
                         type: 'uint256',
                       },
+                      { name: 'typeId', internalType: 'uint8', type: 'uint8' },
                     ],
                   },
                 ],
@@ -679,6 +703,7 @@ export const plugSocketAbi = [
           { name: 'index', internalType: 'uint8', type: 'uint8' },
           { name: 'start', internalType: 'uint256', type: 'uint256' },
           { name: 'length', internalType: 'uint256', type: 'uint256' },
+          { name: 'typeId', internalType: 'uint8', type: 'uint8' },
         ],
       },
     ],
@@ -703,6 +728,7 @@ export const plugSocketAbi = [
               { name: 'index', internalType: 'uint8', type: 'uint8' },
               { name: 'start', internalType: 'uint256', type: 'uint256' },
               { name: 'length', internalType: 'uint256', type: 'uint256' },
+              { name: 'typeId', internalType: 'uint8', type: 'uint8' },
             ],
           },
         ],
@@ -729,6 +755,7 @@ export const plugSocketAbi = [
               { name: 'index', internalType: 'uint8', type: 'uint8' },
               { name: 'start', internalType: 'uint256', type: 'uint256' },
               { name: 'length', internalType: 'uint256', type: 'uint256' },
+              { name: 'typeId', internalType: 'uint8', type: 'uint8' },
             ],
           },
         ],
@@ -792,71 +819,6 @@ export const plugSocketAbi = [
     type: 'function',
     inputs: [
       {
-        name: '$plugs',
-        internalType: 'struct PlugTypesLib.Plugs',
-        type: 'tuple',
-        components: [
-          { name: 'socket', internalType: 'address', type: 'address' },
-          {
-            name: 'plugs',
-            internalType: 'struct PlugTypesLib.Plug[]',
-            type: 'tuple[]',
-            components: [
-              { name: 'selector', internalType: 'uint8', type: 'uint8' },
-              { name: 'to', internalType: 'address', type: 'address' },
-              { name: 'data', internalType: 'bytes', type: 'bytes' },
-              { name: 'value', internalType: 'uint256', type: 'uint256' },
-              {
-                name: 'updates',
-                internalType: 'struct PlugTypesLib.Update[]',
-                type: 'tuple[]',
-                components: [
-                  { name: 'start', internalType: 'uint256', type: 'uint256' },
-                  {
-                    name: 'slice',
-                    internalType: 'struct PlugTypesLib.Slice',
-                    type: 'tuple',
-                    components: [
-                      { name: 'index', internalType: 'uint8', type: 'uint8' },
-                      {
-                        name: 'start',
-                        internalType: 'uint256',
-                        type: 'uint256',
-                      },
-                      {
-                        name: 'length',
-                        internalType: 'uint256',
-                        type: 'uint256',
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          { name: 'solver', internalType: 'bytes', type: 'bytes' },
-          { name: 'salt', internalType: 'bytes', type: 'bytes' },
-        ],
-      },
-    ],
-    name: 'plug',
-    outputs: [
-      {
-        name: '$results',
-        internalType: 'struct PlugTypesLib.Result',
-        type: 'tuple',
-        components: [
-          { name: 'index', internalType: 'uint8', type: 'uint8' },
-          { name: 'error', internalType: 'string', type: 'string' },
-        ],
-      },
-    ],
-    stateMutability: 'payable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      {
         name: '$livePlugs',
         internalType: 'struct PlugTypesLib.LivePlugs',
         type: 'tuple',
@@ -906,6 +868,11 @@ export const plugSocketAbi = [
                             internalType: 'uint256',
                             type: 'uint256',
                           },
+                          {
+                            name: 'typeId',
+                            internalType: 'uint8',
+                            type: 'uint8',
+                          },
                         ],
                       },
                     ],
@@ -920,6 +887,72 @@ export const plugSocketAbi = [
         ],
       },
       { name: '$solver', internalType: 'address', type: 'address' },
+    ],
+    name: 'plug',
+    outputs: [
+      {
+        name: '$results',
+        internalType: 'struct PlugTypesLib.Result',
+        type: 'tuple',
+        components: [
+          { name: 'index', internalType: 'uint8', type: 'uint8' },
+          { name: 'error', internalType: 'string', type: 'string' },
+        ],
+      },
+    ],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: '$plugs',
+        internalType: 'struct PlugTypesLib.Plugs',
+        type: 'tuple',
+        components: [
+          { name: 'socket', internalType: 'address', type: 'address' },
+          {
+            name: 'plugs',
+            internalType: 'struct PlugTypesLib.Plug[]',
+            type: 'tuple[]',
+            components: [
+              { name: 'selector', internalType: 'uint8', type: 'uint8' },
+              { name: 'to', internalType: 'address', type: 'address' },
+              { name: 'data', internalType: 'bytes', type: 'bytes' },
+              { name: 'value', internalType: 'uint256', type: 'uint256' },
+              {
+                name: 'updates',
+                internalType: 'struct PlugTypesLib.Update[]',
+                type: 'tuple[]',
+                components: [
+                  { name: 'start', internalType: 'uint256', type: 'uint256' },
+                  {
+                    name: 'slice',
+                    internalType: 'struct PlugTypesLib.Slice',
+                    type: 'tuple',
+                    components: [
+                      { name: 'index', internalType: 'uint8', type: 'uint8' },
+                      {
+                        name: 'start',
+                        internalType: 'uint256',
+                        type: 'uint256',
+                      },
+                      {
+                        name: 'length',
+                        internalType: 'uint256',
+                        type: 'uint256',
+                      },
+                      { name: 'typeId', internalType: 'uint8', type: 'uint8' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          { name: 'solver', internalType: 'bytes', type: 'bytes' },
+          { name: 'salt', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
     ],
     name: 'plug',
     outputs: [

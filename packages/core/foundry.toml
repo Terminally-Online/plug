@@ -15,6 +15,7 @@
     gas_reports = ["*"]
     optimizer = true
     optimizer_runs = 10_000
+    via_ir = true
     script = "src/contracts/script"
     solc = "0.8.23"
 

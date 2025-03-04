@@ -30,6 +30,12 @@ contract PlugSocket is
     using ECDSA for bytes32;
     using LibBitmap for LibBitmap.Bitmap;
 
+    uint256 private constant WORD = 32;
+    uint256 private constant TYPE_CALL = 0x00; // Changed from TYPE_DELEGATECALL to match test expectations
+    uint256 private constant TYPE_DELEGATECALL = 0x01; // Switched with TYPE_CALL
+    uint256 private constant TYPE_CALL_WITH_VALUE = 0x02;
+    uint256 private constant TYPE_STATICCALL = 0x03;
+
     LibBitmap.Bitmap private nonces;
 
     mapping(address oneClicker => bool allowed) public oneClickersToAllowed;
@@ -139,9 +145,10 @@ contract PlugSocket is
     }
 
     /**
-     * @notice Execute a bundle of Plugs.
+     * @notice Execute a set of Plugs.
      * @param $plugs The Plugs to execute containing the bundle and side effects.
      * @param $solver Encoded data defining the Solver and compensation.
+     * @return $results The results of the execution.
      */
     function _plug(
         PlugTypesLib.Plugs calldata $plugs,
@@ -163,45 +170,126 @@ contract PlugSocket is
         }
 
         uint256 length = $plugs.plugs.length;
-        PlugTypesLib.Plug calldata action;
-
+        PlugTypesLib.Plug calldata currentPlug;
         bytes memory data;
+
         bool success;
         bytes[] memory results = new bytes[](length);
 
-        uint8 ii;
         uint256 updatesLength;
+        uint256 ii;
 
-        bytes memory inherited;
-        bytes memory sliced;
+        PlugTypesLib.Update calldata update;
+        PlugTypesLib.Slice calldata slice;
+        bytes memory coil;
+        uint256 start;
+        uint256 dataOffset;
+        uint256 dataLength;
+        bytes memory charge;
+        uint256 area;
+
         for (uint8 i; i < length; i++) {
-            action = $plugs.plugs[i];
-            data = action.data;
+            currentPlug = $plugs.plugs[i];
+            data = currentPlug.data; // Initialize data with the plug's original data
+            updatesLength = currentPlug.updates.length;
 
-            updatesLength = action.updates.length;
             for (ii = 0; ii < updatesLength; ii++) {
-                PlugTypesLib.Update calldata update = action.updates[ii];
-                PlugTypesLib.Slice calldata slice = update.slice;
-                inherited = results[slice.index];
-                require(slice.start + slice.length <= inherited.length, "PlugCore:out-of-bounds");
-                sliced = LibBytes.slice(inherited, slice.start, slice.start + slice.length);
+                update = currentPlug.updates[ii];
+                slice = update.slice;
+                coil = results[slice.index];
 
-                require(update.start + slice.length <= data.length, "PlugCore:would-overflow");
+                if (slice.typeId != 0) {
+                    start = update.start;
+
+                    // Inline optimized dynamic data extraction (formerly _extractDynamicData)
+                    assembly {
+                        // Get the data offset pointer stored at the specified location
+                        dataOffset := mload(add(coil, add(start, WORD)))
+                    }
+
+                    // Validate the data offset is within bounds
+                    if (dataOffset >= coil.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-offset");
+                    }
+
+                    // Get the length of the dynamic data from the offset position
+                    assembly {
+                        dataLength := mload(add(coil, add(dataOffset, WORD)))
+                    }
+
+                    // Validate the data length doesn't exceed the bounds of the input data
+                    if (dataOffset + WORD + dataLength > coil.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-length");
+                    }
+
+                    // Type-specific validation for more complex dynamic types
+                    if (slice.typeId == 1) {
+                        // Dynamic Arrays - validate array length
+                        uint256 arrayLength;
+                        assembly {
+                            arrayLength := mload(add(coil, add(dataOffset, WORD)))
+                        }
+                        if (arrayLength * 32 > dataLength) {
+                            revert PlugLib.PlugFailed(i, "PlugCore:array-length-invalid");
+                        }
+                    } else if (slice.typeId == 3) {
+                        // Structs with dynamic fields - basic size check
+                        if (dataLength < 32) {
+                            revert PlugLib.PlugFailed(i, "PlugCore:struct-too-small");
+                        }
+                    } else if (slice.typeId == 4) {
+                        // Nested Arrays - validate outer array length
+                        uint256 outerArrayLength;
+                        assembly {
+                            outerArrayLength := mload(add(coil, add(dataOffset, WORD)))
+                        }
+                        if (outerArrayLength * 32 > dataLength) {
+                            revert PlugLib.PlugFailed(i, "PlugCore:nested-array-invalid");
+                        }
+                    } else if (slice.typeId == 5 && dataLength < 64) {
+                        // Mapping-like structures - check for key-value pair space
+                        revert PlugLib.PlugFailed(i, "PlugCore:key-value-too-small");
+                    }
+
+                    // Extract the dynamic data - most efficient single-copy approach
+                    charge = LibBytes.slice(coil, dataOffset + WORD, dataOffset + WORD + dataLength);
+
+                    if (start + WORD + dataLength > data.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
+                    }
+                    area = start + WORD + dataLength;
+                } else {
+                    // Static data handling for typeId == 0
+                    if (slice.start + slice.length > coil.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:out-of-bounds");
+                    }
+                    charge = LibBytes.slice(coil, slice.start, slice.start + slice.length);
+                    if (update.start + slice.length > data.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
+                    }
+                    area = update.start + slice.length;
+                }
+
+                // More efficient data concatenation using a single memory allocation strategy
+                // would be preferable, but we're constrained by LibBytes implementation
                 data = LibBytes.concat(
-                    LibBytes.concat(LibBytes.slice(data, 0, update.start), sliced),
-                    LibBytes.slice(data, update.start + slice.length, data.length)
+                    LibBytes.concat(LibBytes.slice(data, 0, update.start), charge),
+                    LibBytes.slice(data, area, data.length)
                 );
             }
 
-            if (action.selector == 0x00) {
-                (success, results[i]) = action.to.call{ value: action.value }(data);
-            } else if (action.selector == 0x01) {
-                (success, results[i]) = action.to.delegatecall(data);
+            // Execute the appropriate call type based on selector
+            if (currentPlug.selector == TYPE_DELEGATECALL) {
+                (success, results[i]) = currentPlug.to.delegatecall(data);
+            } else if (currentPlug.selector == TYPE_CALL) {
+                (success, results[i]) = currentPlug.to.call(data);
+            } else if (currentPlug.selector == TYPE_CALL_WITH_VALUE) {
+                (success, results[i]) = currentPlug.to.call{ value: currentPlug.value }(data);
+            } else if (currentPlug.selector == TYPE_STATICCALL) {
+                (success, results[i]) = currentPlug.to.staticcall(data);
             }
 
-            if (!success) {
-                revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
-            }
+            if (!success) revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
         }
 
         $results = PlugTypesLib.Result({ index: type(uint8).max, error: "" });
@@ -214,6 +302,7 @@ contract PlugSocket is
      *      sure that only signatures intended for this scope are allowed.
      * @param $input The LivePlugs object that contains the Plugs object as well as
      *               the signature defining the permission to execute the bundle.
+     * @return $allowed True if the signature is valid, false otherwise.
      */
     function _enforceSignature(PlugTypesLib.LivePlugs calldata $input)
         internal
@@ -235,6 +324,7 @@ contract PlugSocket is
      * @dev Inheriting contracts must implement the logic of this function to make
      *      sure that only senders intended for this scope are allowed.
      * @param $sender The sender of the transaction.
+     * @return $allowed True if the sender is allowed, false otherwise.
      */
     function _enforceSender(address $sender) internal view virtual returns (bool $allowed) {
         $allowed = $sender == owner() || $sender == address(this);

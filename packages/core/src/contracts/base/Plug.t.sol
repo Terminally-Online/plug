@@ -420,7 +420,8 @@ contract PlugTest is Test {
             slice: PlugTypesLib.Slice({
                 index: 0, // First plug (the swap)
                 start: 0, // Start of the returned data
-                length: 32 // Length of a uint256
+                length: 32, // Length of a uint256
+                typeId: 0 // Static type
              })
         });
 
@@ -487,7 +488,8 @@ contract PlugTest is Test {
             slice: PlugTypesLib.Slice({
                 index: 0, // First plug
                 start: 0, // Start of return data
-                length: 32 // Length of uint256
+                length: 32, // Length of uint256
+                typeId: 0 // Static type
              })
         });
 
@@ -585,7 +587,8 @@ contract PlugTest is Test {
             slice: PlugTypesLib.Slice({
                 index: 0, // Get result from first plug
                 start: 0, // Start of result data
-                length: 32 // Length of uint256
+                length: 32, // Length of uint256
+                typeId: 0 // Static type
              })
         });
 
@@ -646,7 +649,8 @@ contract PlugTest is Test {
             slice: PlugTypesLib.Slice({
                 index: 0, // Get result from first plug
                 start: 0, // Start of result data
-                length: 32 // Length of uint256
+                length: 32, // Length of uint256
+                typeId: 0 // Static type
              })
         });
 
@@ -756,7 +760,8 @@ contract PlugTest is Test {
             slice: PlugTypesLib.Slice({
                 index: 0, // Reference the first plug's result
                 start: 0, // Start from beginning of result
-                length: 32 // Take full uint256 (32 bytes)
+                length: 32, // Take full uint256 (32 bytes)
+                typeId: 0 // Static type
              })
         });
 
