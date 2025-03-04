@@ -1,7 +1,6 @@
 package plug
 
 import (
-	"fmt"
 	"solver/bindings/erc_20"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
@@ -65,7 +64,8 @@ func getCoils(action string) []coil.Update {
 			return nil
 		}
 		coils, err := coil.FindCoils(erc20Abi, "balanceOf", nil, nil)
-		fmt.Printf("\n\ncoilsaaa: %v\n\n", coils)
+		balanceOutputName := "Balance"
+		coils[0].Slice.Name = &balanceOutputName
 		if err != nil {
 			log.Error("failed to find coils", "error", err)
 			return nil
