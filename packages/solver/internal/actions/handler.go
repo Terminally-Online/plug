@@ -10,7 +10,9 @@ import (
 	"solver/internal/utils"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 type HandlerParams struct {
@@ -51,9 +53,27 @@ type ActionDefinition struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
 	Handler        TransactionHandler
-	Coils          []coil.Update
+	Metadata       *bind.MetaData
+	FunctionName   string
 	IsUserSpecific bool
 	IsSearchable   bool
+}
+
+func (a *ActionDefinition) GetCoils() ([]coil.Update, error) {
+	if a.Metadata == nil {
+		return nil, utils.ErrBuild("metadata is nil")
+	}
+
+	abi, err := a.Metadata.GetAbi()
+	if err != nil {
+		return nil, utils.ErrBuild("failed to get abi")
+	}
+	coils, err := coil.FindCoils(abi, a.FunctionName, nil, nil)
+	if err != nil {
+		return nil, utils.ErrBuild("failed to find coils")
+	}
+
+	return coils, nil
 }
 
 var (
@@ -88,6 +108,11 @@ func NewBaseHandler(
 	}
 	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
+		coils, err := def.GetCoils()
+		if err != nil {
+			log.Error("failed to get coils", "error", err)
+			continue
+		}
 		schemas[action] = ChainSchema{
 			Schema: Schema{
 				Type: func() string {
@@ -98,7 +123,7 @@ func NewBaseHandler(
 				}(),
 				Sentence:       def.Sentence,
 				IsUserSpecific: def.IsUserSpecific,
-				Coils:          def.Coils,
+				Coils:          coils,
 			},
 		}
 	}

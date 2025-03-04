@@ -94,7 +94,7 @@ func (c *Client) Plug(livePlugs []*signature.LivePlugs) ([]signature.Result, err
 	if err != nil {
 		return nil, err
 	}
-	transaction, err := router.Plug0(c.SolverWriteOptions(), lps)
+	transaction, err := router.Plug(c.SolverWriteOptions(), lps)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send plug transaction: %w", err)
 	}

@@ -210,7 +210,7 @@ func handleWrap(inputs SwapInputs, _ actions.HandlerParams, wethAddress string) 
 }
 
 func handleSwap(inputs SwapInputs, params actions.HandlerParams) ([]signature.Plug, error) {
-	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should 
+	// TODO: Right now 'base' is hard-coded as the intended chain for swapping. This should
 	//       consume the chain id provided in the params.
 	bebopApiUrl := fmt.Sprintf(
 		"https://api.bebop.xyz/pmm/base/v3/quote?buy_tokens=%s&sell_tokens=%s&sell_amounts=%s&taker_address=%s&gasless=false&approval_type=Standard&skip_validation=true",
@@ -357,53 +357,6 @@ func HandleConstraintPrice(rawInputs json.RawMessage, params actions.HandlerPara
 	case 1:
 		if price.Price <= thresholdFloat {
 			return nil, fmt.Errorf("current price $%.2f is not greater than threshold $%.2f", price.Price, thresholdFloat)
-		}
-	default:
-		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)
-	}
-
-	return nil, nil
-}
-
-func HandleConstraintBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
-	var inputs struct {
-		Token     string `json:"token"`
-		Address   string `json:"address"`
-		Operator  int    `json:"operator"`
-		Threshold string `json:"threshold"`
-	}
-	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
-	}
-
-	token, decimals, err := utils.ParseAddressAndDecimals(inputs.Token)
-	if err != nil {
-		return nil, err
-	}
-
-	threshold, err := utils.StringToUint(inputs.Threshold, decimals)
-	if err != nil {
-		return nil, err
-	}
-
-	erc20Contract, err := erc_20.NewErc20(*token, params.Client)
-	if err != nil {
-		return nil, err
-	}
-
-	balance, err := erc20Contract.BalanceOf(params.Client.ReadOptions(params.From), common.HexToAddress(inputs.Address))
-	if err != nil {
-		return nil, fmt.Errorf("failed to get token balance: %w", err)
-	}
-
-	switch inputs.Operator {
-	case -1:
-		if balance.Cmp(threshold) >= 0 {
-			return nil, fmt.Errorf("current balance %.2f is not less than threshold %.2f", balance, threshold)
-		}
-	case 1:
-		if balance.Cmp(threshold) <= 0 {
-			return nil, fmt.Errorf("current balance %.2f is not greater than threshold %.2f", balance, threshold)
 		}
 	default:
 		return nil, fmt.Errorf("invalid operator: must be either -1 (less than) or 1 (greater than), got %d", inputs.Operator)

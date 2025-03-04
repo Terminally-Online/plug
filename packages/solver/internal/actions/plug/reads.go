@@ -73,25 +73,6 @@ func getTokenType(chainId uint64, address string) (*int, error) {
 	return nil, fmt.Errorf("unsupported token type")
 }
 
-func getERC20Decimals(chainId uint64, address string) (*uint8, error) {
-	provider, err := client.New(chainId)
-	if err != nil {
-		return nil, err
-	}
-
-	contract, err := erc_20.NewErc20(common.HexToAddress(address), provider)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
-	}
-
-	decimals, err := contract.Decimals(nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get decimals: %v", err)
-	}
-
-	return &decimals, nil
-}
-
 func getProxyTokenType(_ *client.Client, _ string) (*int, error) {
 	return nil, fmt.Errorf("proxies not supported at this time")
 }

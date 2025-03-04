@@ -93,7 +93,7 @@ export const Part: FC<PartProps> = memo(
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 			input.dependentOn === undefined
 		const isEmpty = !value?.value
-		const isValid = !isEmpty && !inputError && !error || value?.value.startsWith("<-{")
+		const isValid = (!isEmpty && !inputError && !error) || value?.value.startsWith("<-{")
 
 		// NOTE: These are using saved option data from the database when it exists. For example,
 		//       this means that if the user enters an ENS and they choose one, then when they refresh
@@ -122,7 +122,11 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						value?.value.startsWith("<-{") ? "bg-orange-300/60" : isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
+						value?.value.startsWith("<-{")
+							? "bg-orange-300/60"
+							: isValid
+								? "bg-plug-yellow/60"
+								: "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
@@ -146,7 +150,9 @@ export const Part: FC<PartProps> = memo(
 								))}
 						</div>
 					)}
-					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">{label.startsWith("<-") ? label.replace("<-{", "").replace("}", "") : label}</span>
+					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">
+						{label.startsWith("<-") ? label.replace("<-{", "").replace("}", "") : label}
+					</span>
 				</button>
 
 				<Frame
@@ -196,52 +202,76 @@ export const Part: FC<PartProps> = memo(
 
 								{isReady && !isOptionBased && (
 									<>
-										<div className="flex flex-row gap-2 relative overflow-hidden">
+										<div className="relative flex flex-row gap-2 overflow-hidden">
 											{Array.from({ length: 1 }).map((_, index) => {
 												if (!(value?.value !== `<-{amount}`)) return
 
-												return <Button
-													key={index}
-													variant="secondary"
-													sizing="sm"
-													onClick={() => handleValue({
-														index: input?.index ?? "",
-														key: input?.name ?? "",
-														name: input?.name ?? "",
-														label,
-														value: `<-{amount}`,
-														isNumber: input.type?.toString().includes("int")
-													})}
-													className="flex flex-row gap-2 px-2 pr-3"
-												>
-													<div className="w-4 h-4 bg-orange-500 rounded-[4px]"><p className="font-bold text-plug-white text-xs">#</p></div>
-													Amount: Number
-												</Button>
+												return (
+													<Button
+														key={index}
+														variant="secondary"
+														sizing="sm"
+														onClick={() =>
+															handleValue({
+																index: input?.index ?? "",
+																key: input?.name ?? "",
+																name: input?.name ?? "",
+																label,
+																value: `<-{amount}`,
+																isNumber: input.type?.toString().includes("int")
+															})
+														}
+														className="flex flex-row gap-2 px-2 pr-3"
+													>
+														<div className="h-4 w-4 rounded-[4px] bg-orange-500">
+															<p className="text-xs font-bold text-plug-white">#</p>
+														</div>
+														Amount: Number
+													</Button>
+												)
 											})}
 										</div>
 
-										{value?.value.startsWith('<-') ? (<>
-											<button
-												className="mb-4 flex w-full cursor-pointer items-center gap-4 border-[1px] border-plug-green/10 p-4 px-6 transition-colors duration-200 ease-in-out rounded-[16px]"
-												onClick={() =>
-													handleValue({
-														index: input?.index ?? "",
-														key: input?.name ?? "",
-														name: input?.name ?? "",
-														label,
-														value: "",
-														isNumber: input.type?.toString().includes("int")
-													})
-												}
-											>
-												<div className="w-4 h-4 bg-orange-500 rounded-[4px] flex items-center justify-center"><p className="font-bold text-plug-white text-xs">#</p></div>
-												{value?.value.startsWith("<-") ? "Balance: value" : getInputPlaceholder(input.type)}
-											</button>
-										</>) : (
+										{value?.value.startsWith("<-") ? (
+											<>
+												<button
+													className="mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] border-plug-green/10 p-4 px-6 transition-colors duration-200 ease-in-out"
+													onClick={() =>
+														handleValue({
+															index: input?.index ?? "",
+															key: input?.name ?? "",
+															name: input?.name ?? "",
+															label,
+															value: "",
+															isNumber: input.type?.toString().includes("int")
+														})
+													}
+												>
+													<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-500">
+														<p className="text-xs font-bold text-plug-white">#</p>
+													</div>
+													{value?.value.startsWith("<-")
+														? "Balance: value"
+														: getInputPlaceholder(input.type)}
+												</button>
+											</>
+										) : (
 											<Search
 												className="mb-4"
-												icon={value?.value.startsWith("<-") ? <div className="w-4 h-4 bg-orange-500 rounded-[4px] flex items-center justify-center"><p className="font-bold text-plug-white text-xs">#</p></div> : <Hash size={14} />}
-												placeholder={value?.value.startsWith("<-") ? "Amount: number" : getInputPlaceholder(input.type)}
+												icon={
+													value?.value.startsWith("<-") ? (
+														<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-500">
+															<p className="text-xs font-bold text-plug-white">#</p>
+														</div>
+													) : (
+														<Hash size={14} />
+													)
+												}
+												placeholder={
+													value?.value.startsWith("<-")
+														? "Amount: number"
+														: getInputPlaceholder(input.type)
+												}
 												search={value?.value}
 												handleSearch={data =>
 													handleValue({
@@ -259,9 +289,7 @@ export const Part: FC<PartProps> = memo(
 												}
 												focus
 											/>
-
 										)}
-
 									</>
 								)}
 
@@ -381,7 +409,7 @@ export const Part: FC<PartProps> = memo(
 					) : (
 						<></>
 					)}
-				</Frame >
+				</Frame>
 			</>
 		)
 	}
