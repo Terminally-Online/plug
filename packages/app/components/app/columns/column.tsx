@@ -1,12 +1,12 @@
 import React, { FC, memo, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, GitFork, Settings, Share, X } from "lucide-react"
+import { Check, ChevronLeft, GitFork, Plus, Settings, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
 import { ConsoleAdmin } from "@/components/app/columns/utils/column-admin"
 import { ConsoleSettings } from "@/components/app/columns/admin/console.settings"
-import { ColumnAdd } from "@/components/app/columns/utils/column-add"
+import { ColumnAdd, OPTIONS } from "@/components/app/columns/utils/column-add"
 import { ColumnApplication } from "@/components/app/columns/utils/column-application"
 import { Header } from "@/components/app/layout/header"
 import { PlugsDiscover } from "@/components/app/plugs/discover"
@@ -35,7 +35,7 @@ export const ConsoleColumn: FC<{
 }> = memo(({ index }) => {
 	const resizeRef = useRef<HTMLDivElement>(null)
 
-	const { account: { session }} = useConnect()
+	const { account: { session } } = useConnect()
 	const { socket } = useSocket()
 
 	const [column] = useAtom(columnByIndexAtom(index))
@@ -81,7 +81,7 @@ export const ConsoleColumn: FC<{
 	if (!column) return null
 
 	return (
-		<div className={cn("relative select-none", column.index === 0 && "ml-2")}>
+		<div className={cn("relative select-none")}>
 			<Draggable draggableId={String(column.id)} index={column.index}>
 				{(provided, snapshot) => (
 					<div
@@ -95,11 +95,11 @@ export const ConsoleColumn: FC<{
 					>
 						<div
 							ref={resizeRef}
-							className="relative my-2 flex w-full select-none flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10 bg-white"
+							className="relative flex w-full select-none flex-col overflow-hidden bg-white"
 						>
 							<div
 								className={cn(
-									"group relative z-[999999] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
+									"group relative z-[999999] flex w-full cursor-pointer flex-row items-center gap-4 overflow-hidden overflow-y-auto border-b-[1px] border-plug-green/10 bg-white px-4 transition-all duration-200 ease-in-out",
 									snapshot.isDragging ? "bg-plug-green/5" : "hover:bg-plug-green/5"
 								)}
 								{...provided.dragHandleProps}
@@ -123,14 +123,14 @@ export const ConsoleColumn: FC<{
 												</Button>
 											)}
 
-											{plug && (
+											{plug ? (
 												<div
 													className="h-6 w-6 min-w-6 rounded-sm bg-plug-green/10"
 													style={{
 														backgroundImage: cardColors[plug.color]
 													}}
 												/>
-											)}
+											) : OPTIONS.find(option => option.label === column.key)?.icon ?? <Plus size={18} className="opacity-40" />}
 
 											<div className="top-0 z-[31] flex w-max flex-row items-center gap-2 overflow-hidden">
 												<SparklingText
@@ -276,15 +276,14 @@ export const ConsoleColumn: FC<{
 							</div>
 						</div>
 
-						<div
-							className="h-full cursor-col-resize px-2"
-							onMouseDown={e => {
-								e.preventDefault()
-								setIsResizing(true)
-							}}
-						>
+						<div className="h-full cursor-col-resize relative">
+							<div className={cn("h-full w-[1px] bg-plug-green/10", snapshot.isDragging && "opacity-0")}/>
 							<div
-								className={cn("h-full w-[1px] bg-plug-green/10", snapshot.isDragging && "opacity-0")}
+								className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+								onMouseDown={e => {
+									e.preventDefault()
+									setIsResizing(true)
+								}}
 							/>
 						</div>
 					</div>
