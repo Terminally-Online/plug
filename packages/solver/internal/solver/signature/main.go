@@ -16,6 +16,15 @@ var (
 	domainVersion = "0.0.1"
 )
 
+const (
+	EIP712_DOMAIN_TYPEHASH = "0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f"
+	UPDATE_TYPEHASH        = "0x56b7ba00148b10c99ae43c2f84a4ec0ec1dfa2e5d7d5954f23e627d964b83435"
+	SLICE_TYPEHASH         = "0x705d2fbc03b585d2178271bc5e779f63e494ae79418e11352a00b51e1edeeaae"
+	PLUG_TYPEHASH          = "0x77f9edb2051551cf1c4102bcde8eba61d391a9e0536544fe44cc2330cc4913fa"
+	PLUGS_TYPEHASH         = "0xf730b3caf995a40c1030675beebec0f819730393c3020ff6bd0295c733af216b"
+	LIVE_PLUGS_TYPEHASH    = "0xb17d5f6d50f15d707601c6994c8e42d3c170be70fe81f012884129e8e5bf41ff"
+)
+
 func GetSolverHash() ([]byte, error) {
 	// NOTE: This sets the expiration of a Solver provided order to five minutes from now so that our Solver
 	//       cannot sign a message, someone else get a hold if it and execute way in the future or us
@@ -51,12 +60,42 @@ func GetSaltHash(from common.Address) ([]byte, error) {
 }
 
 func GetPlugHash(plug Plug) [32]byte {
+	updateArrayHash := getUpdateArrayHash(plug.Updates)
+
 	return crypto.Keccak256Hash(
 		[]byte(PLUG_TYPEHASH),
+		[]byte{plug.Selector},
 		plug.To.Bytes(),
 		crypto.Keccak256(plug.Data),
 		common.LeftPadBytes(plug.Value.Bytes(), 32),
-		common.LeftPadBytes(plug.Gas.Bytes(), 32),
+		updateArrayHash[:],
+	)
+}
+
+func getUpdateArrayHash(updates []Update) [32]byte {
+	var encoded []byte
+	for _, update := range updates {
+		hash := getUpdateHash(update)
+		encoded = append(encoded, hash[:]...)
+	}
+	return crypto.Keccak256Hash(encoded)
+}
+
+func getUpdateHash(update Update) [32]byte {
+	sliceHash := getSliceHash(update.Slice)
+	return crypto.Keccak256Hash(
+		[]byte(UPDATE_TYPEHASH),
+		common.LeftPadBytes(update.Start.Bytes(), 32),
+		sliceHash[:],
+	)
+}
+
+func getSliceHash(slice Slice) [32]byte {
+	return crypto.Keccak256Hash(
+		[]byte(SLICE_TYPEHASH),
+		[]byte{slice.Index},
+		common.LeftPadBytes(slice.Start.Bytes(), 32),
+		common.LeftPadBytes(slice.Length.Bytes(), 32),
 	)
 }
 

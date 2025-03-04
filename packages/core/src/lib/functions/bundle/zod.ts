@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export const literalUnion = <T extends string | number>(
 	constants: readonly T[]

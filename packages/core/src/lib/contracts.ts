@@ -262,6 +262,11 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
+                                                "name": "selector",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
                                                 "name": "to",
                                                 "type": "address",
                                                 "internalType": "address"
@@ -277,9 +282,38 @@ export const contracts = [
                                                 "internalType": "uint256"
                                             },
                                             {
-                                                "name": "gas",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
+                                                "name": "updates",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Update[]",
+                                                "components": [
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "slice",
+                                                        "type": "tuple",
+                                                        "internalType": "struct PlugTypesLib.Slice",
+                                                        "components": [
+                                                            {
+                                                                "name": "index",
+                                                                "type": "uint8",
+                                                                "internalType": "uint8"
+                                                            },
+                                                            {
+                                                                "name": "start",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -337,6 +371,11 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
+                                                "name": "selector",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
                                                 "name": "to",
                                                 "type": "address",
                                                 "internalType": "address"
@@ -352,9 +391,38 @@ export const contracts = [
                                                 "internalType": "uint256"
                                             },
                                             {
-                                                "name": "gas",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
+                                                "name": "updates",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Update[]",
+                                                "components": [
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "slice",
+                                                        "type": "tuple",
+                                                        "internalType": "struct PlugTypesLib.Slice",
+                                                        "components": [
+                                                            {
+                                                                "name": "index",
+                                                                "type": "uint8",
+                                                                "internalType": "uint8"
+                                                            },
+                                                            {
+                                                                "name": "start",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -397,6 +465,11 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug[]",
                         "components": [
                             {
+                                "name": "selector",
+                                "type": "uint8",
+                                "internalType": "uint8"
+                            },
+                            {
                                 "name": "to",
                                 "type": "address",
                                 "internalType": "address"
@@ -412,9 +485,38 @@ export const contracts = [
                                 "internalType": "uint256"
                             },
                             {
-                                "name": "gas",
-                                "type": "uint256",
-                                "internalType": "uint256"
+                                "name": "updates",
+                                "type": "tuple[]",
+                                "internalType": "struct PlugTypesLib.Update[]",
+                                "components": [
+                                    {
+                                        "name": "start",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "slice",
+                                        "type": "tuple",
+                                        "internalType": "struct PlugTypesLib.Slice",
+                                        "components": [
+                                            {
+                                                "name": "index",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
+                                                "name": "start",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "length",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -438,6 +540,11 @@ export const contracts = [
                         "internalType": "struct PlugTypesLib.Plug",
                         "components": [
                             {
+                                "name": "selector",
+                                "type": "uint8",
+                                "internalType": "uint8"
+                            },
+                            {
                                 "name": "to",
                                 "type": "address",
                                 "internalType": "address"
@@ -453,9 +560,38 @@ export const contracts = [
                                 "internalType": "uint256"
                             },
                             {
-                                "name": "gas",
-                                "type": "uint256",
-                                "internalType": "uint256"
+                                "name": "updates",
+                                "type": "tuple[]",
+                                "internalType": "struct PlugTypesLib.Update[]",
+                                "components": [
+                                    {
+                                        "name": "start",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "slice",
+                                        "type": "tuple",
+                                        "internalType": "struct PlugTypesLib.Slice",
+                                        "components": [
+                                            {
+                                                "name": "index",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
+                                                "name": "start",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "length",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -489,6 +625,11 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
+                                        "name": "selector",
+                                        "type": "uint8",
+                                        "internalType": "uint8"
+                                    },
+                                    {
                                         "name": "to",
                                         "type": "address",
                                         "internalType": "address"
@@ -504,9 +645,38 @@ export const contracts = [
                                         "internalType": "uint256"
                                     },
                                     {
-                                        "name": "gas",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
+                                        "name": "updates",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Update[]",
+                                        "components": [
+                                            {
+                                                "name": "start",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "slice",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Slice",
+                                                "components": [
+                                                    {
+                                                        "name": "index",
+                                                        "type": "uint8",
+                                                        "internalType": "uint8"
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "length",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 ]
                             },
@@ -552,6 +722,11 @@ export const contracts = [
                                 "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
+                                        "name": "selector",
+                                        "type": "uint8",
+                                        "internalType": "uint8"
+                                    },
+                                    {
                                         "name": "to",
                                         "type": "address",
                                         "internalType": "address"
@@ -567,9 +742,38 @@ export const contracts = [
                                         "internalType": "uint256"
                                     },
                                     {
-                                        "name": "gas",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
+                                        "name": "updates",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Update[]",
+                                        "components": [
+                                            {
+                                                "name": "start",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "slice",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Slice",
+                                                "components": [
+                                                    {
+                                                        "name": "index",
+                                                        "type": "uint8",
+                                                        "internalType": "uint8"
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "length",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 ]
                             },
@@ -582,6 +786,138 @@ export const contracts = [
                                 "name": "salt",
                                 "type": "bytes",
                                 "internalType": "bytes"
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$typeHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "getSliceHash",
+                "inputs": [
+                    {
+                        "name": "$input",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Slice",
+                        "components": [
+                            {
+                                "name": "index",
+                                "type": "uint8",
+                                "internalType": "uint8"
+                            },
+                            {
+                                "name": "start",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "length",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$typeHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "getUpdateArrayHash",
+                "inputs": [
+                    {
+                        "name": "$input",
+                        "type": "tuple[]",
+                        "internalType": "struct PlugTypesLib.Update[]",
+                        "components": [
+                            {
+                                "name": "start",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "slice",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Slice",
+                                "components": [
+                                    {
+                                        "name": "index",
+                                        "type": "uint8",
+                                        "internalType": "uint8"
+                                    },
+                                    {
+                                        "name": "start",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "length",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "$typeHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    }
+                ],
+                "stateMutability": "pure"
+            },
+            {
+                "type": "function",
+                "name": "getUpdateHash",
+                "inputs": [
+                    {
+                        "name": "$input",
+                        "type": "tuple",
+                        "internalType": "struct PlugTypesLib.Update",
+                        "components": [
+                            {
+                                "name": "start",
+                                "type": "uint256",
+                                "internalType": "uint256"
+                            },
+                            {
+                                "name": "slice",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Slice",
+                                "components": [
+                                    {
+                                        "name": "index",
+                                        "type": "uint8",
+                                        "internalType": "uint8"
+                                    },
+                                    {
+                                        "name": "start",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "length",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -700,70 +1036,87 @@ export const contracts = [
                 "name": "plug",
                 "inputs": [
                     {
-                        "name": "$livePlugs",
+                        "name": "$plugs",
                         "type": "tuple",
-                        "internalType": "struct PlugTypesLib.LivePlugs",
+                        "internalType": "struct PlugTypesLib.Plugs",
                         "components": [
                             {
+                                "name": "socket",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
                                 "name": "plugs",
-                                "type": "tuple",
-                                "internalType": "struct PlugTypesLib.Plugs",
+                                "type": "tuple[]",
+                                "internalType": "struct PlugTypesLib.Plug[]",
                                 "components": [
                                     {
-                                        "name": "socket",
+                                        "name": "selector",
+                                        "type": "uint8",
+                                        "internalType": "uint8"
+                                    },
+                                    {
+                                        "name": "to",
                                         "type": "address",
                                         "internalType": "address"
                                     },
                                     {
-                                        "name": "plugs",
+                                        "name": "data",
+                                        "type": "bytes",
+                                        "internalType": "bytes"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "type": "uint256",
+                                        "internalType": "uint256"
+                                    },
+                                    {
+                                        "name": "updates",
                                         "type": "tuple[]",
-                                        "internalType": "struct PlugTypesLib.Plug[]",
+                                        "internalType": "struct PlugTypesLib.Update[]",
                                         "components": [
                                             {
-                                                "name": "to",
-                                                "type": "address",
-                                                "internalType": "address"
-                                            },
-                                            {
-                                                "name": "data",
-                                                "type": "bytes",
-                                                "internalType": "bytes"
-                                            },
-                                            {
-                                                "name": "value",
+                                                "name": "start",
                                                 "type": "uint256",
                                                 "internalType": "uint256"
                                             },
                                             {
-                                                "name": "gas",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
+                                                "name": "slice",
+                                                "type": "tuple",
+                                                "internalType": "struct PlugTypesLib.Slice",
+                                                "components": [
+                                                    {
+                                                        "name": "index",
+                                                        "type": "uint8",
+                                                        "internalType": "uint8"
+                                                    },
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "length",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    }
+                                                ]
                                             }
                                         ]
-                                    },
-                                    {
-                                        "name": "solver",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
-                                    },
-                                    {
-                                        "name": "salt",
-                                        "type": "bytes",
-                                        "internalType": "bytes"
                                     }
                                 ]
                             },
                             {
-                                "name": "signature",
+                                "name": "solver",
+                                "type": "bytes",
+                                "internalType": "bytes"
+                            },
+                            {
+                                "name": "salt",
                                 "type": "bytes",
                                 "internalType": "bytes"
                             }
                         ]
-                    },
-                    {
-                        "name": "$solver",
-                        "type": "address",
-                        "internalType": "address"
                     }
                 ],
                 "outputs": [
@@ -792,53 +1145,104 @@ export const contracts = [
                 "name": "plug",
                 "inputs": [
                     {
-                        "name": "$plugs",
+                        "name": "$livePlugs",
                         "type": "tuple",
-                        "internalType": "struct PlugTypesLib.Plugs",
+                        "internalType": "struct PlugTypesLib.LivePlugs",
                         "components": [
                             {
-                                "name": "socket",
-                                "type": "address",
-                                "internalType": "address"
-                            },
-                            {
                                 "name": "plugs",
-                                "type": "tuple[]",
-                                "internalType": "struct PlugTypesLib.Plug[]",
+                                "type": "tuple",
+                                "internalType": "struct PlugTypesLib.Plugs",
                                 "components": [
                                     {
-                                        "name": "to",
+                                        "name": "socket",
                                         "type": "address",
                                         "internalType": "address"
                                     },
                                     {
-                                        "name": "data",
+                                        "name": "plugs",
+                                        "type": "tuple[]",
+                                        "internalType": "struct PlugTypesLib.Plug[]",
+                                        "components": [
+                                            {
+                                                "name": "selector",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
+                                                "name": "to",
+                                                "type": "address",
+                                                "internalType": "address"
+                                            },
+                                            {
+                                                "name": "data",
+                                                "type": "bytes",
+                                                "internalType": "bytes"
+                                            },
+                                            {
+                                                "name": "value",
+                                                "type": "uint256",
+                                                "internalType": "uint256"
+                                            },
+                                            {
+                                                "name": "updates",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Update[]",
+                                                "components": [
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "slice",
+                                                        "type": "tuple",
+                                                        "internalType": "struct PlugTypesLib.Slice",
+                                                        "components": [
+                                                            {
+                                                                "name": "index",
+                                                                "type": "uint8",
+                                                                "internalType": "uint8"
+                                                            },
+                                                            {
+                                                                "name": "start",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "solver",
                                         "type": "bytes",
                                         "internalType": "bytes"
                                     },
                                     {
-                                        "name": "value",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
-                                    },
-                                    {
-                                        "name": "gas",
-                                        "type": "uint256",
-                                        "internalType": "uint256"
+                                        "name": "salt",
+                                        "type": "bytes",
+                                        "internalType": "bytes"
                                     }
                                 ]
                             },
                             {
-                                "name": "solver",
-                                "type": "bytes",
-                                "internalType": "bytes"
-                            },
-                            {
-                                "name": "salt",
+                                "name": "signature",
                                 "type": "bytes",
                                 "internalType": "bytes"
                             }
                         ]
+                    },
+                    {
+                        "name": "$solver",
+                        "type": "address",
+                        "internalType": "address"
                     }
                 ],
                 "outputs": [
@@ -1103,6 +1507,11 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
+                                                "name": "selector",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
                                                 "name": "to",
                                                 "type": "address",
                                                 "internalType": "address"
@@ -1118,9 +1527,38 @@ export const contracts = [
                                                 "internalType": "uint256"
                                             },
                                             {
-                                                "name": "gas",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
+                                                "name": "updates",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Update[]",
+                                                "components": [
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "slice",
+                                                        "type": "tuple",
+                                                        "internalType": "struct PlugTypesLib.Slice",
+                                                        "components": [
+                                                            {
+                                                                "name": "index",
+                                                                "type": "uint8",
+                                                                "internalType": "uint8"
+                                                            },
+                                                            {
+                                                                "name": "start",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -1172,6 +1610,11 @@ export const contracts = [
                                         "internalType": "struct PlugTypesLib.Plug[]",
                                         "components": [
                                             {
+                                                "name": "selector",
+                                                "type": "uint8",
+                                                "internalType": "uint8"
+                                            },
+                                            {
                                                 "name": "to",
                                                 "type": "address",
                                                 "internalType": "address"
@@ -1187,9 +1630,38 @@ export const contracts = [
                                                 "internalType": "uint256"
                                             },
                                             {
-                                                "name": "gas",
-                                                "type": "uint256",
-                                                "internalType": "uint256"
+                                                "name": "updates",
+                                                "type": "tuple[]",
+                                                "internalType": "struct PlugTypesLib.Update[]",
+                                                "components": [
+                                                    {
+                                                        "name": "start",
+                                                        "type": "uint256",
+                                                        "internalType": "uint256"
+                                                    },
+                                                    {
+                                                        "name": "slice",
+                                                        "type": "tuple",
+                                                        "internalType": "struct PlugTypesLib.Slice",
+                                                        "components": [
+                                                            {
+                                                                "name": "index",
+                                                                "type": "uint8",
+                                                                "internalType": "uint8"
+                                                            },
+                                                            {
+                                                                "name": "start",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            },
+                                                            {
+                                                                "name": "length",
+                                                                "type": "uint256",
+                                                                "internalType": "uint256"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },

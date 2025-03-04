@@ -1,5 +1,11 @@
 # @nftchance/plug-core
 
+## 0.4.0
+
+### Minor Changes
+
+- 2f25e4e: feat: linked inputs with updates
+
 ## 0.3.7
 
 ### Patch Changes

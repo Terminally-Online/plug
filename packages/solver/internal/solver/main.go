@@ -81,7 +81,7 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 		}
 		// TODO: Only include the gas amount when we can properly estimate it with the traces
 		//       that are generated from the simulation.
-		transactions[i].Gas = big.NewInt(600000)
+		// transactions[i].Gas = big.NewInt(600000)
 	}
 
 	return transactions, nil
@@ -199,7 +199,6 @@ func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs sig
 			To:        plug.To.Hex(),
 			Data:      hexutil.Bytes(data).String(),
 			Value:     plug.Value,
-			Gas:       plug.Gas,
 			Exclusive: plug.Exclusive,
 		}
 		transactions[idx] = transaction
@@ -240,7 +239,6 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		To:        plugs[0].To.Hex(),
 		Data:      hexutil.Bytes(data).String(),
 		Value:     plugs[0].Value,
-		Gas:       plugs[0].Gas,
 		Exclusive: plugs[0].Exclusive,
 	}
 
@@ -250,7 +248,6 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		From:         intent.From,
 		To:           plugs[0].To.Hex(),
 		Value:        plugs[0].Value,
-		Gas:          plugs[0].Gas,
 		Data:         hexutil.Bytes(data).String(),
 		Transactions: transactions,
 	}

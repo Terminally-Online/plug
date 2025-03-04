@@ -67,21 +67,13 @@ contract Plug is PlugInterface {
         virtual
         returns (PlugSocketInterface $socket)
     {
-        /// @dev Pull the address of the Socket from the bundle.
         address socketAddress = $livePlugs.plugs.socket;
-
-        /// @dev If the Socket has not yet been deployed, deploy it.
         if (socketAddress.code.length == 0) {
-            /// @dev Call the factory that will handle the intent based deployment.
             (, address $socketAddress) = factory.deploy($livePlugs.plugs.salt);
-
-            /// @dev Confirm the Socket was deployed to the right address.
             if (socketAddress != $socketAddress) {
                 revert PlugLib.SocketAddressInvalid(socketAddress, $socketAddress);
             }
         }
-
-        /// @dev Load the Socket and return it.
         $socket = PlugSocketInterface(socketAddress);
     }
 

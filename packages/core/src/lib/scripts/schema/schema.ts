@@ -1,7 +1,7 @@
-import { ensureDir, writeFile } from "fs-extra"
-import { dirname, resolve } from "pathe"
+import { ensureDir, writeFile } from 'fs-extra'
+import { dirname, resolve } from 'pathe'
 
-import { configs, generateTypesReference } from "@/src/lib"
+import { configs, generateTypesReference } from '@/src/lib'
 
 export const schema = async () => {
 	const cwd = process.cwd()
@@ -24,9 +24,9 @@ export const schema = async () => {
 
 		if (documentation && config.out.documentation) {
 			for await (const element of documentation) {
-				const restOfPath = element.path.split("/")
+				const restOfPath = element.path.split('/')
 				const fileName = restOfPath.pop()
-				const folderPath = restOfPath.join("/")
+				const folderPath = restOfPath.join('/')
 
 				const documentationPath = resolve(
 					cwd,

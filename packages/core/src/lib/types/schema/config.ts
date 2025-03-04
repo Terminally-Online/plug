@@ -1,4 +1,4 @@
-import { TypedData } from "viem"
+import { TypedData } from 'viem'
 
 export type SchemaContract = {
 	authors: Array<string> | string

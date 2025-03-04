@@ -5,6 +5,6 @@ cache
 typechain-types
 
 node_modules
-lib
+./lib
 
 package.json

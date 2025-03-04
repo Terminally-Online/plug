@@ -11,10 +11,11 @@ import { ReentrancyGuard } from "solady/utils/ReentrancyGuard.sol";
 import { LibBitmap } from "solady/utils/LibBitmap.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
 import { PlugLib, PlugTypesLib } from "../libraries/Plug.Lib.sol";
+import { LibBytes } from "solady/utils/LibBytes.sol";
 
 /**
- * @title Plug
- * @notice The core contract for the Plug framework extremely execution paths.
+ * @title PlugSocket
+ * @notice The "account" contract for a user of Plug.
  * @author 🔌 Plug <hello@onplug.io> (https://onplug.io)
  * @author 🟠 CHANCE <chance@onplug.io> (https://onplug.io)
  */
@@ -150,22 +151,54 @@ contract PlugSocket is
         returns (PlugTypesLib.Result memory $results)
     {
         if ($plugs.solver.length != 0) {
-            (uint48 expiration, address solver) = abi.decode($plugs.solver, (uint48, address));
-            if (expiration < block.timestamp) {
+            if ($plugs.solver.length < 0x40) {
+                revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-malformed");
+            }
+            if (uint256(LibBytes.loadCalldata($plugs.solver, 0x00)) < block.timestamp) {
                 revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-expired");
             }
-            if (solver != $solver) {
+            if (address(uint160(uint256(LibBytes.loadCalldata($plugs.solver, 0x20)))) != $solver) {
                 revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:solver-invalid");
             }
         }
 
-        PlugTypesLib.Plug calldata action;
         uint256 length = $plugs.plugs.length;
+        PlugTypesLib.Plug calldata action;
+
+        bytes memory data;
+        bool success;
+        bytes[] memory results = new bytes[](length);
+
+        uint8 ii;
+        uint256 updatesLength;
+
+        bytes memory inherited;
+        bytes memory sliced;
         for (uint8 i; i < length; i++) {
             action = $plugs.plugs[i];
+            data = action.data;
 
-            (bool success,) =
-                action.to.call{ value: action.value, gas: action.gas }(action.data[1:]);
+            updatesLength = action.updates.length;
+            for (ii = 0; ii < updatesLength; ii++) {
+                PlugTypesLib.Update calldata update = action.updates[ii];
+                PlugTypesLib.Slice calldata slice = update.slice;
+                inherited = results[slice.index];
+                require(slice.start + slice.length <= inherited.length, "PlugCore:out-of-bounds");
+                sliced = LibBytes.slice(inherited, slice.start, slice.start + slice.length);
+
+                require(update.start + slice.length <= data.length, "PlugCore:would-overflow");
+                data = LibBytes.concat(
+                    LibBytes.concat(LibBytes.slice(data, 0, update.start), sliced),
+                    LibBytes.slice(data, update.start + slice.length, data.length)
+                );
+            }
+
+            if (action.selector == 0x00) {
+                (success, results[i]) = action.to.call{ value: action.value }(data);
+            } else if (action.selector == 0x01) {
+                (success, results[i]) = action.to.delegatecall(data);
+            }
+
             if (!success) {
                 revert PlugLib.PlugFailed(i, "PlugCore:plug-failed");
             }
@@ -192,9 +225,7 @@ contract PlugSocket is
         if (nonces.get(nonce) == true) {
             revert PlugLib.PlugFailed(type(uint8).max, "PlugCore:nonce-invalid");
         }
-
         nonces.set(nonce);
-
         $allowed = oneClickersToAllowed[signer] || owner() == signer;
     }
 
@@ -210,14 +241,14 @@ contract PlugSocket is
     }
 
     /**
-     * See { UUPSUpgradeable._authorizeUpgrade }
-     */
-    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
-
-    /**
      * See { PlugTrading._guardInitializeOwnership }
      */
     function _guardInitializeOwnership() internal pure virtual returns (bool $guard) {
         $guard = true;
     }
+
+    /**
+     * See { UUPSUpgradeable._authorizeUpgrade }
+     */
+    function _authorizeUpgrade(address) internal virtual override onlyOwner { }
 }

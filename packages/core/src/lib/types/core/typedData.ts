@@ -1,8 +1,6 @@
-import type {
-	TypedData, TypedDataToPrimitiveTypes
-} from 'abitype'
-import { TypedDataDefinition } from 'viem'
 import { LIVE_PLUGS_TYPES } from '../../constants'
+import type { TypedData, TypedDataToPrimitiveTypes } from 'abitype'
+import { TypedDataDefinition } from 'viem'
 
 // ! Turn a dictionary of EIP-712 types into a union of the keys
 //   that have a signed pair.

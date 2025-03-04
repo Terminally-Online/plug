@@ -1,10 +1,9 @@
+import { gitignore } from './gitignore'
 import dedent from 'dedent'
 import { execa } from 'execa'
 import { default as fs } from 'fs-extra'
 import path from 'path'
 import type { Options } from 'tsup'
-
-import { gitignore } from './gitignore'
 
 type GetConfig = Omit<
 	Options,
