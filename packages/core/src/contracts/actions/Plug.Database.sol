@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.23;
 
-import {SafeTransferLib} from "solady/utils/SafeTransferLib.sol";
-
 /**
  * @title Plug Database
  * @notice The chain is a database and a Plug Socket is empowered with a global
@@ -13,11 +11,31 @@ import {SafeTransferLib} from "solady/utils/SafeTransferLib.sol";
 contract PlugDatabase {
     mapping(address => mapping(bytes32 => bytes32)) public database;
 
-    function set(bytes32 key, bytes32 value) external returns (bytes32 output) {
+    /**
+     * @notice Set a value for a given key in the caller's storage
+     * @param key The key to set
+     * @param value The value to store
+     * @return result The stored value
+     */
+    function set(bytes32 key, bytes32 value) external returns (bytes32 result) {
         return database[msg.sender][key] = value;
     }
 
-    function get(bytes32 key) external view returns (bytes32 output) {
-        return database[msg.sender][key];
+    /**
+     * @notice Get a value for a given key from the specified address's storage
+     * @param sender The address whose storage to read
+     * @param key The key to retrieve
+     * @return result The stored value
+     */
+    function get(address sender, bytes32 key) external view returns (bytes32 result) {
+        return database[sender][key];
+    }
+    
+    /**
+     * @notice Delete a value for a given key from the caller's storage
+     * @param key The key to delete
+     */
+    function remove(bytes32 key) external {
+        delete database[msg.sender][key];
     }
 }
