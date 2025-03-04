@@ -32,6 +32,9 @@ func FindCoils(abi *abi.ABI, functionName string, outputName *string, outputInde
 			continue
 		}
 
+		if output.Name == "" {
+			output.Name = "output" + fmt.Sprint(i)
+		}
 		coils[i] = Update{
 			Start: big.NewInt(int64(currentPos)),
 			Slice: Slice{
@@ -39,6 +42,7 @@ func FindCoils(abi *abi.ABI, functionName string, outputName *string, outputInde
 				Index:  uint8(i),
 				Start:  big.NewInt(int64(currentPos)),
 				Length: big.NewInt(int64(length)),
+				Type:   output.Type.String(),
 			},
 		}
 

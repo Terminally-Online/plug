@@ -7,7 +7,7 @@ import (
 
 // ABIFunction represents a function definition in an ABI
 type ABIFunction struct {
-	Name            string         `json:"name"`
+	Name            string         `json:"name,omitempty"`
 	Inputs          []ABIParameter `json:"inputs"`
 	Outputs         []ABIParameter `json:"outputs"`
 	StateMutability string         `json:"stateMutability"`
@@ -27,6 +27,7 @@ type Slice struct {
 	Index  uint8    `json:"index"`          // Index of the plug in the sequence that produces this data
 	Start  *big.Int `json:"start"`          // Starting byte position within the result data
 	Length *big.Int `json:"length"`         // Length of bytes to extract
+	Type   string   `json:"type"`           // Type of the data
 }
 
 func (s Slice) Wrap() plug_router.PlugTypesLibSlice {
