@@ -60,17 +60,19 @@ type ActionDefinition struct {
 }
 
 func (a *ActionDefinition) GetCoils() ([]coil.Update, error) {
-	if a.Metadata == nil {
-		return nil, utils.ErrBuild("metadata is nil")
+	if a.Metadata == nil || a.FunctionName == "" {
+		return []coil.Update{}, nil
 	}
 
+	// Try to get the ABI and find coils
 	abi, err := a.Metadata.GetAbi()
 	if err != nil {
-		return nil, utils.ErrBuild("failed to get abi")
+		return []coil.Update{}, fmt.Errorf("failed to get ABI: %w", err)
 	}
+
 	coils, err := coil.FindCoils(abi, a.FunctionName, nil, nil)
 	if err != nil {
-		return nil, utils.ErrBuild("failed to find coils")
+		return []coil.Update{}, fmt.Errorf("failed to find coils: %w", err)
 	}
 
 	return coils, nil

@@ -103,6 +103,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 					protocolSchema.Schema[supportedAction] = actions.Schema{
 						Type:     chainSchema.Schema.Type,
 						Sentence: chainSchema.Schema.Sentence,
+						Coils:    chainSchema.Schema.Coils,
 					}
 				}
 			}
@@ -156,6 +157,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 				protocolSchema.Schema[supportedAction] = actions.Schema{
 					Type:     chainSchema.Schema.Type,
 					Sentence: chainSchema.Schema.Sentence,
+					Coils:    chainSchema.Schema.Coils,
 				}
 			}
 		}
