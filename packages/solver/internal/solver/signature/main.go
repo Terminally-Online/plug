@@ -3,6 +3,7 @@ package signature
 import (
 	"math/big"
 	"os"
+	"solver/internal/solver/coil"
 	"solver/internal/utils"
 	"time"
 
@@ -72,7 +73,7 @@ func GetPlugHash(plug Plug) [32]byte {
 	)
 }
 
-func getUpdateArrayHash(updates []Update) [32]byte {
+func getUpdateArrayHash(updates []coil.Update) [32]byte {
 	var encoded []byte
 	for _, update := range updates {
 		hash := getUpdateHash(update)
@@ -81,7 +82,7 @@ func getUpdateArrayHash(updates []Update) [32]byte {
 	return crypto.Keccak256Hash(encoded)
 }
 
-func getUpdateHash(update Update) [32]byte {
+func getUpdateHash(update coil.Update) [32]byte {
 	sliceHash := getSliceHash(update.Slice)
 	return crypto.Keccak256Hash(
 		[]byte(UPDATE_TYPEHASH),
@@ -90,7 +91,7 @@ func getUpdateHash(update Update) [32]byte {
 	)
 }
 
-func getSliceHash(slice Slice) [32]byte {
+func getSliceHash(slice coil.Slice) [32]byte {
 	return crypto.Keccak256Hash(
 		[]byte(SLICE_TYPEHASH),
 		[]byte{slice.Index},

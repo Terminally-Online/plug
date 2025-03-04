@@ -12,7 +12,7 @@ var (
 
 	chains = []*references.Network{references.Mainnet, references.Base}
 
-	ActionEarn               = "earn"
+	ActionEarn               = "supply"
 	ActionWithdraw           = "withdraw"
 	ActionDepositCollateral  = "supply_collateral"
 	ActionWithdrawCollateral = "withdraw_collateral"
