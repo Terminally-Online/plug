@@ -484,7 +484,7 @@ abstract contract TestPlug is TestPlus {
         address $to,
         uint256 $value,
         bytes memory $data,
-        uint8 $plugType
+        uint8
     )
         internal
         pure
