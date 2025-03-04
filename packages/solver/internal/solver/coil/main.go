@@ -1,8 +1,11 @@
 package coil
 
 import (
-	"encoding/json"
 	"fmt"
+	"math/big"
+	"solver/internal/solver/signature"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 // ABIFunction represents a function definition in an ABI
@@ -22,37 +25,35 @@ type ABIParameter struct {
 	Indexed      bool   `json:"indexed,omitempty"`
 }
 
-// ContractABI represents the full ABI of a contract
-type ContractABI []ABIFunction
-
-// GetFunctionReturnTypes takes a contract ABI and function name and returns the output parameters
-func GetFunctionReturnTypes(abiJSON string, functionName string) ([]ABIParameter, error) {
-	var abi ContractABI
-
-	if err := json.Unmarshal([]byte(abiJSON), &abi); err != nil {
-		return nil, fmt.Errorf("failed to parse ABI: %w", err)
-	}
-
-	// Find the function in the ABI
-	for _, function := range abi {
-		if function.Type == "function" && function.Name == functionName {
-			return function.Outputs, nil
-		}
-	}
-
-	return nil, fmt.Errorf("function %s not found in ABI", functionName)
+// Coil represents a function's return value parsing configuration
+type Coil struct {
+	Function *ABIFunction
+	Updates  []signature.Update
 }
 
-// Additional helper methods
+// GetFunctionReturnTypes takes a contract ABI and function name and returns the output parameters
+func GetFunctionReturnTypes(abi *abi.ABI, functionName string) ([]ABIParameter, error) {
+	fn := abi.Methods[functionName]
+	if fn.Name == "" {
+		return nil, fmt.Errorf("function %s not found in ABI", functionName)
+	}
+	return convertABIArgs(fn.Outputs), nil
+}
 
 // GetFunctionByName returns the full function definition from the ABI
-func (abi ContractABI) GetFunctionByName(name string) (*ABIFunction, error) {
-	for _, function := range abi {
-		if function.Type == "function" && function.Name == name {
-			return &function, nil
-		}
+func GetFunctionByName(abi *abi.ABI, name string) (*ABIFunction, error) {
+	fn := abi.Methods[name]
+	if fn.Name == "" {
+		return nil, fmt.Errorf("function %s not found", name)
 	}
-	return nil, fmt.Errorf("function %s not found", name)
+
+	return &ABIFunction{
+		Name:            fn.Name,
+		Inputs:          convertABIArgs(fn.Inputs),
+		Outputs:         convertABIArgs(fn.Outputs),
+		StateMutability: string(fn.StateMutability),
+		Type:            "function",
+	}, nil
 }
 
 // HasNamedOutputs checks if the function has named return values
@@ -77,59 +78,35 @@ func (f ABIFunction) GetOutputNames() []string {
 	return names
 }
 
-// Add these types at the top of the file after the existing types
-
-// Coil represents a function's return value parsing configuration
-type Coil struct {
-	Function *ABIFunction
-	Updates  []Update
-}
-
-// Update represents how to parse a return value
-type Update struct {
-	Start uint
-	Slice Slice
-}
-
-// Slice represents the location and size of a return value in the data
-type Slice struct {
-	Index  uint8
-	Start  uint
-	Length uint
-}
-
-// Add this function after the existing functions
-
 // NewCoil creates a new Coil for parsing return values from the given function
-func NewCoil(abiString string, functionName string) (*Coil, error) {
-	var abi ContractABI
-	if err := json.Unmarshal([]byte(abiString), &abi); err != nil {
-		return nil, fmt.Errorf("failed to parse ABI: %w", err)
-	}
-
-	fn, err := abi.GetFunctionByName(functionName)
-	if err != nil {
-		return nil, err
+func NewCoil(abi *abi.ABI, functionName string) (*Coil, error) {
+	fn := abi.Methods[functionName]
+	if fn.Name == "" {
+		return nil, fmt.Errorf("function %s not found", functionName)
 	}
 
 	coil := &Coil{
-		Function: fn,
-		Updates:  make([]Update, len(fn.Outputs)),
+		Function: &ABIFunction{
+			Name:            fn.Name,
+			Inputs:          convertABIArgs(fn.Inputs),
+			Outputs:         convertABIArgs(fn.Outputs),
+			StateMutability: string(fn.StateMutability),
+			Type:            "function",
+		},
+		Updates: make([]signature.Update, len(fn.Outputs)),
 	}
 
-	// Track the current position in the return data
 	var currentPos uint = 0
-
-	// Create an Update and Slice for each output parameter
 	for i, output := range fn.Outputs {
-		length := getTypeLength(output.Type)
+		length := getTypeLength(output.Type.String())
 
-		coil.Updates[i] = Update{
-			Start: currentPos,
-			Slice: Slice{
+		coil.Updates[i] = signature.Update{
+			Start: big.NewInt(int64(currentPos)),
+			Slice: signature.Slice{
+				Name:   &output.Name,
 				Index:  uint8(i),
-				Start:  currentPos,
-				Length: length,
+				Start:  big.NewInt(int64(currentPos)),
+				Length: big.NewInt(int64(length)),
 			},
 		}
 
@@ -139,7 +116,18 @@ func NewCoil(abiString string, functionName string) (*Coil, error) {
 	return coil, nil
 }
 
-// getTypeLength returns the length in bytes of the given Solidity type
+func convertABIArgs(args abi.Arguments) []ABIParameter {
+	params := make([]ABIParameter, len(args))
+	for i, arg := range args {
+		params[i] = ABIParameter{
+			Name:         arg.Name,
+			Type:         arg.Type.String(),
+			InternalType: arg.Type.String(),
+		}
+	}
+	return params
+}
+
 func getTypeLength(typeName string) uint {
 	switch typeName {
 	case "address":
@@ -152,13 +140,12 @@ func getTypeLength(typeName string) uint {
 		return 1 // 1 byte for boolean
 	case "bytes32":
 		return 32 // 32 bytes for fixed-size byte array
-	// Add more types as needed
 	default:
 		return 32 // Default to 32 bytes for unknown types
 	}
 }
 
-// Add a helper method to get the updates
-func (c *Coil) GetUpdates() []Update {
+// GetUpdates returns the slice of Updates
+func (c *Coil) GetUpdates() []signature.Update {
 	return c.Updates
 }
