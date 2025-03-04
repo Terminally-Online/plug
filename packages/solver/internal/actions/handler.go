@@ -112,8 +112,7 @@ func NewBaseHandler(
 	for action, def := range actionDefinitions {
 		coils, err := def.GetCoils()
 		if err != nil {
-			log.Error("failed to get coils", "error", err)
-			continue
+			log.Error("failed to get coils", "action", action, "error", err)
 		}
 		schemas[action] = ChainSchema{
 			Schema: Schema{
