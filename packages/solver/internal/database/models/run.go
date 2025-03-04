@@ -24,7 +24,7 @@ type Run struct {
 	IntentId   string   `json:"intentId,omitempty" gorm:"type:text"`
 	Intent     Intent   `json:"-" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugId string   `json:"livePlugId,omitempty" gorm:"type:text"`
-	LivePlug   LivePlug `json:"livePlug,omitempty" gorm:"foreignKey:TransactionBundleId;references:Id"`
+	LivePlug   LivePlug `json:"livePlug,omitempty" gorm:"foreignKey:LivePlugId;references:Id"`
 
 	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 	CreatedAt time.Time      `json:"-"`

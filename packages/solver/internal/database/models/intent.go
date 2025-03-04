@@ -28,6 +28,7 @@ type Intent struct {
 	EndAt            *time.Time          `json:"endAt,omitempty" gorm:"type:timestamp"`
 	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
 	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
+	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
 
 	// Relationships
 	Runs      []Run      `json:"runs" gorm:"foreignKey:IntentId;references:Id"`

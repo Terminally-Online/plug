@@ -178,8 +178,7 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 	}, nil
 }
 
-// TODO MASON -- I think this can be deprecated now.
-func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.LivePlug, err error) {
+func (s *Solver) BuildLivePlugModels(intent *models.Intent, livePlugs signature.LivePlugs) (transactionBundle *models.LivePlug, err error) {
 	routerAbi, err := plug_router.PlugRouterMetaData.GetAbi()
 	if err != nil {
 		return nil, utils.ErrABI("PlugRouter")
@@ -219,6 +218,68 @@ func (s *Solver) BuildPlugTransactionBundle(intent *models.Intent, livePlugs sig
 	}
 
 	return &bundle, nil
+}
+
+func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
+	// Get the latest LivePlug for this intent
+	var livePlug models.LivePlug
+	if err := database.DB.Where("intent_id = ?", intent.Id).
+		Order("created_at DESC").
+		First(&livePlug).Error; err != nil {
+		return nil, fmt.Errorf("failed to find live plug: %v", err)
+	}
+
+	// Get the latest Run for this intent
+	var run models.Run
+	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlug.Id).
+		Order("created_at DESC").
+		First(&run).Error; err != nil {
+		return nil, fmt.Errorf("failed to find run: %v", err)
+	}
+
+	// Get the associated plugs
+	var plugs []models.Plug
+	if err := database.DB.Where("bundle_id = ?", livePlug.Id).
+		Find(&plugs).Error; err != nil {
+		return nil, fmt.Errorf("failed to find plugs: %v", err)
+	}
+	livePlug.Plugs = plugs
+
+	// Reconstruct LivePlugs from the stored signature and plugs
+	var livePlugs *signature.LivePlugs
+	if livePlug.Signature != nil {
+		// Only reconstruct LivePlugs if this wasn't an EOA transaction
+		signatureBytes := []byte(*livePlug.Signature)
+
+		// Convert models.Plug to signature.Plug
+		signaturePugs := make([]signature.Plug, len(plugs))
+		for i, plug := range plugs {
+			signaturePugs[i] = signature.Plug{
+				To:        common.HexToAddress(plug.To),
+				Value:     plug.Value,
+				Gas:       plug.Gas,
+				Data:      []byte(plug.Data),
+				Exclusive: plug.Exclusive,
+			}
+		}
+
+		livePlugs = &signature.LivePlugs{
+			Signature: signatureBytes,
+			Plugs: signature.Plugs{
+				Socket: common.HexToAddress(intent.From),
+				Plugs:  signaturePugs,
+			},
+		}
+	}
+
+	return &Solution{
+		Status:       SolutionStatus{Success: run.Status == "success"},
+		Transactions: &livePlug.Plugs,
+		LivePlugs:    livePlugs,
+		Intent:       intent,
+		Run:          &run,
+		Transaction:  &livePlug,
+	}, nil
 }
 
 func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error) {
@@ -275,10 +336,10 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 
 	return &Solution{
 		Status:       SolutionStatus{Success: true},
-		Transactions: plugModels,
+		Transactions: &plugModels,
 		Intent:       intent,
 		Run:          run,
-		Transaction:  livePlug,
+		Transaction:  &livePlug,
 	}, nil
 }
 
@@ -297,7 +358,7 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		return nil, err
 	}
 
-	livePlugModel, err := s.BuildPlugTransactionBundle(intent, *livePlugs)
+	livePlugModel, err := s.BuildLivePlugModels(intent, *livePlugs)
 	if err != nil {
 		return nil, err
 	}
