@@ -15,7 +15,7 @@ type Execution struct {
 	TransactionHash string `json:"transactionHash,omitempty" gorm:"type:text"`
 
 	// Relationships
-	TransactionBundleId string            `json:"transactionBundleId,omitempty" gorm:"type:text"`
+	LivePlugId string            `json:"transactionBundleId,omitempty" gorm:"type:text"`
 	TransactionBundle   TransactionBundle `json:"-" gorm:"foreignKey:TransactionBundleId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response

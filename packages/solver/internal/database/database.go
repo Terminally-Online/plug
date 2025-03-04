@@ -120,8 +120,8 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Execution{},
 		&models.Run{},
 		&models.Intent{},
-		&models.Transaction{},
-		&models.TransactionBundle{},
+		&models.Plug{},
+		&models.LivePlug{},
 	)
 }
 
