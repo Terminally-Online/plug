@@ -48,7 +48,6 @@ func SimulateRaw(livePlug *models.LivePlug, ABI *string) (*models.Run, error) {
 		gas := hexutil.EncodeBig(livePlug.Gas.Int)
 		tx["gas"] = gas
 	}
-	fmt.Printf("tx: %v\n", tx)
 
 	var blockNumber string
 	if err := rpcClient.CallContext(ctx, &blockNumber, "eth_blockNumber"); err != nil {

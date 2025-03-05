@@ -8,6 +8,7 @@ import (
 	"solver/internal/api/solver"
 	"solver/internal/cron"
 	"solver/internal/utils"
+	"time"
 
 	"github.com/joho/godotenv"
 	scheduler "github.com/robfig/cron"
@@ -25,7 +26,7 @@ func main() {
 	actions.SetCachedOptionsProvider(provider)
 
 	// TODO: Would be nice if we did not define the list here. Honestly, not even really
-	//       sure this is doing what I expected when I wrote it. Either way, we should 
+	//       sure this is doing what I expected when I wrote it. Either way, we should
 	//       just have a rolling job that updates the global cache of all protocols and
 	//       all actions that we currently support. The exception being those that are
 	//       user specific because the cache will never even be hit for those.
@@ -59,6 +60,7 @@ func main() {
 		{"0 */5 * * * *", cron.CollectibleMetadata},                                               // Every 5 minutes
 		{"0 */5 * * * *", func() { provider.PreWarmCache(8453, utils.ZeroAddress, actionsList) }}, // Every 5 minutes
 		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},                                  // Every 1 minute
+		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},                       // Every 15 minutes, clean up unsaved intents older than 15 minutes
 	}
 
 	schedule := scheduler.New()
