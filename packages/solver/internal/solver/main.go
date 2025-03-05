@@ -7,8 +7,10 @@ import (
 	"solver/bindings/plug_router"
 	"solver/internal/actions"
 	"solver/internal/actions/aave_v3"
+	"solver/internal/actions/boolean"
 	"solver/internal/actions/ens"
 	"solver/internal/actions/euler"
+	"solver/internal/actions/math"
 	"solver/internal/actions/morpho"
 	"solver/internal/actions/nouns"
 	"solver/internal/actions/plug"
@@ -33,13 +35,15 @@ type Solver struct {
 func New() Solver {
 	return Solver{
 		Protocols: map[string]actions.BaseProtocolHandler{
-			actions.ProtocolPlug:    plug.New(),
-			actions.ProtocolAaveV3:  aave_v3.New(),
-			actions.ProtocolYearnV3: yearn_v3.New(),
-			actions.ProtocolENS:     ens.New(),
-			actions.ProtocolNouns:   nouns.New(),
-			actions.ProtocolMorpho:  morpho.New(),
-			actions.ProtocolEuler:   euler.New(),
+			actions.Plug:    plug.New(),
+			actions.Boolean: boolean.New(),
+			actions.AaveV3:  aave_v3.New(),
+			actions.YearnV3: yearn_v3.New(),
+			actions.ENS:     ens.New(),
+			actions.Nouns:   nouns.New(),
+			actions.Morpho:  morpho.New(),
+			actions.Euler:   euler.New(),
+			actions.Math:    math.New(),
 		},
 		IsKilled: false,
 	}

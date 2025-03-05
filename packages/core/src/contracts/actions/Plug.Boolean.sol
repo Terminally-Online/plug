@@ -136,7 +136,14 @@ contract PlugBoolean {
      * @param threshold The threshold to compare against
      * @return result True if value >= threshold
      */
-    function isGreaterThanOrEqual(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isGreaterThanOrEqual(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value >= threshold;
     }
 
@@ -156,7 +163,14 @@ contract PlugBoolean {
      * @param threshold The threshold to compare against
      * @return result True if value <= threshold
      */
-    function isLessThanOrEqual(uint256 value, uint256 threshold) public pure returns (bool result) {
+    function isLessThanOrEqual(
+        uint256 value,
+        uint256 threshold
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = value <= threshold;
     }
 
@@ -198,7 +212,15 @@ contract PlugBoolean {
      * @param end The end timestamp (inclusive)
      * @return result True if start <= time <= end
      */
-    function isBetweenTimes(uint256 time, uint256 start, uint256 end) public pure returns (bool result) {
+    function isBetweenTimes(
+        uint256 time,
+        uint256 start,
+        uint256 end
+    )
+        public
+        pure
+        returns (bool result)
+    {
         result = time >= start && time <= end;
     }
 

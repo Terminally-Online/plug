@@ -917,8 +917,9 @@ contract PlugTest is Test {
         uint256 innerLength = 4;
 
         // First plug: Get a nested array
-        bytes memory getNestedArrayCallData =
-            abi.encodeWithSelector(mockDynamicData.returnNestedArray.selector, outerLength, innerLength);
+        bytes memory getNestedArrayCallData = abi.encodeWithSelector(
+            mockDynamicData.returnNestedArray.selector, outerLength, innerLength
+        );
 
         PlugTypesLib.Plug memory getNestedArrayPlug = PlugTypesLib.Plug({
             selector: 0x00,

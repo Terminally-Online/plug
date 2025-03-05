@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.23;
 
-import {SafeTransferLib} from "solady/utils/SafeTransferLib.sol";
+import { SafeTransferLib } from "solady/utils/SafeTransferLib.sol";
 
 /**
  * @title Plug EVM
@@ -77,7 +77,11 @@ contract PlugEVM {
      * @return success Always returns true as Solady will revert if the transfer fails
      * @return returnData Empty bytes as Solady handles error internally
      */
-    function transfer(address recipient, uint256 amount, uint256 gasLimit)
+    function transfer(
+        address recipient,
+        uint256 amount,
+        uint256 gasLimit
+    )
         public
         payable
         returns (bool success, bytes memory returnData)
@@ -154,5 +158,5 @@ contract PlugEVM {
     /**
      * @notice Receive function to allow the contract to receive ETH
      */
-    receive() external payable {}
+    receive() external payable { }
 }

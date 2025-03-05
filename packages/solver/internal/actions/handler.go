@@ -142,7 +142,8 @@ func NewBaseHandler(
 		},
 	}
 
-	actions := make([]string, 3, len(actionDefinitions))
+	// Fix: create slice with 0 size and len(actionDefinitions) capacity
+	actions := make([]string, 0, len(actionDefinitions))
 	for action := range actionDefinitions {
 		actions = append(actions, action)
 	}

@@ -34,7 +34,7 @@ contract PlugAssert {
     function assertTrue(bool condition, string memory message) public pure {
         require(condition, string.concat("PlugAssert:", message));
     }
-    
+
     /**
      * @notice Assert that a condition is false with a custom error message
      * @param condition The boolean condition to assert

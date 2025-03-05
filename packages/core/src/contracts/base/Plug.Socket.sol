@@ -31,8 +31,8 @@ contract PlugSocket is
     using LibBitmap for LibBitmap.Bitmap;
 
     uint256 private constant WORD = 32;
-    uint256 private constant TYPE_CALL = 0x00; // Changed from TYPE_DELEGATECALL to match test expectations
-    uint256 private constant TYPE_DELEGATECALL = 0x01; // Switched with TYPE_CALL
+    uint256 private constant TYPE_CALL = 0x00;
+    uint256 private constant TYPE_DELEGATECALL = 0x01;
     uint256 private constant TYPE_CALL_WITH_VALUE = 0x02;
     uint256 private constant TYPE_STATICCALL = 0x03;
 
@@ -182,15 +182,16 @@ contract PlugSocket is
         PlugTypesLib.Update calldata update;
         PlugTypesLib.Slice calldata slice;
         bytes memory coil;
+        bytes memory charge;
         uint256 start;
         uint256 dataOffset;
         uint256 dataLength;
-        bytes memory charge;
         uint256 area;
+        uint256 arrayLength;
 
         for (uint8 i; i < length; i++) {
             currentPlug = $plugs.plugs[i];
-            data = currentPlug.data; // Initialize data with the plug's original data
+            data = currentPlug.data;
             updatesLength = currentPlug.updates.length;
 
             for (ii = 0; ii < updatesLength; ii++) {
@@ -198,68 +199,7 @@ contract PlugSocket is
                 slice = update.slice;
                 coil = results[slice.index];
 
-                if (slice.typeId != 0) {
-                    start = update.start;
-
-                    // Inline optimized dynamic data extraction (formerly _extractDynamicData)
-                    assembly {
-                        // Get the data offset pointer stored at the specified location
-                        dataOffset := mload(add(coil, add(start, WORD)))
-                    }
-
-                    // Validate the data offset is within bounds
-                    if (dataOffset >= coil.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-offset");
-                    }
-
-                    // Get the length of the dynamic data from the offset position
-                    assembly {
-                        dataLength := mload(add(coil, add(dataOffset, WORD)))
-                    }
-
-                    // Validate the data length doesn't exceed the bounds of the input data
-                    if (dataOffset + WORD + dataLength > coil.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-length");
-                    }
-
-                    // Type-specific validation for more complex dynamic types
-                    if (slice.typeId == 1) {
-                        // Dynamic Arrays - validate array length
-                        uint256 arrayLength;
-                        assembly {
-                            arrayLength := mload(add(coil, add(dataOffset, WORD)))
-                        }
-                        if (arrayLength * 32 > dataLength) {
-                            revert PlugLib.PlugFailed(i, "PlugCore:array-length-invalid");
-                        }
-                    } else if (slice.typeId == 3) {
-                        // Structs with dynamic fields - basic size check
-                        if (dataLength < 32) {
-                            revert PlugLib.PlugFailed(i, "PlugCore:struct-too-small");
-                        }
-                    } else if (slice.typeId == 4) {
-                        // Nested Arrays - validate outer array length
-                        uint256 outerArrayLength;
-                        assembly {
-                            outerArrayLength := mload(add(coil, add(dataOffset, WORD)))
-                        }
-                        if (outerArrayLength * 32 > dataLength) {
-                            revert PlugLib.PlugFailed(i, "PlugCore:nested-array-invalid");
-                        }
-                    } else if (slice.typeId == 5 && dataLength < 64) {
-                        // Mapping-like structures - check for key-value pair space
-                        revert PlugLib.PlugFailed(i, "PlugCore:key-value-too-small");
-                    }
-
-                    // Extract the dynamic data - most efficient single-copy approach
-                    charge = LibBytes.slice(coil, dataOffset + WORD, dataOffset + WORD + dataLength);
-
-                    if (start + WORD + dataLength > data.length) {
-                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
-                    }
-                    area = start + WORD + dataLength;
-                } else {
-                    // Static data handling for typeId == 0
+                if (slice.typeId == 0) {
                     if (slice.start + slice.length > coil.length) {
                         revert PlugLib.PlugFailed(i, "PlugCore:out-of-bounds");
                     }
@@ -268,6 +208,44 @@ contract PlugSocket is
                         revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
                     }
                     area = update.start + slice.length;
+                } else {
+                    start = update.start;
+
+                    assembly {
+                        dataOffset := mload(add(coil, add(start, WORD)))
+                    }
+                    if (dataOffset >= coil.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-offset");
+                    }
+
+                    assembly {
+                        dataLength := mload(add(coil, add(dataOffset, WORD)))
+                    }
+                    if (dataOffset + WORD + dataLength > coil.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:invalid-length");
+                    }
+
+                    if (slice.typeId == 1 || slice.typeId == 4) {
+                        assembly {
+                            arrayLength := mload(add(coil, add(dataOffset, WORD)))
+                        }
+                        if (arrayLength * 32 > dataLength) {
+                            revert PlugLib.PlugFailed(i, "PlugCore:array-length-invalid");
+                        }
+                    } else if (slice.typeId == 3) {
+                        if (dataLength < 32) {
+                            revert PlugLib.PlugFailed(i, "PlugCore:struct-too-small");
+                        }
+                    } else if (slice.typeId == 5 && dataLength < 64) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:key-value-too-small");
+                    }
+
+                    charge = LibBytes.slice(coil, dataOffset + WORD, dataOffset + WORD + dataLength);
+
+                    if (start + WORD + dataLength > data.length) {
+                        revert PlugLib.PlugFailed(i, "PlugCore:would-overflow");
+                    }
+                    area = start + WORD + dataLength;
                 }
 
                 // More efficient data concatenation using a single memory allocation strategy

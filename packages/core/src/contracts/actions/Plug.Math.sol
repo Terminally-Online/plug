@@ -82,15 +82,6 @@ contract PlugMath {
     }
 
     /**
-     * @notice Returns the absolute value of a number
-     * @param a Input number
-     * @return result The absolute value of a
-     */
-    function abs(int256 a) public pure returns (int256 result) {
-        return a >= 0 ? a : -a;
-    }
-
-    /**
      * @notice Calculates a number raised to a power
      * @param base The base number
      * @param exponent The exponent (must be non-negative)
@@ -115,24 +106,21 @@ contract PlugMath {
     }
 
     /**
-     * @notice Calculates the average of two numbers
-     * @param a First number
-     * @param b Second number
-     * @return result The average of a and b
-     */
-    function average(int256 a, int256 b) public pure returns (int256 result) {
-        // Use a safe calculation to avoid overflow
-        return (a / 2) + (b / 2) + ((a % 2 + b % 2) / 2);
-    }
-
-    /**
      * @notice Clamps a number between a minimum and maximum value
      * @param value The input value
      * @param minValue The minimum allowed value
      * @param maxValue The maximum allowed value
      * @return result The clamped value (between min and max)
      */
-    function clamp(int256 value, int256 minValue, int256 maxValue) public pure returns (int256 result) {
+    function clamp(
+        int256 value,
+        int256 minValue,
+        int256 maxValue
+    )
+        public
+        pure
+        returns (int256 result)
+    {
         require(minValue <= maxValue, "PlugMath:min-exceeds-max");
         return min(max(value, minValue), maxValue);
     }

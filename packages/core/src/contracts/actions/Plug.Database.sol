@@ -30,7 +30,7 @@ contract PlugDatabase {
     function get(address sender, bytes32 key) external view returns (bytes32 result) {
         return database[sender][key];
     }
-    
+
     /**
      * @notice Delete a value for a given key from the caller's storage
      * @param key The key to delete
