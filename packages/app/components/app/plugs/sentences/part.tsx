@@ -104,8 +104,6 @@ export const Part: FC<PartProps> = memo(
 		//       is no longer supported or shown in the list existing Plugs will still function as
 		//       expected and the user will have the ability to choose an up to date option in the
 		//       future if they see fit.
-		// TODO: In some rare cases, we will have to pause plugs that are using a version of an
-		//       action that is not supported.
 		const icon = action.values?.[input.index]?.icon?.default || (option && option.icon.default)
 		const label =
 			(option && option.label) ||

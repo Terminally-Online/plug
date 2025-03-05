@@ -133,7 +133,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		if (!solverActions || !actionSchema)
 			return (
 				<motion.div
-					className="bg-[length:200%_200% mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
+					className="bg-[length:200%_200%] w-full mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
 					initial={{ y: 20 }}
 					animate={{ y: 0 }}
 				>
