@@ -32,13 +32,13 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 	const availableCoils = useMemo(() => {
 		if (!plug || !solverActions) return {}
-		
-		const coils: Record<string, {type: string, actionIndex: number, coil: any}> = {}
-		
+
+		const coils: Record<string, { type: string, actionIndex: number, coil: any }> = {}
+
 		plug.actions.forEach((action, actionIndex) => {
 			const actionSchema = solverActions[action.protocol]?.schema[action.action]
 			if (!actionSchema || !actionSchema.coils) return
-			
+
 			actionSchema.coils.forEach(coil => {
 				if (coil.slice?.name) {
 					coils[coil.slice.name] = {
@@ -49,19 +49,19 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 				}
 			})
 		})
-		
+
 		return coils
 	}, [plug, solverActions])
-	
+
 	const handleValueChange = (actionIndex: number, inputIndex: string, value: string, additionalData: any = {}) => {
 		if (!plug) return
-		
+
 		const isLinked = value.startsWith("<-{") && value.endsWith("}")
-		
+
 		if (isLinked) {
 			const coilName = value.substring(3, value.length - 1)
 			const coilInfo = availableCoils[coilName]
-			
+
 			if (!coilInfo || coilInfo.actionIndex >= actionIndex) {
 				console.error("Invalid coil reference or circular dependency", {
 					coilName,
@@ -70,7 +70,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 				})
 				return
 			}
-			
+
 			const actionSchema = solverActions[plug.actions[actionIndex].protocol]?.schema[plug.actions[actionIndex].action]
 			if (actionSchema) {
 				const inputType = actionSchema.sentence
@@ -79,27 +79,27 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 					.map(part => {
 						const match = part.match(/(\d+)<([^:]+):([^>]+)>/)
 						if (match && match[1] === inputIndex) {
-							return match[3] 
+							return match[3]
 						}
 						return null
 					})
 					.filter(Boolean)[0]
-				
+
 				if (inputType && coilInfo.type && !isTypeCompatible(inputType, coilInfo.type)) {
 					console.error(`Type mismatch: Input expects ${inputType} but coil provides ${coilInfo.type}`)
 				}
 			}
 		}
-		
+
 		const newActions = [...plug.actions]
 		const action = newActions[actionIndex]
-		
+
 		if (!action.values) {
 			action.values = {}
 		}
-		
+
 		const isNumber = additionalData.isNumber || false
-		
+
 		action.values[inputIndex] = {
 			index: inputIndex,
 			key: inputIndex,
@@ -107,7 +107,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 			value: isNumber && !isLinked ? parseFloat(value) : value,
 			...additionalData
 		}
-		
+
 		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions: JSON.stringify(newActions), updatedAt: new Date() } : p))
 		edit({
 			id: plug.id,
@@ -116,45 +116,54 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 	}
 
 	// TODO: This is a simplified version - real implementation would be more thorough
-	// NOTE: We kind of have an issue here because we need to confirm that it is a type
-	//       that can be properly coerced by the solidity abi encoder when inserting
-	//       the data into the transaction. Realistically though, whether or not we
-	//       pass a uint256 or a bytes32, the value is the same because they both take
-	//       up a full slot.
 	const isTypeCompatible = (inputType: string, coilType: string): boolean => {
 		if (inputType === coilType) return true
-		
+
 		if (inputType.includes('uint') || inputType.includes('int')) {
 			return coilType.includes('uint') || coilType.includes('int')
 		}
-		
+
 		if (inputType === 'address') {
 			return coilType === 'address'
 		}
-		
+
 		if (inputType.includes('bytes') || inputType === 'string') {
 			return coilType.includes('bytes') || coilType === 'string'
 		}
-		
+
 		return false
 	}
-	
+
 	const validateType = (coilName: string, expectedType: string): boolean => {
 		const coilInfo = availableCoils[coilName]
 		if (!coilInfo) return false
-		
+
 		return coilInfo.type === expectedType
 	}
 
 	const handleDragEnd = (result: DropResult) => {
 		if (!result.destination || !plug || !own) return
-
+		
+		if (result.source.index === result.destination.index) return
+		
 		const newActions = [...plug.actions]
 		const [removed] = newActions.splice(result.source.index, 1)
 		newActions.splice(result.destination.index, 0, removed)
-
 		const actions = JSON.stringify(newActions)
-
+		
+		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
+		edit({
+			id: plug.id,
+			actions
+		})
+	}
+	
+	const handleRemoveAction = (actionIndex: number) => {
+		if (!plug) return
+		
+		const newActions = plug.actions.filter((_, i) => i !== actionIndex)
+		const actions = JSON.stringify(newActions)
+		
 		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
 		edit({
 			id: plug.id,
@@ -165,15 +174,13 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 	if (!plug) return null
 
 	return <div className="mb-72 flex flex-col">
-		<Callout.EmptyPlug index={index} isEmpty={plug.actions.length === 0} />
-		
 		<DragDropContext onDragEnd={handleDragEnd}>
 			<Droppable droppableId={`${index}-${plug.id}-items`} direction="vertical">
 				{provided => (
 					<div ref={provided.innerRef} className="flex flex-col" {...provided.droppableProps}>
 						{plug.actions.map((action, actionIndex) => {
 							const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
-							const linked = values.filter(val => val?.value?.startsWith("<-{"))
+							const linked = values.filter(val => val?.value && val?.value?.startsWith("<-{"))
 
 							let prevCoils: ActionSchemaCoils | undefined = []
 							if (actionIndex > 0) {
@@ -203,9 +210,10 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 											linked={linked}
 											prevCoils={prevCoils}
 											dragging={snapshot.isDragging}
-											handleValueChange={(inputIndex, value, additionalData) => 
+											handleValueChange={(inputIndex, value, additionalData) =>
 												handleValueChange(actionIndex, inputIndex, value, additionalData)
 											}
+											handleRemoveAction={() => handleRemoveAction(actionIndex)}
 											validateType={validateType}
 											availableCoils={availableCoils}
 											{...provided.dragHandleProps}

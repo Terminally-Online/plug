@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react"
-import { FC, HTMLAttributes, useState } from "react"
+import { FC, HTMLAttributes, useEffect, useState } from "react"
 
 import { SearchIcon } from "lucide-react"
 
@@ -32,12 +32,12 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 
 	const own = plug !== undefined && session && session.address === plug.socketId
 
-	// useEffect(() => {
-	// 	if (!plug || plug.actions !== "[]" || hasOpenedActions) return
-	//
-	// 	frame(`${item}-actions`)
-	// 	setHasOpenedActions(true)
-	// }, [item, plug, hasOpenedActions, frame])
+	useEffect(() => {
+		if (!plug || plug.actions.length !== 0 || hasOpenedActions) return
+
+		frame(`${item}-actions`)
+		setHasOpenedActions(true)
+	}, [item, plug, hasOpenedActions, frame])
 
 	if (!column || !plug) return null
 

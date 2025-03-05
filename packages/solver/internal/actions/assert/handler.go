@@ -17,16 +17,10 @@ var (
 	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		AssertTrue: {
-			Sentence:     "Assert that {0<condition:boolean>} is true {1<message:string>}",
+			Sentence:     "Assert that {0<condition:bool>} is {1<assertion:bool>}",
 			Handler:      HandleAssertTrue,
 			Metadata:     plug_assert.PlugAssertMetaData,
 			FunctionName: "assertTrue",
-		},
-		AssertFalse: {
-			Sentence:     "Assert that {0<condition:boolean>} is false {1<message:string>}",
-			Handler:      HandleAssertFalse,
-			Metadata:     plug_assert.PlugAssertMetaData,
-			FunctionName: "assertFalse",
 		},
 	}
 )
@@ -41,4 +35,3 @@ func New() actions.BaseProtocolHandler {
 		&AssertOptionsProvider{},
 	)
 }
-

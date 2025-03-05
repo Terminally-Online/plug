@@ -25,8 +25,9 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	prevCoils?: ActionSchemaCoils
 	dragging?: boolean
 	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
+	handleRemoveAction?: () => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, {type: string, actionIndex: number, coil: any}>
+	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
 }
 
 export const Sentence: FC<SentenceProps> = memo(
@@ -41,6 +42,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		prevCoils = [],
 		dragging = false,
 		handleValueChange,
+		handleRemoveAction,
 		validateType,
 		availableCoils = {},
 		className,
@@ -116,14 +118,14 @@ export const Sentence: FC<SentenceProps> = memo(
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
 
-			// If we're using the new linked inputs system with parent-managed state
-			if (handleValueChange) {
-				// Convert index to string since handleValueChange expects a string
-				handleValueChange(String(index), value, { isNumber, ...rest });
-				return;
-			}
-
-			// Legacy approach (direct edit)
+			// // If we're using the new linked inputs system with parent-managed state
+			// if (handleValueChange) {
+			// 	// Convert index to string since handleValueChange expects a string
+			// 	handleValueChange(String(index), value, { isNumber, ...rest });
+			// 	return;
+			// }
+			//
+			// // Legacy approach (direct edit)
 			edit({
 				id: item,
 				actions: JSON.stringify(
@@ -263,12 +265,7 @@ export const Sentence: FC<SentenceProps> = memo(
 							<Button
 								variant="secondary"
 								className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
-								onClick={() =>
-									edit({
-										id: item,
-										actions: JSON.stringify(plug?.actions.filter((_, i) => i !== actionIndex))
-									})
-								}
+								onClick={handleRemoveAction}
 							>
 								<X size={14} className="opacity-60" />
 							</Button>
@@ -285,17 +282,16 @@ export const Sentence: FC<SentenceProps> = memo(
 					</div>}
 				</Accordion>
 
-				{!dragging && plug?.actions && actionIndex < plug?.actions.length - 1 && (
-					<div
-						className={cn(
-							"mx-auto h-2 w-[1px]",
-							isValid && isComplete && !error
-								? "bg-plug-yellow hover:border-plug-yellow"
-								: "bg-plug-red hover:border-plug-red",
-							linked && linked.length > 0 && "bg-orange-300 hover:border-orange:300"
-						)}
-					/>
-				)}
+				<div
+					className={cn(
+						"mx-auto h-2 w-[1px] transition-all duration-200 ease-in-out",
+						isValid && isComplete && !error
+							? "bg-plug-yellow hover:border-plug-yellow"
+							: "bg-plug-red hover:border-plug-red",
+						linked && linked.length > 0 && "bg-orange-300 hover:border-orange:300",
+						!(!dragging && plug?.actions && actionIndex < plug?.actions.length - 1) && "bg-plug-white"
+					)}
+				/>
 			</div>
 		)
 	}

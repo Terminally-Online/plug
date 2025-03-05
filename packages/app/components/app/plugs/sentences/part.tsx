@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useMemo } from "react"
 
 import { Hash, SearchIcon } from "lucide-react"
 
@@ -37,7 +37,7 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	handleSearch: (search: string, index: number) => void
 	handleValue: (args: HandleValueProps) => void
 	validateType?: (coilName: string, expectedType: string) => boolean
-	availableCoils?: Record<string, {type: string, actionIndex: number, coil: any}>
+	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
 }
 
 export type HandleValueProps = {
@@ -84,23 +84,23 @@ export const Part: FC<PartProps> = memo(
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
 
 		// Function to validate linked inputs for type compatibility
-		const validateLinkedInput = (linkedValue: string | undefined, expectedType: string | undefined): boolean => {
+		const validateLinkedInput = useCallback((linkedValue: string | undefined, expectedType: string | undefined): boolean => {
 			if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
-			
+
 			// Extract coil name from the linked value
 			const match = linkedValue.match(/^<-\{(.+)\}$/)
 			if (!match) return false
-			
+
 			const coilName = match[1]
 			return validateType(coilName, expectedType)
-		}
+		}, [availableCoils, validateType])
 
 		const indexedOptions =
 			options &&
 			(Array.isArray(options[optionsIndex])
 				? (options[optionsIndex] as Options)
 				: options && typeof options?.[optionsIndex] === "object" && dependentOnValue
-					? (options[optionsIndex] as Record<string, Options>)[dependentOnValue]
+					? (options[optionsIndex] as Record<string, Options>)[dependentOnValue as string]
 					: undefined)
 		const isOptionBased = indexedOptions !== undefined
 		const option = Array.isArray(indexedOptions)
@@ -110,17 +110,22 @@ export const Part: FC<PartProps> = memo(
 		const isReady =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 			input.dependentOn === undefined
-		const isEmpty = !value?.value
-		
-		// Check if this is a linked value
+
+
+		const validCoils = useMemo(() => {
+			return coils?.filter((coil) => {
+				const coilValue = `<-{${coil.slice.name}}`
+
+				return validateLinkedInput(coilValue, input.type?.toString())
+			}) ?? [] as ActionSchemaCoils
+		}, [coils, input, validateLinkedInput])
+		const validCoilNames = useMemo(() => validCoils.map(coil => `<-{${coil.slice.name}}`), [validCoils])
+
 		const isLinked = value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
-		// Validate the linked value's type
-		const isValidLink = isLinked && validateLinkedInput(value?.value, input.type?.toString())
-		
-		// Show as valid if:
-		// 1. Regular value that is not empty and has no errors, or
-		// 2. Linked value that is validated for type compatibility
-		const isValid = (!isEmpty && !inputError && !error) || isValidLink
+		const isCompatibleCoil = useMemo(() => typeof value?.value === "string" && isLinked && validCoilNames.includes(value?.value), [isLinked, value, validCoilNames])
+		const isValidLink = isLinked && validateLinkedInput(value?.value as string, input.type?.toString())
+		const isEmpty = !value?.value || (isLinked && !isValidLink) || (isLinked && !isCompatibleCoil)
+		const isValid = !isEmpty && !inputError && !error
 
 		// NOTE: These are using saved option data from the database when it exists. For example,
 		//       this means that if the user enters an ENS and they choose one, then when they refresh
@@ -132,7 +137,7 @@ export const Part: FC<PartProps> = memo(
 		const icon = action.values?.[input.index]?.icon?.default || (option && option.icon.default)
 		const label =
 			(option && option.label) ||
-			value?.value ||
+			((isValid || isCompatibleCoil) && value?.value) ||
 			action.values?.[input.index]?.label ||
 			input.name
 				?.replaceAll("_", " ")
@@ -147,18 +152,16 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						isLinked
-							? isValidLink 
-								? "bg-orange-300/60" 
-								: "bg-red-300/60"
+						isCompatibleCoil
+							? "bg-orange-300/60"
 							: isValid
 								? "bg-plug-yellow/60"
 								: "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
-						background: isLinked
-							? isValidLink ? "bg-orange-300/60" : "bg-red-300/60"
+						background: isValidLink
+							? "bg-orange-300/60"
 							: !isValid ? "bg-plug-red" : "bg-plug-yellow"
 					}}
 					onClick={() => (own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
@@ -180,7 +183,9 @@ export const Part: FC<PartProps> = memo(
 						</div>
 					)}
 					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">
-						{label.startsWith("<-") ? label.replace("<-{", "").replace("}", "") : label}
+						{isValidLink && label.startsWith("<-")
+							? label.replace("<-{", "").replace("}", "")
+							: label}
 					</span>
 				</button>
 
@@ -232,13 +237,8 @@ export const Part: FC<PartProps> = memo(
 								{isReady && !isOptionBased && (
 									<>
 										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
-											{coils && coils.map((coil, index) => {
-												const coilValue = `<-{${coil.slice.name}}`
-
-												if (!(value?.value !== coilValue)) return
-
-												const isCompatible = validateLinkedInput(coilValue, input.type?.toString())
-												if (!isCompatible) return
+											{validCoilNames.map((coil, index) => {
+												if (value?.value === coil) return null
 
 												return (
 													<Button
@@ -250,8 +250,8 @@ export const Part: FC<PartProps> = memo(
 																index: input?.index ?? "",
 																key: input?.name ?? "",
 																name: input?.name ?? "",
-																label,
-																value: coilValue,
+																label: label,
+																value: coil,
 																isNumber: input.type?.toString().includes("int")
 															})
 														}
@@ -261,43 +261,41 @@ export const Part: FC<PartProps> = memo(
 															<p className="text-xs font-bold text-plug-white">#</p>
 														</div>
 
-														{formatTitle(coil.slice.name)}
+														{formatTitle(coil.replace("<-{", "").replace("}", ""))}
 													</Button>
 												)
 											})}
 										</div>
 
-										{value?.value.startsWith("<-") ? (
+										{isCompatibleCoil ? (
 											<>
 												<button
-													className={`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out ${
-														isValidLink 
-															? "border-plug-green/10" 
-															: "border-red-400/30 bg-red-100/10"
-													}`}
+													className={`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out ${isValidLink
+														? "border-plug-green/10"
+														: "border-red-400/30 bg-red-100/10"
+														}`}
 													onClick={() =>
 														handleValue({
 															index: input?.index ?? "",
 															key: input?.name ?? "",
 															name: input?.name ?? "",
-															label,
+															label: label,
 															value: "",
 															isNumber: input.type?.toString().includes("int")
 														})
 													}
 												>
-													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${
-														isValidLink ? "bg-orange-500" : "bg-red-500"
-													}`}>
+													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-500" : "bg-red-500"
+														}`}>
 														<p className="text-xs font-bold text-plug-white">
-															{isValidLink ? "#" : "!"}
+															{isCompatibleCoil ? "#" : "!"}
 														</p>
 													</div>
-													<span className={isValidLink ? "" : "text-red-600 font-semibold"}>
-														{value?.value.startsWith("<-")
-															? isValidLink
-                                                          ? "Linked: " + value.value.replace("<-{", "").replace("}", "")
-                                                          : "Invalid link type: Type mismatch"
+													<span className={isCompatibleCoil ? "" : "text-red-600 font-semibold"}>
+														{value?.value.startsWith("<-{")
+															? isCompatibleCoil
+																? formatTitle(value?.value.replace("<-{", "").replace("}", ""))
+																: "Invalid link: Coil not available in this position"
 															: getInputPlaceholder(input.type)}
 													</span>
 												</button>
@@ -305,21 +303,13 @@ export const Part: FC<PartProps> = memo(
 										) : (
 											<Search
 												className="mb-4"
-												icon={
-													value?.value.startsWith("<-") ? (
-														<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-500">
-															<p className="text-xs font-bold text-plug-white">#</p>
-														</div>
-													) : (
-														<Hash size={14} />
-													)
-												}
+												icon={<Hash size={14} />}
 												placeholder={
-													value?.value.startsWith("<-")
+													value?.value && value?.value.startsWith("<-")
 														? "Amount: number"
 														: getInputPlaceholder(input.type)
 												}
-												search={value?.value}
+												search={value?.value ? value?.value as string ?? "" : ""}
 												handleSearch={data =>
 													handleValue({
 														index: input?.index ?? "",
