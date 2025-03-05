@@ -43,8 +43,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(@prisma/client@5.22.0(prisma@5.22.0))(next-auth@4.24.11(next@15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       '@next/third-parties':
-        specifier: 15.2.0
-        version: 15.2.0(next@15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        specifier: 15.2.1
+        version: 15.2.1(next@15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@prisma/client':
         specifier: 5.22.0
         version: 5.22.0(prisma@5.22.0)
@@ -2605,8 +2605,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@next/third-parties@15.2.0':
-    resolution: {integrity: sha512-Nu1qNgMHKK4Uz1nzFio5xNj8dgSuGhcm3mCoVj2Qz5peHRVuhxADP7y+KYDvkb2z2JkZ+REllQ1ZwrqXg8BnQg==}
+  '@next/third-parties@15.2.1':
+    resolution: {integrity: sha512-XIOqG5NptLoH7MUBuxZP58DMjgX/XeDhY2UTcLHjMMMXfvu2kckGOUYFfoueWzkLmmfKbj7e8nq03pkcN6vXUA==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
@@ -7035,8 +7035,8 @@ packages:
   ofetch@1.4.1:
     resolution: {integrity: sha512-QZj2DfGplQAr2oj9KzceK9Hwz6Whxazmn85yYeVuS3u9XTMOGMRx0kO95MQ+vLsj/S/NwBDMMLU5hpxvI6Tklw==}
 
-  ohash@1.1.5:
-    resolution: {integrity: sha512-AtXrG/lMFjPBWj3uhWYFwYVZQqutPYRsv6nnPLTipnC+gJuMFc+WFzf/jx+94Ebray1vxfQfEFDtpIpppOe4xQ==}
+  ohash@1.1.6:
+    resolution: {integrity: sha512-TBu7PtV8YkAZn0tSxobKY2n2aAQva936lhRrj6957aDaCf9IEtqsKbgMzXE/F/sjqYOwmrukeORHNLe5glk7Cg==}
 
   oidc-token-hash@5.0.3:
     resolution: {integrity: sha512-IF4PcGgzAr6XXSff26Sk/+P4KZFJVuHAJZj3wgO3vX2bMdNVp/QXTP3P7CEm9V1IdG8lDLY3HhiqpsE/nOwpPw==}
@@ -11737,7 +11737,7 @@ snapshots:
   '@next/swc-win32-x64-msvc@15.2.0':
     optional: true
 
-  '@next/third-parties@15.2.0(next@15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
+  '@next/third-parties@15.2.1(next@15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
     dependencies:
       next: 15.2.0(@babel/core@7.26.0)(@opentelemetry/api@1.4.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
@@ -16089,7 +16089,7 @@ snapshots:
       defu: 6.1.4
       destr: 2.0.3
       iron-webcrypto: 1.2.1
-      ohash: 1.1.5
+      ohash: 1.1.6
       radix3: 1.1.2
       ufo: 1.5.4
       uncrypto: 0.1.3
@@ -17588,7 +17588,7 @@ snapshots:
       node-fetch-native: 1.6.4
       ufo: 1.5.4
 
-  ohash@1.1.5: {}
+  ohash@1.1.6: {}
 
   oidc-token-hash@5.0.3: {}
 
@@ -19492,7 +19492,7 @@ snapshots:
     dependencies:
       defu: 6.1.4
       mlly: 1.7.4
-      ohash: 1.1.5
+      ohash: 1.1.6
       pathe: 1.1.2
       ufo: 1.5.4
 
