@@ -3,13 +3,16 @@ package math
 import (
 	"encoding/json"
 	"fmt"
-	"math"
+	"math/big"
+	"solver/bindings/plug_math"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
-// Input structs for the different math operations
 type CalculateInputs struct {
 	X         float64 `json:"x"`
 	Operation string  `json:"operation"`
@@ -19,10 +22,6 @@ type CalculateInputs struct {
 type MinMaxInputs struct {
 	A float64 `json:"a"`
 	B float64 `json:"b"`
-}
-
-type AbsInputs struct {
-	Value float64 `json:"value"`
 }
 
 type PowerInputs struct {
@@ -36,100 +35,164 @@ type ClampInputs struct {
 	Max   float64 `json:"max"`
 }
 
-func createResultPlug(_ float64) []signature.Plug {
-	return []signature.Plug{}
-}
-
-// HandleCalculate implements a single calculation action that supports various operations
 func HandleCalculate(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs CalculateInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal calculate inputs: %w", err)
 	}
 
-	// Perform the calculation based on the operation
-	var result float64
-
-	// Support both the exact operation from the options and lowercase variations
+	mathContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["math"])
+	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+	}
+	
+	a := big.NewInt(int64(inputs.X))
+	b := big.NewInt(int64(inputs.Y))
+	
+	var functionName string
 	switch inputs.Operation {
-	case "+":
-		result = inputs.X + inputs.Y
-	case "-":
-		result = inputs.X - inputs.Y
-	case "*":
-		result = inputs.X * inputs.Y
-	case "÷", "/":
+	case "+", "add":
+		functionName = "add"
+	case "-", "subtract", "sub":
+		functionName = "subtract"
+	case "*", "multiply", "mul":
+		functionName = "multiply"
+	case "÷", "/", "divide", "div":
 		if inputs.Y == 0 {
 			return nil, fmt.Errorf("divide by zero error")
 		}
-		result = inputs.X / inputs.Y
-	case "%":
+		functionName = "divide"
+	case "%", "modulo", "mod":
 		if inputs.Y == 0 {
 			return nil, fmt.Errorf("modulo by zero error")
 		}
-		result = math.Mod(inputs.X, inputs.Y)
+		functionName = "modulo"
 	default:
-		// Try lowercase operation for text-based operations
 		operation := strings.ToLower(inputs.Operation)
 		switch operation {
 		case "add", "+":
-			result = inputs.X + inputs.Y
+			functionName = "add"
 		case "subtract", "sub", "-":
-			result = inputs.X - inputs.Y
+			functionName = "subtract"
 		case "multiply", "mul", "*":
-			result = inputs.X * inputs.Y
+			functionName = "multiply"
 		case "divide", "div", "/", "÷":
 			if inputs.Y == 0 {
 				return nil, fmt.Errorf("divide by zero error")
 			}
-			result = inputs.X / inputs.Y
+			functionName = "divide"
 		case "modulo", "mod", "%":
 			if inputs.Y == 0 {
 				return nil, fmt.Errorf("modulo by zero error")
 			}
-			result = math.Mod(inputs.X, inputs.Y)
+			functionName = "modulo"
 		default:
 			return nil, fmt.Errorf("unsupported operation: %s", inputs.Operation)
 		}
 	}
+	
+	calldata, err := mathAbi.Pack(functionName, a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+	}
 
-	return createResultPlug(result), nil
+	plug := signature.Plug{
+		To:    mathContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
-// HandleMin returns the minimum of two numbers
 func HandleMin(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs MinMaxInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal min inputs: %w", err)
 	}
 
-	result := math.Min(inputs.A, inputs.B)
-	return createResultPlug(result), nil
+	mathContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["math"])
+	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+	}
+	
+	a := big.NewInt(int64(inputs.A))
+	b := big.NewInt(int64(inputs.B))
+	
+	calldata, err := mathAbi.Pack("min", a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack min calldata: %w", err)
+	}
+
+	plug := signature.Plug{
+		To:    mathContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
-// HandleMax returns the maximum of two numbers
 func HandleMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs MinMaxInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal max inputs: %w", err)
 	}
 
-	result := math.Max(inputs.A, inputs.B)
-	return createResultPlug(result), nil
+	mathContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["math"])
+	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+	}
+	
+	a := big.NewInt(int64(inputs.A))
+	b := big.NewInt(int64(inputs.B))
+	
+	calldata, err := mathAbi.Pack("max", a, b)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack max calldata: %w", err)
+	}
+
+	plug := signature.Plug{
+		To:    mathContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
-// HandlePower raises a base to an exponent
 func HandlePower(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs PowerInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal power inputs: %w", err)
 	}
 
-	result := math.Pow(inputs.Base, inputs.Exponent)
-	return createResultPlug(result), nil
+	mathContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["math"])
+	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+	}
+	
+	base := big.NewInt(int64(inputs.Base))
+	exponent := big.NewInt(int64(inputs.Exponent))
+	
+	calldata, err := mathAbi.Pack("power", base, exponent)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack power calldata: %w", err)
+	}
+
+	plug := signature.Plug{
+		To:    mathContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
-// HandleClamp clamps a value between min and max
 func HandleClamp(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs ClampInputs
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -140,13 +203,26 @@ func HandleClamp(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("min value exceeds max value")
 	}
 
-	// Clamp the value between min and max
-	result := inputs.Value
-	if result < inputs.Min {
-		result = inputs.Min
-	} else if result > inputs.Max {
-		result = inputs.Max
+	mathContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["math"])
+	mathAbi, err := plug_math.PlugMathMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
+	}
+	
+	value := big.NewInt(int64(inputs.Value))
+	min := big.NewInt(int64(inputs.Min))
+	max := big.NewInt(int64(inputs.Max))
+	
+	calldata, err := mathAbi.Pack("clamp", value, min, max)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack clamp calldata: %w", err)
 	}
 
-	return createResultPlug(result), nil
+	plug := signature.Plug{
+		To:    mathContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }

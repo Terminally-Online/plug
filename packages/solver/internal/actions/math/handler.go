@@ -1,6 +1,7 @@
 package math
 
 import (
+	"solver/bindings/plug_math"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 )
@@ -19,24 +20,33 @@ var (
 	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
 		Calculate: {
-			Sentence: "Calculate {0<x:float>} {1<operation:string>} {2<y:float>}",
-			Handler:  HandleCalculate,
+			Sentence:     "Calculate {0<x:float>} {1<operation:string>} {2<y:float>}",
+			Handler:      HandleCalculate,
+			Metadata:     plug_math.PlugMathMetaData,
 		},
 		Min: {
-			Sentence: "Get the minimum of {0<a:float>} and {1<b:float>}",
-			Handler:  HandleMin,
+			Sentence:     "Get the minimum of {0<a:float>} and {1<b:float>}",
+			Handler:      HandleMin,
+			Metadata:     plug_math.PlugMathMetaData,
+			FunctionName: "min",
 		},
 		Max: {
-			Sentence: "Get the maximum of {0<a:float>} and {1<b:float>}",
-			Handler:  HandleMax,
+			Sentence:     "Get the maximum of {0<a:float>} and {1<b:float>}",
+			Handler:      HandleMax,
+			Metadata:     plug_math.PlugMathMetaData,
+			FunctionName: "max",
 		},
 		Power: {
-			Sentence: "Raise {0<base:float>} to the power of {1<exponent:float>}",
-			Handler:  HandlePower,
+			Sentence:     "Raise {0<base:float>} to the power of {1<exponent:float>}",
+			Handler:      HandlePower,
+			Metadata:     plug_math.PlugMathMetaData,
+			FunctionName: "power",
 		},
 		Clamp: {
-			Sentence: "Clamp {0<value:float>} between {1<min:float>} and {2<max:float>}",
-			Handler:  HandleClamp,
+			Sentence:     "Clamp {0<value:float>} between {1<min:float>} and {2<max:float>}",
+			Handler:      HandleClamp,
+			Metadata:     plug_math.PlugMathMetaData,
+			FunctionName: "clamp",
 		},
 	}
 )

@@ -15,12 +15,24 @@ export const factory = base('Plug.Factory.sol')
 export const socket = base('Plug.Socket.sol')
 export const ticket = base('Plug.Ticket.sol')
 
+export const assert = base('Plug.Assert.sol')
+export const boolean = base('Plug.Boolean.sol')
+export const coercion = base('Plug.Coercion.sol')
+export const database = base('Plug.Database.sol')
+export const evm = base('Plug.EVM.sol')
+export const math = base('Plug.Math.sol')
+
 export const constantContracts: Readonly<Array<Contract>> = [
 	factory,
-	ticket
+	ticket,
+    assert,
+    boolean,
+    coercion,
+    database,
+    evm,
+    math
 ] as const
 export const etchContracts: Readonly<Array<Contract>> = [
-	// ! Bases
 	router,
 	factory,
 	socket

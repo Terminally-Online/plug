@@ -3,10 +3,14 @@ package boolean
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
+	"solver/bindings/plug_boolean"
 	"solver/internal/actions"
+	"solver/internal/bindings/references"
 	"solver/internal/solver/signature"
 	"strings"
-	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type LogicOperationInput struct {
@@ -32,15 +36,6 @@ type TimePropertyInput struct {
 	Property  string `json:"property"`
 }
 
-func createBooleanResultPlug(result bool) []signature.Plug {
-	stateVars := make(map[string]interface{})
-	stateVars["result"] = result
-
-	plug := signature.Plug{}
-
-	return []signature.Plug{plug}
-}
-
 func HandleLogicOperation(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
 	var inputs LogicOperationInput
 	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
@@ -48,28 +43,50 @@ func HandleLogicOperation(rawInputs json.RawMessage, params actions.HandlerParam
 	}
 
 	operation := strings.ToLower(inputs.Operation)
-
-	var result bool
+	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
+	}
+	
+	var functionName string
 	switch operation {
 	case "and":
-		result = inputs.A && inputs.B
+		functionName = "isAnd"
 	case "or":
-		result = inputs.A || inputs.B
+		functionName = "isOr"
 	case "not":
-		result = !inputs.A
+		functionName = "isNot"
 	case "xor":
-		result = inputs.A != inputs.B
+		functionName = "isXor"
 	case "nand":
-		result = !(inputs.A && inputs.B)
+		functionName = "isNand"
 	case "nor":
-		result = !(inputs.A || inputs.B)
+		functionName = "isNor"
 	case "implies":
-		result = !inputs.A || inputs.B
+		functionName = "isImplies"
 	default:
 		return nil, fmt.Errorf("unsupported logical operation: %s", inputs.Operation)
 	}
+	
+	var calldata []byte
+	if operation == "not" {
+		calldata, err = booleanAbi.Pack(functionName, inputs.A)
+	} else {
+		calldata, err = booleanAbi.Pack(functionName, inputs.A, inputs.B)
+	}
+	
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+	}
 
-	return createBooleanResultPlug(result), nil
+	plug := signature.Plug{
+		To:    booleanContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
 func HandleCompareNumbers(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -79,30 +96,54 @@ func HandleCompareNumbers(rawInputs json.RawMessage, params actions.HandlerParam
 	}
 
 	comparison := strings.ToLower(inputs.Comparison)
-
-	var result bool
+	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
+	}
+	
+	var functionName string
 	switch comparison {
 	case "equal":
-		result = inputs.Value == inputs.Threshold
+		functionName = "isEqual"
 	case "notequal":
-		result = inputs.Value != inputs.Threshold
+		functionName = "isNotEqual"
 	case "greaterthan":
-		result = inputs.Value > inputs.Threshold
+		functionName = "isGreaterThan"
 	case "greaterthanorequal":
-		result = inputs.Value >= inputs.Threshold
+		functionName = "isGreaterThanOrEqual"
 	case "lessthan":
-		result = inputs.Value < inputs.Threshold
+		functionName = "isLessThan"
 	case "lessthanorequal":
-		result = inputs.Value <= inputs.Threshold
+		functionName = "isLessThanOrEqual"
 	case "between":
-		min := inputs.Value / 2 // Default fallback
-		max := inputs.Threshold
-		result = inputs.Value >= min && inputs.Value <= max
+		functionName = "isBetween"
 	default:
 		return nil, fmt.Errorf("unsupported number comparison: %s", inputs.Comparison)
 	}
+	
+	var calldata []byte
+	valueInt := big.NewInt(inputs.Value)
+	thresholdInt := big.NewInt(inputs.Threshold)
+	
+	if comparison == "between" {
+		minInt := big.NewInt(inputs.Value) // Using value as min
+		calldata, err = booleanAbi.Pack(functionName, valueInt, minInt, thresholdInt)
+	} else {
+		calldata, err = booleanAbi.Pack(functionName, valueInt, thresholdInt)
+	}
+	
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+	}
 
-	return createBooleanResultPlug(result), nil
+	plug := signature.Plug{
+		To:    booleanContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
 func HandleCompareTimes(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -112,28 +153,48 @@ func HandleCompareTimes(rawInputs json.RawMessage, params actions.HandlerParams)
 	}
 
 	comparison := strings.ToLower(inputs.Comparison)
-
-	var result bool
+	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
+	}
+	
+	var functionName string
 	switch comparison {
 	case "before":
-		result = inputs.Time < inputs.Threshold
+		functionName = "isBeforeTime"
 	case "after":
-		result = inputs.Time > inputs.Threshold
+		functionName = "isAfterTime"
 	case "between":
-		start := inputs.Time / 2
-		end := inputs.Threshold
-		result = inputs.Time >= start && inputs.Time <= end
+		functionName = "isBetweenTimes"
 	case "sameday":
-		time1 := time.Unix(inputs.Time, 0)
-		time2 := time.Unix(inputs.Threshold, 0)
-		year1, month1, day1 := time1.Date()
-		year2, month2, day2 := time2.Date()
-		result = year1 == year2 && month1 == month2 && day1 == day2
+		functionName = "isSameDay"
 	default:
 		return nil, fmt.Errorf("unsupported time comparison: %s", inputs.Comparison)
 	}
+	
+	var calldata []byte
+	timeInt := big.NewInt(inputs.Time)
+	thresholdInt := big.NewInt(inputs.Threshold)
+	
+	if comparison == "between" {
+		startInt := big.NewInt(inputs.Time)
+		calldata, err = booleanAbi.Pack(functionName, timeInt, startInt, thresholdInt)
+	} else {
+		calldata, err = booleanAbi.Pack(functionName, timeInt, thresholdInt)
+	}
+	
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+	}
 
-	return createBooleanResultPlug(result), nil
+	plug := signature.Plug{
+		To:    booleanContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
 
 func HandleCheckTimeProperty(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
@@ -143,18 +204,33 @@ func HandleCheckTimeProperty(rawInputs json.RawMessage, params actions.HandlerPa
 	}
 
 	property := strings.ToLower(inputs.Property)
-	t := time.Unix(inputs.Timestamp, 0)
-	weekday := t.Weekday()
-
-	var result bool
+	booleanContract := common.HexToAddress(references.Networks[params.ChainId].References["plug"]["boolean"])
+	booleanAbi, err := plug_boolean.PlugBooleanMetaData.GetAbi()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get PlugBoolean ABI: %w", err)
+	}
+	
+	var functionName string
 	switch property {
 	case "weekday":
-		result = weekday >= time.Monday && weekday <= time.Friday
+		functionName = "isWeekday"
 	case "weekend":
-		result = weekday == time.Saturday || weekday == time.Sunday
+		functionName = "isWeekend"
 	default:
 		return nil, fmt.Errorf("unsupported time property: %s", inputs.Property)
 	}
+	
+	timestampInt := big.NewInt(inputs.Timestamp)
+	calldata, err := booleanAbi.Pack(functionName, timestampInt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack %s calldata: %w", functionName, err)
+	}
 
-	return createBooleanResultPlug(result), nil
+	plug := signature.Plug{
+		To:    booleanContract,
+		Data:  calldata,
+		Value: nil,
+	}
+	
+	return []signature.Plug{plug}, nil
 }
