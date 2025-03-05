@@ -60,7 +60,7 @@ func main() {
 		{"0 */5 * * * *", cron.CollectibleMetadata},                                               // Every 5 minutes
 		{"0 */5 * * * *", func() { provider.PreWarmCache(8453, utils.ZeroAddress, actionsList) }}, // Every 5 minutes
 		{"0 */1 * * * *", func() { cron.Simulations(s.Solver) }},                                  // Every 1 minute
-		{"0 */5 * * * *", func() { cron.StartIntentCleanupJob(time.Hour, time.Hour) }},            // Every 5 minutes, clean up intents older than an hour
+		{"0 */15 * * * *", func() { cron.IntentCleanup(time.Minute * 15) }},                       // Every 15 minutes, clean up unsaved intents older than 15 minutes
 	}
 
 	schedule := scheduler.New()

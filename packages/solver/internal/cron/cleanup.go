@@ -19,7 +19,12 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 		return err
 	}
 
+	if len(intents) == 0 {
+		return nil
+	}
+
 	// For each intent, delete its related records and then the intent itself
+	deletedCount := 0
 	for _, intent := range intents {
 		err := db.Transaction(func(tx *gorm.DB) error {
 			// Delete related LivePlugs and their Plugs
@@ -29,7 +34,6 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 			}
 
 			for _, livePlug := range livePlugs {
-				// Delete related Plugs
 				if err := tx.Where("bundle_id = ?", livePlug.Id).Delete(&models.Plug{}).Error; err != nil {
 					return err
 				}
@@ -40,7 +44,6 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 				return err
 			}
 
-			// Delete related Runs
 			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
 				return err
 			}
@@ -49,6 +52,7 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 			if err := tx.Delete(&intent).Error; err != nil {
 				return err
 			}
+			log.Printf("Successfully deleted intent %s", intent.Id)
 
 			return nil
 		})
@@ -57,20 +61,15 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 			log.Printf("Error cleaning up intent %s: %v", intent.Id, err)
 			continue
 		}
+		deletedCount++
 	}
 
 	return nil
 }
 
-func StartIntentCleanupJob(cleanupInterval, olderThan time.Duration) {
-	go func() {
-		ticker := time.NewTicker(cleanupInterval)
-		defer ticker.Stop()
-
-		for range ticker.C {
-			if err := CleanupUnusedIntents(database.DB, olderThan); err != nil {
-				log.Printf("Error in cleanup job: %v", err)
-			}
-		}
-	}()
+// IntentCleanup is meant to be called directly by the cron scheduler
+func IntentCleanup(olderThan time.Duration) {
+	if err := CleanupUnusedIntents(database.DB, olderThan); err != nil {
+		log.Printf("Error in cleanup job: %v", err)
+	}
 }
