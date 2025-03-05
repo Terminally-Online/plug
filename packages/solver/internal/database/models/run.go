@@ -1,9 +1,11 @@
 package models
 
 import (
+	"database/sql/driver"
 	"encoding/json"
-	"math/big"
+	"fmt"
 	"solver/internal/database/serializer"
+	"solver/internal/database/types"
 	"solver/internal/utils"
 	"time"
 
@@ -18,7 +20,7 @@ type Run struct {
 	GasEstimate uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
 	From        string        `json:"from,omitempty" gorm:"type:text"`
 	To          string        `json:"to,omitempty" gorm:"type:text"`
-	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
+	Value       *types.BigInt `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
 
 	IntentId   string   `json:"intentId,omitempty" gorm:"type:text"`
@@ -35,6 +37,19 @@ type Run struct {
 type RunOutputData struct {
 	Raw     []byte      `json:"raw" gorm:"type:bytea"`
 	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
+}
+
+// Add these methods to the RunOutputData type
+func (r *RunOutputData) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("expected bytes but got %T", value)
+	}
+	return json.Unmarshal(bytes, r)
+}
+
+func (r RunOutputData) Value() (driver.Value, error) {
+	return json.Marshal(r)
 }
 
 func (r *Run) BeforeCreate(tx *gorm.DB) error {

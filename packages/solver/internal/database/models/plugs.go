@@ -1,8 +1,8 @@
 package models
 
 import (
-	"math/big"
 	"solver/internal/database/serializer"
+	"solver/internal/database/types"
 	"solver/internal/utils"
 	"time"
 
@@ -10,14 +10,14 @@ import (
 )
 
 type LivePlug struct {
-	Id        string   `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	ChainId   uint64   `json:"chainId" gorm:"type:int"`
-	From      string   `json:"from,omitempty" gorm:"type:text"`
-	To        string   `json:"to,omitempty" gorm:"type:text"`
-	Value     *big.Int `json:"value,omitempty" gorm:"type:bigint"`
-	Gas       *big.Int `json:"gas,omitempty" gorm:"type:bigint"`
-	Data      string   `json:"data,omitempty" gorm:"type:bytea"`
-	Signature *string  `json:"signature,omitempty" gorm:"type:bytea"`
+	Id        string        `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	ChainId   uint64        `json:"chainId" gorm:"type:int"`
+	From      string        `json:"from,omitempty" gorm:"type:text"`
+	To        string        `json:"to,omitempty" gorm:"type:text"`
+	Value     *types.BigInt `json:"value,omitempty" gorm:"type:bigint"`
+	Gas       *types.BigInt `json:"gas,omitempty" gorm:"type:bigint"`
+	Data      string        `json:"data,omitempty" gorm:"type:bytea"`
+	Signature *string       `json:"signature,omitempty" gorm:"type:bytea"`
 
 	IntentId string `json:"intentId,omitempty" gorm:"type:text"`
 	Intent   Intent `json:"-" gorm:"foreignKey:IntentId;references:Id"`
@@ -29,13 +29,13 @@ type LivePlug struct {
 }
 
 type Plug struct {
-	Id        string   `json:"id,omitempty" gorm:"primaryKey;type:text"`
-	From      string   `json:"from,omitempty" gorm:"type:text"`
-	To        string   `json:"to,omitempty" gorm:"type:text"`
-	Data      string   `json:"data,omitempty" gorm:"type:bytea"`
-	Value     *big.Int `json:"value,omitempty" gorm:"type:bigint"`
-	Gas       *big.Int `json:"gas,omitempty" gorm:"type:bigint"`
-	Exclusive bool     `json:"exclusive,omitempty" gorm:"type:boolean"`
+	Id        string        `json:"id,omitempty" gorm:"primaryKey;type:text"`
+	From      string        `json:"from,omitempty" gorm:"type:text"`
+	To        string        `json:"to,omitempty" gorm:"type:text"`
+	Data      string        `json:"data,omitempty" gorm:"type:bytea"`
+	Value     *types.BigInt `json:"value,omitempty" gorm:"type:bigint"`
+	Gas       *types.BigInt `json:"gas,omitempty" gorm:"type:bigint"`
+	Exclusive bool          `json:"exclusive,omitempty" gorm:"type:boolean"`
 
 	BundleId string   `json:"bundleId,omitempty" gorm:"type:text"`
 	Bundle   LivePlug `json:"-" gorm:"foreignKey:BundleId;references:Id"`

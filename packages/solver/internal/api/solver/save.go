@@ -2,7 +2,6 @@ package solver
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -110,8 +109,6 @@ func (h *Handler) ToggleIntentSaved(w http.ResponseWriter, r *http.Request) {
 		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Printf("intent: %+v\n", intent)
 
 	if err := json.NewEncoder(w).Encode(intent); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)

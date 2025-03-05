@@ -17,6 +17,7 @@ import (
 	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
@@ -198,8 +199,8 @@ func (s *Solver) BuildLivePlugModels(intent *models.Intent, livePlugs signature.
 			From:      intent.From,
 			To:        plug.To.Hex(),
 			Data:      hexutil.Bytes(data).String(),
-			Value:     plug.Value,
-			Gas:       plug.Gas,
+			Value:     &types.BigInt{Int: plug.Value},
+			Gas:       &types.BigInt{Int: plug.Gas},
 			Exclusive: plug.Exclusive,
 		}
 		plugs[idx] = plugModel
@@ -256,8 +257,8 @@ func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, er
 		for i, plug := range plugs {
 			signaturePugs[i] = signature.Plug{
 				To:        common.HexToAddress(plug.To),
-				Value:     plug.Value,
-				Gas:       plug.Gas,
+				Value:     plug.Value.Int,
+				Gas:       plug.Gas.Int,
 				Data:      []byte(plug.Data),
 				Exclusive: plug.Exclusive,
 			}
@@ -301,8 +302,8 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		From:      intent.From,
 		To:        plugs[0].To.Hex(),
 		Data:      hexutil.Bytes(data).String(),
-		Value:     plugs[0].Value,
-		Gas:       plugs[0].Gas,
+		Value:     &types.BigInt{Int: plugs[0].Value},
+		Gas:       &types.BigInt{Int: plugs[0].Gas},
 		Exclusive: plugs[0].Exclusive,
 	}
 
@@ -311,8 +312,8 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		ChainId:  intent.ChainId,
 		From:     intent.From,
 		To:       plugs[0].To.Hex(),
-		Value:    plugs[0].Value,
-		Gas:      plugs[0].Gas,
+		Value:    &types.BigInt{Int: plugs[0].Value},
+		Gas:      &types.BigInt{Int: plugs[0].Gas},
 		Data:     hexutil.Bytes(data).String(),
 		Plugs:    plugModels,
 	}

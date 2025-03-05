@@ -40,12 +40,12 @@ func SimulateRaw(livePlug *models.LivePlug, ABI *string) (*models.Run, error) {
 	}
 
 	if livePlug.Value != nil {
-		value := hexutil.EncodeBig(livePlug.Value)
+		value := hexutil.EncodeBig(livePlug.Value.Int)
 		tx["value"] = value
 	}
 
 	if livePlug.Gas != nil {
-		gas := hexutil.EncodeBig(livePlug.Gas)
+		gas := hexutil.EncodeBig(livePlug.Gas.Int)
 		tx["gas"] = gas
 	}
 	fmt.Printf("tx: %v\n", tx)
