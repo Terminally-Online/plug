@@ -41,7 +41,6 @@ func HandleCalculate(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to unmarshal calculate inputs: %w", err)
 	}
 
-	// Validate that X and Y are not nil
 	if inputs.X == nil || inputs.Y == nil {
 		return nil, fmt.Errorf("X and Y values must be provided")
 	}
@@ -114,7 +113,6 @@ func HandleMin(rawInputs json.RawMessage, params actions.HandlerParams) ([]signa
 		return nil, fmt.Errorf("failed to unmarshal min inputs: %w", err)
 	}
 
-	// Validate that A and B are not nil
 	if inputs.A == nil || inputs.B == nil {
 		return nil, fmt.Errorf("A and B values must be provided")
 	}
@@ -145,7 +143,6 @@ func HandleMax(rawInputs json.RawMessage, params actions.HandlerParams) ([]signa
 		return nil, fmt.Errorf("failed to unmarshal max inputs: %w", err)
 	}
 
-	// Validate that A and B are not nil
 	if inputs.A == nil || inputs.B == nil {
 		return nil, fmt.Errorf("A and B values must be provided")
 	}
@@ -176,7 +173,6 @@ func HandlePower(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("failed to unmarshal power inputs: %w", err)
 	}
 
-	// Validate that Base and Exponent are not nil
 	if inputs.Base == nil || inputs.Exponent == nil {
 		return nil, fmt.Errorf("Base and Exponent values must be provided")
 	}
@@ -187,7 +183,6 @@ func HandlePower(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
 	}
 	
-	// Check for very large exponents that could cause computational issues
 	if inputs.Exponent.Cmp(big.NewInt(1000)) > 0 {
 		return nil, fmt.Errorf("exponent too large: maximum allowed is 1000")
 	}
@@ -212,12 +207,10 @@ func HandleClamp(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		return nil, fmt.Errorf("failed to unmarshal clamp inputs: %w", err)
 	}
 
-	// Validate that Value, Min, and Max are not nil
 	if inputs.Value == nil || inputs.Min == nil || inputs.Max == nil {
 		return nil, fmt.Errorf("Value, Min, and Max values must be provided")
 	}
 	
-	// Validate min <= max
 	if inputs.Min.Cmp(inputs.Max) > 0 {
 		return nil, fmt.Errorf("min value exceeds max value")
 	}
