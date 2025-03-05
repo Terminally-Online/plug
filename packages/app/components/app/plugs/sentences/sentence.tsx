@@ -6,7 +6,7 @@ import { Hash, X } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, cn, InputValue, useConnect, useCord } from "@/lib"
+import { Action, ActionSchemaCoils, cn, InputValue, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
@@ -22,11 +22,24 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	preview?: boolean
 	error?: boolean
 	linked?: InputValue[]
+	prevCoils?: ActionSchemaCoils
 	dragging?: boolean
 }
 
 export const Sentence: FC<SentenceProps> = memo(
-	({ index, item, action, actionIndex, preview = false, error = false, linked = [], dragging = false, className, ...props }) => {
+	({
+		index,
+		item,
+		action,
+		actionIndex,
+		preview = false,
+		error = false,
+		linked = [],
+		prevCoils = [],
+		dragging = false,
+		className,
+		...props
+	}) => {
 		const { account: { session } } = useConnect()
 
 		const [column] = useAtom(columnByIndexAtom(index))
@@ -76,6 +89,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
+		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? [] : []
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
 				if (value) {
@@ -85,7 +99,6 @@ export const Sentence: FC<SentenceProps> = memo(
 			},
 			{} as Record<string, string>
 		)
-
 		const {
 			state: { parsed, parts },
 			actions: { setValue },
@@ -215,9 +228,10 @@ export const Sentence: FC<SentenceProps> = memo(
 													inputIndex={inputIndex}
 													optionsIndex={optionsIndex}
 													options={options}
+													coils={prevCoils}
+													search={search}
 													getInputValue={getInputValue}
 													getInputError={getInputError}
-													search={search}
 													handleSearch={handleSearch}
 													handleValue={handleValue}
 												/>
@@ -243,13 +257,14 @@ export const Sentence: FC<SentenceProps> = memo(
 						)}
 					</div>
 
-					<div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
-						<p className="font-bold w-full flex flex-row gap-2 items-center">
+					{coils.length > 0 && <div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
+						{coils.map((coil, coilIndex) => (<p key={coilIndex} className="font-bold w-full flex flex-row gap-2 items-center">
 							<Hash size={14} className="opacity-20" />
-							Amount
-							<span className="ml-auto opacity-40">uint256</span>
-						</p>
-					</div>
+							{coil.slice.name}
+							<span className="ml-auto opacity-40">{coil.slice.type}</span>
+
+						</p>))}
+					</div>}
 				</Accordion>
 
 				{!dragging && plug?.actions && actionIndex < plug?.actions.length - 1 && (

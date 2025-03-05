@@ -4,7 +4,7 @@ import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { cn, Action, formatTitle, getValues, useConnect } from "@/lib"
+import { cn, Action, formatTitle, getValues, useConnect, ActionSchemaCoils } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
@@ -82,7 +82,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
 		edit({
 			id: plug.id,
-			actions 
+			actions
 		})
 	}
 
@@ -100,9 +100,16 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 								const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
 								const linked = values.filter(val => val?.value?.startsWith("<-{"))
 
+								let prevCoils: ActionSchemaCoils | undefined = []
+								if (actionIndex > 0) {
+									const prevAction = plug.actions[actionIndex - 1]
+									prevCoils = solverActions[prevAction.protocol].schema[prevAction.action].coils
+								}
+
 								return <Draggable
-									key={`${index}-${actionIndex}-${action.id}-sentence`}
-									draggableId={String(action.id)} index={actionIndex}
+									key={String(action.id)}
+									draggableId={String(action.id)}
+									index={actionIndex}
 								>
 									{(provided, snapshot) => (
 										<div
@@ -119,6 +126,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 												actionIndex={actionIndex}
 												action={action}
 												linked={linked}
+												prevCoils={prevCoils}
 												dragging={snapshot.isDragging}
 												{...provided.dragHandleProps}
 											/>

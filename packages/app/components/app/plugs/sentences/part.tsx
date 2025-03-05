@@ -13,7 +13,7 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { Action, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
+import { Action, ActionSchemaCoils, ActionSchemaOptions, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
@@ -29,7 +29,8 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	input: NonNullable<InputReference>
 	inputIndex: number
 	optionsIndex: number
-	options: Record<string, Options | Record<string, Options>> | undefined
+	options?: ActionSchemaOptions
+	coils?: ActionSchemaCoils,
 	search: Record<number, string | undefined>
 	getInputValue: ReturnType<typeof useCord>["helpers"]["getInputValue"]
 	getInputError: ReturnType<typeof useCord>["helpers"]["getInputError"]
@@ -60,6 +61,7 @@ export const Part: FC<PartProps> = memo(
 		inputIndex,
 		optionsIndex,
 		options,
+		coils,
 		search,
 		getInputValue,
 		getInputError,
@@ -203,10 +205,13 @@ export const Part: FC<PartProps> = memo(
 								{isReady && !isOptionBased && (
 									<>
 										<div className="relative flex flex-row gap-2 overflow-hidden">
-											{Array.from({ length: 1 }).map((_, index) => {
-												if (!(value?.value !== `<-{amount}`)) return
+											{coils && coils.map((coil, index) => {
+												const coilValue = `<-{${coil.slice.name}}`
+
+												if (!(value?.value !== coilValue)) return
 
 												return (
+
 													<Button
 														key={index}
 														variant="secondary"
@@ -217,16 +222,17 @@ export const Part: FC<PartProps> = memo(
 																key: input?.name ?? "",
 																name: input?.name ?? "",
 																label,
-																value: `<-{amount}`,
+																value: coilValue,
 																isNumber: input.type?.toString().includes("int")
 															})
 														}
-														className="flex flex-row gap-2 px-2 pr-3"
+														className="group/coil flex flex-row gap-2 px-2 pr-3"
 													>
-														<div className="h-4 w-4 rounded-[4px] bg-orange-500">
+														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-500 transition-all duration-200 ease-in-out">
 															<p className="text-xs font-bold text-plug-white">#</p>
 														</div>
-														Amount: Number
+
+														{formatTitle(coil.slice.name)}
 													</Button>
 												)
 											})}

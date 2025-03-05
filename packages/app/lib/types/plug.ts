@@ -12,6 +12,13 @@ export type Options = {
 	info?: { label: string, value: string }
 }[]
 
+export type ActionSchemaOptions = Record<string, Options | Record<string, Options>>
+export type ActionSchemaCoil = {
+	start: number,
+	slice: { name: string, index: number, start: number, length: number, type: string, typeId: number }
+}
+export type ActionSchemaCoils = Array<ActionSchemaCoil>
+
 export type ActionSchema = {
 	metadata: {
 		icon: string
@@ -28,7 +35,8 @@ export type ActionSchema = {
 		{
 			type: string
 			sentence: string
-			options?: Record<string, Options | Record<string, Options>>
+			options?: ActionSchemaOptions 
+			coils?: ActionSchemaCoils
 		}
 	>
 }
