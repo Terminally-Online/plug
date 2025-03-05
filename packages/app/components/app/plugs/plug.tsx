@@ -6,7 +6,6 @@ import { SearchIcon } from "lucide-react"
 import { AuthRequiredFrame } from "@/components/app/frames/misc/auth-required"
 import { ActionsFrame } from "@/components/app/frames/plugs/[id]/actions"
 import { ExecuteFrame } from "@/components/app/frames/plugs/[id]/execute"
-import { ManagePlugFrame } from "@/components/app/frames/plugs/[id]/manage"
 import { ShareFrame } from "@/components/app/frames/plugs/[id]/share"
 import { Search } from "@/components/app/inputs/search"
 import { ActionView } from "@/components/app/plugs/actions/action-view"
@@ -86,7 +85,6 @@ export const Plug: FC<HTMLAttributes<HTMLDivElement> & { index?: number; item: s
 					<ActionsFrame index={index} item={item} />
 					<AuthRequiredFrame index={index} />
 					<ExecuteFrame index={index} item={item} />
-					<ManagePlugFrame index={index} item={item} from={from} />
 					<ShareFrame index={index} item={item} />
 				</>
 			)}

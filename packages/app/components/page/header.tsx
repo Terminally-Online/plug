@@ -42,7 +42,7 @@ const PlugHeader = () => {
 					/>
 				}
 				label={plug.name === "" ? "Untitled Plug" : plug.name}
-				nextOnClick={own ? () => frame("manage") : () => { }}
+				nextOnClick={() => {}}
 				nextLabel={
 					<div className="flex flex-row items-center gap-2">
 						<Button
