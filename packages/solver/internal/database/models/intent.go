@@ -36,12 +36,9 @@ type Intent struct {
 	ApiKey    ApiKey     `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Database storage fields
-	ValueStr   string         `json:"-" gorm:"column:value;type:text"`
-	InputsStr  string         `json:"-" gorm:"column:inputs;type:jsonb"`
-	OptionsStr string         `json:"-" gorm:"column:options;type:jsonb"`
-	CreatedAt  time.Time      `json:"createdAt"`
-	UpdatedAt  time.Time      `json:"-"`
-	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 func (i *Intent) BeforeCreate(tx *gorm.DB) error {

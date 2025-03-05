@@ -21,7 +21,7 @@ type LivePlug struct {
 
 	IntentId string `json:"intentId,omitempty" gorm:"type:text"`
 	Intent   Intent `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	Plugs    []Plug `json:"transactions" gorm:"foreignKey:BundleId;references:Id"`
+	Plugs    []Plug `json:"plugs" gorm:"foreignKey:LivePlugId;references:Id"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
@@ -37,8 +37,8 @@ type Plug struct {
 	Gas       *types.BigInt `json:"gas,omitempty" gorm:"type:bigint"`
 	Exclusive bool          `json:"exclusive,omitempty" gorm:"type:boolean"`
 
-	BundleId string   `json:"bundleId,omitempty" gorm:"type:text"`
-	Bundle   LivePlug `json:"-" gorm:"foreignKey:BundleId;references:Id"`
+	LivePlugId string   `json:"livePlugId,omitempty" gorm:"type:text"`
+	LivePlug   LivePlug `json:"-" gorm:"foreignKey:LivePlugId;references:Id"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
