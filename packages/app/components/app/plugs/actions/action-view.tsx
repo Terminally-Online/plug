@@ -11,6 +11,7 @@ import { useAtom, useSetAtom } from "jotai"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { api } from "@/server/client"
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
+import { Sentences } from "../sentences/sentences"
 
 const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
@@ -92,54 +93,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 		<div className="mb-72 flex flex-col">
 			<Callout.EmptyPlug index={index} isEmpty={plug.actions.length === 0} />
 
-			<DragDropContext onDragEnd={handleDragEnd}>
-				<Droppable droppableId={`${index}-${plug.id}-items`} direction="vertical">
-					{provided => (
-						<div ref={provided.innerRef} className="flex flex-col" {...provided.droppableProps}>
-							{plug.actions.map((action, actionIndex) => {
-								const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
-								const linked = values.filter(val => val?.value?.startsWith("<-{"))
-
-								let prevCoils: ActionSchemaCoils | undefined = []
-								if (actionIndex > 0) {
-									const prevAction = plug.actions[actionIndex - 1]
-									prevCoils = solverActions[prevAction.protocol].schema[prevAction.action].coils
-								}
-
-								return <Draggable
-									key={String(action.id)}
-									draggableId={String(action.id)}
-									index={actionIndex}
-								>
-									{(provided, snapshot) => (
-										<div
-											ref={provided.innerRef}
-											className="flex h-full w-full flex-row rounded-lg"
-											{...provided.draggableProps}
-											style={{
-												...provided.draggableProps.style,
-											}}
-										>
-											<Sentence
-												index={index}
-												item={column?.item ?? ""}
-												actionIndex={actionIndex}
-												action={action}
-												linked={linked}
-												prevCoils={prevCoils}
-												dragging={snapshot.isDragging}
-												{...provided.dragHandleProps}
-											/>
-										</div>
-									)}
-								</Draggable>
-							})}
-
-							{provided.placeholder}
-						</div>
-					)}
-				</Droppable>
-			</DragDropContext>
+			<Sentences index={index} />
 
 			{own && plug.actions.length > 0 && suggestions.length > 0 && (
 				<div className="mt-12">

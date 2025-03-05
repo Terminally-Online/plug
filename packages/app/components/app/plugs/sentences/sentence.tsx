@@ -24,6 +24,9 @@ type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	linked?: InputValue[]
 	prevCoils?: ActionSchemaCoils
 	dragging?: boolean
+	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
+	validateType?: (coilName: string, expectedType: string) => boolean
+	availableCoils?: Record<string, {type: string, actionIndex: number, coil: any}>
 }
 
 export const Sentence: FC<SentenceProps> = memo(
@@ -37,6 +40,9 @@ export const Sentence: FC<SentenceProps> = memo(
 		linked = [],
 		prevCoils = [],
 		dragging = false,
+		handleValueChange,
+		validateType,
+		availableCoils = {},
 		className,
 		...props
 	}) => {
@@ -90,6 +96,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
 		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? [] : []
+
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
 				if (value) {
@@ -99,6 +106,7 @@ export const Sentence: FC<SentenceProps> = memo(
 			},
 			{} as Record<string, string>
 		)
+
 		const {
 			state: { parsed, parts },
 			actions: { setValue },
@@ -108,6 +116,14 @@ export const Sentence: FC<SentenceProps> = memo(
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
 
+			// If we're using the new linked inputs system with parent-managed state
+			if (handleValueChange) {
+				// Convert index to string since handleValueChange expects a string
+				handleValueChange(String(index), value, { isNumber, ...rest });
+				return;
+			}
+
+			// Legacy approach (direct edit)
 			edit({
 				id: item,
 				actions: JSON.stringify(
@@ -234,6 +250,8 @@ export const Sentence: FC<SentenceProps> = memo(
 													getInputError={getInputError}
 													handleSearch={handleSearch}
 													handleValue={handleValue}
+													validateType={validateType}
+													availableCoils={availableCoils}
 												/>
 											)
 										})}

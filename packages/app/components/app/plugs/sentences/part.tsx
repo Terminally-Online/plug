@@ -36,6 +36,8 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	getInputError: ReturnType<typeof useCord>["helpers"]["getInputError"]
 	handleSearch: (search: string, index: number) => void
 	handleValue: (args: HandleValueProps) => void
+	validateType?: (coilName: string, expectedType: string) => boolean
+	availableCoils?: Record<string, {type: string, actionIndex: number, coil: any}>
 }
 
 export type HandleValueProps = {
@@ -66,7 +68,9 @@ export const Part: FC<PartProps> = memo(
 		getInputValue,
 		getInputError,
 		handleSearch,
-		handleValue
+		handleValue,
+		validateType,
+		availableCoils
 	}) => {
 		const [searching, , handleDebounce] = useDebounce(search[optionsIndex] ?? "", 250, debounced =>
 			handleSearch(debounced, input.index)
@@ -78,6 +82,18 @@ export const Part: FC<PartProps> = memo(
 		const inputError = getInputError(inputIndex)
 		const dependentOnValue =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
+
+		// Function to validate linked inputs for type compatibility
+		const validateLinkedInput = (linkedValue: string | undefined, expectedType: string | undefined): boolean => {
+			if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
+			
+			// Extract coil name from the linked value
+			const match = linkedValue.match(/^<-\{(.+)\}$/)
+			if (!match) return false
+			
+			const coilName = match[1]
+			return validateType(coilName, expectedType)
+		}
 
 		const indexedOptions =
 			options &&
@@ -95,7 +111,16 @@ export const Part: FC<PartProps> = memo(
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 			input.dependentOn === undefined
 		const isEmpty = !value?.value
-		const isValid = (!isEmpty && !inputError && !error) || value?.value.startsWith("<-{")
+		
+		// Check if this is a linked value
+		const isLinked = value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
+		// Validate the linked value's type
+		const isValidLink = isLinked && validateLinkedInput(value?.value, input.type?.toString())
+		
+		// Show as valid if:
+		// 1. Regular value that is not empty and has no errors, or
+		// 2. Linked value that is validated for type compatibility
+		const isValid = (!isEmpty && !inputError && !error) || isValidLink
 
 		// NOTE: These are using saved option data from the database when it exists. For example,
 		//       this means that if the user enters an ENS and they choose one, then when they refresh
@@ -122,15 +147,19 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						value?.value.startsWith("<-{")
-							? "bg-orange-300/60"
+						isLinked
+							? isValidLink 
+								? "bg-orange-300/60" 
+								: "bg-red-300/60"
 							: isValid
 								? "bg-plug-yellow/60"
 								: "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
-						background: !isValid ? "bg-plug-red" : "bg-plug-yellow"
+						background: isLinked
+							? isValidLink ? "bg-orange-300/60" : "bg-red-300/60"
+							: !isValid ? "bg-plug-red" : "bg-plug-yellow"
 					}}
 					onClick={() => (own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 				>
@@ -202,14 +231,18 @@ export const Part: FC<PartProps> = memo(
 
 								{isReady && !isOptionBased && (
 									<>
-										<div className="relative flex flex-row gap-2 overflow-hidden">
+										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
 											{coils && coils.map((coil, index) => {
 												const coilValue = `<-{${coil.slice.name}}`
 
+												// Skip if it's already selected
 												if (!(value?.value !== coilValue)) return
 
-												return (
+												// Skip if the coil type is incompatible with the input type
+												const isCompatible = validateLinkedInput(coilValue, input.type?.toString())
+												if (!isCompatible) return
 
+												return (
 													<Button
 														key={index}
 														variant="secondary"
@@ -226,7 +259,7 @@ export const Part: FC<PartProps> = memo(
 														}
 														className="group/coil flex flex-row gap-2 px-2 pr-3"
 													>
-														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-500 transition-all duration-200 ease-in-out">
+														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-500 transition-all duration-200 ease-in-out flex items-center justify-center">
 															<p className="text-xs font-bold text-plug-white">#</p>
 														</div>
 
@@ -239,7 +272,11 @@ export const Part: FC<PartProps> = memo(
 										{value?.value.startsWith("<-") ? (
 											<>
 												<button
-													className="mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] border-plug-green/10 p-4 px-6 transition-colors duration-200 ease-in-out"
+													className={`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out ${
+														isValidLink 
+															? "border-plug-green/10" 
+															: "border-red-400/30 bg-red-100/10"
+													}`}
 													onClick={() =>
 														handleValue({
 															index: input?.index ?? "",
@@ -251,12 +288,20 @@ export const Part: FC<PartProps> = memo(
 														})
 													}
 												>
-													<div className="flex h-4 w-4 items-center justify-center rounded-[4px] bg-orange-500">
-														<p className="text-xs font-bold text-plug-white">#</p>
+													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${
+														isValidLink ? "bg-orange-500" : "bg-red-500"
+													}`}>
+														<p className="text-xs font-bold text-plug-white">
+															{isValidLink ? "#" : "!"}
+														</p>
 													</div>
-													{value?.value.startsWith("<-")
-														? "Balance: value"
-														: getInputPlaceholder(input.type)}
+													<span className={isValidLink ? "" : "text-red-600 font-semibold"}>
+														{value?.value.startsWith("<-")
+															? isValidLink
+                                                          ? "Linked: " + value.value.replace("<-{", "").replace("}", "")
+                                                          : "Invalid link type: Type mismatch"
+															: getInputPlaceholder(input.type)}
+													</span>
 												</button>
 											</>
 										) : (
