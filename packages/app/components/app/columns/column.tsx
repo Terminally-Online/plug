@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect, useRef, useState } from "react"
 
-import { Check, ChevronLeft, GitFork, Plus, Settings, Share, X } from "lucide-react"
+import { Check, ChevronLeft, GitFork, Plus, Share, X } from "lucide-react"
 
 import { Draggable } from "@hello-pangea/dnd"
 
@@ -201,19 +201,6 @@ export const ConsoleColumn: FC<{
 															/>
 														</Button>
 													</>
-
-													{plug && own && (
-														<Button
-															variant="secondary"
-															className="rounded-sm p-1"
-															onClick={() => frame("manage")}
-														>
-															<Settings
-																size={14}
-																className="opacity-60 transition-opacity group-hover:opacity-100"
-															/>
-														</Button>
-													)}
 
 													<Button
 														variant="secondary"
