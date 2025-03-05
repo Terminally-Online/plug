@@ -235,10 +235,8 @@ export const Part: FC<PartProps> = memo(
 											{coils && coils.map((coil, index) => {
 												const coilValue = `<-{${coil.slice.name}}`
 
-												// Skip if it's already selected
 												if (!(value?.value !== coilValue)) return
 
-												// Skip if the coil type is incompatible with the input type
 												const isCompatible = validateLinkedInput(coilValue, input.type?.toString())
 												if (!isCompatible) return
 

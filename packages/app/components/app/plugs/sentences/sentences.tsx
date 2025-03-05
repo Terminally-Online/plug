@@ -114,8 +114,13 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 			actions: JSON.stringify(newActions)
 		})
 	}
-	
+
 	// TODO: This is a simplified version - real implementation would be more thorough
+	// NOTE: We kind of have an issue here because we need to confirm that it is a type
+	//       that can be properly coerced by the solidity abi encoder when inserting
+	//       the data into the transaction. Realistically though, whether or not we
+	//       pass a uint256 or a bytes32, the value is the same because they both take
+	//       up a full slot.
 	const isTypeCompatible = (inputType: string, coilType: string): boolean => {
 		if (inputType === coilType) return true
 		

@@ -31,13 +31,11 @@ func (m *BooleanOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ 
 		{Label: "Greater Than or Equal (≥)", Value: "greaterThanOrEqual"},
 		{Label: "Less Than (<)", Value: "lessThan"},
 		{Label: "Less Than or Equal (≤)", Value: "lessThanOrEqual"},
-		{Label: "Is Between", Value: "between"},
 	}
 	
 	timeComparisonOptions := []actions.Option{
 		{Label: "Is Before", Value: "before"},
 		{Label: "Is After", Value: "after"},
-		{Label: "Is Between", Value: "between"},
 		{Label: "Is On Same Day As", Value: "sameDay"},
 	}
 	
