@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"fmt"
 	"log"
 	"solver/internal/database"
 	"solver/internal/database/models"
@@ -28,23 +27,6 @@ func Simulations(s solver.Solver) {
 	for index, intent := range intents {
 		if intent.Saved {
 			solution, err := s.RebuildSolutionFromModels(&intent)
-
-			fmt.Printf("Solution Status: %+v\n", solution.Status)
-			if solution.Transactions != nil {
-				fmt.Printf("Transactions: %+v\n", *solution.Transactions)
-			}
-			if solution.LivePlugs != nil {
-				fmt.Printf("LivePlugs: %+v\n", *solution.LivePlugs)
-			}
-			if solution.Intent != nil {
-				fmt.Printf("Intent: %+v\n", *solution.Intent)
-			}
-			if solution.Run != nil {
-				fmt.Printf("Run: %+v\n", *solution.Run)
-			}
-			if solution.Transaction != nil {
-				fmt.Printf("Transaction: %+v\n", *solution.Transaction)
-			}
 
 			if err != nil {
 				solutions[index] = solver.Solution{
