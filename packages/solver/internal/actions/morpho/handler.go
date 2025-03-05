@@ -8,6 +8,7 @@ import (
 var (
 	name = "Morpho"
 	icon = "https://cdn.onplug.io/protocols/morpho.png"
+	color = "#2470FF"
 	tags = []string{"lending", "defi"}
 
 	ActionEarn             = "earn"
@@ -72,6 +73,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

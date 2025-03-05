@@ -23,6 +23,7 @@ type HandlerParams struct {
 
 type BaseProtocolHandler interface {
 	GetIcon() string
+	GetColor() string
 	GetTags() []string
 	GetActions() []string
 	GetChains(chainId string) ([]*references.Network, error)
@@ -37,6 +38,7 @@ type OptionsHandler func(chainId uint64) (map[int]Options, error)
 type Protocol struct {
 	Name            string
 	Icon            string
+	Color           string
 	Tags            []string
 	Chains          []*references.Network
 	OptionsProvider OptionsProvider
@@ -88,6 +90,7 @@ var (
 func NewBaseHandler(
 	name string,
 	icon string,
+	color string,
 	tags []string,
 	chains []*references.Network,
 	actionDefinitions map[string]ActionDefinition,
@@ -133,6 +136,7 @@ func NewBaseHandler(
 		protocol: Protocol{
 			Name:            name,
 			Icon:            icon,
+			Color:           color,
 			Tags:            tags,
 			Chains:          chains,
 			Schemas:         schemas,
@@ -164,6 +168,10 @@ func (h *BaseHandler) GetName() string {
 
 func (h *BaseHandler) GetIcon() string {
 	return h.protocol.Icon
+}
+
+func (h *BaseHandler) GetColor() string {
+	return h.protocol.Color
 }
 
 func (h *BaseHandler) GetTags() []string {

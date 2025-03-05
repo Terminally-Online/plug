@@ -8,6 +8,7 @@ import (
 var (
 	name = "Euler"
 	icon = "https://cdn.onplug.io/protocols/euler.png"
+	color = "#2AE5B9"
 	tags = []string{"lending", "defi"}
 
 	chains = []*references.Network{references.Mainnet, references.Base}
@@ -77,6 +78,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

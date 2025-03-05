@@ -13,6 +13,7 @@ var (
 
 	name = "Nouns"
 	icon = "https://cdn.onplug.io/protocols/nouns.png"
+	color = "#EFC950"
 	tags = []string{"nft"}
 
 	chains  = []*references.Network{references.Mainnet}
@@ -47,6 +48,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

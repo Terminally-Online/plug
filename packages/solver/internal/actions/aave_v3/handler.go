@@ -9,6 +9,7 @@ import (
 var (
 	name = "Aave V3"
 	icon = "https://cdn.onplug.io/protocols/aave.png"
+	color = "#9896FF"
 	tags = []string{"lending", "defi"}
 
 	chains  = []*references.Network{references.Mainnet, references.Base}
@@ -48,6 +49,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

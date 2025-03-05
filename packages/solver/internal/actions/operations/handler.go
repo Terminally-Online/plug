@@ -8,6 +8,7 @@ import (
 var (
 	name = "Operations"
 	icon = "https://cdn.onplug.io/protocols/operations.png"
+	color = "#8AAEF3"  // Using blue from colors.ts
 	tags = []string{"operations"}
 
 	ActionNumber      = "number"
@@ -35,6 +36,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

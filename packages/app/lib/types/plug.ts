@@ -22,6 +22,7 @@ export type ActionSchemaCoils = Array<ActionSchemaCoil>
 export type ActionSchema = {
 	metadata: {
 		icon: string
+		color: string
 		tags: Array<string>
 		chains: Array<{
 			name: string,

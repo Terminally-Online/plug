@@ -6,7 +6,7 @@ import { Eye, GitFork } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { cn, colors, formatTitle } from "@/lib"
+import { cn, colors, formatTitle, getProtocolColor } from "@/lib"
 import { api, RouterOutputs } from "@/server/client"
 import { COLUMNS, useColumnActions } from "@/state/columns"
 
@@ -17,6 +17,9 @@ type Props = { index: number; from: string; plug: RouterOutputs["plugs"]["all"][
 export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 	const { navigate } = useColumnActions(index)
 	const { data: session } = useSession()
+	
+	// Get the color directly using the sync function
+	const bgColor = plug?.color ? getProtocolColor(plug.color) : undefined
 
 	return (
 		<>
@@ -81,7 +84,7 @@ export const PlugGridItem: FC<Props> = ({ index, from, plug }) => {
 								<div
 									className="absolute -bottom-full -left-1/3 h-full w-3/4 rounded-full blur-[80px] filter"
 									style={{
-										backgroundColor: plug ? colors[plug.color as keyof typeof colors] : undefined
+										backgroundColor: bgColor
 									}}
 								></div>
 							</div>

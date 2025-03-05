@@ -91,7 +91,6 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 			protocolSchema := actions.ProtocolSchema{
 				Metadata: actions.ProtocolMetadata{
 					Icon:   handler.GetIcon(),
-					Color:  handler.GetColor(),
 					Tags:   handler.GetTags(),
 					Chains: chains,
 				},
@@ -146,7 +145,6 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 		protocolSchema := actions.ProtocolSchema{
 			Metadata: actions.ProtocolMetadata{
 				Icon:   handler.GetIcon(),
-				Color:  handler.GetColor(),
 				Tags:   handler.GetTags(),
 				Chains: chains,
 			},
@@ -183,7 +181,6 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 	protocolSchema := actions.ProtocolSchema{
 		Metadata: actions.ProtocolMetadata{
 			Icon:   handler.GetIcon(),
-			Color:  handler.GetColor(),
 			Tags:   handler.GetTags(),
 			Chains: chains,
 		},

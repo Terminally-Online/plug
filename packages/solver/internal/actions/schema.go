@@ -15,6 +15,7 @@ type Chain struct {
 
 type ProtocolMetadata struct {
 	Icon   string                `json:"icon"`
+	Color  string                `json:"color"`
 	Tags   []string              `json:"tags"`
 	Chains []*references.Network `json:"chains"`
 }

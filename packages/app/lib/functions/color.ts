@@ -41,6 +41,22 @@ export const getTextColor = (backgroundColor: string) => {
 	return luminance > 0.5 ? "#000000" : "#FFFFFF"
 }
 
+// Client-side helper to get color for a protocol, supporting both string lookups and dynamic values
+// This function is synchronous to avoid client rendering issues
+export const getProtocolColor = (colorKey: string): string => {
+	// First check if this is already a color value (like "#FFFFFF")
+	if (colorKey?.startsWith('#')) {
+		return colorKey;
+	}
+	
+	// Fall back to constant colors
+	return colors[colorKey as keyof typeof colors] || colors.plug;
+};
+
+// Import schemas since this function runs on the server side
+import { schemas } from './plug/solver';
+
+// On the server side, we can try to get colors from the solver API
 export const getDominantProtocolColor = async (actions: Actions, plugId: string, ctx: any): Promise<string> => {
 	// Default to Plug color if no actions
 	if (!actions?.length) {
@@ -73,10 +89,30 @@ export const getDominantProtocolColor = async (actions: Actions, plugId: string,
 
 	const dominantProtocol = entries.reduce((a, b) => (a[1] > b[1] ? a : b))[0]
 
-	// Get color from colors constant
-	const color = colors[dominantProtocol as keyof typeof colors] || colors.plug
-	await updateWorkflowColor(plugId, color, ctx)
-	return color
+	// On the server side, we can try to get colors from the solver API
+	try {
+		// Get the actual protocol name (not normalized) to query the API
+		const protocolToQuery = actions.find(action => 
+			action.protocol.toLowerCase().startsWith(dominantProtocol))?.protocol;
+		
+		if (protocolToQuery) {
+			const solverSchemas = await schemas(protocolToQuery);
+			
+			if (solverSchemas && solverSchemas[protocolToQuery]?.metadata?.color) {
+				const apiColor = solverSchemas[protocolToQuery].metadata.color;
+				await updateWorkflowColor(plugId, apiColor, ctx);
+				return apiColor;
+			}
+		}
+	} catch (error) {
+		console.error("Error fetching color from solver API:", error);
+		// Fall through to using constants
+	}
+
+	// Fall back to constant colors if API fetch fails
+	const color = colors[dominantProtocol as keyof typeof colors] || colors.plug;
+	await updateWorkflowColor(plugId, color, ctx);
+	return color;
 }
 
 const updateWorkflowColor = async (plugId: string, color: string, ctx: any) => {

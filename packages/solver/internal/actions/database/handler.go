@@ -9,6 +9,7 @@ import (
 var (
 	name = "Database"
 	icon = "https://cdn.onplug.io/protocols/database.png"
+	color = "#9F8AF3" // purple
 	tags = []string{"database", "storage", "state"}
 
 	SetValue    = "setValue"
@@ -42,6 +43,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

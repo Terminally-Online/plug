@@ -8,6 +8,7 @@ import (
 var (
 	name = "ENS"
 	icon = "https://cdn.onplug.io/protocols/ens.png"
+	color = "#0080BC"
 	tags = []string{"naming", "web3"}
 
 	GracePeriod = "grace_period"
@@ -45,6 +46,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

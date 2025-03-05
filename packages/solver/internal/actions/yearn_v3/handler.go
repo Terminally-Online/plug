@@ -8,6 +8,7 @@ import (
 var (
 	name = "Yearn V3"
 	icon = "https://cdn.onplug.io/protocols/yearn.png"
+	color = "#0657F9"
 	tags = []string{"yield", "defi"}
 
 	chains = []*references.Network{references.Mainnet, references.Base}
@@ -53,6 +54,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

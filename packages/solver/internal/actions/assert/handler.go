@@ -9,6 +9,7 @@ import (
 var (
 	name = "Assert"
 	icon = "https://cdn.onplug.io/protocols/assert.png"
+	color = "#F3908A" // red
 	tags = []string{"validation", "assert", "condition"}
 
 	AssertTrue  = "assertTrue"
@@ -35,6 +36,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

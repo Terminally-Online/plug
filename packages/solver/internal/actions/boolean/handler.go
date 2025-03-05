@@ -9,6 +9,7 @@ import (
 var (
 	name = "Boolean"
 	icon = "https://cdn.onplug.io/protocols/boolean.png"
+	color = "#F3B08A" // orange
 	tags = []string{"logic", "condition", "comparison"}
 
 	LogicOperation    = "logicOperation"
@@ -49,6 +50,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

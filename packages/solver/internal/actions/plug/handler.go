@@ -9,6 +9,7 @@ import (
 var (
 	name = "Plug"
 	icon = "https://cdn.onplug.io/protocols/plug.png"
+	color = "#D2F38A"
 	tags = []string{"defi"}
 
 	ReadBalance = "read_balance"
@@ -46,6 +47,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,

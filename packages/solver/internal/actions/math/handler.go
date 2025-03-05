@@ -9,6 +9,7 @@ import (
 var (
 	name = "Math"
 	icon = "https://cdn.onplug.io/protocols/math.png"
+	color = "#8AF3E6" // cyan
 	tags = []string{"scripting"}
 
 	Calculate = "calculate"
@@ -56,6 +57,7 @@ func New() actions.BaseProtocolHandler {
 	return actions.NewBaseHandler(
 		name,
 		icon,
+		color,
 		tags,
 		chains,
 		schemas,
