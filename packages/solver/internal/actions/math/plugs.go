@@ -51,46 +51,28 @@ func HandleCalculate(rawInputs json.RawMessage, params actions.HandlerParams) ([
 		return nil, fmt.Errorf("failed to get PlugMath ABI: %w", err)
 	}
 	
+	operation := strings.ToLower(inputs.Operation)
+	
 	var functionName string
-	switch inputs.Operation {
+	switch operation {
 	case "+", "add":
 		functionName = "add"
-	case "-", "subtract", "sub":
+	case "-", "sub", "subtract":
 		functionName = "subtract"
-	case "*", "multiply", "mul":
+	case "*", "mul", "multiply":
 		functionName = "multiply"
-	case "÷", "/", "divide", "div":
+	case "÷", "/", "div", "divide":
 		if inputs.Y.Cmp(big.NewInt(0)) == 0 {
 			return nil, fmt.Errorf("divide by zero error")
 		}
 		functionName = "divide"
-	case "%", "modulo", "mod":
+	case "%", "mod", "modulo":
 		if inputs.Y.Cmp(big.NewInt(0)) == 0 {
 			return nil, fmt.Errorf("modulo by zero error")
 		}
 		functionName = "modulo"
 	default:
-		operation := strings.ToLower(inputs.Operation)
-		switch operation {
-		case "add", "+":
-			functionName = "add"
-		case "subtract", "sub", "-":
-			functionName = "subtract"
-		case "multiply", "mul", "*":
-			functionName = "multiply"
-		case "divide", "div", "/", "÷":
-			if inputs.Y.Cmp(big.NewInt(0)) == 0 {
-				return nil, fmt.Errorf("divide by zero error")
-			}
-			functionName = "divide"
-		case "modulo", "mod", "%":
-			if inputs.Y.Cmp(big.NewInt(0)) == 0 {
-				return nil, fmt.Errorf("modulo by zero error")
-			}
-			functionName = "modulo"
-		default:
-			return nil, fmt.Errorf("unsupported operation: %s", inputs.Operation)
-		}
+		return nil, fmt.Errorf("unsupported operation: %s", inputs.Operation)
 	}
 	
 	calldata, err := mathAbi.Pack(functionName, inputs.X, inputs.Y)
