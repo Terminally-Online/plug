@@ -14,6 +14,8 @@ const (
 	Bebop     string = "bebop"
 	Euler     string = "euler"
 	Math      string = "math"
+	Assert    string = "assert"
+	Database  string = "database"
 	Scripting string = "scripting"
 
 	ActionDeposit      string = "deposit"
