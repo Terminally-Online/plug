@@ -2,6 +2,7 @@ package solver
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -66,7 +67,7 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) ToggleIntent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ToggleIntentStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -86,6 +87,31 @@ func (h *Handler) ToggleIntent(w http.ResponseWriter, r *http.Request) {
 		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	if err := json.NewEncoder(w).Encode(intent); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) ToggleIntentSaved(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var intent models.Intent
+	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
+		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
+		return
+	}
+
+	intent.Saved = !intent.Saved
+
+	if err := database.DB.Select("saved").Updates(&intent).Error; err != nil {
+		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("intent: %+v\n", intent)
 
 	if err := json.NewEncoder(w).Encode(intent); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
