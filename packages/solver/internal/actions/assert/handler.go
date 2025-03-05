@@ -13,7 +13,6 @@ var (
 
 	AssertTrue  = "assertTrue"
 	AssertFalse = "assertFalse"
-	Fail        = "fail"
 
 	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
@@ -28,12 +27,6 @@ var (
 			Handler:      HandleAssertFalse,
 			Metadata:     plug_assert.PlugAssertMetaData,
 			FunctionName: "assertFalse",
-		},
-		Fail: {
-			Sentence:     "Fail with message: {0<message:string>}",
-			Handler:      HandleFail,
-			Metadata:     plug_assert.PlugAssertMetaData,
-			FunctionName: "fail",
 		},
 	}
 )

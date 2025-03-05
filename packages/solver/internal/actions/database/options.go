@@ -9,18 +9,16 @@ import (
 type DatabaseOptionsProvider struct{}
 
 func (d *DatabaseOptionsProvider) GetOptions(chainId uint64, _ common.Address, _ map[int]string, action string) (map[int]actions.Options, error) {
-	// For the database operations, we don't need predefined options as the inputs are free-form strings
-	// and addresses. However, in the future, we might want to provide common keys as suggestions.
-
+	// NOTE: For the database operations, we don't need predefined options as the inputs are free-form strings
+	//       and addresses. However, in the future, we might want to provide common keys as suggestions
+	//       so I am leaving it here for now. If you are ever not sure of what to work on this
+	//       is a nice random ticket to pick up. - CHANCE
 	switch action {
 	case SetValue:
-		// No predefined options for key or value fields
 		return nil, nil
 	case GetValue:
-		// No predefined options for key or address fields
 		return nil, nil
 	case RemoveValue:
-		// No predefined options for key field
 		return nil, nil
 	default:
 		return nil, nil
