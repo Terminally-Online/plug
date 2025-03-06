@@ -77,7 +77,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 						</p>
 					</div>
 
-					{post.slug in postAnimations && <div className="min-h-[200px] overflow-hidden">
+					{post.slug in postAnimations && <div className="h-[380px] overflow-hidden">
 						{postAnimations[post.slug as keyof typeof postAnimations]}
 					</div>}
 

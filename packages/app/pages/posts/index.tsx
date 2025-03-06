@@ -65,7 +65,8 @@ const Page = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 							<InfoCard
 								key={post.slug}
 								text={post.title}
-								description={post.description}
+								author={post.attributes.author}
+								description={`${post.description.slice(0, 140)}...`}
 								href={`/posts/${post.slug}`}
 								className="h-[480px] cursor-pointer"
 							>
