@@ -1,9 +1,9 @@
 ---
 tags: perspective
-title: DeFi Command Centers
-slug: one-interface
+title: One App to Rule Them All
+slug: one-app
 image: /cdn/papers/hello-world.png
-description: One interface to interact with Ethereum.
+description: Every significant advancement in technology has been marked by the emergence of sophisticated tools that serve its most dedicated users. Traditional finance has its Bloomberg Terminal. Software developers have Visual Studio Code and its forks. These aren't just interfaces - they're command centers where information and control converge with precision. DeFi deserves the same level of sophistication and control. We're here to put a serious battle station in your hands.
 created: 03/06/2025
 author: drakedanner
 ---

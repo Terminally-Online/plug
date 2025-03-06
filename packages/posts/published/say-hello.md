@@ -3,7 +3,7 @@ tags: perspective
 title: Hello World
 slug: hello-world
 image: /cdn/papers/hello-world.png
-description: Command centers for the future built by the terminally online.
+description: We are Terminally Online Inc. and you may know us individually as danner or chance. We've spent the past 5 years plugged into the EVM landscape and we're here to plug you in too.
 created: 01/28/2025
 author: drakedanner
 ---
