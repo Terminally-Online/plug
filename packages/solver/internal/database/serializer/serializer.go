@@ -37,7 +37,7 @@ var typeConverters = map[string]struct {
 	},
 	"*big.Int": {
 		toStr: func(v interface{}) string {
-			if v.(*big.Int) == nil {
+			if v == nil || v.(*big.Int) == nil {
 				return "0"
 			}
 			return v.(*big.Int).String()

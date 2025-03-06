@@ -27,6 +27,7 @@ func Simulations(s solver.Solver) {
 	for index, intent := range intents {
 		if intent.Saved {
 			solution, err := s.RebuildSolutionFromModels(&intent)
+
 			if err != nil {
 				solutions[index] = solver.Solution{
 					Status: solver.SolutionStatus{

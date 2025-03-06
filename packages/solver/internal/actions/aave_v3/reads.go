@@ -25,7 +25,7 @@ func getReserves(chainId uint64) ([]aave_v3_ui_pool_data_provider.IUiPoolDataPro
 	}
 	reserves, _, err := dataProvider.GetReservesData(
 		client.ReadOptions(common.HexToAddress(os.Getenv("SOLVER_ADDRESS"))),
-		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_address_client"]),
+		common.HexToAddress(references.Networks[chainId].References["aave_v3"]["ui_pool_address_provider"]),
 	)
 	if err != nil {
 		return nil, err
