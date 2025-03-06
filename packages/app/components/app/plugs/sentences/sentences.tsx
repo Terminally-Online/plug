@@ -1,14 +1,13 @@
 import { FC, useCallback, useMemo } from "react"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
-import { useConnect, ActionSchemaCoils, InputValue } from "@/lib"
+import { useConnect, ActionSchemaCoils } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { api } from "@/server/client"
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
-import { Callout } from "@/components/app/utils/callout"
 
 type SentenceProps = { index: number }
 
@@ -57,40 +56,6 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 		if (!plug) return
 
 		const isLinked = value.startsWith("<-{") && value.endsWith("}")
-
-		if (isLinked) {
-			const coilName = value.substring(3, value.length - 1)
-			const coilInfo = availableCoils[coilName]
-
-			if (!coilInfo || coilInfo.actionIndex >= actionIndex) {
-				console.error("Invalid coil reference or circular dependency", {
-					coilName,
-					actionIndex,
-					availableCoils
-				})
-				return
-			}
-
-			const actionSchema = solverActions[plug.actions[actionIndex].protocol]?.schema[plug.actions[actionIndex].action]
-			if (actionSchema) {
-				const inputType = actionSchema.sentence
-					.split('{')
-					.filter(part => part.includes('}'))
-					.map(part => {
-						const match = part.match(/(\d+)<([^:]+):([^>]+)>/)
-						if (match && match[1] === inputIndex) {
-							return match[3]
-						}
-						return null
-					})
-					.filter(Boolean)[0]
-
-				if (inputType && coilInfo.type && !isTypeCompatible(inputType, coilInfo.type)) {
-					console.error(`Type mismatch: Input expects ${inputType} but coil provides ${coilInfo.type}`)
-				}
-			}
-		}
-
 		const newActions = [...plug.actions]
 		const action = newActions[actionIndex]
 
@@ -113,25 +78,6 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 			id: plug.id,
 			actions: JSON.stringify(newActions)
 		})
-	}
-
-	// TODO: This is a simplified version - real implementation would be more thorough
-	const isTypeCompatible = (inputType: string, coilType: string): boolean => {
-		if (inputType === coilType) return true
-
-		if (inputType.includes('uint') || inputType.includes('int')) {
-			return coilType.includes('uint') || coilType.includes('int')
-		}
-
-		if (inputType === 'address') {
-			return coilType === 'address'
-		}
-
-		if (inputType.includes('bytes') || inputType === 'string') {
-			return coilType.includes('bytes') || coilType === 'string'
-		}
-
-		return false
 	}
 
 	const validateType = (coilName: string, expectedType: string): boolean => {
