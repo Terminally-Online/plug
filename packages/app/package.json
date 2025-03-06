@@ -89,7 +89,7 @@
     "@types/cli-progress": "^3.11.6",
     "@types/jest": "^29.5.14",
     "@types/matter-js": "^0.19.7",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.13.9",
     "@types/react": "19.0.10",
     "@types/recharts": "^1.8.29",
     "@types/ws": "^8.5.10",
