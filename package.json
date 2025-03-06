@@ -22,7 +22,7 @@
     "@changesets/cli": "^2.27.1",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.9.0",
-    "turbo": "^2.3.3"
+    "turbo": "^2.4.4"
   },
   "private": true,
   "workspaces": [
