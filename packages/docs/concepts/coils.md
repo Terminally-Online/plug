@@ -1,6 +1,6 @@
 # Coils
 
-<span style="color: rgba(0,0,0,0.6)">[Coils](/concepts/coils/) are a proprietary piece of the protocol that enables a vm-like experience at the smart contract level and during transaction execution. With this in place you and every other user has the freedom to do things not possible anywhere else.</span>
+<span style="color: rgba(0,0,0,0.6)">[Coils](/concepts/coils) are a proprietary piece of the protocol that enables a vm-like experience at the smart contract level and during transaction execution. With this in place you and every other user has the freedom to do things not possible anywhere else.</span>
 
 ## State of The Tech
 
