@@ -3,7 +3,7 @@ tags: perspective
 title: The Infrastructure Race
 slug: infra-race
 image: /cdn/papers/infra-race.png
-description: Your ability to transact limits your ability to capture alpha.
+description: There's a scene in the Big Short where Brownfield Fund visits JPMorgan with the goal of getting an International Swaps and Derivatives Association (ISDA) agreement to be able to transact in long term derivatives. The owners of Brownfield saw an opportunity, but they needed an ISDA to be execute the trade. The only problem? Their AUM of $30m was "about 1 billion 470 million short" of the capital requirement needed to qualify for an ISDA. No ISDA, no trade.
 created: 03/03/2025
 author: drakedanner
 ---
