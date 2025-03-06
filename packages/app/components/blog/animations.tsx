@@ -61,13 +61,16 @@ export const postAnimations = {
 		</div>
 	),
 	"chat-interfaces": (<div className="w-full h-1/2 flex items-center justify-center mt-8 relative">
-			{Array.from({ length: 36 }).map((_, bubbleIndex) => (
+			{Array.from({ length: 24 }).map((_, bubbleIndex) => {
+				const row = Math.floor(bubbleIndex / 6);
+				const col = bubbleIndex % 6;
+				return (
 				<motion.div 
 					key={bubbleIndex} 
 					className="border-[12px] border-plug-white absolute rounded-full bg-[#EAEEE5] p-12 flex flex-row items-center gap-4"
 					style={{
-						left: `${-50 + Math.random() * 150}%`,
-						top: `${-50 + Math.random() * 150}%`,
+						left: `${(col * 33.33) - 50 + (Math.random() * 20)}%`,
+						top: `${(row * 33.33) - 50 + (Math.random() * 20)}%`,
 					}}
 				>
 					{Array.from({ length: 3 }).map((_, dotIndex) => (
@@ -86,8 +89,8 @@ export const postAnimations = {
 						/>
 					))}
 				</motion.div>
-
-			))}
+				);
+			})}
 		</div>),
 	"infra-race": (<div className="grid grid-cols-11 grid-rows-10 w-full h-full">
 		{Array.from({ length: 110 }).map((_, index) => {
@@ -113,5 +116,34 @@ export const postAnimations = {
 				/>
 			)
 		})}
-	</div>)
+	</div>),
+	"why-we-built-plug": (<div className="h-full flex flex-col items-center gap-4 mt-4 mb-4">
+			{Array.from({ length: 12 }).map((_, lineIndex) => (
+				<div key={lineIndex} className="w-full h-1 relative bg-plug-green/10 rounded-full">
+					{Array.from({ length: 20 }).map((_, dotIndex) => {
+						const opacity = 0.3 + (Math.sin(dotIndex * 0.5) * 0.7);
+						return (
+							<motion.div
+								key={`${lineIndex}-${dotIndex}`}
+								className={`bg-plug-green absolute h-3 w-3 rounded-full -mt-1`}
+								style={{ 
+									left: "-5%",
+									opacity
+								}}
+								animate={{ 
+									left: "105%",
+									scale: [1, 1 + opacity * 0.7, 1]
+								}}
+								transition={{
+									duration: 1 + Math.random(),
+									repeat: Infinity,
+									ease: "linear",
+									delay: (dotIndex * (1.5 + Math.random())) + (lineIndex * (0.1 + Math.random() * 0.3))
+								}}
+							/>
+						)
+					})}
+				</div>
+			))}
+		</div>)
 }

@@ -77,7 +77,7 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 						</p>
 					</div>
 
-					{post.slug in postAnimations && <div className="min-h-[480px] overflow-hidden">
+					{post.slug in postAnimations && <div className="min-h-[200px] overflow-hidden">
 						{postAnimations[post.slug as keyof typeof postAnimations]}
 					</div>}
 
@@ -112,9 +112,9 @@ export default function Page({ post }: InferGetStaticPropsType<typeof getStaticP
 								</h6>
 							),
 							p: ({ children }) => <p className="break-words opacity-80">{children}</p>,
-							ul: ({ children }) => <ul className="list-disc break-words opacity-60">{children}</ul>,
-							ol: ({ children }) => <ol className="list-decimal break-words opacity-60">{children}</ol>,
-							li: ({ children }) => <li className="mb-2 list-item">{children}</li>,
+							ul: ({ children }) => <ul className="list-disc ml-6 break-words opacity-60">{children}</ul>,
+							ol: ({ children }) => <ol className="list-decimal ml-6 break-words opacity-60">{children}</ol>,
+							li: ({ children }) => <li className="mb-2 ml-2 list-item">{children}</li>,
 							a: ({ children, ...props }) => {
 								const faviconUrl = getFavicon(props.href ?? "")
 
