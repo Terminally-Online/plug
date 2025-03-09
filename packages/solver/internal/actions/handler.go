@@ -21,6 +21,19 @@ type HandlerParams struct {
 	From    common.Address
 }
 
+func (p *HandlerParams) New(chainId uint64, from common.Address) (HandlerParams, error) {
+	client, err := client.New(chainId)
+	if err != nil {
+		return HandlerParams{}, err
+	}
+
+	return HandlerParams{
+		Client:  client,
+		ChainId: chainId,
+		From:    from,
+	}, nil
+}
+
 type BaseProtocolHandler interface {
 	GetIcon() string
 	GetTags() []string
@@ -126,6 +139,7 @@ func NewBaseHandler(
 				IsUserSpecific: def.IsUserSpecific,
 				Coils:          coils,
 			},
+			LinkedInputs: coils, // Add coils directly at the schema level for linked inputs
 		}
 	}
 	cachedProvider := NewCachedOptionsProvider(optionsProvider)

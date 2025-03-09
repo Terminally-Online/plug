@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/big"
 	"solver/internal/database/serializer"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"time"
 
@@ -21,10 +22,10 @@ type Run struct {
 	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
 
-	IntentId            string            `json:"intentId,omitempty" gorm:"type:text"`
-	Intent              Intent            `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	TransactionBundleId string            `json:"transactionBundleId,omitempty" gorm:"type:text"`
-	TransactionBundle   TransactionBundle `json:"transactionBundle,omitempty" gorm:"foreignKey:TransactionBundleId;references:Id"`
+	IntentId     string `json:"intentId,omitempty" gorm:"type:text"`
+	Intent       Intent `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	LivePlugsId  string `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
+	LivePlugs    *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
 
 	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 	CreatedAt time.Time      `json:"-"`
@@ -53,17 +54,17 @@ func (r *Run) AfterFind(tx *gorm.DB) error {
 func (r Run) MarshalJSON() ([]byte, error) {
 	type Alias Run
 
-	// Create a temp struct without the bundle
+	// Create a temp struct without the LivePlugs
 	tmp := &struct {
 		*Alias
-		TransactionBundle *TransactionBundle `json:"transactionBundle,omitempty"`
+		LivePlugs *signature.LivePlugs `json:"livePlugs,omitempty"`
 	}{
 		Alias: (*Alias)(&r),
 	}
 
-	// Only include the bundle if it has a non-zero ID
-	if r.TransactionBundle.Id != "" {
-		tmp.TransactionBundle = &r.TransactionBundle
+	// Only include the LivePlugs if it has a non-zero Id
+	if r.LivePlugs != nil && r.LivePlugs.Id != "" {
+		tmp.LivePlugs = r.LivePlugs
 	}
 
 	return json.Marshal(tmp)

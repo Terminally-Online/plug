@@ -25,9 +25,10 @@ type ProtocolSchema struct {
 }
 
 type ChainSchema struct {
-	Type           string `default:"action" json:"type"`
-	IsUserSpecific bool   `json:"isUserSpecific,omitempty"`
-	Schema         Schema `json:"schema"`
+	Type           string        `default:"action" json:"type"`
+	IsUserSpecific bool          `json:"isUserSpecific,omitempty"`
+	Schema         Schema        `json:"schema"`
+	LinkedInputs   []coil.Update `json:"linkedInputs,omitempty"` // Added to support linked inputs directly at schema level
 }
 
 type Schema struct {
