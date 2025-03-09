@@ -51,5 +51,3 @@ To run an instance of `@terminally-online/plug-app` all you have to do is open y
 pnpm i
 pnpm dev
 ```
-
-...
