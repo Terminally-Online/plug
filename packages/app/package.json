@@ -48,7 +48,7 @@
     "@trpc/server": "11.0.0-rc.819",
     "@vercel/og": "^0.6.3",
     "abitype": "^1.0.2",
-    "axios": "^1.7.7",
+    "axios": "^1.8.2",
     "blockies-react-svg": "^0.0.13",
     "boring-avatars": "^1.10.2",
     "cheerio": "^1.0.0",
