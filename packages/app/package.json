@@ -13,7 +13,7 @@
     "predev": "run-s predev:*",
     "dev": "run-p dev:*",
     "build:lint": "next lint",
-    "build:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
+    "build:prisma": "pnpm prisma:migrate",
     "build:next": "next build",
     "build": "run-s build:*",
     "prettier:format": "prettier --config .prettierrc '**/*.{ts,tsx}' --write",
@@ -25,6 +25,8 @@
     "prisma:reset": "pnpm prisma migrate reset",
     "env:encrypt": "tsx lib/scripts/env.ts encrypt",
     "env:decrypt": "tsx lib/scripts/env.ts decrypt",
+    "prestart:prisma": "pnpm prisma:push && pnpm prisma:seed",
+    "prestart": "run-s prestart:*",
     "start": "next start",
     "job:anonymous": "tsx lib/scripts/cron/anonymous-users.ts",
     "job:metadata": "tsx lib/scripts/cron/collectible-metadata.ts"
