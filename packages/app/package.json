@@ -12,7 +12,6 @@
     "dev:next": "next dev --turbo",
     "predev": "run-s predev:*",
     "dev": "run-p dev:*",
-    "build:env": "pnpm env:decrypt",
     "build:lint": "next lint",
     "build:prisma": "pnpm prisma:generate",
     "build:next": "next build",
