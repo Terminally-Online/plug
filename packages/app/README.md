@@ -51,12 +51,3 @@ To run an instance of `@terminally-online/plug-app` is incredibly straightforwar
 pnpm i
 pnpm dev
 ```
-
-> [!TIP]
-> You will need a PostgreSQL database running in order to read and save the data of your application.
->
-> By default, the app will try running a database through Docker. If it fails however, the build will proceed.
->
-> For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made automatically.
->
-> For production development, it cannot be on the edge due to the use of Prisma.
