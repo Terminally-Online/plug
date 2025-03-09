@@ -23,7 +23,7 @@
 
 ## Commands
 
-To run any piece of the app you will run `make <command>` where `<command>` is the name of the command you want to run:
+To run any piece of the app you will run `pnpm <command>` where `<command>` is the name of the command you want to run:
 
 ```ml
 commands
