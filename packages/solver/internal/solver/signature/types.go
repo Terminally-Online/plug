@@ -130,7 +130,7 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 		return nil, fmt.Errorf("failed to get router ABI: %w", err)
 	}
 
-	plugCalldata, err := routerAbi.Pack("plug", l.Wrap())
+	plugCalldata, err := routerAbi.Pack("plug0", l.Wrap())
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata: %w", err)
 	}
