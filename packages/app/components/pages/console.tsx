@@ -81,12 +81,12 @@ export const ConsolePage = () => {
 		})
 	}, [router, router.query, columns, plugs, add])
 
-	if (!socket)
-		return (
-			<div className="absolute bottom-0 left-0 right-0 top-0 flex h-screen w-screen items-center justify-center">
-				<LoaderCircle size={24} className="animate-spin opacity-40" />
-			</div>
-		)
+	// if (!socket)
+	// 	return (
+	// 		<div className="absolute bottom-0 left-0 right-0 top-0 flex h-screen w-screen items-center justify-center">
+	// 			<LoaderCircle size={24} className="animate-spin opacity-40" />
+	// 		</div>
+	// 	)
 
 	return md ? <DesktopConsole /> : <MobileConsole />
 }

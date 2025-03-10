@@ -71,7 +71,7 @@ export const Ticket: FC<TicketProps> = ({ color }) => {
 		<TicketContainer>
 			<Image
 				className="h-full w-full rounded-lg border-[1px] blur-[80px] filter transition-all duration-200 group-hover:blur-none"
-				src={`http://localhost:3000/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
+				src={`${process.env.NEXT_PUBLIC_APP_URL}/api/nft/image?color=${color.replace("#", "") || "FDFFF7"}`}
 				alt="Plug Founding Ticket"
 				width={1000}
 				height={1600}
