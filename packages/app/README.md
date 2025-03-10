@@ -45,7 +45,7 @@ Whoever is in charge of the encryption key will be able to provide it to you. On
 
 ### Running the App
 
-To run an instance of `@terminally-online/plug-app` all you have to do is open your terminal and run:
+To run `@terminally-online/plug-app` all you have to do is open your terminal and run:
 
 ```bash
 pnpm i
