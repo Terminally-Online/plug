@@ -30,9 +30,9 @@ type Config struct {
 func NewConfig() *Config {
 	return &Config{
 		Host:     GetEnvOrDefault("DATABASE_HOST", "localhost"),
-		User:     GetEnvOrDefault("DATABASE_USER", "postgres"),
+		User:     GetEnvOrDefault("DATABASE_USER", "plug"),
 		Password: GetEnvOrDefault("DATABASE_PASSWORD", "plugdev"),
-		DBName:   GetEnvOrDefault("DATABASE_NAME", "postgres"),
+		DBName:   GetEnvOrDefault("DATABASE_NAME", "plug_solver"),
 		Port:     GetEnvOrDefault("DATABASE_PORT", "6432"),
 		SSLMode:  GetEnvOrDefault("DATABASE_SSLMODE", "disable"),
 	}
