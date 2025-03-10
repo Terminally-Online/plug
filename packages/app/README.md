@@ -41,7 +41,7 @@ For this to work, you will need to have a `.env` file in the root of your reposi
 ENCRYPTION_KEY=<THE_TEAM_ENCRYPTION_KEY>
 ```
 
-Whoever is in charge of the encryption key will be able to provide it to you. Once you've set the value, your environment is ready.
+Once you've set the value, your environment is ready.
 
 ### Running the App
 
