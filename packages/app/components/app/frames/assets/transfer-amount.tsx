@@ -275,9 +275,9 @@ export const TransferAmountFrame: FC<{
 
 		if (column.index === COLUMNS.SIDEBAR_INDEX)
 			sendTransaction({
-				to: intent.transaction.to,
-				data: intent.transaction.data,
-				value: intent.transaction.value
+				to: intent.transactions[0].to,
+				data: intent.transactions[0].data,
+				value: intent.transactions[0].value
 			}, {
 				onSuccess: data => {
 					navigate({ index, key: COLUMNS.KEYS.ACTIVITY })

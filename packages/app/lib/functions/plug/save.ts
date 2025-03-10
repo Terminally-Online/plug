@@ -3,9 +3,9 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { Intent } from "@/lib/types"
+import { IntentResponseIntent } from "@/lib/types"
 
-type CreateIntentProps = Omit<Intent, "id" | "nextSimulationAt" | "periodEndAt" | "runs" | "createdAt">
+type CreateIntentProps = Omit<IntentResponseIntent, "id" | "nextSimulationAt" | "periodEndAt" | "runs" | "createdAt">
 type GetIntentProps = { id?: string; address?: string, addresses?: string[] }
 type IntentIdProps = { id: string }
 
@@ -44,11 +44,11 @@ const save = async <TData>(method: "get" | "post" | "delete", path: string, inpu
 	}
 }
 
-export const createIntent = async (props: CreateIntentProps) => await save<Intent>("post", "", props)
-export const getIntent = async ({ id, address, addresses }: GetIntentProps): Promise<Array<Intent>> => {
+export const createIntent = async (props: CreateIntentProps) => await save<IntentResponseIntent>("post", "", props)
+export const getIntent = async ({ id, address, addresses }: GetIntentProps): Promise<Array<IntentResponseIntent>> => {
 	if (!id && !address && !addresses) throw new TRPCError({ code: "BAD_REQUEST" })
 
 	return await save("get", id ? `/${id}` : addresses ? `/${addresses.join(",")}` : `/${address}`)
 }
-export const toggleIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}`)
-export const deleteIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("delete", `/${id}`)
+export const toggleIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("post", `/${id}`)
+export const deleteIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("delete", `/${id}`)

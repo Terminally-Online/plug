@@ -29,6 +29,12 @@ type EIP712Domain struct {
 	VerifyingContract common.Address `json:"verifyingContract"`
 }
 
+type MinimalPlug struct {
+	To    common.Address `json:"to"`
+	Data  []byte         `json:"data"`
+	Value *big.Int       `json:"value"`
+}
+
 // Plug represents a single transaction to be executed as part of a bundle.
 // It includes all necessary data for contract interaction and dynamic data updates.
 type Plug struct {
@@ -38,12 +44,12 @@ type Plug struct {
 	Data     []byte         `json:"data"`
 	Value    *big.Int       `json:"value"`
 	// Updates contains dynamic data modifications to be applied at execution time
-	Updates  []coil.Update  `json:"updates"`
+	Updates []coil.Update `json:"updates"`
 
 	// Exclusive indicates this plug must be executed alone, not in a batch
-	Exclusive bool        `json:"exclusive,omitempty"`
+	Exclusive bool `json:"exclusive,omitempty"`
 	// Meta contains additional protocol-specific data (not used for execution)
-	Meta      interface{} `json:"meta,omitempty"`
+	Meta any `json:"meta,omitempty"`
 }
 
 func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
@@ -58,6 +64,14 @@ func (p Plug) Wrap() plug_router.PlugTypesLibPlug {
 		Data:     p.Data,
 		Value:    p.Value,
 		Updates:  updates,
+	}
+}
+
+func (p Plug) Minify() *MinimalPlug {
+	return &MinimalPlug{
+		To:    p.To,
+		Data:  p.Data,
+		Value: p.Value,
 	}
 }
 
@@ -90,11 +104,11 @@ func (p Plugs) Wrap() plug_router.PlugTypesLibPlugs {
 // in the database and on-chain execution.
 type LivePlugs struct {
 	// Database fields (serialized to database)
-	Id        string    `json:"id,omitempty" gorm:"primaryKey;type:text"` // Changed ID to Id for consistency with GORM conventions
-	ChainId   uint64    `json:"chainId" gorm:"type:int"`
-	From      string    `json:"from,omitempty" gorm:"type:text"`
+	Id      string `json:"id,omitempty" gorm:"primaryKey;type:text"` // Changed ID to Id for consistency with GORM conventions
+	ChainId uint64 `json:"chainId" gorm:"type:int"`
+	From    string `json:"from,omitempty" gorm:"type:text"`
 	// Pre-packed transaction data for the router contract (for caching/storage)
-	Data      string    `json:"data,omitempty" gorm:"type:bytea"`
+	Data string `json:"data,omitempty" gorm:"type:bytea"`
 	// Reference to the Intent that created this LivePlugs
 	IntentId  string    `json:"intentId,omitempty" gorm:"type:text"`
 	CreatedAt time.Time `json:"createdAt" gorm:"autoCreateTime"`
@@ -103,7 +117,7 @@ type LivePlugs struct {
 
 	// Core LivePlugs fields used for on-chain execution
 	// Collection of transactions to execute atomically
-	Plugs     Plugs  `json:"plugs" gorm:"serializer:json"`
+	Plugs Plugs `json:"plugs" gorm:"serializer:json"`
 	// EIP-712 signature authorizing the execution
 	Signature []byte `json:"signature" gorm:"type:bytea"`
 }
@@ -144,7 +158,7 @@ func (l *LivePlugs) GetCallData() ([]byte, error) {
 func (l *LivePlugs) GetRawPlugs() []Transaction {
 	txs := make([]Transaction, len(l.Plugs.Plugs))
 	identifier := []byte("plug")
-	
+
 	for idx, plug := range l.Plugs.Plugs {
 		data := append(plug.Data, identifier...)
 		txs[idx] = Transaction{
@@ -155,7 +169,7 @@ func (l *LivePlugs) GetRawPlugs() []Transaction {
 			Gas:   nil, // Will be estimated during simulation
 		}
 	}
-	
+
 	return txs
 }
 
@@ -167,20 +181,20 @@ type Result struct {
 // GORM lifecycle hooks for LivePlugs
 
 // BeforeCreate is automatically called by GORM before inserting a new record.
-// It generates a UUID if one isn't provided and ensures the packed calldata 
+// It generates a UUID if one isn't provided and ensures the packed calldata
 // field is populated for backwards compatibility with simulation code.
 func (l *LivePlugs) BeforeCreate(tx *gorm.DB) error {
 	if l.Id == "" {
 		l.Id = utils.GenerateUUID()
 	}
-	
+
 	// Pre-pack the transaction data for storage
 	data, err := l.GetCallData()
 	if err != nil {
 		return err
 	}
 	l.Data = hexutil.Bytes(data).String()
-	
+
 	return nil
 }
 
@@ -192,7 +206,7 @@ func (l *LivePlugs) BeforeSave(tx *gorm.DB) error {
 		return err
 	}
 	l.Data = hexutil.Bytes(data).String()
-	
+
 	return nil
 }
 

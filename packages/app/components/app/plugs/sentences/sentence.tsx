@@ -6,7 +6,7 @@ import { Hash, X } from "lucide-react"
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, ActionSchemaCoils, cn, InputValue, useConnect, useCord } from "@/lib"
+import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
@@ -17,12 +17,12 @@ import { api } from "@/server/client"
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
 	item: string
-	action: Action
+	action: SchemasRequestAction
 	actionIndex: number
 	preview?: boolean
 	error?: boolean
-	linked?: InputValue[]
-	prevCoils?: ActionSchemaCoils
+	linked?: SchemasRequestValue[]
+	prevCoils?: SchemasResponseCoils
 	dragging?: boolean
 	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
 	handleRemoveAction?: () => void

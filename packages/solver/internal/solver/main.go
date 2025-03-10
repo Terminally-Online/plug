@@ -68,8 +68,8 @@ func (s *Solver) GetTransaction(rawInputs json.RawMessage, chainId uint64, from 
 
 	params := actions.HandlerParams{}
 	params, err := params.New(chainId, from)
-	if err != nil { 
-		return nil, err 
+	if err != nil {
+		return nil, err
 	}
 
 	transactions, err := handler.GetTransaction(inputs.Action, rawInputs, params)
@@ -196,7 +196,7 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 			Salt:   []byte{}, // Empty for EOA
 		},
 		Signature: []byte{}, // Empty for EOA
-		
+
 		// Add database fields
 		IntentId: intent.Id,
 		ChainId:  intent.ChainId,
@@ -222,16 +222,16 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 			Data:  data,
 			Value: plugs[0].Value,
 		}
-		
+
 		run, err = simulation.SimulateEOATx(simTx, livePlugs.Id, intent.ChainId)
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if run != nil {
 			run.IntentId = intent.Id
 			run.LivePlugsId = livePlugs.Id
-			
+
 			if err := database.DB.Create(run).Error; err != nil {
 				return nil, fmt.Errorf("failed to save simulation run: %v", err)
 			}
@@ -243,17 +243,21 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 			LivePlugsId: livePlugs.Id,
 			Status:      "pending",
 		}
-		
+
 		if err := database.DB.Create(run).Error; err != nil {
 			return nil, fmt.Errorf("failed to save pending run: %v", err)
 		}
 	}
 
+	transactions := make([]*signature.MinimalPlug, len(plugs))
+	for i, plug := range plugs {
+		transactions[i] = plug.Minify()
+	}
+
 	return &Solution{
-		Status:    SolutionStatus{Success: true},
-		LivePlugs: livePlugs,
-		Intent:    intent,
-		Run:       run,
+		// Intent:       intent,
+		Transactions: transactions,
+		Run:          run,
 	}, nil
 }
 
@@ -280,13 +284,13 @@ func (s *Solver) SolveSocket(intent *models.Intent) (solution *Solution, err err
 		return nil, fmt.Errorf("failed to save live plugs: %v", err)
 	}
 
+	callData, err := livePlugs.GetCallData()
+	if err != nil {
+		return nil, err
+	}
+
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		callData, err := livePlugs.GetCallData()
-		if err != nil {
-			return nil, err
-		}
-
 		simLivePlugs := &signature.LivePlugs{
 			Id:        livePlugs.Id,
 			ChainId:   livePlugs.ChainId,
@@ -297,21 +301,20 @@ func (s *Solver) SolveSocket(intent *models.Intent) (solution *Solution, err err
 			Signature: livePlugs.Signature,
 		}
 
-		// Run simulation
 		run, err = simulation.SimulateLivePlugs(simLivePlugs)
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if run != nil {
 			run.IntentId = intent.Id
 			run.LivePlugsId = livePlugs.Id
 			intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
-			
+
 			if err := database.DB.Create(run).Error; err != nil {
 				return nil, fmt.Errorf("failed to save simulation run: %v", err)
 			}
-			
+
 			if err := database.DB.Model(&intent).Updates(map[string]any{
 				"period_end_at":      intent.PeriodEndAt,
 				"next_simulation_at": intent.NextSimulationAt,
@@ -320,37 +323,71 @@ func (s *Solver) SolveSocket(intent *models.Intent) (solution *Solution, err err
 			}
 		}
 	} else {
-		// Create an empty run if simulation is not requested
 		run = &models.Run{
 			IntentId:    intent.Id,
 			LivePlugsId: livePlugs.Id,
 			Status:      "pending",
 		}
-		
+
 		if err := database.DB.Create(run).Error; err != nil {
 			return nil, fmt.Errorf("failed to save pending run: %v", err)
 		}
 	}
 
-	return &Solution{
-		Status:    SolutionStatus{Success: true},
-		LivePlugs: livePlugs,
-		Intent:    intent,
-		Run:       run,
-	}, nil
+	result := &Solution{
+		// Intent: intent,
+		Run: run,
+	}
+
+	if livePlugs != nil {
+		routerAddress := livePlugs.GetRouterAddress()
+		routerPlug := &signature.MinimalPlug{
+			To:    routerAddress,
+			Data:  callData,
+			Value: big.NewInt(0),
+		}
+		result.Transactions = []*signature.MinimalPlug{routerPlug}
+	}
+
+	return result, nil
 }
 
 func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
-	if isEOA, ok := intent.Options["isEOA"].(bool); ok && isEOA {
-		return s.SolveEOA(intent)
+	var result *Solution
+	var solveErr error
+	var plugs []signature.Plug
+
+	plugs, err = s.GetPlugs(intent)
+	if err != nil {
+		return nil, err
 	}
 
-	return s.SolveSocket(intent)
+	if isEOA, ok := intent.Options["isEOA"].(bool); ok && isEOA {
+		result, solveErr = s.SolveEOA(intent)
+		if solveErr != nil {
+			return nil, solveErr
+		}
+
+		// result.LivePlugs = nil
+
+		transactions := make([]*signature.MinimalPlug, len(plugs))
+		for i, plug := range plugs {
+			transactions[i] = plug.Minify()
+		}
+		result.Transactions = transactions
+	} else {
+		result, solveErr = s.SolveSocket(intent)
+		if solveErr != nil {
+			return nil, solveErr
+		}
+	}
+
+	return result, nil
 }
 
 // Submit executes multiple Intents on-chain through the Plug router contract.
 // For each Intent:
-// 1. It solves the Intent to generate the LivePlugs 
+// 1. It solves the Intent to generate the LivePlugs
 // 2. Filters out unsuccessful simulations
 // 3. Submits the valid LivePlugs to the blockchain with one transaction per Intent
 // This is typically used for cron-scheduled or batched transaction execution.
@@ -379,9 +416,9 @@ func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
 			// Only include LivePlugs if the run was successful or doesn't exist
 			if solution.Run == nil || solution.Run.Status == "success" || solution.Run.Status == "pending" {
 				// We can get LivePlugs directly from the solution now
-				if solution.LivePlugs != nil {
-					livePlugsList = append(livePlugsList, solution.LivePlugs)
-				}
+				// if solution.LivePlugs != nil {
+				// 	livePlugsList = append(livePlugsList, solution.LivePlugs)
+				// }
 			}
 		}
 	}
@@ -390,7 +427,7 @@ func (s *Solver) Submit(intents []models.Intent) ([]signature.Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	results, err := provider.Plug(livePlugsList)
 	if err != nil {
 		return nil, err

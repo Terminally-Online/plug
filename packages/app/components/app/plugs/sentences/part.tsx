@@ -13,7 +13,7 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { Action, ActionSchemaCoils, ActionSchemaOptions, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
+import { SchemasRequestAction, SchemasResponseCoils, cn, formatTitle, SchemasRequestValues, useCord, useDebounce, SchemasResponseOptionsSet, SchemasRequestValuesSet } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
@@ -23,14 +23,14 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	preview?: boolean
 	error?: boolean
 	actionIcon: string
-	action: Action
+	action: SchemasRequestAction
 	actionIndex: number
 	parsed: NonNullable<ReturnType<typeof useCord>["state"]["parsed"]>
 	input: NonNullable<InputReference>
 	inputIndex: number
 	optionsIndex: number
-	options?: ActionSchemaOptions
-	coils?: ActionSchemaCoils,
+	options?: SchemasResponseOptionsSet
+	coils?: SchemasResponseCoils,
 	search: Record<number, string | undefined>
 	getInputValue: ReturnType<typeof useCord>["helpers"]["getInputValue"]
 	getInputError: ReturnType<typeof useCord>["helpers"]["getInputError"]
@@ -46,7 +46,7 @@ export type HandleValueProps = {
 	value: string
 	name: string
 	isNumber?: boolean
-} & Partial<Options[number]>
+} & Partial<SchemasRequestValues[number]>
 
 export const Part: FC<PartProps> = memo(
 	({
@@ -98,9 +98,9 @@ export const Part: FC<PartProps> = memo(
 		const indexedOptions =
 			options &&
 			(Array.isArray(options[optionsIndex])
-				? (options[optionsIndex] as Options)
+				? (options[optionsIndex] as SchemasRequestValues)
 				: options && typeof options?.[optionsIndex] === "object" && dependentOnValue
-					? (options[optionsIndex] as Record<string, Options>)[dependentOnValue as string]
+					? (options[optionsIndex] as SchemasRequestValuesSet)[parseInt(dependentOnValue)]
 					: undefined)
 		const isOptionBased = indexedOptions !== undefined
 		const option = Array.isArray(indexedOptions)
@@ -111,13 +111,12 @@ export const Part: FC<PartProps> = memo(
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 			input.dependentOn === undefined
 
-
 		const validCoils = useMemo(() => {
 			return coils?.filter((coil) => {
 				const coilValue = `<-{${coil.slice.name}}`
 
 				return validateLinkedInput(coilValue, input.type?.toString())
-			}) ?? [] as ActionSchemaCoils
+			}) ?? [] as SchemasResponseCoils
 		}, [coils, input, validateLinkedInput])
 		const validCoilNames = useMemo(() => validCoils.map(coil => `<-{${coil.slice.name}}`), [validCoils])
 
@@ -134,7 +133,7 @@ export const Part: FC<PartProps> = memo(
 		//       is no longer supported or shown in the list existing Plugs will still function as
 		//       expected and the user will have the ability to choose an up to date option in the
 		//       future if they see fit.
-		const icon = action.values?.[input.index]?.icon?.default || (option && option.icon.default)
+		const icon = action.values?.[input.index]?.icon?.default || (option && option?.icon?.default)
 		const label =
 			(option && option.label) ||
 			((isValid || isCompatibleCoil) && value?.value) ||
@@ -361,7 +360,7 @@ export const Part: FC<PartProps> = memo(
 													)}
 
 													<div className="flex flex-row items-center gap-4">
-														{option.icon.default && (
+														{option?.icon?.default && (
 															<div className="flex items-center space-x-2">
 																{option.icon.default
 																	.split("%7C")
@@ -388,7 +387,7 @@ export const Part: FC<PartProps> = memo(
 																)}
 															</p>
 															<p className="flex flex-row items-center justify-between gap-2 whitespace-nowrap text-sm tabular-nums text-black/40">
-																{option.icon.secondary && (
+																{option?.icon?.secondary && (
 																	<Image
 																		className="h-4 w-4 rounded-[4px]"
 																		src={option.icon.secondary}

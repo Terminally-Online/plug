@@ -1,19 +1,18 @@
 import { FC, useCallback, useMemo } from "react"
 
-import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { cn, Action, formatTitle, getValues, useConnect, ActionSchemaCoils } from "@/lib"
+import { SchemasRequestAction, formatTitle, getValues, useConnect } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
 import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { api } from "@/server/client"
-import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd"
+import { DropResult } from "@hello-pangea/dnd"
 import { Sentences } from "../sentences/sentences"
 
-const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
+const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
 
 	actions.forEach(action => (protocolFrequency[action.protocol] = (protocolFrequency[action.protocol] || 0) + 1))

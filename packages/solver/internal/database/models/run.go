@@ -20,12 +20,12 @@ type Run struct {
 	From        string        `json:"from,omitempty" gorm:"type:text"`
 	To          string        `json:"to,omitempty" gorm:"type:text"`
 	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
+	Data        RunOutputData `json:"data,omitempty" gorm:"type:jsonb"`
 
-	IntentId     string `json:"intentId,omitempty" gorm:"type:text"`
-	Intent       Intent `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	LivePlugsId  string `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
-	LivePlugs    *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
+	IntentId    string               `json:"intentId,omitempty" gorm:"type:text"`
+	Intent      Intent               `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	LivePlugsId string               `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
+	LivePlugs   *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
 
 	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 	CreatedAt time.Time      `json:"-"`
@@ -34,8 +34,8 @@ type Run struct {
 }
 
 type RunOutputData struct {
-	Raw     []byte      `json:"raw" gorm:"type:bytea"`
-	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
+	Raw     []byte `json:"raw,omitempty" gorm:"type:bytea"`
+	Decoded any    `json:"decoded,omitempty" gorm:"type:jsonb"`
 }
 
 func (r *Run) BeforeCreate(tx *gorm.DB) error {

@@ -1,11 +1,11 @@
 import { FC } from "react"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
-import { Actions } from "@/lib"
+import { SchemasRequestActions } from "@/lib"
 import { plugByIdAtom } from "@/state/plugs"
 import { useAtom } from "jotai"
 
-export const ActionPreview: FC<{ index: number; item: string; actions?: Actions; errors?: Array<string | null> }> = ({
+export const ActionPreview: FC<{ index: number; item: string; actions?: SchemasRequestActions; errors?: Array<string | null> }> = ({
 	index,
 	item,
 	actions,

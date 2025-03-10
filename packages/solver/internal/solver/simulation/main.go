@@ -46,7 +46,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	// Get router address for this chain
 	routerAddress := livePlugs.GetRouterAddress()
-	
+
 	// Create transaction parameters for simulation
 	tx := map[string]any{
 		"from": livePlugs.From,
@@ -114,7 +114,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 		From:        livePlugs.From,
 		To:          routerAddress.Hex(),
 		Status:      status,
-		ResultData: models.RunOutputData{
+		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
 	}
@@ -218,7 +218,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId string, chainId uint64
 		To:          tx.To.Hex(),
 		Value:       tx.Value,
 		Status:      status,
-		ResultData: models.RunOutputData{
+		Data: models.RunOutputData{
 			Raw: trace.Output,
 		},
 	}

@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from "react"
 
 import { Sentence } from "@/components/app/plugs/sentences/sentence"
-import { useConnect, ActionSchemaCoils } from "@/lib"
+import { useConnect, SchemasResponseCoils } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
@@ -57,15 +57,13 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 
 		const isLinked = value.startsWith("<-{") && value.endsWith("}")
 		const newActions = [...plug.actions]
-		const action = newActions[actionIndex]
-
-		if (!action.values) {
-			action.values = {}
-		}
-
+		const action = newActions[actionIndex] 
 		const isNumber = additionalData.isNumber || false
 
-		action.values[inputIndex] = {
+		// @ts-ignore
+		if (!action.values) action.values = {}
+		// @ts-ignore
+		action.values[parseInt(inputIndex)] = {
 			index: inputIndex,
 			key: inputIndex,
 			name: inputIndex,
@@ -128,7 +126,7 @@ export const Sentences: FC<SentenceProps> = ({ index }) => {
 							const values = Object.values(plug.actions[actionIndex + 1]?.values ?? {})
 							const linked = values.filter(val => val?.value && val?.value?.startsWith("<-{"))
 
-							let prevCoils: ActionSchemaCoils | undefined = []
+							let prevCoils: SchemasResponseCoils | undefined = []
 							if (actionIndex > 0) {
 								const prevAction = plug.actions[actionIndex - 1]
 								prevCoils = solverActions[prevAction.protocol]?.schema[prevAction.action]?.coils || []

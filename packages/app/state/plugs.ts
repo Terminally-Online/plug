@@ -4,7 +4,7 @@ import { atom, useAtom, useAtomValue } from "jotai"
 
 import { Plug } from "@prisma/client"
 
-import { Actions } from "@/lib"
+import { SchemasRequestActions } from "@/lib"
 import { api } from "@/server/client"
 
 import { COLUMNS, useColumnActions } from "./columns"
@@ -38,7 +38,7 @@ export const plugByIdAtom = atomFamily((id: string) => atom(get => {
 	try {
 		return {
 			...plug,
-			actions: JSON.parse(plug.actions) as Actions
+			actions: JSON.parse(plug.actions) as SchemasRequestActions
 		}
 	} catch { 
 		return undefined
