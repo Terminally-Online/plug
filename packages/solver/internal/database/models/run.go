@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -39,7 +40,7 @@ type RunOutputData struct {
 }
 
 // Add these methods to the RunOutputData type
-func (r *RunOutputData) Scan(value interface{}) error {
+func (r *RunOutputData) Scan(value any) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("expected bytes but got %T", value)

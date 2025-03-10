@@ -52,6 +52,4 @@ export const getIntent = async ({ id, address, addresses }: GetIntentProps): Pro
 }
 export const toggleIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("post", `/${id}`)
 export const deleteIntent = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("delete", `/${id}`)
-export const toggleIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}`)
-export const deleteIntent = async ({ id }: IntentIdProps): Promise<Intent> => await save("delete", `/${id}`)
-export const toggleIntentStatus = async ({ id }: IntentIdProps): Promise<Intent> => await save("post", `/${id}/status`)
+export const toggleIntentStatus = async ({ id }: IntentIdProps): Promise<IntentResponseIntent> => await save("post", `/${id}/status`)

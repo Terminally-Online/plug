@@ -29,6 +29,7 @@ type Intent struct {
 	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
 	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
+	Locked           bool                `json:"locked,omitempty" gorm:"type:boolean"`
 
 	Runs      []Run                 `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugs []signature.LivePlugs `json:"-" gorm:"foreignKey:IntentId;references:Id"`

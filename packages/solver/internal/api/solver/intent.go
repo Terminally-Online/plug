@@ -214,7 +214,7 @@ func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if solution, err := h.Solver.Solve(intent); err != nil {
+	if solution, err := h.Solver.Solve(intent, true, false); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {

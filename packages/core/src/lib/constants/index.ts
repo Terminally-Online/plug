@@ -25,12 +25,12 @@ export const math = base('Plug.Math.sol')
 export const constantContracts: Readonly<Array<Contract>> = [
 	factory,
 	ticket,
-    assert,
-    boolean,
-    coercion,
-    database,
-    evm,
-    math
+	assert,
+	boolean,
+	coercion,
+	database,
+	evm,
+	math
 ] as const
 export const etchContracts: Readonly<Array<Contract>> = [
 	router,

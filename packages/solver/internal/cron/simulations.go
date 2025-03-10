@@ -5,6 +5,7 @@ import (
 	"solver/internal/database"
 	"solver/internal/database/models"
 	"solver/internal/solver"
+	"solver/internal/solver/signature"
 	"time"
 )
 
@@ -15,7 +16,7 @@ func Simulations(s solver.Solver) {
 
 	var intents []models.Intent
 	query := database.DB.
-		Where("next_simulation_at <= ? AND status = ?", time.Now(), "active").
+		Where("next_simulation_at <= ? AND status = ? AND saved = ?", time.Now(), "active", true).
 		Order("next_simulation_at asc").
 		Find(&intents)
 	if query.Error != nil {
@@ -23,27 +24,22 @@ func Simulations(s solver.Solver) {
 		return
 	}
 
-	solutions := make([]solver.Solution, len(intents))
-	for index, intent := range intents {
-		if intent.Saved {
+	livePlugs := make(map[string][]*signature.LivePlugs, 0)
+	for _, intent := range intents {
+		if intent.Locked {
 			solution, err := s.RebuildSolutionFromModels(&intent)
-
 			if err != nil {
-				solutions[index] = solver.Solution{
-					Status: solver.SolutionStatus{
-						Success: false,
-						Error:   err.Error(),
-					},
-				}
 				continue
 			}
-			solutions[index] = *solution
-		} else if solution, err := s.Solve(&intent); err != nil {
-			log.Printf("failed to simulation: %v", err)
+			livePlugs[intent.Id] = solution.LivePlugs
 		} else {
-			solutions[index] = *solution
+			if solution, err := s.Solve(&intent, false, true); err == nil {
+				livePlugs[intent.Id] = solution.LivePlugs
+			} else {
+				log.Printf("failed to simulation: %v", err)
+			}
 		}
 	}
 
-	// TODO: Enable execution.
+	// TODO: Enable execution with culling simulation.
 }
