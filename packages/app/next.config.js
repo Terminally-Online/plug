@@ -1,5 +1,4 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
-const path = require("path")
 
 const remotePatterns = [
 	{
@@ -69,24 +68,14 @@ const nextConfig = {
 			}
 		]
 	},
-	webpack: (config, { nextRuntime }) => {
-		if (nextRuntime !== "nodejs") return config;
-
-		config.externals.push("pino-pretty", "lokijs", "encoding", "punycode", {
+	webpack: config => {
+		config.externals.push("pino-pretty", "lokijs", "encoding", {
 			"utf-8-validate": "commonjs utf-8-validate",
 			bufferutil: "commonjs bufferutil"
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return {
-			...config,
-			entry() {
-				return config.entry().then((entry) => ({
-					...entry,
-					cli: path.resolve(process.cwd()),
-				}));
-			},
-		};
+		return config
 	},
 	experimental: {
 		optimizePackageImports: []
@@ -94,13 +83,13 @@ const nextConfig = {
 	transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"]
 }
 
-// const withPWA = require("next-pwa")({
-// 	dest: "public",
-// 	cacheOnFrontEndNav: true,
-// 	reloadOnOnline: true,
-// 	scope: "/app",
-// 	disable: process.env.NODE_ENV === "development",
-// 	skipWaiting: true
-// })
+const withPWA = require("next-pwa")({
+	dest: "public",
+	cacheOnFrontEndNav: true,
+	reloadOnOnline: true,
+	scope: "/app",
+	disable: process.env.NODE_ENV === "development",
+	skipWaiting: true
+})
 
-module.exports = nextConfig
+module.exports = withPWA(nextConfig)
