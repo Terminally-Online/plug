@@ -76,17 +76,7 @@ const nextConfig = {
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		if (nextRuntime !== "nodejs") return config;
-
-		return {
-			...config,
-			entry() {
-				return config.entry().then((entry) => ({
-					...entry,
-					cli: path.resolve(process.cwd()),
-				}));
-			},
-		};
+		return config;
 	},
 	experimental: {
 		optimizePackageImports: []
