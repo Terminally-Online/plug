@@ -3,9 +3,9 @@ import { TRPCError } from "@trpc/server"
 import axios from "axios"
 
 import { env } from "@/env"
-import { ActionSchemas, IntentResponse } from "@/lib/types"
+import { SchemasResponse, IntentResponse, KillResponse } from "@/lib/types"
 
-let cachedSchemas: Record<string, ActionSchemas | undefined> = {}
+let cachedSchemas: Record<string, SchemasResponse | undefined> = {}
 
 export const schemas = async (
 	protocol?: string,
@@ -13,7 +13,7 @@ export const schemas = async (
 	chainId = 8453,
 	search: Array<string> = [],
 	from?: string
-): Promise<ActionSchemas> => {
+): Promise<SchemasResponse> => {
 	const params = {
 		protocol,
 		action,
@@ -39,7 +39,7 @@ export const schemas = async (
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	cachedSchemas[cacheKey] = response.data as ActionSchemas
+	cachedSchemas[cacheKey] = response.data as SchemasResponse
 
 	return response.data
 }
@@ -87,5 +87,5 @@ export const kill = async () => {
 
 	if (response.status !== 200) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
 
-	return response.data as { killed: boolean }
+	return response.data as KillResponse
 }

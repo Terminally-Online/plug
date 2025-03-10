@@ -2,7 +2,7 @@ import { FC, useCallback } from "react"
 
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { ActionSchema, formatTitle, getValues } from "@/lib"
+import { SchemasResponseSchema, formatTitle, getValues } from "@/lib"
 import { useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 import { useAtom, useSetAtom } from "jotai"
@@ -13,7 +13,7 @@ export const ActionItem: FC<{
 	item: string
 	actionName: string
 	protocol: string
-	action: ActionSchema
+	action: SchemasResponseSchema
 	image?: boolean
 }> = ({ index, item, protocol, actionName, action }) => {
 	const { frame } = useColumnActions(index)

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"solver/internal/database/models"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"github.com/joho/godotenv"
@@ -117,11 +118,10 @@ func Initialize() (*gorm.DB, error) {
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.ApiKey{},
-		&models.Intent{},
-		&models.LivePlug{},
-		&models.Plug{},
-		&models.Run{},
 		&models.Execution{},
+		&models.Run{},
+		&models.Intent{},
+		&signature.LivePlugs{},
 	)
 }
 

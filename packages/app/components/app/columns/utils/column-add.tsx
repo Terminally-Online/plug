@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState, type JSX } from "react";
 
-import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon } from "lucide-react"
+import { Activity, Cable, Cog, Coins, Globe, ImageIcon, PiggyBank, Plug, Plus, Star, LockIcon, X } from "lucide-react"
 
 import { Accordion } from "@/components/shared/utils/accordion"
 import { cn, formatTitle } from "@/lib"
@@ -9,6 +9,7 @@ import { COLUMNS, primaryColumnsAtom, useColumnActions } from "@/state/columns"
 import { Flag, useFlags } from "@/state/flags"
 import { useAtomValue } from "jotai";
 import { usePlugActions } from "@/state/plugs";
+import { Button } from "@/components/shared/buttons/button";
 
 type Options = Array<{
 	label: keyof (typeof COLUMNS)["KEYS"]
@@ -129,23 +130,29 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 			<div
 				ref={resizeRef}
 				className={cn(
-					"relative flex select-none flex-col rounded-lg",
-					!isBody && "my-2 border-[1px] border-plug-green/10 bg-white",
+					"relative flex select-none flex-col w-full",
+					!isBody && "bg-white",
 					columns.some(column => column.index >= 0) ? "" : "ml-2"
 				)}
-				style={{ width, minWidth: width }}
+				style={!isBody ? { width, minWidth: width } : {}}
 			>
 				{!isBody && (
-					<div className="relative flex cursor-pointer flex-row items-center overflow-hidden overflow-y-auto rounded-t-lg border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
+					<div className="relative flex flex-row items-center overflow-hidden overflow-y-auto border-b-[1px] border-plug-green/10 bg-white transition-all duration-200 ease-in-out">
 						<div className="flex w-full flex-row items-center gap-4 px-6 py-4">
 							<Plus size={18} className="opacity-40" />
-							<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add Column</p>
+							<p className="overflow-hidden truncate overflow-ellipsis text-lg font-bold">Add</p>
+							<Button className="opacity-0 pointer-events-none cursor-none" variant="secondary" sizing="sm" onClick={() => { }}>
+								<X
+									size={14}
+									className="opacity-60 transition-opacity group-hover:opacity-100"
+								/>
+							</Button>
 						</div>
 					</div>
 				)}
 
-				<div className="h-full overflow-y-scroll">
-					<div className="flex h-full flex-col gap-2 p-4">
+				<div className="h-full overflow-y-scroll w-full">
+					<div className="flex h-full flex-col gap-2 p-4 w-full">
 						<Accordion key={"add"} onExpand={() => addPlug(isBody ? { index } : undefined)}>
 							<div className="flex flex-row items-center gap-2">
 								<div className="flex h-10 w-10 min-w-10 items-center justify-center">
@@ -158,6 +165,7 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 								</div>
 							</div>
 						</Accordion>
+
 						{options.map(option => (
 							<Accordion
 								key={option.label}
@@ -184,14 +192,15 @@ export const ColumnAdd = memo(({ index }: { index: number }) => {
 
 			</div>
 
-			<div
-				className="h-full cursor-col-resize pl-2"
-				onMouseDown={e => {
-					e.preventDefault()
-					setIsResizing(true)
-				}}
-			>
+			<div className="relative h-full cursor-col-resize">
 				<div className="h-full w-[1px] bg-plug-green/10" />
+				<div
+					className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+					onMouseDown={e => {
+						e.preventDefault()
+						setIsResizing(true)
+					}}
+				/>
 			</div>
 		</>
 	)

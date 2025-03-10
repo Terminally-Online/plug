@@ -4,15 +4,15 @@ import { z } from "zod"
 
 import { Plug } from "@prisma/client"
 
-import { createIntent, deleteIntent, getIntent, Intent, toggleIntent, toggleIntentStatus } from "@/lib"
+import { createIntent, deleteIntent, getIntent, IntentResponseIntent, toggleIntent, toggleIntentStatus } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
-type IntentWithPlug = Intent & { plug: Plug }
+type IntentWithPlug = IntentResponseIntent & { plug: Plug }
 
 export const activity = createTRPCRouter({
 	get: protectedProcedure.query(async ({ ctx }) => {
-		const socket = await ctx.db.socket.findFirstOrThrow({ where: { id: ctx.session.address }})
+		const socket = await ctx.db.socket.findFirstOrThrow({ where: { id: ctx.session.address } })
 		const intents = await getIntent({ addresses: [ctx.session.address, socket.socketAddress] })
 		const intentIds = intents.map(intent => intent.id)
 		const plugs = await ctx.db.plug.findMany({
@@ -81,10 +81,12 @@ export const activity = createTRPCRouter({
 
 		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
 
-		const intent = { ...(await toggleIntent(input)), plug }
-		// TODO: This is not working for some reason.
-		// ctx.emitter.emit(subscriptions.execution.update, intent)
-		// return intent
+		const toggled = await toggleIntent(input)
+		const intent = { ...toggled, plug }
+
+		ctx.emitter.emit(subscriptions.execution.update, intent)
+
+		return intent
 	}),
 
 	toggleStatus: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {

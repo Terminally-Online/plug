@@ -4,8 +4,9 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"solver/internal/database/serializer"
-	"solver/internal/database/types"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"time"
 
@@ -20,13 +21,13 @@ type Run struct {
 	GasEstimate uint64        `json:"gasEstimate,omitempty" gorm:"type:bigint"`
 	From        string        `json:"from,omitempty" gorm:"type:text"`
 	To          string        `json:"to,omitempty" gorm:"type:text"`
-	Value       *types.BigInt `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
-	ResultData  RunOutputData `json:"resultData" gorm:"type:jsonb"`
+	Value       *big.Int      `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
+	Data        RunOutputData `json:"data,omitempty" gorm:"type:jsonb"`
 
-	IntentId   string   `json:"intentId,omitempty" gorm:"type:text"`
-	Intent     Intent   `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	LivePlugId string   `json:"livePlugId,omitempty" gorm:"type:text"`
-	LivePlug   LivePlug `json:"livePlug,omitempty" gorm:"foreignKey:LivePlugId;references:Id"`
+	IntentId    string               `json:"intentId,omitempty" gorm:"type:text"`
+	Intent      Intent               `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	LivePlugsId string               `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
+	LivePlugs   *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
 
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
@@ -34,12 +35,12 @@ type Run struct {
 }
 
 type RunOutputData struct {
-	Raw     []byte      `json:"raw" gorm:"type:bytea"`
-	Decoded interface{} `json:"decoded,omitempty" gorm:"type:jsonb"`
+	Raw     []byte `json:"raw,omitempty" gorm:"type:bytea"`
+	Decoded any    `json:"decoded,omitempty" gorm:"type:jsonb"`
 }
 
 // Add these methods to the RunOutputData type
-func (r *RunOutputData) Scan(value interface{}) error {
+func (r *RunOutputData) Scan(value any) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("expected bytes but got %T", value)
@@ -67,17 +68,17 @@ func (r *Run) AfterFind(tx *gorm.DB) error {
 func (r Run) MarshalJSON() ([]byte, error) {
 	type Alias Run
 
-	// Create a temp struct without the bundle
+	// Create a temp struct without the LivePlugs
 	tmp := &struct {
 		*Alias
-		LivePlug *LivePlug `json:"transactionBundle,omitempty"`
+		LivePlugs *signature.LivePlugs `json:"livePlugs,omitempty"`
 	}{
 		Alias: (*Alias)(&r),
 	}
 
-	// Only include the bundle if it has a non-zero ID
-	if r.LivePlug.Id != "" {
-		tmp.LivePlug = &r.LivePlug
+	// Only include the LivePlugs if it has a non-zero Id
+	if r.LivePlugs != nil && r.LivePlugs.Id != "" {
+		tmp.LivePlugs = r.LivePlugs
 	}
 
 	return json.Marshal(tmp)

@@ -1,6 +1,8 @@
-import { FC, HTMLAttributes, memo } from "react"
+import { FC, HTMLAttributes, memo, useCallback, useMemo } from "react"
 
 import { Hash, SearchIcon } from "lucide-react"
+
+import { useAtom } from "jotai"
 
 import { getInputPlaceholder, InputReference } from "@terminallyonline/cord"
 
@@ -11,9 +13,8 @@ import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
 import { Counter } from "@/components/shared/utils/counter"
-import { Action, cn, formatTitle, Options, useCord, useDebounce } from "@/lib"
+import { SchemasRequestAction, SchemasResponseCoils, cn, formatTitle, SchemasRequestValues, useCord, useDebounce, SchemasResponseOptionsSet, SchemasRequestValuesSet } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
-import { useAtom } from "jotai"
 
 type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	index: number
@@ -22,18 +23,21 @@ type PartProps = HTMLAttributes<HTMLButtonElement> & {
 	preview?: boolean
 	error?: boolean
 	actionIcon: string
-	action: Action
+	action: SchemasRequestAction
 	actionIndex: number
 	parsed: NonNullable<ReturnType<typeof useCord>["state"]["parsed"]>
 	input: NonNullable<InputReference>
 	inputIndex: number
 	optionsIndex: number
-	options: Record<string, Options | Record<string, Options>> | undefined
+	options?: SchemasResponseOptionsSet
+	coils?: SchemasResponseCoils,
 	search: Record<number, string | undefined>
 	getInputValue: ReturnType<typeof useCord>["helpers"]["getInputValue"]
 	getInputError: ReturnType<typeof useCord>["helpers"]["getInputError"]
 	handleSearch: (search: string, index: number) => void
 	handleValue: (args: HandleValueProps) => void
+	validateType?: (coilName: string, expectedType: string) => boolean
+	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
 }
 
 export type HandleValueProps = {
@@ -42,7 +46,7 @@ export type HandleValueProps = {
 	value: string
 	name: string
 	isNumber?: boolean
-} & Partial<Options[number]>
+} & Partial<SchemasRequestValues[number]>
 
 export const Part: FC<PartProps> = memo(
 	({
@@ -59,11 +63,14 @@ export const Part: FC<PartProps> = memo(
 		inputIndex,
 		optionsIndex,
 		options,
+		coils,
 		search,
 		getInputValue,
 		getInputError,
 		handleSearch,
-		handleValue
+		handleValue,
+		validateType,
+		availableCoils
 	}) => {
 		const [searching, , handleDebounce] = useDebounce(search[optionsIndex] ?? "", 250, debounced =>
 			handleSearch(debounced, input.index)
@@ -76,12 +83,24 @@ export const Part: FC<PartProps> = memo(
 		const dependentOnValue =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) || undefined
 
+		// Function to validate linked inputs for type compatibility
+		const validateLinkedInput = useCallback((linkedValue: string | undefined, expectedType: string | undefined): boolean => {
+			if (!linkedValue || !validateType || !availableCoils || !expectedType) return false
+
+			// Extract coil name from the linked value
+			const match = linkedValue.match(/^<-\{(.+)\}$/)
+			if (!match) return false
+
+			const coilName = match[1]
+			return validateType(coilName, expectedType)
+		}, [availableCoils, validateType])
+
 		const indexedOptions =
 			options &&
 			(Array.isArray(options[optionsIndex])
-				? (options[optionsIndex] as Options)
+				? (options[optionsIndex] as SchemasRequestValues)
 				: options && typeof options?.[optionsIndex] === "object" && dependentOnValue
-					? (options[optionsIndex] as Record<string, Options>)[dependentOnValue]
+					? (options[optionsIndex] as SchemasRequestValuesSet)[parseInt(dependentOnValue)]
 					: undefined)
 		const isOptionBased = indexedOptions !== undefined
 		const option = Array.isArray(indexedOptions)
@@ -91,7 +110,20 @@ export const Part: FC<PartProps> = memo(
 		const isReady =
 			(input.dependentOn !== undefined && getInputValue(input.dependentOn)?.value) ||
 			input.dependentOn === undefined
-		const isEmpty = !value?.value
+
+		const validCoils = useMemo(() => {
+			return coils?.filter((coil) => {
+				const coilValue = `<-{${coil.slice.name}}`
+
+				return validateLinkedInput(coilValue, input.type?.toString())
+			}) ?? [] as SchemasResponseCoils
+		}, [coils, input, validateLinkedInput])
+		const validCoilNames = useMemo(() => validCoils.map(coil => `<-{${coil.slice.name}}`), [validCoils])
+
+		const isLinked = value?.value?.startsWith("<-{") && value?.value?.endsWith("}")
+		const isCompatibleCoil = useMemo(() => typeof value?.value === "string" && isLinked && validCoilNames.includes(value?.value), [isLinked, value, validCoilNames])
+		const isValidLink = isLinked && validateLinkedInput(value?.value as string, input.type?.toString())
+		const isEmpty = !value?.value || (isLinked && !isValidLink) || (isLinked && !isCompatibleCoil)
 		const isValid = !isEmpty && !inputError && !error
 
 		// NOTE: These are using saved option data from the database when it exists. For example,
@@ -101,12 +133,10 @@ export const Part: FC<PartProps> = memo(
 		//       is no longer supported or shown in the list existing Plugs will still function as
 		//       expected and the user will have the ability to choose an up to date option in the
 		//       future if they see fit.
-		// TODO: In some rare cases, we will have to pause plugs that are using a version of an
-		//       action that is not supported.
-		const icon = action.values?.[input.index]?.icon?.default || (option && option.icon.default)
+		const icon = action.values?.[input.index]?.icon?.default || (option && option?.icon?.default)
 		const label =
 			(option && option.label) ||
-			value?.value ||
+			((isValid || isCompatibleCoil) && value?.value) ||
 			action.values?.[input.index]?.label ||
 			input.name
 				?.replaceAll("_", " ")
@@ -121,11 +151,17 @@ export const Part: FC<PartProps> = memo(
 				<button
 					className={cn(
 						"mx-1 flex flex-row items-center gap-2 rounded-sm px-2 py-1 font-bold text-black/60 transition-all duration-200 ease-in-out",
-						isValid ? "bg-plug-yellow/60" : "bg-plug-red/60",
+						isCompatibleCoil
+							? "bg-orange-300/60"
+							: isValid
+								? "bg-plug-yellow/60"
+								: "bg-plug-red/60",
 						own && !preview ? "cursor-pointer" : "cursor-default"
 					)}
 					style={{
-						background: !isValid ? "bg-plug-red" : "bg-plug-yellow"
+						background: isValidLink
+							? "bg-orange-300/60"
+							: !isValid ? "bg-plug-red" : "bg-plug-yellow"
 					}}
 					onClick={() => (own && !preview ? frame(`${actionIndex}-${inputIndex}`) : undefined)}
 				>
@@ -145,7 +181,11 @@ export const Part: FC<PartProps> = memo(
 								))}
 						</div>
 					)}
-					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">{label}</span>
+					<span className="max-w-[150px] overflow-hidden truncate text-ellipsis">
+						{isValidLink && label.startsWith("<-")
+							? label.replace("<-{", "").replace("}", "")
+							: label}
+					</span>
 				</button>
 
 				<Frame
@@ -194,27 +234,99 @@ export const Part: FC<PartProps> = memo(
 								)}
 
 								{isReady && !isOptionBased && (
-									<Search
-										className="mb-4"
-										icon={<Hash size={14} />}
-										placeholder={getInputPlaceholder(input.type)}
-										search={value?.value}
-										handleSearch={data =>
-											handleValue({
-												index: input?.index ?? "",
-												key: input?.name ?? "",
-												name: input?.name ?? "",
-												label,
-												value: data,
-												isNumber: input.type?.toString().includes("int")
-											})
-										}
-										isNumber={
-											input.type?.toString().includes("int") ||
-											input.type?.toString().includes("float")
-										}
-										focus={true}
-									/>
+									<>
+										<div className="relative flex flex-row flex-wrap gap-2 overflow-hidden">
+											{validCoilNames.map((coil, index) => {
+												if (value?.value === coil) return null
+
+												return (
+													<Button
+														key={index}
+														variant="secondary"
+														sizing="sm"
+														onClick={() =>
+															handleValue({
+																index: input?.index ?? "",
+																key: input?.name ?? "",
+																name: input?.name ?? "",
+																label: label,
+																value: coil,
+																isNumber: input.type?.toString().includes("int")
+															})
+														}
+														className="group/coil flex flex-row gap-2 px-2 pr-3"
+													>
+														<div className="h-4 w-4 rounded-[4px] bg-orange-300 group-hover/coil:bg-orange-500 transition-all duration-200 ease-in-out flex items-center justify-center">
+															<p className="text-xs font-bold text-plug-white">#</p>
+														</div>
+
+														{formatTitle(coil.replace("<-{", "").replace("}", ""))}
+													</Button>
+												)
+											})}
+										</div>
+
+										{isCompatibleCoil ? (
+											<>
+												<button
+													className={`mb-4 flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[1px] p-4 px-6 transition-colors duration-200 ease-in-out ${isValidLink
+														? "border-plug-green/10"
+														: "border-red-400/30 bg-red-100/10"
+														}`}
+													onClick={() =>
+														handleValue({
+															index: input?.index ?? "",
+															key: input?.name ?? "",
+															name: input?.name ?? "",
+															label: label,
+															value: "",
+															isNumber: input.type?.toString().includes("int")
+														})
+													}
+												>
+													<div className={`flex h-4 w-4 items-center justify-center rounded-[4px] ${isCompatibleCoil ? "bg-orange-500" : "bg-red-500"
+														}`}>
+														<p className="text-xs font-bold text-plug-white">
+															{isCompatibleCoil ? "#" : "!"}
+														</p>
+													</div>
+													<span className={isCompatibleCoil ? "" : "text-red-600 font-semibold"}>
+														{value?.value.startsWith("<-{")
+															? isCompatibleCoil
+																? formatTitle(value?.value.replace("<-{", "").replace("}", ""))
+																: "Invalid link: Coil not available in this position"
+															: getInputPlaceholder(input.type)}
+													</span>
+												</button>
+											</>
+										) : (
+											<Search
+												className="mb-4"
+												icon={<Hash size={14} />}
+												placeholder={
+													value?.value && value?.value.startsWith("<-")
+														? "Amount: number"
+														: getInputPlaceholder(input.type)
+												}
+												search={value?.value ? value?.value as string ?? "" : ""}
+												handleSearch={data =>
+													handleValue({
+														index: input?.index ?? "",
+														key: input?.name ?? "",
+														name: input?.name ?? "",
+														label,
+														value: data,
+														isNumber: input.type?.toString().includes("int")
+													})
+												}
+												isNumber={
+													input.type?.toString().includes("int") ||
+													input.type?.toString().includes("float")
+												}
+												focus
+											/>
+										)}
+									</>
 								)}
 
 								{isReady && isOptionBased && (
@@ -248,7 +360,7 @@ export const Part: FC<PartProps> = memo(
 													)}
 
 													<div className="flex flex-row items-center gap-4">
-														{option.icon.default && (
+														{option?.icon?.default && (
 															<div className="flex items-center space-x-2">
 																{option.icon.default
 																	.split("%7C")
@@ -275,7 +387,7 @@ export const Part: FC<PartProps> = memo(
 																)}
 															</p>
 															<p className="flex flex-row items-center justify-between gap-2 whitespace-nowrap text-sm tabular-nums text-black/40">
-																{option.icon.secondary && (
+																{option?.icon?.secondary && (
 																	<Image
 																		className="h-4 w-4 rounded-[4px]"
 																		src={option.icon.secondary}

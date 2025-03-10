@@ -70,8 +70,8 @@ export const Search: FC<Props> = ({
 	}, [focus, ref])
 
 	return (
-        <div className={cn("group flex flex-col gap-2", className)}>
-            <div
+		<div className={cn("group flex flex-col gap-2", className)}>
+			<div
 				className={cn(
 					"flex w-full cursor-pointer items-center gap-4 border-[1px] border-plug-green/10 p-4 px-6 transition-colors duration-200 ease-in-out",
 					textArea ? "rounded-lg" : "rounded-[16px]",
@@ -122,6 +122,6 @@ export const Search: FC<Props> = ({
 
 				{children && <div className="ml-auto">{children}</div>}
 			</div>
-        </div>
-    );
+		</div>
+	);
 }

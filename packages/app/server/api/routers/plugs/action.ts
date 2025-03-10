@@ -5,7 +5,7 @@ import { z } from "zod"
 import Anthropic from "@anthropic-ai/sdk"
 
 import { env } from "@/env"
-import { Actions } from "@/lib/types"
+import { SchemasRequestActions } from "@/lib/types"
 import { anonymousProtectedProcedure, createTRPCRouter } from "@/server/api/trpc"
 
 export const events = {
@@ -118,7 +118,7 @@ export const action = createTRPCRouter({
 })
 
 // Helper function to get dominant protocol
-const getDominantProtocol = (actions: Actions): string => {
+const getDominantProtocol = (actions: SchemasRequestActions): string => {
 	if (!actions?.length) return "plug"
 
 	const protocolFrequency: Record<string, number> = {}

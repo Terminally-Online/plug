@@ -5,17 +5,33 @@ import (
 	"fmt"
 	"solver/internal/bindings/references"
 	"solver/internal/client"
+	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 type HandlerParams struct {
 	Client  *client.Client
 	ChainId uint64
 	From    common.Address
+}
+
+func (p *HandlerParams) New(chainId uint64, from common.Address) (HandlerParams, error) {
+	client, err := client.New(chainId)
+	if err != nil {
+		return HandlerParams{}, err
+	}
+
+	return HandlerParams{
+		Client:  client,
+		ChainId: chainId,
+		From:    from,
+	}, nil
 }
 
 type BaseProtocolHandler interface {
@@ -50,8 +66,29 @@ type ActionDefinition struct {
 	Type           string `default:"action,omitempty"`
 	Sentence       string
 	Handler        TransactionHandler
+	Metadata       *bind.MetaData
+	FunctionName   string
 	IsUserSpecific bool
 	IsSearchable   bool
+}
+
+func (a *ActionDefinition) GetCoils() ([]coil.Update, error) {
+	if a.Metadata == nil || a.FunctionName == "" {
+		return []coil.Update{}, nil
+	}
+
+	// Try to get the ABI and find coils
+	abi, err := a.Metadata.GetAbi()
+	if err != nil {
+		return []coil.Update{}, fmt.Errorf("failed to get ABI: %w", err)
+	}
+
+	coils, err := coil.FindCoils(abi, a.FunctionName, nil, nil)
+	if err != nil {
+		return []coil.Update{}, fmt.Errorf("failed to find coils: %w", err)
+	}
+
+	return coils, nil
 }
 
 var (
@@ -86,6 +123,10 @@ func NewBaseHandler(
 	}
 	schemas := make(map[string]ChainSchema, len(actionDefinitions))
 	for action, def := range actionDefinitions {
+		coils, err := def.GetCoils()
+		if err != nil {
+			log.Error("failed to get coils", "action", action, "error", err)
+		}
 		schemas[action] = ChainSchema{
 			Schema: Schema{
 				Type: func() string {
@@ -96,7 +137,9 @@ func NewBaseHandler(
 				}(),
 				Sentence:       def.Sentence,
 				IsUserSpecific: def.IsUserSpecific,
+				Coils:          coils,
 			},
+			LinkedInputs: coils, // Add coils directly at the schema level for linked inputs
 		}
 	}
 	cachedProvider := NewCachedOptionsProvider(optionsProvider)
@@ -113,7 +156,8 @@ func NewBaseHandler(
 		},
 	}
 
-	actions := make([]string, 3, len(actionDefinitions))
+	// Fix: create slice with 0 size and len(actionDefinitions) capacity
+	actions := make([]string, 0, len(actionDefinitions))
 	for action := range actionDefinitions {
 		actions = append(actions, action)
 	}

@@ -1,12 +1,12 @@
 import { FC, HTMLAttributes, memo, useCallback, useState } from "react"
 
 import { motion } from "framer-motion"
-import { X } from "lucide-react"
+import { Hash, X } from "lucide-react"
 
 import { Image } from "@/components/app/utils/image"
 import { Button } from "@/components/shared/buttons/button"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, cn, useConnect, useCord } from "@/lib"
+import { SchemasRequestAction, SchemasResponseCoils, cn, SchemasRequestValue, useConnect, useCord } from "@/lib"
 import { columnByIndexAtom, useColumnActions } from "@/state/columns"
 import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
 
@@ -17,14 +17,37 @@ import { api } from "@/server/client"
 type SentenceProps = HTMLAttributes<HTMLDivElement> & {
 	index: number
 	item: string
+	action: SchemasRequestAction
+	actionIndex: number
 	preview?: boolean
 	error?: boolean
-	action: Action
-	actionIndex: number
+	linked?: SchemasRequestValue[]
+	prevCoils?: SchemasResponseCoils
+	dragging?: boolean
+	handleValueChange?: (inputIndex: string, value: string, additionalData?: any) => void
+	handleRemoveAction?: () => void
+	validateType?: (coilName: string, expectedType: string) => boolean
+	availableCoils?: Record<string, { type: string, actionIndex: number, coil: any }>
 }
 
 export const Sentence: FC<SentenceProps> = memo(
-	({ index, item, action, actionIndex, preview = false, error = false, className, ...props }) => {
+	({
+		index,
+		item,
+		action,
+		actionIndex,
+		preview = false,
+		error = false,
+		linked = [],
+		prevCoils = [],
+		dragging = false,
+		handleValueChange,
+		handleRemoveAction,
+		validateType,
+		availableCoils = {},
+		className,
+		...props
+	}) => {
 		const { account: { session } } = useConnect()
 
 		const [column] = useAtom(columnByIndexAtom(index))
@@ -74,6 +97,8 @@ export const Sentence: FC<SentenceProps> = memo(
 		const actionSchema = solverActions ? solverActions[action.protocol] : undefined
 		const sentence = actionSchema ? actionSchema.schema[action.action].sentence : ""
 		const options = actionSchema ? actionSchema.schema[action.action].options : undefined
+		const coils = actionSchema ? actionSchema.schema[action.action].coils ?? [] : []
+
 		const values = Object.entries(action.values ?? []).reduce(
 			(acc, [key, value]) => {
 				if (value) {
@@ -93,6 +118,14 @@ export const Sentence: FC<SentenceProps> = memo(
 		const handleValue = ({ index, value, isNumber, ...rest }: HandleValueProps) => {
 			setValue(index, value)
 
+			// // If we're using the new linked inputs system with parent-managed state
+			// if (handleValueChange) {
+			// 	// Convert index to string since handleValueChange expects a string
+			// 	handleValueChange(String(index), value, { isNumber, ...rest });
+			// 	return;
+			// }
+			//
+			// // Legacy approach (direct edit)
 			edit({
 				id: item,
 				actions: JSON.stringify(
@@ -118,7 +151,7 @@ export const Sentence: FC<SentenceProps> = memo(
 		if (!solverActions || !actionSchema)
 			return (
 				<motion.div
-					className="bg-[length:200%_200% mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
+					className="bg-[length:200%_200%] w-full mb-2 h-16 animate-loading rounded-lg border-[1px] border-plug-green/10 bg-gradient-animated p-4"
 					initial={{ y: 20 }}
 					animate={{ y: 0 }}
 				>
@@ -140,22 +173,24 @@ export const Sentence: FC<SentenceProps> = memo(
 			)
 
 		return (
-			<motion.div initial={{ y: 20 }} animate={{ y: 0 }}>
+			<div className="w-full">
 				<Accordion
 					className={cn(
 						"cursor-default hover:bg-white",
 						isValid && isComplete && !error
 							? "border-plug-yellow hover:border-plug-yellow"
 							: "border-plug-red hover:border-plug-red",
+						linked && linked.length > 0 && "border-orange-300 hover:border-orange-300",
 						className
 					)}
+					noPadding
 					data-sentence
 					data-chains={actionSchema?.metadata.chains.join(",") ?? ""}
 					data-valid={isValid && isComplete}
 					data-action-preview={item}
 					{...props}
 				>
-					<div className={cn("flex flex-row items-center font-bold")}>
+					<div className={cn("flex flex-row items-center font-bold p-4")}>
 						<div className="flex w-full flex-wrap items-center gap-[4px]">
 							<div className="flex flex-row items-start gap-[4px]">
 								<div className="relative mt-1 h-6 w-10 flex-shrink-0">
@@ -211,11 +246,14 @@ export const Sentence: FC<SentenceProps> = memo(
 													inputIndex={inputIndex}
 													optionsIndex={optionsIndex}
 													options={options}
+													coils={prevCoils}
+													search={search}
 													getInputValue={getInputValue}
 													getInputError={getInputError}
-													search={search}
 													handleSearch={handleSearch}
 													handleValue={handleValue}
+													validateType={validateType}
+													availableCoils={availableCoils}
 												/>
 											)
 										})}
@@ -227,30 +265,34 @@ export const Sentence: FC<SentenceProps> = memo(
 							<Button
 								variant="secondary"
 								className="mb-auto ml-4 mt-[4px] rounded-sm p-1"
-								onClick={() =>
-									edit({
-										id: item,
-										actions: JSON.stringify(plug?.actions.filter((_, i) => i !== actionIndex))
-									})
-								}
+								onClick={handleRemoveAction}
 							>
 								<X size={14} className="opacity-60" />
 							</Button>
 						)}
 					</div>
+
+					{coils.length > 0 && <div className="border-t-[1px] border-plug-green/10 pt-2 text-sm px-4 pb-2">
+						{coils.map((coil, coilIndex) => (<p key={coilIndex} className="font-bold w-full flex flex-row gap-2 items-center">
+							<Hash size={14} className="opacity-20" />
+							{coil.slice.name}
+							<span className="ml-auto opacity-40">{coil.slice.type}</span>
+
+						</p>))}
+					</div>}
 				</Accordion>
 
-				{plug?.actions && actionIndex < plug?.actions.length - 1 && (
-					<div
-						className={cn(
-							"mx-auto h-2 w-[2px]",
-							isValid && isComplete && !error
-								? "bg-plug-yellow hover:border-plug-yellow"
-								: "bg-plug-red hover:border-plug-red"
-						)}
-					/>
-				)}
-			</motion.div>
+				<div
+					className={cn(
+						"mx-auto h-2 w-[1px] transition-all duration-200 ease-in-out",
+						isValid && isComplete && !error
+							? "bg-plug-yellow hover:border-plug-yellow"
+							: "bg-plug-red hover:border-plug-red",
+						linked && linked.length > 0 && "bg-orange-300 hover:border-orange:300",
+						!(!dragging && plug?.actions && actionIndex < plug?.actions.length - 1) && "bg-plug-white"
+					)}
+				/>
+			</div>
 		)
 	}
 )

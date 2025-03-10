@@ -1,6 +1,7 @@
 package plug
 
 import (
+	"solver/bindings/erc_20"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
 )
@@ -9,6 +10,8 @@ var (
 	name = "Plug"
 	icon = "https://cdn.onplug.io/protocols/plug.png"
 	tags = []string{"defi"}
+
+	ReadBalance = "read_balance"
 
 	chains  = []*references.Network{references.Mainnet, references.Base}
 	schemas = map[string]actions.ActionDefinition{
@@ -28,11 +31,13 @@ var (
 			Handler:        HandleConstraintPrice,
 			IsUserSpecific: true,
 		},
-		actions.ConstraintBalance: {
-			Sentence:       "Balance of {0<token:address:uint256:uint256>} at {1<address:address>} is {2<operator:int8>} than {3<threshold:float>}",
-			Handler:        HandleConstraintBalance,
+		ReadBalance: {
+			Sentence:       "Balance of {0<token:address:uint256:uint256>} held by {1<address:address>}.",
+			Handler:        HandleReadBalance,
 			IsUserSpecific: true,
 			IsSearchable:   true,
+			Metadata:       erc_20.Erc20MetaData,
+			FunctionName:   "balanceOf",
 		},
 	}
 )

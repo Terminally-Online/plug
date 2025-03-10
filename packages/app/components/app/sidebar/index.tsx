@@ -84,7 +84,7 @@ export const ConsoleSidebarPane = () => {
 			{(is.authenticating || !isAuthenticated || is.stats || is.companion || is.searching) && (
 				<div ref={resizeRef} className="flex">
 					<div
-						className="relative m-2 mr-0 flex flex-col overflow-hidden rounded-lg border-[1px] border-plug-green/10"
+						className="relative mr-0 flex flex-col overflow-hidden"
 						style={{
 							width: `${width}px`
 						}}
@@ -139,15 +139,15 @@ export const ConsoleSidebarPane = () => {
 							)}
 						</div>
 					</div>
-
-					<div
-						className="h-full cursor-col-resize pl-2"
-						onMouseDown={e => {
-							e.preventDefault()
-							setIsResizing(true)
-						}}
-					>
+					<div className="relative h-full cursor-col-resize">
 						<div className="h-full w-[1px] bg-plug-green/10" />
+						<div
+							className="absolute top-0 bottom-0 -left-4 -right-4 z-[999]"
+							onMouseDown={e => {
+								e.preventDefault()
+								setIsResizing(true)
+							}}
+						/>
 					</div>
 				</div>
 			)}

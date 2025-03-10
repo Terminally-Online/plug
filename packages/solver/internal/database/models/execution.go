@@ -1,6 +1,7 @@
 package models
 
 import (
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"time"
 
@@ -15,8 +16,8 @@ type Execution struct {
 	TransactionHash string `json:"transactionHash,omitempty" gorm:"type:text"`
 
 	// Relationships
-	LivePlugId string   `json:"livePlugId,omitempty" gorm:"type:text"`
-	LivePlug   LivePlug `json:"-" gorm:"foreignKey:LivePlugId;references:Id"`
+	LivePlugsId string               `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
+	LivePlugs   *signature.LivePlugs `json:"-" gorm:"foreignKey:LivePlugsId;references:Id"`
 
 	// Store the timestamps but do not expose them in the JSON response
 	CreatedAt time.Time      `json:"-"`

@@ -1,17 +1,18 @@
 import { FC, useCallback, useMemo } from "react"
 
-import { Sentence } from "@/components/app/plugs/sentences/sentence"
 import { Callout } from "@/components/app/utils/callout"
 import { Image } from "@/components/app/utils/image"
 import { Accordion } from "@/components/shared/utils/accordion"
-import { Action, formatTitle, getValues, useConnect } from "@/lib"
+import { SchemasRequestAction, formatTitle, getValues, useConnect } from "@/lib"
 import { useActions } from "@/state/actions"
 import { columnByIndexAtom } from "@/state/columns"
 import { useAtom, useSetAtom } from "jotai"
-import { editPlugAtom, plugByIdAtom } from "@/state/plugs"
+import { editPlugAtom, plugByIdAtom, plugsAtom } from "@/state/plugs"
 import { api } from "@/server/client"
+import { DropResult } from "@hello-pangea/dnd"
+import { Sentences } from "../sentences/sentences"
 
-const getProtocolFrequency = (actions: Pick<Action, "protocol" | "action">[]): Record<string, number> => {
+const getProtocolFrequency = (actions: Pick<SchemasRequestAction, "protocol" | "action">[]): Record<string, number> => {
 	const protocolFrequency: Record<string, number> = {}
 
 	actions.forEach(action => (protocolFrequency[action.protocol] = (protocolFrequency[action.protocol] || 0) + 1))
@@ -25,6 +26,7 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 	const [column] = useAtom(columnByIndexAtom(index))
 	const [solverActions] = useActions()
 
+	const setPlugs = useSetAtom(plugsAtom)
 	const [plug] = useAtom(plugByIdAtom(column?.item ?? ""))
 	const own = plug && session && session.address === plug.socketId || false
 	const editPlug = useSetAtom(editPlugAtom)
@@ -67,21 +69,30 @@ export const ActionView: FC<{ index: number }> = ({ index }) => {
 			.slice(0, 3)
 	}, [baseSuggestions, plug])
 
+
+	const handleDragEnd = (result: DropResult) => {
+		if (!result.destination || !plug) return
+
+		const newActions = [...plug.actions]
+		const [removed] = newActions.splice(result.source.index, 1)
+		newActions.splice(result.destination.index, 0, removed)
+
+		const actions = JSON.stringify(newActions)
+
+		setPlugs(prev => prev.map(p => plug && p.id === column?.item ? { ...p, actions, updatedAt: new Date() } : p))
+		edit({
+			id: plug.id,
+			actions
+		})
+	}
+
 	if (!plug) return null
 
 	return (
 		<div className="mb-72 flex flex-col">
 			<Callout.EmptyPlug index={index} isEmpty={plug.actions.length === 0} />
 
-			{plug.actions.map((action, actionIndex) => (
-				<Sentence
-					key={`${index}-${actionIndex}-${action.id}-sentence`}
-					index={index}
-					item={column?.item ?? ""}
-					actionIndex={actionIndex}
-					action={action}
-				/>
-			))}
+			<Sentences index={index} />
 
 			{own && plug.actions.length > 0 && suggestions.length > 0 && (
 				<div className="mt-12">

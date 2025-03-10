@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"solver/internal/database/serializer"
 	"solver/internal/database/types"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 
 	"time"
@@ -28,12 +29,12 @@ type Intent struct {
 	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
 	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
 	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
+	Locked           bool                `json:"locked,omitempty" gorm:"type:boolean"`
 
-	// Relationships
-	Runs      []Run      `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
-	LivePlugs []LivePlug `json:"-" gorm:"foreignKey:IntentId;references:Id"`
-	ApiKeyId  string     `json:"-" gorm:"column:api_key_id;type:text"`
-	ApiKey    ApiKey     `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
+	Runs      []Run                 `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
+	LivePlugs []signature.LivePlugs `json:"-" gorm:"foreignKey:IntentId;references:Id"`
+	ApiKeyId  string                `json:"-" gorm:"column:api_key_id;type:text"`
+	ApiKey    ApiKey                `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Database storage fields
 	CreatedAt time.Time      `json:"createdAt"`
