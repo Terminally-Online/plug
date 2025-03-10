@@ -68,14 +68,37 @@ const nextConfig = {
 			}
 		]
 	},
-	webpack: config => {
+	webpack: (config, { nextRuntime }) => {
 		config.externals.push("pino-pretty", "lokijs", "encoding", {
 			"utf-8-validate": "commonjs utf-8-validate",
 			bufferutil: "commonjs bufferutil"
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return config
+		if (nextRuntime !== "nodejs") return config;
+
+		return {
+			...config,
+			entry() {
+				return config.entry().then((entry) => ({
+					...entry,
+					cli: path.resolve(process.cwd()),
+				}));
+			},
+		};
+	},
+	webpack: (config, { nextRuntime }) => {
+		// Undocumented property of next 12.
+		if (nextRuntime !== "nodejs") return config;
+		return {
+			...config,
+			entry() {
+				return config.entry().then((entry) => ({
+					...entry,
+					cli: path.resolve(process.cwd(), "lib/cli.ts"),
+				}));
+			},
+		};
 	},
 	experimental: {
 		optimizePackageImports: []
