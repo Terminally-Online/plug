@@ -1,4 +1,5 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
+const path = require("path")
 
 const remotePatterns = [
 	{
@@ -77,7 +78,15 @@ const nextConfig = {
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return config
+		return {
+			...config,
+			entry() {
+				return config.entry().then((entry) => ({
+					...entry,
+					cli: path.resolve(process.cwd()),
+				}));
+			},
+		};
 	},
 	experimental: {
 		optimizePackageImports: []
