@@ -7,7 +7,7 @@ config()
 
 export const env = createEnv({
 	server: {
-		DATABASE_URL: z.string().startsWith("postgresql://"),
+		DATABASE_URL: z.string(),
 		NEXTAUTH_URL: z.string().startsWith("http"),
 		NEXTAUTH_SECRET: z.string(),
 		OPENSEA_KEY: z.string(),

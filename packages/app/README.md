@@ -41,22 +41,13 @@ For this to work, you will need to have a `.env` file in the root of your reposi
 ENCRYPTION_KEY=<THE_TEAM_ENCRYPTION_KEY>
 ```
 
-Whoever is in charge of the encryption key will be able to provide it to you. Once you've set the value, your environment is ready.
+Once you've set the value, your environment is ready.
 
 ### Running the App
 
-To run an instance of `@terminally-online/plug-app` is incredibly straightforward. Open your terminal and run:
+To run `@terminally-online/plug-app` all you have to do is open your terminal and run:
 
 ```bash
 pnpm i
 pnpm dev
 ```
-
-> [!TIP]
-> You will need a PostgreSQL database running in order to read and save the data of your application.
->
-> By default, the app will try running a database through Docker. If it fails however, the build will proceed.
->
-> For local development, spin one up using your preferred method, such as Docker. Again, an attempt is made automatically.
->
-> For production development, it cannot be on the edge due to the use of Prisma.

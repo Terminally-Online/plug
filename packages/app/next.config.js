@@ -1,4 +1,5 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
+const path = require("path")
 
 const remotePatterns = [
 	{
@@ -68,14 +69,14 @@ const nextConfig = {
 			}
 		]
 	},
-	webpack: config => {
+	webpack: (config, { nextRuntime }) => {
 		config.externals.push("pino-pretty", "lokijs", "encoding", {
 			"utf-8-validate": "commonjs utf-8-validate",
 			bufferutil: "commonjs bufferutil"
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return config
+		return config;
 	},
 	experimental: {
 		optimizePackageImports: []

@@ -44,9 +44,9 @@ void app.prepare().then(() => {
 		})
 	})
 
-	server.listen(process.env.PORT)
+	server.listen(3001)
 
 	console.log(
-		`> Server listening at http://localhost:${process.env.PORT} as ${dev ? "development" : process.env.NODE_ENV}`
+		`> Server listening at http://localhost:${3001} as ${dev ? "development" : process.env.NODE_ENV}`
 	)
 })

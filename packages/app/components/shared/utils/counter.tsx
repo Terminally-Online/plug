@@ -5,8 +5,6 @@ import { motion } from "framer-motion"
 import { formatForDisplay, useClient } from "@/lib"
 import { cn } from "@/lib/utils"
 
-
-
 const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 	const [y, setY] = useState(0)
 	const columnContainer = useRef<HTMLSpanElement>(null)
@@ -20,7 +18,7 @@ const NumberColumn: FC<{ digit: string }> = ({ digit }) => {
 
 	return (
 		<span className="relative text-center" ref={columnContainer}>
-			<motion.span className="absolute bottom-0 h-[1000%]" whileInView={{ y }}>
+			<motion.span className="absolute bottom-0 h-[1000%]" whileInView={{ translateY: y }}>
 				{[9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(i => (
 					<div key={i} className="h-[10%]">
 						{i}
