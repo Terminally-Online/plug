@@ -29,12 +29,12 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		Host:     GetEnvOrDefault("DB_HOST", "localhost"),
-		User:     GetEnvOrDefault("DB_USER", "plug"),
-		Password: GetEnvOrDefault("DB_PASSWORD", "plugdev"),
-		DBName:   GetEnvOrDefault("DB_NAME", "plug_solver"),
-		Port:     GetEnvOrDefault("DB_PORT", "6432"),
-		SSLMode:  GetEnvOrDefault("DB_SSLMODE", "disable"),
+		Host:     GetEnvOrDefault("DATABASE_HOST", "localhost"),
+		User:     GetEnvOrDefault("DATABASE_USER", "plug"),
+		Password: GetEnvOrDefault("DATABASE_PASSWORD", "plugdev"),
+		DBName:   GetEnvOrDefault("DATABASE_NAME", "plug_solver"),
+		Port:     GetEnvOrDefault("DATABASE_PORT", "6432"),
+		SSLMode:  GetEnvOrDefault("DATABASE_SSLMODE", "disable"),
 	}
 }
 

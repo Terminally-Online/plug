@@ -9,14 +9,6 @@
 -   **Maximum Value Extraction**: Automatically find and execute the most optimal routes for your transactions.
 -   **Enterprise-Grade Reliability**: Built for scale with robust monitoring and fail-safes.
 
-## Features
-
--   **Portfolio Management**: Seamlessly track, use, and swap your assets across chains.
--   **Smart Intent Resolution**: Convert high-level user intents into optimized transaction sequences.
--   **Cross-Protocol Optimization**: Find the best routes across multiple protocols and liquidity sources.
--   **Real-Time Monitoring**: Track transaction status and health metrics across the entire system.
--   **User-First Design**: A strict focus on the end-user instead of a developer ecosystem.
-
 ## Codebase Contents
 
 ```ml

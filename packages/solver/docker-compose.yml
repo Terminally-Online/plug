@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     container_name: plug_solver_postgres
     environment:
-      POSTGRES_USER: plug
-      POSTGRES_PASSWORD: plugdev
-      POSTGRES_DB: plug_solver
+      DATABASE_USER: plug
+      DATABASE_PASSWORD: plugdev
+      DATABASE_DB: plug_solver
     ports:
       - "6432:5432"
     volumes:

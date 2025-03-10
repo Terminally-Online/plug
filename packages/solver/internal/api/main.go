@@ -12,6 +12,8 @@ func SetupRouter(s solver.Handler) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(m.Json)
 
+	r.HandleFunc("/health", s.GetHealth).Methods("GET")
+
 	// Plug app only routes
 	admin := r.PathPrefix("").Subrouter()
 	admin.Use(m.AdminApiKey)
