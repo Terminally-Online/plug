@@ -38,7 +38,7 @@ export const ActivityProvider: FC<PropsWithChildren> = ({ children }) => {
 	})
 
 	const handle = {
-		toggle: api.plugs.activity.toggle.useMutation({
+		toggle: api.plugs.activity.toggleStatus.useMutation({
 			onMutate: data => {
 				setActivities(prev =>
 					prev.map(activity =>

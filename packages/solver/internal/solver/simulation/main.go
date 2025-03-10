@@ -13,20 +13,6 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-// SimulateRaw is a deprecated function that was used to simulate transactions
-// with the old TransactionBundle model. Use SimulateLivePlugs instead.
-// Kept for API compatibility only.
-func SimulateRaw(transactionBundle interface{}, ABI *string) (*models.Run, error) {
-	fmt.Println("WARNING: SimulateRaw is deprecated, use SimulateLivePlugs instead")
-	return nil, fmt.Errorf("deprecated: use SimulateLivePlugs instead")
-}
-
-// Simulate is a thin wrapper around SimulateLivePlugs for API compatibility.
-// Use SimulateLivePlugs directly when possible.
-func Simulate(livePlugs *signature.LivePlugs) (*models.Run, error) {
-	return SimulateLivePlugs(livePlugs)
-}
-
 // SimulateLivePlugs performs a local simulation of a LivePlugs execution
 // using the node's debug_traceCall API. It creates a Run record with the
 // simulation results including gas estimates and error information.
@@ -80,8 +66,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 
 	tx["gasPrice"] = baseFee.BaseFeePerGas
 
-	// Run the simulation trace
-	callTraceConfig := map[string]interface{}{
+	callTraceConfig := map[string]any{
 		"tracer": "callTracer",
 	}
 
@@ -137,7 +122,7 @@ func SimulateLivePlugs(livePlugs *signature.LivePlugs) (*models.Run, error) {
 // Unlike SimulateLivePlugs, this simulates a transaction sent directly from an EOA to
 // the target contract, making it suitable for wallets that don't support Plug socket
 // signatures. It still creates a Run record linked to the original LivePlugs.
-func SimulateEOATx(tx *signature.Transaction, livePlugsId string, chainId uint64) (*models.Run, error) {
+func SimulateEOATx(tx *signature.Transaction, livePlugsId *string, chainId uint64) (*models.Run, error) {
 	ctx := context.Background()
 
 	rpcUrl, err := client.GetQuicknodeUrl(chainId)
@@ -151,13 +136,12 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId string, chainId uint64
 	}
 	defer rpcClient.Close()
 
-	// Create transaction parameters for simulation
-	simTx := map[string]interface{}{
+	simTx := map[string]any{
 		"from": tx.From.Hex(),
 		"to":   tx.To.Hex(),
 	}
 
-	if tx.Data != nil && len(tx.Data) > 0 {
+	if len(tx.Data) > 0 {
 		simTx["data"] = hexutil.Bytes(tx.Data).String()
 	}
 
@@ -183,9 +167,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId string, chainId uint64
 	}
 
 	simTx["gasPrice"] = baseFee.BaseFeePerGas
-
-	// Run the simulation trace
-	callTraceConfig := map[string]interface{}{
+	callTraceConfig := map[string]any{
 		"tracer": "callTracer",
 	}
 
@@ -213,7 +195,7 @@ func SimulateEOATx(tx *signature.Transaction, livePlugsId string, chainId uint64
 	}
 
 	run := &models.Run{
-		LivePlugsId: livePlugsId,
+		LivePlugsId: *livePlugsId,
 		From:        tx.From.Hex(),
 		To:          tx.To.Hex(),
 		Value:       tx.Value,

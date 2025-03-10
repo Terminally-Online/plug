@@ -4,7 +4,7 @@ import { z } from "zod"
 
 import { Plug } from "@prisma/client"
 
-import { createIntent, deleteIntent, getIntent, IntentResponseIntent, toggleIntent } from "@/lib"
+import { createIntent, deleteIntent, getIntent, IntentResponseIntent, toggleIntent, toggleIntentStatus } from "@/lib"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { subscription, subscriptions } from "@/server/subscription"
 
@@ -71,7 +71,7 @@ export const activity = createTRPCRouter({
 			return updated
 		}),
 
-	toggle: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+	toggleSaved: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const plug = await ctx.db.plug.findFirstOrThrow({
 			where: {
 				socketId: ctx.session.address,
@@ -88,6 +88,20 @@ export const activity = createTRPCRouter({
 
 		return intent
 	}),
+
+	toggleStatus: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+		const plug = await ctx.db.plug.findFirstOrThrow({
+			where: {
+				socketId: ctx.session.address,
+				intentIds: { has: input.id }
+			}
+		})
+
+		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
+		
+		const intent = { ...(await toggleIntentStatus(input)), plug }
+	}),
+
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const intent = await deleteIntent(input)

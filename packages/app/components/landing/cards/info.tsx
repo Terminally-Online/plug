@@ -6,17 +6,19 @@ import { motion, MotionProps } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 export const InfoCard: FC<
 	HTMLAttributes<HTMLDivElement> &
-		MotionProps &
-		PropsWithChildren<{
-			icon?: ReactNode
-			text: string | React.ReactNode
-			description?: string
-			href?: string
-		}>
-> = ({ children, icon, text, description, href, className, ...props }) => {
+	MotionProps &
+	PropsWithChildren<{
+		icon?: ReactNode
+		text: string | React.ReactNode
+		description?: string
+		author?: string
+		href?: string
+	}>
+> = ({ children, icon, text, description, author, href, className, ...props }) => {
 	const router = useRouter()
 
 	const handleClick = () => {
@@ -47,14 +49,27 @@ export const InfoCard: FC<
 				<div className="z-[10] flex flex-col gap-2 font-bold">
 					<h2 className="flex items-center text-lg lg:text-2xl">{text}</h2>
 					{description && <p className="max-w-[480px] text-plug-green/40">{description}</p>}
-					{href && (
-						<Link href={href} className="mt-2 flex flex-row items-center gap-2 text-plug-green">
-							Read More
-							<span className="opacity-40 transition-opacity duration-300 group-hover:opacity-100">
-								<ArrowRight size={14} />
-							</span>
-						</Link>
-					)}
+					<div className="flex flex-row justify-between items-center">
+						{href && (
+							<Link href={href} className="mt-2 flex flex-row items-center gap-2 text-plug-green">
+								Read More
+								<span className="opacity-40 transition-opacity duration-300 group-hover:opacity-100">
+									<ArrowRight size={14} />
+								</span>
+							</Link>
+						)}
+						{author && <div className="flex flex-row gap-2 items-center">
+							<Image
+								src={`/users/${author}.png`}
+								alt={author ?? ""}
+								width={24}
+								height={24}
+								className="rounded-full w-6 h-6"
+							/>
+
+							<p>{author}</p>
+						</div>}
+					</div>
 				</div>
 			</div>
 		</motion.div>

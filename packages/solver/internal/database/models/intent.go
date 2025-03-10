@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/big"
 	"solver/internal/database/serializer"
 	"solver/internal/database/types"
 	"solver/internal/solver/signature"
@@ -19,7 +18,7 @@ type Intent struct {
 	Status           string              `json:"status,omitempty" gorm:"type:text;default:'active'"`
 	ChainId          uint64              `json:"chainId" gorm:"type:int"`
 	From             string              `json:"from,omitempty" gorm:"type:text"`
-	Value            *big.Int            `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
+	Value            *types.BigInt       `json:"value,omitempty" db_field:"ValueStr" gorm:"-"`
 	GasLimit         *uint64             `json:"gasLimit,omitempty" gorm:"type:int"`
 	Inputs           types.Inputs        `json:"inputs,omitempty" gorm:"type:jsonb"`
 	Options          types.Options       `json:"options,omitempty" gorm:"type:jsonb"`
@@ -29,20 +28,17 @@ type Intent struct {
 	EndAt            *time.Time          `json:"endAt,omitempty" gorm:"type:timestamp"`
 	PeriodEndAt      *time.Time          `json:"periodEndAt,omitempty" gorm:"type:timestamp"`
 	NextSimulationAt *time.Time          `json:"nextSimulationAt,omitempty" gorm:"type:timestamp"`
+	Saved            bool                `json:"saved,omitempty" gorm:"type:boolean"`
 
-	// Relationships
 	Runs      []Run                 `json:"runs" gorm:"foreignKey:IntentId;references:Id"`
 	LivePlugs []signature.LivePlugs `json:"-" gorm:"foreignKey:IntentId;references:Id"`
 	ApiKeyId  string                `json:"-" gorm:"column:api_key_id;type:text"`
 	ApiKey    ApiKey                `json:"-" gorm:"foreignKey:ApiKeyId;references:Id"`
 
 	// Database storage fields
-	ValueStr   string         `json:"-" gorm:"column:value;type:text"`
-	InputsStr  string         `json:"-" gorm:"column:inputs;type:jsonb"`
-	OptionsStr string         `json:"-" gorm:"column:options;type:jsonb"`
-	CreatedAt  time.Time      `json:"createdAt"`
-	UpdatedAt  time.Time      `json:"-"`
-	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 func (i *Intent) BeforeCreate(tx *gorm.DB) error {

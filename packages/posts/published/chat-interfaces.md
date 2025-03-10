@@ -3,7 +3,7 @@ tags: perspective
 title: Chat Interfaces and Crypto Agents
 slug: chat-interfaces
 image: /cdn/papers/hello-world.png
-description: Building the infrastructure required to enable agents to make onchain transactions.
+description: Every morning, I wake up and start working with a symphony of AI assistants. Claude helps architect our systems, Cursor generates our code, ChatGPT brainstorms solutions, Perplexity researches edge cases, the list goes on. My reality is highly AI-augmented.
 created: 02/17/2025
 author: drakedanner
 ---

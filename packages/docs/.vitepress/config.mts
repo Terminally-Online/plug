@@ -56,8 +56,12 @@ export default defineConfig({
             link: "/concepts/plugs",
           },
           {
-            text: "Lifecycle",
-            link: "/concepts/lifecycle",
+            text: "Coils",
+            link: "/concepts/coils",
+          },
+          {
+            text: "Schedules",
+            link: "/concepts/schedules",
           },
         ],
       },

@@ -1,8 +1,9 @@
 package models
 
 import (
+	"database/sql/driver"
 	"encoding/json"
-	"math/big"
+	"fmt"
 	"solver/internal/database/serializer"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
@@ -27,7 +28,6 @@ type Run struct {
 	LivePlugsId string               `json:"livePlugsId,omitempty" gorm:"type:text;column:live_plugs_id"`
 	LivePlugs   *signature.LivePlugs `json:"livePlugs,omitempty" gorm:"foreignKey:LivePlugsId;references:Id"`
 
-	ValueStr  string         `json:"-" gorm:"column:value;type:text"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
@@ -36,6 +36,19 @@ type Run struct {
 type RunOutputData struct {
 	Raw     []byte `json:"raw,omitempty" gorm:"type:bytea"`
 	Decoded any    `json:"decoded,omitempty" gorm:"type:jsonb"`
+}
+
+// Add these methods to the RunOutputData type
+func (r *RunOutputData) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("expected bytes but got %T", value)
+	}
+	return json.Unmarshal(bytes, r)
+}
+
+func (r RunOutputData) Value() (driver.Value, error) {
+	return json.Marshal(r)
 }
 
 func (r *Run) BeforeCreate(tx *gorm.DB) error {

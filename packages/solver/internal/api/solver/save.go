@@ -24,6 +24,9 @@ func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	inputs.ApiKeyId = apiKey.Id
+	if val, exists := inputs.Options["save"]; exists {
+		inputs.Saved = val.(bool)
+	}
 	if err := database.DB.Omit("nextSimulationAt", "periodEndAt").Create(&inputs).Error; err != nil {
 		utils.MakeHttpError(w, "failed to save intent: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -63,7 +66,7 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) ToggleIntent(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ToggleIntentStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -80,6 +83,29 @@ func (h *Handler) ToggleIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := database.DB.Select("status").Updates(&intent).Error; err != nil {
+		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(intent); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *Handler) ToggleIntentSaved(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var intent models.Intent
+	if err := database.DB.First(&intent, "id = ?", id).Error; err != nil {
+		utils.MakeHttpError(w, "failed to find intent: "+err.Error(), http.StatusNotFound)
+		return
+	}
+
+	intent.Saved = !intent.Saved
+
+	if err := database.DB.Select("saved").Updates(&intent).Error; err != nil {
 		utils.MakeHttpError(w, "failed to toggle intent: "+err.Error(), http.StatusInternalServerError)
 		return
 	}

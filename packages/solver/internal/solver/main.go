@@ -20,6 +20,7 @@ import (
 	"solver/internal/client"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"solver/internal/database/types"
 	"solver/internal/solver/signature"
 	"solver/internal/solver/simulation"
 	"solver/internal/utils"
@@ -172,6 +173,68 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 	}, nil
 }
 
+func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
+	// Get the latest LivePlug for this intent
+	var livePlug models.LivePlug
+	if err := database.DB.Where("intent_id = ?", intent.Id).
+		Order("created_at DESC").
+		First(&livePlug).Error; err != nil {
+		return nil, fmt.Errorf("failed to find live plug: %v", err)
+	}
+
+	// Get the latest Run for this intent
+	var run models.Run
+	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlug.Id).
+		Order("created_at DESC").
+		First(&run).Error; err != nil {
+		return nil, fmt.Errorf("failed to find run: %v", err)
+	}
+
+	// Get the associated plugs
+	var plugs []models.Plug
+	if err := database.DB.Where("bundle_id = ?", livePlug.Id).
+		Find(&plugs).Error; err != nil {
+		return nil, fmt.Errorf("failed to find plugs: %v", err)
+	}
+	livePlug.Plugs = plugs
+
+	// Reconstruct LivePlugs from the stored signature and plugs
+	var livePlugs *signature.LivePlugs
+	if livePlug.Signature != nil {
+		// Only reconstruct LivePlugs if this wasn't an EOA transaction
+		signatureBytes := []byte(*livePlug.Signature)
+
+		// Convert models.Plug to signature.Plug
+		signaturePugs := make([]signature.Plug, len(plugs))
+		for i, plug := range plugs {
+			signaturePugs[i] = signature.Plug{
+				To:        common.HexToAddress(plug.To),
+				Value:     plug.Value.Int,
+				Gas:       plug.Gas.Int,
+				Data:      []byte(plug.Data),
+				Exclusive: plug.Exclusive,
+			}
+		}
+
+		livePlugs = &signature.LivePlugs{
+			Signature: signatureBytes,
+			Plugs: signature.Plugs{
+				Socket: common.HexToAddress(intent.From),
+				Plugs:  signaturePugs,
+			},
+		}
+	}
+
+	return &Solution{
+		Status:       SolutionStatus{Success: run.Status == "success"},
+		Transactions: &livePlug.Plugs,
+		LivePlugs:    livePlugs,
+		Intent:       intent,
+		Run:          &run,
+		Transaction:  &livePlug,
+	}, nil
+}
+
 // SolveEOA handles transaction creation for externally owned accounts (EOAs).
 // Unlike SolveSocket, this creates transactions that can be sent directly from
 // a regular wallet without using the Plug router contract. The generated transactions
@@ -182,40 +245,11 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 		return nil, err
 	}
 
-	// EOAs can only run one transaction at a time
-	if len(plugs) > 1 {
-		return nil, utils.ErrField("plugs", "eoa can only run one transaction at a time")
-	}
-
-	// Create a LivePlugs structure without a signature (for EOA)
-	livePlugs := &signature.LivePlugs{
-		Plugs: signature.Plugs{
-			Socket: common.HexToAddress(intent.From),
-			Plugs:  plugs,
-			Solver: []byte{}, // Empty for EOA
-			Salt:   []byte{}, // Empty for EOA
-		},
-		Signature: []byte{}, // Empty for EOA
-
-		// Add database fields
-		IntentId: intent.Id,
-		ChainId:  intent.ChainId,
-		From:     intent.From,
-	}
-
-	// For EOA, we store the raw transaction data
 	identifier := []byte("plug")
 	data := append(plugs[0].Data, identifier...)
-	livePlugs.Data = hexutil.Bytes(data).String()
-
-	// Save directly to database
-	if err := database.DB.Create(livePlugs).Error; err != nil {
-		return nil, fmt.Errorf("failed to save live plugs: %v", err)
-	}
 
 	var run *models.Run
 	if simulate, ok := intent.Options["simulate"].(bool); ok && simulate {
-		// For EOA, we simulate the direct transaction not using the router
 		simTx := &signature.Transaction{
 			From:  common.HexToAddress(intent.From),
 			To:    plugs[0].To,
@@ -223,25 +257,22 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 			Value: plugs[0].Value,
 		}
 
-		run, err = simulation.SimulateEOATx(simTx, livePlugs.Id, intent.ChainId)
+		run, err = simulation.SimulateEOATx(simTx, nil, intent.ChainId)
 		if err != nil {
 			return nil, err
 		}
 
 		if run != nil {
 			run.IntentId = intent.Id
-			run.LivePlugsId = livePlugs.Id
 
 			if err := database.DB.Create(run).Error; err != nil {
 				return nil, fmt.Errorf("failed to save simulation run: %v", err)
 			}
 		}
 	} else {
-		// Create an empty run if simulation is not requested
 		run = &models.Run{
 			IntentId:    intent.Id,
-			LivePlugsId: livePlugs.Id,
-			Status:      "pending",
+			Status:      "failure",
 		}
 
 		if err := database.DB.Create(run).Error; err != nil {
@@ -255,7 +286,6 @@ func (s *Solver) SolveEOA(intent *models.Intent) (solution *Solution, err error)
 	}
 
 	return &Solution{
-		// Intent:       intent,
 		Transactions: transactions,
 		Run:          run,
 	}, nil
@@ -335,7 +365,6 @@ func (s *Solver) SolveSocket(intent *models.Intent) (solution *Solution, err err
 	}
 
 	result := &Solution{
-		// Intent: intent,
 		Run: run,
 	}
 
@@ -352,6 +381,7 @@ func (s *Solver) SolveSocket(intent *models.Intent) (solution *Solution, err err
 	return result, nil
 }
 
+
 func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 	var result *Solution
 	var solveErr error
@@ -367,8 +397,6 @@ func (s *Solver) Solve(intent *models.Intent) (solution *Solution, err error) {
 		if solveErr != nil {
 			return nil, solveErr
 		}
-
-		// result.LivePlugs = nil
 
 		transactions := make([]*signature.MinimalPlug, len(plugs))
 		for i, plug := range plugs {
