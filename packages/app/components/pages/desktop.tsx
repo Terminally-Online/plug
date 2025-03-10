@@ -14,6 +14,8 @@ export const DesktopConsole = memo(() => {
 		<div className="min-w-screen flex h-screen w-full flex-row overflow-y-hidden overflow-x-visible">
 			<ConsoleSidebar />
 
+			<pre>socket: {JSON.stringify(socket, null, 2)}</pre>
+
 			{isAuthenticated && socket?.identity?.onboardingAt ? (
 				<ConsoleColumnRow />
 			) : (
