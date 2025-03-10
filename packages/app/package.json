@@ -27,8 +27,9 @@
     "env:decrypt": "tsx lib/scripts/env.ts decrypt",
     "prestart:prisma": "pnpm prisma:migrate && pnpm prisma:push && pnpm prisma:seed",
     "prestart": "run-s prestart:*",
-    "start": "next start",
     "start:wss": "tsx ./server/ws.prod.ts --tsconfig tsconfig.json",
+    "start:next": "next start",
+    "start": "run-p start:*",
     "job:anonymous": "tsx lib/scripts/cron/anonymous-users.ts",
     "job:metadata": "tsx lib/scripts/cron/collectible-metadata.ts"
   },
