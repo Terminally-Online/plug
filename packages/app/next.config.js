@@ -68,14 +68,24 @@ const nextConfig = {
 			}
 		]
 	},
-	webpack: config => {
-		config.externals.push("pino-pretty", "lokijs", "encoding", {
+	webpack: (config, { nextRuntime }) => {
+		if (nextRuntime !== "nodejs") return config;
+
+		config.externals.push("pino-pretty", "lokijs", "encoding", "punycode", {
 			"utf-8-validate": "commonjs utf-8-validate",
 			bufferutil: "commonjs bufferutil"
 		})
 		config.resolve.plugins.push(new TsconfigPathsPlugin({}))
 
-		return config
+		return {
+			...config,
+			entry() {
+				return config.entry().then((entry) => ({
+					...entry,
+					cli: path.resolve(process.cwd(), "lib/cli.ts"),
+				}));
+			},
+		};
 	},
 	experimental: {
 		optimizePackageImports: []
