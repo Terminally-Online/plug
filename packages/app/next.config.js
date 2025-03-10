@@ -94,13 +94,13 @@ const nextConfig = {
 	transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"]
 }
 
-const withPWA = require("next-pwa")({
-	dest: "public",
-	cacheOnFrontEndNav: true,
-	reloadOnOnline: true,
-	scope: "/app",
-	disable: process.env.NODE_ENV === "development",
-	skipWaiting: true
-})
+// const withPWA = require("next-pwa")({
+// 	dest: "public",
+// 	cacheOnFrontEndNav: true,
+// 	reloadOnOnline: true,
+// 	scope: "/app",
+// 	disable: process.env.NODE_ENV === "development",
+// 	skipWaiting: true
+// })
 
-module.exports = withPWA(nextConfig)
+module.exports = nextConfig
