@@ -16,10 +16,12 @@ import { Plug } from "../../base/Plug.sol";
 import { PlugFactory } from "../../base/Plug.Factory.sol";
 import { PlugSocket } from "../../base/Plug.Socket.sol";
 
+import { PlugMockDex } from "../../mocks/Plug.Mock.Dex.sol";
 import { PlugMockERC20 } from "../../mocks/Plug.Mock.ERC20.sol";
 import { PlugMockERC721 } from "../../mocks/Plug.Mock.ERC721.sol";
 import { PlugMockERC1155 } from "../../mocks/Plug.Mock.ERC1155.sol";
 import { PlugMockEcho } from "../../mocks/Plug.Mock.Echo.sol";
+import { PlugMockDynamicData } from "../../mocks/Plug.Mock.DynamicData.sol";
 
 /// @dev `address(bytes20(uint160(uint256(keccak256("hevm cheat code")))))`.
 address constant _VM_ADDRESS = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
@@ -401,6 +403,8 @@ abstract contract TestPlug is TestPlus {
     PlugMockERC20 internal mockERC20;
     PlugMockERC721 internal mockERC721;
     PlugMockERC1155 internal mockERC1155;
+    PlugMockDex internal dex;
+    PlugMockDynamicData internal mockDynamicData;
 
     Plug internal plug;
     PlugFactory internal factory;
@@ -425,22 +429,39 @@ abstract contract TestPlug is TestPlus {
     uint256 internal PLUG_NO_VALUE = 0;
     uint256 internal PLUG_VALUE = 1 ether;
 
+    address internal recipient = address(0x3);
+
+    event ArrayReceived(uint256[] values);
+    event StringReceived(string value);
+    event BytesReceived(bytes value);
+    event StructReceived(uint256 id, string name, uint256[] values);
+    event NestedArrayReceived(uint256[][] values);
+
     function setUpPlug() internal {
         factoryOwner = _randomNonZeroAddress();
         signer = vm.addr(signerPrivateKey);
         oneClicker = vm.addr(oneClickerPrivateKey);
 
         mock = new PlugMockEcho();
-        mock = new PlugMockEcho();
+        dex = new PlugMockDex();
         mockERC20 = new PlugMockERC20();
         mockERC721 = new PlugMockERC721();
         mockERC1155 = new PlugMockERC1155();
+        mockDynamicData = new PlugMockDynamicData();
 
         plug = deployPlug();
         factory = deployFactory();
 
         socketImplementation = new PlugSocket();
         socket = deployVault();
+
+        mockERC20.mint(address(socket), 1000 ether);
+        vm.prank(address(socket));
+        mockERC20.approve(address(dex), type(uint256).max);
+
+        dex.setSwapRate(address(mockERC20), address(mockERC20), 2 ether);
+
+        mockERC20.mint(address(dex), 1000 ether);
     }
 
     function deployPlug() internal virtual returns (Plug $plug) {
@@ -463,25 +484,26 @@ abstract contract TestPlug is TestPlus {
         address $to,
         uint256 $value,
         bytes memory $data,
-        uint8 $plugType,
-        uint256 $gas
+        uint8
     )
         internal
         pure
         returns (PlugTypesLib.Plug memory $plug)
     {
+        PlugTypesLib.Update[] memory updates = new PlugTypesLib.Update[](0);
         $plug = PlugTypesLib.Plug({
+            // Use TYPE_CALL_WITH_VALUE (0x02) for value transfers
+            selector: $value > 0 ? 0x02 : 0x00,
             to: $to,
-            data: abi.encodePacked($plugType, $data),
+            data: $data,
             value: $value,
-            gas: $gas
+            updates: updates
         });
     }
 
     function createPlug(
         uint256 $value,
-        uint8 $plugType,
-        uint256 $gas
+        uint8 $plugType
     )
         internal
         view
@@ -492,8 +514,7 @@ abstract contract TestPlug is TestPlus {
                 address(mock),
                 $value,
                 abi.encodeWithSelector(PlugMockEcho.revertEcho.selector),
-                $plugType,
-                $gas
+                $plugType
             );
         } else if ($plugType == PLUG_EXECUTION) {
             if ($value == PLUG_NO_VALUE) {
@@ -501,13 +522,11 @@ abstract contract TestPlug is TestPlus {
                     address(mock),
                     $value,
                     abi.encodeWithSelector(PlugMockEcho.emptyEcho.selector),
-                    $plugType,
-                    $gas
+                    $plugType
                 );
             } else {
-                $plug = createPlug(
-                    0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType, $gas
-                );
+                $plug =
+                    createPlug(0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E, $value, "", $plugType);
             }
         }
     }

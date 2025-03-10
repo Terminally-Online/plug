@@ -10,6 +10,7 @@ import (
 	"solver/bindings/euler_evc"
 	"solver/internal/actions"
 	"solver/internal/bindings/references"
+	"solver/internal/solver/coil"
 	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strconv"
@@ -75,6 +76,7 @@ func HandleEarn(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 		params.From,
 		big.NewInt(0),
 		depositCalldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
@@ -185,6 +187,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		subAccountAddress,
 		big.NewInt(0),
 		depositCalldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap deposit call: %w", err)
@@ -205,6 +208,7 @@ func HandleDepositCollateral(rawInputs json.RawMessage, params actions.HandlerPa
 		subAccountAddress,
 		big.NewInt(0),
 		enableCollateralCalldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap enable collateral call: %w", err)
@@ -266,6 +270,7 @@ func HandleWithdrawCollateral(rawInputs json.RawMessage, params actions.HandlerP
 		subAccountAddress,
 		big.NewInt(0),
 		calldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap withdraw collateral call: %w", err)
@@ -323,6 +328,7 @@ func HandleBorrow(rawInputs json.RawMessage, params actions.HandlerParams) ([]si
 		subAccountAddress,
 		big.NewInt(0),
 		calldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap borrow call: %w", err)
@@ -394,6 +400,7 @@ func HandleRepay(rawInputs json.RawMessage, params actions.HandlerParams) ([]sig
 		subAccountAddress,
 		big.NewInt(0),
 		repayCalldata,
+		nil,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to wrap repay call: %w", err)
@@ -597,7 +604,7 @@ func HandleConstraintTimeToLiquidation(rawInputs json.RawMessage, params actions
 	return nil, nil
 }
 
-func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte) (signature.Plug, error) {
+func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccount common.Address, value *big.Int, calldata []byte, updates *[]coil.Update) (signature.Plug, error) {
 	evc, err := euler_evc.EulerEvcMetaData.GetAbi()
 	if err != nil {
 		return signature.Plug{}, utils.ErrABI("EulerEvc")
@@ -614,10 +621,10 @@ func WrapEVCCall(chainId uint64, targetContract common.Address, onBehalfOfAccoun
 		fmt.Printf("WrapEVCCall pack error: %v\n", err)
 		return signature.Plug{}, utils.ErrTransaction(err.Error())
 	}
-	fmt.Printf("WrapEVCCall callCalldata: %v\n", callCalldata)
 
 	return signature.Plug{
-		To:   common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
-		Data: callCalldata,
+		To:      common.HexToAddress(references.Networks[chainId].References["euler"]["evc"]),
+		Data:    callCalldata,
+		Updates: *updates,
 	}, nil
 }

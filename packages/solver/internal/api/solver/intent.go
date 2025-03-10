@@ -103,6 +103,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 					protocolSchema.Schema[supportedAction] = actions.Schema{
 						Type:     chainSchema.Schema.Type,
 						Sentence: chainSchema.Schema.Sentence,
+						Coils:    chainSchema.Schema.Coils,
 					}
 				}
 			}
@@ -156,6 +157,7 @@ func (h *Handler) GetSchema(w http.ResponseWriter, r *http.Request) {
 				protocolSchema.Schema[supportedAction] = actions.Schema{
 					Type:     chainSchema.Schema.Type,
 					Sentence: chainSchema.Schema.Sentence,
+					Coils:    chainSchema.Schema.Coils,
 				}
 			}
 		}
@@ -212,7 +214,7 @@ func (h *Handler) GetSolution(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if solution, err := h.Solver.Solve(intent); err != nil {
+	if solution, err := h.Solver.Solve(intent, true, false); err != nil {
 		utils.MakeHttpError(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		if err := json.NewEncoder(w).Encode(solution); err != nil {

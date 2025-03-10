@@ -1,2 +1,2 @@
-export * from "./mining"
-export * from "./typedData"
+export * from './mining'
+export * from './typedData'

@@ -3,9 +3,12 @@ package plug
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"solver/bindings/erc_20"
+	"solver/internal/actions"
 	"solver/internal/client"
+	"solver/internal/solver/signature"
 	"solver/internal/utils"
 	"strings"
 
@@ -70,25 +73,36 @@ func getTokenType(chainId uint64, address string) (*int, error) {
 	return nil, fmt.Errorf("unsupported token type")
 }
 
-func getERC20Decimals(chainId uint64, address string) (*uint8, error) {
-	provider, err := client.New(chainId)
+func getProxyTokenType(_ *client.Client, _ string) (*int, error) {
+	return nil, fmt.Errorf("proxies not supported at this time")
+}
+
+func HandleReadBalance(rawInputs json.RawMessage, params actions.HandlerParams) ([]signature.Plug, error) {
+	var inputs struct {
+		Token   string `json:"token"`
+		Address string `json:"address"`
+	}
+	if err := json.Unmarshal(rawInputs, &inputs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal balance constraint inputs: %w", err)
+	}
+
+	token, _, err := utils.ParseAddressAndDecimals(inputs.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	contract, err := erc_20.NewErc20(common.HexToAddress(address), provider)
+	erc20Abi, err := erc_20.Erc20MetaData.GetAbi()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ERC20 contract instance: %v", err)
+		return nil, err
 	}
 
-	decimals, err := contract.Decimals(nil)
+	balanceCalldata, err := erc20Abi.Pack("balanceOf", common.HexToAddress(inputs.Address))
 	if err != nil {
-		return nil, fmt.Errorf("failed to get decimals: %v", err)
+		return nil, err
 	}
 
-	return &decimals, nil
-}
-
-func getProxyTokenType(_ *client.Client, _ string) (*int, error) {
-	return nil, fmt.Errorf("proxies not supported at this time")
+	return []signature.Plug{{
+		To:   *token,
+		Data: balanceCalldata,
+	}}, nil
 }

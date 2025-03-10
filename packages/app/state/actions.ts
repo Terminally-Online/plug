@@ -1,9 +1,9 @@
 import { useAtom } from "jotai"
 
-import { ActionSchemas } from "@/lib"
+import { SchemasResponse } from "@/lib"
 
 import { atomWithStorage } from "jotai/utils"
 
-export const actionsAtom = atomWithStorage<ActionSchemas>("plug.actions", {})
+export const actionsAtom = atomWithStorage<SchemasResponse>("plug.actions", {})
 
 export const useActions = () => useAtom(actionsAtom)

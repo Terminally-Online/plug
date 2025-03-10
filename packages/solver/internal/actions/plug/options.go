@@ -52,7 +52,7 @@ func (p *PlugOptionsProvider) GetOptions(chainId uint64, from common.Address, se
 			0: {Simple: transferOptions},
 			1: {Simple: actions.BaseThresholdFields},
 		}, nil
-	case actions.ConstraintBalance:
+	case ReadBalance:
 		addressOptions, err := GetAddressOptions(chainId, from, search[1])
 		if err != nil {
 			return nil, err

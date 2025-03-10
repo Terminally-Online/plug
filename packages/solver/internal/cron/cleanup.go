@@ -4,6 +4,7 @@ import (
 	"log"
 	"solver/internal/database"
 	"solver/internal/database/models"
+	"solver/internal/solver/signature"
 	"time"
 
 	"gorm.io/gorm"
@@ -28,19 +29,19 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 	for _, intent := range intents {
 		err := db.Transaction(func(tx *gorm.DB) error {
 			// Delete related LivePlugs and their Plugs
-			var livePlugs []models.LivePlug
+			var livePlugs []signature.LivePlugs
 			if err := tx.Where("intent_id = ?", intent.Id).Find(&livePlugs).Error; err != nil {
 				return err
 			}
 
 			for _, livePlug := range livePlugs {
-				if err := tx.Where("bundle_id = ?", livePlug.Id).Delete(&models.Plug{}).Error; err != nil {
+				if err := tx.Where("bundle_id = ?", livePlug.Id).Delete(&signature.Plug{}).Error; err != nil {
 					return err
 				}
 			}
 
 			// Delete LivePlugs
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.LivePlug{}).Error; err != nil {
+			if err := tx.Where("intent_id = ?", intent.Id).Delete(&signature.LivePlugs{}).Error; err != nil {
 				return err
 			}
 

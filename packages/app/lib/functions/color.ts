@@ -1,4 +1,4 @@
-import { Actions } from "@/lib/types"
+import { SchemasRequestActions } from "@/lib/types"
 
 import { colors } from "../constants/colors"
 import { ASSET_COLORS } from "./blockchain"
@@ -41,7 +41,7 @@ export const getTextColor = (backgroundColor: string) => {
 	return luminance > 0.5 ? "#000000" : "#FFFFFF"
 }
 
-export const getDominantProtocolColor = async (actions: Actions, plugId: string, ctx: any): Promise<string> => {
+export const getDominantProtocolColor = async (actions: SchemasRequestActions, plugId: string, ctx: any): Promise<string> => {
 	// Default to Plug color if no actions
 	if (!actions?.length) {
 		const color = colors.plug
