@@ -1,4 +1,5 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
+const path = require("path")
 
 const remotePatterns = [
 	{
@@ -83,19 +84,6 @@ const nextConfig = {
 				return config.entry().then((entry) => ({
 					...entry,
 					cli: path.resolve(process.cwd()),
-				}));
-			},
-		};
-	},
-	webpack: (config, { nextRuntime }) => {
-		// Undocumented property of next 12.
-		if (nextRuntime !== "nodejs") return config;
-		return {
-			...config,
-			entry() {
-				return config.entry().then((entry) => ({
-					...entry,
-					cli: path.resolve(process.cwd(), "lib/cli.ts"),
 				}));
 			},
 		};
