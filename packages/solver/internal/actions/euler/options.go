@@ -261,9 +261,12 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			return nil, fmt.Errorf("multicall failed: %w", err)
 		}
 
+		vaultsBySubaccount := make(map[int]struct {
+			debtVault        euler_account_lens.VaultAccountInfo
+			collateralVaults []euler_account_lens.VaultAccountInfo
+		})
 		options := make([]actions.Option, 0)
 		optionsByIndex := make(map[int]actions.Option)
-
 		consecutiveEmptyAccounts := 0
 		maxIndex := -1
 		var activeIndices []int
@@ -307,20 +310,21 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					continue
 				}
 
+				fmt.Printf("vaultAccountInfo: %v\n", vaultAccountInfo)
 				netValue := utils.UintToFloat(new(big.Int).Sub(vaultAccountInfo.LiquidityInfo.CollateralValueRaw, vaultAccountInfo.LiquidityInfo.LiabilityValue), 18)
+				collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "collateral")
+				debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vaultAccountInfo.Asset.Hex()))
 
 				// Store debt vault in the map
 				optionsByIndex[i] = actions.Option{
-					Label: fmt.Sprintf("Account #%d", i+1),
+					Label: fmt.Sprintf("Account #%d", i),
 					Name:  utils.FormatAddress(vaultAccountInfo.Account),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
 						Label: vaultAccountInfo.Asset.Hex(),
 						Value: fmt.Sprintf("$%.2f", netValue),
 					},
-					Icon: actions.OptionIcon{
-						Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(vaultAccountInfo.Asset.Hex())),
-					},
+					Icon: actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
 				}
 			}
 
@@ -328,6 +332,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			if len(collateralVaults) > 0 {
 				for _, collateralVault := range collateralVaults {
 					if _, exists := optionsByIndex[collateralVault.accountIndex]; exists {
+						fmt.Printf("vault %s failed, account #%d already exists\n", collateralVault.vaultAccountInfo.Asset.Hex(), collateralVault.accountIndex)
 						continue
 					}
 
@@ -340,18 +345,18 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					decimals := uint8(price.vault.AssetDecimals.Uint64())
 					assetValue := utils.UintToFloat(collateralVault.vaultAccountInfo.Assets, decimals)
 					netValue := assetValue * price.price * math.Pow10(int(decimals))
+					collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(collateralVault.vaultAccountInfo.Asset.Hex()))
+					debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
 
 					optionsByIndex[collateralVault.accountIndex] = actions.Option{
-						Label: fmt.Sprintf("Account #%d", collateralVault.accountIndex+1),
+						Label: fmt.Sprintf("Account #%d", collateralVault.accountIndex),
 						Name:  utils.FormatAddress(collateralVault.vaultAccountInfo.Account),
 						Value: fmt.Sprintf("%d", collateralVault.accountIndex),
 						Info: actions.OptionInfo{
 							Label: collateralVault.vaultAccountInfo.Asset.Hex(),
 							Value: fmt.Sprintf("$%.2f", netValue),
 						},
-						Icon: actions.OptionIcon{
-							Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(collateralVault.vaultAccountInfo.Asset.Hex())),
-						},
+						Icon: actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
 					}
 				}
 			}
@@ -363,16 +368,18 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			next := activeIndices[i+1]
 
 			// Add empty accounts between active accounts
+			collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "collateral")
+			debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
 			for j := current + 1; j < next; j++ {
 				optionsByIndex[j] = actions.Option{
-					Label: fmt.Sprintf("Account #%d", j+1),
+					Label: fmt.Sprintf("Account #%d", j),
 					Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(j))),
 					Value: fmt.Sprintf("%d", j),
 					Info: actions.OptionInfo{
-						Label: "No Asset Defined",
+						Label: "Health Factor: -",
 						Value: "$0.00",
 					},
-					Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
+					Icon: actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
 				}
 			}
 		}
@@ -386,15 +393,18 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 		// Add a new empty account at the end
 		nextIndex := maxIndex + 1
+		collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "collateral")
+		debtIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
+
 		options = append(options, actions.Option{
-			Label: fmt.Sprintf("Account #%d", nextIndex+1),
+			Label: fmt.Sprintf("Account #%d", nextIndex),
 			Name:  utils.FormatAddress(GetSubAccountAddress(address, uint8(nextIndex))),
 			Value: fmt.Sprintf("%d", nextIndex),
 			Info: actions.OptionInfo{
-				Label: "No Asset Defined",
+				Label: "Health Factor: -",
 				Value: "$0.00",
 			},
-			Icon: actions.OptionIcon{Default: fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "new account")},
+			Icon: actions.OptionIcon{Default: fmt.Sprintf("%s%%7C%s", collateralIcon, debtIcon)},
 		})
 
 		return options, nil
