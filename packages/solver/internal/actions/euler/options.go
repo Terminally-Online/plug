@@ -301,16 +301,16 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 			}
 		}
 
-		// Second pass - create options from the organized data
 		options := make([]actions.Option, 0)
 		optionsByIndex := make(map[int]actions.Option)
 
 		// Create options for active accounts
 		for i := 0; i <= maxIndex; i++ {
 			if accountVaults, exists := vaultsBySubaccount[i]; exists {
+				// These values will vary depending on whether we have a debt vault.
 				var debtIcon string
 				var netValue float64
-				// var healthFactor float64
+				var healthFactor string
 				var totalCollateralValue float64
 
 				// find the largest value collateral vault
@@ -318,6 +318,7 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					vault euler_account_lens.VaultAccountInfo
 					value float64
 				}
+				// Find the largest collateral vault and collect total collateral value
 				for _, collateralVault := range accountVaults.collateralVaults {
 					vaultPrice, err := GetVaultPrice(collateralVault.Vault.String(), chainId)
 					if err != nil {
@@ -342,14 +343,22 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 
 				accountAddress := GetSubAccountAddress(address, uint8(i))
 
+				// set the option variables based on whether we have a debt vault
 				if accountVaults.debtVault != nil {
 					netValue = utils.UintToFloat(new(big.Int).Sub(accountVaults.debtVault.LiquidityInfo.CollateralValueRaw, accountVaults.debtVault.LiquidityInfo.LiabilityValue), 18)
 					debtIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(accountVaults.debtVault.Asset.Hex()))
-					// healthFactor = utils.UintToFloat(accountVaults.debtVault.LiquidityInfo.HealthFactor, 18)
+
+					totalValueBorrowed := accountVaults.debtVault.LiquidityInfo.LiabilityValue
+					lltvValueCollateral := accountVaults.debtVault.LiquidityInfo.CollateralValueLiquidation
+
+					healthFactorFloat := new(big.Float).SetInt(lltvValueCollateral)
+					healthFactorFloat.Quo(healthFactorFloat, new(big.Float).SetInt(totalValueBorrowed))
+					healthFactorF64, _ := healthFactorFloat.Float64()
+					healthFactor = fmt.Sprintf("Health Factor: %.2f", healthFactorF64)
 				} else {
 					netValue = totalCollateralValue
 					debtIcon = fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, "debt")
-					// healthFactor = -1
+					healthFactor = "Health Factor: -"
 				}
 
 				collateralIcon := fmt.Sprintf("https://token-icons.llamao.fi/icons/tokens/%d/%s?h=60&w=60", chainId, strings.ToLower(largestCollateralVault.vault.Asset.Hex()))
@@ -361,13 +370,12 @@ func GetAddressPositions(chainId uint64, address common.Address) ([]actions.Opti
 					Name:  utils.FormatAddress(accountAddress),
 					Value: fmt.Sprintf("%d", i),
 					Info: actions.OptionInfo{
-						Label: "Health Factor: 1.2",
+						Label: healthFactor,
 						Value: fmt.Sprintf("$%.2f", netValue),
 					},
 					Icon: actions.OptionIcon{Default: allIcon},
 				}
 			} else {
-				// Create empty account option
 				option := createEmptyAccountOption(i, chainId, address)
 				optionsByIndex[i] = option
 			}
