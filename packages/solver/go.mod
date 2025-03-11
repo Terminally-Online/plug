@@ -32,9 +32,15 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/swaggest/jsonschema-go v0.3.73 // indirect
+	github.com/swaggest/openapi-go v0.2.57 // indirect
+	github.com/swaggest/refl v1.3.1 // indirect
+	github.com/swaggest/rest v0.2.73 // indirect
+	github.com/swaggest/usecase v1.3.1 // indirect
 	github.com/wealdtech/go-multicodec v1.4.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
