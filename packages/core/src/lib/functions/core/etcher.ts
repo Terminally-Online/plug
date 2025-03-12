@@ -222,4 +222,3 @@ fs.writeFileSync(
 )
 
 execSync('forge fmt')
-execSync('pnpm wagmi generate')
