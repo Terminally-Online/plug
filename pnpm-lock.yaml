@@ -61,8 +61,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@terminallyonline/plug-core':
-        specifier: ^0.3.7
-        version: 0.3.7(@tanstack/query-core@5.66.11)(@tanstack/react-query@5.66.11(react@19.0.0))(@types/react@19.0.10)(bufferutil@4.0.9)(react@19.0.0)(typescript@5.7.3)(utf-8-validate@6.0.5)
+        specifier: ^0.4.1
+        version: 0.4.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
       '@trpc/client':
         specifier: 11.0.0-rc.819
         version: 11.0.0-rc.819(@trpc/server@11.0.0-rc.819(typescript@5.7.3))(typescript@5.7.3)
@@ -2924,8 +2924,8 @@ packages:
   '@terminallyonline/cord@0.3.2':
     resolution: {integrity: sha512-pKKBtInlhIhVjvYrL+VlAdI58L3lHU290XYT6+p4rOO+8bK1UYGuQyY+YkQ9tF+8CBX1WVT/1WZSU1Ht1yQI7w==}
 
-  '@terminallyonline/plug-core@0.3.7':
-    resolution: {integrity: sha512-f0rdyrBmj5cjEAmNKy9hSIeffnPiBbw+353yimb3bZnczRu4iczL1p8ta35VydrHubanWM0V3l4/PjEE0xqEUw==}
+  '@terminallyonline/plug-core@0.4.1':
+    resolution: {integrity: sha512-JI0xg2FF1PzgneDikvohJh7VnM95Ig3Q3D1n3TPwgn1sw66hsVEAsXhVJYQB4o8S4yp2Fp1QYeXg57Q6OEytNg==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -5815,11 +5815,6 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
-  lucide-react@0.471.2:
-    resolution: {integrity: sha512-A8fDycQxGeaSOTaI7Bm4fg8LBXO7Qr9ORAX47bDRvugCsjLIliugQO0PkKFoeAD57LIQwlWKd3NIQ3J7hYp84g==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   lucide-react@0.477.0:
     resolution: {integrity: sha512-yCf7aYxerFZAbd8jHJxjwe1j7jEMPptjnaOqdYeirFnEy85cNR3/L+o0I875CYFYya+eEVzZSbNuRk8BZPDpVw==}
     peerDependencies:
@@ -7264,9 +7259,6 @@ packages:
   socket.io-parser@4.2.4:
     resolution: {integrity: sha512-/GbIKmo8ioc+NIWIhwdecY0ge+qVBSMdgxGygevmdHj24bsfgtCmcUUcQ5ZzcylGFHsN3k4HB4Cgkl96KVnuew==}
     engines: {node: '>=10.0.0'}
-
-  solady@0.0.191:
-    resolution: {integrity: sha512-wiab1exBWHT7tLv8m+MnIppa0cn1PBhYskdYqe9/WYgL5Tn2cph5uZVLgy3H3fXXrya68Y5K5oe17hvOyrU87Q==}
 
   solady@0.1.10:
     resolution: {integrity: sha512-RQ2p2bPjgb1GeHZCv5S4PTKSao7UV+fUO3F7nXumLE9vTZWaL151ciGY+ucGtL2YZONNr0u/8OgAkZorvGYaTg==}
@@ -11088,45 +11080,18 @@ snapshots:
 
   '@terminallyonline/cord@0.3.2': {}
 
-  '@terminallyonline/plug-core@0.3.7(@tanstack/query-core@5.66.11)(@tanstack/react-query@5.66.11(react@19.0.0))(@types/react@19.0.10)(bufferutil@4.0.9)(react@19.0.0)(typescript@5.7.3)(utf-8-validate@6.0.5)':
+  '@terminallyonline/plug-core@0.4.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
     dependencies:
       abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
       commander: 12.1.0
       ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      lucide-react: 0.471.2(react@19.0.0)
       pathe: 1.1.2
-      solady: 0.0.191
+      solady: 0.1.10
       viem: 2.23.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@3.24.1)
-      wagmi: 2.14.7(@tanstack/query-core@5.66.11)(@tanstack/react-query@5.66.11(react@19.0.0))(@types/react@19.0.10)(bufferutil@4.0.9)(react@19.0.0)(typescript@5.7.3)(utf-8-validate@6.0.5)(viem@2.23.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@3.24.1))(zod@3.24.1)
       zod: 3.24.1
     transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@react-native-async-storage/async-storage'
-      - '@tanstack/query-core'
-      - '@tanstack/react-query'
-      - '@types/react'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/kv'
-      - aws4fetch
       - bufferutil
-      - db0
-      - encoding
-      - immer
-      - ioredis
-      - react
-      - supports-color
       - typescript
-      - uploadthing
       - utf-8-validate
 
   '@testing-library/dom@10.4.0':
@@ -14768,10 +14733,6 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@0.471.2(react@19.0.0):
-    dependencies:
-      react: 19.0.0
-
   lucide-react@0.477.0(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -16458,8 +16419,6 @@ snapshots:
       debug: 4.3.7
     transitivePeerDependencies:
       - supports-color
-
-  solady@0.0.191: {}
 
   solady@0.1.10: {}
 
