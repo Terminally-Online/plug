@@ -1,7 +1,1 @@
-export type {
-	contracts,
-	Domain,
-	Contract,
-	GetTypedDataLivePairs,
-	GetTypedDataLivePlugs
-} from '@/src/lib'
+export type { Domain, Contract } from '@/src/lib'
