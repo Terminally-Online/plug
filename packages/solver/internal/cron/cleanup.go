@@ -34,12 +34,11 @@ func CleanupUnusedIntents(db *gorm.DB, olderThan time.Duration) error {
 				return err
 			}
 
-			// Delete LivePlugs
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&signature.LivePlugs{}).Error; err != nil {
+			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
 				return err
 			}
 
-			if err := tx.Where("intent_id = ?", intent.Id).Delete(&models.Run{}).Error; err != nil {
+			if err := tx.Where("intent_id = ?", intent.Id).Delete(&signature.LivePlugs{}).Error; err != nil {
 				return err
 			}
 
