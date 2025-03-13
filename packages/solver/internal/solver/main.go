@@ -26,6 +26,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"gorm.io/gorm"
 )
 
 type Solver struct {
@@ -173,58 +174,31 @@ func (s *Solver) GetLivePlugs(plugs []signature.Plug, chainId uint64, from strin
 }
 
 func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, error) {
-	var livePlug signature.LivePlugs
-	if err := database.DB.Where("intent_id = ?", intent.Id).
+	if err := database.DB.Where("id = ?", intent.Id).
 		Order("created_at DESC").
-		First(&livePlug).Error; err != nil {
+		Preload("Runs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC").Limit(1)
+		}).
+		Preload("LivePlugs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC").Limit(1)
+		}).
+		First(&intent).Error; err != nil {
 		return nil, fmt.Errorf("failed to find live plug: %v", err)
 	}
 
-	var run models.Run
-	if err := database.DB.Where("intent_id = ? AND live_plug_id = ?", intent.Id, livePlug.Id).
-		Order("created_at DESC").
-		First(&run).Error; err != nil {
-		return nil, fmt.Errorf("failed to find run: %v", err)
+	// If we're rebuilding from models, we want the most recent LivePlugs and Run
+	livePlug := intent.LivePlugs[0]
+	run := intent.Runs[0]
+
+	plugs := make([]*signature.MinimalPlug, len(livePlug.Plugs.Plugs))
+	for i, plug := range livePlug.Plugs.Plugs {
+		plugs[i] = plug.Minify()
 	}
-
-	var plugs []signature.Plug
-	if err := database.DB.Where("bundle_id = ?", livePlug.Id).
-		Find(&plugs).Error; err != nil {
-		return nil, fmt.Errorf("failed to find plugs: %v", err)
-	}
-	livePlug.Plugs.Plugs = plugs
-
-	// TODO: Move the next_simulation_at forward.
-
-	// var livePlugs *signature.LivePlugs
-	// if livePlug.Signature != nil {
-	// 	// Only reconstruct LivePlugs if this wasn't an EOA transaction
-	// 	signatureBytes := []byte(*livePlug.Signature)
-	//
-	// 	// Convert models.Plug to signature.Plug
-	// 	signaturePugs := make([]signature.Plug, len(plugs))
-	// 	for i, plug := range plugs {
-	// 		signaturePugs[i] = signature.Plug{
-	// 			To:        common.HexToAddress(plug.To),
-	// 			Value:     plug.Value.Int,
-	// 			Data:      []byte(plug.Data),
-	// 			Exclusive: plug.Exclusive,
-	// 		}
-	// 	}
-	//
-	// 	livePlugs = &signature.LivePlugs{
-	// 		Signature: signatureBytes,
-	// 		Plugs: signature.Plugs{
-	// 			Socket: common.HexToAddress(intent.From),
-	// 			Plugs:  signaturePugs,
-	// 		},
-	// 	}
-	// }
 
 	return &Solution{
-		// LivePlugs: livePlugs,
-		// Transactions: livePlug.Plugs,
-		Run: &run,
+		LivePlugs:    &livePlug,
+		Transactions: plugs,
+		Run:          &run,
 	}, nil
 }
 
@@ -329,22 +303,14 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 			return nil, err
 		}
 
-		// if run != nil {
-		// 	run.IntentId = intent.Id
-		// 	run.LivePlugsId = livePlugs.Id
-		// 	intent.PeriodEndAt, intent.NextSimulationAt = intent.GetNextSimulationAt()
-		//
-		// 	if err := database.DB.Create(run).Error; err != nil {
-		// 		return nil, fmt.Errorf("failed to save simulation run: %v", err)
-		// 	}
-		//
-		// 	if err := database.DB.Model(&intent).Updates(map[string]any{
-		// 		"period_end_at":      intent.PeriodEndAt,
-		// 		"next_simulation_at": intent.NextSimulationAt,
-		// 	}).Error; err != nil {
-		// 		return nil, fmt.Errorf("failed to update intent: %v", err)
-		// 	}
-		// }
+		if run != nil {
+			run.IntentId = intent.Id
+			run.LivePlugsId = livePlugs.Id
+
+			if err := database.DB.Create(run).Error; err != nil {
+				return nil, fmt.Errorf("failed to save simulation run: %v", err)
+			}
+		}
 	}
 
 	if err := database.DB.Create(run).Error; err != nil {
@@ -352,7 +318,8 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 	}
 
 	result := &Solution{
-		Run: run,
+		Run:       run,
+		LivePlugs: livePlugs,
 	}
 
 	if livePlugs != nil {
