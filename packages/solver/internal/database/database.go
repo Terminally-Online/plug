@@ -158,5 +158,19 @@ func Seed(db *gorm.DB) error {
 		}
 	}
 
+	testing := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
+	var existingApiKey3 models.ApiKey
+	if err := db.Where("socket_id = ?", testing).First(&existingApiKey3).Error; err == gorm.ErrRecordNotFound {
+		apiKey := models.ApiKey{
+			SocketId:  &testing,
+			Key:       "testing",
+			RateLimit: 1000,
+			Role:      "admin",
+		}
+		if err := db.Create(&apiKey).Error; err != nil {
+			return utils.ErrBuild("failed to save third api key: " + err.Error())
+		}
+	}
+
 	return nil
 }
