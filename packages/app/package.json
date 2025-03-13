@@ -44,7 +44,7 @@
 		"@terminallyonline/cord": "^0.3.2",
 		"@terminallyonline/plug-core": "^0.4.1",
 		"@trpc/client": "11.0.0-rc.819",
-		"@trpc/next": "11.0.0-rc.819",
+		"@trpc/next": "11.0.0-rc.828",
 		"@trpc/react-query": "11.0.0-rc.819",
 		"@trpc/server": "11.0.0-rc.819",
 		"@vercel/og": "^0.6.3",
