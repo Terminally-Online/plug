@@ -126,9 +126,9 @@ func AutoMigrate(db *gorm.DB) error {
 }
 
 func Seed(db *gorm.DB) error {
-	appApiKey := os.Getenv("PLUG_APP_API_KEY")
+	appApiKey := os.Getenv("ADMIN_API_KEY")
 	if appApiKey == "" {
-		panic("PLUG_APP_API_KEY environment variable is not set")
+		panic("ADMIN_API_KEY environment variable is not set")
 	}
 
 	dev := "0x0Bb5d848487B10F8CFBa21493c8f6D47e8a8B17E"
