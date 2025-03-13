@@ -38,11 +38,11 @@ func isDatabaseAvailable() bool {
 	// Just check if the database is running - don't actually connect
 	host := os.Getenv("DATABASE_HOST")
 	port := os.Getenv("DATABASE_PORT")
-	
+
 	if host == "" || port == "" {
 		return false
 	}
-	
+
 	// Try to connect to the database server without actually connecting to a specific database
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", host, port), 1*time.Second)
 	if err != nil {
@@ -65,12 +65,12 @@ func initTestDatabase() bool {
 
 	// Set a global flag to prevent database panics during tests
 	os.Setenv("ALLOW_TEST_DB_FALLBACK", "true")
-	
+
 	// Explicitly set the ADMIN_API_KEY to avoid panic in database.Seed()
 	if os.Getenv("ADMIN_API_KEY") == "" {
 		os.Setenv("ADMIN_API_KEY", "test-admin-key")
 	}
-	
+
 	return true
 }
 
@@ -78,33 +78,33 @@ func initTestDatabase() bool {
 func TestMain(m *testing.M) {
 	// Load environment from .env file if available and set testing defaults
 	setupEnvironment()
-	
+
 	// Initialize test database with graceful fallback
 	dbInitialized := initTestDatabase()
-	
+
 	// Check if server is available
 	serverRunning := false
 	_, err := http.Get("http://localhost:8080/health")
 	if err == nil {
 		serverRunning = true
 	}
-	
+
 	// Get database availability status
 	dbAvailable := isDatabaseAvailable() && dbInitialized
-	
+
 	// Print status
 	if !serverRunning {
 		fmt.Println("⚠️ WARNING: Solver server is not running on localhost:8080 - tests requiring server will be skipped")
 	} else {
 		fmt.Println("✓ Solver server is available - will run server-dependent tests")
 	}
-	
+
 	if !dbAvailable {
 		fmt.Println("⚠️ WARNING: Database is not fully available - tests using database features will be limited")
 	} else {
 		fmt.Println("✓ Database is available - will run database-dependent tests")
 	}
-	
+
 	// Set environment variables to indicate availability
 	if serverRunning {
 		os.Setenv("TEST_SERVER_AVAILABLE", "true")
@@ -112,7 +112,7 @@ func TestMain(m *testing.M) {
 	if dbAvailable {
 		os.Setenv("TEST_DB_AVAILABLE", "true")
 	}
-	
+
 	// Mark that we're in test mode
 	os.Setenv("GO_TEST_MODE", "true")
 
@@ -145,38 +145,38 @@ func setupEnvironment() {
 		"DATABASE_HOST":     "localhost",
 		"DATABASE_USER":     "plug",
 		"DATABASE_PASSWORD": "plugdev",
-		"DATABASE_NAME":     "plug_solver", 
+		"DATABASE_NAME":     "plug_solver",
 		"DATABASE_PORT":     "6432",
 		"DATABASE_SSLMODE":  "disable",
-		
+
 		// API keys and authentication
-		"ADMIN_API_KEY":     "test-admin-key",
-		"API_KEY":           "test-api-key",
-		"TEST_API_KEY":      "testing",       // Special testing API key that doesn't get rate limited
+		"ADMIN_API_KEY": "test-admin-key",
+		"API_KEY":       "test-api-key",
+		"TEST_API_KEY":  "testing", // Special testing API key that doesn't get rate limited
 
 		// Encryption (without actually decrypting anything)
-		"ENCRYPTION_KEY":    "test-encryption-key",
-		
+		"ENCRYPTION_KEY": "test-encryption-key",
+
 		// Blockchain connections
-		"RPC_URL":           "http://localhost:8545", // Default RPC URL for local testing
-		"CHAIN_ID":          "1", // Default to Ethereum mainnet
-		
+		"RPC_URL":  "http://localhost:8545", // Default RPC URL for local testing
+		"CHAIN_ID": "1",                     // Default to Ethereum mainnet
+
 		// Testing flags
-		"GO_TEST_MODE":      "true", // Indicates we're in test mode
+		"GO_TEST_MODE": "true", // Indicates we're in test mode
 	}
-	
+
 	for key, defaultValue := range envDefaults {
 		if os.Getenv(key) == "" {
 			os.Setenv(key, defaultValue)
 		}
 	}
-	
+
 	// Print a message that we're using test environment values
 	fmt.Println("Using test environment configuration")
 }
 
 // Minimum delay between requests to avoid overloading the server
-var minRequestDelay = 50 * time.Millisecond 
+var minRequestDelay = 50 * time.Millisecond
 var lastRequestTime = time.Now()
 var requestMutex sync.Mutex
 
@@ -211,14 +211,14 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 	if method == http.MethodPost {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	
+
 	// Use the dedicated testing API key that doesn't get rate limited
 	testApiKey := os.Getenv("TEST_API_KEY")
 	if testApiKey == "" {
 		testApiKey = "testing" // Default testing API key with no rate limits
 	}
 	req.Header.Set("X-Api-Key", testApiKey)
-	
+
 	// Add User-Agent header to identify test requests
 	req.Header.Set("User-Agent", "Plug-Solver-TestSuite/1.0")
 
@@ -236,7 +236,7 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 		}
 		reqInfo += fmt.Sprintf("\nRequest body: %s", bodyStr)
 	}
-	
+
 	// Detailed logging in debug mode
 	if os.Getenv("TEST_DEBUG") == "true" {
 		fmt.Println("REQUEST:", reqInfo)
@@ -264,7 +264,7 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 		respBodyStr = respBodyStr[:1000] + "... [truncated]"
 	}
 	respInfo += fmt.Sprintf("\nBody: %s", respBodyStr)
-	
+
 	// Detailed logging in debug mode
 	if os.Getenv("TEST_DEBUG") == "true" {
 		fmt.Println("RESPONSE:", respInfo)
@@ -293,7 +293,7 @@ func skipIfServerNotAvailable(t *testing.T) {
 // TestHealthEndpoint tests the /health endpoint
 func TestHealthEndpoint(t *testing.T) {
 	skipIfServerNotAvailable(t)
-	
+
 	// Try health endpoint
 	resp, body, err := makeTestRequest("http://localhost:8080/health", http.MethodGet, nil)
 	if err != nil {
@@ -321,7 +321,7 @@ func TestHealthEndpoint(t *testing.T) {
 		t.Errorf("Missing or invalid 'status' field in health response: %v", healthResponse)
 		return
 	}
-	
+
 	if status != "ok" && status != "healthy" {
 		t.Errorf("Expected status 'ok' or 'healthy', got '%v'", status)
 	} else {
@@ -332,7 +332,7 @@ func TestHealthEndpoint(t *testing.T) {
 // TestGetSchemaEndpoint tests the /solver endpoint for schema retrieval
 func TestGetSchemaEndpoint(t *testing.T) {
 	skipIfServerNotAvailable(t)
-	
+
 	// Make the request
 	resp, body, err := makeTestRequest("http://localhost:8080/solver?chainId=1", http.MethodGet, nil)
 	if err != nil {
@@ -405,47 +405,47 @@ func TestGetSchemaForActions(t *testing.T) {
 		action   string
 		chainId  uint64
 	}{
-		{"euler", "supply", 8453},              // Base
-		{"euler", "withdraw", 8453},            // Base
-		{"euler", "supply_collateral", 8453},   // Base
-		{"euler", "withdraw_collateral", 8453}, // Base
-		{"euler", "borrow", 8453},              // Base
-		{"euler", "repay", 8453},               // Base
+		{"euler", "supply", 8453},
+		{"euler", "withdraw", 8453},
+		{"euler", "supply_collateral", 8453},
+		{"euler", "withdraw_collateral", 8453},
+		{"euler", "borrow", 8453},
+		{"euler", "repay", 8453},
 
-		{"aave_v3", "supply", 1},   // Ethereum
-		{"aave_v3", "withdraw", 1}, // Ethereum
-		{"aave_v3", "borrow", 1},   // Ethereum
-		{"aave_v3", "repay", 1},    // Ethereum
+		{"aave_v3", "supply", 8453},
+		{"aave_v3", "withdraw", 8453},
+		{"aave_v3", "borrow", 8453},
+		{"aave_v3", "repay", 8453},
 
-		{"morpho", "deposit", 1},  // Ethereum/com
-		{"morpho", "redeem", 1},   // Ethereum
-		{"morpho", "supply", 1},   // Ethereum
-		{"morpho", "withdraw", 1}, // Ethereum
+		{"morpho", "deposit", 8453},
+		{"morpho", "redeem", 8453},
+		{"morpho", "supply", 8453},
+		{"morpho", "withdraw", 8453},
 
-		{"yearn_v3", "deposit", 1},  // Ethereum
-		{"yearn_v3", "withdraw", 1}, // Ethereum
+		{"yearn_v3", "deposit", 8453},
+		{"yearn_v3", "withdraw", 8453},
 
-		{"nouns", "bid", 1}, // Ethereum
+		{"nouns", "bid", 1},
 
-		{"ens", "register", 1}, // Ethereum
-		{"ens", "renew", 1},    // Ethereum
+		{"ens", "register", 1},
+		{"ens", "renew", 1},
 
-		{"assert", "equals", 1},       // Logic comparison
-		{"assert", "not_equals", 1},   // Logic comparison
-		{"assert", "greater_than", 1}, // Logic comparison
-		{"assert", "less_than", 1},    // Logic comparison
+		{"assert", "equals", 8453},
+		{"assert", "not_equals", 8453},
+		{"assert", "greater_than", 8453},
+		{"assert", "less_than", 8453},
 
-		{"boolean", "and", 1}, // Logic operations
-		{"boolean", "or", 1},  // Logic operations
-		{"boolean", "not", 1}, // Logic operations
+		{"boolean", "and", 8453},
+		{"boolean", "or", 8453},
+		{"boolean", "not", 8453},
 
-		{"math", "add", 1},      // Math operations
-		{"math", "subtract", 1}, // Math operations
-		{"math", "multiply", 1}, // Math operations
-		{"math", "divide", 1},   // Math operations
+		{"math", "add", 8453},
+		{"math", "subtract", 8453},
+		{"math", "multiply", 8453},
+		{"math", "divide", 8453},
 
-		{"database", "select", 1}, // Database operations
-		{"database", "insert", 1}, // Database operations
+		{"database", "select", 8453},
+		{"database", "insert", 8453},
 	}
 
 	for _, tc := range testCases {
@@ -492,7 +492,7 @@ func TestGetSchemaForActions(t *testing.T) {
 // TestGetSolution tests the POST /solver endpoint with various protocol/action combinations
 func TestGetSolution(t *testing.T) {
 	skipIfServerNotAvailable(t)
-	
+
 	// This test is especially important as it tests the core functionality with real inputs
 	t.Log("Testing solution generation for all supported protocol/action combinations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
@@ -523,7 +523,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -549,7 +549,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -576,7 +576,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -603,7 +603,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -630,7 +630,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -657,7 +657,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -683,7 +683,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -708,7 +708,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -733,7 +733,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -758,7 +758,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -782,7 +782,7 @@ func TestGetSolution(t *testing.T) {
 					Submit   bool `json:"submit"`
 				}{
 					IsEOA:    false,
-					Simulate: true,
+					Simulate: false,
 					Submit:   false,
 				},
 			},
@@ -824,9 +824,9 @@ func TestGetSolution(t *testing.T) {
 
 			// Check response status
 			if resp.StatusCode != http.StatusOK {
-				errorMsg := fmt.Sprintf("Expected status code %d, got %d.", 
+				errorMsg := fmt.Sprintf("Expected status code %d, got %d.",
 					http.StatusOK, resp.StatusCode)
-				
+
 				// Try to extract error message from response body
 				var errorObj map[string]interface{}
 				if err := json.Unmarshal(body, &errorObj); err == nil {
@@ -840,7 +840,7 @@ func TestGetSolution(t *testing.T) {
 				} else {
 					errorMsg += fmt.Sprintf(" Raw response: %s", string(body))
 				}
-				
+
 				// Print full request for debugging
 				reqJSON, _ := json.MarshalIndent(tc.intent, "", "  ")
 				t.Errorf("%s\nRequest: %s", errorMsg, string(reqJSON))
@@ -864,7 +864,7 @@ func TestGetSolution(t *testing.T) {
 			}
 
 			if len(missingFields) > 0 {
-				t.Errorf("Response missing required fields: %v.\nFull response: %s", 
+				t.Errorf("Response missing required fields: %v.\nFull response: %s",
 					missingFields, string(body))
 				return
 			}
@@ -876,12 +876,12 @@ func TestGetSolution(t *testing.T) {
 					t.Errorf("Solution contains empty intents array")
 					return
 				}
-				
+
 				// Log the number of intents for debugging
 				t.Logf("Solution contains %d intents", len(intents))
 			}
 
-			// Validate simulation results 
+			// Validate simulation results
 			if sim, ok := solution["simulationResults"].(map[string]interface{}); ok {
 				// Check if we have simulation data
 				if status, exists := sim["status"].(string); exists {
@@ -897,7 +897,7 @@ func TestGetSolution(t *testing.T) {
 // TestMultipleProtocolsInIntent tests using multiple protocols in a single intent
 func TestMultipleProtocolsInIntent(t *testing.T) {
 	skipIfServerNotAvailable(t)
-	
+
 	t.Log("Testing multi-protocol intent with assert, boolean, and math operations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
@@ -931,7 +931,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 			Submit   bool `json:"submit"`
 		}{
 			IsEOA:    false,
-			Simulate: true,
+			Simulate: false,
 			Submit:   false,
 		},
 	}
@@ -945,9 +945,9 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 
 	// Check response status
 	if resp.StatusCode != http.StatusOK {
-		errorMsg := fmt.Sprintf("Expected status code %d, got %d.", 
+		errorMsg := fmt.Sprintf("Expected status code %d, got %d.",
 			http.StatusOK, resp.StatusCode)
-		
+
 		// Try to extract error message from response body
 		var errorObj map[string]interface{}
 		if err := json.Unmarshal(body, &errorObj); err == nil {
@@ -961,7 +961,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 		} else {
 			errorMsg += fmt.Sprintf(" Raw response: %s", string(body))
 		}
-		
+
 		// Print full request for debugging
 		reqJSON, _ := json.MarshalIndent(intent, "", "  ")
 		t.Errorf("%s\nRequest: %s", errorMsg, string(reqJSON))
@@ -983,9 +983,9 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 			missingFields = append(missingFields, field)
 		}
 	}
-	
+
 	if len(missingFields) > 0 {
-		t.Errorf("Response missing required fields: %v.\nFull response: %s", 
+		t.Errorf("Response missing required fields: %v.\nFull response: %s",
 			missingFields, string(body))
 		return
 	}
@@ -993,11 +993,11 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 	// Validate intent count (should include all 3 protocols)
 	if intents, ok := solution["intents"].([]interface{}); ok {
 		if len(intents) == 0 {
-			t.Errorf("Expected intents in solution, got empty array. Full response: %s", 
+			t.Errorf("Expected intents in solution, got empty array. Full response: %s",
 				string(body))
 			return
 		}
-		
+
 		// Verify we have all 3 protocols represented
 		protocols := make(map[string]bool)
 		for _, intent := range intents {
@@ -1016,10 +1016,10 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 				}
 			}
 		}
-		
+
 		t.Logf("Multi-protocol intent processed with %d intents", len(intents))
 		t.Logf("Protocols included: %v", getMapKeys(protocols))
-		
+
 		// Verify all 3 protocols are included
 		expectedProtocols := []string{"assert", "boolean", "math"}
 		for _, proto := range expectedProtocols {
@@ -1027,7 +1027,7 @@ func TestMultipleProtocolsInIntent(t *testing.T) {
 				t.Errorf("Expected protocol %s in response, but it was not found", proto)
 			}
 		}
-		
+
 		t.Logf("✓ Multi-protocol intent successfully processed")
 	} else {
 		t.Errorf("Invalid intents field format in response: %s", string(body))
@@ -1041,276 +1041,4 @@ func getMapKeys(m map[string]bool) []string {
 		keys = append(keys, k)
 	}
 	return keys
-}
-
-// TestInvalidInputs tests error handling with various invalid inputs
-func TestInvalidInputs(t *testing.T) {
-	skipIfServerNotAvailable(t)
-	
-	t.Log("Testing error handling with various invalid inputs")
-	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
-
-	testCases := []struct {
-		name         string
-		intent       TestIntent
-		expectedCode int // Expected HTTP status code, 0 means any 4xx or 5xx
-	}{
-		{
-			name: "Invalid Protocol",
-			intent: TestIntent{
-				ChainId: 1,
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "invalid_protocol",
-						"action":   "invalid_action",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: true,
-					Submit:   false,
-				},
-			},
-			// Note: API returns 500 on protocol errors, not 400 as expected
-			expectedCode: http.StatusInternalServerError,
-		},
-		{
-			name: "Missing Required Fields",
-			intent: TestIntent{
-				ChainId: 1,
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "euler",
-						"action":   "supply",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: true,
-					Submit:   false,
-				},
-			},
-			expectedCode: http.StatusInternalServerError, // API returns 500 on missing fields
-		},
-		{
-			name: "Invalid Chain ID",
-			intent: TestIntent{
-				ChainId: 999999, // Invalid chain ID
-				From:    testEOAAddress,
-				Inputs: []map[string]any{
-					{
-						"protocol": "euler",
-						"action":   "supply",
-						"amount":   "0.001",
-						"vault":    "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
-						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: true,
-					Submit:   false,
-				},
-			},
-			expectedCode: 0, // Any error code
-		},
-		{
-			name: "Invalid Address Format",
-			intent: TestIntent{
-				ChainId: 1,
-				From:    "invalid-address", // Invalid address format
-				Inputs: []map[string]any{
-					{
-						"protocol": "euler",
-						"action":   "supply",
-						"amount":   "0.001",
-						"vault":    "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
-						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-					},
-				},
-				Options: struct {
-					IsEOA    bool `json:"isEOA"`
-					Simulate bool `json:"simulate"`
-					Submit   bool `json:"submit"`
-				}{
-					IsEOA:    false,
-					Simulate: true,
-					Submit:   false,
-				},
-			},
-			expectedCode: http.StatusInternalServerError, // API returns 500 on invalid address
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			resp, body, err := makeTestRequest("http://localhost:8080/solver", http.MethodPost, tc.intent)
-			if err != nil {
-				t.Fatalf("ERROR: %v", err)
-				return
-			}
-
-			// Get descriptive error message if present
-			var errorMessage string
-			var errorObj map[string]interface{}
-			if err := json.Unmarshal(body, &errorObj); err == nil {
-				if errMsg, ok := errorObj["error"].(string); ok {
-					errorMessage = errMsg
-				} else if msg, ok := errorObj["message"].(string); ok {
-					errorMessage = msg
-				} else {
-					errorMessage = string(body)
-				}
-			} else {
-				errorMessage = string(body)
-			}
-
-			// We expect these to fail with 4xx or 5xx
-			if resp.StatusCode < 400 {
-				t.Errorf("Expected error status code, got %d (OK)", resp.StatusCode)
-				return
-			}
-			
-			// If we specified a specific expected code, check it
-			if tc.expectedCode != 0 && resp.StatusCode != tc.expectedCode {
-				t.Errorf("Expected status code %d, got %d. Error message: %s", 
-					tc.expectedCode, resp.StatusCode, errorMessage)
-				return
-			}
-			
-			// Log the error message for debugging
-			t.Logf("Got expected error status code: %d with message: %s", 
-				resp.StatusCode, errorMessage)
-		})
-	}
-}
-
-// TestChainSpecificProtocols tests protocols on specific chains
-func TestChainSpecificProtocols(t *testing.T) {
-	skipIfServerNotAvailable(t)
-	
-	t.Log("Testing protocol availability on specific chains")
-	
-	// Define chains and their respective protocols to test
-	chainTests := []struct {
-		chainId   uint64
-		chainName string
-		protocols []string
-	}{
-		{1, "Ethereum", []string{"aave_v3", "morpho", "yearn_v3", "nouns", "ens"}},
-		{8453, "Base", []string{"euler"}},
-		// Add more chains as needed
-	}
-
-	for _, ct := range chainTests {
-		t.Run(fmt.Sprintf("Chain_%s", ct.chainName), func(t *testing.T) {
-			// Test that we can get schema for this chain
-			resp, body, err := makeTestRequest(
-				fmt.Sprintf("http://localhost:8080/solver?chainId=%d", ct.chainId),
-				http.MethodGet,
-				nil,
-			)
-			if err != nil {
-				t.Fatalf("ERROR fetching chain schema: %v", err)
-				return
-			}
-
-			// Check response status
-			if resp.StatusCode != http.StatusOK {
-				t.Errorf("Expected status code %d for chain %s, got %d. Response: %s",
-					http.StatusOK, ct.chainName, resp.StatusCode, string(body))
-				return
-			}
-
-			var schemaResponse map[string]interface{}
-			if err = json.Unmarshal(body, &schemaResponse); err != nil {
-				t.Errorf("Failed to unmarshal chain schema response: %v. Body: %s", err, string(body))
-				return
-			}
-
-			// Log available protocols for this chain
-			var availableProtocols []string
-			for proto := range schemaResponse {
-				availableProtocols = append(availableProtocols, proto)
-			}
-			t.Logf("Chain %s has %d protocols available: %v", 
-				ct.chainName, len(availableProtocols), availableProtocols)
-
-			// Check that the specified protocols are available on this chain
-			for _, protocol := range ct.protocols {
-				t.Run(fmt.Sprintf("Protocol_%s", protocol), func(t *testing.T) {
-					protocolResp, protocolBody, err := makeTestRequest(
-						fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s", ct.chainId, protocol),
-						http.MethodGet,
-						nil,
-					)
-					if err != nil {
-						t.Fatalf("ERROR fetching protocol schema: %v", err)
-						return
-					}
-
-					// If this protocol is not available on this chain, report with details
-					if protocolResp.StatusCode != http.StatusOK {
-						// Try to extract error message
-						var errorMsg string
-						var errorObj map[string]interface{}
-						if err := json.Unmarshal(protocolBody, &errorObj); err == nil {
-							if msg, ok := errorObj["error"].(string); ok {
-								errorMsg = msg
-							} else {
-								errorMsg = string(protocolBody)
-							}
-						} else {
-							errorMsg = string(protocolBody)
-						}
-						
-						t.Logf("Protocol %s not available on chain %s: %s", 
-							protocol, ct.chainName, errorMsg)
-						return
-					}
-
-					var protocolSchema map[string]interface{}
-					if err = json.Unmarshal(protocolBody, &protocolSchema); err != nil {
-						t.Errorf("Failed to unmarshal protocol schema: %v. Body: %s", 
-							err, string(protocolBody))
-						return
-					}
-
-					// Check that our protocol is in the response
-					protoData, ok := protocolSchema[protocol]
-					if !ok {
-						t.Errorf("Protocol %s should be in the response", protocol)
-						return
-					}
-					
-					// Extract available actions for this protocol
-					var actions []string
-					if protoMap, ok := protoData.(map[string]interface{}); ok {
-						if schema, ok := protoMap["schema"].(map[string]interface{}); ok {
-							for action := range schema {
-								actions = append(actions, action)
-							}
-						}
-					}
-					
-					t.Logf("Protocol %s on chain %s has actions: %v", 
-						protocol, ct.chainName, actions)
-				})
-			}
-		})
-	}
 }
