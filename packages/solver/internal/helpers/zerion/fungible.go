@@ -97,7 +97,7 @@ func GetFungiblePositions(chains []string, socketID, socketAddress common.Addres
 		"GET",
 		map[string]string{
 			"accept":        "application/json",
-			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_API_KEY")),
+			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_KEY")),
 		},
 		nil,
 		nil,
@@ -127,7 +127,7 @@ func GetFungibles(search string, chains []string) ([]ZerionToken, error) {
 		"GET",
 		map[string]string{
 			"accept":        "application/json",
-			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_API_KEY")),
+			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_KEY")),
 		},
 		nil,
 		nil,
