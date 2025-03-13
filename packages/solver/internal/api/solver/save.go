@@ -10,6 +10,7 @@ import (
 	"solver/internal/utils"
 
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,9 @@ func (h *Handler) ReadIntents(w http.ResponseWriter, r *http.Request) {
 	result := database.DB.
 		Where("api_key_id = ? AND saved = ?", apiKeyId, true).
 		Order("created_at desc").
+		Preload("Runs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC")
+		}).
 		Find(&intents)
 
 	if result.Error != nil {
@@ -74,6 +78,9 @@ func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 	}
 	result := query.
 		Order("created_at desc").
+		Preload("Runs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("created_at DESC")
+		}).
 		Find(&intents)
 	if result.Error != nil {
 		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
