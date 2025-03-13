@@ -19,7 +19,7 @@ export const env = createEnv({
 		DOCKER_CONTAINER_NAME: z.string().optional().default("postgres"),
 		DOCKER_DATABASE_NAME: z.string().optional().default("postgres"),
 		DOCKER_DATABASE_PORT: z.string().optional().default("5434"),
-		DOCKER_DATABASE_PASSWORD: z.string().optional().default("postgres"),
+		DOCKER_DATABASE_PASSWORD: z.string().optional().default("postgres")
 	},
 	client: {
 		NEXT_PUBLIC_DEVELOPMENT: z
@@ -28,7 +28,6 @@ export const env = createEnv({
 			.default("false")
 			.transform(val => val === "true"),
 		NEXT_PUBLIC_APP_URL: z.string().optional().default("http://localhost:3000"),
-		NEXT_PUBLIC_WS_URL: z.string().optional().default("ws://localhost:3001"),
 		NEXT_PUBLIC_EARLY_ACCESS: z
 			.string()
 			.optional()
@@ -54,7 +53,6 @@ export const env = createEnv({
 		DOCKER_DATABASE_PASSWORD: process.env.DOCKER_DATABASE_PASSWORD,
 		NEXT_PUBLIC_DEVELOPMENT: process.env.NEXT_PUBLIC_DEVELOPMENT,
 		NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-		NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
 		NEXT_PUBLIC_EARLY_ACCESS: process.env.NEXT_PUBLIC_EARLY_ACCESS,
 		NEXT_PUBLIC_WALLETCONNECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
 		NEXT_PUBLIC_QUICKNODE_NAME: process.env.NEXT_PUBLIC_QUICKNODE_NAME,
