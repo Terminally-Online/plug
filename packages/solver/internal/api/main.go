@@ -43,7 +43,7 @@ func SetupRouter(s solver.Handler) *mux.Router {
 	// API key protected routes that can be killed
 	killable := protected.PathPrefix("").Subrouter()
 	killable.Use(m.KillSwitch)
-	
+
 	// Main solver endpoints with OpenAPI
 	killable.Handle("/solver", NewOpenAPIHandler(s.GetSchema, s.SetupOpenAPIForGetSchema)).Methods("GET")
 	killable.Handle("/solver", NewOpenAPIHandler(s.GetSolution, s.SetupOpenAPIForGetSolution)).Methods("POST")
@@ -78,11 +78,44 @@ func SetupRouter(s solver.Handler) *mux.Router {
     window.onload = function() {
       window.ui = SwaggerUIBundle({
         url: "/openapi.json",
-        dom_id: '#swagger-ui',
+        dom_id: "#swagger-ui",
         deepLinking: true,
         presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
         plugins: [SwaggerUIBundle.plugins.DownloadUrl],
-        layout: "StandaloneLayout"
+        layout: "StandaloneLayout",
+        requestInterceptor: function(req) {
+          var apiKey = localStorage.getItem("api_key");
+          if (apiKey) {
+            req.headers["X-Api-Key"] = apiKey;
+          }
+          return req;
+        },
+        onComplete: function() {
+          var apiKey = localStorage.getItem("api_key");
+          if (apiKey) {
+            window.ui.preauthorizeApiKey("ApiKeyAuth", apiKey);
+          }
+        }
+      });
+
+      // Add API key input field
+      var topbarEl = document.querySelector(".topbar");
+      var apiKeyContainer = document.createElement("div");
+      apiKeyContainer.style.cssText = "margin-right: 16px; display: flex; align-items: center;";
+      apiKeyContainer.innerHTML = '<label style="color: #3b4151; margin-right: 8px;">API Key:</label><input type="text" id="api_key_input" style="padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px;" placeholder="Enter API key">';
+      topbarEl.insertBefore(apiKeyContainer, topbarEl.firstChild);
+
+      // Handle API key input
+      var apiKeyInput = document.getElementById("api_key_input");
+      apiKeyInput.value = localStorage.getItem("api_key") || "";
+      apiKeyInput.addEventListener("change", function(e) {
+        var key = e.target.value.trim();
+        if (key) {
+          localStorage.setItem("api_key", key);
+          window.ui.preauthorizeApiKey("ApiKeyAuth", key);
+        } else {
+          localStorage.removeItem("api_key");
+        }
       });
     };
   </script>

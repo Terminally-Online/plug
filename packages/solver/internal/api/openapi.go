@@ -12,12 +12,35 @@ import (
 func SetupOpenAPIRoutes(r *mux.Router) http.Handler {
 	// Setup OpenAPI schema
 	refl := openapi3.NewReflector()
-	
+
 	// Configure the API metadata
-	refl.SpecSchema().SetTitle("Plug Solver API")
-	refl.SpecSchema().SetVersion("v1.0.0")
-	refl.SpecSchema().SetDescription("API for Plug Solver to build Ethereum transactions.")
-	
+	schema := refl.SpecSchema()
+	schema.SetTitle("Plug Solver API")
+	schema.SetVersion("v1.0.0")
+	schema.SetDescription("API for Plug Solver to build Ethereum transactions.")
+
+	// Initialize Components
+	refl.Spec.Components = &openapi3.Components{}
+
+	// Add API key security scheme
+	refl.Spec.Components.SecuritySchemes = &openapi3.ComponentsSecuritySchemes{
+		MapOfSecuritySchemeOrRefValues: map[string]openapi3.SecuritySchemeOrRef{
+			"ApiKeyAuth": {
+				SecurityScheme: &openapi3.SecurityScheme{
+					APIKeySecurityScheme: &openapi3.APIKeySecurityScheme{
+						Name: "X-Api-Key",
+						In:   "header",
+					},
+				},
+			},
+		},
+	}
+	refl.Spec.Security = []map[string][]string{
+		{
+			"ApiKeyAuth": {},
+		},
+	}
+
 	// Create OpenAPI collector
 	collector := gorillamux.NewOpenAPICollector(refl)
 
