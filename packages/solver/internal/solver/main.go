@@ -396,6 +396,8 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 		}
 	}
 
+	result.IntentId = intent.Id
+
 	if !live {
 		result.LivePlugs = nil
 	}
