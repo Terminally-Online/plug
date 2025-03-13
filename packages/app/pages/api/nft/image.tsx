@@ -10,15 +10,15 @@ export const config = {
 	runtime: "edge"
 }
 
-// export const getStaticPaths = () => {
-// 	const paths = colors.map(color => ({ params: { color } }))
-// 	return { paths, fallback: "blocking" }
-// }
+export const getStaticPaths = () => {
+	const paths = colors.map(color => ({ params: { color } }))
+	return { paths, fallback: "blocking" }
+}
 
-// export const getStaticProps = ({ params }: { params: { color?: string; number?: string } }) => ({
-// 	props: { color: params?.color, number: params?.number },
-// 	revalidate: 60 * 60 * 24 * 30
-// })
+export const getStaticProps = ({ params }: { params: { color?: string; number?: string } }) => ({
+	props: { color: params?.color, number: params?.number },
+	revalidate: 60 * 60 * 24 * 30
+})
 
 export default async function handler(req: NextRequest) {
 	const regular = await fetch(new URL("../../../assets/Satoshi-Regular.ttf", import.meta.url)).then(res =>
