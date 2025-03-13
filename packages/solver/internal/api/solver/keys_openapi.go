@@ -29,20 +29,20 @@ func SetupOpenAPIForCreateApiKey(oc openapi.OperationContext) error {
 	oc.SetTags("API Keys")
 	oc.SetSummary("Create API Key")
 	oc.SetDescription("Creates a new API key with the specified parameters. Requires admin privileges.")
-	
+
 	// Define request body
 	oc.AddReqStructure(ApiKeyCreateRequest{})
-	
+
 	// Define success response
 	oc.AddRespStructure(models.ApiKey{}, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error responses
 	oc.AddRespStructure(
 		map[string]string{"error": "invalid request body"},
 		openapi.WithContentType("application/json"),
 		openapi.WithHTTPStatus(http.StatusBadRequest),
 	)
-	
+
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to save api key"},
 		openapi.WithContentType("application/json"),
@@ -58,15 +58,15 @@ func SetupOpenAPIForReadApiKey(oc openapi.OperationContext) error {
 	oc.SetTags("API Keys")
 	oc.SetSummary("Get API Key")
 	oc.SetDescription("Retrieves an API key by ID. Requires admin privileges.")
-	
+
 	// Define path parameter
 	oc.AddReqStructure(struct {
 		ID string `path:"id" description:"API key ID"`
 	}{})
-	
+
 	// Define success response
 	oc.AddRespStructure(models.ApiKey{}, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error responses
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to find api key"},
@@ -83,31 +83,31 @@ func SetupOpenAPIForUpdateApiKey(oc openapi.OperationContext) error {
 	oc.SetTags("API Keys")
 	oc.SetSummary("Update API Key")
 	oc.SetDescription("Updates an existing API key with the provided parameters. Requires admin privileges.")
-	
+
 	// Define path parameter
 	oc.AddReqStructure(struct {
 		ID string `path:"id" description:"API key ID"`
 	}{})
-	
+
 	// Define request body
 	oc.AddReqStructure(ApiKeyCreateRequest{})
-	
+
 	// Define success response
 	oc.AddRespStructure(nil, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error responses
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to find api key"},
 		openapi.WithContentType("application/json"),
 		openapi.WithHTTPStatus(http.StatusNotFound),
 	)
-	
+
 	oc.AddRespStructure(
 		map[string]string{"error": "invalid request body"},
 		openapi.WithContentType("application/json"),
 		openapi.WithHTTPStatus(http.StatusBadRequest),
 	)
-	
+
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to update api key"},
 		openapi.WithContentType("application/json"),
@@ -123,22 +123,22 @@ func SetupOpenAPIForDeleteApiKey(oc openapi.OperationContext) error {
 	oc.SetTags("API Keys")
 	oc.SetSummary("Delete API Key")
 	oc.SetDescription("Deletes an API key by ID. Requires admin privileges.")
-	
+
 	// Define path parameter
 	oc.AddReqStructure(struct {
 		ID string `path:"id" description:"API key ID"`
 	}{})
-	
+
 	// Define success response
 	oc.AddRespStructure(models.ApiKey{}, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error responses
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to find api key"},
 		openapi.WithContentType("application/json"),
 		openapi.WithHTTPStatus(http.StatusNotFound),
 	)
-	
+
 	oc.AddRespStructure(
 		map[string]string{"error": "failed to delete api key"},
 		openapi.WithContentType("application/json"),

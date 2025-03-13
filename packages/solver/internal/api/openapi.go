@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/swaggest/openapi-go/openapi3"
@@ -35,6 +36,8 @@ func SetupOpenAPIRoutes(r *mux.Router) http.Handler {
 			},
 		},
 	}
+
+	// Set global security requirement
 	refl.Spec.Security = []map[string][]string{
 		{
 			"ApiKeyAuth": {},
@@ -47,6 +50,16 @@ func SetupOpenAPIRoutes(r *mux.Router) http.Handler {
 	// Walk the router and collect all the OpenAPI operations
 	if err := r.Walk(collector.Walker); err != nil {
 		panic(err)
+	}
+
+	// Remove admin endpoints from the spec
+	paths := refl.Spec.Paths.MapOfPathItemValues
+	if paths != nil {
+		for path := range paths {
+			if path == "/api-key" || strings.HasPrefix(path, "/api-key/") || path == "/solver/kill" {
+				delete(paths, path)
+			}
+		}
 	}
 
 	// Create the handler to serve the OpenAPI specification
