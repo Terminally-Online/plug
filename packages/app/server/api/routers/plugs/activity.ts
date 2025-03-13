@@ -98,10 +98,13 @@ export const activity = createTRPCRouter({
 		})
 
 		if (!plug) throw new TRPCError({ code: "NOT_FOUND" })
-		
-		const intent = { ...(await toggleIntentStatus(input)), plug }
-	}),
 
+		const intent = { ...(await toggleIntentStatus(input)), plug }
+
+		ctx.emitter.emit(subscriptions.execution.update, intent)
+
+		return intent
+	}),
 
 	delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const intent = await deleteIntent(input)

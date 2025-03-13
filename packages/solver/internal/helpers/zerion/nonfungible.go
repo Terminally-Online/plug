@@ -84,7 +84,7 @@ func getCollectibles(chains []string, socketId, socketAddress string, limit int,
 		"GET",
 		map[string]string{
 			"accept":        "application/json",
-			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_API_KEY")),
+			"authorization": fmt.Sprintf("Basic %v", os.Getenv("ZERION_KEY")),
 		},
 		nil,
 		nil,
@@ -101,7 +101,9 @@ func getCollectibles(chains []string, socketId, socketAddress string, limit int,
 
 	if response.Links.Next != "" {
 		nextNonFungibles, err := getCollectibles(chains, socketId, socketAddress, limit, response.Links.Next)
-		if err != nil { return nil, err }
+		if err != nil {
+			return nil, err
+		}
 		response.Data = append(response.Data, nextNonFungibles...)
 	}
 
