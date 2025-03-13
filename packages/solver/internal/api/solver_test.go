@@ -53,34 +53,10 @@ func isDatabaseAvailable() bool {
 	return true
 }
 
-// initTestDatabase attempts to set up the database for testing
-// It won't panic if the database isn't available, instead it will
-// return a status indicating whether the database was initialized
-func initTestDatabase() bool {
-	// Skip DB initialization if already set in the environment
-	if os.Getenv("GO_TEST_MODE") == "true" && !isDatabaseAvailable() {
-		fmt.Println("Skipping database initialization for tests as database is not available")
-		return false
-	}
-
-	// Set a global flag to prevent database panics during tests
-	os.Setenv("ALLOW_TEST_DB_FALLBACK", "true")
-
-	// Explicitly set the ADMIN_API_KEY to avoid panic in database.Seed()
-	if os.Getenv("ADMIN_API_KEY") == "" {
-		os.Setenv("ADMIN_API_KEY", "test-admin-key")
-	}
-
-	return true
-}
-
 // TestMain sets up common test environment
 func TestMain(m *testing.M) {
 	// Load environment from .env file if available and set testing defaults
 	setupEnvironment()
-
-	// Initialize test database with graceful fallback
-	dbInitialized := initTestDatabase()
 
 	// Check if server is available
 	serverRunning := false
@@ -90,7 +66,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Get database availability status
-	dbAvailable := isDatabaseAvailable() && dbInitialized
+	dbAvailable := isDatabaseAvailable()
 
 	// Print status
 	if !serverRunning {
@@ -282,18 +258,8 @@ func makeTestRequest(url, method string, body interface{}) (*http.Response, []by
 	}, responseBody, nil
 }
 
-// Helper to check if server is available and skip if not
-func skipIfServerNotAvailable(t *testing.T) {
-	if os.Getenv("TEST_SERVER_AVAILABLE") != "true" {
-		t.Skip("Skipping test: server is not running based on initial check")
-		return
-	}
-}
-
 // TestHealthEndpoint tests the /health endpoint
 func TestHealthEndpoint(t *testing.T) {
-	skipIfServerNotAvailable(t)
-
 	// Try health endpoint
 	resp, body, err := makeTestRequest("http://localhost:8080/health", http.MethodGet, nil)
 	if err != nil {
@@ -331,8 +297,6 @@ func TestHealthEndpoint(t *testing.T) {
 
 // TestGetSchemaEndpoint tests the /solver endpoint for schema retrieval
 func TestGetSchemaEndpoint(t *testing.T) {
-	skipIfServerNotAvailable(t)
-
 	// Make the request
 	resp, body, err := makeTestRequest("http://localhost:8080/solver?chainId=1", http.MethodGet, nil)
 	if err != nil {
@@ -412,40 +376,31 @@ func TestGetSchemaForActions(t *testing.T) {
 		{"euler", "borrow", 8453},
 		{"euler", "repay", 8453},
 
-		{"aave_v3", "supply", 8453},
-		{"aave_v3", "withdraw", 8453},
+		{"aave_v3", "deposit", 8453},
 		{"aave_v3", "borrow", 8453},
 		{"aave_v3", "repay", 8453},
+		{"aave_v3", "withdraw", 8453},
 
-		{"morpho", "deposit", 8453},
-		{"morpho", "redeem", 8453},
-		{"morpho", "supply", 8453},
+		{"morpho", "earn", 8453},
+		{"morpho", "supply_collateral", 8453},
 		{"morpho", "withdraw", 8453},
+		{"morpho", "withdraw_all", 8453},
+		{"morpho", "borrow", 8453},
+		{"morpho", "repay", 8453},
+		{"morpho", "repay_all", 8453},
+		{"morpho", "claim_rewards", 8453},
 
 		{"yearn_v3", "deposit", 8453},
 		{"yearn_v3", "withdraw", 8453},
+		{"yearn_v3", "stake", 8453},
+		{"yearn_v3", "stake_max", 8453},
+		{"yearn_v3", "redeem", 8453},
+		{"yearn_v3", "redeem_max", 8453},
 
 		{"nouns", "bid", 1},
 
-		{"ens", "register", 1},
+		{"ens", "buy", 1},
 		{"ens", "renew", 1},
-
-		{"assert", "equals", 8453},
-		{"assert", "not_equals", 8453},
-		{"assert", "greater_than", 8453},
-		{"assert", "less_than", 8453},
-
-		{"boolean", "and", 8453},
-		{"boolean", "or", 8453},
-		{"boolean", "not", 8453},
-
-		{"math", "add", 8453},
-		{"math", "subtract", 8453},
-		{"math", "multiply", 8453},
-		{"math", "divide", 8453},
-
-		{"database", "select", 8453},
-		{"database", "insert", 8453},
 	}
 
 	for _, tc := range testCases {
@@ -491,8 +446,6 @@ func TestGetSchemaForActions(t *testing.T) {
 
 // TestGetSolution tests the POST /solver endpoint with various protocol/action combinations
 func TestGetSolution(t *testing.T) {
-	skipIfServerNotAvailable(t)
-
 	// This test is especially important as it tests the core functionality with real inputs
 	t.Log("Testing solution generation for all supported protocol/action combinations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
@@ -896,8 +849,6 @@ func TestGetSolution(t *testing.T) {
 
 // TestMultipleProtocolsInIntent tests using multiple protocols in a single intent
 func TestMultipleProtocolsInIntent(t *testing.T) {
-	skipIfServerNotAvailable(t)
-
 	t.Log("Testing multi-protocol intent with assert, boolean, and math operations")
 	testEOAAddress := "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
 
