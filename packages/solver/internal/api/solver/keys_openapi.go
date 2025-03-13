@@ -26,7 +26,7 @@ type ApiKeyCreateRequest struct {
 // SetupOpenAPIForCreateApiKey defines the OpenAPI documentation for the POST /api-key endpoint
 func SetupOpenAPIForCreateApiKey(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("API Keys")
+	oc.SetTags("Admin")
 	oc.SetSummary("Create API Key")
 	oc.SetDescription("Creates a new API key with the specified parameters. Requires admin privileges.")
 
@@ -55,7 +55,7 @@ func SetupOpenAPIForCreateApiKey(oc openapi.OperationContext) error {
 // SetupOpenAPIForReadApiKey defines the OpenAPI documentation for the GET /api-key/{id} endpoint
 func SetupOpenAPIForReadApiKey(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("API Keys")
+	oc.SetTags("Admin")
 	oc.SetSummary("Get API Key")
 	oc.SetDescription("Retrieves an API key by ID. Requires admin privileges.")
 
@@ -80,7 +80,7 @@ func SetupOpenAPIForReadApiKey(oc openapi.OperationContext) error {
 // SetupOpenAPIForUpdateApiKey defines the OpenAPI documentation for the POST /api-key/{id} endpoint
 func SetupOpenAPIForUpdateApiKey(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("API Keys")
+	oc.SetTags("Admin")
 	oc.SetSummary("Update API Key")
 	oc.SetDescription("Updates an existing API key with the provided parameters. Requires admin privileges.")
 
@@ -120,7 +120,7 @@ func SetupOpenAPIForUpdateApiKey(oc openapi.OperationContext) error {
 // SetupOpenAPIForDeleteApiKey defines the OpenAPI documentation for the DELETE /api-key/{id} endpoint
 func SetupOpenAPIForDeleteApiKey(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("API Keys")
+	oc.SetTags("Admin")
 	oc.SetSummary("Delete API Key")
 	oc.SetDescription("Deletes an API key by ID. Requires admin privileges.")
 

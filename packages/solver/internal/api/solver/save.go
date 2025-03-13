@@ -37,6 +37,27 @@ func (h *Handler) CreateIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) ReadIntents(w http.ResponseWriter, r *http.Request) {
+	var intents []models.Intent
+	apiKeyId := r.Header.Get("X-Api-Key-Id")
+
+	result := database.DB.
+		Where("api_key_id = ? AND saved = ?", apiKeyId, true).
+		Order("created_at desc").
+		Find(&intents)
+
+	if result.Error != nil {
+		utils.MakeHttpError(w, "database error: "+result.Error.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(intents); err != nil {
+		utils.MakeHttpError(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (h *Handler) ReadIntent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]

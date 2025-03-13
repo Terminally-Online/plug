@@ -37,13 +37,13 @@ func (h *Handler) PostKill(w http.ResponseWriter, r *http.Request) {
 // SetupOpenAPIForGetKill defines the OpenAPI documentation for the GET /solver/kill endpoint
 func SetupOpenAPIForGetKill(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("System")
+	oc.SetTags("Admin")
 	oc.SetSummary("Get Kill Switch Status")
 	oc.SetDescription("Returns the current status of the kill switch, which controls whether new solver operations are allowed")
-	
+
 	// Define success response
 	oc.AddRespStructure(KillResponse{}, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error response
 	oc.AddRespStructure(
 		map[string]string{"error": "Internal server error"},
@@ -57,13 +57,13 @@ func SetupOpenAPIForGetKill(oc openapi.OperationContext) error {
 // SetupOpenAPIForPostKill defines the OpenAPI documentation for the POST /solver/kill endpoint
 func SetupOpenAPIForPostKill(oc openapi.OperationContext) error {
 	// Set operation tags, summary, and description
-	oc.SetTags("System")
+	oc.SetTags("Admin")
 	oc.SetSummary("Toggle Kill Switch")
 	oc.SetDescription("Toggles the state of the kill switch that controls whether new solver operations are allowed")
-	
+
 	// Define success response
 	oc.AddRespStructure(KillResponse{}, openapi.WithHTTPStatus(http.StatusOK))
-	
+
 	// Define error response
 	oc.AddRespStructure(
 		map[string]string{"error": "Internal server error"},

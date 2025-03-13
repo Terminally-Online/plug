@@ -35,6 +35,10 @@ func (h *Handler) SetupOpenAPIForCreateIntent(oc openapi.OperationContext) error
 	return SetupOpenAPIForCreateIntent(oc)
 }
 
+func (h *Handler) SetupOpenAPIForReadIntents(oc openapi.OperationContext) error {
+	return SetupOpenAPIForReadIntents(oc)
+}
+
 func (h *Handler) SetupOpenAPIForReadIntent(oc openapi.OperationContext) error {
 	return SetupOpenAPIForReadIntent(oc)
 }

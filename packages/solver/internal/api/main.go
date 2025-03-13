@@ -35,6 +35,7 @@ func SetupRouter(s solver.Handler) *mux.Router {
 
 	// Intent endpoints with OpenAPI
 	protected.Handle("/solver/save", NewOpenAPIHandler(s.CreateIntent, s.SetupOpenAPIForCreateIntent)).Methods("POST")
+	protected.Handle("/solver/save", NewOpenAPIHandler(s.ReadIntents, s.SetupOpenAPIForReadIntents)).Methods("GET")
 	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.ReadIntent, s.SetupOpenAPIForReadIntent)).Methods("GET")
 	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.ToggleIntentSaved, s.SetupOpenAPIForToggleIntentSaved)).Methods("POST")
 	protected.Handle("/solver/save/{id}", NewOpenAPIHandler(s.DeleteIntent, s.SetupOpenAPIForDeleteIntent)).Methods("DELETE")
