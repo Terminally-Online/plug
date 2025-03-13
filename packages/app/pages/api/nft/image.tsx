@@ -12,7 +12,7 @@ export const config = {
 
 export const getStaticPaths = () => {
 	const paths = colors.map(color => ({ params: { color } }))
-	return { paths, fallback: "blocking" }
+	return { paths }
 }
 
 export const getStaticProps = ({ params }: { params: { color?: string; number?: string } }) => ({
