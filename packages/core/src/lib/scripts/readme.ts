@@ -41,7 +41,9 @@ function generateReadme(templateString: string): string {
 		// Sort versions in descending order (newest first)
 		const versions = Object.keys(addresses).sort().reverse()
 
-		versions.forEach(ver => {
+		// Only show the latest version
+		if (versions.length > 0) {
+			const ver = versions[0]
 			const versionInfo = addresses[ver]
 			deploymentTree += `\`\`\`ml\n[v${ver}]:\n`
 
@@ -73,10 +75,10 @@ function generateReadme(templateString: string): string {
 			})
 
 			deploymentTree += '```\n\n'
-		})
+		}
 
 		return templateString.replace(
-			'<__DEPLOYMENT_ADDRESSES__>',
+			'<**DEPLOYMENT_ADDRESSES**>',
 			deploymentTree.trim()
 		)
 	} catch (error) {
