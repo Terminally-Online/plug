@@ -569,6 +569,12 @@ func HandleConstraintHealthFactor(rawInputs json.RawMessage, params actions.Hand
 		mulDivDown(position.Collateral, market.State.Price, OraclePriceScale),
 		market.LLTV,
 	)
+
+	// If the user has no borrow assets, the health factor is infinite and we can't divide by zero
+	if borrowAssets.Cmp(big.NewInt(0)) != 1 {
+		return nil, nil
+	}
+
 	healthFactor := wDivDown(maxBorrow, borrowAssets)
 
 	switch inputs.Operator {
