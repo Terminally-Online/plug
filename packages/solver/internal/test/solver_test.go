@@ -67,6 +67,8 @@ func warningPrint(format string, args ...interface{}) {
 	fmt.Printf(colorYellow+format+colorReset+"\n", args...)
 }
 
+var testAddress = "0x50701f4f523766bFb5C195F93333107d1cB8cD90"
+
 // Test intent struct matching the expected API format
 type TestIntent struct {
 	Id      string           `json:"id,omitempty"`
@@ -444,7 +446,7 @@ func TestGetSchemaForActions(t *testing.T) {
 		// Create a map to track which actions we've already tested
 		// so we don't test the same action multiple times
 		testedActions := make(map[string]bool)
-		
+
 		// Create maps to track which actions are available on each chain
 		baseChainActions := make(map[string]bool)
 		otherChainActions := make(map[string]map[uint64]bool)
@@ -505,8 +507,8 @@ func TestGetSchemaForActions(t *testing.T) {
 			// Run the test for this protocol/action combination
 			t.Run(fmt.Sprintf("%s_%s_schema_chain_%d", protocol, action, tc.Intent.ChainId), func(t *testing.T) {
 				resp, body, err := makeTestRequest(
-					fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s&action=%s", 
-						tc.Intent.ChainId, protocol, action),
+					fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s&action=%s&from=%s",
+						tc.Intent.ChainId, protocol, action, testAddress),
 					http.MethodGet,
 					nil,
 				)
@@ -517,9 +519,9 @@ func TestGetSchemaForActions(t *testing.T) {
 
 				// All schema endpoints should work with status 200 for valid inputs
 				if resp.StatusCode != http.StatusOK {
-					errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d", 
+					errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 						action, protocol, tc.Intent.ChainId, resp.StatusCode)
-					t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d", 
+					t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d",
 						action, protocol, tc.Intent.ChainId, resp.StatusCode)
 					return
 				}
@@ -571,9 +573,9 @@ func TestGetSchemaForActions(t *testing.T) {
 
 			// All schema endpoints should work with status 200 for valid inputs
 			if resp.StatusCode != http.StatusOK {
-				errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d", 
+				errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d",
 					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
-				t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d", 
+				t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d",
 					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
 				return
 			}
@@ -610,9 +612,9 @@ func TestGetSolution(t *testing.T) {
 	const baseChainID = 8453
 
 	// Define protocols to test, with preferred chains
-	baseProtocols := []string{"morpho", "euler"}  // Protocols to test on Base chain
-	mainnetProtocols := []string{"aave_v3", "yearn_v3", "nouns", "ens"}  // Protocols to test on Ethereum mainnet
-	utilityProtocols := []string{"assert", "boolean", "math", "database"}  // Chain-agnostic utility protocols
+	baseProtocols := []string{"morpho", "euler"}                          // Protocols to test on Base chain
+	mainnetProtocols := []string{"aave_v3", "yearn_v3", "nouns", "ens"}   // Protocols to test on Ethereum mainnet
+	utilityProtocols := []string{"assert", "boolean", "math", "database"} // Chain-agnostic utility protocols
 
 	// Run tests for each group
 	for _, protocol := range baseProtocols {
@@ -620,11 +622,11 @@ func TestGetSolution(t *testing.T) {
 	}
 
 	for _, protocol := range mainnetProtocols {
-		runProtocolTests(t, protocol, testEOAAddress, 1)  // Chain ID 1 for Ethereum mainnet
+		runProtocolTests(t, protocol, testEOAAddress, 1) // Chain ID 1 for Ethereum mainnet
 	}
 
 	for _, protocol := range utilityProtocols {
-		runProtocolTests(t, protocol, testEOAAddress, baseChainID)  // Test utilities on Base
+		runProtocolTests(t, protocol, testEOAAddress, baseChainID) // Test utilities on Base
 	}
 }
 
@@ -661,7 +663,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 		if forceSpecificChain != "" && tc.Intent.ChainId != forceChainID {
 			continue
 		}
-		
+
 		if tc.Intent.ChainId == preferredChainID {
 			preferredChainTestCases = append(preferredChainTestCases, tc)
 		} else {
@@ -758,18 +760,18 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 
 				// Print full request for debugging
 				reqJSON, _ := json.MarshalIndent(tc.Intent, "", "  ")
-				
+
 				// Handle the failure based on whether we expect it to succeed
 				if tc.ExpectOk {
 					// Get more specific error categorization to help debugging
 					failureCategory := categorizeFailure(string(body), tc.Intent.ChainId, protocol, action)
 					errorLog(t, "%s\nFailure category: %s\nRequest: %s", errorMsg, failureCategory, string(reqJSON))
-					
+
 					// Mark as failing but continue tests - don't stop everything for one failing test
 					t.Errorf("Test case %s failed: %s", tc.Name, errorMsg)
 				} else {
 					// If we expected an error, log it as a success
-					successLog(t, "Got expected error status code %d for %s.%s on chain %d", 
+					successLog(t, "Got expected error status code %d for %s.%s on chain %d",
 						resp.StatusCode, protocol, action, tc.Intent.ChainId)
 				}
 				return
@@ -817,7 +819,7 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 				// Check if we have simulation data
 				if status, exists := sim["status"].(string); exists {
 					infoLog(t, "Simulation status: %s", status)
-					
+
 					// If simulation status indicates failure but we expected success, that's an issue
 					if status != "success" && tc.ExpectOk {
 						warningLog(t, "Simulation returned status %q but test case expected success", status)
@@ -865,27 +867,27 @@ func loadTestCasesForProtocol(protocol string) ([]TestCase, error) {
 	// Find the current directory
 	_, filename, _, _ := runtime.Caller(0)
 	dir := filepath.Dir(filename)
-	
+
 	// Look for the protocol's test file
 	testFilePath := filepath.Join(dir, "cases", fmt.Sprintf("%s_test_cases.json", protocol))
-	
+
 	// Check if the file exists
 	if _, err := os.Stat(testFilePath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("test cases file not found: %s", testFilePath)
 	}
-	
+
 	// Read and parse the test file
 	fileData, err := os.ReadFile(testFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading test cases file: %w", err)
 	}
-	
+
 	var testCases []TestCase
 	err = json.Unmarshal(fileData, &testCases)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing test cases: %w", err)
 	}
-	
+
 	return testCases, nil
 }
 

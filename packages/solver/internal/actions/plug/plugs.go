@@ -37,6 +37,9 @@ func HandleTransfer(rawInputs json.RawMessage, params actions.HandlerParams) ([]
 
 	parts := strings.Split(inputs.Token, ":")
 	token := common.HexToAddress(parts[0])
+	if len(parts) < 3 {
+		return nil, fmt.Errorf("invalid token format: %s, expected format 'address:decimals:standard'", inputs.Token)
+	}
 	decimals, err := strconv.ParseUint(parts[1], 10, 8)
 	if err != nil {
 		return nil, err
@@ -296,6 +299,9 @@ func HandleSwap(rawInputs json.RawMessage, params actions.HandlerParams) ([]sign
 
 	tokenOutParts := strings.Split(inputs.Token, ":")
 	inputs.Token = tokenOutParts[0]
+	if len(tokenOutParts) < 3 {
+		return nil, fmt.Errorf("invalid token format: %s, expected format 'address:decimals:standard'", inputs.Token)
+	}
 	decimals, err := strconv.ParseUint(tokenOutParts[1], 10, 8)
 	if err != nil {
 		return nil, err
