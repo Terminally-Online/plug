@@ -30,7 +30,7 @@
           "action": "supply_collateral",
           "amount": "0.001",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -51,7 +51,7 @@
           "action": "withdraw",
           "amount": "0.001",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -71,7 +71,7 @@
           "protocol": "morpho",
           "action": "withdraw_all",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -92,7 +92,7 @@
           "action": "borrow",
           "amount": "0.001",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -113,7 +113,7 @@
           "action": "repay",
           "amount": "0.001",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -133,7 +133,7 @@
           "protocol": "morpho",
           "action": "repay_all",
           "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
-          "target": "USDC-WETH"
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda"
         }
       ],
       "options": {
@@ -148,6 +148,7 @@
     "name": "Morpho Claim Rewards",
     "intent": {
       "chainId": 8453,
+      "from": "0x1ccb2945F1325e061b40Fe5b0B452f0E76fB7278",
       "inputs": [
         {
           "protocol": "morpho",
@@ -160,7 +161,7 @@
         "submit": false
       }
     },
-    "expectOk": true
+    "expectOk": false
   },
   {
     "name": "Morpho Health Factor Constraint",
@@ -170,7 +171,7 @@
         {
           "protocol": "morpho",
           "action": "health_factor",
-          "target": "USDC-WETH",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda",
           "operator": 1,
           "threshold": "1.5"
         }
@@ -192,7 +193,7 @@
           "protocol": "morpho",
           "action": "apy",
           "direction": 1,
-          "target": "USDC-WETH",
+          "target": "0x8793cf302b8ffd655ab97bd1c695dbd967807e8367a65cb2f4edaf1380ba1bda",
           "operator": 1,
           "threshold": "0.5"
         }
