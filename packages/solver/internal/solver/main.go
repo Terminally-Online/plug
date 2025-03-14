@@ -224,7 +224,7 @@ func (s *Solver) RebuildSolutionFromModels(intent *models.Intent) (*Solution, er
 	return &Solution{
 		// LivePlugs: livePlugs,
 		// Transactions: livePlug.Plugs,
-		Run:          &run,
+		Run: &run,
 	}, nil
 }
 
@@ -312,7 +312,7 @@ func (s *Solver) SolveSocket(intent *models.Intent, simulate bool) (solution *So
 		LivePlugsId: livePlugs.Id,
 		Status:      "pending",
 	}
-	shouldSimulate := simulate && intent.Options["simulate"].(bool)
+	shouldSimulate := simulate && intent.Options["simulate"] != nil && intent.Options["simulate"].(bool)
 	if shouldSimulate {
 		simLivePlugs := &signature.LivePlugs{
 			Id:        livePlugs.Id,
@@ -396,7 +396,9 @@ func (s *Solver) Solve(intent *models.Intent, simulate bool, live bool) (solutio
 		}
 	}
 
-	if !live { result.LivePlugs = nil }
+	if !live {
+		result.LivePlugs = nil
+	}
 
 	return result, nil
 }
