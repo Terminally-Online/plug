@@ -204,16 +204,30 @@ echo -e "${BLUE}Actions tested:${NC}"
 ACTIONS=$(grep -o "Testing protocol=[a-z0-9_]* action=[a-z0-9_]*" "$TEMP_FILE" 2>/dev/null | sort | uniq | sed 's/Testing protocol=\([a-z0-9_]*\) action=\([a-z0-9_]*\)/    ✓ \1: \2/' || echo "    None detected")
 echo "$ACTIONS"
 
-# Chain-specific statistics
+# Chain-specific statistics - use more accurate patterns to count actual tests
 echo
 echo -e "${BLUE}Chain-specific test statistics:${NC}"
-BASE_TESTS=$(grep -c "chain_8453" "$TEMP_FILE" || echo 0)
-BASE_PASSED=$(grep -o "Successfully generated solution.*chain_8453" "$TEMP_FILE" | wc -l || echo 0)
-MAINNET_TESTS=$(grep -c "chain_1" "$TEMP_FILE" || echo 0)
-MAINNET_PASSED=$(grep -o "Successfully generated solution.*chain_1" "$TEMP_FILE" | wc -l || echo 0)
 
-echo -e "    Base (Chain 8453): Ran ${BASE_TESTS} tests, ${GREEN}${BASE_PASSED} passed${NC}"
-echo -e "    Ethereum (Chain 1): Ran ${MAINNET_TESTS} tests, ${GREEN}${MAINNET_PASSED} passed${NC}"
+# Count only actual test runs, not just any mention of the chain ID
+BASE_TESTS=$(grep -c "RUN.*chain_8453" "$TEMP_FILE" || echo 0)
+# Count passed tests - look for both PASS and "Successfully generated solution"
+BASE_PASSED=$(grep -E "PASS:.*chain_8453|--- PASS: .*chain_8453" "$TEMP_FILE" | wc -l || echo 0)
+# Same for mainnet tests
+MAINNET_TESTS=$(grep -c "RUN.*chain_1" "$TEMP_FILE" || echo 0)
+MAINNET_PASSED=$(grep -E "PASS:.*chain_1|--- PASS: .*chain_1" "$TEMP_FILE" | wc -l || echo 0)
+
+# Skip showing this section if no chain-specific tests were run
+if [ $BASE_TESTS -eq 0 ] && [ $MAINNET_TESTS -eq 0 ]; then
+  echo -e "    No chain-specific tests detected"
+else
+  # Only show chains with actual tests
+  if [ $BASE_TESTS -gt 0 ]; then
+    echo -e "    Base (Chain 8453): Ran ${BASE_TESTS} tests, ${GREEN}${BASE_PASSED} passed${NC}"
+  fi
+  if [ $MAINNET_TESTS -gt 0 ]; then
+    echo -e "    Ethereum (Chain 1): Ran ${MAINNET_TESTS} tests, ${GREEN}${MAINNET_PASSED} passed${NC}"
+  fi
+fi
 
 # Clean up temp file
 rm "$TEMP_FILE"
