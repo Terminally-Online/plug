@@ -668,7 +668,748 @@ func TestGetSolution(t *testing.T) {
 			expectOk: true,
 		},
 		{
-			name: "Aave V3 Supply",
+			name: "Euler Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "euler",
+						"action":    "health_factor",
+						"operator":  1,           // Greater than
+						"threshold": "1.5",       // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Euler Time to Liquidation Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "euler",
+						"action":    "time_to_liquidation",
+						"operator":  2,           // Less than
+						"threshold": "3600",      // Time to liquidation < 1 hour
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Euler APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "euler",
+						"action":    "apy",
+						"direction": 1,           // Supply APY
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Deposit",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "deposit",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Borrow",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Repay",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "health_factor",
+						"operator":  1,           // Greater than
+						"threshold": "1.5",       // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "apy",
+						"direction": 1,           // Supply APY
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Earn",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "earn",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"vault":    "0xB323495f7E4148BE5643A4EA4C38A573F521Cfc2", // Example Morpho vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Supply Collateral",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "supply_collateral",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Borrow",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Claim Rewards",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "claim_rewards",
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "health_factor",
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "1.5",       // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "apy",
+						"direction": 1,           // Supply APY
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Deposit",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "deposit",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 APY Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "yearn_v3",
+						"action":    "apy",
+						"token":     "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resp, body, err := makeTestRequest(
+				fmt.Sprintf("http://localhost:8080/solver?chainId=%d&protocol=%s&action=%s", tc.intent.ChainId, tc.intent.Inputs[0]["protocol"].(string), tc.intent.Inputs[0]["action"].(string)),
+				http.MethodPost,
+				tc.intent,
+			)
+			if err != nil {
+				t.Skip("Skipping test: server is not running")
+				return
+			}
+
+			if tc.expectOk {
+				if resp.StatusCode != http.StatusOK {
+					t.Errorf("Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
+					t.Errorf("Response body: %s", body)
+				}
+			} else {
+				if resp.StatusCode == http.StatusOK {
+					t.Errorf("Expected non-200 status code, got %d", resp.StatusCode)
+					t.Errorf("Response body: %s", body)
+				}
+			}
+		})
+	}
+}
+		},
+		{
+			name: "Euler Time to Liquidation Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":    "euler",
+						"action":      "time_to_liquidation",
+						"operator":    1,    // Greater than
+						"threshold":   "60", // Time to liquidation > 60 minutes
+						"sub-account": 5,
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Euler APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "euler",
+						"action":    "apy",
+						"direction": 1, // Supply APY
+						"vault":     "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+						"operator":  1,     // Greater than
+						"threshold": "0.5", // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Deposit",
 			intent: TestIntent{
 				ChainId: 1, // Ethereum
 				From:    testEOAAddress,
@@ -677,7 +1418,7 @@ func TestGetSolution(t *testing.T) {
 						"protocol": "aave_v3",
 						"action":   "deposit",
 						"amount":   "0.001",
-						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
 						"vault":    "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
 					},
 				},
@@ -693,6 +1434,1180 @@ func TestGetSolution(t *testing.T) {
 			},
 			expectOk: true,
 		},
+		{
+			name: "Aave V3 Borrow",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Repay",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "health_factor",
+						"operator":  1,     // Greater than
+						"threshold": "1.5", // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 APY Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "apy",
+						"direction": 1,                                               // Deposit APY
+						"token":     "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"operator":  1,                                               // Greater than
+						"threshold": "0.5",                                           // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Earn",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "earn",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"vault":    "0xB323495f7E4148BE5643A4EA4C38A573F521Cfc2", // Example Morpho vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Supply Collateral",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "supply_collateral",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Borrow",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Claim Rewards",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "claim_rewards",
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "health_factor",
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "1.5",       // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "apy",
+						"direction": 1,           // Supply APY
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Deposit",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "deposit",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+		},
+		{
+			name: "Euler Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":    "euler",
+						"action":      "health_factor",
+						"operator":    1,     // Greater than
+						"threshold":   "1.5", // Health factor > 1.5
+						"sub-account": 5,
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Euler Time to Liquidation Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":    "euler",
+						"action":      "time_to_liquidation",
+						"operator":    1,    // Greater than
+						"threshold":   "60", // Time to liquidation > 60 minutes
+						"sub-account": 5,
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Euler APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "euler",
+						"action":    "apy",
+						"direction": 1, // Supply APY
+						"vault":     "0x0A1a3b5f2041F33522C4efc754a7D096f880eE16",
+						"operator":  1,     // Greater than
+						"threshold": "0.5", // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Deposit",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "deposit",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Borrow",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Repay",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "aave_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "health_factor",
+						"operator":  1,     // Greater than
+						"threshold": "1.5", // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Aave V3 APY Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "aave_v3",
+						"action":    "apy",
+						"direction": 1,                                               // Deposit APY
+						"token":     "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"operator":  1,                                               // Greater than
+						"threshold": "0.5",                                           // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Earn",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "earn",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"vault":    "0xB323495f7E4148BE5643A4EA4C38A573F521Cfc2", // Example Morpho vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Supply Collateral",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "supply_collateral",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Withdraw All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "withdraw_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Borrow",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "borrow",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay",
+						"amount":   "0.001",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Repay All",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "repay_all",
+						"token":    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6", // USDC on Base
+						"target":   "USDC-WETH", // Example market
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Claim Rewards",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "morpho",
+						"action":   "claim_rewards",
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho Health Factor Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "health_factor",
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "1.5",       // Health factor > 1.5
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Morpho APY Constraint",
+			intent: TestIntent{
+				ChainId: 8453, // Base
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "morpho",
+						"action":    "apy",
+						"direction": 1,           // Supply APY
+						"target":    "USDC-WETH", // Example market
+						"operator":  1,           // Greater than
+						"threshold": "0.5",       // APY > 0.5%
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Deposit",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "deposit",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Withdraw",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "withdraw",
+						"amount":   "0.001",
+						"token":    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18", // WETH
+						"vault":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // Example Yearn vault
+					},
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Stake Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "stake_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem",
+						"amount":   "0.001",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 Redeem Max",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol": "yearn_v3",
+						"action":   "redeem_max",
+						"token":    "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+				},
+				Options: struct {
+					IsEOA    bool `json:"isEOA"`
+					Simulate bool `json:"simulate"`
+					Submit   bool `json:"submit"`
+				}{
+					IsEOA:    false,
+					Simulate: false,
+					Submit:   false,
+				},
+			},
+			expectOk: true,
+		},
+		{
+			name: "Yearn V3 APY Constraint",
+			intent: TestIntent{
+				ChainId: 1, // Ethereum
+				From:    testEOAAddress,
+				Inputs: []map[string]any{
+					{
+						"protocol":  "yearn_v3",
+						"action":    "apy",
+						"token":     "0xa258C4606Ca8206D8aA700cE2143D7db854D168c:18", // Vault token
+						"operator":  1,           // Greater than
 	}
 
 	for _, tc := range testCases {
