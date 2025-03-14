@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -514,16 +515,14 @@ func TestGetSchemaForActions(t *testing.T) {
 					return
 				}
 
-				// Some combinations might not be available, so we'll skip if we get 400
-				if resp.StatusCode == http.StatusBadRequest {
-					warningLog(t, "Action %s not available for protocol %s on chain %d", 
-						action, protocol, tc.Intent.ChainId)
-					t.Skipf("Action %s not available for protocol %s on chain %d", 
-						action, protocol, tc.Intent.ChainId)
+				// All schema endpoints should work with status 200 for valid inputs
+				if resp.StatusCode != http.StatusOK {
+					errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d", 
+						action, protocol, tc.Intent.ChainId, resp.StatusCode)
+					t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d", 
+						action, protocol, tc.Intent.ChainId, resp.StatusCode)
 					return
 				}
-
-				assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 				var schemaResponse map[string]interface{}
 				err = json.Unmarshal(body, &schemaResponse)
@@ -570,14 +569,14 @@ func TestGetSchemaForActions(t *testing.T) {
 				return
 			}
 
-			// Some combinations might not be available, so we'll skip if we get 400
-			if resp.StatusCode == http.StatusBadRequest {
-				warningLog(t, "Action %s not available for protocol %s on chain %d", tc.action, tc.protocol, tc.chainId)
-				t.Skipf("Action %s not available for protocol %s on chain %d", tc.action, tc.protocol, tc.chainId)
+			// All schema endpoints should work with status 200 for valid inputs
+			if resp.StatusCode != http.StatusOK {
+				errorLog(t, "Action %s should be available for protocol %s on chain %d. Got status %d", 
+					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
+				t.Errorf("Action %s should be available for protocol %s on chain %d. Got status %d", 
+					tc.action, tc.protocol, tc.chainId, resp.StatusCode)
 				return
 			}
-
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 			var schemaResponse map[string]interface{}
 			err = json.Unmarshal(body, &schemaResponse)
@@ -631,6 +630,20 @@ func TestGetSolution(t *testing.T) {
 
 // Helper function to run all tests for a specific protocol with preferred chain ID
 func runProtocolTests(t *testing.T, protocol string, testAddress string, preferredChainID uint64) {
+	// Check if we're filtering tests by chain ID
+	forceSpecificChain := os.Getenv("TEST_CHAIN_ID")
+	var forceChainID uint64
+	if forceSpecificChain != "" {
+		// Parse the chain ID from the environment variable
+		id, err := strconv.ParseUint(forceSpecificChain, 10, 64)
+		if err == nil {
+			forceChainID = id
+			infoLog(t, "Forcing tests to run only on chain ID %d based on TEST_CHAIN_ID", forceChainID)
+		} else {
+			warningLog(t, "Invalid TEST_CHAIN_ID value: %s", forceSpecificChain)
+		}
+	}
+
 	// Load test cases for this protocol from its JSON file
 	testCases, err := loadTestCasesForProtocol(protocol)
 	if err != nil {
@@ -638,12 +651,17 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 		return
 	}
 
-	// Filter test cases to prioritize the preferred chain
+	// Filter test cases by chain
 	preferredChainTestCases := make([]TestCase, 0)
 	otherChainTestCases := make([]TestCase, 0)
 
-	// Sort test cases by preferred chain
+	// Sort test cases by chain
 	for _, tc := range testCases {
+		// If forcing a specific chain, only include those test cases
+		if forceSpecificChain != "" && tc.Intent.ChainId != forceChainID {
+			continue
+		}
+		
 		if tc.Intent.ChainId == preferredChainID {
 			preferredChainTestCases = append(preferredChainTestCases, tc)
 		} else {
@@ -651,11 +669,16 @@ func runProtocolTests(t *testing.T, protocol string, testAddress string, preferr
 		}
 	}
 
-	// If we have test cases for the preferred chain, use only those
+	// Determine which test cases to run
 	finalTestCases := preferredChainTestCases
-	if len(finalTestCases) == 0 {
+	if len(finalTestCases) == 0 && forceSpecificChain == "" {
+		// Only fall back to other chains if we're not forcing a specific chain
 		infoLog(t, "No test cases for protocol %s on chain %d, using alternative chains", protocol, preferredChainID)
 		finalTestCases = otherChainTestCases
+	} else if len(finalTestCases) == 0 && forceSpecificChain != "" {
+		// If forcing a specific chain and no test cases, skip this protocol
+		infoLog(t, "No test cases for protocol %s on chain %d (from TEST_CHAIN_ID), skipping", protocol, forceChainID)
+		return
 	} else {
 		infoLog(t, "Using %d test cases for protocol %s on chain %d", len(finalTestCases), protocol, preferredChainID)
 	}

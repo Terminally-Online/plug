@@ -14,7 +14,8 @@ echo -e "${BLUE}╚════════════════════�
 # Parse command line arguments
 SKIP_DB_CHECK=false
 HELP=false
-TEST_MODE="all"  # all, basic, or minimal
+TEST_MODE="all"  # all, basic, base, mainnet, etc.
+CHAIN_ID=""      # Optional specific chain ID to test
 
 for arg in "$@"; do
   case $arg in
@@ -24,6 +25,10 @@ for arg in "$@"; do
       ;;
     --test-mode=*)
       TEST_MODE="${arg#*=}"
+      shift
+      ;;
+    --chain-id=*)
+      CHAIN_ID="${arg#*=}"
       shift
       ;;
     --help)
@@ -45,6 +50,8 @@ if [ "$HELP" = true ]; then
   echo -e "                            - basic: Run most critical tests"
   echo -e "                            - minimal: Run only essential tests"
   echo -e "                            - noactions: Skip protocol action tests that might fail"
+  echo -e "  --chain-id=ID             Run tests only for a specific chain ID (e.g. 8453 for Base)"
+  echo -e "                            This overrides the chain selection in --test-mode"
   echo -e "  --help                    Show this help message"
   exit 0
 fi
@@ -94,6 +101,12 @@ export ALLOW_TEST_DB_FALLBACK=true
 # Set API keys for testing
 export ADMIN_API_KEY=${ADMIN_API_KEY:-bingbopboombam}
 export TEST_API_KEY=${TEST_API_KEY:-testing}  # Special test key that doesn't get rate limited
+
+# Set chain ID if provided
+if [ -n "$CHAIN_ID" ]; then
+  export TEST_CHAIN_ID="$CHAIN_ID"
+  echo -e "${BLUE}Focusing tests on chain ID: ${CHAIN_ID}${NC}"
+fi
 
 # Show which API key is being used
 echo -e "${GREEN}Using API key for tests: ${TEST_API_KEY}${NC}"
