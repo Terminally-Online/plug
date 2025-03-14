@@ -134,13 +134,14 @@
     "name": "Euler Health Factor Constraint",
     "intent": {
       "chainId": 8453,
+      "from": "0x50701f4f523766bFb5C195F93333107d1cB8cD90",
       "inputs": [
         {
           "protocol": "euler",
           "action": "health_factor",
           "operator": 1,
           "threshold": "1.5",
-          "sub-account": 5
+          "sub-account": 1
         }
       ],
       "options": {
