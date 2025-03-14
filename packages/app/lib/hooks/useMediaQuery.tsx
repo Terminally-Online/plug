@@ -25,7 +25,7 @@ export const useMediaQuery = () => {
 			Object.keys(BREAKPOINTS).reduce(
 				(acc, key) => ({
 					...acc,
-					[key]: false
+					[key]: true
 				}),
 				{}
 			) as BreakpointState
