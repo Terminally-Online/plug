@@ -72,7 +72,7 @@
 		"recharts": "^2.15.1",
 		"sharp": "^0.33.5",
 		"superjson": "^2.2.2",
-		"tailwind-merge": "^2.5.4",
+		"tailwind-merge": "^3.0.2",
 		"tsx": "^4.19.3",
 		"utf-8-validate": "6.0.5",
 		"viem": "^2.23.6",
