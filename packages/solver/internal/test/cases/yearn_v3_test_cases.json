@@ -8,8 +8,8 @@
           "protocol": "yearn_v3",
           "action": "deposit",
           "amount": "0.001",
-          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
-          "vault": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c"
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "vault": "0xd5428B889621Eee8060fc105AA0AB0Fa2e344468"
         }
       ],
       "options": {
@@ -29,8 +29,8 @@
           "protocol": "yearn_v3",
           "action": "withdraw",
           "amount": "0.001",
-          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
-          "vault": "0xa258C4606Ca8206D8aA700cE2143D7db854D168c"
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913:6",
+          "vault": "0xd5428B889621Eee8060fc105AA0AB0Fa2e344468"
         }
       ],
       "options": {

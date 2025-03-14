@@ -156,13 +156,14 @@
     "name": "Euler Time to Liquidation Constraint",
     "intent": {
       "chainId": 8453,
+      "from": "0x50701f4f523766bFb5C195F93333107d1cB8cD90",
       "inputs": [
         {
           "protocol": "euler",
           "action": "time_to_liquidation",
           "operator": 1,
           "threshold": "60",
-          "sub-account": 5
+          "sub-account": 1
         }
       ],
       "options": {

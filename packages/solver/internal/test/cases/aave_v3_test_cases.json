@@ -109,8 +109,8 @@
           "protocol": "aave_v3",
           "action": "apy",
           "direction": 1,
-          "token": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2:18",
-          "operator": 1,
+          "token": "0x4200000000000000000000000000000000000006:18",
+          "operator": -1,
           "threshold": "0.5"
         }
       ],
